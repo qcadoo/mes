@@ -33,8 +33,8 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
-				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(acceptTechnology);" />
-				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{state}.changeTechnologyState(cancelTechnology);" />
+				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(acceptTechnology)" />
+				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{state}.changeTechnologyState(cancelTechnology)" />
 			</group>
 			<group name="reports">
 				<smallButton name="pdf" icon="pdfIcon16.png" action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);" state="enabled" />
@@ -48,7 +48,7 @@
 					<![CDATA[
 						#{form}.addOnChangeListener({
 							onSetValue: function() {
-								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology"];
+								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology"]; <!-- ,"statuses.activate", "statuses.deactivate"]; -->
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								for (var elementKey in itemNames) {
@@ -63,7 +63,7 @@
 								if (isSaved && #{state}.getValue().content && #{state}.getValue().content.value) {
 									#{state}.updateRibbon(#{state}.getValue().content.value);
 								}
-							};
+							}
 						});
 					]]>
 				</script>
@@ -111,7 +111,7 @@
 									toggleEditable(newValue.content.value);
 									#{inProducts}.setEnabled(false, true); 
   									#{outProducts}.setEnabled(false, true);
-								};
+								}
 							});
 							
 							var onSetValueListener = {
@@ -121,14 +121,14 @@
 									} else {
 										this.setEnabled(false, true);
 									}
-								};
+								}
 							};
 							
  							#{technologyTree}.addOnChangeListener({  
  								select: function(newValue){ 
  									#{outProducts}.setEnabled(true, true); 
  									#{outProducts}.setEnabled(true, true); 
- 								}; 
+ 								} 
  							}); 
 							
 							#{technologyTree}.addOnChangeListener(onSetValueListener); 
@@ -141,7 +141,7 @@
 								if (window.confirm(ribbonItem.confirmMessage)) {
 									#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
 								}
-							};
+							}
 							
 							function toggleEditable(state) {
 								var isDraft = state == "01draft";
@@ -149,11 +149,12 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								if (state != "01draft") {
-									#{window}.setEnabled(isDraft, true); 
- 								}
+								if(state != "01draft"){
+								#{window}.setEnabled(isDraft, true); 
+ 								  }
 								
-								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
+								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", 
+									"actions.cancel"]; <!--, "statuses.activate", "statuses.deactivate"]; -->
 								for (var elementKey in toggleRibbonItems) {
 									var ribbonItemName = toggleRibbonItems[elementKey];
 									var ribbonItem = #{window}.getRibbonItem(ribbonItemName);
@@ -203,7 +204,6 @@
 									cancelState.enable();
 								}
 							}
-							
 							this.updateRibbon = updateRibbon;
 						]]>
 					</script>

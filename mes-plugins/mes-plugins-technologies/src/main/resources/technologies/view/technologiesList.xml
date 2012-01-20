@@ -40,7 +40,7 @@
 		<component type="grid" name="technologies" reference="grid">
 			<script>
 				<![CDATA[
-					var toggleRibbonItems = ["actions.delete"];
+					var toggleRibbonItems = ["actions.delete"]; <!--, "statuses.activate", "statuses.deactivate"];-->
 		
 					this.addOnChangeListener({
 						onChange: function(selectedEntitiesArray) {
@@ -49,7 +49,7 @@
 							} else {
 								resetRibbon();
 							}
-						};
+						}
 					});
 					
 					this.changeTechnologyState = function(eventPerformer, ribbonItemName, entityId) {
