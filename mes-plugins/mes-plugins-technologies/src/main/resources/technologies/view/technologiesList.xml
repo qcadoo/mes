@@ -32,17 +32,15 @@
 		<ribbon>
 			<template name="standardGridTemplate" />
 			<group name="status">
-				<smallButton name="acceptTechnology" icon="startIcon16.png"
-					state="disabled" action="#{grid}.changeTechnologyState(acceptTechnology)" />
-				<smallButton name="cancelTechnology" icon="deleteIcon16.png"
-					state="disabled" action="#{grid}.changeTechnologyState(cancelTechnology)" />
+				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{grid}.changeTechnologyState(acceptTechnology);" />
+				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{grid}.changeTechnologyState(cancelTechnology);" />
 			</group>
 		</ribbon>
 
 		<component type="grid" name="technologies" reference="grid">
 			<script>
 				<![CDATA[
-					var toggleRibbonItems = ["actions.delete"]; <!--, "statuses.activate", "statuses.deactivate"];-->
+					var toggleRibbonItems = ["actions.delete"];
 		
 					this.addOnChangeListener({
 						onChange: function(selectedEntitiesArray) {
