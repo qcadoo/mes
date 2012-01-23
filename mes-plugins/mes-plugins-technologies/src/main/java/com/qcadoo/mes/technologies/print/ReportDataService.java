@@ -49,6 +49,8 @@ import com.qcadoo.model.api.EntityTreeNode;
 @Service
 public class ReportDataService {
 
+    private static final String QUANTITY_FIELD = "quantity";
+
     private static final String COMPONENT_QUANTITY_ALGORITHM = "02perTechnology";
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
@@ -96,11 +98,11 @@ public class ReportDataService {
                             || technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)) {
                         if (products.containsKey(product)) {
                             BigDecimal quantity = products.get(product);
-                            quantity = ((BigDecimal) operationProductComponent.getField("quantity")).multiply(plannedQuantity,
+                            quantity = ((BigDecimal) operationProductComponent.getField(QUANTITY_FIELD)).multiply(plannedQuantity,
                                     MathContext.DECIMAL128).add(quantity);
                             products.put(product, quantity);
                         } else {
-                            products.put(product, ((BigDecimal) operationProductComponent.getField("quantity")).multiply(
+                            products.put(product, ((BigDecimal) operationProductComponent.getField(QUANTITY_FIELD)).multiply(
                                     plannedQuantity, MathContext.DECIMAL128));
                         }
                     }
@@ -125,8 +127,8 @@ public class ReportDataService {
             }
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField(MODEL_BASIC_PRODUCT);
-                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
+                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField(QUANTITY_FIELD)).multiply(plannedQuantity,
+                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField(QUANTITY_FIELD),
                         MathContext.DECIMAL128);
                 EntityTreeNode prevOperation = findPreviousOperation(node, product, technology);
                 if (prevOperation != null) {

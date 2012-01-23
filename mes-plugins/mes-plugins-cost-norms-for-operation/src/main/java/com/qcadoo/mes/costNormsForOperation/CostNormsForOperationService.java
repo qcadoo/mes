@@ -45,6 +45,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class CostNormsForOperationService {
 
+    private static final String OPERATION_FIELD = "operation";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -58,9 +60,9 @@ public class CostNormsForOperationService {
 
     public void copyCostValuesFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
-        ComponentState operationLookup = view.getComponentByReference("operation");
+        ComponentState operationLookup = view.getComponentByReference(OPERATION_FIELD);
         if (operationLookup.getFieldValue() == null) {
-            if (!"operation".equals(operationLookupState.getName())) {
+            if (!OPERATION_FIELD.equals(operationLookupState.getName())) {
                 view.getComponentByReference("form").addMessage(
                         translationService.translate("costNormsForOperation.messages.info.missingOperationReference",
                                 view.getLocale()), INFO);
@@ -121,11 +123,11 @@ public class CostNormsForOperationService {
         if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
             return;
         }
-        if (technologyOperationComponent.getBelongsToField("operation") == null) {
+        if (technologyOperationComponent.getBelongsToField(OPERATION_FIELD) == null) {
             return;
         }
         copyCostValuesFromGivenOperation(technologyOperationComponent,
-                technologyOperationComponent.getBelongsToField("operation"));
+                technologyOperationComponent.getBelongsToField(OPERATION_FIELD));
     }
 
     /* ******* CUSTOM HELPER(S) ******* */

@@ -59,9 +59,23 @@ public interface WorkPlansConstants {
 
     String VIEW_WORK_PLANS_LIST = "workPlansList";
 
-    Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet("hideDescriptionInWorkPlans", "hideDetailsInWorkPlans",
-            "hideTechnologyAndOrderInWorkPlans", "imageUrlInWorkPlan", "dontPrintInputProductsInWorkPlans",
-            "dontPrintOutputProductsInWorkPlans");
+    // FIELDS
+
+    String HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD = "hideDescriptionInWorkPlans";
+
+    String HIDE_DETAILS_IN_WORK_PLANS_FIELD = "hideDetailsInWorkPlans";
+
+    String HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD = "hideTechnologyAndOrderInWorkPlans";
+
+    String DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD = "dontPrintInputProductsInWorkPlans";
+
+    String DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD = "dontPrintOutputProductsInWorkPlans";
+
+    String IMAGE_URL_IN_WORK_PLAN_FIELD = "imageUrlInWorkPlan";
+
+    Set<String> WORKPLAN_PARAMETERS = Sets.newHashSet(HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, HIDE_DETAILS_IN_WORK_PLANS_FIELD,
+            HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, IMAGE_URL_IN_WORK_PLAN_FIELD,
+            DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD);
 
     Set<String> FILE_EXTENSIONS = Sets.newHashSet("bmp", "gif", "jpg", "jpeg", "png", "tiff", "wmf", "eps");
 

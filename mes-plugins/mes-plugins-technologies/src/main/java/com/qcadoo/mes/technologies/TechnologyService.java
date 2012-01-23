@@ -67,6 +67,32 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class TechnologyService {
 
+    private static final String QUANTITY_FIELD = "quantity";
+
+    private static final String UNIT_SAMPLING_NR_FIELD = "unitSamplingNr";
+
+    private static final String COMPONENT_QUANTITY_ALGORITHM_FIELD = "componentQuantityAlgorithm";
+
+    private static final String QUALITY_CONTROL_TYPE_FIELD = "qualityControlType";
+
+    private static final String ENTITY_TYPE_FIELD = "entityType";
+
+    private static final String OPERATION_COMPONENTS_FIELD = "operationComponents";
+
+    private static final String REFERENCE_TECHNOLOGY_FIELD = "referenceTechnology";
+
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String QUALITY_CONTROL_REQUIRED_FIELD = "qualityControlRequired";
+
+    private static final String CHILDREN_FIELD = "children";
+
+    private static final String STATE_FIELD = "state";
+
+    private static final String PARENT_FIELD = "parent";
+
     private static final String ACCEPTED = "02accepted";
 
     private static final String NUMBER = "number";
@@ -85,13 +111,13 @@ public class TechnologyService {
 
     private static final String CONST_MASTER = "master";
 
-    private static final String CONST_PRODUCT = "product";
+    private static final String CONST_PRODUCT = PRODUCT_FIELD;
 
-    private static final String CONST_ENTITY_TYPE = "entityType";
+    private static final String CONST_ENTITY_TYPE = ENTITY_TYPE_FIELD;
 
     private static final String CONST_OPERATION = "operation";
 
-    private static final String CONST_OPERATION_COMPONENTS = "operationComponents";
+    private static final String CONST_OPERATION_COMPONENTS = OPERATION_COMPONENTS_FIELD;
 
     private static final String CONST_OPERATION_COMPONENT = "operationComponent";
 
@@ -101,7 +127,7 @@ public class TechnologyService {
 
     private static final String CONST_REFERENCE_MODE = "referenceMode";
 
-    private static final String CONST_STATE = "state";
+    private static final String CONST_STATE = STATE_FIELD;
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
@@ -202,7 +228,7 @@ public class TechnologyService {
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
             inProduct.setField(CONST_OPERATION_COMPONENT, rootOperation);
             inProduct.setField(CONST_PRODUCT, inProductWithCount.getKey());
-            inProduct.setField("quantity", inProductWithCount.getValue());
+            inProduct.setField(QUANTITY_FIELD, inProductWithCount.getValue());
             inProducts.add(inProduct);
         }
 
@@ -221,7 +247,7 @@ public class TechnologyService {
 
         FieldComponent qualityControlType = (FieldComponent) state;
 
-        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference("unitSamplingNr");
+        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference(UNIT_SAMPLING_NR_FIELD);
 
         if (qualityControlType.getFieldValue() != null) {
             if (qualityControlType.getFieldValue().equals("02forUnit")) {
@@ -260,7 +286,7 @@ public class TechnologyService {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent name = (FieldComponent) state.getComponentByReference("name");
+        FieldComponent name = (FieldComponent) state.getComponentByReference(NAME_FIELD);
         FieldComponent productState = (FieldComponent) componentState;
 
         if (StringUtils.hasText((String) name.getFieldValue()) || productState.getFieldValue() == null) {
@@ -277,7 +303,7 @@ public class TechnologyService {
         cal.setTime(new Date());
 
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
-                product.getStringField("name"), product.getStringField(NUMBER),
+                product.getStringField(NAME_FIELD), product.getStringField(NUMBER),
                 cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH) + 1));
     }
 
@@ -322,9 +348,9 @@ public class TechnologyService {
 
             entity.setField(CONST_ENTITY_TYPE, CONST_OPERATION);
             entity.setField(REFERENCE_TECHNOLOGY, null);
-            entity.setField("qualityControlRequired", copiedRoot.getField("qualityControlRequired"));
+            entity.setField(QUALITY_CONTROL_REQUIRED_FIELD, copiedRoot.getField(QUALITY_CONTROL_REQUIRED_FIELD));
             entity.setField(CONST_OPERATION, copiedRoot.getField(CONST_OPERATION));
-            entity.setField("children", copiedRoot.getField("children"));
+            entity.setField(CHILDREN_FIELD, copiedRoot.getField(CHILDREN_FIELD));
             entity.setField(CONST_OPERATION_COMP_PRODUCT_IN, copiedRoot.getField(CONST_OPERATION_COMP_PRODUCT_IN));
             entity.setField(CONST_OPERATION_COMP_PRODUCT_OUT, copiedRoot.getField(CONST_OPERATION_COMP_PRODUCT_OUT));
         }
@@ -356,9 +382,9 @@ public class TechnologyService {
     private Entity copyReferencedTechnologyOperations(final EntityTreeNode node, final Entity technology) {
         Entity copy = node.copy();
         copy.setId(null);
-        copy.setField("parent", null);
+        copy.setField(PARENT_FIELD, null);
         copy.setField(CONST_TECHNOLOGY, technology);
-        copy.setField("children", copyOperationsChildren(node.getChildren(), technology));
+        copy.setField(CHILDREN_FIELD, copyOperationsChildren(node.getChildren(), technology));
         copy.setField(CONST_OPERATION_COMP_PRODUCT_IN,
                 copyProductComponents(copy.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN)));
         copy.setField(CONST_OPERATION_COMP_PRODUCT_OUT,
@@ -451,7 +477,7 @@ public class TechnologyService {
             if (CONST_OPERATION.equals(operation.getStringField(CONST_ENTITY_TYPE))) {
                 continue;
             }
-            final Entity referenceTechnology = operation.getBelongsToField("referenceTechnology");
+            final Entity referenceTechnology = operation.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD);
             if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(CONST_STATE))) {
                 technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
                         "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
@@ -462,10 +488,10 @@ public class TechnologyService {
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.equals(technology.getStringField("state"))) {
+        if (!ACCEPTED.equals(technology.getStringField(STATE_FIELD))) {
             return true;
         }
-        if ("01perProductOut".equals(technology.getStringField("componentQuantityAlgorithm"))) {
+        if ("01perProductOut".equals(technology.getStringField(COMPONENT_QUANTITY_ALGORITHM_FIELD))) {
             final Entity savedTechnology = dataDefinition.get(technology.getId());
             final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
             if (!checkIfConsumesSubOpsProds(technologyOperations)) {
@@ -491,7 +517,7 @@ public class TechnologyService {
 
     private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
-            final Entity parent = technologyOperation.getBelongsToField("parent");
+            final Entity parent = technologyOperation.getBelongsToField(PARENT_FIELD);
             if (parent != null && CONST_OPERATION.equals(parent.getStringField(CONST_ENTITY_TYPE))) {
                 final EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
                 final EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
@@ -508,13 +534,13 @@ public class TechnologyService {
     }
 
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField("qualityControlType");
+        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_FIELD);
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-            BigDecimal unitSamplingNr = (BigDecimal) entity.getField("unitSamplingNr");
+            BigDecimal unitSamplingNr = (BigDecimal) entity.getField(UNIT_SAMPLING_NR_FIELD);
             if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
                 entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField("unitSamplingNr"),
+                entity.addError(dataDefinition.getField(UNIT_SAMPLING_NR_FIELD),
                         "technologies.technology.validate.global.error.unitSamplingNr");
                 return false;
             }
@@ -539,14 +565,14 @@ public class TechnologyService {
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField(CONST_TECHNOLOGY);
         EntityTreeNode rootNode = technology.getTreeField(CONST_OPERATION_COMPONENTS).getRoot();
-        if (rootNode == null || technologyOperation.getBelongsToField("parent") != null) {
+        if (rootNode == null || technologyOperation.getBelongsToField(PARENT_FIELD) != null) {
             return;
         }
-        technologyOperation.setField("parent", rootNode);
+        technologyOperation.setField(PARENT_FIELD, rootNode);
     }
 
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
-        view.getComponentByReference("state").performEvent(view, "toggleEnabled");
+        view.getComponentByReference(STATE_FIELD).performEvent(view, "toggleEnabled");
     }
 
     public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
@@ -571,7 +597,7 @@ public class TechnologyService {
             return true;
         }
         if (isTechnologyIsAlreadyAccepted(technology, existingTechnology)) {
-            entity.addGlobalError(errorMessageKey, technology.getStringField("name"));
+            entity.addGlobalError(errorMessageKey, technology.getStringField(NAME_FIELD));
             return false;
         }
 
@@ -637,7 +663,7 @@ public class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            if (technology.getBelongsToField("product").getId().equals(product.getId())) {
+            if (technology.getBelongsToField(PRODUCT_FIELD).getId().equals(product.getId())) {
                 return PRODUCT;
             } else {
                 return WASTE;
@@ -665,11 +691,11 @@ public class TechnologyService {
 
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
+            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(ENTITY_TYPE_FIELD))) {
                 operationComponents.add(operationComponent);
             } else {
                 addOperationsFromSubtechnologiesToList(
-                        operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents"),
+                        operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD).getTreeField(OPERATION_COMPONENTS_FIELD),
                         operationComponents);
             }
         }

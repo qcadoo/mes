@@ -54,6 +54,22 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
 
+    private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
+
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String ONLY_COMPONENTS_FIELD = "onlyComponents";
+
+    private static final String UNIT_FIELD = "unit";
+
+    private static final String NUMBER_FIELD = "number";
+
+    private static final String ORDERS_FIELD = "orders";
+
+    private static final String DATE_FIELD = "date";
+
+    private static final String NAME_FIELD = "name";
+
     private final int[] defaultMatReqHeaderColumnWidth = new int[] { 25, 25, 24, 13, 13 };
 
     private final int[] defaultOrderHeaderColumnWidth = new int[] { 37, 37, 13, 13 };
@@ -68,8 +84,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, entity.getField("name").toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), securityService.getCurrentUserName());
+        PdfUtil.addDocumentHeader(document, entity.getField(NAME_FIELD).toString(), documenTitle, documentAuthor,
+                (Date) entity.getField(DATE_FIELD), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(getTranslationService().translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), PdfUtil.getArialBold11Dark()));
@@ -93,16 +109,16 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
-        List<Entity> orders = entity.getManyToManyField("orders");
-        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
+        List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
+        Boolean onlyComponents = (Boolean) entity.getField(ONLY_COMPONENTS_FIELD);
         Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
                 onlyComponents);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Object unit = entry.getKey().getField("unit");
+            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            Object unit = entry.getKey().getField(UNIT_FIELD);
             if (unit == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             } else {
@@ -117,23 +133,23 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
-        List<Entity> orders = entity.getManyToManyField("orders");
+        List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         Collections.sort(orders, new EntityOrderNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(5, orderHeader, true, defaultMatReqHeaderColumnWidth);
 
         for (Entity order : orders) {
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
-            Entity product = (Entity) order.getField("product");
+            table.addCell(new Phrase(order.getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            Entity product = (Entity) order.getField(PRODUCT_FIELD);
             if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             } else {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             }
             if (product == null) {
                 table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             } else {
-                Object unit = product.getField("unit");
+                Object unit = product.getField(UNIT_FIELD);
                 if (unit == null) {
                     table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
                 } else {
@@ -141,7 +157,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 }
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
             table.addCell(new Phrase(getDecimalFormat().format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
