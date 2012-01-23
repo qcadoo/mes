@@ -216,25 +216,7 @@ public class WorkPlanProductsServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectQuantitiesForSimpleAlgorithm() {
-        // given
-        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("02perTechnology");
-
-        // when
-        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
-
-        // then
-        assertEquals(new BigDecimal(25), productQuantities.get(productInComponent1));
-        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
-    }
-
-    @Test
-    public void shouldReturnCorrectQuantitiesForNormalAlgorithm() {
-        // given
-        when(technology.getStringField("componentQuantityAlgorithm")).thenReturn("01perProductOut");
+    public void shouldReturnCorrectQuantities() {
 
         // when
         Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
@@ -247,9 +229,4 @@ public class WorkPlanProductsServiceTest {
         assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowIllegalStateExceptionIfThereIsNoAlgorithmSelectedInTechnology() {
-        // when
-        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
-    }
 }

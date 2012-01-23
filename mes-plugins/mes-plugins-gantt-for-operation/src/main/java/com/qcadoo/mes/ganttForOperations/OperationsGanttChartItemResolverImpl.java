@@ -47,6 +47,30 @@ import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 @Service
 public class OperationsGanttChartItemResolverImpl implements OperationsGanttChartItemResolver {
 
+    private static final String ORDER_OPERATION_COMPONENT_FIELD = "orderOperationComponent";
+
+    private static final String PRODUCTION_SCHEDULING_MODEL = "productionScheduling";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String NUMBER_FIELD = "number";
+
+    private static final String NODE_NUMBER_FIELD = "nodeNumber";
+
+    private static final String ORDERS_MODEL = "orders";
+
+    private static final String OPERATION_FIELD = "operation";
+
+    private static final String DATE_TO_FIELD = "dateTo";
+
+    private static final String ORDER_FIELD = "order";
+
+    private static final String DATE_FROM_FIELD = "dateFrom";
+
+    private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
+
+    private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
+
     private static final Logger LOG = LoggerFactory.getLogger(OperationsGanttChartItemResolverImpl.class);
 
     @Autowired
@@ -56,15 +80,15 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
         try {
             Long orderId = Long.valueOf(context.getString("orderId"));
-            Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+            Entity order = dataDefinitionService.get(ORDERS_MODEL, ORDER_FIELD).get(orderId);
 
             if (order == null) {
                 LOG.warn("Cannot find order for " + orderId);
                 return Collections.emptyMap();
             }
 
-            List<Entity> operations = dataDefinitionService.get("productionScheduling", "orderOperationComponent").find()
-                    .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+            List<Entity> operations = dataDefinitionService.get(PRODUCTION_SCHEDULING_MODEL, ORDER_OPERATION_COMPONENT_FIELD).find()
+                    .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
 
             if (operations.isEmpty()) {
                 LOG.warn("Cannot find operations for " + order);
@@ -74,13 +98,13 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             Date orderStartDate = null;
             Date orderEndDate = null;
 
-            if (order.getField("effectiveDateFrom") != null) {
-                orderStartDate = (Date) order.getField("effectiveDateFrom");
-                orderEndDate = new Date(((Date) order.getField("effectiveDateFrom")).getTime()
-                        + (((Date) order.getField("dateTo")).getTime() - ((Date) order.getField("dateFrom")).getTime()));
-            } else if (order.getField("dateFrom") != null) {
-                orderStartDate = (Date) order.getField("dateFrom");
-                orderEndDate = (Date) order.getField("dateTo");
+            if (order.getField(EFFECTIVE_DATE_FROM_FIELD) != null) {
+                orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
+                orderEndDate = new Date(((Date) order.getField(EFFECTIVE_DATE_FROM_FIELD)).getTime()
+                        + (((Date) order.getField(DATE_TO_FIELD)).getTime() - ((Date) order.getField(DATE_FROM_FIELD)).getTime()));
+            } else if (order.getField(DATE_FROM_FIELD) != null) {
+                orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
+                orderEndDate = (Date) order.getField(DATE_TO_FIELD);
             } else {
                 LOG.warn("Cannot find orderStartDate for " + order);
                 return Collections.emptyMap();
@@ -93,8 +117,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             Map<String, Integer> counters = new HashMap<String, Integer>();
 
             for (Entity operation : operations) {
-                Date dateFrom = (Date) operation.getField("effectiveDateFrom");
-                Date dateTo = (Date) operation.getField("effectiveDateTo");
+                Date dateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
+                Date dateTo = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
 
                 if (dateFrom == null || dateTo == null) {
                     continue;
@@ -129,8 +153,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     }
 
     private String getDescriptionForOperarion(final Entity operation) {
-        return operation.getStringField("nodeNumber") + " " + operation.getBelongsToField("operation").getStringField("number")
-                + " " + operation.getBelongsToField("operation").getStringField("name");
+        return operation.getStringField(NODE_NUMBER_FIELD) + " " + operation.getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD)
+                + " " + operation.getBelongsToField(OPERATION_FIELD).getStringField(NAME_FIELD);
     }
 
 }

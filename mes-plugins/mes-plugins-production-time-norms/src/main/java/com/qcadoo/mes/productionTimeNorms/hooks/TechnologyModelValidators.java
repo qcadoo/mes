@@ -53,7 +53,7 @@ public class TechnologyModelValidators {
         return errors.getMessages("technologies.technology.validate.global.error.noTJSpecified", technology);
     }
 
-    private boolean checkIfTJSet(Entity operationComponent) {
+    private boolean checkIfTJSet(final Entity operationComponent) {
         if (operationComponent.getField("tj") == null) {
             return false;
         }

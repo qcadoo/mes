@@ -89,11 +89,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         panelTableValues.put("default",
                 (Boolean) technology.getField("master") ? getTranslationService().translate("qcadooView.true", locale)
                         : getTranslationService().translate("qcadooView.false", locale));
-        panelTableValues.put(
-                "algorithm",
-                getTranslationService().translate(
-                        "technologies.technology.componentQuantityAlgorithm.value."
-                                + technology.getStringField("componentQuantityAlgorithm"), locale));
+
         panelTableValues.put("description", technology.getStringField("description"));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
