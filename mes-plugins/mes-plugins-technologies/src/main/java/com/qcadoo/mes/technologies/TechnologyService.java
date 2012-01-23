@@ -604,7 +604,8 @@ public class TechnologyService {
         return true;
     }
 
-    private boolean checkIfDeactivated(DataDefinition dataDefinition, Entity technology, Entity existingTechnology) {
+    private boolean checkIfDeactivated(final DataDefinition dataDefinition, final Entity technology,
+            final Entity existingTechnology) {
         if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())) {
             if (technology.isActive() != existingTechnology.isActive()) {
                 return true;
@@ -694,9 +695,8 @@ public class TechnologyService {
             if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(ENTITY_TYPE_FIELD))) {
                 operationComponents.add(operationComponent);
             } else {
-                addOperationsFromSubtechnologiesToList(
-                        operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD).getTreeField(OPERATION_COMPONENTS_FIELD),
-                        operationComponents);
+                addOperationsFromSubtechnologiesToList(operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD)
+                        .getTreeField(OPERATION_COMPONENTS_FIELD), operationComponents);
             }
         }
     }

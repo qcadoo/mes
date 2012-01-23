@@ -88,7 +88,7 @@ public class OperationModelHooks {
         return (operation.getField("operationInputColumns") == null) && (operation.getField("operationOutputColumns") == null);
     }
 
-    private EntityList getParameterHasManyField(String fieldName) {
+    private EntityList getParameterHasManyField(final String fieldName) {
         Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
                 .uniqueResult();
 
