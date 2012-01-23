@@ -599,7 +599,8 @@ public class TechnologyService {
         return true;
     }
 
-    private boolean checkIfDeactivated(DataDefinition dataDefinition, Entity technology, Entity existingTechnology) {
+    private boolean checkIfDeactivated(final DataDefinition dataDefinition, final Entity technology,
+            final Entity existingTechnology) {
         if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())) {
             if (technology.isActive() != existingTechnology.isActive()) {
                 return true;

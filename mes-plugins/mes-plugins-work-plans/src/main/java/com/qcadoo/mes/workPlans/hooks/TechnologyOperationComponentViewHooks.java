@@ -64,7 +64,7 @@ public class TechnologyOperationComponentViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    private Object getOperationField(Long operationId, String fieldName) {
+    private Object getOperationField(final Long operationId, final String fieldName) {
         checkArgument(operationId != null, "Operation Id is null");
 
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

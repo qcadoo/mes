@@ -96,7 +96,7 @@ public class TechnologyOperationComponentModelHooks {
                 && (technologyOperationComponent.getField("technologyOperationOutputColumns") == null);
     }
 
-    private EntityList getOperationHasManyField(Long operationId, String fieldName) {
+    private EntityList getOperationHasManyField(final Long operationId, final String fieldName) {
         Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION).get(operationId);
 
