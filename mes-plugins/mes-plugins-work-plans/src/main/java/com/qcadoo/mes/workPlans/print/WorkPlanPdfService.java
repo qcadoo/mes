@@ -52,7 +52,6 @@ import com.google.common.collect.Lists;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
@@ -463,9 +462,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
     void addOrderSeries(final PdfPTable table, final List<Entity> orders, final DecimalFormat df) throws DocumentException {
         Collections.sort(orders, new EntityNumberComparator());
         for (Entity order : orders) {
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
 
             String unitString = "";
@@ -482,8 +479,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     unitString = " " + unit.toString();
                 }
             }
-
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
