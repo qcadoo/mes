@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.workPlansColumnExtension;
+package com.qcadoo.mes.technologies.print;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -34,8 +34,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
 @Service
-public class WorkPlansProductsService {
+public class ProductQuantitiesService {
 
+    /**
+     * 
+     * @param orders
+     *            List of orders
+     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the value values
+     */
     public Map<Entity, BigDecimal> getProductQuantities(List<Entity> orders) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
@@ -48,15 +54,36 @@ public class WorkPlansProductsService {
                 throw new IllegalStateException("Order doesn't contain technology.");
             }
 
-            EntityTree tree = technology.getTreeField("operationComponents");
-
-            calculateQuantitiesForNormalAlgorithm(tree, productQuantities, plannedQty, technology);
+            fillMapWithQuantitiesForTechnology(technology, plannedQty, productQuantities);
         }
 
         return productQuantities;
     }
 
-    void preloadProductQuantities(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty) {
+    /**
+     * 
+     * @param technology
+     *            Given technology
+     * @param givenQty
+     *            How many products, that are outcomes with this technology, we want.
+     * @return Map with operationProductComponent (in or out) as the key and its quantity as the value
+     */
+    public Map<Entity, BigDecimal> getProductQuantities(Entity technology, BigDecimal givenQty) {
+        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
+
+        fillMapWithQuantitiesForTechnology(technology, givenQty, productQuantities);
+
+        return productQuantities;
+    }
+
+    private void fillMapWithQuantitiesForTechnology(Entity technology, BigDecimal givenQty,
+            Map<Entity, BigDecimal> productQuantities) {
+        EntityTree tree = technology.getTreeField("operationComponents");
+
+        calculateQuantitiesForNormalAlgorithm(tree, productQuantities, givenQty, technology);
+    }
+
+    private void preloadProductQuantities(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty) {
         for (Entity operationComponent : tree) {
             for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
@@ -70,16 +97,16 @@ public class WorkPlansProductsService {
         }
     }
 
-    void calculateQuantitiesForNormalAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty,
-            Entity technology) {
+    private void calculateQuantitiesForNormalAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities,
+            BigDecimal plannedQty, Entity technology) {
         preloadProductQuantities(tree, productQuantities, plannedQty);
 
         Entity root = tree.getRoot();
         traverse(root, null, productQuantities, plannedQty, technology);
     }
 
-    void traverse(Entity operationComponent, Entity previousOperationComponent, Map<Entity, BigDecimal> productQuantities,
-            BigDecimal plannedQty, Entity technology) {
+    private void traverse(Entity operationComponent, Entity previousOperationComponent,
+            Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty, Entity technology) {
         if (previousOperationComponent == null) {
             Entity outProduct = technology.getBelongsToField("product");
 

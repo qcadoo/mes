@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.workPlansColumnExtension;
+package com.qcadoo.mes.technologies.print;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -44,9 +44,9 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 
-public class WorkPlanProductsServiceTest {
+public class ProductQuantitiesServiceTest {
 
-    private WorkPlansProductsService workPlanProductsService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Mock
     private EntityList orders;
@@ -95,7 +95,7 @@ public class WorkPlanProductsServiceTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        workPlanProductsService = new WorkPlansProductsService();
+        productQuantitiesService = new ProductQuantitiesService();
 
         Iterator<Entity> ordersIterator = mock(Iterator.class);
         when(orders.iterator()).thenReturn(ordersIterator);
@@ -212,14 +212,13 @@ public class WorkPlanProductsServiceTest {
         when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
     }
 
     @Test
     public void shouldReturnCorrectQuantities() {
-
         // when
-        Map<Entity, BigDecimal> productQuantities = workPlanProductsService.getProductQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -229,4 +228,16 @@ public class WorkPlanProductsServiceTest {
         assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
     }
 
+    @Test
+    public void shouldReturnCorrectQuantitiesForTechnologyAndGivenMultiplier() {
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, plannedQty);
+
+        // then
+        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
+        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
+        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+    }
 }
