@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +144,9 @@ public class TechnologyService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    ProductQuantitiesService productQuantitiesService;
+
     private enum ProductDirection {
         IN, OUT;
     }
@@ -216,17 +219,17 @@ public class TechnologyService {
             outProductsGrid.setEntities(rootOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT));
         }
 
-        Map<Entity, BigDecimal> inProductsWithCount = new LinkedHashMap<Entity, BigDecimal>();
         List<Entity> inProducts = new ArrayList<Entity>();
 
-        reportDataService.countQuantityForProductsIn(inProductsWithCount, technology, BigDecimal.ONE, false);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, BigDecimal.ONE);
 
-        for (Map.Entry<Entity, BigDecimal> inProductWithCount : inProductsWithCount.entrySet()) {
+        for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+
             inProduct.setField(CONST_OPERATION_COMPONENT, rootOperation);
-            inProduct.setField(CONST_PRODUCT, inProductWithCount.getKey());
-            inProduct.setField(QUANTITY_FIELD, inProductWithCount.getValue());
+            inProduct.setField(CONST_PRODUCT, productQuantity.getKey());
+            inProduct.setField(QUANTITY_FIELD, productQuantity.getValue());
             inProducts.add(inProduct);
         }
 

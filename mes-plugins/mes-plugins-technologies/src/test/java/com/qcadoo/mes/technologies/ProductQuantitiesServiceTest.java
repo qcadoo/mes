@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.print;
+package com.qcadoo.mes.technologies;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -83,6 +85,9 @@ public class ProductQuantitiesServiceTest {
 
     @Mock
     private EntityList productOutComponentsForOperation2;
+
+    @Mock
+    private DataDefinition ddIn, ddOut;
 
     private Map<Entity, List<Entity>> productInComponents;
 
@@ -204,6 +209,16 @@ public class ProductQuantitiesServiceTest {
         when(operationComponent2.getHasManyField("children")).thenReturn(operationComponent2children);
 
         when(technology.getTreeField("operationComponents")).thenReturn(tree);
+
+        when(ddIn.getName()).thenReturn("operationProductInComponent");
+        when(ddOut.getName()).thenReturn("operationProductOutComponent");
+
+        when(productInComponent1.getDataDefinition()).thenReturn(ddIn);
+        when(productInComponent2.getDataDefinition()).thenReturn(ddIn);
+        when(productInComponent3.getDataDefinition()).thenReturn(ddIn);
+        when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
+        when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
+
     }
 
     @Test(expected = IllegalStateException.class)
@@ -212,13 +227,13 @@ public class ProductQuantitiesServiceTest {
         when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
     }
 
     @Test
     public void shouldReturnCorrectQuantities() {
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -229,15 +244,30 @@ public class ProductQuantitiesServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectQuantitiesForTechnologyAndGivenMultiplier() {
+    public void shouldReturnCorrectQuantitiesOfInputProductsForTechnology() {
         // when
         Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, plannedQty);
 
         // then
-        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
-        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
-        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+        assertEquals(3, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+    }
+
+    @Ignore
+    @Test
+    public void shouldReturnQuantitiesOfInputProductsForOrdersAndIfToldCountOnlyComponents() {
+        // given
+        boolean onlyComponents = true;
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders, onlyComponents);
+
+        // then
+        assertEquals(3, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+
     }
 }

@@ -21,16 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.print;
+package com.qcadoo.mes.technologies;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 @Service
@@ -40,9 +42,10 @@ public class ProductQuantitiesService {
      * 
      * @param orders
      *            List of orders
-     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the value values
+     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
+     *         products that are the same, but are related to different operations are here as different entries.
      */
-    public Map<Entity, BigDecimal> getProductQuantities(List<Entity> orders) {
+    public Map<Entity, BigDecimal> getProductComponentQuantities(List<Entity> orders) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
         for (Entity order : orders) {
@@ -65,22 +68,43 @@ public class ProductQuantitiesService {
      * @param technology
      *            Given technology
      * @param givenQty
-     *            How many products, that are outcomes with this technology, we want.
-     * @return Map with operationProductComponent (in or out) as the key and its quantity as the value
+     *            How many products, that are outcomes of this technology, we want.
+     * @return Map with product as the key and its quantity as the value. This time keys are products, so they are aggregated.
      */
     public Map<Entity, BigDecimal> getProductQuantities(Entity technology, BigDecimal givenQty) {
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+
+        fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities);
+
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
-        fillMapWithQuantitiesForTechnology(technology, givenQty, productQuantities);
+        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
+            if ("operationProductInComponent".equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
+                Entity product = productComponentQuantity.getKey().getBelongsToField("product");
+                BigDecimal newQty = productComponentQuantity.getValue();
+
+                BigDecimal oldQty = productQuantities.get(product);
+                if (oldQty != null) {
+                    newQty = newQty.add(oldQty);
+
+                }
+                productQuantities.put(product, newQty);
+            }
+        }
 
         return productQuantities;
     }
 
+    public Map<Entity, BigDecimal> getProductQuantities(EntityList orders, boolean onlyComponents) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private void fillMapWithQuantitiesForTechnology(Entity technology, BigDecimal givenQty,
-            Map<Entity, BigDecimal> productQuantities) {
+            Map<Entity, BigDecimal> productComponentQuantities) {
         EntityTree tree = technology.getTreeField("operationComponents");
 
-        calculateQuantitiesForNormalAlgorithm(tree, productQuantities, givenQty, technology);
+        calculateQuantitiesForNormalAlgorithm(tree, productComponentQuantities, givenQty, technology);
     }
 
     private void preloadProductQuantities(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty) {
