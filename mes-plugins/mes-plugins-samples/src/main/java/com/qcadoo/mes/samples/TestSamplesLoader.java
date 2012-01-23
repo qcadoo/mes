@@ -28,7 +28,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAF
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BOM_ID;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DATE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_DESCRIPTION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_EAN;
@@ -437,9 +436,6 @@ public class TestSamplesLoader extends SamplesLoader {
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
             }
-            if (!values.get("algorithm").isEmpty()) {
-                technology.setField("componentQuantityAlgorithm", values.get("algorithm"));
-            }
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(FIELD_NAME) + ", "
@@ -452,44 +448,17 @@ public class TestSamplesLoader extends SamplesLoader {
             validateEntity(technology);
 
             if (PROD_NR_10.equals(values.get(PRODUCT_NUMBER))) {
-                if ("9".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForTable(technology);
-                } else if ("10".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForTableAdvanced(technology);
-                }
+                addTechnologyOperationComponentsForTableAdvanced(technology);
             } else if (PROD_NR_17.equals(values.get(PRODUCT_NUMBER))) {
-                if ("11".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForTabouret(technology);
-                } else if ("12".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForTabouretAdvanced(technology);
-                }
+                addTechnologyOperationComponentsForTabouretAdvanced(technology);
             } else if (PROD_NR_25.equals(values.get(PRODUCT_NUMBER))) {
-                if ("13".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForStool(technology);
-                } else if ("14".equals(values.get(BOM_ID))) {
-                    addTechnologyOperationComponentsForStoolAdvanced(technology);
-                }
+                addTechnologyOperationComponentsForStoolAdvanced(technology);
             }
 
             treeNumberingService.generateNumbersAndUpdateTree(
                     dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent"),
                     TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
         }
-    }
-
-    private void addTechnologyOperationComponentsForTable(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_14));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_13));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_12));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_10));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
-        addProductInComponent(parent, new BigDecimal("0.25"), getProductByNumber(PROD_NR_16));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
     }
 
     private void addTechnologyOperationComponentsForTableAdvanced(final Entity technology) {
@@ -505,28 +474,6 @@ public class TestSamplesLoader extends SamplesLoader {
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_16));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_15));
-    }
-
-    private void addTechnologyOperationComponentsForStool(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_27));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_26));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_25));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
-        addProductInComponent(parent, new BigDecimal("8"), getProductByNumber(PROD_NR_21));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_30));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_29));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_28));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_26));
-        Entity parent1 = addOperationComponent(technology, parent, getOperationByNumber("4"));
-        addProductInComponent(parent1, new BigDecimal("16"), getProductByNumber(PROD_NR_33));
-        addProductOutComponent(parent1, new BigDecimal("16"), getProductByNumber(PROD_NR_29));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_31));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_28));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
-        addProductInComponent(parent, new BigDecimal("0.125"), getProductByNumber(PROD_NR_32));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_31));
     }
 
     private void addTechnologyOperationComponentsForStoolAdvanced(final Entity technology) {
@@ -549,24 +496,6 @@ public class TestSamplesLoader extends SamplesLoader {
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_32));
         addProductOutComponent(parent, new BigDecimal("32"), getProductByNumber(PROD_NR_31));
-    }
-
-    private void addTechnologyOperationComponentsForTabouret(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_18));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_19));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_17));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_21));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_20));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_22));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_19));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_22));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
-        addProductInComponent(parent, new BigDecimal("0.125"), getProductByNumber(PROD_NR_24));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
     }
 
     private void addTechnologyOperationComponentsForTabouretAdvanced(final Entity technology) {

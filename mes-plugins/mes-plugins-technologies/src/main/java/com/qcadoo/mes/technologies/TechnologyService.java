@@ -71,8 +71,6 @@ public class TechnologyService {
 
     private static final String UNIT_SAMPLING_NR_FIELD = "unitSamplingNr";
 
-    private static final String COMPONENT_QUANTITY_ALGORITHM_FIELD = "componentQuantityAlgorithm";
-
     private static final String QUALITY_CONTROL_TYPE_FIELD = "qualityControlType";
 
     private static final String ENTITY_TYPE_FIELD = "entityType";
@@ -491,16 +489,13 @@ public class TechnologyService {
         if (!ACCEPTED.equals(technology.getStringField(STATE_FIELD))) {
             return true;
         }
-        if ("01perProductOut".equals(technology.getStringField(COMPONENT_QUANTITY_ALGORITHM_FIELD))) {
-            final Entity savedTechnology = dataDefinition.get(technology.getId());
-            final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
-            if (!checkIfConsumesSubOpsProds(technologyOperations)) {
-                technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
-                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
-                return false;
-            }
+        final Entity savedTechnology = dataDefinition.get(technology.getId());
+        final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        if (!checkIfConsumesSubOpsProds(technologyOperations)) {
+            technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+                    "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
+            return false;
         }
-
         return true;
     }
 

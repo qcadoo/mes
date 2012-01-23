@@ -81,8 +81,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private static final String[] ACCEPTABLE_DICTIONARIES = { "categories", "posts", "units" };
 
-    private static final String[] TECHNOLOGY_QUANTITY_ALGRITHM = { "01perProductOut", "02perTechnology" };
-
     private static final String TECHNOLOGY_PLUGIN_NAME = TECHNOLOGIES_PLUGIN_IDENTIFIER;
 
     private static final String ORDER_GROUPS_PLUGIN_NAME = "orderGroups";
@@ -293,9 +291,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField("qualityControlType", "02forUnit");
         technology.setField("unitSamplingNr", "123");
         technology.setField("qualityControlInstruction", "asd23");
-
-        technology.setField("componentQuantityAlgorithm",
-                TECHNOLOGY_QUANTITY_ALGRITHM[RANDOM.nextInt(TECHNOLOGY_QUANTITY_ALGRITHM.length)]);
 
         technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         validateEntity(technology);

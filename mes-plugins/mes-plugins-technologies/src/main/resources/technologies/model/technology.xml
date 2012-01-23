@@ -43,8 +43,6 @@
 		</string>
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
-		<enum name="componentQuantityAlgorithm" values="01perProductOut,02perTechnology"
-			default="01perProductOut" required="true" />
 
 		<enum name="state" values="01draft,02accepted,03declined,04outdated"
 			default="01draft" required="true" />

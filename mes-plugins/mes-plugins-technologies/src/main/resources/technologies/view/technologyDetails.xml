@@ -94,9 +94,6 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
-					<layoutElement column="2" row="4">
-						<component type="select" name="componentQuantityAlgorithm" field="componentQuantityAlgorithm" />
-					</layoutElement>
 				</component>
 				
 				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false">
