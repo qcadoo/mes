@@ -94,9 +94,6 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
-					<layoutElement column="2" row="4">
-						<component type="select" name="componentQuantityAlgorithm" field="componentQuantityAlgorithm" />
-					</layoutElement>
 				</component>
 				
 				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false">
@@ -149,9 +146,7 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								if(state != "01draft"){
-									#{window}.setEnabled(isDraft, true); 
- 								}
+								#{window}.setEnabled(isDraft, true); 
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
 								for (var elementKey in toggleRibbonItems) {

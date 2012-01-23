@@ -65,7 +65,7 @@ public class OperationViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    private Object getParameterField(String fieldName) {
+    private Object getParameterField(final String fieldName) {
         Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
                 .uniqueResult();
 

@@ -50,16 +50,7 @@ public class WorkPlansProductsService {
 
             EntityTree tree = technology.getTreeField("operationComponents");
 
-            String algorithm = technology.getStringField("componentQuantityAlgorithm");
-
-            if ("01perProductOut".equals(algorithm)) {
-                calculateQuantitiesForNormalAlgorithm(tree, productQuantities, plannedQty, technology);
-            } else if ("02perTechnology".equals(algorithm)) {
-                calculateQuantitiesForSimpleAlgorithm(tree, productQuantities, plannedQty);
-            } else {
-                throw new IllegalStateException(
-                        "technology's componentQuantityAlgorithm isn't 01perProductOut nor 02perTechnology");
-            }
+            calculateQuantitiesForNormalAlgorithm(tree, productQuantities, plannedQty, technology);
         }
 
         return productQuantities;
@@ -75,20 +66,6 @@ public class WorkPlansProductsService {
             for (Entity productComponent : operationComponent.getHasManyField("operationProductOutComponents")) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
                 productQuantities.put(productComponent, neededQty);
-            }
-        }
-    }
-
-    void calculateQuantitiesForSimpleAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities, BigDecimal plannedQty) {
-        for (Entity operationComponent : tree) {
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
-                productQuantities.put(productComponent, neededQty.multiply(plannedQty));
-            }
-
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductOutComponents")) {
-                BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
-                productQuantities.put(productComponent, neededQty.multiply(plannedQty));
             }
         }
     }
