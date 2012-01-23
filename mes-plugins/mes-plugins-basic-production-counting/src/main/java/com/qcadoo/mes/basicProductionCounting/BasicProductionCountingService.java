@@ -36,16 +36,19 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -74,6 +77,9 @@ public class BasicProductionCountingService {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void generateProducedProducts(final ViewDefinitionState state) {
         final String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
@@ -313,5 +319,37 @@ public class BasicProductionCountingService {
             throw new IllegalStateException("Cant compare two product types");
         }
     };
+
+    public void fillDoneQuantityField(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
+        final FormComponent form = (FormComponent) viewState.getComponentByReference("form");
+        final FieldComponent producedQuantity = (FieldComponent) viewState.getComponentByReference("producedQuantity");
+        final Long countingId = form.getEntityId();
+        if (countingId != null) {
+            final Entity counting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(countingId);
+            Entity order = counting.getBelongsToField(MODEL_FIELD_ORDER);
+            final Entity product = counting.getBelongsToField(MODEL_FIELD_PRODUCT);
+
+            if (order.getBelongsToField(MODEL_FIELD_PRODUCT).getId().equals(product.getId())) {
+                final String fieldValue = (String) producedQuantity.getFieldValue();
+                if (fieldValue == null || fieldValue.isEmpty()) {
+                    return;
+                }
+                try {
+                    final BigDecimal doneQuantity = new BigDecimal(fieldValue.replace(",", ".").replace(" ", "")
+                            .replace("\u00A0", ""));
+                    order.setField("doneQuantity", doneQuantity);
+                    order = order.getDataDefinition().save(order);
+                } catch (NumberFormatException ex) {
+                    return;
+                }
+                if (!order.isValid()) {
+                    producedQuantity.addMessage(
+                            translationService.translate(order.getError("doneQuantity").getMessage(), viewState.getLocale()),
+                            MessageType.FAILURE);
+                }
+            }
+        }
+    }
 
 }
