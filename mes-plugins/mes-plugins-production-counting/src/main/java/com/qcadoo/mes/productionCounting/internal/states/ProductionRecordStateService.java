@@ -57,8 +57,8 @@ public class ProductionRecordStateService {
     private void changeRecordState(final ViewDefinitionState view, final String state) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         final Entity productionCounting = form.getEntity();
-        productionCounting.setField("state", state);
-        final FieldComponent stateField = (FieldComponent) view.getComponentByReference("state");
+        productionCounting.setField(STATE_FIELD, state);
+        final FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE_FIELD);
         stateField.setFieldValue(state);
     }
 
@@ -68,7 +68,7 @@ public class ProductionRecordStateService {
             return;
         }
         final Entity productionRecord = form.getEntity();
-        String states = productionRecord.getStringField("state");
+        String states = productionRecord.getStringField(STATE_FIELD);
         if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
             for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "shift",
                     "machineTime", "laborTime")) {

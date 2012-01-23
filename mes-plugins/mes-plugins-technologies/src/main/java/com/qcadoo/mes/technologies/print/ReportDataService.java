@@ -49,6 +49,8 @@ import com.qcadoo.model.api.EntityTreeNode;
 @Service
 public class ReportDataService {
 
+    private static final String QUANTITY_FIELD = "quantity";
+
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
     @Autowired
@@ -90,9 +92,9 @@ public class ReportDataService {
             }
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = (Entity) operationProductInComponent.getField(MODEL_BASIC_PRODUCT);
-                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField("quantity")).multiply(plannedQuantity,
-                        MathContext.DECIMAL128).divide((BigDecimal) productOutComponent.getField("quantity"),
-                        MathContext.DECIMAL128);
+                BigDecimal quantity = ((BigDecimal) operationProductInComponent.getField(QUANTITY_FIELD)).multiply(
+                        plannedQuantity, MathContext.DECIMAL128).divide(
+                        (BigDecimal) productOutComponent.getField(QUANTITY_FIELD), MathContext.DECIMAL128);
                 EntityTreeNode prevOperation = findPreviousOperation(node, product, technology);
                 if (prevOperation != null) {
                     boolean success = countQuntityComponentPerOutProducts(products, prevOperation, onlyComponents, quantity,

@@ -27,9 +27,6 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="basicProductionCountingList" modelName="order" modelPlugin="orders">
 
-	<!-- name="basicProductionCountingList" modelName="basicProductionCounting" 
-		menuAccessible="true"> -->
-
 	<component type="window" name="window">
 		<ribbon>
 			<group template="navigation" />
@@ -45,6 +42,7 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
+				<option type="column" name="unit" fields="product" expression="#product['unit']"/>
 				<option type="order" column="productType" direction="desc" />
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />

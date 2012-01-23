@@ -35,22 +35,17 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ProductionRecordsService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Autowired
     private MaterialRequirementReportDataService materialRequrements;

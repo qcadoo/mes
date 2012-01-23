@@ -59,6 +59,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class ProductionCountingPdfService extends PdfDocumentService {
 
+    private static final String TAB_SPACE_LITERAL = "\t \t \t";
+
     private static final String FIELD_USED_QUANTITY = "usedQuantity";
 
     private static final String NOT_AVAILABLE = "N/A";
@@ -167,7 +169,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 + ":", PdfUtil.getArialBold10Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TAB_SPACE_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerQuantityOutProduct", locale)
                                 + " "
@@ -177,7 +179,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                         QCADOO_VIEW_FALSE, locale)), PdfUtil.getArialBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TAB_SPACE_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerQuantityInProduct", locale)
                                 + " "
@@ -187,20 +189,20 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                 .getArialBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TAB_SPACE_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.registerProductionTime", locale)
                                 + " "
                                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("registerProductionTime") ? getTranslationService()
                                         .translate(QCADOO_VIEW_TRUE, locale) : getTranslationService().translate(
                                         QCADOO_VIEW_FALSE, locale)), PdfUtil.getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
+        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("justOne") ? getTranslationService()
                         .translate(QCADOO_VIEW_TRUE, locale) : getTranslationService().translate(QCADOO_VIEW_FALSE, locale)),
                 PdfUtil.getArialBold9Dark()));
-        rightPanel.addCell(new Phrase("\t \t \t"
+        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
                 + getTranslationService().translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("allowToClose") ? getTranslationService()
@@ -208,7 +210,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 PdfUtil.getArialBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
-                        "\t \t \t"
+                        TAB_SPACE_LITERAL
                                 + getTranslationService().translate(
                                         "productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
                                 + " "
