@@ -146,9 +146,7 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								if(state != "01draft"){
-									#{window}.setEnabled(isDraft, true); 
- 								}
+								#{window}.setEnabled(isDraft, true); 
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
 								for (var elementKey in toggleRibbonItems) {

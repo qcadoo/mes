@@ -31,30 +31,33 @@
 	view="operationDetails">
 
 	<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
-		<component type="gridLayout" name="workPlansBasicGridLayout" columns="3" rows="5">
+		<component type="gridLayout" name="workPlansBasicGridLayout" columns="3" rows="1">
 			<layoutElement column="1" row="1">
-				<component type="label" name="workPlansBasicTabWelcome">
-					<option type="labelStyle" value="text" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="2">
-				<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
-					<option type="labelWidth" value="50" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="3">
-				<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
-					<option type="labelWidth" value="50" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="4">
-				<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
-					<option type="labelWidth" value="50" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="5">
-				<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" hasDescription="true">
-					<option type="labelWidth" value="50" />
+				<component type="borderLayout" name="workPlansBasicBorderLayout">
+					<component type="gridLayout" name="workPlansGridLayout" columns="1" rows="4">
+						<layoutElement column="1" row="1">
+							<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
+								<option type="labelWidth" value="50" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
+								<option type="labelWidth" value="50" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
+								<option type="labelWidth" value="50" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4">
+							<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" hasDescription="true">
+								<option type="labelWidth" value="50" />
+							</component>
+						</layoutElement>
+					</component>
+					
+					<option type="label" value="workPlansBasicTabWelcome" />
 				</component>
 			</layoutElement>
 		</component>
