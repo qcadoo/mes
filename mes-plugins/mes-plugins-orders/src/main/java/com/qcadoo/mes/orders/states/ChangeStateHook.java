@@ -98,7 +98,7 @@ public class ChangeStateHook {
             newEntity.setField(FIELD_STATE, oldEntity.getStringField(FIELD_STATE));
             for (ChangeOrderStateMessage error : errors) {
                 if (error.getReferenceToField() == null) {
-                    newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
+                    newEntity.addGlobalError(error.getMessage(), error.getVars());
                 } else {
                     // newEntity.addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
                     // error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
