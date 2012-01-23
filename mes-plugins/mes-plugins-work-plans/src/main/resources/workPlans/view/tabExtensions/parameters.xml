@@ -33,7 +33,7 @@
 	<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
 		<component type="gridLayout" name="workPlansBasicGridLayout" columns="3" rows="1">
 			<layoutElement column="1" row="1">
-				<component type="borderLayout" name="trackingRecordSimpleDetailsBorderLayout">
+				<component type="borderLayout" name="workPlansBasicBorderLayout">
 					<component type="gridLayout" name="workPlansGridLayout" columns="1" rows="4">
 						<layoutElement column="1" row="1">
 							<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
