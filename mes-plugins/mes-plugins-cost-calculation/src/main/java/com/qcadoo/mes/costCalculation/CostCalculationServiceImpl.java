@@ -56,7 +56,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     }
 
     @Override
-    public Entity calculateTotalCost(Entity costCalculation) {
+    public Entity calculateTotalCost(final Entity costCalculation) {
 
         BigDecimal productionCosts;
         BigDecimal materialCostMargin = getBigDecimal(costCalculation.getField("materialCostMargin"));

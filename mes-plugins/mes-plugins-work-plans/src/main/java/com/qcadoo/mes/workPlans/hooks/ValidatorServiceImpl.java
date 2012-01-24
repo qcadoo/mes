@@ -38,7 +38,7 @@ public class ValidatorServiceImpl implements ValidatorService {
         String attachment = model.getStringField(attachmentName);
 
         if (attachment != null) {
-            String attachemntExtension = attachment.substring((attachment.lastIndexOf(".") + 1), attachment.length());
+            String attachemntExtension = attachment.substring((attachment.lastIndexOf('.') + 1), attachment.length());
 
             boolean contains = false;
 

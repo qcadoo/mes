@@ -32,29 +32,31 @@ public class ChangeOrderStateMessage {
     private String message;
 
     private MessageType type;
-    
+
     private String[] vars;
 
-    public ChangeOrderStateMessage(String message, String referenceToField, MessageType type, String... vars) {
+    public ChangeOrderStateMessage(final String message, final String referenceToField, final MessageType type,
+            final String... vars) {
         this.referenceToField = referenceToField;
         this.message = message;
         this.type = type;
         this.vars = vars;
     }
 
-    public static ChangeOrderStateMessage errorForComponent(String message, String referenceToField, String... vars) {
+    public static ChangeOrderStateMessage errorForComponent(final String message, final String referenceToField,
+            final String... vars) {
         return new ChangeOrderStateMessage(message, referenceToField, MessageType.FAILURE, vars);
     }
 
-    public static ChangeOrderStateMessage error(String message, String... vars) {
+    public static ChangeOrderStateMessage error(final String message, final String... vars) {
         return new ChangeOrderStateMessage(message, null, MessageType.FAILURE, vars);
     }
 
-    public static ChangeOrderStateMessage info(String message, String... vars) {
+    public static ChangeOrderStateMessage info(final String message, final String... vars) {
         return new ChangeOrderStateMessage(message, null, MessageType.INFO, vars);
     }
 
-    public static ChangeOrderStateMessage success(String message, String... vars) {
+    public static ChangeOrderStateMessage success(final String message, final String... vars) {
         return new ChangeOrderStateMessage(message, null, MessageType.INFO, vars);
     }
 
@@ -66,11 +68,11 @@ public class ChangeOrderStateMessage {
         return referenceToField;
     }
 
-    public void setReferenceToField(String referenceToField) {
+    public void setReferenceToField(final String referenceToField) {
         this.referenceToField = referenceToField;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -78,10 +80,10 @@ public class ChangeOrderStateMessage {
         return type;
     }
 
-    public void setType(MessageType type) {
+    public void setType(final MessageType type) {
         this.type = type;
     }
-    
+
     public String[] getVars() {
         return vars;
     }

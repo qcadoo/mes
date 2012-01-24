@@ -43,11 +43,11 @@ public class OrderStatesChangingService {
 
     private final Set<OrderStateListener> listeners = Sets.newHashSet();
 
-    public void addOrderStateListener(OrderStateListener listener) {
+    public void addOrderStateListener(final OrderStateListener listener) {
         listeners.add(listener);
     }
 
-    public void removeOrderStateListener(OrderStateListener listener) {
+    public void removeOrderStateListener(final OrderStateListener listener) {
         listeners.remove(listener);
     }
 

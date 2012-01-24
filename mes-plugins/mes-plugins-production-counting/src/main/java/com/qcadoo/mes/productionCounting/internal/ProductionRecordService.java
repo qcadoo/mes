@@ -86,7 +86,8 @@ public class ProductionRecordService {
         return isValidTypeOfProductionRecording(entity, typeOfProductionRecording, dataDefinition);
     }
 
-    public boolean isValidTypeOfProductionRecording(Entity entity, String typeOfProductionRecording, DataDefinition dd) {
+    public boolean isValidTypeOfProductionRecording(final Entity entity, final String typeOfProductionRecording,
+            final DataDefinition dd) {
         boolean validTypeOfRecording = true;
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
             entity.addError(dd.getField(FIELD_ORDER), "productionCounting.validate.global.error.productionRecord.orderError");

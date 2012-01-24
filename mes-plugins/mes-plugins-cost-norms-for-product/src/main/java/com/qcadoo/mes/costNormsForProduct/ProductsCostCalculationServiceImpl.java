@@ -93,7 +93,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         return ProductsCostCalculationConstants.valueOf(strValue);
     }
 
-    private BigDecimal getBigDecimal(Object value) {
+    private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
         }

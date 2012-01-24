@@ -254,7 +254,10 @@ public class ProductionRecordViewService {
             order.setField(COMPONENT_STATE, CLOSED_ORDER);
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
-            if (!orderFromDB.getStringField(COMPONENT_STATE).equals(CLOSED_ORDER)) {
+            if (orderFromDB.getStringField(COMPONENT_STATE).equals(CLOSED_ORDER)) {
+                form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
+                        MessageType.INFO, false);
+            } else {
                 form.addMessage(translationService.translate("productionCounting.order.orderCannotBeClosed", view.getLocale()),
                         MessageType.INFO, false);
                 for (ErrorMessage message : order.getErrors().values()) {
@@ -271,9 +274,6 @@ public class ProductionRecordViewService {
                     error = error.append(message.getMessage());
                     form.addMessage(error.toString(), MessageType.FAILURE, false);
                 }
-            } else {
-                form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
-                        MessageType.INFO, false);
             }
         }
     }
