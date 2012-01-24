@@ -58,6 +58,14 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class ProductionBalanceService {
 
+    private static final String WORKER_FIELD = "worker";
+
+    private static final String FILE_NAME_FIELD = "fileName";
+
+    private static final String GENERATED_FIELD = "generated";
+
+    private static final String DATE_FIELD = "date";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -71,10 +79,10 @@ public class ProductionBalanceService {
     private ProductionBalancePdfService productionBalancePdfService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("date", null);
-        entity.setField("generated", false);
-        entity.setField("fileName", null);
-        entity.setField("worker", null);
+        entity.setField(FILE_NAME_FIELD, null);
+        entity.setField(GENERATED_FIELD, false);
+        entity.setField(DATE_FIELD, null);
+        entity.setField(WORKER_FIELD, null);
         return true;
     }
 
@@ -117,11 +125,11 @@ public class ProductionBalanceService {
         } else {
             Entity productionBalance = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
 
-            if (productionBalance.getField("generated") == null) {
-                productionBalance.setField("generated", "0");
+            if (productionBalance.getField(GENERATED_FIELD) == null) {
+                productionBalance.setField(GENERATED_FIELD, "0");
             }
 
-            if ("1".equals(productionBalance.getField("generated"))) {
+            if ("1".equals(productionBalance.getField(GENERATED_FIELD))) {
                 generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
@@ -142,9 +150,9 @@ public class ProductionBalanceService {
     public void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState date = viewDefinitionState.getComponentByReference("date");
-            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED_FIELD);
+            ComponentState date = viewDefinitionState.getComponentByReference(DATE_FIELD);
+            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER_FIELD);
             FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
             FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference("description");
             FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference("order");
@@ -155,7 +163,7 @@ public class ProductionBalanceService {
                 String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(productionBalance.getStringField("fileName"))) {
+            } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME_FIELD))) {
                 String message = translationService.translate(
                         "productionCounting.productionBalance.report.error.documentsWasGenerated", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
@@ -196,7 +204,7 @@ public class ProductionBalanceService {
     }
 
     private void requestComponentUpdateState(final ViewDefinitionState view) {
-        for (String reference : Arrays.asList("name", "description", "order", "worker", "generated", "date")) {
+        for (String reference : Arrays.asList("name", "description", "order", WORKER_FIELD, GENERATED_FIELD, DATE_FIELD)) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.requestComponentUpdateState();
         }
@@ -210,7 +218,7 @@ public class ProductionBalanceService {
             if (productionBalance == null) {
                 state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (!StringUtils.hasText(productionBalance.getStringField("fileName"))) {
+            } else if (!StringUtils.hasText(productionBalance.getStringField(FILE_NAME_FIELD))) {
                 state.addMessage(translationService.translate(
                         "productionCounting.productionBalance.report.error.documentsWasNotGenerated", state.getLocale()),
                         MessageType.FAILURE);

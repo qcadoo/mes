@@ -45,7 +45,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -134,9 +133,6 @@ public class TechnologyService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ReportDataService reportDataService;
 
     @Autowired
     private TreeNumberingService treeNumberingService;

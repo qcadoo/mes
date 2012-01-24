@@ -40,6 +40,10 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class BasicProductionRecordChangeListener extends RecordStateListener {
 
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String ORDER_FIELD = "order";
+
     private static final String FIELD_USED_QUANTITY = "usedQuantity";
 
     @Autowired
@@ -52,15 +56,15 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         return super.onAccepted(productionRecord, prevState);
     }
 
-    private void setOrderDoneQuantity(Entity productionRecord) {
-        final Entity order = productionRecord.getBelongsToField("order");
-        final Entity product = order.getBelongsToField("product");
+    private void setOrderDoneQuantity(final Entity productionRecord) {
+        final Entity order = productionRecord.getBelongsToField(ORDER_FIELD);
+        final Entity product = order.getBelongsToField(PRODUCT_FIELD);
 
         final List<Entity> productionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product)).list()
-                .getEntities();
+                .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).add(SearchRestrictions.belongsTo(PRODUCT_FIELD, product))
+                .list().getEntities();
 
         Preconditions.checkArgument(productionCountings.size() == 1,
                 "There is more than one production counting for same order and product");
@@ -83,12 +87,12 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     }
 
     private Entity getProductCount(final Entity productIn, final List<Entity> productionCountings) {
-        Entity product = productIn.getBelongsToField("product");
+        Entity product = productIn.getBelongsToField(PRODUCT_FIELD);
 
         product = product.getDataDefinition().get(product.getId());
 
         for (Entity productionCounting : productionCountings) {
-            if (productionCounting.getBelongsToField("product").getId().equals(product.getId())) {
+            if (productionCounting.getBelongsToField(PRODUCT_FIELD).getId().equals(product.getId())) {
                 return productionCounting;
             }
         }
@@ -146,12 +150,12 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     }
 
     private void updateBasicProductionCounting(final Entity productionRecord, final Operation operation) {
-        final Entity order = productionRecord.getBelongsToField("order");
+        final Entity order = productionRecord.getBelongsToField(ORDER_FIELD);
 
         final List<Entity> productionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
 
         final List<Entity> productsIn = productionRecord.getHasManyField("recordOperationProductInComponents");
         final List<Entity> productsOut = productionRecord.getHasManyField("recordOperationProductOutComponents");

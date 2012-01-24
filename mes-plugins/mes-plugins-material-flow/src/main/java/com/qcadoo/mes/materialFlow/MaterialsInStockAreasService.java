@@ -62,6 +62,14 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class MaterialsInStockAreasService {
 
+    private static final String FILE_NAME_FIELD = "fileName";
+
+    private static final String WORKER_FIELD = "worker";
+
+    private static final String TIME_FIELD = "time";
+
+    private static final String GENERATED_FIELD = "generated";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -78,10 +86,10 @@ public class MaterialsInStockAreasService {
     private MaterialFlowXlsService materialFlowXlsService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("fileName", null);
-        entity.setField("generated", false);
-        entity.setField("time", null);
-        entity.setField("worker", null);
+        entity.setField(FILE_NAME_FIELD, null);
+        entity.setField(GENERATED_FIELD, false);
+        entity.setField(TIME_FIELD, null);
+        entity.setField(WORKER_FIELD, null);
         return true;
     }
 
@@ -107,8 +115,8 @@ public class MaterialsInStockAreasService {
             Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
             List<Entity> stockAreaComponents = (List<Entity>) materialsInStockAreasEntity.getField("stockAreas");
 
-            if (materialsInStockAreasEntity.getField("generated") == null) {
-                materialsInStockAreasEntity.setField("generated", "0");
+            if (materialsInStockAreasEntity.getField(GENERATED_FIELD) == null) {
+                materialsInStockAreasEntity.setField(GENERATED_FIELD, "0");
             }
 
             if (stockAreaComponents.size() == 0) {
@@ -117,7 +125,7 @@ public class MaterialsInStockAreasService {
                 deleteButton.setMessage(null);
                 deleteButton.setEnabled(true);
             } else {
-                if ((Boolean) materialsInStockAreasEntity.getField("generated")) {
+                if ((Boolean) materialsInStockAreasEntity.getField(GENERATED_FIELD)) {
                     generateButton.setMessage("materialFlow.ribbon.message.recordAlreadyGenerated");
                     generateButton.setEnabled(false);
                     deleteButton.setMessage("materialFlow.ribbon.message.recordAlreadyGenerated");
@@ -154,7 +162,7 @@ public class MaterialsInStockAreasService {
             for (Long entityId : grid.getSelectedEntitiesIds()) {
                 Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
 
-                if ((Boolean) materialsInStockAreasEntity.getField("generated")) {
+                if ((Boolean) materialsInStockAreasEntity.getField(GENERATED_FIELD)) {
                     canDelete = false;
                     break;
                 }
@@ -176,7 +184,7 @@ public class MaterialsInStockAreasService {
         ComponentState name = state.getComponentByReference("name");
         ComponentState materialFlowForDate = state.getComponentByReference("materialFlowForDate");
         ComponentState materialsInStockAreasComponents = state.getComponentByReference("materialsInStockAreasComponents");
-        FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
+        FieldComponent generated = (FieldComponent) state.getComponentByReference(GENERATED_FIELD);
 
         if ("1".equals(generated.getFieldValue())) {
             name.setEnabled(false);
@@ -212,9 +220,9 @@ public class MaterialsInStockAreasService {
     public void generateDataForMaterialsInStockAreasReport(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState date = viewDefinitionState.getComponentByReference("time");
-            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED_FIELD);
+            ComponentState date = viewDefinitionState.getComponentByReference(TIME_FIELD);
+            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER_FIELD);
 
             Entity materialsInStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                     MODEL_MATERIALS_IN_STOCK_AREAS).get((Long) state.getFieldValue());
@@ -223,7 +231,7 @@ public class MaterialsInStockAreasService {
                 String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(materialsInStockAreas.getStringField("fileName"))) {
+            } else if (StringUtils.hasText(materialsInStockAreas.getStringField(FILE_NAME_FIELD))) {
                 String message = translationService.translate(
                         "materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasGenerated",
                         state.getLocale());
@@ -268,7 +276,7 @@ public class MaterialsInStockAreasService {
 
     private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas)
             throws IOException, DocumentException {
-        Entity materialFlowWithFileName = materialFlowPdfService.updateFileName(materialsInStockAreas, "time",
+        Entity materialFlowWithFileName = materialFlowPdfService.updateFileName(materialsInStockAreas, TIME_FIELD,
                 "Material_in_stock_areas");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
@@ -284,7 +292,7 @@ public class MaterialsInStockAreasService {
             if (materialsInStockAreas == null) {
                 state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
-            } else if (!StringUtils.hasText(materialsInStockAreas.getStringField("fileName"))) {
+            } else if (!StringUtils.hasText(materialsInStockAreas.getStringField(FILE_NAME_FIELD))) {
                 state.addMessage(translationService.translate(
                         "materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasNotGenerated",
                         state.getLocale()), MessageType.FAILURE);
