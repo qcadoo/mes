@@ -64,7 +64,7 @@ public class MaterialFlowService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final String forDate) {
+    public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final Date forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -76,14 +76,6 @@ public class MaterialFlowService {
                 MaterialFlowConstants.MODEL_TRANSFER);
         DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        Date date;
-        DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-
-        try {
-            date = format.parse(forDate);
-        } catch (ParseException pe) {
-            throw new IllegalStateException(pe);
-        }
 
         Long productId = Long.valueOf(product);
 
@@ -102,18 +94,18 @@ public class MaterialFlowService {
         if (lastCorrectionDate == null) {
 
             resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
-                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate)).list();
 
             resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
-                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate)).list();
 
         } else {
             resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
-                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate))
                     .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
 
             resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
-                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", date))
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate))
                     .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
         }
 
@@ -157,16 +149,22 @@ public class MaterialFlowService {
                     && !date.getFieldValue().toString().equals("")) {
                 Long stockAreasNumber = (Long) stockAreas.getFieldValue();
                 String productNumber = product.getFieldValue().toString();
-                String forDate = date.getFieldValue().toString();
 
-                BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+                String stringDate = date.getFieldValue().toString();
 
-                if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                    should.setFieldValue(shouldBe);
-                } else {
-                    should.setFieldValue(BigDecimal.ZERO);
+                DateFormat format = DateFormat.getDateInstance(DateFormat.DEFAULT, state.getLocale());
+                try {
+                    Date forDate = format.parse(stringDate);
+                    BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+
+                    if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
+                        should.setFieldValue(shouldBe);
+                    } else {
+                        should.setFieldValue(BigDecimal.ZERO);
+                    }
+                } catch (ParseException parseException) {
+                    throw new IllegalStateException(parseException);
                 }
-
             }
         }
         should.requestComponentUpdateState();
@@ -257,7 +255,7 @@ public class MaterialFlowService {
 
             List<Entity> products = getProductsSeenInStockArea(stockArea.getStringField("number"));
 
-            String forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString();
+            Date forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate"));
             for (Entity product : products) {
                 BigDecimal quantity = calculateShouldBeInStockArea(stockArea.getId(), product.getStringField("number"), forDate);
 

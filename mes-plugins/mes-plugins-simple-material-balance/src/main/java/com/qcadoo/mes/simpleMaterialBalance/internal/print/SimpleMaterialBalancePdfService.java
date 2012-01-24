@@ -24,6 +24,7 @@
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -103,13 +104,15 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.date", locale),
-                ((Date) simpleMaterialBalance.getField(DATE_FIELD)).toString(), null, PdfUtil.getArialBold10Dark(),
+                DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT, locale).format(
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.name", locale),
-                simpleMaterialBalance.getStringField(NAME_FIELD), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                simpleMaterialBalance.getStringField(NAME_FIELD), null, PdfUtil.getArialBold10Dark(),
+                PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate(
@@ -120,8 +123,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.onlyComponents", locale),
-                (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD) ? getTranslationService().translate("qcadooView.true",
-                        locale) : getTranslationService().translate("qcadooView.false", locale), null,
+                (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD) ? getTranslationService().translate(
+                        "qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale), null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
@@ -162,7 +165,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), entry.getKey().getId().toString(),
-                        simpleMaterialBalance.getField(DATE_FIELD).toString()));
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)));
             }
             table.addCell(new Phrase(getDecimalFormat().format(available), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(available.subtract(entry.getValue())), PdfUtil.getArialBold9Dark()));
@@ -186,7 +189,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> orders = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(ORDERS_FIELD));
         Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity e : orders) {
-            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
             table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NAME_FIELD), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
@@ -208,8 +212,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> stockAreas = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD));
         Collections.sort(stockAreas, new EntityStockAreasNumberComparator());
         for (Entity e : stockAreas) {
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
         }
         document.add(table);
     }
