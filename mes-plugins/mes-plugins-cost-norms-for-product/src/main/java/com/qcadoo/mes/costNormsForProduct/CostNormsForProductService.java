@@ -163,4 +163,23 @@ public class CostNormsForProductService {
             }
         }
     }
+
+    public void enabledFieldForExternalID(final ViewDefinitionState view) {
+        FieldComponent nominalCost = (FieldComponent) view.getComponentByReference("nominalCost");
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                form.getEntityId());
+
+        if (entity == null) {
+            return;
+        }
+        String externalNumber = entity.getStringField("externalNumber");
+
+        if (externalNumber != null) {
+            nominalCost.setEnabled(true);
+        }
+    }
 }

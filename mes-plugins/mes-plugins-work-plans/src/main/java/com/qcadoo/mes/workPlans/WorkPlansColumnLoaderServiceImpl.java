@@ -97,7 +97,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             parameter.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
             parameter.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
             parameter.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-            parameter.getDataDefinition().save(parameter);
+
+            if (parameter.isValid()) {
+                parameter.getDataDefinition().save(parameter);
+            }
         }
     }
 
@@ -111,7 +114,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 operation.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
                 operation.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
                 operation.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                operation.getDataDefinition().save(operation);
+
+                if (operation.isValid()) {
+                    operation.getDataDefinition().save(operation);
+                }
             }
         }
     }
@@ -126,7 +132,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 technologyOperationComponent.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
                 technologyOperationComponent.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
                 technologyOperationComponent.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
+
+                if (technologyOperationComponent.isValid()) {
+                    technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
+                }
             }
         }
 
@@ -142,7 +151,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 orderOperationComponent.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
                 orderOperationComponent.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
                 orderOperationComponent.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                orderOperationComponent.getDataDefinition().save(orderOperationComponent);
+
+                if (orderOperationComponent.isValid()) {
+                    orderOperationComponent.getDataDefinition().save(orderOperationComponent);
+                }
             }
         }
     }

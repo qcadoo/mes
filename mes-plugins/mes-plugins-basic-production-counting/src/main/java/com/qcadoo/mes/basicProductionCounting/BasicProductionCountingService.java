@@ -42,7 +42,6 @@ import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataServ
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -94,7 +93,8 @@ public class BasicProductionCountingService {
         }
     }
 
-    private void updateProductsForOrder(Entity order, String pluginName, String modelName, String fieldName) {
+    private void updateProductsForOrder(final Entity order, final String pluginName, final String modelName,
+            final String fieldName) {
         final List<Entity> orderList = Arrays.asList(order);
 
         final Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(

@@ -107,7 +107,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            Boolean includeTpz) {
+            final Boolean includeTpz) {
         if (operationComponent.getField("entityType") != null
                 && !OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField("entityType"))) {
             return estimateRealizationTimeForOperation(

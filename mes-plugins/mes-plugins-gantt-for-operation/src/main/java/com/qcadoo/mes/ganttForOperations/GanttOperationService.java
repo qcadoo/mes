@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +43,16 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class GanttOperationService {
+
+    private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
+
+    private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
+
+    private static final String GANTT_FIELD = "gantt";
+
+    private static final String DATE_TO_FIELD = "dateTo";
+
+    private static final String DATE_FROM_FIELD = "dateFrom";
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
@@ -56,16 +67,16 @@ public class GanttOperationService {
 
     public void refereshGanttChart(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        viewDefinitionState.getComponentByReference("gantt").performEvent(viewDefinitionState, "refresh");
+        viewDefinitionState.getComponentByReference(GANTT_FIELD).performEvent(viewDefinitionState, "refresh");
     }
 
     public void disableFormWhenNoOrderSelected(final ViewDefinitionState viewDefinitionState) {
-        if (viewDefinitionState.getComponentByReference("gantt").getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(false);
-            viewDefinitionState.getComponentByReference("dateTo").setEnabled(false);
+        if (viewDefinitionState.getComponentByReference(GANTT_FIELD).getFieldValue() == null) {
+            viewDefinitionState.getComponentByReference(DATE_FROM_FIELD).setEnabled(false);
+            viewDefinitionState.getComponentByReference(DATE_TO_FIELD).setEnabled(false);
         } else {
-            viewDefinitionState.getComponentByReference("dateFrom").setEnabled(true);
-            viewDefinitionState.getComponentByReference("dateTo").setEnabled(true);
+            viewDefinitionState.getComponentByReference(DATE_FROM_FIELD).setEnabled(true);
+            viewDefinitionState.getComponentByReference(DATE_TO_FIELD).setEnabled(true);
         }
     }
 
@@ -83,7 +94,7 @@ public class GanttOperationService {
     }
 
     private void scheduleOrder(final Long orderId) {
-        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
         if (order == null) {
             return;
@@ -91,14 +102,15 @@ public class GanttOperationService {
 
         DataDefinition dataDefinition = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
 
-        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
+        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
+                .list().getEntities();
 
         Date orderStartDate = null;
 
-        if (order.getField("effectiveDateFrom") != null) {
-            orderStartDate = (Date) order.getField("effectiveDateFrom");
-        } else if (order.getField("dateFrom") != null) {
-            orderStartDate = (Date) order.getField("dateFrom");
+        if (order.getField(EFFECTIVE_DATE_FROM_FIELD) != null) {
+            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
+        } else if (order.getField(DATE_FROM_FIELD) != null) {
+            orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
         } else {
             return;
         }
@@ -107,8 +119,8 @@ public class GanttOperationService {
             Integer offset = (Integer) operation.getField("operationOffSet");
             Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
 
-            operation.setField("effectiveDateFrom", null);
-            operation.setField("effectiveDateTo", null);
+            operation.setField(EFFECTIVE_DATE_FROM_FIELD, null);
+            operation.setField(EFFECTIVE_DATE_TO_FIELD, null);
 
             if (offset == null || duration == null || duration.equals(0)) {
                 continue;
@@ -130,8 +142,8 @@ public class GanttOperationService {
                 continue;
             }
 
-            operation.setField("effectiveDateFrom", dateFrom);
-            operation.setField("effectiveDateTo", dateTo);
+            operation.setField(EFFECTIVE_DATE_FROM_FIELD, dateFrom);
+            operation.setField(EFFECTIVE_DATE_TO_FIELD, dateTo);
         }
 
         for (Entity operation : operations) {
@@ -142,7 +154,7 @@ public class GanttOperationService {
 
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
         ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
-        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
         Object realizationTime = order.getField("realizationTime");
         if (realizationTime == null || "0".equals(realizationTime.toString()) || "".equals(realizationTime.toString())) {
@@ -154,7 +166,7 @@ public class GanttOperationService {
     public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
 
         FieldComponent title = (FieldComponent) viewDefinitionState.getComponentByReference("title");
-        Entity order = dataDefinitionService.get("orders", "order").get(orderId);
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
         String number = order.getField("number").toString();
         String name = order.getField("name").toString();
 

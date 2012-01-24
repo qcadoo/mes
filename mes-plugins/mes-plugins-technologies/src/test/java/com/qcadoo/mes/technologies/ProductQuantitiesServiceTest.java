@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -95,6 +94,12 @@ public class ProductQuantitiesServiceTest {
 
     private BigDecimal plannedQty;
 
+    private EntityList mockEntityList(List<Entity> list) {
+        EntityList entityList = mock(EntityList.class);
+        when(entityList.iterator()).thenReturn(list.iterator());
+        return entityList;
+    }
+
     @Before
     @SuppressWarnings("unchecked")
     public void init() {
@@ -104,8 +109,8 @@ public class ProductQuantitiesServiceTest {
 
         Iterator<Entity> ordersIterator = mock(Iterator.class);
         when(orders.iterator()).thenReturn(ordersIterator);
-        when(ordersIterator.hasNext()).thenReturn(true, false);
-        when(ordersIterator.next()).thenReturn(order);
+        when(ordersIterator.hasNext()).thenReturn(true, false, true, false, true, false);
+        when(ordersIterator.next()).thenReturn(order, order, order);
 
         when(order.getBelongsToField("technology")).thenReturn(technology);
 
@@ -245,8 +250,12 @@ public class ProductQuantitiesServiceTest {
 
     @Test
     public void shouldReturnCorrectQuantitiesOfInputProductsForTechnology() {
+        // given
+        boolean onlyComponents = false;
+
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, plannedQty);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
+                onlyComponents);
 
         // then
         assertEquals(3, productQuantities.size());
@@ -255,17 +264,16 @@ public class ProductQuantitiesServiceTest {
         assertEquals(new BigDecimal(5), productQuantities.get(product3));
     }
 
-    @Ignore
     @Test
     public void shouldReturnQuantitiesOfInputProductsForOrdersAndIfToldCountOnlyComponents() {
         // given
         boolean onlyComponents = true;
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders, onlyComponents);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
 
         // then
-        assertEquals(3, productQuantities.size());
+        assertEquals(2, productQuantities.size());
         assertEquals(new BigDecimal(50), productQuantities.get(product1));
         assertEquals(new BigDecimal(5), productQuantities.get(product3));
 

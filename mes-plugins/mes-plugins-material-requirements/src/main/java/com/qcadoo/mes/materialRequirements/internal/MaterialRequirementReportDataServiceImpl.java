@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialRequirements.internal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.model.api.Entity;
 
@@ -41,6 +41,9 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
 
     @Autowired
     private ReportDataService reportDataService;
+
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
 
     @Override
     public final Map<Entity, BigDecimal> getQuantitiesForMaterialRequirementProducts(
@@ -55,15 +58,6 @@ public class MaterialRequirementReportDataServiceImpl implements MaterialRequire
     @Override
     public final Map<Entity, BigDecimal> getQuantitiesForOrdersTechnologyProducts(final List<Entity> orders,
             final Boolean onlyComponents) {
-        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
-        for (Entity order : orders) {
-            Entity technology = (Entity) order.getField("technology");
-            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
-            if (technology != null && plannedQuantity != null && plannedQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                reportDataService.countQuantityForProductsIn(products, technology, plannedQuantity, onlyComponents);
-            }
-        }
-        return products;
+        return productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
     }
-
 }

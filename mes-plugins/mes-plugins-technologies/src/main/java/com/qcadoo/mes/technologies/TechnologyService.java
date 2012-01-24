@@ -45,7 +45,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -136,9 +135,6 @@ public class TechnologyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private ReportDataService reportDataService;
-
-    @Autowired
     private TreeNumberingService treeNumberingService;
 
     @Autowired
@@ -221,7 +217,8 @@ public class TechnologyService {
 
         List<Entity> inProducts = new ArrayList<Entity>();
 
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, BigDecimal.ONE);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                BigDecimal.ONE, false);
 
         for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
