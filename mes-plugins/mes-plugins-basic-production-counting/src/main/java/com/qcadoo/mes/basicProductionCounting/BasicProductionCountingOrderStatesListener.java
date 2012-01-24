@@ -35,9 +35,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -46,10 +46,10 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class BasicProductionCountingOrderStatesListener extends OrderStateListener {
 
     @Autowired
-    private MaterialRequirementReportDataService materialRequirementReportDataService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Override
     public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
@@ -64,8 +64,8 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
         List<ChangeOrderStateMessage> messages = new ArrayList<ChangeOrderStateMessage>();
 
         if (prodCountings == null || prodCountings.isEmpty()) {
-            final Map<Entity, BigDecimal> productsReq = materialRequirementReportDataService
-                    .getQuantitiesForOrdersTechnologyProducts(Arrays.asList(order), false);
+            final Map<Entity, BigDecimal> productsReq = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order),
+                    false);
 
             for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
                 Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,

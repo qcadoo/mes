@@ -41,6 +41,8 @@ public class ProductQuantitiesService {
 
     private static final String PRODUCT_LITERAL = "product";
 
+    // TODO MICI service has some obvious duplications, refactor them to make it pretty.
+
     /**
      * 
      * @param orders
@@ -119,6 +121,62 @@ public class ProductQuantitiesService {
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         for (Entity order : orders) {
+            BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
+
+            Entity technology = order.getBelongsToField("technology");
+
+            if (technology == null) {
+                throw new IllegalStateException("Order doesn't contain technology.");
+            }
+
+            fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents);
+        }
+
+        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
+
+        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
+            if ("operationProductInComponent".equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
+                if (onlyComponents && nonComponents.contains(productComponentQuantity.getKey())) {
+                    continue;
+                }
+
+                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_LITERAL);
+                BigDecimal newQty = productComponentQuantity.getValue();
+
+                BigDecimal oldQty = productQuantities.get(product);
+                if (oldQty != null) {
+                    newQty = newQty.add(oldQty);
+
+                }
+                productQuantities.put(product, newQty);
+            }
+        }
+
+        return productQuantities;
+    }
+
+    /**
+     * 
+     * @param components
+     *            List of components that have order as belongsTo relation
+     * @param onlyComponents
+     *            A flag that indicates if we want only components or intermediates too
+     * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
+     *         aggregated)
+     */
+    public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(List<Entity> components, boolean onlyComponents) {
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+
+        Set<Entity> nonComponents = new HashSet<Entity>();
+
+        for (Entity component : components) {
+            Entity order = component.getBelongsToField("order");
+
+            if (order == null) {
+                throw new IllegalStateException(
+                        "Given component doesn't point to an order using getBelongsToField(\"order\") relation");
+            }
+
             BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
 
             Entity technology = order.getBelongsToField("technology");

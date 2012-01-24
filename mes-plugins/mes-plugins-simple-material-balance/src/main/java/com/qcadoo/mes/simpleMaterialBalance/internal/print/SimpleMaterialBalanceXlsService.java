@@ -37,8 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -62,7 +62,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     private static final String NUMBER_FIELD = "number";
 
     @Autowired
-    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private MaterialFlowService materialFlowService;
@@ -100,8 +100,9 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         int rowNum = 1;
         List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
-                orders, onlyComponents);
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+
         List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
