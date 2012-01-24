@@ -354,8 +354,8 @@ public class BasicProductionCountingService {
     }
 
     public boolean checkValueOfQuantity(final DataDefinition dataDefinition, final Entity entity) {
-        BigDecimal usedQuantity = (BigDecimal) entity.getBelongsToField("usedQuantity");
-        BigDecimal producedQuantity = (BigDecimal) entity.getBelongsToField("producedQuantity");
+        BigDecimal usedQuantity = (BigDecimal) entity.getField("usedQuantity");
+        BigDecimal producedQuantity = (BigDecimal) entity.getField("producedQuantity");
 
         if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
             return false;
