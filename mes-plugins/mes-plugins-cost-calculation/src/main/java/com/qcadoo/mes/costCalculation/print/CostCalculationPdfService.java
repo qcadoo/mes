@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,7 +52,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
-import com.qcadoo.mes.technologies.print.ReportDataService;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -80,7 +79,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     TreeNumberingService treeNumberingService;
 
     @Autowired
-    ReportDataService reportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     TimeConverterService timeConverterService;
@@ -334,16 +333,20 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTableHeader.add(getTranslationService().translate(translate, locale));
         }
         PdfPTable materialsTable = PdfUtil.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
-        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         Entity technology;
         if (costCalculation.getBelongsToField("order") == null) {
             technology = costCalculation.getBelongsToField("technology");
         } else {
             technology = costCalculation.getBelongsToField("order").getBelongsToField("technology");
+
         }
-        reportDataService.countQuantityForProductsIn(products, technology, (BigDecimal) costCalculation.getField("quantity"),
-                true);
+
+        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
+
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField(NAME), PdfUtil.getArialRegular9Dark()));
