@@ -33,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -48,7 +48,7 @@ public class ProductionRecordsService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private MaterialRequirementReportDataService materialRequrements;
+    private ProductQuantitiesService productQuantitiesService;
 
     private Entity order;
 
@@ -114,8 +114,7 @@ public class ProductionRecordsService {
         final List<Entity> productionCountings = searchBuilder.add(SearchRestrictions.belongsTo(MODEL_FIELD_ORDER, order)).list()
                 .getEntities();
 
-        final Map<Entity, BigDecimal> products = materialRequrements.getQuantitiesForOrdersTechnologyProducts(
-                Arrays.asList(order), false);
+        final Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order), false);
 
         final Entity productOut = order.getBelongsToField(MODEL_FIELD_PRODUCT);
         final BigDecimal neededQuantity = (BigDecimal) order.getField(MODEL_FIELD_PLANNED_QUANTITY);
@@ -201,8 +200,8 @@ public class ProductionRecordsService {
             return;
         }
 
-        final Map<Entity, BigDecimal> requirement = materialRequrements.getQuantitiesForOrdersTechnologyProducts(
-                Arrays.asList(order), false);
+        final Map<Entity, BigDecimal> requirement = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order),
+                false);
 
         final Entity productOut = order.getBelongsToField(MODEL_FIELD_PRODUCT);
         final BigDecimal neededQuantity = (BigDecimal) order.getField(MODEL_FIELD_PLANNED_QUANTITY);

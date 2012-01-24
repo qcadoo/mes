@@ -42,10 +42,10 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityStockAreasNumberComparator;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -77,7 +77,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private MaterialFlowService materialFlowService;
@@ -109,7 +109,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.name", locale),
-                simpleMaterialBalance.getStringField(NAME_FIELD), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                simpleMaterialBalance.getStringField(NAME_FIELD), null, PdfUtil.getArialBold10Dark(),
+                PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(
                 panelTable,
                 getTranslationService().translate(
@@ -120,8 +121,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.onlyComponents", locale),
-                (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD) ? getTranslationService().translate("qcadooView.true",
-                        locale) : getTranslationService().translate("qcadooView.false", locale), null,
+                (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD) ? getTranslationService().translate(
+                        "qcadooView.true", locale) : getTranslationService().translate("qcadooView.false", locale), null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
@@ -149,8 +150,9 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         PdfPTable table = PdfUtil.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false);
         List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForMaterialRequirementProducts(
-                orders, onlyComponents);
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+
         List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
@@ -186,7 +188,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> orders = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(ORDERS_FIELD));
         Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity e : orders) {
-            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
             table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NAME_FIELD), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
@@ -208,8 +211,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> stockAreas = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD));
         Collections.sort(stockAreas, new EntityStockAreasNumberComparator());
         for (Entity e : stockAreas) {
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), PdfUtil
+                    .getArialRegular9Dark()));
         }
         document.add(table);
     }

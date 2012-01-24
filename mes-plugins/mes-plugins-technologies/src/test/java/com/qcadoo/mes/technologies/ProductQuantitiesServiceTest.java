@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -93,12 +94,6 @@ public class ProductQuantitiesServiceTest {
     private Map<Entity, List<Entity>> productOutComponents;
 
     private BigDecimal plannedQty;
-
-    private EntityList mockEntityList(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
-        return entityList;
-    }
 
     @Before
     @SuppressWarnings("unchecked")
@@ -223,7 +218,6 @@ public class ProductQuantitiesServiceTest {
         when(productInComponent3.getDataDefinition()).thenReturn(ddIn);
         when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
         when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
-
     }
 
     @Test(expected = IllegalStateException.class)
@@ -277,5 +271,23 @@ public class ProductQuantitiesServiceTest {
         assertEquals(new BigDecimal(50), productQuantities.get(product1));
         assertEquals(new BigDecimal(5), productQuantities.get(product3));
 
+    }
+
+    @Test
+    public void shouldReturnQuantitiesAlsoForListOfComponents() {
+        // given
+        Entity component = mock(Entity.class);
+        when(component.getBelongsToField("order")).thenReturn(order);
+        boolean onlyComponents = false;
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
+                Arrays.asList(component), onlyComponents);
+
+        // then
+        assertEquals(3, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
     }
 }
