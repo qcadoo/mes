@@ -68,11 +68,11 @@ public class ChangeRecordStateMessage {
         return referenceToField;
     }
 
-    public void setReferenceToField(String referenceToField) {
+    public void setReferenceToField(final String referenceToField) {
         this.referenceToField = referenceToField;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -80,7 +80,7 @@ public class ChangeRecordStateMessage {
         return type;
     }
 
-    public void setType(MessageType type) {
+    public void setType(final MessageType type) {
         this.type = type;
     }
 

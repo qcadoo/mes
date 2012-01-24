@@ -299,7 +299,7 @@ public class CostCalculationViewService {
     /* FUNCTIONS FOR FIRE CALCULATION AND HANDLING RESULTS BELOW */
 
     /* Event handler, fire total calculation */
-    public void generateCostCalculation(ViewDefinitionState view, ComponentState componentState, String[] args) {
+    public void generateCostCalculation(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity costCalculation = getEntityFromForm(view);
         if (costCalculation.getId() == null) {
             view.getComponentByReference(FORM)

@@ -37,7 +37,6 @@ public class WorkPlanOnStartupService extends Module {
     private WorkPlansColumnLoader workPlansColumnLoader;
 
     @Override
-    @Transactional
     public void multiTenantEnable() {
         workPlansColumnLoader.setDefaulValues();
 

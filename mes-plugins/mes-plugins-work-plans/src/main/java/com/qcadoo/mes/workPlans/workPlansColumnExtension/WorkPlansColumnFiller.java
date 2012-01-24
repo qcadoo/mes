@@ -53,7 +53,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
      *            List of orders
      * @return The Keys of the map are productComponents, values are Maps columnIdentifier -> columnValue
      */
-    public Map<Entity, Map<String, String>> getValues(List<Entity> orders) {
+    public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
         fillProductNames(orders, values);
@@ -62,7 +62,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         return values;
     }
 
-    private void fillProductNames(List<Entity> orders, Map<Entity, Map<String, String>> valuesMap) {
+    private void fillProductNames(final List<Entity> orders, final Map<Entity, Map<String, String>> valuesMap) {
         for (Entity order : orders) {
 
             // TODO mici, change those to orderOperationComponents?
@@ -90,7 +90,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         }
     }
 
-    private void fillPlannedQuantities(List<Entity> orders, Map<Entity, Map<String, String>> valuesMap) {
+    private void fillPlannedQuantities(final List<Entity> orders, final Map<Entity, Map<String, String>> valuesMap) {
         ProductQuantitiesService productQuantitiesSerivce = new ProductQuantitiesService();
         Map<Entity, BigDecimal> productQuantities = productQuantitiesSerivce.getProductComponentQuantities(orders);
 
@@ -128,7 +128,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         }
     }
 
-    private String getProductName(Entity productComponent) {
+    private String getProductName(final Entity productComponent) {
         Entity product = productComponent.getBelongsToField("product");
 
         StringBuilder productString = new StringBuilder(product.getStringField("name"));

@@ -48,7 +48,7 @@ public class ProductQuantitiesService {
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      *         products that are the same, but are related to different operations are here as different entries.
      */
-    public Map<Entity, BigDecimal> getProductComponentQuantities(List<Entity> orders) {
+    public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
@@ -160,7 +160,7 @@ public class ProductQuantitiesService {
         calculateQuantitiesForNormalAlgorithm(tree, productComponentQuantities, nonComponents, givenQty, technology);
     }
 
-    private void preloadProductQuantities(EntityTree tree, Map<Entity, BigDecimal> productQuantities) {
+    private void preloadProductQuantities(final EntityTree tree, Map<Entity, BigDecimal> productQuantities) {
         for (Entity operationComponent : tree) {
             for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
@@ -174,7 +174,7 @@ public class ProductQuantitiesService {
         }
     }
 
-    private void calculateQuantitiesForNormalAlgorithm(EntityTree tree, Map<Entity, BigDecimal> productQuantities,
+    private void calculateQuantitiesForNormalAlgorithm(final EntityTree tree, Map<Entity, BigDecimal> productQuantities,
             Set<Entity> notComponents, BigDecimal plannedQty, Entity technology) {
         preloadProductQuantities(tree, productQuantities);
 
@@ -182,8 +182,9 @@ public class ProductQuantitiesService {
         traverse(root, null, productQuantities, notComponents, plannedQty, technology);
     }
 
-    private void traverse(Entity operationComponent, Entity previousOperationComponent,
-            Map<Entity, BigDecimal> productQuantities, Set<Entity> nonComponents, BigDecimal plannedQty, Entity technology) {
+    private void traverse(Entity operationComponent, final Entity previousOperationComponent,
+            final Map<Entity, BigDecimal> productQuantities, final Set<Entity> nonComponents, final BigDecimal plannedQty,
+            final Entity technology) {
         if (previousOperationComponent == null) {
             Entity outProduct = technology.getBelongsToField(PRODUCT_LITERAL);
 

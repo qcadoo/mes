@@ -93,7 +93,8 @@ public class ProductionRecordStateService {
         setRecordState(view, component, record, targetState);
     }
 
-    private void setRecordState(ViewDefinitionState view, ComponentState component, final Entity record, String targetState) {
+    private void setRecordState(final ViewDefinitionState view, final ComponentState component, final Entity record,
+            final String targetState) {
         if (record == null) {
             return;
         }
