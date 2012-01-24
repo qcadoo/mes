@@ -181,7 +181,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return valuesMap;
     }
 
-    void addOperations(final Document document, Entity workPlan, final DecimalFormat df, final Locale locale)
+    void addOperations(final Document document, final Entity workPlan, final DecimalFormat df, final Locale locale)
             throws DocumentException {
         Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
@@ -437,7 +437,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     void addProductsSeries(final List<Entity> productComponentsArg, final Document document,
             final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent, final DecimalFormat df,
-            ProductDirection direction, Locale locale) throws DocumentException {
+            final ProductDirection direction, final Locale locale) throws DocumentException {
         if (productComponentsArg.isEmpty()) {
             return;
         }

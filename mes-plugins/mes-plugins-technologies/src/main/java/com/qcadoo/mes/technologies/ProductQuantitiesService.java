@@ -130,7 +130,7 @@ public class ProductQuantitiesService {
     }
 
     private void traverse(final Entity operationComponent, final Entity previousOperationComponent,
-            Map<Entity, BigDecimal> productQuantities, final BigDecimal plannedQty, final Entity technology) {
+            final Map<Entity, BigDecimal> productQuantities, final BigDecimal plannedQty, final Entity technology) {
         if (previousOperationComponent == null) {
             Entity outProduct = technology.getBelongsToField("product");
 
