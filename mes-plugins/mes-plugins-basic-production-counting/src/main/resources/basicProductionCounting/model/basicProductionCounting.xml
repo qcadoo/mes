@@ -34,5 +34,7 @@
 		<decimal name="usedQuantity"/>
 		<decimal name="producedQuantity"/>
 	</fields>
-	<hooks />
+	<hooks >
+		<validatesWith class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="checkValueOfQuantity"/>
+	</hooks>
 </model>

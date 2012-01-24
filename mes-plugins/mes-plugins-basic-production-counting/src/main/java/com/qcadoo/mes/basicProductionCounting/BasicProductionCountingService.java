@@ -42,6 +42,7 @@ import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataServ
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -352,4 +353,16 @@ public class BasicProductionCountingService {
         }
     }
 
+    public boolean checkValueOfQuantity(final DataDefinition dataDefinition, final Entity entity) {
+        BigDecimal usedQuantity = (BigDecimal) entity.getBelongsToField("usedQuantity");
+        BigDecimal producedQuantity = (BigDecimal) entity.getBelongsToField("producedQuantity");
+
+        if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
+            return false;
+        }
+        if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
+            return false;
+        }
+        return true;
+    }
 }

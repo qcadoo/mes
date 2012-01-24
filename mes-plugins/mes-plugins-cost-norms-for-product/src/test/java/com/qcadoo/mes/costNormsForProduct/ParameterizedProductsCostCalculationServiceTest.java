@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,7 +49,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -59,8 +57,6 @@ import com.qcadoo.model.api.EntityTree;
 public class ParameterizedProductsCostCalculationServiceTest {
 
     private ProductsCostCalculationService productCostCalc;
-
-    private TechnologyService technologyService;
 
     private ProductQuantitiesService productQuantitiesService;
 
@@ -76,15 +72,15 @@ public class ParameterizedProductsCostCalculationServiceTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 // mode, average, lastPurchase, nominal, costForNumber, input qtty, order qtty, expectedResult
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(1), valueOf(1), valueOf(30) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(2), valueOf(1), valueOf(60) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(1), valueOf(90) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(2), valueOf(180) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(1), valueOf(1), valueOf(10) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(2), valueOf(1), valueOf(20) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(1), valueOf(30) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(2), valueOf(120) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(3), valueOf(270) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(4), valueOf(360) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(2), valueOf(90) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(4), valueOf(480) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(2), valueOf(60) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(3), valueOf(135) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(180) }, });
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(240) }, });
     }
 
     public ParameterizedProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, BigDecimal average,
@@ -102,7 +98,6 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     @Before
     public void init() {
-        technologyService = mock(TechnologyService.class);
         productQuantitiesService = mock(ProductQuantitiesService.class);
 
         costCalculation = mock(Entity.class);
@@ -115,10 +110,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
         productCostCalc = new ProductsCostCalculationServiceImpl();
 
-        ReflectionTestUtils.setField(productCostCalc, "technologyService", technologyService);
         ReflectionTestUtils.setField(productCostCalc, "productQuantitiesService", productQuantitiesService);
-
-        when(technologyService.getProductType(product, technology)).thenReturn(TechnologyService.COMPONENT);
 
         when(costCalculation.getField("quantity")).thenReturn(orderQuantity);
         when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
@@ -152,7 +144,6 @@ public class ParameterizedProductsCostCalculationServiceTest {
         when(productQuantitiesService.getNeededProductQuantities(technology, BigDecimal.ONE, true)).thenReturn(productQuantities);
     }
 
-    @Ignore
     @Test
     public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
