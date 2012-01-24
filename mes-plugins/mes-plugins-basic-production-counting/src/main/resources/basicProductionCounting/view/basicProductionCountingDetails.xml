@@ -82,6 +82,8 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
+			
+			<listener event="save" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="fillDoneQuantityField"/>
 		</component>
 	</component>
 

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -85,14 +86,13 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                     }
                     valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
                 }
-
             }
         }
     }
 
     private void fillPlannedQuantities(List<Entity> orders, Map<Entity, Map<String, String>> valuesMap) {
-        WorkPlansProductsService workPlansProductsSerivce = new WorkPlansProductsService();
-        Map<Entity, BigDecimal> productQuantities = workPlansProductsSerivce.getProductQuantities(orders);
+        ProductQuantitiesService productQuantitiesSerivce = new ProductQuantitiesService();
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesSerivce.getProductComponentQuantities(orders);
 
         Locale locale = LocaleContextHolder.getLocale();
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
