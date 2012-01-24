@@ -221,7 +221,8 @@ public class TechnologyService {
 
         List<Entity> inProducts = new ArrayList<Entity>();
 
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, BigDecimal.ONE);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                BigDecimal.ONE, false);
 
         for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

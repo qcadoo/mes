@@ -30,15 +30,16 @@ import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculati
 import static java.math.BigDecimal.ROUND_UP;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -46,35 +47,33 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Autowired
     TechnologyService technologyService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     public void calculateProductsCost(final Entity costCalculation) {
         checkArgument(costCalculation != null);
         BigDecimal quantity = getBigDecimal(costCalculation.getField("quantity"));
         BigDecimal result = BigDecimal.ZERO;
-        EntityTree technologyOperationComponents = costCalculation.getBelongsToField("technology").getTreeField(
-                "operationComponents");
         ProductsCostCalculationConstants mode = getProductModeFromField(costCalculation.getField("calculateMaterialCostsMode"));
 
         checkArgument(quantity != null && quantity != BigDecimal.ZERO, "quantity is  null");
-        checkArgument(technologyOperationComponents != null, "operationComponents is null!");
         checkArgument(mode != null, "mode is null!");
 
         Entity technology = costCalculation.getBelongsToField("technology");
 
-        for (Entity operationComponent : technologyOperationComponents) {
-            EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
-            for (Entity inputProduct : inputProducts) {
-                BigDecimal quantityOfInputProducts = getBigDecimal(inputProduct.getField("quantity"));
-                Entity product = inputProduct.getBelongsToField("product");
-                if (!technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)) {
-                    continue;
-                }
-                BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
-                BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
-                BigDecimal costPerUnit = cost.divide(costForNumber, 4);
+        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                BigDecimal.ONE, true);
 
-                result = result.add(costPerUnit.multiply(quantityOfInputProducts));
-            }
+        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantity.getKey();
+
+            BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
+            BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
+            BigDecimal costPerUnit = cost.divide(costForNumber, 4);
+
+            result = result.add(costPerUnit.multiply(productQuantity.getValue()));
         }
+
         result = result.multiply(quantity);
         costCalculation.setField("totalMaterialCosts", result.setScale(3, ROUND_UP));
     }
