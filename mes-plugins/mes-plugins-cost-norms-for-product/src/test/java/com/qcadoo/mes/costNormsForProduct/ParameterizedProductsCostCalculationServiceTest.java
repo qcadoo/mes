@@ -80,7 +80,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(4), valueOf(480) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(2), valueOf(60) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(3), valueOf(135) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(240) }, });
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(240) } });
     }
 
     public ParameterizedProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, BigDecimal average,

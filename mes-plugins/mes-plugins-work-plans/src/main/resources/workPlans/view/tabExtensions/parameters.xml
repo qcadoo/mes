@@ -78,13 +78,16 @@
 			<layoutElement column="1" row="3">
 				<component type="grid" name="columnsForInputProducts" source="#{form}.parameterInputColumns" reference="columnsForInputProducts" >
 					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
-
+					
+					<option type="searchable" value="name" />
+					<option type="orderable" value="name" />
+			
 					<option type="order" column="succession" direction="desc" />
 					
 					<option type="correspondingView" value="workPlans/parameterInputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
-						
+					
 					<option type="creatable" value="true" />
 					<option type="deletable" value="true" />
 					<option type="fullscreen" value="true" />
@@ -100,7 +103,10 @@
 			<layoutElement column="2" row="3">
 				<component type="grid" name="columnsForOutputProducts" source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts" >
 					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
-
+					
+					<option type="searchable" value="name" />
+					<option type="orderable" value="name" />
+					
 					<option type="order" column="succession" direction="desc" />
 					
 					<option type="correspondingView" value="workPlans/parameterOutputColumnDetails" />
