@@ -38,14 +38,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
-
-    @Autowired
-    TechnologyService technologyService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
