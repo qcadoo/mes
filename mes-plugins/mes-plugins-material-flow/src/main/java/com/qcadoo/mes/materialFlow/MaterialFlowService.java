@@ -28,12 +28,10 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +67,6 @@ public class MaterialFlowService {
     private static final String STAFF_FIELD = "staff";
 
     private static final String STOCK_AREAS_FROM_FIELD = "stockAreasFrom";
-
-    private static final String MATERIAL_FLOW_FOR_DATE_FIELD = "materialFlowForDate";
 
     private static final String SHOULD_BE_FIELD = "shouldBe";
 
