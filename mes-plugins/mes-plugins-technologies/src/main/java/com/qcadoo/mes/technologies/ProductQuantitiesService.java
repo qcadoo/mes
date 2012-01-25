@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,14 +35,13 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 @Service
 public class ProductQuantitiesService {
 
     private static final String PRODUCT_LITERAL = "product";
-
-    // TODO MICI service has some obvious duplications, refactor them to make it pretty.
 
     /**
      * 
@@ -51,22 +51,14 @@ public class ProductQuantitiesService {
      *         products that are the same, but are related to different operations are here as different entries.
      */
     public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders) {
-        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        for (Entity order : orders) {
-            BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
+        getAllQuantitiesForOrders(orders, false, productComponentQuantities, operationMultipliers, nonComponents);
 
-            Entity technology = order.getBelongsToField("technology");
-
-            if (technology == null) {
-                throw new IllegalStateException("Order doesn't contain technology.");
-            }
-
-            fillMapWithQuantitiesForTechnology(technology, plannedQty, productQuantities, nonComponents);
-        }
-
-        return productQuantities;
+        return productComponentQuantities;
     }
 
     /**
@@ -80,9 +72,10 @@ public class ProductQuantitiesService {
     public Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQty,
             final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities, nonComponents);
+        fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities, nonComponents, operationMultipliers);
 
         return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
     }
@@ -98,20 +91,32 @@ public class ProductQuantitiesService {
      */
     public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
-
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        for (Entity order : orders) {
-            BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
+        getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationMultipliers, nonComponents);
 
-            Entity technology = order.getBelongsToField("technology");
+        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+    }
 
-            if (technology == null) {
-                throw new IllegalStateException("Order doesn't contain technology.");
-            }
+    /**
+     * 
+     * @param orders
+     *            Given list of orders
+     * @param onlyComponents
+     *            A flag that indicates if we want only components or intermediates too
+     * @param operationMultipliers
+     *            Method takes here an empty map and puts here info on how many certain operations (operationComponents) have to
+     *            be run.
+     * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
+     *         aggregated)
+     */
+    public Map<Entity, BigDecimal> getNeededProductQuantities(EntityList orders, boolean onlyComponents,
+            Map<Entity, BigDecimal> operationMultipliers) {
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Set<Entity> nonComponents = new HashSet<Entity>();
 
-            fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents);
-        }
+        getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationMultipliers, nonComponents);
 
         return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
     }
@@ -128,6 +133,7 @@ public class ProductQuantitiesService {
     public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
             final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
 
         Set<Entity> nonComponents = new HashSet<Entity>();
 
@@ -147,10 +153,28 @@ public class ProductQuantitiesService {
                 throw new IllegalStateException("Order doesn't contain technology.");
             }
 
-            fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents);
+            fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents,
+                    operationMultipliers);
         }
 
         return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+    }
+
+    private void getAllQuantitiesForOrders(final List<Entity> orders, final boolean onlyComponents,
+            final Map<Entity, BigDecimal> productComponentQuantities, final Map<Entity, BigDecimal> operationMultipliers,
+            final Set<Entity> nonComponents) {
+        for (Entity order : orders) {
+            BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
+
+            Entity technology = order.getBelongsToField("technology");
+
+            if (technology == null) {
+                throw new IllegalStateException("Order doesn't contain technology.");
+            }
+
+            fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents,
+                    operationMultipliers);
+        }
     }
 
     private Map<Entity, BigDecimal> getInputProducts(final Map<Entity, BigDecimal> productComponentQuantities,
@@ -179,13 +203,14 @@ public class ProductQuantitiesService {
     }
 
     private void fillMapWithQuantitiesForTechnology(final Entity technology, final BigDecimal givenQty,
-            final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents) {
+            final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents,
+            final Map<Entity, BigDecimal> operationMultipliers) {
         EntityTree tree = technology.getTreeField("operationComponents");
 
         preloadProductQuantities(tree, productComponentQuantities);
 
         Entity root = tree.getRoot();
-        traverse(root, null, productComponentQuantities, nonComponents, givenQty, technology);
+        traverse(root, null, productComponentQuantities, nonComponents, givenQty, technology, operationMultipliers);
     }
 
     private void preloadProductQuantities(final EntityTree tree, final Map<Entity, BigDecimal> productQuantities) {
@@ -202,24 +227,35 @@ public class ProductQuantitiesService {
         }
     }
 
+    private void multiplyInQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
+            final Entity outProductComponent, final Map<Entity, BigDecimal> mapWithQuantities,
+            final Map<Entity, BigDecimal> operationMultipliers) {
+        BigDecimal multiplier = needed.divide(actual).setScale(0, RoundingMode.CEILING);
+
+        operationMultipliers.put(operationComponent, multiplier);
+
+        mapWithQuantities.put(outProductComponent, actual.multiply(multiplier));
+
+        for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
+            BigDecimal currentInQuantity = mapWithQuantities.get(currentIn);
+            mapWithQuantities.put(currentIn, currentInQuantity.multiply(multiplier));
+        }
+
+    }
+
     private void traverse(final Entity operationComponent, final Entity previousOperationComponent,
             final Map<Entity, BigDecimal> productQuantities, final Set<Entity> nonComponents, final BigDecimal plannedQty,
-            final Entity technology) {
+            final Entity technology, final Map<Entity, BigDecimal> operationMultipliers) {
         if (previousOperationComponent == null) {
             Entity outProduct = technology.getBelongsToField(PRODUCT_LITERAL);
 
             for (Entity out : operationComponent.getHasManyField("operationProductOutComponents")) {
                 if (out.getBelongsToField(PRODUCT_LITERAL).getId().equals(outProduct.getId())) {
+
                     BigDecimal outQuantity = productQuantities.get(out);
 
-                    BigDecimal multiplier = plannedQty.divide(outQuantity);
-
-                    productQuantities.put(out, outQuantity.multiply(multiplier));
-
-                    for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
-                        BigDecimal currentInQuantity = productQuantities.get(currentIn);
-                        productQuantities.put(currentIn, currentInQuantity.multiply(multiplier));
-                    }
+                    multiplyInQuantities(plannedQty, outQuantity, operationComponent, out, productQuantities,
+                            operationMultipliers);
 
                     break;
                 }
@@ -235,14 +271,8 @@ public class ProductQuantitiesService {
                         BigDecimal outQuantity = productQuantities.get(out);
                         BigDecimal inQuantity = productQuantities.get(in);
 
-                        BigDecimal multiplier = inQuantity.divide(outQuantity);
-
-                        productQuantities.put(out, outQuantity.multiply(multiplier));
-
-                        for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
-                            BigDecimal currentInQuantity = productQuantities.get(currentIn);
-                            productQuantities.put(currentIn, currentInQuantity.multiply(multiplier));
-                        }
+                        multiplyInQuantities(inQuantity, outQuantity, operationComponent, out, productQuantities,
+                                operationMultipliers);
 
                         break;
                     }
@@ -256,7 +286,7 @@ public class ProductQuantitiesService {
         }
 
         for (Entity child : operationComponent.getHasManyField("children")) {
-            traverse(child, operationComponent, productQuantities, nonComponents, plannedQty, technology);
+            traverse(child, operationComponent, productQuantities, nonComponents, plannedQty, technology, operationMultipliers);
         }
     }
 }
