@@ -68,6 +68,10 @@
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
 			method="fillCostTabUnit" />
+			
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="enabledFieldForExternalID" />
 
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"

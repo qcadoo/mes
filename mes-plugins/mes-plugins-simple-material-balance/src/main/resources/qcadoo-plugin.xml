@@ -48,15 +48,6 @@
 		</vendor>
 	</information>
 
-	<dependencies>
-		<dependency>
-			<plugin>materialFlow</plugin>
-		</dependency>
-		<dependency>
-			<plugin>materialRequirements</plugin>
-		</dependency>
-    </dependencies>
-
 	<modules>
 		<localization:translation path="locales" />
 		

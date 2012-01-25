@@ -21,13 +21,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.print;
+package com.qcadoo.mes.technologies;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -39,6 +41,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -49,16 +52,10 @@ public class ProductQuantitiesServiceTest {
     private ProductQuantitiesService productQuantitiesService;
 
     @Mock
-    private EntityList orders;
-
-    @Mock
     private Entity order;
 
     @Mock
     private Entity technology;
-
-    @Mock
-    private EntityTree tree;
 
     @Mock
     private Entity product1, product2, product3, product4;
@@ -68,6 +65,9 @@ public class ProductQuantitiesServiceTest {
 
     @Mock
     private Entity productOutComponent2, productOutComponent4;
+
+    @Mock
+    private DataDefinition ddIn, ddOut;
 
     @Mock
     private EntityTreeNode operationComponent1, operationComponent2;
@@ -84,11 +84,27 @@ public class ProductQuantitiesServiceTest {
     @Mock
     private EntityList productOutComponentsForOperation2;
 
+    private EntityList orders;
+
+    private EntityTree tree;
+
     private Map<Entity, List<Entity>> productInComponents;
 
     private Map<Entity, List<Entity>> productOutComponents;
 
     private BigDecimal plannedQty;
+
+    private static EntityList mockEntityListIterator(List<Entity> list) {
+        EntityList entityList = mock(EntityList.class);
+        when(entityList.iterator()).thenReturn(list.iterator());
+        return entityList;
+    }
+
+    private static EntityTree mockEntityTreeIterator(List<Entity> list) {
+        EntityTree entityTree = mock(EntityTree.class);
+        when(entityTree.iterator()).thenReturn(list.iterator());
+        return entityTree;
+    }
 
     @Before
     @SuppressWarnings("unchecked")
@@ -97,18 +113,17 @@ public class ProductQuantitiesServiceTest {
 
         productQuantitiesService = new ProductQuantitiesService();
 
-        Iterator<Entity> ordersIterator = mock(Iterator.class);
-        when(orders.iterator()).thenReturn(ordersIterator);
-        when(ordersIterator.hasNext()).thenReturn(true, false);
-        when(ordersIterator.next()).thenReturn(order);
+        orders = mockEntityListIterator(asList(order));
 
         when(order.getBelongsToField("technology")).thenReturn(technology);
 
-        Iterator<Entity> treeIterator = mock(Iterator.class);
-        when(tree.iterator()).thenReturn(treeIterator);
-        when(treeIterator.hasNext()).thenReturn(true, true, false, true, true, false, true, true, false, true, true, false);
-        when(treeIterator.next()).thenReturn(operationComponent1, operationComponent2, operationComponent1, operationComponent2,
-                operationComponent1, operationComponent2, operationComponent1, operationComponent2);
+        tree = mockEntityTreeIterator(asList((Entity) operationComponent1, (Entity) operationComponent2));
+
+        productInComponentsForOperation1 = mockEntityListIterator(asList(productInComponent1));
+        productOutComponentsForOperation1 = mockEntityListIterator(asList(productOutComponent2));
+
+        productInComponentsForOperation2 = mockEntityListIterator(asList(productInComponent2, productInComponent3));
+        productOutComponentsForOperation2 = mockEntityListIterator(asList(productOutComponent4));
 
         productInComponentsForOperation1 = mock(EntityList.class);
         productOutComponentsForOperation1 = mock(EntityList.class);
@@ -145,7 +160,7 @@ public class ProductQuantitiesServiceTest {
         when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation2);
         when(operationComponent2.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation2);
 
-        plannedQty = new BigDecimal(5);
+        plannedQty = new BigDecimal(4.5f);
 
         when(order.getField("plannedQuantity")).thenReturn(plannedQty);
 
@@ -158,22 +173,10 @@ public class ProductQuantitiesServiceTest {
         productInComponents = new HashMap<Entity, List<Entity>>();
         productOutComponents = new HashMap<Entity, List<Entity>>();
 
-        List<Entity> productInComponentsForOperation1 = new LinkedList<Entity>();
-        List<Entity> productInComponentsForOperation2 = new LinkedList<Entity>();
-        List<Entity> productOutComponentsForOperation1 = new LinkedList<Entity>();
-        List<Entity> productOutComponentsForOperation2 = new LinkedList<Entity>();
-
-        productInComponentsForOperation1.add(productInComponent1);
-        productInComponentsForOperation2.add(productInComponent2);
-        productInComponentsForOperation2.add(productInComponent3);
-
-        productOutComponentsForOperation1.add(productOutComponent2);
-        productOutComponentsForOperation2.add(productOutComponent4);
-
-        productInComponents.put(operationComponent1, productInComponentsForOperation1);
-        productInComponents.put(operationComponent2, productInComponentsForOperation2);
-        productOutComponents.put(operationComponent1, productOutComponentsForOperation1);
-        productOutComponents.put(operationComponent2, productOutComponentsForOperation2);
+        productInComponents.put(operationComponent1, asList(productInComponent1));
+        productInComponents.put(operationComponent2, asList(productInComponent2, productInComponent3));
+        productOutComponents.put(operationComponent1, asList(productOutComponent2));
+        productOutComponents.put(operationComponent2, asList(productOutComponent4));
 
         when(product1.getId()).thenReturn(1L);
         when(product2.getId()).thenReturn(2L);
@@ -189,21 +192,22 @@ public class ProductQuantitiesServiceTest {
 
         when(tree.getRoot()).thenReturn(operationComponent2);
 
-        EntityList operationComponent1children = mock(EntityList.class);
-        EntityList operationComponent2children = mock(EntityList.class);
-        Iterator<Entity> children1iterator = mock(Iterator.class);
-        Iterator<Entity> children2iterator = mock(Iterator.class);
-        when(children1iterator.hasNext()).thenReturn(false);
-        when(children2iterator.hasNext()).thenReturn(true, false);
-        when(children2iterator.next()).thenReturn(operationComponent1);
-
-        when(operationComponent1children.iterator()).thenReturn(children1iterator);
-        when(operationComponent2children.iterator()).thenReturn(children2iterator);
+        EntityList operationComponent1children = mockEntityListIterator(new LinkedList<Entity>());
+        EntityList operationComponent2children = mockEntityListIterator(asList((Entity) operationComponent1));
 
         when(operationComponent1.getHasManyField("children")).thenReturn(operationComponent1children);
         when(operationComponent2.getHasManyField("children")).thenReturn(operationComponent2children);
 
         when(technology.getTreeField("operationComponents")).thenReturn(tree);
+
+        when(ddIn.getName()).thenReturn("operationProductInComponent");
+        when(ddOut.getName()).thenReturn("operationProductOutComponent");
+
+        when(productInComponent1.getDataDefinition()).thenReturn(ddIn);
+        when(productInComponent2.getDataDefinition()).thenReturn(ddIn);
+        when(productInComponent3.getDataDefinition()).thenReturn(ddIn);
+        when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
+        when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -212,13 +216,13 @@ public class ProductQuantitiesServiceTest {
         when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
+        productQuantitiesService.getProductComponentQuantities(orders);
     }
 
     @Test
     public void shouldReturnCorrectQuantities() {
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -229,15 +233,67 @@ public class ProductQuantitiesServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectQuantitiesForTechnologyAndGivenMultiplier() {
+    public void shouldReturnCorrectQuantitiesOfInputProductsForTechnology() {
+        // given
+        boolean onlyComponents = false;
+
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductQuantities(technology, plannedQty);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
+                onlyComponents);
 
         // then
-        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
-        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
-        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+        assertEquals(3, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+    }
+
+    @Test
+    public void shouldReturnQuantitiesOfInputProductsForOrdersAndIfToldCountOnlyComponents() {
+        // given
+        boolean onlyComponents = true;
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+
+        // then
+        assertEquals(2, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+
+    }
+
+    @Test
+    public void shouldReturnQuantitiesAlsoForListOfComponents() {
+        // given
+        Entity component = mock(Entity.class);
+        when(component.getBelongsToField("order")).thenReturn(order);
+        boolean onlyComponents = false;
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantitiesForComponents(
+                Arrays.asList(component), onlyComponents);
+
+        // then
+        assertEquals(3, productQuantities.size());
+        assertEquals(new BigDecimal(50), productQuantities.get(product1));
+        assertEquals(new BigDecimal(10), productQuantities.get(product2));
+        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+    }
+
+    @Test
+    public void shouldReturnOperationMultipliers() {
+        // given
+        boolean onlyComponents = false;
+
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+
+        // when
+        productQuantitiesService.getNeededProductQuantities(orders, onlyComponents, operationMultipliers);
+
+        // then
+        assertEquals(2, operationMultipliers.size());
+        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
     }
 }

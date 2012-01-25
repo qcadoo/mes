@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.print.ReportDataService;
 import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -136,13 +135,13 @@ public class TechnologyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private ReportDataService reportDataService;
-
-    @Autowired
     private TreeNumberingService treeNumberingService;
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    ProductQuantitiesService productQuantitiesService;
 
     private enum ProductDirection {
         IN, OUT;
@@ -216,17 +215,18 @@ public class TechnologyService {
             outProductsGrid.setEntities(rootOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT));
         }
 
-        Map<Entity, BigDecimal> inProductsWithCount = new LinkedHashMap<Entity, BigDecimal>();
         List<Entity> inProducts = new ArrayList<Entity>();
 
-        reportDataService.countQuantityForProductsIn(inProductsWithCount, technology, BigDecimal.ONE, false);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                BigDecimal.ONE, false);
 
-        for (Map.Entry<Entity, BigDecimal> inProductWithCount : inProductsWithCount.entrySet()) {
+        for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+
             inProduct.setField(CONST_OPERATION_COMPONENT, rootOperation);
-            inProduct.setField(CONST_PRODUCT, inProductWithCount.getKey());
-            inProduct.setField(QUANTITY_FIELD, inProductWithCount.getValue());
+            inProduct.setField(CONST_PRODUCT, productQuantity.getKey());
+            inProduct.setField(QUANTITY_FIELD, productQuantity.getValue());
             inProducts.add(inProduct);
         }
 

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,9 +51,8 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
-import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
-import com.qcadoo.mes.technologies.print.ReportDataService;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -81,10 +79,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     TreeNumberingService treeNumberingService;
 
     @Autowired
-    ReportDataService reportDataService;
-
-    @Autowired
-    MaterialRequirementReportDataService materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     TimeConverterService timeConverterService;
@@ -94,7 +89,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private static final String NAME = "name";
 
     @Override
-    protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
+    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documentTitle = getTranslationService().translate("costCalculation.costCalculationDetails.report.title", locale);
         String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
@@ -131,7 +126,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getReportTitle(Locale locale) {
+    protected String getReportTitle(final Locale locale) {
         return getTranslationService().translate("costCalculation.costCalculationDetails.report.fileName", locale);
     }
 
@@ -221,7 +216,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         return leftPanelColumn;
     }
 
-    public PdfPTable addRightPanelToReport(Entity costCalculation, Locale locale) {
+    public PdfPTable addRightPanelToReport(final Entity costCalculation, final Locale locale) {
         PdfPTable rightPanelColumn = PdfUtil.createPanelTable(1);
         rightPanelColumn.addCell(new Phrase(getTranslationService().translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.technicalProductionCost", locale)
@@ -323,7 +318,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         return rightPanelColumn;
     }
 
-    public PdfPTable addMaterialsTable(Entity costCalculation, Locale locale) {
+    public PdfPTable addMaterialsTable(final Entity costCalculation, final Locale locale) {
 
         List<String> materialsTableHeader = new ArrayList<String>();
         for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.number",
@@ -338,16 +333,20 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTableHeader.add(getTranslationService().translate(translate, locale));
         }
         PdfPTable materialsTable = PdfUtil.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
-        Map<Entity, BigDecimal> products = new HashMap<Entity, BigDecimal>();
         Entity technology;
         if (costCalculation.getBelongsToField("order") == null) {
             technology = costCalculation.getBelongsToField("technology");
         } else {
             technology = costCalculation.getBelongsToField("order").getBelongsToField("technology");
+
         }
-        reportDataService.countQuantityForProductsIn(products, technology, (BigDecimal) costCalculation.getField("quantity"),
-                true);
+
+        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
+
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField(NAME), PdfUtil.getArialRegular9Dark()));

@@ -30,8 +30,8 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -67,7 +67,7 @@ public class MaterialFlowServiceTest {
 
     private static final String PRODUCT = "1";
 
-    private static final String FORDATE = "Mon Dec 12 14:00:37 CET 2011";
+    private static final Date FORDATE = new Date();
 
     @Before
     public void init() {

@@ -44,13 +44,18 @@
 			<option type="column" name="generated" fields="generated"
 				link="false" width="100" />
 			<option type="column" name="worker" fields="worker" width="200" />
-			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="workPlans/workPlanDetails" />
-			<option type="correspondingComponent" value="form" />
+			
 			<option type="searchable" value="name,generated,worker" />
 			<option type="orderable" value="name,generated,worker" />
+			
+			<option type="order" column="name" direction="asc" />
+			
+			<option type="correspondingView" value="workPlans/workPlanDetails" />
+			<option type="correspondingComponent" value="form" />
+			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+			
 			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
 				method="printWorkPlan" />
 			<script>

@@ -78,12 +78,6 @@
 
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
-		<view:view-grid-column plugin="orders" view="ordersList"
-			component="grid">
-			<view:column name="realizationTime" fields="realizationTime"
-				orderable="true" searchable="false" width="30" link="false" />
-		</view:view-grid-column>
-
 		<view:view resource="view/orderTimePrediction.xml" />
 
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"

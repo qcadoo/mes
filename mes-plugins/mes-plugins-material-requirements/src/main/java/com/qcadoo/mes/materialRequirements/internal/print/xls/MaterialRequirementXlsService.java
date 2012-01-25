@@ -36,8 +36,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -47,7 +47,7 @@ import com.qcadoo.report.api.xls.XlsUtil;
 public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
-    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -71,8 +71,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
-                onlyComponents);
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);

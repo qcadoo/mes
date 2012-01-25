@@ -42,9 +42,9 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementReportDataServiceImpl;
 import com.qcadoo.mes.materialRequirements.internal.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -78,7 +78,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private MaterialRequirementReportDataServiceImpl materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -111,8 +111,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) entity.getField(ONLY_COMPONENTS_FIELD);
-        Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(orders,
-                onlyComponents);
+
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = PdfUtil.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {

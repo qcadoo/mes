@@ -63,7 +63,6 @@
 		
 		<model:model model="orderGroup" resource="model/orderGroup.xml" />
 		
-		<menu:menu-category name="orders" />
 		<menu:menu-item name="orderGroups" category="orders" view="orderGroupsList" />
 
 		<view:view resource="view/orderGroupsList.xml" />
