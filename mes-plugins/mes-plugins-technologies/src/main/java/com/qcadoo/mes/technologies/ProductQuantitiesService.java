@@ -35,13 +35,16 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
 @Service
 public class ProductQuantitiesService {
 
     private static final String PRODUCT_LITERAL = "product";
+
+    private static final String IN_PRODUCT = "operationProductInComponent";
+
+    private static final String OUT_PRODUCT = "operationProductOutComponent";
 
     /**
      * 
@@ -77,7 +80,7 @@ public class ProductQuantitiesService {
 
         fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities, nonComponents, operationMultipliers);
 
-        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
     /**
@@ -96,7 +99,24 @@ public class ProductQuantitiesService {
 
         getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationMultipliers, nonComponents);
 
-        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
+    }
+
+    /**
+     * 
+     * @param orders
+     *            Given list of orders
+     * @return Map of output products and their quantities (products that occur in multiple operations or even in multiple orders
+     *         are aggregated)
+     */
+    public Map<Entity, BigDecimal> getOutputProductQuantities(final List<Entity> orders) {
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+        Set<Entity> nonComponents = new HashSet<Entity>();
+
+        getAllQuantitiesForOrders(orders, false, productComponentQuantities, operationMultipliers, nonComponents);
+
+        return getProducts(productComponentQuantities, nonComponents, false, OUT_PRODUCT);
     }
 
     /**
@@ -111,14 +131,14 @@ public class ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    public Map<Entity, BigDecimal> getNeededProductQuantities(EntityList orders, boolean onlyComponents,
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, boolean onlyComponents,
             Map<Entity, BigDecimal> operationMultipliers) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationMultipliers, nonComponents);
 
-        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
     /**
@@ -157,7 +177,7 @@ public class ProductQuantitiesService {
                     operationMultipliers);
         }
 
-        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
     private void getAllQuantitiesForOrders(final List<Entity> orders, final boolean onlyComponents,
@@ -177,12 +197,12 @@ public class ProductQuantitiesService {
         }
     }
 
-    private Map<Entity, BigDecimal> getInputProducts(final Map<Entity, BigDecimal> productComponentQuantities,
-            final Set<Entity> nonComponents, final boolean onlyComponents) {
+    private Map<Entity, BigDecimal> getProducts(final Map<Entity, BigDecimal> productComponentQuantities,
+            final Set<Entity> nonComponents, final boolean onlyComponents, final String type) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
         for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            if ("operationProductInComponent".equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
+            if (type.equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
                 if (onlyComponents && nonComponents.contains(productComponentQuantity.getKey())) {
                     continue;
                 }
