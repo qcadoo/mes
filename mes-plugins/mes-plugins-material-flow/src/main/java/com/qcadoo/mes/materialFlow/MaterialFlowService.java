@@ -28,12 +28,10 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +68,6 @@ public class MaterialFlowService {
 
     private static final String STOCK_AREAS_FROM_FIELD = "stockAreasFrom";
 
-    private static final String MATERIAL_FLOW_FOR_DATE_FIELD = "materialFlowForDate";
-
     private static final String SHOULD_BE_FIELD = "shouldBe";
 
     private static final String STOCK_CORRECTION_DATE_FIELD = "stockCorrectionDate";
@@ -94,7 +90,7 @@ public class MaterialFlowService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final String forDate) {
+    public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final Date forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -106,14 +102,6 @@ public class MaterialFlowService {
                 MaterialFlowConstants.MODEL_TRANSFER);
         DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
-        Date date;
-        DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-
-        try {
-            date = format.parse(forDate);
-        } catch (ParseException pe) {
-            throw new IllegalStateException(pe);
-        }
 
         Long productId = Long.valueOf(product);
 
@@ -132,19 +120,19 @@ public class MaterialFlowService {
         if (lastCorrectionDate == null) {
 
             resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
-                    .add(SearchRestrictions.eq(PRODUCT_ID_FIELD, productId)).add(SearchRestrictions.le(TIME_FIELD, date)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate)).list();
 
             resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
-                    .add(SearchRestrictions.eq(PRODUCT_ID_FIELD, productId)).add(SearchRestrictions.le(TIME_FIELD, date)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate)).list();
 
         } else {
             resultTo = transferTo.find().add(SearchRestrictions.eq("stockAreasTo.id", stockAreas))
-                    .add(SearchRestrictions.eq(PRODUCT_ID_FIELD, productId)).add(SearchRestrictions.le(TIME_FIELD, date))
-                    .add(SearchRestrictions.gt(TIME_FIELD, lastCorrectionDate)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate))
+                    .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
 
             resultFrom = transferFrom.find().add(SearchRestrictions.eq("stockAreasFrom.id", stockAreas))
-                    .add(SearchRestrictions.eq(PRODUCT_ID_FIELD, productId)).add(SearchRestrictions.le(TIME_FIELD, date))
-                    .add(SearchRestrictions.gt(TIME_FIELD, lastCorrectionDate)).list();
+                    .add(SearchRestrictions.eq("product.id", productId)).add(SearchRestrictions.le("time", forDate))
+                    .add(SearchRestrictions.gt("time", lastCorrectionDate)).list();
         }
 
         for (Entity e : resultTo.getEntities()) {
@@ -187,16 +175,22 @@ public class MaterialFlowService {
                     && !date.getFieldValue().toString().equals("")) {
                 Long stockAreasNumber = (Long) stockAreas.getFieldValue();
                 String productNumber = product.getFieldValue().toString();
-                String forDate = date.getFieldValue().toString();
 
-                BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+                String stringDate = date.getFieldValue().toString();
 
-                if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                    should.setFieldValue(shouldBe);
-                } else {
-                    should.setFieldValue(BigDecimal.ZERO);
+                DateFormat format = DateFormat.getDateInstance(DateFormat.DEFAULT, state.getLocale());
+                try {
+                    Date forDate = format.parse(stringDate);
+                    BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+
+                    if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
+                        should.setFieldValue(shouldBe);
+                    } else {
+                        should.setFieldValue(BigDecimal.ZERO);
+                    }
+                } catch (ParseException parseException) {
+                    throw new IllegalStateException(parseException);
                 }
-
             }
         }
         should.requestComponentUpdateState();
@@ -287,7 +281,8 @@ public class MaterialFlowService {
 
             List<Entity> products = getProductsSeenInStockArea(stockArea.getStringField(NUMBER_FIELD));
 
-            String forDate = ((Date) materialsInStockAreas.getField(MATERIAL_FLOW_FOR_DATE_FIELD)).toString();
+            Date forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate"));
+
             for (Entity product : products) {
                 BigDecimal quantity = calculateShouldBeInStockArea(stockArea.getId(), product.getStringField(NUMBER_FIELD),
                         forDate);

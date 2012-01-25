@@ -24,6 +24,7 @@
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -114,7 +115,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId().toString(),
-                        simpleMaterialBalance.getField(DATE_FIELD).toString()));
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)));
             }
             row.createCell(4).setCellValue(getDecimalFormat().format(available));
             row.createCell(5).setCellValue(getDecimalFormat().format(available.subtract(product.getValue())));

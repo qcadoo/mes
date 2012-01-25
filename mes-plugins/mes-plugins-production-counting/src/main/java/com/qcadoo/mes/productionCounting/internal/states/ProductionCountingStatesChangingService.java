@@ -28,12 +28,16 @@ import static com.qcadoo.mes.productionCounting.internal.states.ProductionCounti
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DECLINED;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.DRAFT;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class ProductionCountingStatesChangingService {
@@ -50,7 +54,7 @@ public class ProductionCountingStatesChangingService {
         stateListeners.remove(listener);
     }
 
-    void performChangeState(final Entity newEntity, final Entity oldEntity) {
+    List<ChangeRecordStateMessage> performChangeState(final Entity newEntity, final Entity oldEntity) {
         checkArgument(newEntity != null, "New entity is null");
         checkArgument(oldEntity != null, "Old entity is null");
 
@@ -63,40 +67,44 @@ public class ProductionCountingStatesChangingService {
         } else if (DECLINED.getStringValue().equals(newEntity.getStringField(FIELD_STATE))) {
             state = ProductionCountingStates.DECLINED;
         } else {
-            return;
+            return new ArrayList<ChangeRecordStateMessage>();
         }
 
         if (oldEntity == null && !state.equals(DRAFT)) {
-            throw new IllegalStateException();
+            return Arrays.asList(ChangeRecordStateMessage.error(""));
         }
         if (oldEntity != null && state.equals(ACCEPTED) && !DRAFT.getStringValue().equals(oldEntity.getStringField(FIELD_STATE))) {
-            throw new IllegalStateException();
+            return Arrays.asList(ChangeRecordStateMessage.error(""));
         }
         switch (state) {
             case ACCEPTED:
-                performAccepted(newEntity, oldEntity);
-                break;
+                return performAccepted(newEntity, oldEntity);
             case DECLINED:
-                performDeclined(newEntity, oldEntity);
-                break;
+                return performDeclined(newEntity, oldEntity);
             case DRAFT:
-                break;
+                return new ArrayList<ChangeRecordStateMessage>();
             default:
-                throw new IllegalStateException("Record entity has invalid state value");
+                return Arrays.asList(ChangeRecordStateMessage.error(""));
         }
 
     }
 
-    private void performDeclined(final Entity productionRecord, final Entity prevState) {
+    private List<ChangeRecordStateMessage> performDeclined(final Entity productionRecord, final Entity prevState) {
+        List<ChangeRecordStateMessage> messages = new ArrayList<ChangeRecordStateMessage>();
         for (RecordStateListener listener : stateListeners) {
-            listener.onDeclined(productionRecord, prevState);
+            messages = listener.onDeclined(productionRecord, prevState);
         }
+
+        return messages;
     }
 
-    private void performAccepted(final Entity productionRecord, final Entity prevState) {
+    private List<ChangeRecordStateMessage> performAccepted(final Entity productionRecord, final Entity prevState) {
+        List<ChangeRecordStateMessage> messages = new ArrayList<ChangeRecordStateMessage>();
         for (RecordStateListener listener : stateListeners) {
-            listener.onAccepted(productionRecord, prevState);
+            messages = listener.onAccepted(productionRecord, prevState);
         }
+
+        return messages;
     }
 
 }

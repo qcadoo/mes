@@ -24,6 +24,7 @@
 package com.qcadoo.mes.simpleMaterialBalance.internal.print;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -103,7 +104,8 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
                 panelTable,
                 getTranslationService().translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.date", locale),
-                ((Date) simpleMaterialBalance.getField(DATE_FIELD)).toString(), null, PdfUtil.getArialBold10Dark(),
+                DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT, locale).format(
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(
                 panelTable,
@@ -164,7 +166,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), entry.getKey().getId().toString(),
-                        simpleMaterialBalance.getField(DATE_FIELD).toString()));
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)));
             }
             table.addCell(new Phrase(getDecimalFormat().format(available), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(getDecimalFormat().format(available.subtract(entry.getValue())), PdfUtil.getArialBold9Dark()));

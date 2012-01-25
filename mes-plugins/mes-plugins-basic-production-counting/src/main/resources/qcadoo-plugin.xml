@@ -53,6 +53,13 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
