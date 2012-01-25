@@ -34,7 +34,7 @@
 		<string name="name" required="true" />
 		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			required="true" />
-		<string name="ean" />
+		<string name="ean" unique="true" />
 		<dictionary name="category" dictionary="categories" />
 		<dictionary name="unit" dictionary="units" required="true" />
 		<hasMany name="substitutes" model="substitute" joinField="product"
