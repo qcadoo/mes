@@ -77,33 +77,14 @@ public class ProductQuantitiesService {
      *            How many products, that are outcomes of this technology, we want.
      * @return Map with product as the key and its quantity as the value. This time keys are products, so they are aggregated.
      */
-    public Map<Entity, BigDecimal> getNeededProductQuantities(Entity technology, BigDecimal givenQty, boolean onlyComponents) {
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQty,
+            final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities, nonComponents);
 
-        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
-
-        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            if ("operationProductInComponent".equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
-                if (onlyComponents && nonComponents.contains(productComponentQuantity.getKey())) {
-                    continue;
-                }
-
-                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_LITERAL);
-                BigDecimal newQty = productComponentQuantity.getValue();
-
-                BigDecimal oldQty = productQuantities.get(product);
-                if (oldQty != null) {
-                    newQty = newQty.add(oldQty);
-
-                }
-                productQuantities.put(product, newQty);
-            }
-        }
-
-        return productQuantities;
+        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
     }
 
     /**
@@ -115,7 +96,7 @@ public class ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    public Map<Entity, BigDecimal> getNeededProductQuantities(List<Entity> orders, boolean onlyComponents) {
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
 
         Set<Entity> nonComponents = new HashSet<Entity>();
@@ -132,27 +113,7 @@ public class ProductQuantitiesService {
             fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents);
         }
 
-        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
-
-        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            if ("operationProductInComponent".equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
-                if (onlyComponents && nonComponents.contains(productComponentQuantity.getKey())) {
-                    continue;
-                }
-
-                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_LITERAL);
-                BigDecimal newQty = productComponentQuantity.getValue();
-
-                BigDecimal oldQty = productQuantities.get(product);
-                if (oldQty != null) {
-                    newQty = newQty.add(oldQty);
-
-                }
-                productQuantities.put(product, newQty);
-            }
-        }
-
-        return productQuantities;
+        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
     }
 
     /**
@@ -164,7 +125,8 @@ public class ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(List<Entity> components, boolean onlyComponents) {
+    public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
+            final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
 
         Set<Entity> nonComponents = new HashSet<Entity>();
@@ -188,6 +150,11 @@ public class ProductQuantitiesService {
             fillMapWithQuantitiesForTechnology(technology, plannedQty, productComponentQuantities, nonComponents);
         }
 
+        return getInputProducts(productComponentQuantities, nonComponents, onlyComponents);
+    }
+
+    private Map<Entity, BigDecimal> getInputProducts(final Map<Entity, BigDecimal> productComponentQuantities,
+            final Set<Entity> nonComponents, final boolean onlyComponents) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
         for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
@@ -211,14 +178,17 @@ public class ProductQuantitiesService {
         return productQuantities;
     }
 
-    private void fillMapWithQuantitiesForTechnology(Entity technology, BigDecimal givenQty,
-            Map<Entity, BigDecimal> productComponentQuantities, Set<Entity> nonComponents) {
+    private void fillMapWithQuantitiesForTechnology(final Entity technology, final BigDecimal givenQty,
+            final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents) {
         EntityTree tree = technology.getTreeField("operationComponents");
 
-        calculateQuantitiesForNormalAlgorithm(tree, productComponentQuantities, nonComponents, givenQty, technology);
+        preloadProductQuantities(tree, productComponentQuantities);
+
+        Entity root = tree.getRoot();
+        traverse(root, null, productComponentQuantities, nonComponents, givenQty, technology);
     }
 
-    private void preloadProductQuantities(final EntityTree tree, Map<Entity, BigDecimal> productQuantities) {
+    private void preloadProductQuantities(final EntityTree tree, final Map<Entity, BigDecimal> productQuantities) {
         for (Entity operationComponent : tree) {
             for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
@@ -232,15 +202,7 @@ public class ProductQuantitiesService {
         }
     }
 
-    private void calculateQuantitiesForNormalAlgorithm(final EntityTree tree, Map<Entity, BigDecimal> productQuantities,
-            Set<Entity> notComponents, BigDecimal plannedQty, Entity technology) {
-        preloadProductQuantities(tree, productQuantities);
-
-        Entity root = tree.getRoot();
-        traverse(root, null, productQuantities, notComponents, plannedQty, technology);
-    }
-
-    private void traverse(Entity operationComponent, final Entity previousOperationComponent,
+    private void traverse(final Entity operationComponent, final Entity previousOperationComponent,
             final Map<Entity, BigDecimal> productQuantities, final Set<Entity> nonComponents, final BigDecimal plannedQty,
             final Entity technology) {
         if (previousOperationComponent == null) {
