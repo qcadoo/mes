@@ -514,7 +514,7 @@
 			</distributionManagement>
 		</profile>
 		<profile>
-			<id>release</id>
+			<id>package</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -527,7 +527,7 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/release/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/package/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
