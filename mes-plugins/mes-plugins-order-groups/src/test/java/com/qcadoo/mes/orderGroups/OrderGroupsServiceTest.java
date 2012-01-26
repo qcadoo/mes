@@ -36,6 +36,7 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -365,6 +366,7 @@ public class OrderGroupsServiceTest {
         Mockito.verify(nameComponent, Mockito.never()).setFieldValue(Mockito.anyObject());
     }
 
+    @Ignore
     @Test
     public final void shouldChangeOrderGroupName() throws Exception {
         // given
