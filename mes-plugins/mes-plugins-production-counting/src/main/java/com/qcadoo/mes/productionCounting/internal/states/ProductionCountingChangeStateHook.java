@@ -23,11 +23,14 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class ProductionCountingChangeStateHook {
@@ -41,7 +44,21 @@ public class ProductionCountingChangeStateHook {
 
             final Entity oldEntity = dataDefinition.get(entity.getId());
             if (oldEntity != null) {
-                changingService.performChangeState(entity, oldEntity);
+                List<ChangeRecordStateMessage> errors = changingService.performChangeState(entity, oldEntity);
+                if (errors != null && !errors.isEmpty()) {
+                    if (errors.size() == 1 && errors.get(0).getType().equals(MessageType.INFO)) {
+                        return;
+                    }
+                    entity.setField("state", oldEntity.getField("state"));
+                    for (ChangeRecordStateMessage error : errors) {
+                        if (error.getReferenceToField() == null) {
+                            entity.addGlobalError(error.getMessage(), error.getVars());
+                        } else {
+                            entity.addError(dataDefinition.getField(error.getReferenceToField()), error.getMessage(),
+                                    error.getVars());
+                        }
+                    }
+                }
             }
         }
     }

@@ -38,9 +38,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.materialRequirements.api.MaterialRequirementReportDataService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -73,7 +73,7 @@ public class BasicProductionCountingService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private MaterialRequirementReportDataService materialRequirementReportDataService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -96,10 +96,7 @@ public class BasicProductionCountingService {
 
     private void updateProductsForOrder(final Entity order, final String pluginName, final String modelName,
             final String fieldName) {
-        final List<Entity> orderList = Arrays.asList(order);
-
-        final Map<Entity, BigDecimal> products = materialRequirementReportDataService.getQuantitiesForOrdersTechnologyProducts(
-                orderList, true);
+        final Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order), true);
 
         List<Entity> producedProducts = dataDefinitionService.get(pluginName, modelName).find()
                 .add(SearchRestrictions.belongsTo(MODEL_FIELD_ORDER, order)).list().getEntities();

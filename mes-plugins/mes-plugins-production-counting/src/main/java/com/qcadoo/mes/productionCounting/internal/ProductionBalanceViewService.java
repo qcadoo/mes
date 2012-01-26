@@ -186,6 +186,7 @@ public class ProductionBalanceViewService {
         if (!inputProductsList.isEmpty()) {
             Collections.sort(inputProductsList, new EntityProductInOutComparator());
             inputProducts.setEntities(productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList));
+            inputProducts.setEntities(inputProductsList);
             inputProducts.setVisible(true);
         }
     }

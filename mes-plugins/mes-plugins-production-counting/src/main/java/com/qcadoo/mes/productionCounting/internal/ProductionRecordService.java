@@ -34,17 +34,20 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
 import static java.math.BigDecimal.ROUND_UP;
+import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -61,6 +64,9 @@ public class ProductionRecordService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
 
     private static final String FIELD_ORDER = "order";
 
@@ -164,8 +170,6 @@ public class ProductionRecordService {
         Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
         Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
 
-        BigDecimal orderQuantity = getBigDecimal(order.getField("plannedQuantity"));
-
         if (!registerInput && !registerOutput) {
             return;
         }
@@ -183,17 +187,15 @@ public class ProductionRecordService {
         }
 
         if (registerInput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT,
-                    orderQuantity);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
         }
         if (registerOutput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT,
-                    orderQuantity);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
         }
     }
 
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
-            final String modelName, final BigDecimal orderQuantity) {
+            final String modelName) {
         if (checkIfOperationListIsEmpty(orderOperations)) {
             return;
         }
@@ -208,32 +210,32 @@ public class ProductionRecordService {
             recordProductFieldName = "recordOperationProductInComponents";
         }
 
+        /*
+         * TODO whoever did this, i cannot be sure how this was intended to work. Ive patched this to use the new unified product
+         * quantities algorithm, but it could be wrong.
+         */
+
         for (Entity orderOperation : orderOperations) {
-            List<Entity> technologyProducts = orderOperation.getBelongsToField("technologyOperationComponent").getHasManyField(
-                    technologyProductFieldName);
-            if (technologyProducts == null) {
-                continue;
+            Entity order = orderOperation.getBelongsToField("order");
+
+            Map<Entity, BigDecimal> productQuantities;
+
+            if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
+                productQuantities = productQuantitiesService.getNeededProductQuantities(asList(order), false);
+            } else if (MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT.equals(modelName)) {
+                productQuantities = productQuantitiesService.getOutputProductQuantities(asList(order));
+            } else {
+                throw new IllegalStateException("Wrong modelName.");
             }
 
-            for (Entity technologyProduct : technologyProducts) {
-                Long productId = technologyProduct.getBelongsToField("product").getId();
-                BigDecimal plannedQuantity = getBigDecimal(technologyProduct.getField("quantity"));
-                BigDecimal newPlannedQuantity = null;
-                Entity recordProduct = null;
-
-                if (recordProductsMap.containsKey(productId)) {
-                    recordProduct = recordProductsMap.get(productId);
-                    newPlannedQuantity = getBigDecimal(recordProduct.getField("plannedQuantity")).add(plannedQuantity).multiply(
-                            orderQuantity);
-                } else {
-                    recordProduct = recordProductDD.create();
-                    recordProduct.setField("product", technologyProduct.getField("product"));
-                    newPlannedQuantity = plannedQuantity.multiply(orderQuantity);
-                }
-                recordProduct.setField("plannedQuantity", newPlannedQuantity.setScale(3, BigDecimal.ROUND_HALF_UP));
-                recordProductsMap.put(productId, recordProduct);
+            for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                Entity recordProduct = recordProductDD.create();
+                recordProduct.setField("product", productQuantity.getKey());
+                recordProduct.setField("plannedQuantity", productQuantity.getValue());
+                recordProductsMap.put(productQuantity.getKey().getId(), recordProduct);
             }
         }
+
         productionRecord.setField(recordProductFieldName, newArrayList(recordProductsMap.values()));
     }
 

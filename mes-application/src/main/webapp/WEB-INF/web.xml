@@ -188,6 +188,14 @@
 		<location>/error.html?code=400</location>
 	</error-page>
 	<error-page>
+		<error-code>402</error-code>
+		<location>/error.html?code=402</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/error.html?code=403</location>
+	</error-page>
+	<error-page>
 		<error-code>404</error-code>
 		<location>/error.html?code=404</location>
 	</error-page>
