@@ -26,8 +26,11 @@ package com.qcadoo.mes.productionCounting.internal.states;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.model.api.Entity;
 
+@Service
 public class RecordStateListener {
 
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
