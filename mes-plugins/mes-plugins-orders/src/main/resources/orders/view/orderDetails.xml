@@ -315,13 +315,7 @@
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
-				<option type="expression" value="#name + ' - ' + #number + ' - ' + (#state =='01pending' ? '@orders.order.state.value.01pending' :
-#state == '02accepted' ? '@orders.order.state.value.02accepted' :
-#state == '03inProgress' ? '@orders.order.state.value.03inProgress' :
-#state == '04completed' ? '@orders.order.state.value.04completed' :
-#state == '05declined' ? '@orders.order.state.value.05declined' :
-#state == '06interrupted' ? '@orders.order.state.value.06interrupted' :
-#state == '07abandoned' ? '@orders.order.state.value.07abandoned' : '')" />
+				<option type="expression" value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
 				<listener event="changeOrderStateToAccepted"
 					class="com.qcadoo.mes.orders.states.OrderStatesService" method="changeOrderStateToAccepted" />
 				<listener event="changeOrderStateToInProgress"
@@ -359,21 +353,9 @@
 				source="#{form}.loggings">
 				<option type="column" name="dateAndTime" fields="dateAndTime" />
 				<option type="column" name="previousState" fields="previousState"
-					expression="#previousState == '01pending' ? '@orders.order.state.value.01pending' :
-#previousState == '02accepted' ? '@orders.order.state.value.02accepted' :
-#previousState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
-#previousState == '04completed' ? '@orders.order.state.value.04completed' :
-#previousState == '05declined' ? '@orders.order.state.value.05declined' :
-#previousState == '06interrupted' ? '@orders.order.state.value.06interrupted' :
-#previousState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
+				expression="'@orders.order.state.value.' + #previousState" />
 				<option type="column" name="currentState" fields="currentState"
-					expression="#currentState == '01pending' ? '@orders.order.state.value.01pending' :
-#currentState == '02accepted' ? '@orders.order.state.value.02accepted' :
-#currentState == '03inProgress' ? '@orders.order.state.value.03inProgress' :
-#currentState == '04completed' ? '@orders.order.state.value.04completed' :
-#currentState == '05declined' ? '@orders.order.state.value.05declined' :
-#currentState == '06interrupted' ? '@orders.order.state.value.06interrupted' :
-#currentState == '07abandoned' ? '@orders.order.state.value.07abandoned' : ''" />
+					expression="'@orders.order.state.value.' + #currentState" />
 				<option type="column" name="shift" fields="shift"
 					expression="#shift == null ? 'N/A' : #shift['name']" />
 				<option type="column" name="worker" fields="worker" />
