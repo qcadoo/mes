@@ -167,9 +167,6 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField(FIELD_USED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-            if (!productionCounting.isValid()) {
-                throw new IllegalStateException("Saved entity is invalid");
-            }
         }
 
         for (Entity productOut : productsOut) {
@@ -179,9 +176,6 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField("producedQuantity", result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-            if (!productionCounting.isValid()) {
-                throw new IllegalStateException("Saved entity is invalid");
-            }
         }
     }
 }
