@@ -355,10 +355,10 @@ public class BasicProductionCountingService {
         BigDecimal producedQuantity = (BigDecimal) entity.getField("producedQuantity");
 
         if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            return false;
+            entity.addError(dataDefinition.getField("usedQuantity"), "basic.production.counting.value.lower.zero");
         }
         if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            return false;
+            entity.addError(dataDefinition.getField("producedQuantity"), "basic.production.counting.value.lower.zero");
         }
         return true;
     }
