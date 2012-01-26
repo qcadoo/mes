@@ -64,10 +64,7 @@
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									save.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
-									saveBack.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
 									saveNew.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
-									cancel.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
 									del.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
 								}
 							}
