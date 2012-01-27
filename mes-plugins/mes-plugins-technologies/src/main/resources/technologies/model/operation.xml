@@ -32,7 +32,7 @@
 			<validatesLength max="255" />
 		</string>
 		<string name="name" required="true" unique="true">
-			<validatesLength max="2048" />
+			<validatesLength max="1024" />
 		</string>
 		<string name="comment">
 			<validatesLength max="2048" />

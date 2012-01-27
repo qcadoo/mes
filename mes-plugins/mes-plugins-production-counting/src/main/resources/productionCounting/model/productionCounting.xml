@@ -33,7 +33,7 @@
 			required="true" />
 		<belongsTo name="product" plugin="basic" model="product" />
 		<string name="name" required="true">
-			<validatesLength max="255" />
+			<validatesLength max="1024" />
 		</string>
 		<datetime name="date" />
 		<string name="worker" />

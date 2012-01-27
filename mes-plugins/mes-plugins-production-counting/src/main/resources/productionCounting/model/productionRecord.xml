@@ -28,7 +28,9 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" unique="true" />
+		<string name="number" unique="true" >
+			<validatesLength max="255"/> 
+		</string>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"

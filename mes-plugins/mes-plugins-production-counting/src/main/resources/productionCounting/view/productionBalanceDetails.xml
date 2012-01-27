@@ -92,7 +92,7 @@
 						}
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
@@ -121,13 +121,13 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="name" reference="name" field="name" />
 					</layoutElement>				
-					<layoutElement column="1" row="5">
+					<layoutElement column="1" row="6">
 						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
 					</layoutElement>
-					<layoutElement column="1" row="6">
+					<layoutElement column="1" row="7">
 						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
@@ -137,7 +137,7 @@
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3" height="4">
+					<layoutElement column="2" row="3" height="5">
 						<component type="textarea" name="description" reference="description" field="description" />
 					</layoutElement>				
 				</component>
