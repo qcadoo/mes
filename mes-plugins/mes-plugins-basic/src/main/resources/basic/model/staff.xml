@@ -38,6 +38,8 @@
 			<validatesLength max="255" />
 		</string>
 		<string name="post" />
+		<belongsTo name="shift" model="shift" />
+		<belongsTo name="division" model="division" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

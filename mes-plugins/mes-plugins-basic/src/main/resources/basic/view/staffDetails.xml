@@ -34,8 +34,7 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="staff" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="4">
+			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number">
 						<option type="alignment" value="right" />
@@ -49,6 +48,23 @@
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="input" name="post" field="post" />
+				</layoutElement>
+				<layoutElement column="1" row="5">
+					<component type="lookup" name="shift" field="shift" reference="shift" hasDescription="true">
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="6">
+					<component type="lookup" name="division" field="division" reference="division" hasDescription="true">
+						<option type="column" name="name" fields="name" />
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
