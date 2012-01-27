@@ -29,10 +29,11 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
-			<validatesLength max="40" />
-			<validatesRegex pattern="^[a-zA-Z0-9\\_\\.\\(\\)]+$" />
+			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true" />
+		<string name="name" required="true">
+			<validatesLength max="1024" />
+		</string>
 		<date name="dateFrom" />
 		<date name="dateTo" />
         <hasMany name="orders" model="order" plugin="orders" joinField="orderGroup" />

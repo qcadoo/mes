@@ -174,3 +174,11 @@ alter table workplans_columnforinputproducts alter column description type varch
 alter table workplans_workplan alter column name type varchar(1024);
 
 -- end
+
+-- Table: ordergroups_ordergroup
+-- changed 26.01.2012
+
+alter table ordergroups_ordergroup alter column name type varchar(1024);
+alter table ordergroups_ordergroup alter column "number" type varchar(255);
+
+-- end
