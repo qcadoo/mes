@@ -87,6 +87,7 @@
         </model:model-hook>
 		
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		
         <view:view-grid-column plugin="orders" view="ordersList" component="grid">
             <view:column name="orderGroup" fields="orderGroupName" orderable="true" searchable="true" link="false" width="60" />
         </view:view-grid-column>
