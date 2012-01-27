@@ -210,3 +210,5 @@ ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_division_fkey FOREIGN KEY (di
       REFERENCES basic_division (id) DEFERRABLE;
 
 -- end
+
+
