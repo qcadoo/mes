@@ -133,6 +133,10 @@
 							<option type="expression" value="#name" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
+							
+							<listener event="onSelectedEntityChange" 
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" 
+								method="fillShiftField" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -152,6 +156,10 @@
 							<option type="expression" value="#name" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
+							
+							<listener event="onSelectedEntityChange" 
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" 
+								method="fillDivisionField" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
@@ -267,6 +275,9 @@
 					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 					method="closeOrder" />
 				<listener event="changeRecordState" 
+					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" 
+					method="changeRecordState"/>
+				<listener event="onSelectedEntityChange" 
 					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" 
 					method="changeRecordState"/>
 			</component>

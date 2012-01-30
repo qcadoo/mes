@@ -245,6 +245,11 @@ public class ProductionRecordViewService {
     public void closeOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(COMPONENT_FORM);
         Entity order = getOrderFromLookup(view);
+
+        if (order == null) {
+            return;
+        }
+
         Boolean autoCloseOrder = getBooleanValue(order.getField(FIELD_AUTO_CLOSE_ORDER));
         String orderState = order.getStringField(COMPONENT_STATE);
         if (autoCloseOrder

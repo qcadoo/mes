@@ -99,7 +99,7 @@ public class GenealogiesForComponentsService {
 
                 for (Entity operationComponent : operationComponents) {
                     for (Entity operationProductInComponent : operationComponent.getHasManyField("operationProductInComponents")) {
-                        if ((Boolean) operationProductInComponent.getField(BATCH_REQUIRED)) {
+                        if (operationProductInComponent.getBooleanField(BATCH_REQUIRED)) {
                             targetProductInComponents.add(createGenealogyProductInComponent(genealogy,
                                     operationProductInComponent, existingProductInComponents));
                         }
@@ -145,12 +145,12 @@ public class GenealogiesForComponentsService {
     }
 
     public void fillBatchRequiredForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField(BATCH_REQUIRED) != null && (Boolean) entity.getField(BATCH_REQUIRED)) {
+        if (entity.getField(BATCH_REQUIRED) != null && entity.getBooleanField(BATCH_REQUIRED)) {
             Entity technology = entity.getBelongsToField("operationComponent").getBelongsToField("technology");
             DataDefinition technologyInDef = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
             Entity technologyEntity = technologyInDef.get(technology.getId());
-            if (!(Boolean) technologyEntity.getField(BATCH_REQUIRED)) {
+            if (!technologyEntity.getBooleanField(BATCH_REQUIRED)) {
                 technologyEntity.setField(BATCH_REQUIRED, true);
                 technologyInDef.save(technologyEntity);
             }

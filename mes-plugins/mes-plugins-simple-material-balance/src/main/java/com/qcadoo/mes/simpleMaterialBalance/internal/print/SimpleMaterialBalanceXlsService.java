@@ -101,7 +101,8 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(orders,
+                onlyComponents);
 
         List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
