@@ -498,7 +498,7 @@ public class OrderService {
         }
         Entity savedOrder = orderDD.get(order.getId());
         if ("05declined".equals(savedOrder.getStringField("state"))) {
-            return false;
+            return true;
         }
         if (order.isActive()) {
             Entity technology = order.getBelongsToField("technology");
