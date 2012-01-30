@@ -30,6 +30,8 @@ public interface ProductionCountingConstants {
     // MODEL
     String MODEL_PRODUCTION_RECORD = "productionRecord";
 
+    String MODEL_PRODUCTION_RECORD_LOGGING = "productionRecordLogging";
+
     String MODEL_PRODUCTION_BALANCE = "productionBalance";
 
     String MODEL_PRODUCTION_COUNTING = "productionCounting";

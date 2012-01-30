@@ -211,4 +211,50 @@ ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_division_fkey FOREIGN KEY (di
 
 -- end
 
+      
+-- Table: basic_staff
+-- changed: 27.01.2012
 
+ALTER TABLE basic_staff ADD COLUMN shift_id bigint;
+ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE;
+ALTER TABLE basic_staff ADD COLUMN division_id bigint;
+ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_division_fkey FOREIGN KEY (division_id)
+      REFERENCES basic_division (id) DEFERRABLE;
+
+-- end
+
+
+-- Table: productioncounting_productionrecord
+-- changed: 27.01.2012
+
+ALTER TABLE productioncounting_productionrecord ADD COLUMN shift_id bigint;
+ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_s_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN division_id bigint;
+ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_d_fkey FOREIGN KEY (division_id)
+      REFERENCES basic_division (id) DEFERRABLE;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN workstationtype_id bigint;
+ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_wt_fkey FOREIGN KEY (workstationtype_id)
+      REFERENCES basic_workstationtype (id) DEFERRABLE;
+
+-- end
+
+
+-- Table: productioncounting_productionrecordlogging
+-- changed: 27.01.2012
+  
+CREATE TABLE productioncounting_productionrecordlogging
+(
+  id bigint NOT NULL,
+  productionrecord_id bigint,
+  dateandtime timestamp without time zone,
+  previousstate character varying(255),
+  currentstate character varying(255),
+  worker character varying(255),
+  CONSTRAINT productioncounting_productionrecordlogging_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncounting_productionrecordlogging_pr_fkey FOREIGN KEY (productionrecord_id)
+      REFERENCES productioncounting_productionrecord (id) DEFERRABLE
+);
+
+-- end

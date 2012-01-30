@@ -72,6 +72,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
+		<model:model model="productionRecordLogging" resource="model/productionRecordLogging.xml" />
 		<model:model model="productionBalance" resource="model/productionBalance.xml" />
 		<model:model model="productionCounting" resource="model/productionCounting.xml" />
 		<model:model model="recordOperationProductInComponent"

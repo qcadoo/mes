@@ -41,7 +41,6 @@
 							var deleteable = true;
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
-								console.log(deleteButton);
 							}else{
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
@@ -51,10 +50,8 @@
 									}
 								}
 								if(deleteable == false){
-									console.log("Wylaczam delete");
 									deleteButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.delete)}");
 								}else{
-									console.log("Wlaczam delete");
 									deleteButton.enable();
 								}
 							}

@@ -55,6 +55,12 @@
 		<integer name="plannedTime" />
 		<integer name="plannedMachineTime" />
 		<integer name="plannedLaborTime" />
+		
+		<belongsTo name="staff" model="staff" plugin="basic" />
+		<belongsTo name="workstationType" model="workstationType" plugin="basic" />
+		<belongsTo name="division" model="division" plugin="basic" />
+		
+		<hasMany name="loggings" model="productionRecordLogging" joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
 		<onSave
@@ -69,6 +75,9 @@
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="countPlannedTimeAndBalance" />
+		<onCreate 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="logCreateEvent" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
