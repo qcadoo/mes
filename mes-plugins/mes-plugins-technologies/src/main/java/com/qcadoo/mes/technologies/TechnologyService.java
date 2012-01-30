@@ -733,4 +733,39 @@ public class TechnologyService {
         return false;
     }
 
+    /**
+     * 
+     * @param operationComponent
+     * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
+     *         product/intermediate.
+     */
+    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+        Entity parentOpComp = operationComponent.getBelongsToField("parent");
+
+        List<Entity> prodOutComps = operationComponent.getHasManyField("operationProductOutComponents");
+
+        if (parentOpComp == null) {
+            Entity technology = operationComponent.getBelongsToField("technology");
+            Entity product = technology.getBelongsToField("product");
+
+            for (Entity prodOutComp : prodOutComps) {
+                if (prodOutComp.getBelongsToField("product").getId().equals(product.getId())) {
+                    return (BigDecimal) prodOutComp.getField("quantity");
+                }
+            }
+        } else {
+            List<Entity> prodInComps = parentOpComp.getHasManyField("operationProductInComponents");
+
+            for (Entity prodOutComp : prodOutComps) {
+                for (Entity prodInComp : prodInComps) {
+                    if (prodOutComp.getBelongsToField("product").getId().equals(prodInComp.getBelongsToField("product").getId())) {
+                        return (BigDecimal) prodOutComp.getField("quantity");
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("operation doesn't have any products nor intermediates");
+    }
+
 }

@@ -119,12 +119,6 @@ public class ProductQuantitiesServiceTest {
 
         tree = mockEntityTreeIterator(asList((Entity) operationComponent1, (Entity) operationComponent2));
 
-        productInComponentsForOperation1 = mockEntityListIterator(asList(productInComponent1));
-        productOutComponentsForOperation1 = mockEntityListIterator(asList(productOutComponent2));
-
-        productInComponentsForOperation2 = mockEntityListIterator(asList(productInComponent2, productInComponent3));
-        productOutComponentsForOperation2 = mockEntityListIterator(asList(productOutComponent4));
-
         productInComponentsForOperation1 = mock(EntityList.class);
         productOutComponentsForOperation1 = mock(EntityList.class);
 
@@ -290,6 +284,34 @@ public class ProductQuantitiesServiceTest {
 
         // when
         productQuantitiesService.getNeededProductQuantities(orders, onlyComponents, operationMultipliers);
+
+        // then
+        assertEquals(2, operationMultipliers.size());
+        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+    }
+
+    @Test
+    public void shouldReturnOperationMultipliersAlsoForComponents() {
+        // given
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+
+        // when
+        productQuantitiesService.getProductComponentQuantities(orders, operationMultipliers);
+
+        // then
+        assertEquals(2, operationMultipliers.size());
+        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+    }
+
+    @Test
+    public void shouldReturnOperationMultipliersAlsoForPlainTechnology() {
+        // given
+        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+
+        // when
+        productQuantitiesService.getProductComponentQuantities(technology, plannedQty, operationMultipliers);
 
         // then
         assertEquals(2, operationMultipliers.size());

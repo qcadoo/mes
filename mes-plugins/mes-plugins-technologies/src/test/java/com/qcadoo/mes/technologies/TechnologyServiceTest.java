@@ -23,95 +23,78 @@
  */
 package com.qcadoo.mes.technologies;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.model.internal.api.DataAccessService;
+import com.qcadoo.model.api.EntityList;
 
 public class TechnologyServiceTest {
 
-    @Autowired
-    private TechnologyService technologyService;
+    TechnologyService technologyService;
 
-    private SearchResult result;
+    @Mock
+    Entity opComp1, opComp2;
 
-    private SearchCriteriaBuilder search;
+    @Mock
+    Entity product1, product2;
+
+    @Mock
+    Entity prodOutComp1, prodOutComp2;
+
+    @Mock
+    Entity prodInComp1;
+
+    private static EntityList mockEntityIterator(List<Entity> entities) {
+        EntityList entityList = mock(EntityList.class);
+        when(entityList.iterator()).thenReturn(entities.iterator());
+        return entityList;
+    }
 
     @Before
     public void init() {
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        ReflectionTestUtils.setField(technologyService, "dataDefinitionService", dataDefinitionService);
+        technologyService = new TechnologyService();
 
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        when(dataDefinitionService.get(Mockito.anyString(), Mockito.anyString())).thenReturn(dataDefinition);
+        MockitoAnnotations.initMocks(this);
 
-        search = mock(SearchCriteriaBuilder.class);
-        when(dataDefinition.find()).thenReturn(search);
+        when(product1.getId()).thenReturn(1l);
+        when(product2.getId()).thenReturn(2l);
 
-        result = mock(SearchResult.class);
-        when(search.list()).thenReturn(result);
+        when(opComp1.getBelongsToField("parent")).thenReturn(null);
+        when(opComp2.getBelongsToField("parent")).thenReturn(opComp1);
+        EntityList opComp1Children = mockEntityIterator(asList(opComp2));
+        when(opComp1.getHasManyField("children")).thenReturn(opComp1Children);
 
-        DataAccessService dataAccessService = mock(DataAccessService.class);
-        given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
+        when(prodOutComp1.getBelongsToField("product")).thenReturn(product1);
+        when(prodOutComp2.getBelongsToField("product")).thenReturn(product2);
+        when(prodInComp1.getBelongsToField("product")).thenReturn(product1);
 
-        SearchRestrictions searchRestrictions = new SearchRestrictions();
-        ReflectionTestUtils.setField(searchRestrictions, "dataAccessService", dataAccessService);
+        when(prodOutComp1.getField("quantity")).thenReturn(new BigDecimal(10));
+
+        EntityList opComp1prodIns = mockEntityIterator(asList(prodInComp1));
+        when(opComp1.getHasManyField("operationProductInComponents")).thenReturn(opComp1prodIns);
+
+        EntityList opComp2prodOuts = mockEntityIterator(asList(prodOutComp1, prodOutComp2));
+        when(opComp2.getHasManyField("operationProductOutComponents")).thenReturn(opComp2prodOuts);
     }
 
-    @Ignore("not ready yet")
     @Test
-    public void shouldReturnUnrelatedIfProductAndTechnologyAreUnrelated() {
-        // given
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        when(product.getId()).thenReturn(10L);
-        List<Entity> list = new LinkedList<Entity>();
-        when(result.getEntities()).thenReturn(list);
-
+    public void shouldReturnOutputProductCountForOperationComponent() {
         // when
-        String type = technologyService.getProductType(product, technology);
+        BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);
 
         // then
-        assertEquals("00unrelated", type);
+        assertEquals(new BigDecimal(10), count);
     }
 
-    @Ignore("not ready yet")
-    @Test
-    public void shouldReturnIntermediateIfProductIsBothInAndOut() {
-        // given
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        when(product.getId()).thenReturn(10L);
-        List<Entity> list = new LinkedList<Entity>();
-        Entity productComponent = mock(Entity.class);
-        when(productComponent.getBelongsToField("product")).thenReturn(product);
-        SearchCriteriaBuilder otherSearch = mock(SearchCriteriaBuilder.class);
-        when(search.add(SearchRestrictions.isNull("operationComponent.parent"))).thenReturn(otherSearch);
-        list.add(productComponent);
-        when(otherSearch.list().getEntities()).thenReturn(list);
-
-        // when
-        String type = technologyService.getProductType(product, technology);
-
-        // then
-        assertEquals("02intermediate", type);
-    }
 }
