@@ -160,8 +160,4 @@
 				class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService" method="generateSimpleMaterialBalance" />
 		</component>
 	</component>
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.simpleMaterialBalance.internal.SimpleMaterialBalanceService"
-			method="setGenerateButtonState" />
-	</hooks>
 </view>
