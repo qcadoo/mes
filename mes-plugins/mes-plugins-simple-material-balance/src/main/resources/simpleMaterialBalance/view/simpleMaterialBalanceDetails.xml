@@ -47,8 +47,8 @@
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-					
 					var entityExists = false;
+					var generateButton = #{window}.getRibbonItem("generate.generate");
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
@@ -71,16 +71,19 @@
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
 								xlsRibbonItem.enable();
 								pdfRibbonItem.enable();
+								generateButton.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
+								generateButton.enable();
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
 							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							generateButton.disable("#{translate(recordNotCreated)}");
 							saveRibbonItem.enable();
 						}
 					}
