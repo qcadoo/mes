@@ -41,6 +41,8 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
@@ -64,6 +66,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -140,6 +145,14 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             return evaluateOperationTime(actualOperationComponent, includeTpz, operationRuns);
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
+            Entity technologyOperationComponent = operationComponent;
+
+            if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+                long techOperationId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
+                technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperationId);
+            }
+
             int operationTime = 0;
             int pathTime = 0;
 
@@ -152,10 +165,10 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
 
-            BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(operationComponent);
+            BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(technologyOperationComponent);
 
             BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, BigDecimal.ROUND_UP).multiply(
-                    operationRuns.get(operationComponent));
+                    operationRuns.get(technologyOperationComponent));
 
             if ("01all".equals(operationComponent.getField("countRealized"))
                     || operationComponent.getBelongsToField("parent") == null) {
