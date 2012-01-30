@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,18 +71,6 @@ public class ProductQuantitiesServiceTest {
     @Mock
     private EntityTreeNode operationComponent1, operationComponent2;
 
-    @Mock
-    private EntityList productInComponentsForOperation1;
-
-    @Mock
-    private EntityList productOutComponentsForOperation1;
-
-    @Mock
-    private EntityList productInComponentsForOperation2;
-
-    @Mock
-    private EntityList productOutComponentsForOperation2;
-
     private EntityList orders;
 
     private EntityTree tree;
@@ -107,7 +94,6 @@ public class ProductQuantitiesServiceTest {
     }
 
     @Before
-    @SuppressWarnings("unchecked")
     public void init() {
         MockitoAnnotations.initMocks(this);
 
@@ -119,40 +105,30 @@ public class ProductQuantitiesServiceTest {
 
         tree = mockEntityTreeIterator(asList((Entity) operationComponent1, (Entity) operationComponent2));
 
-        productInComponentsForOperation1 = mock(EntityList.class);
-        productOutComponentsForOperation1 = mock(EntityList.class);
+        EntityList opComp1InComp = mockEntityListIterator(asList(productInComponent1));
+        EntityList opComp1InComp1 = mockEntityListIterator(asList(productInComponent1));
+        EntityList opComp1InComp2 = mockEntityListIterator(asList(productInComponent1));
 
-        Iterator<Entity> productInComponentsForOperation1iterator = mock(Iterator.class);
-        Iterator<Entity> productOutComponentsForOperation1iterator = mock(Iterator.class);
-        when(productInComponentsForOperation1.iterator()).thenReturn(productInComponentsForOperation1iterator);
-        when(productOutComponentsForOperation1.iterator()).thenReturn(productOutComponentsForOperation1iterator);
-        when(productInComponentsForOperation1iterator.hasNext()).thenReturn(true, false, true, false, true, false);
-        when(productOutComponentsForOperation1iterator.hasNext()).thenReturn(true, false, true, false, true, false);
-        when(productInComponentsForOperation1iterator.next()).thenReturn(productInComponent1, productInComponent1,
-                productInComponent1);
-        when(productOutComponentsForOperation1iterator.next()).thenReturn(productOutComponent2, productOutComponent2,
-                productOutComponent2);
+        EntityList opComp2InComp = mockEntityListIterator(asList(productInComponent2, productInComponent3));
+        EntityList opComp2InComp1 = mockEntityListIterator(asList(productInComponent2, productInComponent3));
+        EntityList opComp2InComp2 = mockEntityListIterator(asList(productInComponent2, productInComponent3));
 
-        productInComponentsForOperation2 = mock(EntityList.class);
-        productOutComponentsForOperation2 = mock(EntityList.class);
+        EntityList opComp1OutComp = mockEntityListIterator(asList(productOutComponent2));
+        EntityList opComp1OutComp1 = mockEntityListIterator(asList(productOutComponent2));
+        EntityList opComp1OutComp2 = mockEntityListIterator(asList(productOutComponent2));
 
-        Iterator<Entity> productInComponentsForOperation2iterator = mock(Iterator.class);
-        Iterator<Entity> productOutComponentsForOperation2iterator = mock(Iterator.class);
-        when(productInComponentsForOperation2.iterator()).thenReturn(productInComponentsForOperation2iterator);
-        when(productOutComponentsForOperation2.iterator()).thenReturn(productOutComponentsForOperation2iterator);
-        when(productInComponentsForOperation2iterator.hasNext()).thenReturn(true, true, false, true, true, false, true, true,
-                false);
-        when(productOutComponentsForOperation2iterator.hasNext()).thenReturn(true, false, true, false, true, false);
-        when(productInComponentsForOperation2iterator.next()).thenReturn(productInComponent2, productInComponent3,
-                productInComponent2, productInComponent3, productInComponent2, productInComponent3);
-        when(productOutComponentsForOperation2iterator.next()).thenReturn(productOutComponent4, productOutComponent4,
-                productOutComponent4);
+        EntityList opComp2OutComp = mockEntityListIterator(asList(productOutComponent4));
+        EntityList opComp2OutComp1 = mockEntityListIterator(asList(productOutComponent4));
+        EntityList opComp2OutComp2 = mockEntityListIterator(asList(productOutComponent4));
 
-        when(operationComponent1.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation1);
-        when(operationComponent1.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation1);
-
-        when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(productInComponentsForOperation2);
-        when(operationComponent2.getHasManyField("operationProductOutComponents")).thenReturn(productOutComponentsForOperation2);
+        when(operationComponent1.getHasManyField("operationProductInComponents")).thenReturn(opComp1InComp, opComp1InComp1,
+                opComp1InComp2);
+        when(operationComponent1.getHasManyField("operationProductOutComponents")).thenReturn(opComp1OutComp, opComp1OutComp1,
+                opComp1OutComp2);
+        when(operationComponent2.getHasManyField("operationProductInComponents")).thenReturn(opComp2InComp, opComp2InComp1,
+                opComp2InComp2);
+        when(operationComponent2.getHasManyField("operationProductOutComponents")).thenReturn(opComp2OutComp, opComp2OutComp1,
+                opComp2OutComp2);
 
         plannedQty = new BigDecimal(4.5f);
 

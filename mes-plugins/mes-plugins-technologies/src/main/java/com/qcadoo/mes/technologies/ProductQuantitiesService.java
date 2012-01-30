@@ -283,14 +283,16 @@ public class ProductQuantitiesService {
         }
     }
 
-    private void multiplyInQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
-            final Entity outProductComponent, final Map<Entity, BigDecimal> mapWithQuantities,
-            final Map<Entity, BigDecimal> operationRuns) {
+    private void multiplyQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
+            final Map<Entity, BigDecimal> mapWithQuantities, final Map<Entity, BigDecimal> operationRuns) {
         BigDecimal multiplier = needed.divide(actual, 0, RoundingMode.CEILING);
 
         operationRuns.put(operationComponent, multiplier);
 
-        mapWithQuantities.put(outProductComponent, actual.multiply(multiplier));
+        for (Entity currentOut : operationComponent.getHasManyField("operationProductOutComponents")) {
+            BigDecimal currentOutQty = mapWithQuantities.get(currentOut);
+            mapWithQuantities.put(currentOut, currentOutQty.multiply(multiplier));
+        }
 
         for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
             BigDecimal currentInQuantity = mapWithQuantities.get(currentIn);
@@ -310,7 +312,7 @@ public class ProductQuantitiesService {
 
                     BigDecimal outQuantity = productQuantities.get(out);
 
-                    multiplyInQuantities(plannedQty, outQuantity, operationComponent, out, productQuantities, operationRuns);
+                    multiplyQuantities(plannedQty, outQuantity, operationComponent, productQuantities, operationRuns);
 
                     break;
                 }
@@ -326,7 +328,7 @@ public class ProductQuantitiesService {
                         BigDecimal outQuantity = productQuantities.get(out);
                         BigDecimal inQuantity = productQuantities.get(in);
 
-                        multiplyInQuantities(inQuantity, outQuantity, operationComponent, out, productQuantities, operationRuns);
+                        multiplyQuantities(inQuantity, outQuantity, operationComponent, productQuantities, operationRuns);
 
                         break;
                     }
