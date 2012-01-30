@@ -29,12 +29,14 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
-			<validatesLength max="40" />
+			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true" />
+		<string name="name" required="true" >
+			<validatesLength max="1024"/>
+		</string>
 		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
 			required="true" />
-		<string name="ean" />
+		<string name="ean" unique="true" />
 		<dictionary name="category" dictionary="categories" />
 		<dictionary name="unit" dictionary="units" required="true" />
 		<hasMany name="substitutes" model="substitute" joinField="product"

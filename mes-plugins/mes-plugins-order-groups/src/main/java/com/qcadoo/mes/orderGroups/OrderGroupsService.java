@@ -161,6 +161,7 @@ public class OrderGroupsService {
             return;
         }
         for (Entity order : orders) {
+            order.setField(ORDER_GROUP_NAME_FIELD, orderGroup.getStringField(NAME_FIELD));
             order.getDataDefinition().save(order);
         }
     }
@@ -171,7 +172,6 @@ public class OrderGroupsService {
             order.setField(ORDER_GROUP_NAME_FIELD, null);
             return;
         }
-        order.setField(ORDER_GROUP_NAME_FIELD, orderGroup.getStringField(NAME_FIELD));
     }
 
     public final void showInOrdersList(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {

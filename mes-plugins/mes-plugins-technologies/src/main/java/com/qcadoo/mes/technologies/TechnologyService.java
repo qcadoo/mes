@@ -29,6 +29,7 @@ import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERE
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.poi.hssf.record.formula.OperationPtg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -499,7 +501,7 @@ public class TechnologyService {
         return true;
     }
 
-    private boolean checkIfAtLeastOneCommonElement(final EntityList prodsIn, final EntityList prodsOut) {
+    private boolean checkIfAtLeastOneCommonElement(final List<Entity> prodsIn, final List<Entity> prodsOut) {
         for (Entity prodOut : prodsOut) {
             for (Entity prodIn : prodsIn) {
                 if (prodIn.getBelongsToField(CONST_PRODUCT).getId().equals(prodOut.getBelongsToField(CONST_PRODUCT).getId())) {
@@ -513,16 +515,27 @@ public class TechnologyService {
     private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(PARENT_FIELD);
-            if (parent != null && CONST_OPERATION.equals(parent.getStringField(CONST_ENTITY_TYPE))) {
-                final EntityList prodsIn = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
-                final EntityList prodsOut = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+            if (parent == null || "referenceTechnology".equals(parent.getStringField(CONST_ENTITY_TYPE))) {
+                continue;
+            }
+            final EntityList prodsOut = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
+            if (CONST_OPERATION.equals(technologyOperation.getStringField(CONST_ENTITY_TYPE))) {
+                final EntityList prodsIn = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
                 if (prodsIn == null || prodsOut == null) {
                     return false;
                 }
                 if (!checkIfAtLeastOneCommonElement(prodsIn, prodsOut)) {
                     return false;
                 }
+            } else {
+                final Entity prodIn = technologyOperation.getBelongsToField("referenceTechnology");
 
+                if (prodIn == null || prodsOut == null) {
+                    return false;
+                }
+                if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodIn), prodsOut)) {
+                    return false;
+                }
             }
         }
         return true;

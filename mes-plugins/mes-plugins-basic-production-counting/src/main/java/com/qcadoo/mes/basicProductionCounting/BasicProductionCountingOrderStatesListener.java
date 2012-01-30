@@ -73,10 +73,7 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
                 productionCounting.setField("order", order);
                 productionCounting.setField("product", productReq.getKey());
                 productionCounting.setField("plannedQuantity", productReq.getValue());
-                productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-                if (!productionCounting.isValid()) {
-                    throw new IllegalStateException("Saved order entity is invalid.");
-                }
+                productionCounting.getDataDefinition().save(productionCounting);
             }
 
             Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -84,10 +81,7 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
             productionCounting.setField("order", order);
             productionCounting.setField("product", order.getBelongsToField("product"));
             productionCounting.setField("plannedQuantity", order.getField("plannedQuantity"));
-            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
-            if (!productionCounting.isValid()) {
-                throw new IllegalStateException("Saved order entity is invalid.");
-            }
+            productionCounting.getDataDefinition().save(productionCounting);
         }
 
         return messages;

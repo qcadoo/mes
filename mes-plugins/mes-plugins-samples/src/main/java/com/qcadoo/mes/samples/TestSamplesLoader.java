@@ -182,8 +182,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void addWorkstationType(final Map<String, String> values) {
-        Entity machine = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE)
-                .create();
+        Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
 
         LOG.debug("id: " + values.get("id") + " name " + values.get(FIELD_NAME) + " prod_line " + values.get("prod_line")
                 + " description " + values.get(FIELD_DESCRIPTION));

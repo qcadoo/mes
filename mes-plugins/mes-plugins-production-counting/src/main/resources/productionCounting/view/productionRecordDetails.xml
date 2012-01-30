@@ -41,7 +41,6 @@
 				reference="form">
 				<script>
 					<![CDATA[
-						
 						this.addOnChangeListener({
 							onSetValue: function() {
 								var itemNames = ["status.acceptRecord", "status.cancelRecord"];
@@ -74,15 +73,98 @@
 						});
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="2"
-					rows="15">
+				<component type="gridLayout" name="mainGridLayout" columns="3" rows="5">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="lastRecord" field="lastRecord"
 							reference="lastRecord" />
 					</layoutElement>
-					<layoutElement column="2" row="5">
-						<component type="checkbox" name="isDisabled" reference="isDisabled" defaultVisible="false">
+					<layoutElement column="1" row="2">
+						<component type="input" name="number" field="number"
+							reference="number" defaultEnabled="false">
+							<option type="alignment" value="right" />
 						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="order" field="order"
+							reference="order">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="state" fields="state" />
+							<option type="column" name="typeOfProductionRecording" fields="typeOfProductionRecording"/>
+							<option type="required" value="true" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="order" column="number" direction="desc" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="disableFieldsIfBasicSelected" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="clearFields" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="enabledOrDisabledOperationField" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="registeringProductionTime" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+								method="checkJustOne" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="orderOperationComponent"
+							field="orderOperationComponent" source="#{order}.orderOperationComponents"
+							reference="orderOperationComponent" defaultEnabled="false">
+							<option type="column" name="name" fields="operation"
+								expression="#operation['name']" link="true" />
+							<option type="fieldCode" value="nodeNumber" />
+							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
+							<option type="searchable" value="name,nodeNumber" />
+							<option type="orderable" value="name,nodeNumber" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="staff" reference="staff"
+							field="staff">
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="lookup" name="shift" reference="shift"
+							field="shift">
+							<option type="required" value="true" />
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="lookup" name="workstationType" reference="workstationType"
+							field="workstationType">
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="lookup" name="division" reference="division"
+							field="division">
+							<option type="fieldCode" value="name" />
+							<option type="expression" value="#name" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="5">
+						<component type="checkbox" name="isDisabled" reference="isDisabled" defaultVisible="false" hasLabel="false" />
 						<component type="select" name="state" field="state"
 							reference="state" hasLabel="false" defaultVisible="false">
 							<script>
@@ -178,156 +260,126 @@
 							</script>
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="input" name="number" field="number"
-							reference="number" defaultEnabled="false">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="lookup" name="order" field="order"
-							reference="order">
-							<option type="column" name="name" fields="name" link="true" />
-							<option type="column" name="state" fields="state" />
-							<option type="column" name="typeOfProductionRecording" fields="typeOfProductionRecording"/>
-							<option type="required" value="true" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="order" column="number" direction="desc" />
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="disableFieldsIfBasicSelected" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="clearFields" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="enabledOrDisabledOperationField" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="registeringProductionTime" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="checkJustOne" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="lookup" name="orderOperationComponent"
-							field="orderOperationComponent" source="#{order}.orderOperationComponents"
-							reference="orderOperationComponent" defaultEnabled="false">
-							<option type="column" name="name" fields="operation"
-								expression="#operation['name']" link="true" />
-							<option type="fieldCode" value="nodeNumber" />
-							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
-							<option type="searchable" value="name,nodeNumber" />
-							<option type="orderable" value="name,nodeNumber" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="lookup" name="shift" reference="shift"
-							field="shift">
-							<option type="required" value="true" />
-							<option type="fieldCode" value="name" />
-							<option type="expression" value="#name" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="6">
-						<component type="input" name="creationTime" field="creationTime"
-							reference="creationTime" defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="1" row="7">
-						<component type="input" name="worker" field="worker"
-							reference="worker" defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="1" row="8">
-						<component type="separatorLine" name="line1" />
-					</layoutElement>
-					<layoutElement column="1" row="9">
-						<component type="grid" name="recordOperationProductInComponent"
-							reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents"
-							defaultEnabled="false">
-							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" width="100" />
-							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" width="200" />
-							<option type="column" name="usedQuantity" fields="usedQuantity"
-								width="100" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
-							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView"
-								value="productionCounting/recordOperationProductInComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="paginable" value="false" />
-							<option type="creatable" value="false" />
-							<option type="deletable" value="false" />
-							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="false" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="label" name="borderLayoutCumulated"
-							reference="borderLayoutCumulated" defaultVisible="false">
-							<option type="labelStyle" value="text" />
-						</component>
-						<component type="label" name="borderLayoutForEach"
-							reference="borderLayoutForEach" defaultVisible="false">
-							<option type="labelStyle" value="text" />
-						</component>
-						<component type="label" name="borderLayoutNone"
-							reference="borderLayoutNone">
-							<option type="labelStyle" value="text" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="time" name="laborTime" reference="laborTime"
-							field="laborTime" defaultVisible="false" />
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="time" name="machineTime" reference="machineTime"
-							field="machineTime" defaultVisible="false" />
-					</layoutElement>
-					<layoutElement column="2" row="8">
-						<component type="separatorLine" name="line2" />
-					</layoutElement>
-					<layoutElement column="2" row="9">
-						<component type="grid" name="recordOperationProductOutComponent"
-							reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents"
-							defaultEnabled="false">
-							<option type="column" name="number" fields="product"
-								expression="#product['number']" link="true" width="100" />
-							<option type="column" name="name" fields="product"
-								expression="#product['name']" link="true" width="200" />
-							<option type="column" name="usedQuantity" fields="usedQuantity"
-								width="100" />
-							<option type="column" name="unit" fields="product"
-								expression="#product['unit']" link="false" width="70" />
-							<option type="order" column="number" direction="desc" />
-							<option type="correspondingView"
-								value="productionCounting/recordOperationProductOutComponentDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							<option type="paginable" value="false" />
-							<option type="creatable" value="false" />
-							<option type="deletable" value="false" />
-							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="false" />
-						</component>
-					</layoutElement>
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				<listener event="save"
 					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 					method="closeOrder" />
-<listener event="changeRecordState" class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" method="changeRecordState"/>
+				<listener event="changeRecordState" 
+					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" 
+					method="changeRecordState"/>
 			</component>
+		</windowTab>
+		<windowTab name="productsTab">
+			<component type="gridLayout" name="productsGridLayout" columns="2" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="recordOperationProductInComponent"
+						reference="recordOperationProductInComponent" source="#{form}.recordOperationProductInComponents"
+						defaultEnabled="false">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" width="100" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" width="200" />
+						<option type="column" name="usedQuantity" fields="usedQuantity"
+							width="100" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+							
+						<option type="order" column="number" direction="desc" />
+						
+						<option type="correspondingView"
+							value="productionCounting/recordOperationProductInComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						
+						<option type="searchable" value="number,name,usedQuantity,unit" />
+						<option type="orderable" value="number,name,usedQuantity,unit" />
+						
+						<option type="creatable" value="false" />
+						<option type="deletable" value="false" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="grid" name="recordOperationProductOutComponent"
+						reference="recordOperationProductOutComponent" source="#{form}.recordOperationProductOutComponents"
+						defaultEnabled="false">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" width="100" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" width="200" />
+						<option type="column" name="usedQuantity" fields="usedQuantity"
+							width="100" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+							
+						<option type="order" column="number" direction="desc" />
+						
+						<option type="correspondingView"
+							value="productionCounting/recordOperationProductOutComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						
+						<option type="searchable" value="number,name,usedQuantity,unit" />
+						<option type="orderable" value="number,name,usedQuantity,unit" />
+						
+						<option type="creatable" value="false" />
+						<option type="deletable" value="false" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="false" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="timeTab">
+			<component type="gridLayout" name="timeGridLayout" columns="3" rows="3">
+				<layoutElement column="1" row="1">
+				<component type="label" name="borderLayoutCumulated"
+					reference="borderLayoutCumulated" defaultVisible="false">
+					<option type="labelStyle" value="text" />
+				</component>
+				<component type="label" name="borderLayoutForEach"
+					reference="borderLayoutForEach" defaultVisible="false">
+					<option type="labelStyle" value="text" />
+				</component>
+				<component type="label" name="borderLayoutNone"
+					reference="borderLayoutNone">
+					<option type="labelStyle" value="text" />
+				</component>
+			</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="time" name="laborTime" reference="laborTime"
+						field="#{form}.laborTime" defaultVisible="false" />
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="time" name="machineTime" reference="machineTime"
+						field="#{form}.machineTime" defaultVisible="false" />
+				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="historyTab">
+			<component type="gridLayout" name="historyGridLayout" columns="3" rows="3">
+				<layoutElement column="1" row="1">
+					<component type="input" name="creationTime" field="creationTime"
+						reference="creationTime" defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="worker" field="worker"
+						reference="worker" defaultEnabled="false" />
+				</layoutElement>
+				<layoutElement column="1" row="3" width="3">
+					<component type="grid" name="loggingsGrid" reference="grid" source="#{form}.loggings">
+						<option type="column" name="dateAndTime" fields="dateAndTime" />
+						<option type="column" name="currentState" fields="currentState" expression="'@productionCounting.productionRecord.state.value.' + #currentState" />
+						<option type="column" name="worker" fields="worker" />
+						<option type="order" column="dateAndTime" direction="asc" />
+						<option type="searchable" value="dateAndTime,currentState,worker" />
+						<option type="orderable" value="dateAndTime,currentState,worker" />
+					</component>
+				</layoutElement>
+			s</component>
 		</windowTab>
 	</component>
 	<hooks>

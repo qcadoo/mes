@@ -28,7 +28,9 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" unique="true" />
+		<string name="number" unique="true" >
+			<validatesLength max="255"/> 
+		</string>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
@@ -53,6 +55,12 @@
 		<integer name="plannedTime" />
 		<integer name="plannedMachineTime" />
 		<integer name="plannedLaborTime" />
+		
+		<belongsTo name="staff" model="staff" plugin="basic" />
+		<belongsTo name="workstationType" model="workstationType" plugin="basic" />
+		<belongsTo name="division" model="division" plugin="basic" />
+		
+		<hasMany name="loggings" model="productionRecordLogging" joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
 		<onSave
@@ -67,6 +75,9 @@
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="countPlannedTimeAndBalance" />
+		<onCreate 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="logCreateEvent" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />

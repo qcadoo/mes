@@ -24,28 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="columnForInputProducts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<model name="productionRecordLogging" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="identifier" required="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description" />
-		<string name="columnFiller" required="true">
-			<validatesLength max="2048" />
-		</string>
-		
-		<hasMany name="parameterInputColumns" plugin="workPlans" model="parameterInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="operationInputColumns" plugin="workPlans" model="operationInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="technologyOperationInputColumns" plugin="workPlans" model="technologyOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="orderOperationInputColumns" plugin="workPlans" model="orderOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
+		<belongsTo name="productionRecord" model="productionRecord" />
+		<datetime name="dateAndTime" />
+		<string name="previousState" />
+		<string name="currentState" />
+		<string name="worker" />
 	</fields>
-	<hooks>
-		
-	</hooks>
-	<identifier expression="#name" />
+	<hooks />
 </model>

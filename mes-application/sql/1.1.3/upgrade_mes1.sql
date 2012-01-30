@@ -1,7 +1,6 @@
 -- Table: technologies_technology
--- changed: 20.1.2012
+-- changed: 20.01.2012
 
-ALTER TABLE technologies_technology
-	DROP COLUMN componentquantityalgorithm;
+ALTER TABLE technologies_technology DROP COLUMN componentquantityalgorithm;
 	
 -- end

@@ -31,7 +31,9 @@
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
 		<belongsTo name="operation" model="orderOperationComponent" plugin="productionScheduling" />
-		<string name="number" required="true"  />
+		<string name="number" required="true"  >
+			<validatesLength max="255" />
+		</string>
 		<enum name="controlResult" values="01correct,02incorrect,03objection" />
 		<string name="batchNr" />
 		<string name="comment" />

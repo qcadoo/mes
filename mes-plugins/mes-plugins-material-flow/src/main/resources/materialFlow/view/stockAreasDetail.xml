@@ -34,14 +34,14 @@
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				columns="3" rows="2">
+				columns="3" rows="3">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="name" field="name" />
+				<layoutElement column="1" row="2" height="2">
+					<component type="textarea" name="name" field="name" />
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />

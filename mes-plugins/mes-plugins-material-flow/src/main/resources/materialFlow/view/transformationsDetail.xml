@@ -82,22 +82,22 @@
 					
 				]]>
 			</script>
-			<component type="gridLayout" name="gridLayout" columns="2" rows="8" >
+			<component type="gridLayout" name="gridLayout" columns="2" rows="9" >
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" reference="number" 
 						field="number" />
 				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="name" reference="name"
+				<layoutElement column="1" row="2" height="2">
+					<component type="textarea" name="name" reference="name"
 						field="name" />
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="4">
 					<component type="calendar" name="time" reference="time"
 						field="time">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4" width="1" height="5">
+				<layoutElement column="1" row="5" width="1" height="5">
 					<component type="grid" name="transformationsConsumption"
 						reference="transformationsConsumption" source="#{form}.transfersConsumption">
 						<option type="column" name="number" fields="number"
@@ -142,7 +142,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="4" width="1" height="5">
+				<layoutElement column="2" row="5" width="1" height="5">
 					<component type="grid" name="transformationsProduction"
 						reference="transformationsProduction" source="#{form}.transfersProduction">
 						<option type="column" name="number" fields="number"

@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="name" required="true">
-			<validatesLength max="255" />
+			<validatesLength max="1024" />
 		</string>
 		<datetime name="materialFlowForDate" required="true"/>
 		<datetime name="time" />

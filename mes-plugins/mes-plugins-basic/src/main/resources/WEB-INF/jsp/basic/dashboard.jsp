@@ -86,7 +86,7 @@
 	<div id="contentWrapperMiddle">
 	<div id="dashboardContentWrapper">
 		<div id="userElement">
-			${translationsMap['basic.dashboard.hello']} <span id="userLogin">${userLogin}</span>
+			${translationsMap['basic.dashboard.hello']}&nbsp;<span id="userLogin">${userLogin}</span>
 		</div>
 		<div id="descriptionElement">
 			<div id="descriptionHeader">

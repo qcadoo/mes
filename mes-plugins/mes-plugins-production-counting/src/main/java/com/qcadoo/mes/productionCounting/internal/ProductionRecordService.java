@@ -45,6 +45,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -77,30 +78,31 @@ public class ProductionRecordService {
     @Autowired
     private SecurityService securityService;
 
-    public void generateData(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField("number") == null) {
-            entity.setField("number", numberGeneratorService.generateNumber(ProductionCountingConstants.PLUGIN_IDENTIFIER, entity
-                    .getDataDefinition().getName()));
+    public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        if (productionRecord.getField("number") == null) {
+            productionRecord.setField("number", numberGeneratorService.generateNumber(
+                    ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
         }
-        entity.setField("creationTime", new Date());
-        entity.setField("worker", securityService.getCurrentUserName());
+        productionRecord.setField("creationTime", new Date());
+        productionRecord.setField("worker", securityService.getCurrentUserName());
     }
 
-    public boolean checkTypeOfProductionRecording(final DataDefinition dataDefinition, final Entity entity) {
-        final Entity order = entity.getBelongsToField(FIELD_ORDER);
+    public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
         final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
-        return isValidTypeOfProductionRecording(entity, typeOfProductionRecording, dataDefinition);
+        return isValidTypeOfProductionRecording(productionRecord, typeOfProductionRecording, productionRecordDD);
     }
 
-    public boolean isValidTypeOfProductionRecording(final Entity entity, final String typeOfProductionRecording,
-            final DataDefinition dd) {
+    public boolean isValidTypeOfProductionRecording(final Entity productionRecord, final String typeOfProductionRecording,
+            final DataDefinition productionRecordDD) {
         boolean validTypeOfRecording = true;
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
-            entity.addError(dd.getField(FIELD_ORDER), "productionCounting.validate.global.error.productionRecord.orderError");
+            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+                    "productionCounting.validate.global.error.productionRecord.orderError");
             validTypeOfRecording = false;
         }
         if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
-            entity.addError(dd.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
             validTypeOfRecording = false;
         }
@@ -108,37 +110,38 @@ public class ProductionRecordService {
     }
 
     // checkIfJustOneChoosen
-    public boolean checkIfPartialIsAllowed(final DataDefinition dd, final Entity entity) {
+    public boolean checkIfPartialIsAllowed(final DataDefinition productionRecordDD, final Entity productionRecord) {
         boolean isAllowed = true;
-        final Entity order = entity.getBelongsToField(FIELD_ORDER);
+        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
         final Boolean justOne = getBooleanValue(order.getField("justOne"));
-        final Boolean lastRecord = getBooleanValue(entity.getField("lastRecord"));
+        final Boolean lastRecord = getBooleanValue(productionRecord.getField("lastRecord"));
         if (!lastRecord && justOne) {
-            entity.addError(dd.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
                     "productionCounting.validate.global.error.productionRecord.orderError.justOne");
             isAllowed = false;
         }
         return isAllowed;
     }
 
-    public boolean checkIfExistsFinalRecord(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean checkIfExistsFinalRecord(final DataDefinition productionRecordDD, final Entity productionRecord) {
         boolean finalExist = true;
-        if (entity.getId() == null) {
+        if (productionRecord.getId() == null) {
 
-            final Entity order = entity.getBelongsToField(FIELD_ORDER);
+            final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
             final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
 
-            final SearchCriteriaBuilder searchBuilder = dataDefinition.find();
+            final SearchCriteriaBuilder searchBuilder = productionRecordDD.find();
             searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
             searchBuilder.add(SearchRestrictions.belongsTo(FIELD_ORDER, order));
             searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
             if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
                 searchBuilder.add(SearchRestrictions.belongsTo(FIELD_ORDER_OPERATION_COMPONENT,
-                        entity.getBelongsToField("orderOperationComponents")));
+                        productionRecord.getBelongsToField("orderOperationComponents")));
             }
             if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-                entity.addError(dataDefinition.getField(FIELD_ORDER), "productionCounting.record.messages.error.finalExists");
+                productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+                        "productionCounting.record.messages.error.finalExists");
                 finalExist = false;
             }
         }
@@ -156,7 +159,7 @@ public class ProductionRecordService {
         return isStarted;
     }
 
-    public void copyProductsFromOrderOperation(final DataDefinition dd, final Entity productionRecord) {
+    public void copyProductsFromOrderOperation(final DataDefinition productionRecordDD, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
         if (order == null) {
             return;
@@ -239,19 +242,19 @@ public class ProductionRecordService {
         productionRecord.setField(recordProductFieldName, newArrayList(recordProductsMap.values()));
     }
 
-    public boolean checkIfOperationIsSet(final DataDefinition dd, final Entity productionRecord) {
+    public boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
         String recordingMode = productionRecord.getBelongsToField(FIELD_ORDER).getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
         Object orderOperation = productionRecord.getField(FIELD_ORDER_OPERATION_COMPONENT);
 
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
-            productionRecord.addError(dd.getField(FIELD_ORDER_OPERATION_COMPONENT),
+            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER_OPERATION_COMPONENT),
                     "productionCounting.record.messages.error.operationIsNotSet");
             return false;
         }
         return true;
     }
 
-    public void countPlannedTimeAndBalance(final DataDefinition dataDefinition, final Entity productionRecord) {
+    public void countPlannedTimeAndBalance(final DataDefinition productionRecordDD, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
         if (!getBooleanValue(order.getField("registerProductionTime"))) {
             return;
@@ -265,6 +268,43 @@ public class ProductionRecordService {
         }
         countPlannedTime(productionRecord, operationComponents);
         countTimeBalance(productionRecord);
+    }
+
+    public void logCreateEvent(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        final Date logDate = new Date();
+        final Entity logEntity = createStateLog();
+
+        logEntity.setField("currentState", ProductionCountingStates.DRAFT.getStringValue());
+        logEntity.setField("worker", securityService.getCurrentUserName());
+        logEntity.setField("dateAndTime", logDate);
+
+        productionRecord.setField("loggings", Lists.newArrayList(logEntity));
+    }
+
+    public void logStateChange(final Entity productionRecord, final ProductionCountingStates oldState,
+            final ProductionCountingStates newState) {
+        final Date logDate = new Date();
+        final Entity logEntity = createStateLog();
+
+        logEntity.setField("previousState", oldState.getStringValue());
+        logEntity.setField("currentState", newState.getStringValue());
+        logEntity.setField("worker", securityService.getCurrentUserName());
+        logEntity.setField("dateAndTime", logDate);
+        logEntity.setField("productionRecord", productionRecord);
+        logEntity.getDataDefinition().save(logEntity);
+    }
+
+    public final void changeStateToDefault(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        productionRecord.setField("state", ProductionCountingStates.DRAFT.getStringValue());
+    }
+
+    private Entity createStateLog() {
+        return getLoggingDataDefinition().create();
+    }
+
+    private DataDefinition getLoggingDataDefinition() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_RECORD_LOGGING);
     }
 
     private void countPlannedTime(final Entity productionRecord, final List<Entity> operationComponents) {
