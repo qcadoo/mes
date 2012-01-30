@@ -28,13 +28,10 @@ public interface BasicConstants {
     String PLUGIN_IDENTIFIER = "basic";
 
     // MODEL
-    String MODEL_MACHINE = "machine";
 
     String MODEL_PARAMETER = "parameter";
 
     String MODEL_PRODUCT = "product";
-
-    String MODEL_CONTRACTOR = "contractor";
 
     String MODEL_STAFF = "staff";
 
@@ -47,6 +44,10 @@ public interface BasicConstants {
     String MODEL_CURRENCY = "currency";
 
     String MODEL_SHIFT = "shift";
+
+    String MODEL_WORKSTATION_TYPE = "workstationType";
+
+    String MODEL_DIVISION = "division";
 
     // VIEW
     String VIEW_MACHINE_DETAILS = "machineDetails";

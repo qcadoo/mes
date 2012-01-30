@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -55,6 +56,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -256,6 +261,10 @@ public class ProductionRecordService {
 
     public void countPlannedTimeAndBalance(final DataDefinition productionRecordDD, final Entity productionRecord) {
         Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        if (order == null) {
+            return;
+        }
+
         if (!getBooleanValue(order.getField("registerProductionTime"))) {
             return;
         }
@@ -296,6 +305,79 @@ public class ProductionRecordService {
 
     public final void changeStateToDefault(final DataDefinition productionRecordDD, final Entity productionRecord) {
         productionRecord.setField("state", ProductionCountingStates.DRAFT.getStringValue());
+    }
+
+    public final void fillShiftField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        fillShiftField(view);
+    }
+
+    public final void fillShiftField(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FieldComponent staffLookup = getFieldComponent(view, "staff");
+        FieldComponent shiftLookup = getFieldComponent(view, "shift");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        if (staffLookup.getFieldValue() == null) {
+            shiftLookup.setFieldValue(null);
+            return;
+        }
+
+        Long staffId = Long.valueOf(staffLookup.getFieldValue().toString());
+        Entity staff = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF).get(staffId);
+
+        if (staff == null) {
+            return;
+        }
+
+        Entity shift = staff.getBelongsToField("shift");
+
+        if (shift == null) {
+            shiftLookup.setFieldValue(null);
+        } else {
+            shiftLookup.setFieldValue(shift.getId());
+        }
+    }
+
+    public final void fillDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        fillDivisionField(view);
+    }
+
+    public final void fillDivisionField(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FieldComponent workstationTypeLookup = getFieldComponent(view, "workstationType");
+        FieldComponent divisionLookup = getFieldComponent(view, "division");
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        if (workstationTypeLookup.getFieldValue() == null) {
+            divisionLookup.setFieldValue(null);
+            return;
+        }
+
+        Long workstationTypeId = Long.valueOf(workstationTypeLookup.getFieldValue().toString());
+        Entity workstationType = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_WORKSTATION_TYPE).get(workstationTypeId);
+
+        if (workstationType == null) {
+            return;
+        }
+
+        Entity division = workstationType.getBelongsToField("division");
+
+        if (division == null) {
+            divisionLookup.setFieldValue(null);
+        } else {
+            divisionLookup.setFieldValue(division.getId());
+        }
+    }
+
+    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
+        return (FieldComponent) view.getComponentByReference(name);
     }
 
     private Entity createStateLog() {
