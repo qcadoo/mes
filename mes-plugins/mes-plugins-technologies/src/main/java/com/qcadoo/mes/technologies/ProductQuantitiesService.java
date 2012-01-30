@@ -286,7 +286,7 @@ public class ProductQuantitiesService {
     private void multiplyInQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
             final Entity outProductComponent, final Map<Entity, BigDecimal> mapWithQuantities,
             final Map<Entity, BigDecimal> operationRuns) {
-        BigDecimal multiplier = needed.divide(actual).setScale(0, RoundingMode.CEILING);
+        BigDecimal multiplier = needed.divide(actual, 0, RoundingMode.CEILING);
 
         operationRuns.put(operationComponent, multiplier);
 
