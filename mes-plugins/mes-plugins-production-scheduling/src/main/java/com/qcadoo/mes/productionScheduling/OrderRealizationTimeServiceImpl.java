@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -124,6 +125,17 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
     }
 
+    /**
+     * 
+     * @param operationComponent
+     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
+     *            orderOperationComponent
+     * @param plannedQuantity
+     *            How many products we want this operation to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @return Duration of an operation in seconds.
+     */
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
@@ -135,7 +147,46 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
     }
 
-    private int evaluateOperationTime(final EntityTreeNode operationComponent, final Boolean includeTpz,
+    /**
+     * 
+     * @param entity
+     *            An order or a technology for which we want to estimate operation times.
+     * @param plannedQuantity
+     *            How many products we want this order/technology to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @return Map where keys are operationComponents and values are corresponding operation durations
+     */
+    public Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz) {
+        Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
+
+        String entityType = entity.getDataDefinition().getName();
+        Entity technology;
+        List<Entity> operationComponents;
+
+        if ("technology".equals(entityType)) {
+            technology = entity;
+
+            operationComponents = technology.getTreeField("operationComponents");
+        } else if ("order".equals(entityType)) {
+            technology = entity.getBelongsToField("technology");
+
+            operationComponents = entity.getTreeField("orderOperationComponents");
+        } else {
+            throw new IllegalStateException("Entity has to be either order or technology");
+        }
+
+        productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
+
+        for (Entity operationComponent : operationComponents) {
+            int duration = evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
+            operationDurations.put(operationComponent, duration);
+        }
+
+        return operationDurations;
+    }
+
+    private int evaluateOperationTime(final Entity operationComponent, final Boolean includeTpz,
             final Map<Entity, BigDecimal> operationRuns) {
         String entityType = operationComponent.getStringField("entityType");
 
@@ -156,7 +207,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             int operationTime = 0;
             int pathTime = 0;
 
-            for (EntityTreeNode child : operationComponent.getChildren()) {
+            for (Entity child : operationComponent.getHasManyField("children")) {
                 int tmpPathTime = evaluateOperationTime(child, includeTpz, operationRuns);
                 if (tmpPathTime > pathTime) {
                     pathTime = tmpPathTime;
