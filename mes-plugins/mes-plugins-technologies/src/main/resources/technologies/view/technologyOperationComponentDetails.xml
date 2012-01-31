@@ -32,7 +32,7 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete" />
+			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.saveNew" />
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
