@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-<users>
-	<row LOGIN="J.Nowak" EMAIL="j.nowak@email.com" FIRSTNAME="Jan" LASTNAME="Nowak" ROLE="ROLE_USER" />
-	<row LOGIN="A.Kowalski" EMAIL="a.kowalski@email.com" FIRSTNAME="Adam" LASTNAME="Kowalski" ROLE="ROLE_USER" />
-</users>
+<trackingRecords>
+	<row ENTITY_TYPE="02forOrder" QUANTITY="" PRODUCED_BATCH_NO="673DWQ" ORDER_NO="000001"/>
+</trackingRecords>

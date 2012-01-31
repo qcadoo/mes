@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<users>
-	<row LOGIN="J.Nowak" EMAIL="j.nowak@email.com" FIRSTNAME="Jan" LASTNAME="Nowak" ROLE="ROLE_USER" />
-	<row LOGIN="A.Kowalski" EMAIL="a.kowalski@email.com" FIRSTNAME="Adam" LASTNAME="Kowalski" ROLE="ROLE_USER" />
-</users>
+
+<costCalculation>
+	<row NUMBER="1" DESCRIPTION="" ORDER_NO="000001" DEF_TECH_NO="000010-010" TECH_NO="000010-010" PROD_NO="000010" QUANTITY="15" INCLUDE_TPZ="true" CALCULATE_MATERIAL_COST_MODE="01nominal" CALCULATE_OPERATION_COST_MODE="hourly" ADDITIONAL_OVERHEAD="" PRODUCTION_COST_MARGIN="" MATERIAL_COST_MARGIN=""/>
+    <row NUMBER="2" DESCRIPTION="Cost calculation with overheads included" ORDER_NO="000002" DEF_TECH_NO="000025-011" TECH_NO="000025-011" PROD_NO="000025" QUANTITY="10" INCLUDE_TPZ="true" CALCULATE_MATERIAL_COST_MODE="01nominal" CALCULATE_OPERATION_COST_MODE="hourly" ADDITIONAL_OVERHEAD="200" PRODUCTION_COST_MARGIN="10" MATERIAL_COST_MARGIN="15"/>
+</costCalculation>

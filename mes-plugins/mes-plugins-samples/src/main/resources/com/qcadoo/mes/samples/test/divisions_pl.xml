@@ -24,6 +24,7 @@
     ***************************************************************************
 
 -->
+
 <divisions>
 	<row NUMBER="1" NAME="Dział frezowania" SUPERVISOR="03"/>
 	<row NUMBER="2" NAME="Dział szlifowania" SUPERVISOR="02"/>
