@@ -228,9 +228,9 @@ ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_division_fkey FOREIGN KEY (di
 -- Table: productioncounting_productionrecord
 -- changed: 27.01.2012
 
-ALTER TABLE productioncounting_productionrecord ADD COLUMN shift_id bigint;
-ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_s_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) DEFERRABLE;
+ALTER TABLE productioncounting_productionrecord ADD COLUMN staff_id bigint;
+ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_s_fkey FOREIGN KEY (staff_id)
+      REFERENCES basic_staff (id) DEFERRABLE;
 ALTER TABLE productioncounting_productionrecord ADD COLUMN division_id bigint;
 ALTER TABLE productioncounting_productionrecord ADD CONSTRAINT productioncounting_productionrecord_d_fkey FOREIGN KEY (division_id)
       REFERENCES basic_division (id) DEFERRABLE;
