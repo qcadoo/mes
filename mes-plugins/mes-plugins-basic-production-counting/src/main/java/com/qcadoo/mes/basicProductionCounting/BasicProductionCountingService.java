@@ -353,12 +353,17 @@ public class BasicProductionCountingService {
     public boolean checkValueOfQuantity(final DataDefinition dataDefinition, final Entity entity) {
         BigDecimal usedQuantity = (BigDecimal) entity.getField("usedQuantity");
         BigDecimal producedQuantity = (BigDecimal) entity.getField("producedQuantity");
-
+        if (usedQuantity == null && producedQuantity == null) {
+            return true;
+        }
         if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
             entity.addError(dataDefinition.getField("usedQuantity"), "basic.production.counting.value.lower.zero");
         }
         if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
             entity.addError(dataDefinition.getField("producedQuantity"), "basic.production.counting.value.lower.zero");
+        }
+        if (!entity.getGlobalErrors().isEmpty() || !entity.getErrors().isEmpty()) {
+            return false;
         }
         return true;
     }
