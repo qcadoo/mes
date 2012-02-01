@@ -50,6 +50,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -89,6 +90,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private OrderRealizationTimeService orderRealizationTimeService;
+
     private static final Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
     private static final Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
@@ -103,7 +107,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         OperationsCostCalculationConstants mode = getOperationModeFromField(costCalculation
                 .getField("calculateOperationCostsMode"));
         BigDecimal quantity = getBigDecimal(costCalculation.getField(QUANTITY_FIELD));
-        Boolean includeTPZ = getBooleanFromField(costCalculation.getField("includeTPZ"));
+        Boolean includeTPZ = costCalculation.getBooleanField("includeTPZ");
         BigDecimal margin = getBigDecimal(costCalculation.getField("productionCostMargin"));
 
         copyTechnologyTree(costCalculation);
@@ -114,12 +118,21 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         checkArgument(operationComponents != null, "given operation components is null");
 
+        Entity entity = costCalculation.getBelongsToField("technology");
+        Entity order = costCalculation.getBelongsToField("order");
+        if (order != null) {
+            entity = order;
+        }
+
+        Map<Entity, Integer> realizationTimes = orderRealizationTimeService
+                .estimateRealizationTimes(entity, quantity, includeTPZ);
+
         if (mode == PIECEWORK) {
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(), margin, quantity);
             costCalculation.setField("totalPieceworkCosts", totalPieceworkCost);
         } else {
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
-                    quantity, includeTPZ);
+                    quantity, realizationTimes);
             costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, ROUND_UP));
             costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, ROUND_UP));
         }
@@ -128,38 +141,32 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
-            final BigDecimal margin, final BigDecimal plannedQuantity, final Boolean includeTPZ) {
+            final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes) {
         checkArgument(operationComponent != null, "given operationComponent is null");
 
         BigDecimal hourlyMachineCost = getBigDecimal(operationComponent.getField(MACHINE_HOURLY_COST));
         BigDecimal hourlyLaborCost = getBigDecimal(operationComponent.getField(LABOR_HOURLY_COST));
-        BigDecimal numOfProducts = countNumberOfOutputProducts(operationComponent
-                .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT_FIELD));
-        BigDecimal prodInOneCycle = getBigDecimal(operationComponent.getField(PRODUCTION_IN_ONE_CYCLE_FIELD));
         Map<String, BigDecimal> resultsMap = Maps.newHashMapWithExpectedSize(PATH_COST_KEYS.size());
-        Map<String, BigDecimal> unitResultsMap;
 
         for (String key : PATH_COST_KEYS) {
             resultsMap.put(key, BigDecimal.ZERO);
         }
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity, includeTPZ);
+            Map<String, BigDecimal> unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity,
+                    realizationTimes);
             for (String key : PATH_COST_KEYS) {
                 BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key));
                 resultsMap.put(key, unitOperationCost);
             }
         }
-        BigDecimal quantityOfComponents = numOfProducts.multiply(plannedQuantity);
-        BigDecimal numOfCycles = quantityOfComponents.divide(prodInOneCycle).setScale(0, ROUND_UP);
-        BigDecimal tj = getBigDecimal(operationComponent.getField("tj"));
         BigDecimal machineUtilization = getBigDecimal(operationComponent.getField("machineUtilization"));
         BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
-        BigDecimal additionalTime = getBigDecimal(operationComponent.getField("timeNextOperation"));
-        BigDecimal duration = (tj.multiply(numOfCycles)).add(additionalTime);
-        if (includeTPZ) {
-            duration = duration.add(getBigDecimal(operationComponent.getField("tpz")));
-        }
+
+        Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
+        int dur = realizationTimes.get(techOperComp);
+        BigDecimal duration = BigDecimal.valueOf(dur);
+
         BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), 5, ROUND_HALF_UP);
         BigDecimal durationMachine = durationInHours.multiply(machineUtilization);
         BigDecimal durationLabor = durationInHours.multiply(laborUtilization);
@@ -175,7 +182,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 
-        // add child operations cost values to total cost of operation
         resultsMap.put(MACHINE_HOURLY_COST, resultsMap.get(MACHINE_HOURLY_COST).add(operationMachineCost));
         resultsMap.put(LABOR_HOURLY_COST, resultsMap.get(LABOR_HOURLY_COST).add(operationLaborCost));
 
@@ -335,13 +341,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
         // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
         return BigDecimal.valueOf(Double.valueOf(value.toString()));
-    }
-
-    private Boolean getBooleanFromField(final Object value) {
-        if ("1".equals(value) || "true".equals(value)) {
-            return true;
-        }
-        return false;
     }
 
     private OperationsCostCalculationConstants getOperationModeFromField(final Object value) {

@@ -110,7 +110,7 @@ public class OrderRealizationTimeServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectOperationTime() {
+    public void shouldReturnCorrectOperationTimeWithShifts() {
         // given
         boolean includeTpz = true;
         BigDecimal plannedQuantity = new BigDecimal(1);
@@ -144,7 +144,7 @@ public class OrderRealizationTimeServiceImplTest {
                 plannedQuantity, includeTpz);
 
         // then
-        assertEquals(new Integer(6), operationDurations.get(techOpComp1));
+        assertEquals(new Integer(3), operationDurations.get(techOpComp1));
         assertEquals(new Integer(3), operationDurations.get(techOpComp2));
     }
 
@@ -165,7 +165,7 @@ public class OrderRealizationTimeServiceImplTest {
                 plannedQuantity, includeTpz);
 
         // then
-        assertEquals(new Integer(6), operationDurations.get(opComp1));
+        assertEquals(new Integer(3), operationDurations.get(opComp1));
         assertEquals(new Integer(3), operationDurations.get(opComp2));
     }
 }

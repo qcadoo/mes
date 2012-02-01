@@ -134,7 +134,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
      *            How many products we want this operation to produce
      * @param includeTpz
      *            Flag indicating if we want to include Tpz
-     * @return Duration of an operation in seconds.
+     * @return Duration of an operation in seconds, including shifts caused by waiting for child operations to finish.
      */
     @Override
     @Transactional
@@ -180,7 +180,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
         for (Entity operationComponent : operationComponents) {
-            int duration = evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
+            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, operationRunsField);
 
             if ("order".equals(entityType)) {
                 operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
@@ -202,15 +202,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             return evaluateOperationTime(actualOperationComponent, includeTpz, operationRuns);
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
-            Entity technologyOperationComponent = operationComponent;
-
-            if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
-                long techOperationId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
-                technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperationId);
-            }
-
-            int operationTime = 0;
+            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, operationRuns);
             int pathTime = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
@@ -220,38 +212,51 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
-
-            BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(technologyOperationComponent);
-
-            BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, BigDecimal.ROUND_UP).multiply(
-                    operationRuns.get(technologyOperationComponent));
-
-            if ("01all".equals(operationComponent.getField("countRealized"))
-                    || operationComponent.getBelongsToField("parent") == null) {
-                operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")))))
-                        .intValue();
-            } else {
-                operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
-                        : (BigDecimal) operationComponent.getField("countMachine")).multiply(BigDecimal
-                        .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
-            }
-
-            if (includeTpz) {
-                operationTime += getIntegerValue(operationComponent.getField("tpz"));
-            }
-
             if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
                 operationComponent.setField("operationOffSet", pathTime);
                 operationComponent.getDataDefinition().save(operationComponent);
             }
 
-            pathTime += operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
-            return pathTime;
+            return pathTime + operationTime;
         }
 
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
+    }
+
+    private int evaluateSingleOperationTime(final Entity operationComponent, final Boolean includeTpz,
+            final Map<Entity, BigDecimal> operationRuns) {
+        Entity technologyOperationComponent = operationComponent;
+
+        if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+            long techOperationId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
+            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperationId);
+        }
+
+        int operationTime = 0;
+
+        BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
+
+        BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(technologyOperationComponent);
+
+        BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, BigDecimal.ROUND_UP).multiply(
+                operationRuns.get(technologyOperationComponent));
+
+        if ("01all".equals(operationComponent.getField("countRealized"))
+                || operationComponent.getBelongsToField("parent") == null) {
+            operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
+        } else {
+            operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
+                    : (BigDecimal) operationComponent.getField("countMachine")).multiply(BigDecimal
+                    .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
+        }
+
+        if (includeTpz) {
+            operationTime += getIntegerValue(operationComponent.getField("tpz"));
+        }
+
+        return operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
     }
 
     private Integer getIntegerValue(final Object value) {

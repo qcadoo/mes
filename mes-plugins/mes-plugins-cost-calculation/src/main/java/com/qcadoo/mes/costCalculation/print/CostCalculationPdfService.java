@@ -86,7 +86,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private String tabInText = "\t \t \t";
 
-    private static final String NAME = "name";
+    private static final String NAME_L = "name";
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -156,15 +156,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 costCalculation.getStringField("number"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
                 getTranslationService().translate("costCalculation.costCalculation.product.label", locale) + ":", costCalculation
-                        .getBelongsToField("product").getStringField(NAME), null, PdfUtil.getArialBold9Dark(),
+                        .getBelongsToField("product").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
                 getTranslationService().translate("costCalculation.costCalculation.defaultTechnology.label", locale) + ":",
-                costCalculation.getBelongsToField("defaultTechnology").getStringField(NAME), null, PdfUtil.getArialBold9Dark(),
+                costCalculation.getBelongsToField("defaultTechnology").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
                 getTranslationService().translate("costCalculation.costCalculation.technology.label", locale) + ":",
-                costCalculation.getBelongsToField("technology").getStringField(NAME), null, PdfUtil.getArialBold9Dark(),
+                costCalculation.getBelongsToField("technology").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
                 getTranslationService().translate("costCalculation.costCalculation.quantity.label", locale) + ":",
@@ -173,7 +173,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         Entity order = costCalculation.getBelongsToField("order");
         addTableCellAsTable(leftPanelColumn,
                 getTranslationService().translate("costCalculation.costCalculation.order.label", locale) + ":",
-                order == null ? "" : order.getStringField(NAME), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                order == null ? "" : order.getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
                 null);
 
         leftPanelColumn.addCell(new Phrase(getTranslationService().translate(
@@ -349,7 +349,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            materialsTable.addCell(new Phrase(product.getKey().getStringField(NAME), PdfUtil.getArialRegular9Dark()));
+            materialsTable.addCell(new Phrase(product.getKey().getStringField(NAME_L), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(getDecimalFormat().format(product.getValue()), PdfUtil.getArialRegular9Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -401,7 +401,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), PdfUtil
                         .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        NAME), PdfUtil.getArialRegular9Dark()));
+                        NAME_L), PdfUtil.getArialRegular9Dark()));
 
                 String duration = timeConverterService.convertTimeToString((Integer) calculationOperationComponent
                         .getField("duration"));
@@ -445,7 +445,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), PdfUtil
                         .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        NAME), PdfUtil.getArialRegular9Dark()));
+                        NAME_L), PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(calculationOperationComponent.getField("pieces")),
                         PdfUtil.getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(getDecimalFormat().format(
