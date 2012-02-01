@@ -37,6 +37,7 @@
 				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
 				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;" state="disabled" />
 				<smallButton name="delete" icon="deleteIcon16.png" action="#{grid}.performDelete;" state="disabled" />
+				<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{window}.performRefresh;" />
 			</group>
 			<template name="standardGridTemplate" excludeGroups="actions"/>
 			<group name="status">

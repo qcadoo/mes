@@ -25,14 +25,6 @@
 
 -->
 <categories>
-	<row LOGIN="adam" EMAIL="adam.rataj@email.com" FIRSTNAME="Adam" LASTNAME="Rataj" ROLE="ROLE_ADMIN" />
-	<row LOGIN="john.ford" EMAIL="john.ford@email.com" FIRSTNAME="John" LASTNAME="Ford" ROLE="ROLE_ADMIN" />
-	<row LOGIN="hans.mercedes" EMAIL="hans.mercedes@email.com" FIRSTNAME="Hans" LASTNAME="Mercedes" ROLE="ROLE_ADMIN" />
-	<row LOGIN="alberto.fiat" EMAIL="alberto.fiat@email.com" FIRSTNAME="Alberto" LASTNAME="Fiat" ROLE="ROLE_ADMIN" />
-	<row LOGIN="steve.green" EMAIL="steve.green@email.com" FIRSTNAME="Steve" LASTNAME="Green" ROLE="ROLE_SUPERVISOR" />
-	<row LOGIN="hans.klos" EMAIL="hans.klos@email.com" FIRSTNAME="Hans" LASTNAME="Klos" ROLE="ROLE_SUPERVISOR" />
-	<row LOGIN="pablo.perke" EMAIL="pablo.perke@email.com" FIRSTNAME="Pablo" LASTNAME="Perke" ROLE="ROLE_SUPERVISOR" />
-	<row LOGIN="abdul.turek" EMAIL="abdul.turek@email.com" FIRSTNAME="Abdul" LASTNAME="Turek" ROLE="ROLE_USER" />
-	<row LOGIN="jose.mexico" EMAIL="jose.mexico@email.com" FIRSTNAME="Jose" LASTNAME="Mexico" ROLE="ROLE_USER" />
-	<row LOGIN="mark.pakistan" EMAIL="mark.pakistan@email.com" FIRSTNAME="Mark" LASTNAME="Pakistan" ROLE="ROLE_USER" />
+	<row LOGIN="J.Nowak" EMAIL="j.nowak@email.com" FIRSTNAME="Jan" LASTNAME="Nowak" ROLE="ROLE_USER" />
+	<row LOGIN="A.Kowalski" EMAIL="a.kowalski@email.com" FIRSTNAME="Adam" LASTNAME="Kowalski" ROLE="ROLE_USER" />
 </categories>

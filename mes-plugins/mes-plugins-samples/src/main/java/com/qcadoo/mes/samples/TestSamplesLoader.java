@@ -131,15 +131,35 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
         readDataFromXML(dataset, "shifts", locale);
+        readDataFromXML(dataset, "divisions", locale);
         if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
         }
         if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, ORDERS_PLUGIN_IDENTIFIER, locale);
+            if (isEnabled("orderGroups")) {
+                readDataFromXML(dataset, "orderGroups", locale);
+            }
         }
         if (isEnabled("materialRequirements")) {
             addMaterialRequirements();
+        }
+        if (isEnabled("costCalculation")) {
+            readDataFromXML(dataset, "costCalculation", locale);
+        }
+        if (isEnabled("materialFlow")) {
+            readDataFromXML(dataset, "stockAreas", locale);
+            readDataFromXML(dataset, "transformations", locale);
+            readDataFromXML(dataset, "transfer", locale);
+            readDataFromXML(dataset, "stockCorrection", locale);
+        }
+        if (isEnabled("advancedGenealogy")) {
+            readDataFromXML(dataset, "batches", locale);
+            if (isEnabled("advancedGenealogyForOrders")) {
+                readDataFromXML(dataset, "trackingRecords", locale);
+            }
+            readDataFromXML(dataset, "genealogyTables", locale);
         }
         if (isEnabled(WORK_PLANS_PLUGIN_IDENTIFIER)) {
             addWorkPlans();
@@ -178,6 +198,26 @@ public class TestSamplesLoader extends SamplesLoader {
             addWorkstationType(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
+        } else if ("division".equals(type)) {
+            addDivision(values);
+        } else if ("orderGroups".equals(type)) {
+            addOrderGroup(values);
+        } else if ("costCalculation".equals(type)) {
+            addCostCalculation(values);
+        } else if ("stockAreas".equals(type)) {
+            addStokckArea(values);
+        } else if ("transformations".equals(type)) {
+            addTransformation(values);
+        } else if ("transfer".equals(type)) {
+            addTransfer(values);
+        } else if ("stockCorrection".equals(type)) {
+            addStockCorrection(values);
+        } else if ("batches".equals(type)) {
+            addBatches(values);
+        } else if ("trackingRecords".equals(type)) {
+            addTrackingRecord(values);
+        } else if ("genealogyTables".equals(type)) {
+            addGenealogyTables(values);
         }
     }
 
@@ -342,8 +382,33 @@ public class TestSamplesLoader extends SamplesLoader {
         technology.getDataDefinition().save(technology);
     }
 
+    private void addOrderGroup(final Map<String, String> values) {
+        Entity orderGroup = dataDefinitionService.get("orderGroups", "orderGroup").create();
+        orderGroup.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        orderGroup.setField(FIELD_NAME, values.get(FIELD_NAME));
+
+        Entity order3 = getOrderByNumber("000003");
+        Entity order2 = getOrderByNumber("000002");
+
+        orderGroup.setField("dateTo", order3.getField("dateTo"));
+        orderGroup.setField("dateFrom", order2.getField("dateFrom"));
+
+        orderGroup = orderGroup.getDataDefinition().save(orderGroup);
+        validateEntity(orderGroup);
+
+        order3.setField("orderGroup", orderGroup);
+        order2.setField("orderGroup", orderGroup);
+
+        validateEntity(order3.getDataDefinition().save(order3));
+        validateEntity(order2.getDataDefinition().save(order2));
+
+    }
+
     private void addOrder(final Map<String, String> values) {
-        long startDate = System.currentTimeMillis() + MILLIS_IN_DAY * (RANDOM.nextInt(50) - 25);
+        long startDate = System.currentTimeMillis();
+        long endDate = startDate;
+        long MILLS_IN_HOUR = 3600000;
+        long MILLS_IN_MINUTE = 60000;
 
         if (!values.get("scheduled_start_date").isEmpty()) {
             try {
@@ -353,7 +418,15 @@ public class TestSamplesLoader extends SamplesLoader {
             }
         }
 
-        long endDate = startDate + (MILLIS_IN_DAY * RANDOM.nextInt(50));
+        if ("000001".equals(values.get("order_nr"))) {
+            endDate = startDate + MILLIS_IN_DAY + 1 * MILLS_IN_HOUR + 45 * MILLS_IN_MINUTE;
+        } else if ("000002".equals(values.get("order_nr"))) {
+            startDate -= 2 * MILLIS_IN_DAY;
+            endDate = startDate + MILLIS_IN_DAY + 3 * MILLS_IN_HOUR + 40 * MILLS_IN_MINUTE;
+        } else if ("000003".equals(values.get("order_nr"))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 6 * MILLS_IN_HOUR + 50 * MILLS_IN_MINUTE;
+        }
 
         if (!values.get("scheduled_end_date").isEmpty()) {
             try {
@@ -379,6 +452,20 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField(ORDER_STATE, "01pending");
 
         Entity product = getProductByNumber(values.get(PRODUCT_NUMBER));
+
+        if (isEnabled("productionCounting")) {
+            order.setField("typeOfProductionRecording", values.get("type_of_production_recording"));
+            order.setField("registerQuantityInProduct", values.get("register_quantity_in_product"));
+            order.setField("registerQuantityOutProduct", values.get("register_quantity_out_product"));
+            order.setField("registerProductionTime", values.get("register_production_time"));
+            order.setField("justOne", values.get("just_one"));
+            order.setField("allowToClose", values.get("allow_to_close"));
+            order.setField("autoCloseOrder", values.get("auto_close_order"));
+        }
+
+        if (isEnabled("advancedGenealogyForOrders")) {
+            order.setField("trackingRecordForOrderTreatment", values.get("tracking_record_for_order_treatment"));
+        }
 
         order.setField(BASIC_MODEL_PRODUCT, product);
         if (order.getField(TECHNOLOGY_MODEL_TECHNOLOGY) == null) {
@@ -409,6 +496,147 @@ public class TestSamplesLoader extends SamplesLoader {
 
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
         validateEntity(order);
+
+        // TODO MICI: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
+        // if ("000001".equals(values.get("order_nr")) || "000002".equals(values.get("order_nr"))
+        // ||"000003".equals(values.get("order_nr"))) {
+        // order.setField("state", "02accepted");
+        //
+        // order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        // validateEntity(order);
+        //
+        // order.setField("state", "03inProgress");
+        //
+        // order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        // validateEntity(order);
+        // }
+    }
+
+    private void addBatches(final Map<String, String> values) {
+        Entity batch = dataDefinitionService.get("advancedGenealogy", "batch").create();
+
+        batch.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        batch.setField("product", getProductByNumber(values.get("product_nr")));
+        batch.setField("manufacturer", getManufacturerByNumber(values.get("manufacturer_nr")));
+
+        batch = batch.getDataDefinition().save(batch);
+        validateEntity(batch);
+    }
+
+    private void addTrackingRecord(final Map<String, String> values) {
+        Entity trackingRecord = dataDefinitionService.get("advancedGenealogy", "trackingRecord").create();
+
+        trackingRecord.setField("entityType", values.get("entity_type"));
+        trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
+        trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
+
+        trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
+        validateEntity(trackingRecord);
+
+        buildTrackingRecord(trackingRecord);
+    }
+
+    private void addGenealogyTables(final Map<String, String> values) {
+        Entity genealogyTable = dataDefinitionService.get("advancedGenealogy", "genealogyReport").create();
+
+        genealogyTable.setField("type", values.get("type"));
+        genealogyTable.setField(FIELD_NAME, values.get(FIELD_NAME));
+        genealogyTable.setField("includeDraft", values.get("include_draft"));
+        genealogyTable.setField("directRelatedOnly", values.get("direct_related_only"));
+        genealogyTable.setField("batch", getBatchByNumber(values.get("batch_no")));
+
+        genealogyTable = genealogyTable.getDataDefinition().save(genealogyTable);
+        validateEntity(genealogyTable);
+    }
+
+    private void addDivision(final Map<String, String> values) {
+        Entity division = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "division").create();
+
+        division.setField("number", values.get("NUMBER"));
+        division.setField("name", values.get("NAME"));
+        division.setField("supervisor", values.get("SUPERVISOR"));
+
+        division = division.getDataDefinition().save(division);
+        validateEntity(division);
+    }
+
+    private void addCostCalculation(final Map<String, String> values) {
+        Entity costCalculation = dataDefinitionService.get("costCalculation", "costCalculation").create();
+
+        costCalculation.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        costCalculation.setField(FIELD_DESCRIPTION, values.get(FIELD_DESCRIPTION));
+        costCalculation.setField(ORDERS_MODEL_ORDER, getOrderByNumber(values.get("order_no")));
+        costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("tech_no")));
+        costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("def_tech_no")));
+        costCalculation.setField("product", getProductByNumber(values.get("prod_no")));
+        costCalculation.setField("quantity", values.get("quantity"));
+        costCalculation.setField("includeTPZ", values.get("include_tpz"));
+        costCalculation.setField("calculateMaterialCostsMode", values.get("calculate_material_cost_mode"));
+        costCalculation.setField("calculateOperationCostsMode", values.get("calculate_operation_cost_mode"));
+        costCalculation.setField("additionalOverhead", values.get("additional_overhead"));
+        costCalculation.setField("productionCostMargin", values.get("production_cost_margin"));
+        costCalculation.setField("materialCostMargin", values.get("material_cost_margin"));
+
+        costCalculation = costCalculation.getDataDefinition().save(costCalculation);
+
+        validateEntity(costCalculation);
+    }
+
+    private void addStokckArea(Map<String, String> values) {
+        Entity stockArea = dataDefinitionService.get("materialFlow", "stockAreas").create();
+
+        stockArea.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        stockArea.setField(FIELD_NAME, values.get(FIELD_NAME));
+
+        stockArea = stockArea.getDataDefinition().save(stockArea);
+        validateEntity(stockArea);
+    }
+
+    private void addTransformation(Map<String, String> values) {
+        Entity transformation = dataDefinitionService.get("materialFlow", "transformations").create();
+
+        transformation.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        transformation.setField(FIELD_NAME, values.get(FIELD_NAME));
+        transformation.setField("time", values.get("time"));
+        transformation.setField("stockAreasFrom", getStockAreaByNumber(values.get("stock_areas_from")));
+        transformation.setField("stockAreasTo", getStockAreaByNumber(values.get("stock_areas_to")));
+        transformation.setField("staff", getStaffByNumber(values.get("staff")));
+
+        transformation = transformation.getDataDefinition().save(transformation);
+        validateEntity(transformation);
+    }
+
+    private void addStockCorrection(Map<String, String> values) {
+        Entity stockCorrection = dataDefinitionService.get("materialFlow", "stockCorrection").create();
+
+        stockCorrection.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        stockCorrection.setField("stockCorrectionDate", values.get("stock_correction_date"));
+        stockCorrection.setField("stockAreas", getStockAreaByNumber(values.get("stock_areas")));
+        stockCorrection.setField("product", getProductByNumber(values.get("product")));
+        stockCorrection.setField("staff", getStaffByNumber(values.get("staff")));
+        stockCorrection.setField("found", values.get("found"));
+
+        stockCorrection = stockCorrection.getDataDefinition().save(stockCorrection);
+        validateEntity(stockCorrection);
+    }
+
+    private void addTransfer(Map<String, String> values) {
+        Entity transfer = dataDefinitionService.get("materialFlow", "transfer").create();
+
+        transfer.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
+        transfer.setField("type", values.get("type"));
+        transfer.setField("product", getProductByNumber(values.get("product")));
+        transfer.setField(FIELD_QUANTITY, values.get(FIELD_QUANTITY));
+        transfer.setField("staff", getStaffByNumber(values.get("staff")));
+        transfer.setField("stockAreasFrom", getStockAreaByNumber(values.get("stock_areas_from")));
+        transfer.setField("stockAreasTo", getStockAreaByNumber(values.get("stock_areas_to")));
+        transfer.setField("time", values.get("time"));
+
+        transfer.setField("transformationsConsumption", getTransformationByNumber(values.get("transformations_consumption")));
+        transfer.setField("transformationsProduction", getTransformationByNumber(values.get("transformations_production")));
+
+        transfer = transfer.getDataDefinition().save(transfer);
+        validateEntity(transfer);
     }
 
     private void addTechnology(final Map<String, String> values) {
@@ -426,11 +654,24 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField(FIELD_NUMBER, values.get("bom_nr"));
             technology.setField(BASIC_MODEL_PRODUCT, product);
             technology.setField(ORDER_STATE, "01draft");
+            technology.setField("description", values.get("DESCRIPTION"));
             technology.setField("batchRequired", true);
             technology.setField("postFeatureRequired", false);
             technology.setField("otherFeatureRequired", false);
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
+
+            if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
+                // TODO MICI: it looks like extended enum's don't work in samples, this is required by quality controls
+                // technology.setField("qualityControlType", "04forOperation");
+            } else if (isEnabled("qualityControls")
+                    && ("02forUnit".equals(values.get("quality_control_type")) || "03forOrder".equals(values
+                            .get("quality_control_type")))) {
+                technology.setField("qualityControlType", values.get("quality_control_type"));
+                if ("02forUnit".equals(values.get("quality_control_type"))) {
+                    technology.setField("unitSamplingNr", values.get("unit_sampling_nr"));
+                }
+            }
 
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
@@ -472,7 +713,7 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_11));
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_16));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_15));
+        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_15));
     }
 
     private void addTechnologyOperationComponentsForStoolAdvanced(final Entity technology) {
@@ -481,8 +722,8 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_26));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_25));
         parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
-        addProductInComponent(parent, new BigDecimal("8"), getProductByNumber(PROD_NR_21));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_30));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_21));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_30));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_29));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_28));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_26));
@@ -494,7 +735,7 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_28));
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_32));
-        addProductOutComponent(parent, new BigDecimal("32"), getProductByNumber(PROD_NR_31));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_31));
     }
 
     private void addTechnologyOperationComponentsForTabouretAdvanced(final Entity technology) {
@@ -503,16 +744,16 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_19));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_17));
         parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_21));
+        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_21));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(PROD_NR_20));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_22));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_19));
         parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_23));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_22));
+        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_22));
         parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(PROD_NR_24));
-        addProductOutComponent(parent, new BigDecimal("32"), getProductByNumber(PROD_NR_23));
+        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
@@ -671,14 +912,44 @@ public class TestSamplesLoader extends SamplesLoader {
         }
     }
 
+    private Entity getOrderByNumber(String number) {
+        return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
+                .add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
+    }
+
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
-                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).list().getEntities().get(0);
+                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getOperationByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).find()
-                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).list().getEntities().get(0);
+                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getStaffByNumber(String number) {
+        return dataDefinitionService.get("basic", "staff").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getTransformationByNumber(String number) {
+        return dataDefinitionService.get("materialFlow", "transformations").find()
+                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getStockAreaByNumber(String number) {
+        return dataDefinitionService.get("materialFlow", "stockAreas").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getManufacturerByNumber(String number) {
+        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "company").find()
+                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getBatchByNumber(String number) {
+        return dataDefinitionService.get("advancedGenealogy", "batch").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
     }
 
     private Entity getRandomProduct() {
@@ -693,6 +964,59 @@ public class TestSamplesLoader extends SamplesLoader {
                 .getTotalNumberOfEntities();
         return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
+    }
+
+    private void buildTrackingRecord(final Entity trackingRecord) {
+        Entity genProdIn = addGenealogyProductInComponent(trackingRecord, "000011", "5");
+        addUsedBatch(genProdIn, "321DEW");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000012", "5");
+        addUsedBatch(genProdIn, "706FCV");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000014", "5");
+        addUsedBatch(genProdIn, "980DEN");
+        addUsedBatch(genProdIn, "767BMM");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000013", "5");
+        addUsedBatch(genProdIn, "876DEW");
+        addUsedBatch(genProdIn, "444VWM");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000015", "1");
+        addUsedBatch(genProdIn, "349SWA");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000016", "2");
+        addUsedBatch(genProdIn, "150DEB");
+    }
+
+    private void addUsedBatch(final Entity genealogyProductInComponent, final String batchNumber) {
+        Entity genealogyProductInBatch = dataDefinitionService.get("advancedGenealogyForOrders", "genealogyProductInBatch")
+                .create();
+
+        genealogyProductInBatch.setField("batch", getBatchByNumber(batchNumber));
+        genealogyProductInBatch.setField("genealogyProductInComponent", genealogyProductInComponent);
+
+        genealogyProductInBatch = genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
+        validateEntity(genealogyProductInBatch);
+    }
+
+    private Entity addGenealogyProductInComponent(final Entity trackingRecord, final String productNumber,
+            final String operationNumber) {
+        Entity product = getProductByNumber(productNumber);
+        Entity order = trackingRecord.getBelongsToField(ORDERS_MODEL_ORDER);
+        Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
+        Entity operationProdInComp = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
+                .find().add(SearchRestrictions.belongsTo("product", product)).setMaxResults(1).uniqueResult();
+        Entity orderOperationComponent = dataDefinitionService
+                .get("productionScheduling", "orderOperationComponent")
+                .find()
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
+                        SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
+                        SearchRestrictions.belongsTo("operation", getOperationByNumber(operationNumber)))).setMaxResults(1)
+                .uniqueResult();
+
+        Entity genealogyProductInComponent = dataDefinitionService
+                .get("advancedGenealogyForOrders", "genealogyProductInComponent")
+                .find()
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord),
+                        SearchRestrictions.belongsTo("productInComponent", operationProdInComp),
+                        SearchRestrictions.belongsTo("orderOperationComponent", orderOperationComponent))).setMaxResults(1)
+                .uniqueResult();
+        return genealogyProductInComponent;
     }
 
 }

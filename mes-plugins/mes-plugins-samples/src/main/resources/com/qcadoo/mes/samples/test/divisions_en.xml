@@ -22,8 +22,9 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
-
+    
 -->
+
 <divisions>
 	<row NUMBER="1" NAME="Milling division" SUPERVISOR="03"/>
 	<row NUMBER="2" NAME="Griding division" SUPERVISOR="02"/>

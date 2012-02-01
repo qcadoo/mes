@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<users>
-	<row LOGIN="J.Nowak" EMAIL="j.nowak@email.com" FIRSTNAME="Jan" LASTNAME="Nowak" ROLE="ROLE_USER" />
-	<row LOGIN="A.Kowalski" EMAIL="a.kowalski@email.com" FIRSTNAME="Adam" LASTNAME="Kowalski" ROLE="ROLE_USER" />
-</users>
+<stockCorrection>
+	<row NUMBER="1" STOCK_CORRECTION_DATE="2012-01-05 00:00:00" STOCK_AREAS="7" PRODUCT="000029" SHOULD_BE="" FOUND="100" STAFF="02"/>
+	<row NUMBER="2" STOCK_CORRECTION_DATE="2012-01-05 00:00:00" STOCK_AREAS="4" PRODUCT="000016" SHOULD_BE="" FOUND="100" STAFF="01"/>
+	<row NUMBER="3" STOCK_CORRECTION_DATE="2012-01-05 00:00:00" STOCK_AREAS="5" PRODUCT="000025" SHOULD_BE="" FOUND="9" STAFF="01"/>
+</stockCorrection>
