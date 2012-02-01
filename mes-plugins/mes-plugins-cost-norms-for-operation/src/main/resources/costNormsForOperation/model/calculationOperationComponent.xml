@@ -32,7 +32,7 @@
 		<belongsTo name="operation" plugin="technologies" model="operation"
 			required="true" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
-			model="technologyOperationComponent" required="true" />
+			model="technologyOperationComponent" required="true" lazy="false" />
 		<belongsTo name="parent" model="calculationOperationComponent" />
 		<enum name="entityType" values="operation" required="true"
 			default="operation" />

@@ -133,13 +133,19 @@ public class OrderRealizationTimeServiceImplTest {
         EntityTree orderOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
         when(order.getTreeField("orderOperationComponents")).thenReturn(orderOperationComponents);
 
+        Entity techOpComp1 = mock(Entity.class);
+        Entity techOpComp2 = mock(Entity.class);
+
+        when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(techOpComp1);
+        when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(techOpComp2);
+
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(order,
                 plannedQuantity, includeTpz);
 
         // then
-        assertEquals(new Integer(6), operationDurations.get(opComp1));
-        assertEquals(new Integer(3), operationDurations.get(opComp2));
+        assertEquals(new Integer(6), operationDurations.get(techOpComp1));
+        assertEquals(new Integer(3), operationDurations.get(techOpComp2));
     }
 
     @Test

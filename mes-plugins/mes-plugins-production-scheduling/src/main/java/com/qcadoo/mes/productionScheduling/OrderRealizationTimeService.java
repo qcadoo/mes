@@ -26,7 +26,9 @@ package com.qcadoo.mes.productionScheduling;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -45,6 +47,8 @@ public interface OrderRealizationTimeService {
 
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final Boolean includeTpz);
+
+    Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz);
 
     Date getDateFromField(final Object value);
 

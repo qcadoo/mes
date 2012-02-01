@@ -147,6 +147,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
     }
 
+    @Override
     /**
      * 
      * @param entity
@@ -180,6 +181,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         for (Entity operationComponent : operationComponents) {
             int duration = evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
+
+            if ("order".equals(entityType)) {
+                operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
+            }
+
             operationDurations.put(operationComponent, duration);
         }
 
