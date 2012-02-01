@@ -661,10 +661,12 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
 
-            if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
-                // TODO MICI: it looks like extended enum's don't work in samples, this is required by quality controls
-                // technology.setField("qualityControlType", "04forOperation");
-            } else if (isEnabled("qualityControls")
+            // if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
+            // // TODO MICI: it looks like extended enum's don't work in samples, this is required by quality controls
+            // // technology.setField("qualityControlType", "04forOperation");
+            // } else if (isEnabled("qualityControls")
+            if (!(isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type")))
+                    && isEnabled("qualityControls")
                     && ("02forUnit".equals(values.get("quality_control_type")) || "03forOrder".equals(values
                             .get("quality_control_type")))) {
                 technology.setField("qualityControlType", values.get("quality_control_type"));
