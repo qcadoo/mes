@@ -35,7 +35,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -60,14 +60,14 @@ public class CostCalculationReportService {
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state.getFieldValue() instanceof Long) {
-            Entity costCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
-                    CostCalculateConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
+            Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
             if (costCalculation == null) {
                 state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
                         MessageType.FAILURE);
             } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
-                viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculateConstants.PLUGIN_IDENTIFIER + "/"
-                        + CostCalculateConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
+                viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculationConstants.PLUGIN_IDENTIFIER + "/"
+                        + CostCalculationConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
                         + "&fieldDate=dateOfCalculation", true, false);
             } else {
                 state.addMessage(translationService.translate(
@@ -90,8 +90,8 @@ public class CostCalculationReportService {
         if (state instanceof FormComponent) {
             ComponentState date = viewDefinitionState.getComponentByReference("dateOfCalculation");
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            Entity costCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
-                    CostCalculateConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
+            Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
 
             if (costCalculation == null) {
                 String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
@@ -118,8 +118,8 @@ public class CostCalculationReportService {
                 generated.setFieldValue("0");
                 return;
             }
-            costCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
-                    CostCalculateConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
+            costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
             try {
                 generateCostCalDocuments(state, costCalculation);
                 state.performEvent(viewDefinitionState, "reset", new String[0]);
