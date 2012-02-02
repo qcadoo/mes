@@ -38,6 +38,7 @@ import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,6 +51,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -73,6 +75,9 @@ public class ProductionRecordService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private static final String FIELD_ORDER = "order";
 
@@ -210,30 +215,49 @@ public class ProductionRecordService {
 
         DataDefinition recordProductDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
         Map<Long, Entity> recordProductsMap = newHashMap();
-        String technologyProductFieldName = "operationProductOutComponents";
+        String productModel = "operationProductOutComponent";
         String recordProductFieldName = "recordOperationProductOutComponents";
 
         if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
-            technologyProductFieldName = "operationProductInComponents";
+            productModel = "operationProductInComponent";
             recordProductFieldName = "recordOperationProductInComponents";
         }
-
-        /*
-         * TODO whoever did this, i cannot be sure how this was intended to work. Ive patched this to use the new unified product
-         * quantities algorithm, but it could be wrong.
-         */
 
         for (Entity orderOperation : orderOperations) {
             Entity order = orderOperation.getBelongsToField("order");
 
-            Map<Entity, BigDecimal> productQuantities;
+            Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
-            if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
-                productQuantities = productQuantitiesService.getNeededProductQuantities(asList(order), false);
-            } else if (MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT.equals(modelName)) {
-                productQuantities = productQuantitiesService.getOutputProductQuantities(asList(order));
-            } else {
-                throw new IllegalStateException("Wrong modelName.");
+            Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService
+                    .getProductComponentQuantities(asList(order));
+
+            Entity orderOperationComponent = productionRecord.getBelongsToField("orderOperationComponent");
+
+            for (Entry<Entity, BigDecimal> prodCompQty : productComponentQuantities.entrySet()) {
+                if (orderOperationComponent == null) {
+                    Entity product = prodCompQty.getKey().getBelongsToField("product");
+                    Entity technology = order.getBelongsToField("technology");
+                    String type = technologyService.getProductType(product, technology);
+                    if (!TechnologyService.COMPONENT.equals(type) && !TechnologyService.PRODUCT.equals(type)) {
+                        continue;
+                    }
+                } else {
+                    Entity operation = orderOperationComponent.getBelongsToField("operation");
+                    Entity currentOperation = prodCompQty.getKey().getBelongsToField("operationComponent")
+                            .getBelongsToField("operation");
+                    if (!operation.getId().equals(currentOperation.getId())) {
+                        continue;
+                    }
+                }
+
+                if (productModel.equals(prodCompQty.getKey().getDataDefinition().getName())) {
+                    Entity product = prodCompQty.getKey().getBelongsToField("product");
+                    BigDecimal qty = prodCompQty.getValue();
+                    if (productQuantities.get(product) != null) {
+                        qty = qty.add(productQuantities.get(product));
+                    }
+                    productQuantities.put(product, qty);
+                }
             }
 
             for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
