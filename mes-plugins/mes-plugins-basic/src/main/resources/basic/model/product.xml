@@ -34,8 +34,7 @@
 		<string name="name" required="true" >
 			<validatesLength max="1024"/>
 		</string>
-		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
-			required="true" />
+		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste" />
 		<string name="ean" unique="true" />
 		<dictionary name="category" dictionary="categories" />
 		<dictionary name="unit" dictionary="units" required="true" />
