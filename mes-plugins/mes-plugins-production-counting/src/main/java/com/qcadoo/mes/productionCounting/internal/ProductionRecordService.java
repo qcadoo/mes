@@ -234,10 +234,15 @@ public class ProductionRecordService {
             Entity orderOperationComponent = productionRecord.getBelongsToField("orderOperationComponent");
 
             for (Entry<Entity, BigDecimal> prodCompQty : productComponentQuantities.entrySet()) {
+                Entity product = prodCompQty.getKey().getBelongsToField("product");
+                Entity technology = order.getBelongsToField("technology");
+                String type = technologyService.getProductType(product, technology);
+
+                if (TechnologyService.WASTE.equals(type)) {
+                    continue;
+                }
+
                 if (orderOperationComponent == null) {
-                    Entity product = prodCompQty.getKey().getBelongsToField("product");
-                    Entity technology = order.getBelongsToField("technology");
-                    String type = technologyService.getProductType(product, technology);
                     if (!TechnologyService.COMPONENT.equals(type) && !TechnologyService.PRODUCT.equals(type)) {
                         continue;
                     }
@@ -251,7 +256,6 @@ public class ProductionRecordService {
                 }
 
                 if (productModel.equals(prodCompQty.getKey().getDataDefinition().getName())) {
-                    Entity product = prodCompQty.getKey().getBelongsToField("product");
                     BigDecimal qty = prodCompQty.getValue();
                     if (productQuantities.get(product) != null) {
                         qty = qty.add(productQuantities.get(product));
