@@ -55,6 +55,7 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
@@ -78,6 +79,9 @@ public class ProductionRecordService {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private NumberService numberService;
 
     private static final String FIELD_ORDER = "order";
 
@@ -258,7 +262,7 @@ public class ProductionRecordService {
                 if (productModel.equals(prodCompQty.getKey().getDataDefinition().getName())) {
                     BigDecimal qty = prodCompQty.getValue();
                     if (productQuantities.get(product) != null) {
-                        qty = qty.add(productQuantities.get(product));
+                        qty = qty.add(productQuantities.get(product), numberService.getMathContext());
                     }
                     productQuantities.put(product, qty);
                 }
@@ -434,9 +438,12 @@ public class ProductionRecordService {
             BigDecimal productionInOneCycle = getBigDecimal(orderOperationComponent.getField("productionInOneCycle"));
             BigDecimal machineUtilization = getBigDecimal(orderOperationComponent.getField("machineUtilization"));
             BigDecimal laborUtilization = getBigDecimal(orderOperationComponent.getField("laborUtilization"));
-            plannedTime = plannedTime.add(tj.multiply(productionInOneCycle)).add(tpz);
-            plannedMachineTime = plannedMachineTime.add(plannedTime.multiply(machineUtilization));
-            plannedLaborTime = plannedLaborTime.add(plannedTime.multiply(laborUtilization));
+            plannedTime = plannedTime.add(tj.multiply(productionInOneCycle, numberService.getMathContext()),
+                    numberService.getMathContext()).add(tpz, numberService.getMathContext());
+            plannedMachineTime = plannedMachineTime.add(plannedTime.multiply(machineUtilization, numberService.getMathContext()),
+                    numberService.getMathContext());
+            plannedLaborTime = plannedLaborTime.add(plannedTime.multiply(laborUtilization, numberService.getMathContext()),
+                    numberService.getMathContext());
         }
         productionRecord.setField("plannedTime", plannedTime.setScale(0, ROUND_UP).intValue());
         productionRecord.setField("plannedMachineTime", plannedMachineTime.setScale(0, ROUND_UP).intValue());
@@ -449,9 +456,10 @@ public class ProductionRecordService {
         BigDecimal machineTime = getBigDecimal(productionRecord.getField("machineTime"));
         BigDecimal laborTime = getBigDecimal(productionRecord.getField("laborTime"));
 
-        productionRecord
-                .setField("machineTimeBalance", machineTime.subtract(plannedMachineTime).setScale(0, ROUND_UP).intValue());
-        productionRecord.setField("laborTimeBalance", laborTime.subtract(plannedLaborTime).setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("machineTimeBalance", machineTime.subtract(plannedMachineTime, numberService.getMathContext())
+                .setScale(0, ROUND_UP).intValue());
+        productionRecord.setField("laborTimeBalance", laborTime.subtract(plannedLaborTime, numberService.getMathContext())
+                .setScale(0, ROUND_UP).intValue());
     }
 
     private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {

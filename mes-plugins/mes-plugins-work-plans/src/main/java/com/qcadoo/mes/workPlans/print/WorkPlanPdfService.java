@@ -55,6 +55,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
@@ -90,13 +91,16 @@ public class WorkPlanPdfService extends PdfDocumentService {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private TranslationService translationService;
+
     enum ProductDirection {
         IN, OUT;
     }
 
     @Override
     public String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("workPlans.workPlan.report.title", locale);
+        return translationService.translate("workPlans.workPlan.report.title", locale);
     }
 
     @Override
@@ -232,7 +236,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         PdfPTable table = PdfUtil.createPanelTable(1);
         table.getDefaultCell().setBackgroundColor(null);
 
-        String commentLabel = getTranslationService().translate("workPlans.workPlan.report.operation.comment", locale);
+        String commentLabel = translationService.translate("workPlans.workPlan.report.operation.comment", locale);
         String commentContent = operationComponent.getBelongsToField(OPERATION_LITERAL).getStringField("comment");
 
         if (commentContent == null) {
@@ -250,17 +254,17 @@ public class WorkPlanPdfService extends PdfDocumentService {
     void addOperationInfoToTheOperationHeader(final PdfPTable operationTable, final Entity operationComponent, final Locale locale) {
         String operationLevel = operationComponent.getStringField("nodeNumber");
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.level", locale), operationLevel, null,
+                translationService.translate("workPlans.workPlan.report.operation.level", locale), operationLevel, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         String operationName = operationComponent.getBelongsToField(OPERATION_LITERAL).getStringField(NAME_LITERAL);
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.name", locale), operationName, null,
+                translationService.translate("workPlans.workPlan.report.operation.name", locale), operationName, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         String operationNumber = operationComponent.getBelongsToField(OPERATION_LITERAL).getStringField(NUMBER_LITERAL);
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.number", locale), operationNumber, null,
+                translationService.translate("workPlans.workPlan.report.operation.number", locale), operationNumber, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
     }
 
@@ -279,16 +283,16 @@ public class WorkPlanPdfService extends PdfDocumentService {
             Entity division = workstationType.getBelongsToField("division");
             if (division != null) {
                 divisionName = division.getStringField(NAME_LITERAL);
-                divisionLabel = getTranslationService().translate("workPlans.workPlan.report.operation.division", locale);
+                divisionLabel = translationService.translate("workPlans.workPlan.report.operation.division", locale);
                 Entity supervisor = division.getBelongsToField("supervisor");
                 if (supervisor != null) {
                     supervisorName = supervisor.getStringField(NAME_LITERAL) + " " + supervisor.getStringField("surname");
-                    supervisorLabel = getTranslationService().translate("workPlans.workPlan.report.operation.supervisor", locale);
+                    supervisorLabel = translationService.translate("workPlans.workPlan.report.operation.supervisor", locale);
                 }
             }
 
             PdfUtil.addTableCellAsTable(operationTable,
-                    getTranslationService().translate("workPlans.workPlan.report.operation.workstationType", locale),
+                    translationService.translate("workPlans.workPlan.report.operation.workstationType", locale),
                     workstationTypeName, null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
             PdfUtil.addTableCellAsTable(operationTable, divisionLabel, divisionName, null, PdfUtil.getArialBold10Dark(),
                     PdfUtil.getArialRegular10Dark());
@@ -304,17 +308,17 @@ public class WorkPlanPdfService extends PdfDocumentService {
             technologyString = technology.getStringField(NAME_LITERAL);
         }
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.technology", locale), technologyString,
-                null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                translationService.translate("workPlans.workPlan.report.operation.technology", locale), technologyString, null,
+                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         String orderName = order.getStringField(NAME_LITERAL);
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.orderName", locale), orderName, null,
+                translationService.translate("workPlans.workPlan.report.operation.orderName", locale), orderName, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
         String orderNumber = order.getStringField(NUMBER_LITERAL);
         PdfUtil.addTableCellAsTable(operationTable,
-                getTranslationService().translate("workPlans.workPlan.report.operation.orderNumber", locale), orderNumber, null,
+                translationService.translate("workPlans.workPlan.report.operation.orderNumber", locale), orderNumber, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
     }
 
@@ -325,22 +329,21 @@ public class WorkPlanPdfService extends PdfDocumentService {
         PrioritizedString title = null;
 
         if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
-            title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDistinction",
-                    locale));
+            title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noDistinction", locale));
         } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
             Entity endProduct = technology.getBelongsToField(PRODUCT_LITERAL);
 
-            String prefix = getTranslationService().translate("workPlans.workPlan.report.title.byEndProduct", locale);
+            String prefix = translationService.translate("workPlans.workPlan.report.title.byEndProduct", locale);
             String endProductName = endProduct.getStringField(NAME_LITERAL);
             title = new PrioritizedString(prefix + " " + endProductName);
         } else if (WorkPlanType.BY_WORKSTATION_TYPE.getStringValue().equals(type)) {
             Entity workstation = operationComponent.getBelongsToField(OPERATION_LITERAL).getBelongsToField("workstationType");
 
             if (workstation == null) {
-                title = new PrioritizedString(getTranslationService().translate(
-                        "workPlans.workPlan.report.title.noWorkstationType", locale), 1);
+                title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noWorkstationType",
+                        locale), 1);
             } else {
-                String suffix = getTranslationService().translate("workPlans.workPlan.report.title.byWorkstationType", locale);
+                String suffix = translationService.translate("workPlans.workPlan.report.title.byWorkstationType", locale);
                 String workstationName = workstation.getStringField(NAME_LITERAL);
                 title = new PrioritizedString(suffix + " " + workstationName);
             }
@@ -348,16 +351,16 @@ public class WorkPlanPdfService extends PdfDocumentService {
             Entity workstation = operationComponent.getBelongsToField(OPERATION_LITERAL).getBelongsToField("workstationType");
 
             if (workstation == null) {
-                title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDivision",
-                        locale), 1);
+                title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noDivision", locale),
+                        1);
             } else {
                 Entity division = workstation.getBelongsToField("division");
 
                 if (division == null) {
-                    title = new PrioritizedString(getTranslationService().translate("workPlans.workPlan.report.title.noDivision",
+                    title = new PrioritizedString(translationService.translate("workPlans.workPlan.report.title.noDivision",
                             locale), 1);
                 } else {
-                    String suffix = getTranslationService().translate("workPlans.workPlan.report.title.byDivision", locale);
+                    String suffix = translationService.translate("workPlans.workPlan.report.title.byDivision", locale);
                     String divisionName = division.getStringField(NAME_LITERAL);
                     title = new PrioritizedString(suffix + " " + divisionName);
                 }
@@ -417,6 +420,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private static final class OperationProductComponentComparator implements Comparator<Entity> {
 
+        @Override
         public int compare(final Entity o0, final Entity o1) {
             Entity prod0 = o0.getBelongsToField(PRODUCT_LITERAL);
             Entity prod1 = o1.getBelongsToField(PRODUCT_LITERAL);
@@ -427,6 +431,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private static final class ColumnSuccessionComparator implements Comparator<Entity> {
 
+        @Override
         public int compare(final Entity o1, final Entity o2) {
             Integer o1succession = (Integer) o1.getField("succession");
             Integer o2succession = (Integer) o2.getField("succession");
@@ -530,15 +535,15 @@ public class WorkPlanPdfService extends PdfDocumentService {
             return;
         }
 
-        String titleString = getTranslationService().translate("workPlans.workPlan.report.additionalFields", locale);
+        String titleString = translationService.translate("workPlans.workPlan.report.additionalFields", locale);
         document.add(new Paragraph(titleString, PdfUtil.getArialBold10Dark()));
 
         PdfUtil.addImage(document, imagePath);
     }
 
     void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documenTitle = getTranslationService().translate("workPlans.workPlan.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, entity.getField(NAME_LITERAL).toString(), documenTitle, documentAuthor,
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
     }
@@ -577,9 +582,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
             final ProductDirection direction, final Locale locale) throws DocumentException {
         String title;
         if (ProductDirection.IN.equals(direction)) {
-            title = getTranslationService().translate("workPlans.workPlan.report.productsInTable", locale);
+            title = translationService.translate("workPlans.workPlan.report.productsInTable", locale);
         } else if (ProductDirection.OUT.equals(direction)) {
-            title = getTranslationService().translate("workPlans.workPlan.report.productsOutTable", locale);
+            title = translationService.translate("workPlans.workPlan.report.productsOutTable", locale);
         } else {
             throw new IllegalStateException("unknown product direction");
         }
@@ -590,7 +595,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         for (Entity column : columns) {
             String nameKey = column.getStringField(NAME_LITERAL);
-            header.add(getTranslationService().translate(nameKey, locale));
+            header.add(translationService.translate(nameKey, locale));
         }
 
         return header;
@@ -598,14 +603,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     List<String> prepareOrdersTableHeader(final Document document, final Entity entity, final Locale locale)
             throws DocumentException {
-        document.add(new Paragraph(getTranslationService().translate("workPlans.workPlan.report.ordersTable", locale), PdfUtil
+        document.add(new Paragraph(translationService.translate("workPlans.workPlan.report.ordersTable", locale), PdfUtil
                 .getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
-        orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.product", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.workPlan.report.colums.plannedQuantity", locale));
-        orderHeader.add(getTranslationService().translate("workPlans.orderTable.dateTo", locale));
+        orderHeader.add(translationService.translate("orders.order.number.label", locale));
+        orderHeader.add(translationService.translate("orders.order.name.label", locale));
+        orderHeader.add(translationService.translate("workPlans.workPlan.report.colums.product", locale));
+        orderHeader.add(translationService.translate("workPlans.workPlan.report.colums.plannedQuantity", locale));
+        orderHeader.add(translationService.translate("workPlans.orderTable.dateTo", locale));
         return orderHeader;
     }
 

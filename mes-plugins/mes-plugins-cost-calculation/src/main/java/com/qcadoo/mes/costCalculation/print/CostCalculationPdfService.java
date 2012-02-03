@@ -26,7 +26,6 @@ package com.qcadoo.mes.costCalculation.print;
 import static com.google.common.collect.Lists.newLinkedList;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +48,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
@@ -56,6 +56,7 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -84,14 +85,20 @@ public class CostCalculationPdfService extends PdfDocumentService {
     @Autowired
     TimeConverterService timeConverterService;
 
-    private String tabInText = "\t \t \t";
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    private final String tabInText = "\t \t \t";
 
     private static final String NAME_L = "name";
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documentTitle = getTranslationService().translate("costCalculation.costCalculationDetails.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documentTitle = translationService.translate("costCalculation.costCalculationDetails.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
         DataDefinition dataDefCostCalculation = dataDefinitionService.get(CostCalculateConstants.PLUGIN_IDENTIFIER,
@@ -108,13 +115,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        document.add(new Paragraph(getTranslationService().translate("costCalculation.costCalculationDetails.report.paragraph",
-                locale), PdfUtil.getArialBold11Dark()));
+        document.add(new Paragraph(translationService
+                .translate("costCalculation.costCalculationDetails.report.paragraph", locale), PdfUtil.getArialBold11Dark()));
         PdfPTable materialsTable = addMaterialsTable(costCalculation, locale);
         document.add(materialsTable);
 
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("costCalculation.costCalculationDetails.report.paragraph2",
+        document.add(new Paragraph(translationService.translate("costCalculation.costCalculationDetails.report.paragraph2",
                 locale), PdfUtil.getArialBold11Dark()));
 
         if ("hourly".equals(costCalculation.getField("calculateOperationCostsMode"))) {
@@ -127,7 +134,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("costCalculation.costCalculationDetails.report.fileName", locale);
+        return translationService.translate("costCalculation.costCalculationDetails.report.fileName", locale);
     }
 
     private void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue, final String nullValue,
@@ -151,66 +158,64 @@ public class CostCalculationPdfService extends PdfDocumentService {
     public PdfPTable addLeftPanelToReport(final Entity costCalculation, final Locale locale) {
         PdfPTable leftPanelColumn = PdfUtil.createPanelTable(1);
 
+        addTableCellAsTable(leftPanelColumn, translationService.translate("costCalculation.costCalculation.number.label", locale)
+                + ":", costCalculation.getStringField("number"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                null);
         addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.number.label", locale) + ":",
-                costCalculation.getStringField("number"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
-        addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.product.label", locale) + ":", costCalculation
+                translationService.translate("costCalculation.costCalculation.product.label", locale) + ":", costCalculation
                         .getBelongsToField("product").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.defaultTechnology.label", locale) + ":",
+                translationService.translate("costCalculation.costCalculation.defaultTechnology.label", locale) + ":",
                 costCalculation.getBelongsToField("defaultTechnology").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.technology.label", locale) + ":",
-                costCalculation.getBelongsToField("technology").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
+                translationService.translate("costCalculation.costCalculation.technology.label", locale) + ":", costCalculation
+                        .getBelongsToField("technology").getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.quantity.label", locale) + ":",
-                getDecimalFormat().format(costCalculation.getField("quantity")), null, PdfUtil.getArialBold9Dark(),
-                PdfUtil.getArialBold9Dark(), null);
+                translationService.translate("costCalculation.costCalculation.quantity.label", locale) + ":", numberService
+                        .getDecimalFormat(locale).format(costCalculation.getField("quantity")), null,
+                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
         Entity order = costCalculation.getBelongsToField("order");
-        addTableCellAsTable(leftPanelColumn,
-                getTranslationService().translate("costCalculation.costCalculation.order.label", locale) + ":",
-                order == null ? "" : order.getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
-                null);
+        addTableCellAsTable(leftPanelColumn, translationService.translate("costCalculation.costCalculation.order.label", locale)
+                + ":", order == null ? "" : order.getStringField(NAME_L), null, PdfUtil.getArialBold9Dark(),
+                PdfUtil.getArialBold9Dark(), null);
 
-        leftPanelColumn.addCell(new Phrase(getTranslationService().translate(
-                "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale)
-                + ":", PdfUtil.getArialBold10Dark()));
+        leftPanelColumn.addCell(new Phrase(translationService.translate(
+                "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale) + ":", PdfUtil
+                .getArialBold10Dark()));
         addTableCellAsTable(leftPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.includeTPZ.label", locale) + ":",
-                (Boolean) costCalculation.getField("includeTPZ") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale), null, PdfUtil.getArialBold9Dark(),
+                tabInText + translationService.translate("costCalculation.costCalculation.includeTPZ.label", locale) + ":",
+                (Boolean) costCalculation.getField("includeTPZ") ? translationService.translate("qcadooView.true", locale)
+                        : translationService.translate("qcadooView.false", locale), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
 
         Object reportData = costCalculation.getField("calculateMaterialCostsMode");
         addTableCellAsTable(
                 leftPanelColumn,
                 tabInText
-                        + getTranslationService().translate("costCalculation.costCalculation.calculateMaterialCostsMode.label",
-                                locale),
-                reportData == null ? getTranslationService().translate("qcadooView.form.blankComboBoxValue", locale)
-                        : getTranslationService().translate(
-                                "costCalculation.costCalculation.calculateMaterialCostsMode.value." + reportData.toString(),
-                                locale), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                        + translationService
+                                .translate("costCalculation.costCalculation.calculateMaterialCostsMode.label", locale),
+                reportData == null ? translationService.translate("qcadooView.form.blankComboBoxValue", locale)
+                        : translationService.translate("costCalculation.costCalculation.calculateMaterialCostsMode.value."
+                                + reportData.toString(), locale), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                null);
         reportData = costCalculation.getField("calculateOperationCostsMode");
         addTableCellAsTable(
                 leftPanelColumn,
                 tabInText
-                        + getTranslationService().translate("costCalculation.costCalculation.calculateOperationCostsMode.label",
+                        + translationService.translate("costCalculation.costCalculation.calculateOperationCostsMode.label",
                                 locale),
-                reportData == null ? getTranslationService().translate("qcadooView.form.blankComboBoxValue", locale)
-                        : getTranslationService().translate(
-                                "costCalculation.costCalculation.calculateOperationCostsMode.value." + reportData.toString(),
-                                locale)
+                reportData == null ? translationService.translate("qcadooView.form.blankComboBoxValue", locale)
+                        : translationService.translate("costCalculation.costCalculation.calculateOperationCostsMode.value."
+                                + reportData.toString(), locale)
 
                 , null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
 
         reportData = costCalculation.getField("description");
         addTableCellAsTable(leftPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.description.label", locale) + ":",
+                tabInText + translationService.translate("costCalculation.costCalculation.description.label", locale) + ":",
                 (reportData == null ? "" : reportData), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
 
         return leftPanelColumn;
@@ -218,101 +223,91 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     public PdfPTable addRightPanelToReport(final Entity costCalculation, final Locale locale) {
         PdfPTable rightPanelColumn = PdfUtil.createPanelTable(1);
-        rightPanelColumn.addCell(new Phrase(getTranslationService().translate(
-                "costCalculation.costCalculationDetails.window.mainTab.form.technicalProductionCost", locale)
-                + ":", PdfUtil.getArialBold10Dark()));
+        rightPanelColumn.addCell(new Phrase(translationService.translate(
+                "costCalculation.costCalculationDetails.window.mainTab.form.technicalProductionCost", locale) + ":", PdfUtil
+                .getArialBold10Dark()));
 
         Object reportData = costCalculation.getField("totalMaterialCosts");
-        addTableCellAsTable(
-                rightPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.totalMaterialCosts.label", locale)
-                        + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+        addTableCellAsTable(rightPanelColumn,
+                tabInText + translationService.translate("costCalculation.costCalculation.totalMaterialCosts.label", locale)
+                        + ":", (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         reportData = costCalculation.getField("totalMachineHourlyCosts");
-        addTableCellAsTable(
-                rightPanelColumn,
-                tabInText
-                        + getTranslationService().translate("costCalculation.costCalculation.totalMachineHourlyCosts.label",
-                                locale) + ":", (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+        addTableCellAsTable(rightPanelColumn,
+                tabInText + translationService.translate("costCalculation.costCalculation.totalMachineHourlyCosts.label", locale)
+                        + ":", (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         reportData = costCalculation.getField("totalLaborHourlyCosts");
-        addTableCellAsTable(
-                rightPanelColumn,
-                tabInText
-                        + getTranslationService()
-                                .translate("costCalculation.costCalculation.totalLaborHourlyCosts.label", locale) + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+        addTableCellAsTable(rightPanelColumn,
+                tabInText + translationService.translate("costCalculation.costCalculation.totalLaborHourlyCosts.label", locale)
+                        + ":", (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
         reportData = costCalculation.getField("totalTechnicalProductionCosts");
         addTableCellAsTable(
                 rightPanelColumn,
                 tabInText
-                        + getTranslationService().translate(
-                                "costCalculation.costCalculation.totalTechnicalProductionCosts.label", locale) + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+                        + translationService.translate("costCalculation.costCalculation.totalTechnicalProductionCosts.label",
+                                locale) + ":",
+                (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
 
-        rightPanelColumn.addCell(new Phrase(getTranslationService().translate(
-                "costCalculation.costCalculationDetails.window.mainTab.form.overheads", locale)
-                + ":", PdfUtil.getArialBold10Dark()));
+        rightPanelColumn.addCell(new Phrase(translationService.translate(
+                "costCalculation.costCalculationDetails.window.mainTab.form.overheads", locale) + ":", PdfUtil
+                .getArialBold10Dark()));
         reportData = costCalculation.getField("productionCostMargin");
         Object reportData2 = costCalculation.getField("productionCostMarginValue");
         addTableCellAsTable(
                 rightPanelColumn,
-                tabInText
-                        + getTranslationService().translate("costCalculation.costCalculation.productionCostMargin.label", locale)
+                tabInText + translationService.translate("costCalculation.costCalculation.productionCostMargin.label", locale)
                         + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)
+                (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)
                         + (reportData2 == null ? "" : " ("
-                                + getTranslationService().translate(
-                                        "costCalculation.costCalculation.productionCostMarginValue.label", locale) + ": "
-                                + reportData2.toString() + " " + currencyService.getCurrencyAlphabeticCode() + ")")), null,
-                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                                + translationService.translate("costCalculation.costCalculation.productionCostMarginValue.label",
+                                        locale) + ": " + reportData2.toString() + " "
+                                + currencyService.getCurrencyAlphabeticCode() + ")")), null, PdfUtil.getArialBold9Dark(),
+                PdfUtil.getArialBold9Dark(), null);
         reportData = costCalculation.getField("materialCostMargin");
         reportData2 = costCalculation.getField("materialCostMarginValue");
         addTableCellAsTable(
                 rightPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.materialCostMargin.label", locale)
+                tabInText + translationService.translate("costCalculation.costCalculation.materialCostMargin.label", locale)
                         + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)
+                (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)
                         + (reportData2 == null ? "" : " ("
-                                + getTranslationService().translate(
-                                        "costCalculation.costCalculation.materialCostMarginValue.label", locale) + ": "
-                                + reportData2.toString() + " " + currencyService.getCurrencyAlphabeticCode() + ")")), null,
-                PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                                + translationService.translate("costCalculation.costCalculation.materialCostMarginValue.label",
+                                        locale) + ": " + reportData2.toString() + " "
+                                + currencyService.getCurrencyAlphabeticCode() + ")")), null, PdfUtil.getArialBold9Dark(),
+                PdfUtil.getArialBold9Dark(), null);
         reportData = costCalculation.getField("additionalOverhead");
-        addTableCellAsTable(
-                rightPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.additionalOverhead.label", locale)
-                        + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+        addTableCellAsTable(rightPanelColumn,
+                tabInText + translationService.translate("costCalculation.costCalculation.additionalOverhead.label", locale)
+                        + ":", (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold9Dark(),
                 PdfUtil.getArialBold9Dark(), null);
 
         reportData = costCalculation.getField("totalCosts");
 
-        rightPanelColumn.addCell(new Phrase(getTranslationService().translate(
-                "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale)
-                + ":", PdfUtil.getArialBold10Dark()));
+        rightPanelColumn.addCell(new Phrase(translationService.translate(
+                "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale) + ":", PdfUtil
+                .getArialBold10Dark()));
 
         reportData = costCalculation.getField("totalCosts");
         addTableCellAsTable(
                 rightPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.totalCosts.label", locale) + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+                tabInText + translationService.translate("costCalculation.costCalculation.totalCosts.label", locale) + ":",
+                (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark(), null);
 
         reportData = costCalculation.getField("costPerUnit");
         addTableCellAsTable(
                 rightPanelColumn,
-                tabInText + getTranslationService().translate("costCalculation.costCalculation.costPerUnit.label", locale) + ":",
-                (reportData == null ? "" : getDecimalFormat().format(reportData)) + " "
+                tabInText + translationService.translate("costCalculation.costCalculation.costPerUnit.label", locale) + ":",
+                (reportData == null ? "" : numberService.getDecimalFormat(locale).format(reportData)) + " "
                         + currencyService.getCurrencyAlphabeticCode(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark(), null);
         return rightPanelColumn;
@@ -330,7 +325,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
 
-            materialsTableHeader.add(getTranslationService().translate(translate, locale));
+            materialsTableHeader.add(translationService.translate(translate, locale));
         }
         PdfPTable materialsTable = PdfUtil.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
         Entity technology;
@@ -351,22 +346,27 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTable.addCell(new Phrase(product.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField(NAME_L), PdfUtil.getArialRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
-            materialsTable.addCell(new Phrase(getDecimalFormat().format(product.getValue()), PdfUtil.getArialRegular9Dark()));
+            materialsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(product.getValue()), PdfUtil
+                    .getArialRegular9Dark()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal nominalCost = (BigDecimal) product.getKey().getField("nominalCost");
             BigDecimal costForNumber = (BigDecimal) product.getKey().getField("costForNumber");
-            BigDecimal costPerUnit = nominalCost.divide(costForNumber, 3, RoundingMode.HALF_UP);
-            materialsTable.addCell(new Phrase(getDecimalFormat().format(costPerUnit), PdfUtil.getArialRegular9Dark()));
-            BigDecimal costs = product.getValue().multiply(costPerUnit);
-            materialsTable.addCell(new Phrase(getDecimalFormat().format(costs), PdfUtil.getArialRegular9Dark()));
+            BigDecimal costPerUnit = nominalCost.divide(costForNumber, numberService.getMathContext());
+            materialsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(costPerUnit), PdfUtil
+                    .getArialRegular9Dark()));
+            BigDecimal costs = product.getValue().multiply(costPerUnit, numberService.getMathContext());
+            materialsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(costs), PdfUtil
+                    .getArialRegular9Dark()));
             Object reportData = costCalculation.getField("materialCostMargin");
             if (reportData == null) {
                 materialsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
                 materialsTable.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
             } else {
-                materialsTable.addCell(new Phrase(getDecimalFormat().format(reportData), PdfUtil.getArialRegular9Dark()));
-                BigDecimal totalCosts = costs.add((BigDecimal) reportData);
-                materialsTable.addCell(new Phrase(getDecimalFormat().format(totalCosts), PdfUtil.getArialRegular9Dark()));
+                materialsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(reportData), PdfUtil
+                        .getArialRegular9Dark()));
+                BigDecimal totalCosts = costs.add((BigDecimal) reportData, numberService.getMathContext());
+                materialsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(totalCosts), PdfUtil
+                        .getArialRegular9Dark()));
             }
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
@@ -384,7 +384,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
-            operationsTableHeader.add(getTranslationService().translate(translate, locale));
+            operationsTableHeader.add(translationService.translate(translate, locale));
         }
 
         int[] columnWitdh = { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
@@ -408,15 +408,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
                 operationsTable.addCell(new Phrase(duration, PdfUtil.getArialRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("machineHourlyCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("laborHourlyCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("operationCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("operationMarginCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("totalOperationCost")), PdfUtil.getArialRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             }
@@ -434,7 +434,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
-            operationsTableHeader.add(getTranslationService().translate(translate, locale));
+            operationsTableHeader.add(translationService.translate(translate, locale));
         }
         List<Entity> calculationOperationComponents = costCalculation.getTreeField("calculationOperationComponents");
 
@@ -446,15 +446,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         .getArialRegular9Dark()));
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
                         NAME_L), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(calculationOperationComponent.getField("pieces")),
-                        PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                        calculationOperationComponent.getField("pieces")), PdfUtil.getArialRegular9Dark()));
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("pieceworkCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("operationCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("operationMarginCost")), PdfUtil.getArialRegular9Dark()));
-                operationsTable.addCell(new Phrase(getDecimalFormat().format(
+                operationsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
                         calculationOperationComponent.getField("totalOperationCost")), PdfUtil.getArialRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             }

@@ -33,28 +33,4 @@
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-	<bean id="qualityControlForOrderPdfView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForOrderPdfView"/>
-  		
-  	<bean id="qualityControlForUnitPdfView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForUnitPdfView"/>
-  		
-  	<bean id="qualityControlForBatchPdfView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForBatchPdfView"/>
-  		
-  	<bean id="qualityControlForOperationPdfView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForOperationPdfView"/>
-
-	<bean id="qualityControlForOrderXlsView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForOrderXlsView"/>
-  		
-  	<bean id="qualityControlForUnitXlsView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForUnitXlsView"/>
-  		
-  	<bean id="qualityControlForBatchXlsView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForBatchXlsView"/>
-  		
-  	<bean id="qualityControlForOperationXlsView"
-  		class="com.qcadoo.mes.qualityControls.print.QualityControlForOperationXlsView"/>
-
 </beans>

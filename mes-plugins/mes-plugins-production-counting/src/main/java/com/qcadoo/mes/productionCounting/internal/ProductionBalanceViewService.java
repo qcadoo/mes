@@ -40,6 +40,7 @@ import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRe
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -75,6 +76,9 @@ public class ProductionBalanceViewService {
 
     @Autowired
     private TimeConverterService timeConverterService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -229,12 +233,14 @@ public class ProductionBalanceViewService {
         List<Entity> orderOperationComponents = order.getTreeField("orderOperationComponents");
         for (Entity orderOperationComponent : orderOperationComponents) {
             plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tj"))).add(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")));
-            machinePlannedTime = machinePlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
-                    .getField("machineUtilization")));
-            laborPlannedTime = laborPlannedTime.add(plannedTime.multiply((BigDecimal) orderOperationComponent
-                    .getField("laborUtilization")));
+                    new BigDecimal((Integer) orderOperationComponent.getField("tj")), numberService.getMathContext()).add(
+                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")), numberService.getMathContext());
+            machinePlannedTime = machinePlannedTime.add(
+                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("machineUtilization"),
+                            numberService.getMathContext()), numberService.getMathContext());
+            laborPlannedTime = laborPlannedTime.add(
+                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("laborUtilization"),
+                            numberService.getMathContext()), numberService.getMathContext());
         }
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
@@ -244,12 +250,14 @@ public class ProductionBalanceViewService {
                 .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
         for (Entity productionRecord : productionRecordsList) {
-            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")));
-            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")));
+            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
+                    numberService.getMathContext());
+            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
+                    numberService.getMathContext());
         }
 
-        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime);
-        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime);
+        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
+        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
 
         FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference("machinePlannedTime");

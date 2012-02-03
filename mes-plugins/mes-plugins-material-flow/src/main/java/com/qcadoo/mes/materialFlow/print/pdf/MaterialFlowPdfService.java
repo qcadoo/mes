@@ -38,8 +38,10 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 
@@ -49,23 +51,29 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     @Autowired
     private MaterialFlowService materialFlowService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
+
     @Override
     protected void buildPdfContent(final Document document, final Entity materialsInStockAreas, final Locale locale)
             throws DocumentException {
         Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
 
-        String documenTitle = getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documenTitle = translationService.translate("materialFlow.materialFlow.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
                 materialsInStockAreas.getStringField("worker"));
 
         PdfPTable panelTable = PdfUtil.createPanelTable(2);
         PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
+                translationService.translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
                 ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
                 PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("materialFlow.materialFlow.report.panel.time", locale),
+                translationService.translate("materialFlow.materialFlow.report.panel.time", locale),
                 ((Date) materialsInStockAreas.getField("time")).toString(), null, PdfUtil.getArialBold10Dark(),
 
                 PdfUtil.getArialRegular10Dark());
@@ -77,7 +85,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
             names.add(stockArea.getField("number").toString());
         }
         PdfUtil.addTableCellAsTable(panelTable,
-                getTranslationService().translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names, null,
+                translationService.translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names, null,
                 PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
         PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
 
@@ -86,17 +94,18 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         document.add(panelTable);
 
         List<String> tableHeader = new ArrayList<String>();
-        tableHeader.add(getTranslationService().translate("materialFlow.materialFlow.report.columnHeader.number", locale));
-        tableHeader.add(getTranslationService().translate("materialFlow.materialFlow.report.columnHeader.name", locale));
-        tableHeader.add(getTranslationService().translate("materialFlow.materialFlow.report.columnHeader.quantity", locale));
-        tableHeader.add(getTranslationService().translate("materialFlow.materialFlow.report.columnHeader.unit", locale));
+        tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.number", locale));
+        tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.name", locale));
+        tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.quantity", locale));
+        tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.unit", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format(data.getValue()), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(data.getValue()), PdfUtil
+                    .getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }
@@ -105,6 +114,6 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("materialFlow.materialFlow.report.title", locale);
+        return translationService.translate("materialFlow.materialFlow.report.title", locale);
     }
 }

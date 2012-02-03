@@ -35,6 +35,7 @@ import com.qcadoo.mes.productionCounting.internal.states.ChangeRecordStateMessag
 import com.qcadoo.mes.productionCounting.internal.states.RecordStateListener;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -48,6 +49,9 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
@@ -121,7 +125,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
                 add = addition;
             }
 
-            return value.add(add);
+            return value.add(add, numberService.getMathContext());
         }
 
     }
@@ -143,7 +147,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             } else {
                 sub = substrahend;
             }
-            return value.subtract(sub);
+            return value.subtract(sub, numberService.getMathContext());
 
         }
 

@@ -24,7 +24,6 @@
 package com.qcadoo.mes.qualityControls;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -131,6 +131,9 @@ public final class QualityControlService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private TranslationService translationService;
@@ -547,7 +550,8 @@ public final class QualityControlService {
                 return false;
             }
 
-            if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity)) > 0) {
+            if (acceptedDefectsQuantity.compareTo(takenForControlQuantity.subtract(rejectedQuantity,
+                    numberService.getMathContext())) > 0) {
                 entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL),
                         "qualityControls.quality.control.validate.global.error.acceptedDefectsQuantity.tooLarge");
@@ -704,8 +708,8 @@ public final class QualityControlService {
 
             BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
-            BigDecimal numberOfControls = doneQuantity == null ? plannedQuantity.divide(sampling, RoundingMode.HALF_UP)
-                    : doneQuantity.divide(sampling, RoundingMode.HALF_UP);
+            BigDecimal numberOfControls = doneQuantity == null ? plannedQuantity.divide(sampling, numberService.getMathContext())
+                    : doneQuantity.divide(sampling, numberService.getMathContext());
 
             for (int i = 0; i <= numberOfControls.intValue(); i++) {
                 DataDefinition qualityForUnitDataDefinition = dataDefinitionService.get(
@@ -725,8 +729,9 @@ public final class QualityControlService {
                 if (i < numberOfControls.intValue()) {
                     forUnit.setField(CONTROLLED_QUANTITY_LITERAL, sampling);
                 } else {
-                    BigDecimal numberOfRemainders = doneQuantity == null ? plannedQuantity.divideAndRemainder(sampling)[1]
-                            : doneQuantity.divideAndRemainder(sampling)[1];
+                    BigDecimal numberOfRemainders = doneQuantity == null ? plannedQuantity.divideAndRemainder(sampling,
+                            numberService.getMathContext())[1] : doneQuantity.divideAndRemainder(sampling,
+                            numberService.getMathContext())[1];
                     forUnit.setField(CONTROLLED_QUANTITY_LITERAL, numberOfRemainders);
 
                     if (numberOfRemainders.compareTo(BigDecimal.ZERO) < 1) {

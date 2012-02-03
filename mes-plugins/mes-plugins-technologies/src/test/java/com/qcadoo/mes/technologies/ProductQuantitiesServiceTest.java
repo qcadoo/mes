@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,12 +40,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
 public class ProductQuantitiesServiceTest {
 
@@ -71,6 +74,9 @@ public class ProductQuantitiesServiceTest {
     @Mock
     private EntityTreeNode operationComponent1, operationComponent2;
 
+    @Mock
+    private NumberService numberService;
+
     private EntityList orders;
 
     private EntityTree tree;
@@ -80,6 +86,8 @@ public class ProductQuantitiesServiceTest {
     private Map<Entity, List<Entity>> productOutComponents;
 
     private BigDecimal plannedQty;
+
+    private MathContext mathContext;
 
     private static EntityList mockEntityListIterator(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
@@ -98,6 +106,8 @@ public class ProductQuantitiesServiceTest {
         MockitoAnnotations.initMocks(this);
 
         productQuantitiesService = new ProductQuantitiesService();
+
+        ReflectionTestUtils.setField(productQuantitiesService, "numberService", numberService);
 
         orders = mockEntityListIterator(asList(order));
 
@@ -178,6 +188,9 @@ public class ProductQuantitiesServiceTest {
         when(productInComponent3.getDataDefinition()).thenReturn(ddIn);
         when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
         when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
+
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -195,11 +208,11 @@ public class ProductQuantitiesServiceTest {
         Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
 
         // then
-        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
-        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
-        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
+        assertEquals(new BigDecimal(45).setScale(1), productQuantities.get(productInComponent1));
+        assertEquals(new BigDecimal(9).setScale(1), productQuantities.get(productInComponent2));
+        assertEquals(new BigDecimal(4.5), productQuantities.get(productInComponent3));
+        assertEquals(new BigDecimal(9).setScale(1), productQuantities.get(productOutComponent2));
+        assertEquals(new BigDecimal(4.5), productQuantities.get(productOutComponent4));
     }
 
     @Test
@@ -213,9 +226,9 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(3, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(10), productQuantities.get(product2));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(45).setScale(1), productQuantities.get(product1));
+        assertEquals(new BigDecimal(9).setScale(1), productQuantities.get(product2));
+        assertEquals(new BigDecimal(4.5), productQuantities.get(product3));
     }
 
     @Test
@@ -228,8 +241,8 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(2, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(45).setScale(1), productQuantities.get(product1));
+        assertEquals(new BigDecimal(4.5), productQuantities.get(product3));
 
     }
 
@@ -246,9 +259,9 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(3, productQuantities.size());
-        assertEquals(new BigDecimal(50), productQuantities.get(product1));
-        assertEquals(new BigDecimal(10), productQuantities.get(product2));
-        assertEquals(new BigDecimal(5), productQuantities.get(product3));
+        assertEquals(new BigDecimal(45).setScale(1), productQuantities.get(product1));
+        assertEquals(new BigDecimal(9).setScale(1), productQuantities.get(product2));
+        assertEquals(new BigDecimal(4.5), productQuantities.get(product3));
     }
 
     @Test
@@ -263,8 +276,8 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(new BigDecimal(4.5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(9).setScale(1), operationMultipliers.get(operationComponent1));
     }
 
     @Test
@@ -277,8 +290,8 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(new BigDecimal(4.5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(9).setScale(1), operationMultipliers.get(operationComponent1));
     }
 
     @Test
@@ -291,7 +304,7 @@ public class ProductQuantitiesServiceTest {
 
         // then
         assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(new BigDecimal(4.5), operationMultipliers.get(operationComponent2));
+        assertEquals(new BigDecimal(9).setScale(1), operationMultipliers.get(operationComponent1));
     }
 }
