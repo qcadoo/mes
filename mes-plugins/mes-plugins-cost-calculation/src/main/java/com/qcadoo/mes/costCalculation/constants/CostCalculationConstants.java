@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public interface CostCalculateConstants {
+public interface CostCalculationConstants {
 
     String PLUGIN_IDENTIFIER = "costCalculation";
 

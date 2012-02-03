@@ -104,6 +104,7 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
+		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyTreeIsntEmpty" />
 		<onCopy
 			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="clearGeneratedOnCopy" />

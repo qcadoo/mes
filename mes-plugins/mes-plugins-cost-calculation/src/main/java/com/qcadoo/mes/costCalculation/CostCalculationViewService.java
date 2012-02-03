@@ -25,12 +25,12 @@ package com.qcadoo.mes.costCalculation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.FORM;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.ORDER;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.PRODUCT;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.QUANTITY;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculateConstants.TECHNOLOGY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.FORM;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.ORDER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.PRODUCT;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.QUANTITY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
 import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
@@ -53,7 +53,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costCalculation.constants.CostCalculateConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -177,8 +177,8 @@ public class CostCalculationViewService {
     }
 
     private void generateNumber(final ViewDefinitionState viewDefinitionState) {
-        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, CostCalculateConstants.PLUGIN_IDENTIFIER,
-                CostCalculateConstants.MODEL_COST_CALCULATION, FORM, "number");
+        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, CostCalculationConstants.PLUGIN_IDENTIFIER,
+                CostCalculationConstants.MODEL_COST_CALCULATION, FORM, "number");
     }
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
