@@ -198,19 +198,6 @@ ALTER TABLE ordergroups_ordergroup ALTER COLUMN "number" type varchar(255);
 
 -- end
 
-
--- Table: basic_staff
--- changed: 27.01.2012
-
-ALTER TABLE basic_staff ADD COLUMN shift_id bigint;
-ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_shift_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) DEFERRABLE;
-ALTER TABLE basic_staff ADD COLUMN division_id bigint;
-ALTER TABLE basic_staff ADD CONSTRAINT basic_staff_division_fkey FOREIGN KEY (division_id)
-      REFERENCES basic_division (id) DEFERRABLE;
-
--- end
-
       
 -- Table: basic_staff
 -- changed: 27.01.2012
