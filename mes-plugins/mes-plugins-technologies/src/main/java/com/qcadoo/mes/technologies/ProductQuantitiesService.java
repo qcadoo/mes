@@ -24,7 +24,6 @@
 package com.qcadoo.mes.technologies;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +31,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class ProductQuantitiesService {
@@ -45,6 +46,9 @@ public class ProductQuantitiesService {
     private static final String IN_PRODUCT = "operationProductInComponent";
 
     private static final String OUT_PRODUCT = "operationProductOutComponent";
+
+    @Autowired
+    private NumberService numberService;
 
     /**
      * 
@@ -285,18 +289,18 @@ public class ProductQuantitiesService {
 
     private void multiplyQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
             final Map<Entity, BigDecimal> mapWithQuantities, final Map<Entity, BigDecimal> operationRuns) {
-        BigDecimal multiplier = needed.divide(actual, 0, RoundingMode.CEILING);
+        BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
 
         operationRuns.put(operationComponent, multiplier);
 
         for (Entity currentOut : operationComponent.getHasManyField("operationProductOutComponents")) {
             BigDecimal currentOutQty = mapWithQuantities.get(currentOut);
-            mapWithQuantities.put(currentOut, currentOutQty.multiply(multiplier));
+            mapWithQuantities.put(currentOut, currentOutQty.multiply(multiplier, numberService.getMathContext()));
         }
 
         for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
             BigDecimal currentInQuantity = mapWithQuantities.get(currentIn);
-            mapWithQuantities.put(currentIn, currentInQuantity.multiply(multiplier));
+            mapWithQuantities.put(currentIn, currentInQuantity.multiply(multiplier, numberService.getMathContext()));
         }
 
     }

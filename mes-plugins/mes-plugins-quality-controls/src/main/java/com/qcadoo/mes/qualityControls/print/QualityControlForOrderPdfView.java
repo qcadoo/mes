@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -42,6 +43,7 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
@@ -49,6 +51,7 @@ import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
+@Component(value = "qualityControlForOrderPdfView")
 public class QualityControlForOrderPdfView extends ReportPdfView {
 
     @Autowired
@@ -57,11 +60,14 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
     @Autowired
     private QualityControlsReportService qualityControlsReportService;
 
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        String documentTitle = getTranslationService().translate("qualityControls.qualityControlForOrder.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documentTitle = translationService.translate("qualityControls.qualityControlForOrder.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForOrder");
@@ -80,25 +86,25 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
             addProductSeries(document, entry, locale);
         }
 
-        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
+        String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
-        return getTranslationService().translate("qualityControls.qualityControlForOrder.report.fileName", locale);
+        return translationService.translate("qualityControls.qualityControlForOrder.report.fileName", locale);
     }
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("qualityControls.qualityControlForOrder.report.title", locale));
+        document.addTitle(translationService.translate("qualityControls.qualityControlForOrder.report.title", locale));
     }
 
     private void addOrderSeries(final Document document, final Map<Entity, List<BigDecimal>> quantities, final Locale locale)
             throws DocumentException {
         List<String> qualityHeader = new ArrayList<String>();
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.controlled.quantity", locale));
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.done.quantity", locale));
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.correct.quantity", locale));
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.incorrect.quantity", locale));
-        qualityHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.objective.quantity", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.product.number", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.controlled.quantity", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.done.quantity", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.correct.quantity", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.incorrect.quantity", locale));
+        qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.objective.quantity", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(6, qualityHeader, false);
 
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
@@ -120,8 +126,8 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
 
         document.add(qualityControlsReportService.prepareTitle(entry.getKey(), locale, "order"));
         List<String> productHeader = new ArrayList<String>();
-        productHeader.add(getTranslationService().translate("qualityControls.qualityControl.report.control.number", locale));
-        productHeader.add(getTranslationService().translate(
+        productHeader.add(translationService.translate("qualityControls.qualityControl.report.control.number", locale));
+        productHeader.add(translationService.translate(
                 "qualityControls.qualityControlForOrderDetails.window.qualityControlForOrder.controlResult.label", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(2, productHeader, false);
         List<Entity> sortedOrders = entry.getValue();
@@ -129,10 +135,8 @@ public class QualityControlForOrderPdfView extends ReportPdfView {
 
         for (Entity entity : sortedOrders) {
             table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(
-                    getTranslationService().translate(
-                            "qualityControls.qualityForOrder.controlResult.value." + entity.getField("controlResult").toString(),
-                            locale), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(translationService.translate("qualityControls.qualityForOrder.controlResult.value."
+                    + entity.getField("controlResult").toString(), locale), PdfUtil.getArialRegular9Dark()));
         }
         document.add(table);
 

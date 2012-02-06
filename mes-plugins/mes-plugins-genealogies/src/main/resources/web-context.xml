@@ -37,7 +37,5 @@
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-  	<bean id="genealogyForProductView"
-  		class="com.qcadoo.mes.genealogies.print.GenealogyForProductView"/>
 
 </beans>

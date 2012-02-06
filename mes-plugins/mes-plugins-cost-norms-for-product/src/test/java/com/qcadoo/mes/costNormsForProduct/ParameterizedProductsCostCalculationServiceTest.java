@@ -30,8 +30,10 @@ import static java.math.BigDecimal.valueOf;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,13 +47,13 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 
 @RunWith(Parameterized.class)
 public class ParameterizedProductsCostCalculationServiceTest {
@@ -62,11 +64,15 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     private Entity costCalculation;
 
-    private ProductsCostCalculationConstants calculationMode;
+    private final ProductsCostCalculationConstants calculationMode;
 
-    private BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity, orderQuantity, expectedResult;
+    private final BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity, orderQuantity, expectedResult;
 
-    private BigDecimal costForNumber;
+    private final BigDecimal costForNumber;
+
+    private NumberService numberService;
+
+    private MathContext mathContext;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -99,6 +105,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
     @Before
     public void init() {
         productQuantitiesService = mock(ProductQuantitiesService.class);
+        numberService = mock(NumberService.class);
 
         costCalculation = mock(Entity.class);
         EntityTree operationComponents = mock(EntityTree.class);
@@ -110,7 +117,11 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
         productCostCalc = new ProductsCostCalculationServiceImpl();
 
-        ReflectionTestUtils.setField(productCostCalc, "productQuantitiesService", productQuantitiesService);
+        setField(productCostCalc, "productQuantitiesService", productQuantitiesService);
+        setField(productCostCalc, "numberService", numberService);
+
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
 
         when(costCalculation.getField("quantity")).thenReturn(orderQuantity);
         when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
@@ -139,9 +150,10 @@ public class ParameterizedProductsCostCalculationServiceTest {
         when(product.getField("costForNumber")).thenReturn(costForNumber);
 
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
-        productQuantities.put(product, inputQuantity.multiply(orderQuantity));
+        productQuantities.put(product, inputQuantity.multiply(orderQuantity, numberService.getMathContext()));
 
         when(productQuantitiesService.getNeededProductQuantities(technology, BigDecimal.ONE, true)).thenReturn(productQuantities);
+
     }
 
     @Test

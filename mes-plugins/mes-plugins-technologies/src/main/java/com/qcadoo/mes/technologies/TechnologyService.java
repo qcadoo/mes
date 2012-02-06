@@ -52,6 +52,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
@@ -142,6 +143,9 @@ public class TechnologyService {
 
     @Autowired
     ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private NumberService numberService;
 
     private enum ProductDirection {
         IN, OUT;

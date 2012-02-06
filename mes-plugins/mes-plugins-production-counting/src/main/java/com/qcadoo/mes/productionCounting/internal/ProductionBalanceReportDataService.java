@@ -27,9 +27,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class ProductionBalanceReportDataService {
@@ -64,6 +66,9 @@ public class ProductionBalanceReportDataService {
 
     private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
 
+    @Autowired
+    private NumberService numberService;
+
     public List<Entity> groupProductInOutComponentsByProduct(final List<Entity> productsList) {
         List<Entity> groupedProducts = new ArrayList<Entity>();
 
@@ -82,13 +87,15 @@ public class ProductionBalanceReportDataService {
                                 .toString()
                                 .equals(prevProduct.getBelongsToField(PRODUCTION_RECORD_FIELD)
                                         .getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD).getId().toString())) {
-                    plannedQuantity = plannedQuantity.add((BigDecimal) product.getField(PLANNED_QUANTITY_FIELD));
+                    plannedQuantity = plannedQuantity.add((BigDecimal) product.getField(PLANNED_QUANTITY_FIELD),
+                            numberService.getMathContext());
                 }
                 if (product.getField(USED_QUANTITY_FIELD) != null) {
                     if (usedQuantity == null) {
                         usedQuantity = (BigDecimal) product.getField(USED_QUANTITY_FIELD);
                     } else {
-                        usedQuantity = usedQuantity.add((BigDecimal) product.getField(USED_QUANTITY_FIELD));
+                        usedQuantity = usedQuantity.add((BigDecimal) product.getField(USED_QUANTITY_FIELD),
+                                numberService.getMathContext());
                     }
                 }
             } else {
@@ -97,7 +104,7 @@ public class ProductionBalanceReportDataService {
                 if (usedQuantity == null) {
                     prevProduct.setField(BALANCE_FIELD, null);
                 } else {
-                    prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity));
+                    prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
                 }
                 groupedProducts.add(prevProduct);
                 prevProduct = product;
@@ -110,7 +117,7 @@ public class ProductionBalanceReportDataService {
         if (usedQuantity == null) {
             prevProduct.setField(BALANCE_FIELD, null);
         } else {
-            prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity));
+            prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
         }
         groupedProducts.add(prevProduct);
 

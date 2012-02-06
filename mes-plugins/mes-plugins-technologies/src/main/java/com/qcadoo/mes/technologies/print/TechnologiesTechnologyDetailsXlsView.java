@@ -40,6 +40,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.DataDefinition;
@@ -50,6 +51,7 @@ import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.xls.ReportXlsView;
 import com.qcadoo.report.api.xls.XlsUtil;
 
+@Component(value = "technologiesTechnologyDetailsXlsView")
 public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
 
     @Autowired

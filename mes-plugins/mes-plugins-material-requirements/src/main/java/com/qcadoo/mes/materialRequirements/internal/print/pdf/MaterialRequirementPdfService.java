@@ -42,10 +42,12 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialRequirements.internal.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -80,35 +82,41 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
+
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
-        String documenTitle = getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documenTitle = translationService.translate("materialRequirements.materialRequirement.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, entity.getField(NAME_FIELD).toString(), documenTitle, documentAuthor,
                 (Date) entity.getField(DATE_FIELD), securityService.getCurrentUserName());
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("materialRequirements.materialRequirement.report.paragrah",
+        document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), PdfUtil.getArialBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
-        orderHeader.add(getTranslationService().translate("orders.order.number.label", locale));
-        orderHeader.add(getTranslationService().translate("orders.order.name.label", locale));
-        orderHeader.add(getTranslationService().translate("orders.order.product.label", locale));
-        orderHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
-        orderHeader.add(getTranslationService().translate("orders.order.plannedQuantity.label", locale));
-        addOrderSeries(document, entity, orderHeader);
+        orderHeader.add(translationService.translate("orders.order.number.label", locale));
+        orderHeader.add(translationService.translate("orders.order.name.label", locale));
+        orderHeader.add(translationService.translate("orders.order.product.label", locale));
+        orderHeader.add(translationService.translate("basic.product.unit.label", locale));
+        orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
+        addOrderSeries(document, entity, orderHeader, locale);
         document.add(Chunk.NEWLINE);
-        document.add(new Paragraph(getTranslationService().translate("materialRequirements.materialRequirement.report.paragrah2",
+        document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), PdfUtil.getArialBold11Dark()));
         List<String> productHeader = new ArrayList<String>();
-        productHeader.add(getTranslationService().translate("basic.product.number.label", locale));
-        productHeader.add(getTranslationService().translate("basic.product.name.label", locale));
-        productHeader.add(getTranslationService().translate("basic.product.unit.label", locale));
-        productHeader.add(getTranslationService().translate("technologies.technologyOperationComponent.quantity.label", locale));
-        addTechnologySeries(document, entity, productHeader);
+        productHeader.add(translationService.translate("basic.product.number.label", locale));
+        productHeader.add(translationService.translate("basic.product.name.label", locale));
+        productHeader.add(translationService.translate("basic.product.unit.label", locale));
+        productHeader.add(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
+        addTechnologySeries(document, entity, productHeader, locale);
     }
 
-    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
-            throws DocumentException {
+    private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader,
+            final Locale locale) throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) entity.getField(ONLY_COMPONENTS_FIELD);
 
@@ -126,13 +134,13 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue()), PdfUtil.getArialBold9Dark()));
+            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(entry.getValue()), PdfUtil.getArialBold9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
     }
 
-    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
+    private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader, final Locale locale)
             throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         Collections.sort(orders, new EntityOrderNumberComparator());
@@ -160,7 +168,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(getDecimalFormat().format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(plannedQuantity), PdfUtil
+                    .getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
@@ -168,7 +177,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
+        return translationService.translate("materialRequirements.materialRequirement.report.title", locale);
     }
 
 }

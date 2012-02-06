@@ -36,6 +36,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
@@ -44,6 +45,7 @@ import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.ReportXlsView;
 import com.qcadoo.report.api.xls.XlsUtil;
 
+@Component(value = "qualityControlForBatchXlsView")
 public class QualityControlForBatchXlsView extends ReportXlsView {
 
     @Autowired
