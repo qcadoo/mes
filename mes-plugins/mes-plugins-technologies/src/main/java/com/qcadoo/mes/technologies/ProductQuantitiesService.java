@@ -40,7 +40,7 @@ import com.qcadoo.model.api.EntityTree;
 @Service
 public class ProductQuantitiesService {
 
-    private static final String PRODUCT_LITERAL = "product";
+    private static final String PRODUCT_L = "product";
 
     private static final String IN_PRODUCT = "operationProductInComponent";
 
@@ -240,7 +240,7 @@ public class ProductQuantitiesService {
                     continue;
                 }
 
-                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_LITERAL);
+                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_L);
                 BigDecimal newQty = productComponentQuantity.getValue();
 
                 BigDecimal oldQty = productQuantities.get(product);
@@ -269,6 +269,13 @@ public class ProductQuantitiesService {
     private void preloadProductQuantitiesAndOperationRuns(final EntityTree tree, final Map<Entity, BigDecimal> productQuantities,
             Map<Entity, BigDecimal> operationRuns) {
         for (Entity operationComponent : tree) {
+            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+                EntityTree refTree = refTech.getTreeField("operationComponents");
+                preloadProductQuantitiesAndOperationRuns(refTree, productQuantities, operationRuns);
+                continue;
+            }
+
             for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
                 productQuantities.put(productComponent, neededQty);
@@ -304,11 +311,19 @@ public class ProductQuantitiesService {
     private void traverse(final Entity operationComponent, final Entity previousOperationComponent,
             final Map<Entity, BigDecimal> productQuantities, final Set<Entity> nonComponents, final BigDecimal plannedQty,
             final Entity technology, final Map<Entity, BigDecimal> operationRuns) {
+        if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+            Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+            EntityTree refTree = refTech.getTreeField("operationComponents");
+            traverse(refTree.getRoot(), previousOperationComponent, productQuantities, nonComponents, plannedQty, refTech,
+                    operationRuns);
+            return;
+        }
+
         if (previousOperationComponent == null) {
-            Entity outProduct = technology.getBelongsToField(PRODUCT_LITERAL);
+            Entity outProduct = technology.getBelongsToField(PRODUCT_L);
 
             for (Entity out : operationComponent.getHasManyField("operationProductOutComponents")) {
-                if (out.getBelongsToField(PRODUCT_LITERAL).getId().equals(outProduct.getId())) {
+                if (out.getBelongsToField(PRODUCT_L).getId().equals(outProduct.getId())) {
 
                     BigDecimal outQuantity = productQuantities.get(out);
 
@@ -322,7 +337,7 @@ public class ProductQuantitiesService {
                 boolean isntComponent = false;
 
                 for (Entity out : operationComponent.getHasManyField("operationProductOutComponents")) {
-                    if (out.getBelongsToField(PRODUCT_LITERAL).getId().equals(in.getBelongsToField(PRODUCT_LITERAL).getId())) {
+                    if (out.getBelongsToField(PRODUCT_L).getId().equals(in.getBelongsToField(PRODUCT_L).getId())) {
                         isntComponent = true;
 
                         BigDecimal outQuantity = productQuantities.get(out);

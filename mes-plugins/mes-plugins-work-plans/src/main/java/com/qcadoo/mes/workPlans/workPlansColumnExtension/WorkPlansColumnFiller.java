@@ -56,74 +56,82 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
-        fillProductNames(orders, values);
-        fillPlannedQuantities(orders, values);
+        ProductQuantitiesService productQuantitiesSerivce = new ProductQuantitiesService();
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesSerivce.getProductComponentQuantities(orders);
+
+        for (Entity order : orders) {
+            Entity technology = order.getBelongsToField("technology");
+            fillProductNames(technology, values);
+            fillPlannedQuantities(technology, productQuantities, values);
+        }
 
         return values;
     }
 
-    private void fillProductNames(final List<Entity> orders, final Map<Entity, Map<String, String>> valuesMap) {
-        for (Entity order : orders) {
+    private void fillProductNames(final Entity technology, final Map<Entity, Map<String, String>> valuesMap) {
+        // TODO mici, change those to orderOperationComponents?
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
 
-            // TODO mici, change those to orderOperationComponents?
-            Entity technology = order.getBelongsToField("technology");
-            EntityTree operationComponents = technology.getTreeField("operationComponents");
+        for (Entity operationComponent : operationComponents) {
+            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+                fillProductNames(refTech, valuesMap);
+                continue;
+            }
 
-            for (Entity operationComponent : operationComponents) {
-                EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
-                EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+            EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
+            EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
 
-                for (Entity productComponent : outputProducts) {
-                    if (valuesMap.get(productComponent) == null) {
-                        valuesMap.put(productComponent, new HashMap<String, String>());
-                    }
-                    valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
+            for (Entity productComponent : outputProducts) {
+                if (valuesMap.get(productComponent) == null) {
+                    valuesMap.put(productComponent, new HashMap<String, String>());
                 }
+                valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
+            }
 
-                for (Entity productComponent : inputProducts) {
-                    if (valuesMap.get(productComponent) == null) {
-                        valuesMap.put(productComponent, new HashMap<String, String>());
-                    }
-                    valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
+            for (Entity productComponent : inputProducts) {
+                if (valuesMap.get(productComponent) == null) {
+                    valuesMap.put(productComponent, new HashMap<String, String>());
                 }
+                valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
             }
         }
     }
 
-    private void fillPlannedQuantities(final List<Entity> orders, final Map<Entity, Map<String, String>> valuesMap) {
-        ProductQuantitiesService productQuantitiesSerivce = new ProductQuantitiesService();
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesSerivce.getProductComponentQuantities(orders);
-
+    private void fillPlannedQuantities(final Entity technology, final Map<Entity, BigDecimal> productQuantities,
+            final Map<Entity, Map<String, String>> valuesMap) {
         Locale locale = LocaleContextHolder.getLocale();
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
 
-        for (Entity order : orders) {
-            // TODO mici, change those to orderOperationComponents?
-            Entity technology = order.getBelongsToField("technology");
-            EntityTree operationComponents = technology.getTreeField("operationComponents");
+        // TODO mici, change those to orderOperationComponents?
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
 
-            for (Entity operationComponent : operationComponents) {
-                EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
-                EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+        for (Entity operationComponent : operationComponents) {
+            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+                fillPlannedQuantities(refTech, productQuantities, valuesMap);
+                continue;
+            }
 
-                for (Entity productComponent : outputProducts) {
-                    if (valuesMap.get(productComponent) == null) {
-                        valuesMap.put(productComponent, new HashMap<String, String>());
-                    }
-                    String unit = productComponent.getBelongsToField("product").getStringField("unit");
-                    String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
-                    valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
+            EntityList inputProducts = operationComponent.getHasManyField("operationProductInComponents");
+            EntityList outputProducts = operationComponent.getHasManyField("operationProductOutComponents");
+
+            for (Entity productComponent : outputProducts) {
+                if (valuesMap.get(productComponent) == null) {
+                    valuesMap.put(productComponent, new HashMap<String, String>());
                 }
+                String unit = productComponent.getBelongsToField("product").getStringField("unit");
+                String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
+                valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
+            }
 
-                for (Entity productComponent : inputProducts) {
-                    if (valuesMap.get(productComponent) == null) {
-                        valuesMap.put(productComponent, new HashMap<String, String>());
-                    }
-                    String unit = productComponent.getBelongsToField("product").getStringField("unit");
-                    String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
-                    valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
+            for (Entity productComponent : inputProducts) {
+                if (valuesMap.get(productComponent) == null) {
+                    valuesMap.put(productComponent, new HashMap<String, String>());
                 }
-
+                String unit = productComponent.getBelongsToField("product").getStringField("unit");
+                String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
+                valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
         }
     }

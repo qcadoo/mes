@@ -252,46 +252,73 @@ public class ProductQuantitiesServiceTest {
     }
 
     @Test
-    public void shouldReturnOperationMultipliers() {
+    public void shouldReturnOperationRuns() {
         // given
         boolean onlyComponents = false;
 
-        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
 
         // when
-        productQuantitiesService.getNeededProductQuantities(orders, onlyComponents, operationMultipliers);
+        productQuantitiesService.getNeededProductQuantities(orders, onlyComponents, operationRuns);
 
         // then
-        assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(2, operationRuns.size());
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
     }
 
     @Test
-    public void shouldReturnOperationMultipliersAlsoForComponents() {
+    public void shouldReturnOperationRunsAlsoForComponents() {
         // given
-        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
 
         // when
-        productQuantitiesService.getProductComponentQuantities(orders, operationMultipliers);
+        productQuantitiesService.getProductComponentQuantities(orders, operationRuns);
 
         // then
-        assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(2, operationRuns.size());
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
     }
 
     @Test
-    public void shouldReturnOperationMultipliersAlsoForPlainTechnology() {
+    public void shouldReturnOperationRunsAlsoForPlainTechnology() {
         // given
-        Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
 
         // when
-        productQuantitiesService.getProductComponentQuantities(technology, plannedQty, operationMultipliers);
+        productQuantitiesService.getProductComponentQuantities(technology, plannedQty, operationRuns);
 
         // then
-        assertEquals(2, operationMultipliers.size());
-        assertEquals(new BigDecimal(5), operationMultipliers.get(operationComponent2));
-        assertEquals(new BigDecimal(10), operationMultipliers.get(operationComponent1));
+        assertEquals(2, operationRuns.size());
+        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2));
+        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1));
+    }
+
+    @Test
+    public void shouldTraverseAlsoThroughReferencedTechnologies() {
+        // given
+        Entity refTech = mock(Entity.class);
+        Entity someOpComp = mock(Entity.class);
+
+        EntityList child = mockEntityListIterator(asList(someOpComp));
+        when(operationComponent2.getHasManyField("children")).thenReturn(child);
+
+        when(someOpComp.getStringField("entityType")).thenReturn("referenceTechnology");
+        when(someOpComp.getBelongsToField("referenceTechnology")).thenReturn(refTech);
+
+        EntityTree refTree = mockEntityTreeIterator(asList((Entity) operationComponent1));
+        when(refTree.getRoot()).thenReturn(operationComponent1);
+        when(refTech.getTreeField("operationComponents")).thenReturn(refTree);
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+
+        // then
+        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
+        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
+        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
+        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
     }
 }

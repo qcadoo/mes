@@ -118,6 +118,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         addOperations(document, workPlan, decimalFormat, locale);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<Entity, Map<String, String>> getColumnValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
@@ -367,6 +368,32 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return title;
     }
 
+    private void fetchOperationComponentsFromTechnology(final Entity technology, final Entity workPlan, final Entity order,
+            final Locale locale, final Map<Entity, Entity> opComps2Order, final Map<PrioritizedString, List<Entity>> opComps) {
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
+
+        for (Entity operationComponent : operationComponents) {
+            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+                fetchOperationComponentsFromTechnology(refTech, workPlan, order, locale, opComps2Order, opComps);
+                continue;
+            }
+
+            PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
+
+            if (title == null) {
+                throw new IllegalStateException("undefined workplan type");
+            }
+
+            if (!opComps.containsKey(title)) {
+                opComps.put(title, new ArrayList<Entity>());
+            }
+
+            opComps2Order.put(operationComponent, order);
+            opComps.get(title).add(operationComponent);
+        }
+    }
+
     Map<PrioritizedString, List<Entity>> getOperationComponentsWithDistinction(final Entity workPlan,
             final Map<Entity, Entity> operationComponent2order, final Locale locale) {
         Map<PrioritizedString, List<Entity>> operationComponentsWithDistinction = new TreeMap<PrioritizedString, List<Entity>>();
@@ -378,22 +405,25 @@ public class WorkPlanPdfService extends PdfDocumentService {
             if (technology == null) {
                 continue;
             }
-            EntityTree operationComponents = technology.getTreeField("operationComponents");
 
-            for (Entity operationComponent : operationComponents) {
-                PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
+            fetchOperationComponentsFromTechnology(technology, workPlan, order, locale, operationComponent2order,
+                    operationComponentsWithDistinction);
 
-                if (title == null) {
-                    throw new IllegalStateException("undefined workplan type");
-                }
-
-                if (!operationComponentsWithDistinction.containsKey(title)) {
-                    operationComponentsWithDistinction.put(title, new ArrayList<Entity>());
-                }
-
-                operationComponent2order.put(operationComponent, order);
-                operationComponentsWithDistinction.get(title).add(operationComponent);
-            }
+            // if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+            //
+            // }
+            // PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
+            //
+            // if (title == null) {
+            // throw new IllegalStateException("undefined workplan type");
+            // }
+            //
+            // if (!operationComponentsWithDistinction.containsKey(title)) {
+            // operationComponentsWithDistinction.put(title, new ArrayList<Entity>());
+            // }
+            //
+            // operationComponent2order.put(operationComponent, order);
+            // operationComponentsWithDistinction.get(title).add(operationComponent);
         }
 
         for (List<Entity> operationComponents : operationComponentsWithDistinction.values()) {
