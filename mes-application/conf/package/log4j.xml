@@ -169,7 +169,7 @@
 		<appender-ref ref="report-log" />
 	</logger>
 	
-	<logger name="com.qcadoo.mes.plugins.integration">
+	<logger name="com.qcadoo.mes.plugins">
 		<level value="debug" />
 		<appender-ref ref="connector-log" />
 	</logger>
