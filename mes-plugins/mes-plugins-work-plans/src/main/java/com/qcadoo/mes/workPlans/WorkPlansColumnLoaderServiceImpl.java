@@ -71,15 +71,23 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     private static final String ACTIVE_FIELD = "active";
 
-    private static final String OUTPUT_TYPE = "output";
+    private static enum ColumnType {
+        INPUT("input"), OUTPUT("output"), BOTH("both");
 
-    private static final String INPUT_TYPE = "input";
+        private String stringValue;
 
-    private static final String BOTH_TYPE = "both";
+        private ColumnType(final String stringValue) {
+            this.stringValue = stringValue;
+        }
 
-    private static final String ADD_OPERATION = "add";
+        public String getStringValue() {
+            return stringValue;
+        }
+    };
 
-    private static final String DELETE_OPERATION = "delete";
+    private static enum OperationType {
+        ADD, DELETE;
+    };
 
     private static final String[] COLUMN_ATTRIBUTES = new String[] { IDENTIFIER_FIELD, NAME_FIELD, DESCRIPTION_FIELD,
             COLUMNFILLER_FIELD, TYPE_FIELD, ACTIVE_FIELD };
@@ -160,14 +168,14 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     public void fillColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, ADD_OPERATION);
+        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, OperationType.ADD);
     }
 
     public void clearColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, DELETE_OPERATION);
+        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, OperationType.DELETE);
     }
 
-    private void readDataFromXML(final String plugin, final String type, final String[] attributes, final String operation) {
+    private void readDataFromXML(final String plugin, final String type, final String[] attributes, final OperationType operation) {
         LOG.info("Loading test data from " + type + ".xml ...");
 
         try {
@@ -194,7 +202,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void readData(final String type, final String[] attributes, final NodeList nodeLst, final int row,
-            final String operation) {
+            final OperationType operation) {
         Map<String, String> values = new HashMap<String, String>();
         Node fstNode = nodeLst.item(row);
 
@@ -206,24 +214,24 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
 
         if (COLUMN_FOR_PRODUCTS.equals(type)) {
-            if (ADD_OPERATION.equals(operation)) {
-                if (BOTH_TYPE.equals(values.get(TYPE_FIELD))) {
+            if (OperationType.ADD.equals(operation)) {
+                if (ColumnType.BOTH.getStringValue().equals(values.get(TYPE_FIELD))) {
                     addColumnForInputProducts(values);
                     addColumnForOutputProducts(values);
-                } else if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.INPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
                     addColumnForInputProducts(values);
-                } else if (OUTPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
                     addColumnForOutputProducts(values);
                 } else {
                     throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
                 }
-            } else if (DELETE_OPERATION.equals(operation)) {
-                if (BOTH_TYPE.equals(values.get(TYPE_FIELD))) {
+            } else if (OperationType.DELETE.equals(operation)) {
+                if (ColumnType.BOTH.getStringValue().equals(values.get(TYPE_FIELD))) {
                     deleteColumnForInputProducts(values);
                     deleteColumnForOutputProducts(values);
-                } else if (INPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.INPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
                     deleteColumnForInputProducts(values);
-                } else if (OUTPUT_TYPE.equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
                     deleteColumnForOutputProducts(values);
                 } else {
                     throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
