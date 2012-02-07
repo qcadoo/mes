@@ -210,10 +210,11 @@
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
         
-        <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
-            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" method="copyColumnForProducts" />
-        </model:model-hook>
-        
+        <!-- TODO: maybe used in future-->
+		<!-- <model:model-hook plugin="productionScheduling" model="orderOperationComponent"> -->
+		<!--     <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" method="copyColumnForProducts" /> -->
+		<!-- </model:model-hook> -->
+		
 		<menu:menu-category name="reports" />
 		
 		<menu:menu-item name="workPlans" category="reports" view="workPlansList" />
@@ -235,7 +236,9 @@
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
+		
+		<!-- TODO: maybe used in future-->
+		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" /> -->
 		
 		<view:view-listener plugin="orders"
 			view="ordersList" component="grid" event="addSelectedOrdersToWorkPlan"
