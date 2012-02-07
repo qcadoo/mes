@@ -248,10 +248,12 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                             + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
                                     .getStringField(FIELD_NAME), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
                     null);
-            addTableCellAsTable(panelTable,
+            addTableCellAsTable(
+                    panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
-                    (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getField("creationTime"))),
-                    null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                    (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getHasManyField("loggings")
+                            .get(0).getField("dateAndTime"))), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(),
+                    null);
             if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerProductionTime")) {
                 addTableCellAsTable(panelTable, translationService.translate(
                         "productionCounting.productionCounting.report.panel.machineOperationTime", locale),
@@ -265,7 +267,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         }
         addTableCellAsTable(panelTable,
                 translationService.translate("productionCounting.productionCounting.report.panel.worker", locale),
-                productionRecord.getStringField("worker"), null, PdfUtil.getArialBold9Dark(), PdfUtil.getArialBold9Dark(), null);
+                productionRecord.getHasManyField("loggings").get(0).getStringField("worker"), null, PdfUtil.getArialBold9Dark(),
+                PdfUtil.getArialBold9Dark(), null);
         if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerProductionTime")) {
             addTableCellAsTable(
                     panelTable,

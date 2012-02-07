@@ -43,11 +43,43 @@ public interface OrderRealizationTimeService {
 
     BigDecimal getBigDecimalFromField(final Object value, final Locale locale);
 
+    /**
+     * 
+     * @param operationComponent
+     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
+     *            orderOperationComponent
+     * @param plannedQuantity
+     *            How many products we want this operation to produce
+     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish
+     *         (includeTpz).
+     */
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
 
+    /**
+     * 
+     * @param operationComponent
+     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
+     *            orderOperationComponent
+     * @param plannedQuantity
+     *            How many products we want this operation to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
+     */
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final Boolean includeTpz);
 
+    /**
+     * 
+     * @param entity
+     *            An order or a technology for which we want to estimate operation times.
+     * @param plannedQuantity
+     *            How many products we want this order/technology to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations,
+     *         without offset added)
+     */
     Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz);
 
     Date getDateFromField(final Object value);

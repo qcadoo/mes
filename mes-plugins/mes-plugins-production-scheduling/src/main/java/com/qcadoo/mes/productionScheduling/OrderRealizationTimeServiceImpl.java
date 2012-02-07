@@ -129,17 +129,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
     }
 
-    /**
-     * 
-     * @param operationComponent
-     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            orderOperationComponent
-     * @param plannedQuantity
-     *            How many products we want this operation to produce
-     * @param includeTpz
-     *            Flag indicating if we want to include Tpz
-     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
-     */
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
@@ -152,16 +141,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     @Override
-    /**
-     * 
-     * @param entity
-     *            An order or a technology for which we want to estimate operation times.
-     * @param plannedQuantity
-     *            How many products we want this order/technology to produce
-     * @param includeTpz
-     *            Flag indicating if we want to include Tpz
-     * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations, without offset added)
-     */
     public Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz) {
         Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
 

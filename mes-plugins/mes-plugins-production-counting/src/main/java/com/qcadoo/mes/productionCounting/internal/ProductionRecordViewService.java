@@ -124,26 +124,25 @@ public class ProductionRecordViewService {
         Entity order = getOrderFromLookup(view);
         String typeOfProductionRecording = order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
 
-        view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(
-                getBooleanValue(order.getField(COMPONENT_REGISTER_PRODUCTION_TIME)));
-        view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(
-                getBooleanValue(order.getField(COMPONENT_REGISTER_PRODUCTION_TIME)));
+        view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
+        view.getComponentByReference(COMPONENT_MACHINE_TIME)
+                .setVisible(order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
 
         view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
         view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(
                 PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
-                        && getBooleanValue(order.getField(COMPONENT_REGISTER_PRODUCTION_TIME)));
+                        && order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
         view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)
-                        && getBooleanValue(order.getField(COMPONENT_REGISTER_PRODUCTION_TIME)));
+                        && order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
         view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(
                 getBooleanValue(!PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
                         && !PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
-                getBooleanValue(order.getField(FIELD_REGISTER_QUANTITY_OUT_PRODUCT)));
+                order.getBooleanField(FIELD_REGISTER_QUANTITY_OUT_PRODUCT));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
-                getBooleanValue(order.getField(FIELD_REGISTER_QUANTITY_IN_PRODUCT)));
+                order.getBooleanField(FIELD_REGISTER_QUANTITY_IN_PRODUCT));
 
         view.getComponentByReference("isDisabled").setFieldValue(false);
     }
@@ -227,7 +226,7 @@ public class ProductionRecordViewService {
         if (order == null) {
             return;
         }
-        Boolean registerProductionTime = getBooleanValue(order.getField(COMPONENT_REGISTER_PRODUCTION_TIME));
+        Boolean registerProductionTime = order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME);
         if (registerProductionTime && order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING) != null
                 && !("01none".equals(order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING)))) {
             view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(true);
@@ -250,7 +249,7 @@ public class ProductionRecordViewService {
             return;
         }
 
-        Boolean autoCloseOrder = getBooleanValue(order.getField(FIELD_AUTO_CLOSE_ORDER));
+        Boolean autoCloseOrder = order.getBooleanField(FIELD_AUTO_CLOSE_ORDER);
         String orderState = order.getStringField(COMPONENT_STATE);
         if (autoCloseOrder
                 && "1".equals(view.getComponentByReference("lastRecord").getFieldValue())

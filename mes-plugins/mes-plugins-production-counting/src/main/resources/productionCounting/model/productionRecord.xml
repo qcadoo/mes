@@ -45,8 +45,6 @@
 			model="recordOperationProductOutComponent" />
 
 		<boolean name="lastRecord" />
-		<string name="worker" />
-		<datetime name="creationTime" />
 
 		<integer name="machineTime" />
 		<integer name="machineTimeBalance" />
@@ -76,8 +74,11 @@
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="countPlannedTimeAndBalance" />
 		<onCreate 
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			class="com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService"
 			method="logCreateEvent" />
+		<onCopy 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="changeStateToDefault" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
