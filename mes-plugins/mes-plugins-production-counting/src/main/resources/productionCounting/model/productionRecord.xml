@@ -40,9 +40,9 @@
 		<enum name="state" values="01draft,02accepted,03declined"
 			default="01draft" required="true" />
 		<hasMany name="recordOperationProductInComponents" joinField="productionRecord"
-			model="recordOperationProductInComponent" />
+			model="recordOperationProductInComponent" cascade="delete" />
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
-			model="recordOperationProductOutComponent" />
+			model="recordOperationProductOutComponent" cascade="delete" />
 
 		<boolean name="lastRecord" />
 
