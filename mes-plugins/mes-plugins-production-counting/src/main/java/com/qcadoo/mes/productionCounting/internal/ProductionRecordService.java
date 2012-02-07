@@ -37,7 +37,6 @@ import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
@@ -58,7 +56,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -89,16 +86,11 @@ public class ProductionRecordService {
 
     private static final String FIELD_TYPE_OF_PRODUCTION_RCORDING = "typeOfProductionRecording";
 
-    @Autowired
-    private SecurityService securityService;
-
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField("number") == null) {
             productionRecord.setField("number", numberGeneratorService.generateNumber(
                     ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
         }
-        productionRecord.setField("creationTime", new Date());
-        productionRecord.setField("worker", securityService.getCurrentUserName());
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
@@ -127,8 +119,8 @@ public class ProductionRecordService {
     public boolean checkIfPartialIsAllowed(final DataDefinition productionRecordDD, final Entity productionRecord) {
         boolean isAllowed = true;
         final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-        final Boolean justOne = getBooleanValue(order.getField("justOne"));
-        final Boolean lastRecord = getBooleanValue(productionRecord.getField("lastRecord"));
+        final Boolean justOne = order.getBooleanField("justOne");
+        final Boolean lastRecord = productionRecord.getBooleanField("lastRecord");
         if (!lastRecord && justOne) {
             productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
                     "productionCounting.validate.global.error.productionRecord.orderError.justOne");
@@ -184,8 +176,8 @@ public class ProductionRecordService {
         }
         List<Entity> operationComponents = null;
 
-        Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
-        Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
+        Boolean registerInput = order.getBooleanField(PARAM_REGISTER_IN_PRODUCTS);
+        Boolean registerOutput = order.getBooleanField(PARAM_REGISTER_OUT_PRODUCTS);
 
         if (!registerInput && !registerOutput) {
             return;
@@ -297,7 +289,7 @@ public class ProductionRecordService {
             return;
         }
 
-        if (!getBooleanValue(order.getField("registerProductionTime"))) {
+        if (!order.getBooleanField("registerProductionTime")) {
             return;
         }
         String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
@@ -309,30 +301,6 @@ public class ProductionRecordService {
         }
         countPlannedTime(productionRecord, operationComponents);
         countTimeBalance(productionRecord);
-    }
-
-    public void logCreateEvent(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        final Date logDate = new Date();
-        final Entity logEntity = createStateLog();
-
-        logEntity.setField("currentState", ProductionCountingStates.DRAFT.getStringValue());
-        logEntity.setField("worker", securityService.getCurrentUserName());
-        logEntity.setField("dateAndTime", logDate);
-
-        productionRecord.setField("loggings", Lists.newArrayList(logEntity));
-    }
-
-    public void logStateChange(final Entity productionRecord, final ProductionCountingStates oldState,
-            final ProductionCountingStates newState) {
-        final Date logDate = new Date();
-        final Entity logEntity = createStateLog();
-
-        logEntity.setField("previousState", oldState.getStringValue());
-        logEntity.setField("currentState", newState.getStringValue());
-        logEntity.setField("worker", securityService.getCurrentUserName());
-        logEntity.setField("dateAndTime", logDate);
-        logEntity.setField("productionRecord", productionRecord);
-        logEntity.getDataDefinition().save(logEntity);
     }
 
     public final void changeStateToDefault(final DataDefinition productionRecordDD, final Entity productionRecord) {
@@ -408,19 +376,6 @@ public class ProductionRecordService {
         }
     }
 
-    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
-        return (FieldComponent) view.getComponentByReference(name);
-    }
-
-    private Entity createStateLog() {
-        return getLoggingDataDefinition().create();
-    }
-
-    private DataDefinition getLoggingDataDefinition() {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_RECORD_LOGGING);
-    }
-
     private void countPlannedTime(final Entity productionRecord, final List<Entity> operationComponents) {
         if (checkIfOperationListIsEmpty(operationComponents)) {
             return;
@@ -464,6 +419,10 @@ public class ProductionRecordService {
 
     private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
+    }
+
+    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
+        return (FieldComponent) view.getComponentByReference(name);
     }
 
     public static BigDecimal getBigDecimal(final Object value) {

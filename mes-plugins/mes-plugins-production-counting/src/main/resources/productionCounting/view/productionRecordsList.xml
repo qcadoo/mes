@@ -71,9 +71,9 @@
 				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
 				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
-			<option type="column" name="creationTime" fields="creationTime"
+			<option type="column" name="dateAndTime" fields="loggings" expression="#loggings[0].getField('dateAndTime').toLocaleString()"
 				link="true" width="300" />
-			<option type="column" name="worker" fields="worker" link="true"
+			<option type="column" name="worker" fields="loggings" expression="#loggings[0].getField('worker')" link="true"
 				width="300" />
 			<option type="column" name="state" fields="state" reference="state" hidden="true"/>
 			<option type="order" column="number" direction="asc" />
