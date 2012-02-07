@@ -43,7 +43,6 @@
 		</string>
 		<tree name="operationComponents" model="technologyOperationComponent"
 			joinField="technology" cascade="delete" copyable="true" />
-
 		<enum name="state" values="01draft,02accepted,03declined,04outdated"
 			default="01draft" required="true" />
 		<hasMany name="loggings" joinField="technology" model="logging"

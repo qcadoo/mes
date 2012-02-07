@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +47,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -66,6 +67,7 @@ import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -86,9 +88,6 @@ public class WorkPlanPdfServiceTest {
     private static final String NO_DISTINCTION = "No distinction";
 
     @Mock
-    private Entity parameter;
-
-    @Mock
     private TranslationService translationService;
 
     @Mock
@@ -101,7 +100,10 @@ public class WorkPlanPdfServiceTest {
     private Document document;
 
     @Mock
-    private Entity op1Comp, op2Comp, op3Comp, op4Comp, op5Comp;
+    private Entity op1Comp, op2Comp, op3Comp, op4Comp, op5Comp, op6Comp;
+
+    @Mock
+    private EntityList operComp1, operComp2;
 
     @Mock
     private Entity workstation1, workstation2;
@@ -116,6 +118,18 @@ public class WorkPlanPdfServiceTest {
     private DecimalFormat df;
 
     private final Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
+
+    private static EntityList mockEntityListIterator(final List<Entity> list) {
+        EntityList entityList = mock(EntityList.class);
+        when(entityList.iterator()).thenReturn(list.iterator());
+        return entityList;
+    }
+
+    private static EntityTree mockEntityTreeIterator(final List<Entity> list) {
+        EntityTree entityTree = mock(EntityTree.class);
+        when(entityTree.iterator()).thenReturn(list.iterator());
+        return entityTree;
+    }
 
     @Before
     public void init() {
@@ -159,20 +173,13 @@ public class WorkPlanPdfServiceTest {
         when(op4.getBelongsToField("workstationType")).thenReturn(workstation2);
         when(op5.getBelongsToField("workstationType")).thenReturn(null);
 
-        @SuppressWarnings("unchecked")
-        List<Entity> orders = mock(List.class);
-
         Entity order1 = mock(Entity.class);
         Entity order2 = mock(Entity.class);
 
         when(order1.getStringField("number")).thenReturn("1");
         when(order2.getStringField("number")).thenReturn("2");
 
-        @SuppressWarnings("unchecked")
-        Iterator<Entity> ordersIterator = mock(Iterator.class);
-        when(orders.iterator()).thenReturn(ordersIterator);
-        when(ordersIterator.hasNext()).thenReturn(true, true, false);
-        when(ordersIterator.next()).thenReturn(order1, order2);
+        EntityList orders = mockEntityListIterator(Arrays.asList(order1, order2));
 
         Entity tech1 = mock(Entity.class);
         Entity tech2 = mock(Entity.class);
@@ -192,26 +199,23 @@ public class WorkPlanPdfServiceTest {
         EntityTree operComp1 = mock(EntityTree.class);
         EntityTree operComp2 = mock(EntityTree.class);
 
+        operComp1 = mockEntityTreeIterator(asList(op1Comp, op2Comp, op3Comp));
+        operComp2 = mockEntityTreeIterator(asList(op4Comp, op5Comp));
+
         when(tech1.getTreeField("operationComponents")).thenReturn(operComp1);
         when(tech2.getTreeField("operationComponents")).thenReturn(operComp2);
-
-        @SuppressWarnings("unchecked")
-        Iterator<Entity> operComp1Iterator = mock(Iterator.class);
-        when(operComp1.iterator()).thenReturn(operComp1Iterator);
-        when(operComp1Iterator.hasNext()).thenReturn(true, true, true, false);
-        when(operComp1Iterator.next()).thenReturn(op1Comp, op2Comp, op3Comp);
-
-        @SuppressWarnings("unchecked")
-        Iterator<Entity> operComp2Iterator = mock(Iterator.class);
-        when(operComp2.iterator()).thenReturn(operComp2Iterator);
-        when(operComp2Iterator.hasNext()).thenReturn(true, true, false);
-        when(operComp2Iterator.next()).thenReturn(op4Comp, op5Comp);
 
         when(op1Comp.getStringField("nodeNumber")).thenReturn("2.A.1");
         when(op2Comp.getStringField("nodeNumber")).thenReturn("1.");
         when(op3Comp.getStringField("nodeNumber")).thenReturn("2.");
         when(op4Comp.getStringField("nodeNumber")).thenReturn("1.");
         when(op5Comp.getStringField("nodeNumber")).thenReturn("2.");
+
+        when(op1Comp.getStringField("entityType")).thenReturn("operation");
+        when(op2Comp.getStringField("entityType")).thenReturn("operation");
+        when(op3Comp.getStringField("entityType")).thenReturn("operation");
+        when(op4Comp.getStringField("entityType")).thenReturn("operation");
+        when(op5Comp.getStringField("entityType")).thenReturn("operation");
 
         when(workPlan.getManyToManyField("orders")).thenReturn(orders);
 
@@ -258,16 +262,15 @@ public class WorkPlanPdfServiceTest {
         verify(translationService).translate("qcadooReport.commons.generatedBy.label", locale);
     }
 
-    @Ignore
     @Test
     public void shouldPrepareCorrectOrdersTableHeader() throws DocumentException {
         // given
-        when(translationService.translate("workPlans.workPlan.report.paragrah", locale)).thenReturn("paragraph");
         when(translationService.translate("orders.order.number.label", locale)).thenReturn("numberLabel");
         when(translationService.translate("orders.order.name.label", locale)).thenReturn("nameLabel");
         when(translationService.translate("workPlans.workPlan.report.colums.product", locale)).thenReturn("productLabel");
-        when(translationService.translate("orders.order.plannedQuantity.label", locale)).thenReturn("quantityLabel");
-        when(translationService.translate("orders.order.dateTo.label", locale)).thenReturn("dateLabel");
+        when(translationService.translate("workPlans.workPlan.report.colums.plannedQuantity", locale))
+                .thenReturn("quantityLabel");
+        when(translationService.translate("workPlans.orderTable.dateTo", locale)).thenReturn("dateLabel");
 
         // when
         List<String> ordersTableHeader = workPlanPdfService.prepareOrdersTableHeader(document, workPlan, locale);
@@ -391,6 +394,30 @@ public class WorkPlanPdfServiceTest {
     }
 
     @Test
+    public void shouldTraverseTechnologyTreeEvenThroughReferenedTechnologies() {
+        // given
+        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
+        when(op5Comp.getStringField("entityType")).thenReturn("referenceTechnology");
+
+        Entity refTech = mock(Entity.class);
+        EntityTree refTechOps = mockEntityTreeIterator(asList(op6Comp));
+        when(op5Comp.getBelongsToField("referenceTechnology")).thenReturn(refTech);
+        when(refTech.getTreeField("operationComponents")).thenReturn(refTechOps);
+
+        // when
+        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
+                workPlan, operationComponent2order, locale);
+
+        // then
+        PrioritizedString noDistinction = new PrioritizedString(NO_DISTINCTION);
+        assertTrue(operationComponents.get(noDistinction).get(0).equals(op2Comp));
+        assertTrue(operationComponents.get(noDistinction).get(1).equals(op3Comp));
+        assertTrue(operationComponents.get(noDistinction).get(2).equals(op1Comp));
+        assertTrue(operationComponents.get(noDistinction).get(3).equals(op4Comp));
+        assertTrue(operationComponents.get(noDistinction).get(4).equals(op6Comp));
+    }
+
+    @Test
     public void shouldGetOperationComponentsForDistinctionByWorkstationType() {
         // given
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
@@ -485,7 +512,6 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldPrepareProductTableHeaderCorrectly() throws DocumentException {
         // given
-        String headerKey = "workPlans.workPlan.report.colums.product";
         when(translationService.translate("workPlans.workPlan.report.colums.product", locale)).thenReturn("product");
         when(translationService.translate("orders.order.plannedQuantity.label", locale)).thenReturn("quantity");
         List<Entity> columns = new LinkedList<Entity>();

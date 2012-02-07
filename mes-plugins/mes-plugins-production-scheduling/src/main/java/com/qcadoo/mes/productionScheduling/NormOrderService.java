@@ -47,6 +47,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class NormOrderService {
 
+    private static final String OPERATION_COMPONENTS_L = "operationComponents";
+
     private static final String TECHNOLOGY_FIELD = "technology";
 
     private static final String COUNT_REALIZED_FIELD = "countRealized";
@@ -64,7 +66,7 @@ public class NormOrderService {
             return true;
         }
 
-        List<Entity> technologyTree = technology.getTreeField("operationComponents");
+        List<Entity> technologyTree = technology.getTreeField(OPERATION_COMPONENTS_L);
         if (technologyTree.isEmpty()) {
             order.addError(orderDataDefinition.getField(TECHNOLOGY_FIELD), "productionScheduling.order.emptyTechnologyTree");
             return false;
@@ -99,7 +101,7 @@ public class NormOrderService {
             orderOperationComponentDD.delete(orderOperationComponents.getRoot().getId());
         }
 
-        EntityTree operationComponents = technology.getTreeField("operationComponents");
+        EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS_L);
 
         entity.setField(ORDER_OPERATION_COMPONENTS, Collections.singletonList(createOrderOperationComponent(
                 operationComponents.getRoot(), entity, technology, null, orderOperationComponentDD)));
@@ -148,7 +150,7 @@ public class NormOrderService {
                     orderOperationComponent);
         } else {
             Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
-            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField(ORDER_OPERATION_COMPONENTS).getRoot(), order,
+            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField(OPERATION_COMPONENTS_L).getRoot(), order,
                     technology, orderOperationComponentDD, orderOperationComponent);
         }
 
