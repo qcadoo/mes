@@ -26,9 +26,11 @@ package com.qcadoo.mes.productionCounting.internal.states;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -42,24 +44,59 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ProductionRecordStateService {
 
+    @Autowired
+    private ProductionRecordLoggingService loggingService;
+
     private static final String STATE_FIELD = "state";
 
-    public void changeRecordStateToAccepted(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        changeRecordState(view, ProductionCountingStates.ACCEPTED.getStringValue());
-        state.performEvent(view, "save", new String[0]);
-    }
-
-    public void changeRecordStateToDeclined(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        changeRecordState(view, ProductionCountingStates.DECLINED.getStringValue());
-        state.performEvent(view, "save", new String[0]);
-    }
-
-    private void changeRecordState(final ViewDefinitionState view, final String state) {
+    public void changeRecordState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        final String targetState = getTargetStateFromArgs(args);
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        final Entity productionCounting = form.getEntity();
-        productionCounting.setField(STATE_FIELD, state);
-        final FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE_FIELD);
-        stateField.setFieldValue(state);
+        final Entity record = form.getEntity();
+
+        setRecordState(view, component, record, targetState);
+    }
+
+    private void setRecordState(final ViewDefinitionState view, final ComponentState component, final Entity record,
+            final String targetState) {
+        if (record == null) {
+            return;
+        }
+
+        final boolean sourceComponentIsForm = component instanceof FormComponent;
+        final DataDefinition recordDataDefinition = record.getDataDefinition();
+        final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
+
+        ProductionCountingStates oldState = ProductionCountingStates.parseString(record.getStringField(STATE_FIELD));
+        ProductionCountingStates newState = ProductionCountingStates.parseString(targetState);
+
+        if (newState.equals(oldState)) {
+            return;
+        }
+
+        if (sourceComponentIsForm) {
+            stateFieldComponent.setFieldValue(newState.getStringValue());
+            component.performEvent(view, "save", new String[0]);
+
+            Entity savedRecord = recordDataDefinition.get(record.getId());
+            stateFieldComponent.setFieldValue(savedRecord.getStringField(STATE_FIELD));
+
+            loggingService.logStateChange(savedRecord, oldState, newState);
+        } else {
+            record.setField(STATE_FIELD, newState.getStringValue());
+            Entity savedRecord = recordDataDefinition.save(record);
+
+            loggingService.logStateChange(record, oldState, newState);
+
+            List<ErrorMessage> errorMessages = Lists.newArrayList();
+            errorMessages.addAll(savedRecord.getErrors().values());
+            errorMessages.addAll(savedRecord.getGlobalErrors());
+
+            for (ErrorMessage message : errorMessages) {
+                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO);
+            }
+        }
+
     }
 
     public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
@@ -83,51 +120,6 @@ public class ProductionRecordStateService {
                     .getComponentByReference("recordOperationProductOutComponent");
             gridProductOutComponent.setEditable(false);
         }
-    }
-
-    public void changeRecordState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        final String targetState = getTargetStateFromArgs(args);
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        final Entity record = form.getEntity();
-
-        setRecordState(view, component, record, targetState);
-    }
-
-    private void setRecordState(final ViewDefinitionState view, final ComponentState component, final Entity record,
-            final String targetState) {
-        if (record == null) {
-            return;
-        }
-
-        final boolean sourceComponentIsForm = component instanceof FormComponent;
-        final DataDefinition recordDataDefinition = record.getDataDefinition();
-        final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
-
-        String oldState = record.getStringField(STATE_FIELD);
-        String newState = targetState;
-
-        if (newState.equals(oldState)) {
-            return;
-        }
-
-        if (sourceComponentIsForm) {
-            stateFieldComponent.setFieldValue(newState);
-            component.performEvent(view, "save", new String[0]);
-            Entity savedRecord = recordDataDefinition.get(record.getId());
-            stateFieldComponent.setFieldValue(savedRecord.getStringField(STATE_FIELD));
-        } else {
-            record.setField(STATE_FIELD, newState);
-            Entity savedRecord = recordDataDefinition.save(record);
-
-            List<ErrorMessage> errorMessages = Lists.newArrayList();
-            errorMessages.addAll(savedRecord.getErrors().values());
-            errorMessages.addAll(savedRecord.getGlobalErrors());
-
-            for (ErrorMessage message : errorMessages) {
-                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO);
-            }
-        }
-
     }
 
     private String getTargetStateFromArgs(final String[] args) {

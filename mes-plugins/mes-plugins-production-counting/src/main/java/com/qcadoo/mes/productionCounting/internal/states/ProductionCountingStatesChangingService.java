@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class ProductionCountingStatesChangingService {

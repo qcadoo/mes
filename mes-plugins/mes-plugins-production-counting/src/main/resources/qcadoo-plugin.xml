@@ -154,7 +154,8 @@
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:resource uri="public/**/*" />
 
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
+		<view:view-hook plugin="basic" view="parameters" 
+			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="setParametersDefaultValue" />
 		<view:view-hook plugin="orders" view="orderDetails"
