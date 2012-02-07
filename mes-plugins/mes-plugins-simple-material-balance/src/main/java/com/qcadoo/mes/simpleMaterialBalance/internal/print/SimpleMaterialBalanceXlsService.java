@@ -36,10 +36,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -67,36 +69,42 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     @Autowired
     private MaterialFlowService materialFlowService;
 
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number", locale));
+        cell0.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number",
+                locale));
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
+        cell1.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name",
+                locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate("basic.product.unit.label", locale));
+        cell2.setCellValue(translationService.translate("basic.product.unit.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService().translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed", locale));
+        cell3.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed",
+                locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell4 = header.createCell(4);
-        cell4.setCellValue(getTranslationService().translate(
+        cell4.setCellValue(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inStoch", locale));
         cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell5 = header.createCell(5);
-        cell5.setCellValue(getTranslationService().translate(
+        cell5.setCellValue(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
         cell5.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
     @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity simpleMaterialBalance) {
+    protected void addSeries(final HSSFSheet sheet, final Entity simpleMaterialBalance, final Locale locale) {
         int rowNum = 1;
         List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
@@ -111,15 +119,17 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             row.createCell(0).setCellValue(product.getKey().getField(NUMBER_FIELD).toString());
             row.createCell(1).setCellValue(product.getKey().getField(NAME_FIELD).toString());
             row.createCell(2).setCellValue(product.getKey().getField(UNIT_FIELD).toString());
-            row.createCell(3).setCellValue(getDecimalFormat().format(product.getValue()));
+            row.createCell(3).setCellValue(numberService.getDecimalFormat(locale).format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId().toString(),
-                        (Date) simpleMaterialBalance.getField(DATE_FIELD)));
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)), numberService.getMathContext());
             }
-            row.createCell(4).setCellValue(getDecimalFormat().format(available));
-            row.createCell(5).setCellValue(getDecimalFormat().format(available.subtract(product.getValue())));
+            row.createCell(4).setCellValue(numberService.getDecimalFormat(locale).format(available));
+            row.createCell(5).setCellValue(
+                    numberService.getDecimalFormat(locale).format(
+                            available.subtract(product.getValue(), numberService.getMathContext())));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);
@@ -131,7 +141,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
+        return translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
     }
 
 }

@@ -28,7 +28,6 @@ import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperati
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.LABOR_HOURLY_COST;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
-import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
@@ -60,6 +59,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -92,6 +92,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
+
+    @Autowired
+    private NumberService numberService;
 
     private static final Logger LOG = LoggerFactory.getLogger(OperationsCostCalculationServiceImpl.class);
 
@@ -156,7 +159,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Map<String, BigDecimal> unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity,
                     realizationTimes);
             for (String key : PATH_COST_KEYS) {
-                BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key));
+                BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key), numberService.getMathContext());
                 resultsMap.put(key, unitOperationCost);
             }
         }
@@ -169,23 +172,27 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         int dur = realizationTimes.get(techOperComp);
         BigDecimal duration = BigDecimal.valueOf(dur);
 
-        BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), 5, ROUND_HALF_UP);
-        BigDecimal durationMachine = durationInHours.multiply(machineUtilization);
-        BigDecimal durationLabor = durationInHours.multiply(laborUtilization);
-        BigDecimal operationMachineCost = durationMachine.multiply(hourlyMachineCost);
-        BigDecimal operationLaborCost = durationLabor.multiply(hourlyLaborCost);
-        BigDecimal operationCost = operationMachineCost.add(operationLaborCost);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, ROUND_HALF_UP));
+        BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), numberService.getMathContext());
+        BigDecimal durationMachine = durationInHours.multiply(machineUtilization, numberService.getMathContext());
+        BigDecimal durationLabor = durationInHours.multiply(laborUtilization, numberService.getMathContext());
+        BigDecimal operationMachineCost = durationMachine.multiply(hourlyMachineCost, numberService.getMathContext());
+        BigDecimal operationLaborCost = durationLabor.multiply(hourlyLaborCost, numberService.getMathContext());
+        BigDecimal operationCost = operationMachineCost.add(operationLaborCost, numberService.getMathContext());
+        BigDecimal operationMarginCost = operationCost.multiply(
+                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext());
 
         operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
         operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
-        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost).setScale(3, ROUND_UP));
+        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost, numberService.getMathContext())
+                .setScale(3, ROUND_UP));
         operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 
-        resultsMap.put(MACHINE_HOURLY_COST, resultsMap.get(MACHINE_HOURLY_COST).add(operationMachineCost));
-        resultsMap.put(LABOR_HOURLY_COST, resultsMap.get(LABOR_HOURLY_COST).add(operationLaborCost));
+        resultsMap.put(MACHINE_HOURLY_COST,
+                resultsMap.get(MACHINE_HOURLY_COST).add(operationMachineCost, numberService.getMathContext()));
+        resultsMap.put(LABOR_HOURLY_COST,
+                resultsMap.get(LABOR_HOURLY_COST).add(operationLaborCost, numberService.getMathContext()));
 
         return resultsMap;
     }
@@ -218,26 +225,29 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal pathCost = BigDecimal.ZERO;
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            pathCost = pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity));
+            pathCost = pathCost.add(estimateCostCalculationForPieceWork(child, margin, plannedQuantity),
+                    numberService.getMathContext());
         }
 
         BigDecimal pieceworkCost = getBigDecimal(operationComponent.getField("pieceworkCost"));
         BigDecimal numberOfOperations = getBigDecimal(operationComponent.getField("numberOfOperations"));
         BigDecimal numOfProducts = countNumberOfOutputProducts(operationComponent
                 .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT_FIELD));
-        BigDecimal pieces = numOfProducts.multiply(plannedQuantity);
-        BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, 5, ROUND_HALF_UP);
-        BigDecimal operationCost = pieces.multiply(pieceworkCostPerOperation);
-        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100), 5, ROUND_HALF_UP));
+        BigDecimal pieces = numOfProducts.multiply(plannedQuantity, numberService.getMathContext());
+        BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, numberService.getMathContext());
+        BigDecimal operationCost = pieces.multiply(pieceworkCostPerOperation, numberService.getMathContext());
+        BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100),
+                numberService.getMathContext()));
 
         operationComponent.setField("pieces", pieces.setScale(3, ROUND_UP));
         operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
         operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
-        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost).setScale(3, ROUND_UP));
+        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost, numberService.getMathContext())
+                .setScale(3, ROUND_UP));
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 
-        return operationCost.add(pathCost);
+        return operationCost.add(pathCost, numberService.getMathContext());
     }
 
     @Transactional

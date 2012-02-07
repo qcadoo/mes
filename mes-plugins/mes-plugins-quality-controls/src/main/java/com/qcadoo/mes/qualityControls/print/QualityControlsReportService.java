@@ -53,6 +53,7 @@ import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.report.api.pdf.PdfUtil;
@@ -77,6 +78,9 @@ public class QualityControlsReportService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     public final void printQualityControlReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -163,9 +167,18 @@ public class QualityControlsReportService {
             List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
             if (quantities.containsKey(product)) {
                 quantitiesList = quantities.get(product);
-                quantitiesList.set(0, quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity")));
-                quantitiesList.set(1, quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity")));
-                quantitiesList.set(2, quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity")));
+                quantitiesList.set(
+                        0,
+                        quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity"),
+                                numberService.getMathContext()));
+                quantitiesList.set(
+                        1,
+                        quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity"),
+                                numberService.getMathContext()));
+                quantitiesList.set(
+                        2,
+                        quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity"),
+                                numberService.getMathContext()));
             } else {
                 quantitiesList.add(0, (BigDecimal) entity.getField("controlledQuantity"));
                 quantitiesList.add(1, (BigDecimal) entity.getField("rejectedQuantity"));
@@ -183,24 +196,25 @@ public class QualityControlsReportService {
             List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
             if (quantities.containsKey(product)) {
                 quantitiesList = quantities.get(product);
-                quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE, numberService.getMathContext()));
                 if (CONTROL_RESULT_TYPE_CORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE, numberService.getMathContext()));
                 } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE, numberService.getMathContext()));
                 } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE, numberService.getMathContext()));
                 }
                 if (entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY) == null) {
                     quantitiesList.set(
                             4,
                             quantitiesList.get(4).add(
-                                    (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY)));
+                                    (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY),
+                                    numberService.getMathContext()));
                 } else {
-                    quantitiesList
-                            .set(4,
-                                    quantitiesList.get(4).add(
-                                            (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY)));
+                    quantitiesList.set(
+                            4,
+                            quantitiesList.get(4).add((BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY),
+                                    numberService.getMathContext()));
                 }
             } else {
                 quantitiesList.add(0, BigDecimal.ONE);
@@ -251,13 +265,13 @@ public class QualityControlsReportService {
             List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
             if (quantities.containsKey(operation)) {
                 quantitiesList = quantities.get(operation);
-                quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE));
+                quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE, numberService.getMathContext()));
                 if (CONTROL_RESULT_TYPE_CORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE));
+                    quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE, numberService.getMathContext()));
                 } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE));
+                    quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE, numberService.getMathContext()));
                 } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(entity.getField(FIELD_CONTROL_RESULT))) {
-                    quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE));
+                    quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE, numberService.getMathContext()));
                 }
             } else {
                 quantitiesList.add(0, BigDecimal.ONE);

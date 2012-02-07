@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,14 +40,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
-public class ProductQuantitiesServiceTest {
+public class ProductQuantitiesServiceImplTest {
 
     private ProductQuantitiesService productQuantitiesService;
 
@@ -71,6 +74,9 @@ public class ProductQuantitiesServiceTest {
     @Mock
     private EntityTreeNode operationComponent1, operationComponent2;
 
+    @Mock
+    private NumberService numberService;
+
     private EntityList orders;
 
     private EntityTree tree;
@@ -80,6 +86,8 @@ public class ProductQuantitiesServiceTest {
     private Map<Entity, List<Entity>> productOutComponents;
 
     private BigDecimal plannedQty;
+
+    private MathContext mathContext;
 
     private static EntityList mockEntityListIterator(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
@@ -97,7 +105,9 @@ public class ProductQuantitiesServiceTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        productQuantitiesService = new ProductQuantitiesService();
+        productQuantitiesService = new ProductQuantitiesServiceImpl();
+
+        ReflectionTestUtils.setField(productQuantitiesService, "numberService", numberService);
 
         orders = mockEntityListIterator(asList(order));
 
@@ -178,6 +188,9 @@ public class ProductQuantitiesServiceTest {
         when(productInComponent3.getDataDefinition()).thenReturn(ddIn);
         when(productOutComponent2.getDataDefinition()).thenReturn(ddOut);
         when(productOutComponent4.getDataDefinition()).thenReturn(ddOut);
+
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -208,8 +221,8 @@ public class ProductQuantitiesServiceTest {
         boolean onlyComponents = false;
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
-                onlyComponents);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                plannedQty, onlyComponents);
 
         // then
         assertEquals(3, productQuantities.size());
@@ -224,7 +237,8 @@ public class ProductQuantitiesServiceTest {
         boolean onlyComponents = true;
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders,
+                onlyComponents);
 
         // then
         assertEquals(2, productQuantities.size());

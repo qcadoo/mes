@@ -493,13 +493,10 @@ public class OrderService {
     }
 
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
-        if (order.getId() == null) {
+        if ("05declined".equals(order.getStringField("state"))) {
             return true;
         }
-        Entity savedOrder = orderDD.get(order.getId());
-        if ("05declined".equals(savedOrder.getStringField("state"))) {
-            return true;
-        }
+
         if (order.isActive()) {
             Entity technology = order.getBelongsToField("technology");
             if (technology == null) {

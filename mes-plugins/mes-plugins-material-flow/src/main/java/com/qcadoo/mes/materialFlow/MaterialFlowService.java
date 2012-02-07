@@ -43,6 +43,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
@@ -89,6 +90,9 @@ public class MaterialFlowService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private NumberService numberService;
 
     public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final Date forDate) {
 
@@ -137,19 +141,19 @@ public class MaterialFlowService {
 
         for (Entity e : resultTo.getEntities()) {
             BigDecimal quantity = (BigDecimal) e.getField(QUANTITY_FIELD);
-            countProductIn = countProductIn.add(quantity);
+            countProductIn = countProductIn.add(quantity, numberService.getMathContext());
         }
 
         for (Entity e : resultFrom.getEntities()) {
             BigDecimal quantity = (BigDecimal) e.getField(QUANTITY_FIELD);
-            countProductOut = countProductOut.add(quantity);
+            countProductOut = countProductOut.add(quantity, numberService.getMathContext());
         }
 
         if (lastCorrectionDate == null) {
-            countProductIn = countProductIn.subtract(countProductOut);
+            countProductIn = countProductIn.subtract(countProductOut, numberService.getMathContext());
         } else {
-            countProductIn = countProductIn.add(countProduct);
-            countProductIn = countProductIn.subtract(countProductOut);
+            countProductIn = countProductIn.add(countProduct, numberService.getMathContext());
+            countProductIn = countProductIn.subtract(countProductOut, numberService.getMathContext());
         }
 
         if (countProductIn.compareTo(BigDecimal.ZERO) == -1) {
@@ -288,7 +292,7 @@ public class MaterialFlowService {
                         forDate);
 
                 if (reportData.containsKey(product)) {
-                    reportData.put(product, reportData.get(product).add(quantity));
+                    reportData.put(product, reportData.get(product).add(quantity, numberService.getMathContext()));
                 } else {
                     reportData.put(product, quantity);
                 }

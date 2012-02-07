@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -49,6 +50,9 @@ public class ProductionRecordsService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private NumberService numberService;
 
     private Entity order;
 
@@ -140,7 +144,7 @@ public class ProductionRecordsService {
                 if (quantity == null) {
                     quantity = addition;
                 } else if (addition != null) {
-                    quantity = quantity.add(addition);
+                    quantity = quantity.add(addition, numberService.getMathContext());
                 }
             }
             foundCounting.setField(quantityType, quantity);

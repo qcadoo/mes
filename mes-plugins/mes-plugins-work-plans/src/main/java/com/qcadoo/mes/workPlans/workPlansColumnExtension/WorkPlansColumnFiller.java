@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
@@ -38,6 +40,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 
+@Component
 public class WorkPlansColumnFiller implements ColumnFiller {
 
     // TODO mici, those constants will end up as duplication somewhere,
@@ -46,6 +49,9 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     private static final String PRODUCT_COLUMN = "productName";
 
     private static final String QUANTITY_COLUMN = "plannedQuantity";
+
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
 
     /**
      * 
@@ -56,8 +62,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
-        ProductQuantitiesService productQuantitiesSerivce = new ProductQuantitiesService();
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesSerivce.getProductComponentQuantities(orders);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
 
         for (Entity order : orders) {
             Entity technology = order.getBelongsToField("technology");

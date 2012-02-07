@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
 public class OrderRealizationTimeServiceImplTest {
 
@@ -43,6 +45,11 @@ public class OrderRealizationTimeServiceImplTest {
 
     @Mock
     TechnologyService technologyService;
+
+    @Mock
+    NumberService numberService;
+
+    private MathContext mathContext;
 
     private static EntityList mockEntityListIterator(List<Entity> list) {
         EntityList entityList = mock(EntityList.class);
@@ -104,9 +111,13 @@ public class OrderRealizationTimeServiceImplTest {
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "operationRunsField", operationRuns);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "productQuantitiesService", productQuantitiesService);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "technologyService", technologyService);
+        ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "numberService", numberService);
 
         when(technologyService.getProductCountForOperationComponent(opComp1)).thenReturn(new BigDecimal(1));
         when(technologyService.getProductCountForOperationComponent(opComp2)).thenReturn(new BigDecimal(1));
+
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
     }
 
     @Test

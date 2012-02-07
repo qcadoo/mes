@@ -38,6 +38,7 @@ import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationC
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class CostCalculationServiceImpl implements CostCalculationService {
@@ -47,6 +48,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
+
+    @Autowired
+    private NumberService numberService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -78,17 +82,20 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         if (operationMode == HOURLY) {
             BigDecimal totalMachine = getBigDecimal(costCalculation.getField("totalMachineHourlyCosts"));
             BigDecimal totalLabor = getBigDecimal(costCalculation.getField("totalLaborHourlyCosts"));
-            productionCosts = totalMachine.add(totalLabor);
+            productionCosts = totalMachine.add(totalLabor, numberService.getMathContext());
         } else {
             productionCosts = getBigDecimal(costCalculation.getField("totalPieceworkCosts"));
         }
 
         BigDecimal materialCosts = getBigDecimal(costCalculation.getField("totalMaterialCosts"));
-        BigDecimal productionCostMarginValue = productionCosts.multiply(productionCostMargin).divide(BigDecimal.valueOf(100));
-        BigDecimal materialCostMarginValue = materialCosts.multiply(materialCostMargin).divide(BigDecimal.valueOf(100));
-        BigDecimal totalTechnicalProductionCosts = productionCosts.add(materialCosts);
-        BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue).add(additionalOverhead);
-        BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts);
+        BigDecimal productionCostMarginValue = productionCosts.multiply(productionCostMargin, numberService.getMathContext())
+                .divide(BigDecimal.valueOf(100), numberService.getMathContext());
+        BigDecimal materialCostMarginValue = materialCosts.multiply(materialCostMargin, numberService.getMathContext()).divide(
+                BigDecimal.valueOf(100), numberService.getMathContext());
+        BigDecimal totalTechnicalProductionCosts = productionCosts.add(materialCosts, numberService.getMathContext());
+        BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext()).add(
+                additionalOverhead, numberService.getMathContext());
+        BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
         costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
         costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
@@ -97,7 +104,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         costCalculation.setField("totalOverhead", totalOverhead);
         costCalculation.setField("totalTechnicalProductionCosts", totalTechnicalProductionCosts);
         costCalculation.setField("totalCosts", totalCosts);
-        costCalculation.setField("totalCostsPerUnit", totalCosts.divide(quantity, 3));
+        costCalculation.setField("totalCostsPerUnit", totalCosts.divide(quantity, numberService.getMathContext()));
 
         return costCalculation.getDataDefinition().save(costCalculation);
     }

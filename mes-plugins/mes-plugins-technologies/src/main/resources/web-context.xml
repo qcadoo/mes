@@ -33,9 +33,5 @@
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-	<bean id="technologiesTechnologyDetailsPdfView"
-  		class="com.qcadoo.mes.technologies.print.TechnologiesTechnologyDetailsPdfView"/>
-	<bean id="technologiesTechnologyDetailsXlsView"
-  		class="com.qcadoo.mes.technologies.print.TechnologiesTechnologyDetailsXlsView"/>
   		
 </beans>

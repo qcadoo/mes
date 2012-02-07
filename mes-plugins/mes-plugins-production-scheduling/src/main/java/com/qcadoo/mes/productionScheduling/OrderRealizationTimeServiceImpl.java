@@ -46,6 +46,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -57,7 +58,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private static final String REFERENCE_TECHNOLOGY_ENTITY_TYPE = "referenceTechnology";
 
-    private Map<Entity, BigDecimal> operationRunsField = new HashMap<Entity, BigDecimal>();
+    private final Map<Entity, BigDecimal> operationRunsField = new HashMap<Entity, BigDecimal>();
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
@@ -70,6 +71,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -125,17 +129,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
     }
 
-    /**
-     * 
-     * @param operationComponent
-     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            orderOperationComponent
-     * @param plannedQuantity
-     *            How many products we want this operation to produce
-     * @param includeTpz
-     *            Flag indicating if we want to include Tpz
-     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
-     */
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
@@ -148,16 +141,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     @Override
-    /**
-     * 
-     * @param entity
-     *            An order or a technology for which we want to estimate operation times.
-     * @param plannedQuantity
-     *            How many products we want this order/technology to produce
-     * @param includeTpz
-     *            Flag indicating if we want to include Tpz
-     * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations, without offset added)
-     */
     public Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz) {
         Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
 
@@ -240,16 +223,18 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(technologyOperationComponent);
 
-        BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, BigDecimal.ROUND_UP).multiply(
-                operationRuns.get(technologyOperationComponent));
+        BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
+                operationRuns.get(technologyOperationComponent), numberService.getMathContext());
 
         if ("01all".equals(operationComponent.getField("countRealized"))
                 || operationComponent.getBelongsToField("parent") == null) {
-            operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
+            operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))),
+                    numberService.getMathContext())).intValue();
         } else {
             operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
-                    : (BigDecimal) operationComponent.getField("countMachine")).multiply(BigDecimal
-                    .valueOf(getIntegerValue(operationComponent.getField("tj"))))).intValue();
+                    : (BigDecimal) operationComponent.getField("countMachine")).multiply(
+                    BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))), numberService.getMathContext()))
+                    .intValue();
         }
 
         if (includeTpz) {

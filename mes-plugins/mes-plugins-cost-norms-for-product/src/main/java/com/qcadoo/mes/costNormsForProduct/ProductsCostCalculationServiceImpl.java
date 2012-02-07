@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -46,6 +47,10 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Autowired
+    private NumberService numberService;
+
+    @Override
     public void calculateProductsCost(final Entity costCalculation) {
         checkArgument(costCalculation != null);
         BigDecimal quantity = getBigDecimal(costCalculation.getField("quantity"));
@@ -65,12 +70,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
             BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
             BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
-            BigDecimal costPerUnit = cost.divide(costForNumber, 4);
+            BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
-            result = result.add(costPerUnit.multiply(productQuantity.getValue()));
+            result = result.add(costPerUnit.multiply(productQuantity.getValue(), numberService.getMathContext()),
+                    numberService.getMathContext());
         }
 
-        result = result.multiply(quantity);
+        result = result.multiply(quantity, numberService.getMathContext());
         costCalculation.setField("totalMaterialCosts", result.setScale(3, ROUND_UP));
     }
 

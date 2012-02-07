@@ -27,9 +27,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -63,6 +66,10 @@ public class MaterialFlowServiceTest {
 
     private SearchResult resultFrom;
 
+    private NumberService numberService;
+
+    private MathContext mathContext;
+
     private static final String STOCKAREAS = "1";
 
     private static final String PRODUCT = "1";
@@ -76,8 +83,13 @@ public class MaterialFlowServiceTest {
         transferDataCorrection = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         dataDefStockAreas = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         transfer = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        numberService = mock(NumberService.class);
 
         setField(materialFlowService, "dataDefinitionService", dataDefinitionService);
+        setField(materialFlowService, "numberService", numberService);
+
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
 
         resultTo = mock(SearchResult.class);
         resultFrom = mock(SearchResult.class);

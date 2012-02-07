@@ -29,10 +29,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +52,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -75,6 +78,10 @@ public class QualityControlServiceTest {
 
     private QualityControlForNumberService qualityControlForNumber;
 
+    private NumberService numberService;
+
+    private MathContext mathContext;
+
     private static final Integer DIGITS_NUMBER = 6;
 
     @Before
@@ -83,12 +90,16 @@ public class QualityControlServiceTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         qualityControlService = new QualityControlService();
         translationService = mock(TranslationService.class);
+        numberService = mock(NumberService.class);
         qualityControlForNumber = mock(QualityControlForNumberService.class);
         setField(qualityControlService, "dataDefinitionService", dataDefinitionService);
         setField(qualityControlService, "securityService", securityService);
         setField(qualityControlService, "translationService", translationService);
         setField(qualityControlService, "qualityControlForNumber", qualityControlForNumber);
+        setField(qualityControlService, "numberService", numberService);
 
+        mathContext = MathContext.DECIMAL64;
+        when(numberService.getMathContext()).thenReturn(mathContext);
     }
 
     @Test

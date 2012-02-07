@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
@@ -47,16 +48,19 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
+@Component(value = "technologiesTechnologyDetailsPdfView")
 public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
     @Autowired
@@ -68,14 +72,19 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
+
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved technology! (missing id)");
 
-        String documentTitle = getTranslationService().translate("technologies.technologiesTechnologyDetails.report.title",
-                locale);
-        String documentAuthor = getTranslationService().translate("qcadooReport.commons.generatedBy.label", locale);
+        String documentTitle = translationService.translate("technologies.technologiesTechnologyDetails.report.title", locale);
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -87,8 +96,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         panelTableValues.put("number", technology.getStringField("number"));
         panelTableValues.put(MODEL_BASIC_PRODUCT, technology.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME));
         panelTableValues.put("default",
-                (Boolean) technology.getField("master") ? getTranslationService().translate("qcadooView.true", locale)
-                        : getTranslationService().translate("qcadooView.false", locale));
+                (Boolean) technology.getField("master") ? translationService.translate("qcadooView.true", locale)
+                        : translationService.translate("qcadooView.false", locale));
 
         panelTableValues.put("description", technology.getStringField("description"));
 
@@ -96,9 +105,9 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         for (Map.Entry<String, String> panelEntry : panelTableValues.entrySet()) {
             PdfUtil.addTableCellAsTable(
                     panelTable,
-                    getTranslationService().translate(
-                            "technologies.technologiesTechnologyDetails.report.panel.technology." + panelEntry.getKey(), locale),
-                    panelEntry.getValue(), null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                    translationService.translate("technologies.technologiesTechnologyDetails.report.panel.technology."
+                            + panelEntry.getKey(), locale), panelEntry.getValue(), null, PdfUtil.getArialBold10Dark(),
+                    PdfUtil.getArialRegular10Dark());
         }
 
         panelTable.setSpacingAfter(20);
@@ -106,17 +115,17 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         document.add(panelTable);
 
         List<String> technologyDetailsTableHeader = new ArrayList<String>();
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.level", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.name", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.direction", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.product", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.quantity", locale));
-        technologyDetailsTableHeader.add(getTranslationService().translate(
+        technologyDetailsTableHeader.add(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.columnHeader.unit", locale));
         PdfPTable table = PdfUtil.createTableWithHeader(6, technologyDetailsTableHeader, false);
 
@@ -140,10 +149,11 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 }
                 table.addCell(new Phrase(nodeNumber, PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(operationName, PdfUtil.getArialRegular9Dark()));
-                table.addCell(new Phrase(getTranslationService().translate(productType, locale), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(translationService.translate(productType, locale), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), PdfUtil
                         .getArialRegular9Dark()));
-                table.addCell(new Phrase(product.getField("quantity").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(product.getField("quantity")), PdfUtil
+                        .getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
             }
@@ -151,14 +161,14 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
         document.add(table);
 
-        String text = getTranslationService().translate("qcadooReport.commons.endOfPrint.label", locale);
+        String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
         PdfUtil.addEndOfDocument(document, writer, text);
-        return getTranslationService().translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
+        return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
     }
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(getTranslationService().translate("technologies.technologiesTechnologyDetails.report.title", locale));
+        document.addTitle(translationService.translate("technologies.technologiesTechnologyDetails.report.title", locale));
     }
 
 }

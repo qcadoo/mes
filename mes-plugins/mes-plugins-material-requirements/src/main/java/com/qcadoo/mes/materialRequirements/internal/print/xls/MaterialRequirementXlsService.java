@@ -36,6 +36,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
@@ -49,25 +50,28 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate("basic.product.number.label", locale));
+        cell0.setCellValue(translationService.translate("basic.product.number.label", locale));
         cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate("basic.product.name.label", locale));
+        cell1.setCellValue(translationService.translate("basic.product.name.label", locale));
         cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate("technologies.technologyOperationComponent.quantity.label", locale));
+        cell2.setCellValue(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
         cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService().translate("basic.product.unit.label", locale));
+        cell3.setCellValue(translationService.translate("basic.product.unit.label", locale));
         cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
     }
 
     @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity entity) {
+    protected void addSeries(final HSSFSheet sheet, final Entity entity, final Locale locale) {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
@@ -95,6 +99,6 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Override
     protected String getReportTitle(final Locale locale) {
-        return getTranslationService().translate("materialRequirements.materialRequirement.report.title", locale);
+        return translationService.translate("materialRequirements.materialRequirement.report.title", locale);
     }
 }
