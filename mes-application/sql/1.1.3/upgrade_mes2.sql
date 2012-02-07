@@ -245,13 +245,3 @@ CREATE TABLE productioncounting_productionrecordlogging
 );
 
 -- end
-
-
--- Table: productioncounting_productionrecord
--- changed: 07.02.2012
-
-ALTER TABLE productioncounting_productionrecord DROP COLUMN worker;
-ALTER TABLE productioncounting_productionrecord DROP COLUMN creationTime;
-
--- end
-
