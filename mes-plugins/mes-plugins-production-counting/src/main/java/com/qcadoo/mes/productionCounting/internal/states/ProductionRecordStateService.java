@@ -49,48 +49,6 @@ public class ProductionRecordStateService {
 
     private static final String STATE_FIELD = "state";
 
-    // public void changeRecordStateToAccepted(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-    // changeRecordState(view, ProductionCountingStates.ACCEPTED.getStringValue());
-    // state.performEvent(view, "save", new String[0]);
-    // }
-    //
-    // public void changeRecordStateToDeclined(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-    // changeRecordState(view, ProductionCountingStates.DECLINED.getStringValue());
-    // state.performEvent(view, "save", new String[0]);
-    // }
-
-    private void changeRecordState(final ViewDefinitionState view, final String state) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        final Entity productionCounting = form.getEntity();
-        productionCounting.setField(STATE_FIELD, state);
-
-        final FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE_FIELD);
-        stateField.setFieldValue(state);
-    }
-
-    public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntity() == null) {
-            return;
-        }
-        final Entity productionRecord = form.getEntity();
-        String states = productionRecord.getStringField(STATE_FIELD);
-        if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
-            for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "shift",
-                    "machineTime", "laborTime")) {
-                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                field.setEnabled(false);
-                field.requestComponentUpdateState();
-            }
-            GridComponent gridProductInComponent = (GridComponent) view
-                    .getComponentByReference("recordOperationProductInComponent");
-            gridProductInComponent.setEditable(false);
-            GridComponent gridProductOutComponent = (GridComponent) view
-                    .getComponentByReference("recordOperationProductOutComponent");
-            gridProductOutComponent.setEditable(false);
-        }
-    }
-
     public void changeRecordState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -139,6 +97,29 @@ public class ProductionRecordStateService {
             }
         }
 
+    }
+
+    public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+        final Entity productionRecord = form.getEntity();
+        String states = productionRecord.getStringField(STATE_FIELD);
+        if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
+            for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "shift",
+                    "machineTime", "laborTime")) {
+                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                field.setEnabled(false);
+                field.requestComponentUpdateState();
+            }
+            GridComponent gridProductInComponent = (GridComponent) view
+                    .getComponentByReference("recordOperationProductInComponent");
+            gridProductInComponent.setEditable(false);
+            GridComponent gridProductOutComponent = (GridComponent) view
+                    .getComponentByReference("recordOperationProductOutComponent");
+            gridProductOutComponent.setEditable(false);
+        }
     }
 
     private String getTargetStateFromArgs(final String[] args) {

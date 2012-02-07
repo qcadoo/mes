@@ -76,6 +76,9 @@
 		<onCreate 
 			class="com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService"
 			method="logCreateEvent" />
+		<onCopy 
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
+			method="changeStateToDefault" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkTypeOfProductionRecording" />
