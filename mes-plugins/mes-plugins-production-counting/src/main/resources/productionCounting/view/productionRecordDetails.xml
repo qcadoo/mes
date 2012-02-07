@@ -371,16 +371,8 @@
 			</component>
 		</windowTab>
 		<windowTab name="historyTab">
-			<component type="gridLayout" name="historyGridLayout" columns="3" rows="3">
-				<layoutElement column="1" row="1">
-					<component type="input" name="creationTime" field="creationTime"
-						reference="creationTime" defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="worker" field="worker"
-						reference="worker" defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="1" row="3" width="3">
+			<component type="gridLayout" name="historyGridLayout" columns="3" rows="1">
+				<layoutElement column="1" row="1" width="3">
 					<component type="grid" name="loggingsGrid" reference="grid" source="#{form}.loggings">
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="currentState" expression="'@productionCounting.productionRecord.state.value.' + #currentState" />

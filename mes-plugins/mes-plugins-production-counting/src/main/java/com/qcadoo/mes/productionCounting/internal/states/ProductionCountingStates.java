@@ -35,4 +35,16 @@ public enum ProductionCountingStates {
     public String getStringValue() {
         return state;
     }
+
+    public static ProductionCountingStates parseString(final String stringValue) {
+        if ("01draft".equals(stringValue)) {
+            return DRAFT;
+        } else if ("02accepted".equals(stringValue)) {
+            return ACCEPTED;
+        } else if ("03declined".equals(stringValue)) {
+            return DECLINED;
+        } else {
+            throw new IllegalArgumentException("Unsupported or unspecified batch state " + stringValue);
+        }
+    }
 }
