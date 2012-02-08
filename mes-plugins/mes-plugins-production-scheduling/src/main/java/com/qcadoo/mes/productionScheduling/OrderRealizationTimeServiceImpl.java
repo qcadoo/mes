@@ -50,6 +50,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
@@ -75,6 +76,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private TimeConverterService timeConverterService;
+
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -84,7 +88,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         if (StringUtils.hasText((String) dateTo.getFieldValue()) && !StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            Date date = shiftsService.findDateFromForOrder(getDateFromField(dateTo.getFieldValue()),
+            Date date = shiftsService.findDateFromForOrder(timeConverterService.getDateFromField(dateTo.getFieldValue()),
                     Integer.valueOf((String) realizationTime.getFieldValue()));
             if (date != null) {
                 dateFrom.setFieldValue(setDateToField(date));
@@ -101,7 +105,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            Date date = shiftsService.findDateToForOrder(getDateFromField(dateFrom.getFieldValue()),
+            Date date = shiftsService.findDateToForOrder(timeConverterService.getDateFromField(dateFrom.getFieldValue()),
                     Integer.valueOf((String) realizationTime.getFieldValue()));
             if (date != null) {
                 dateTo.setFieldValue(setDateToField(date));
@@ -112,15 +116,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     public Object setDateToField(final Date date) {
         return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(date);
-    }
-
-    @Override
-    public Date getDateFromField(final Object value) {
-        try {
-            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).parse((String) value);
-        } catch (ParseException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
     }
 
     @Override

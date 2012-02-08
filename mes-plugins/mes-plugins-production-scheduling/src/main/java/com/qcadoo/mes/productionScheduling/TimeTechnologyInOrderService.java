@@ -41,6 +41,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class TimeTechnologyInOrderService {
@@ -66,6 +67,9 @@ public class TimeTechnologyInOrderService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private TimeConverterService timeConverterService;
 
     public void setVisibleAlert(final ViewDefinitionState viewDefinitionState) {
         ComponentState alert = viewDefinitionState.getComponentByReference("alert");
@@ -124,7 +128,7 @@ public class TimeTechnologyInOrderService {
         } else {
             realizationTime.setFieldValue(maxPathTime);
 
-            Date dateFrom = orderRealizationTimeService.getDateFromField(startTime.getFieldValue());
+            Date dateFrom = timeConverterService.getDateFromField(startTime.getFieldValue());
             Date dateTo = shiftsService.findDateToForOrder(dateFrom, maxPathTime);
 
             if (dateTo != null) {

@@ -32,8 +32,6 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.TECHNOLOGIES_MODEL_TECHNOLOGY;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -481,14 +478,6 @@ public class OrderService {
             state.getComponentByReference("dateTo").setEnabled(false);
             state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
             state.getComponentByReference(FIELD_PLANNED_QUANTITY).setEnabled(false);
-        }
-    }
-
-    public Date getDateFromField(final Object value) {
-        try {
-            return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).parse((String) value);
-        } catch (ParseException e) {
-            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
