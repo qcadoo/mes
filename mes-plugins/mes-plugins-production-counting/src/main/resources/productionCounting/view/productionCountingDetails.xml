@@ -141,9 +141,9 @@
 								expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name']" />
 						<option type="column" name="lastRecord" fields="lastRecord" 
 								expression="#lastRecord" />
-						<option type="column" name="shift" fields="shift" expression="#shift['name']" />
-						<option type="column" name="date" fields="creationTime" />
-						<option type="column" name="worker" fields="worker" />
+						<option type="column" name="shift" fields="shift"  />
+						<option type="column" name="dateAndTime" fields="loggings" expression="#loggings[0].getField('dateAndTime').toLocaleString()" />
+						<option type="column" name="worker" fields="loggings" expression="#loggings[0].getField('worker')" />
 						<option type="order" column="number" direction="asc" />
 					</component>
 				</layoutElement>				

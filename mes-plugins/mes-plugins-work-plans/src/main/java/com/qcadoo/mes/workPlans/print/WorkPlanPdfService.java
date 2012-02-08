@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +95,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     enum ProductDirection {
         IN, OUT;
     }
@@ -122,6 +126,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         addOperations(document, workPlan, decimalFormat, locale);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<Entity, Map<String, String>> getColumnValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
@@ -138,17 +143,23 @@ public class WorkPlanPdfService extends PdfDocumentService {
             }
 
             for (String classString : classesStrings) {
-                Class<?> columnFiller;
+                Class<?> clazz;
                 try {
-                    columnFiller = Class.forName(classString);
+                    clazz = Thread.currentThread().getContextClassLoader().loadClass(classString);
                 } catch (ClassNotFoundException e) {
                     throw new IllegalStateException("Failed to find class: " + classString, e);
+                }
+
+                Object bean = applicationContext.getBean(clazz);
+
+                if (bean == null) {
+                    throw new IllegalStateException("Failed to find bean for class: " + classString);
                 }
 
                 Method method;
 
                 try {
-                    method = columnFiller.getMethod("getValues", List.class);
+                    method = clazz.getMethod("getValues", List.class);
                 } catch (SecurityException e) {
                     throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
                 } catch (NoSuchMethodException e) {
@@ -159,14 +170,12 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
                 String invokeMethodError = "Failed to invoke column evaulator method";
                 try {
-                    values = (Map<Entity, Map<String, String>>) method.invoke(columnFiller.newInstance(), orders);
+                    values = (Map<Entity, Map<String, String>>) method.invoke(bean, orders);
                 } catch (IllegalArgumentException e) {
                     throw new IllegalStateException(invokeMethodError, e);
                 } catch (IllegalAccessException e) {
                     throw new IllegalStateException(invokeMethodError, e);
                 } catch (InvocationTargetException e) {
-                    throw new IllegalStateException(invokeMethodError, e);
-                } catch (InstantiationException e) {
                     throw new IllegalStateException(invokeMethodError, e);
                 }
 
@@ -370,6 +379,32 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return title;
     }
 
+    private void fetchOperationComponentsFromTechnology(final Entity technology, final Entity workPlan, final Entity order,
+            final Locale locale, final Map<Entity, Entity> opComps2Order, final Map<PrioritizedString, List<Entity>> opComps) {
+        EntityTree operationComponents = technology.getTreeField("operationComponents");
+
+        for (Entity operationComponent : operationComponents) {
+            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+                fetchOperationComponentsFromTechnology(refTech, workPlan, order, locale, opComps2Order, opComps);
+                continue;
+            }
+
+            PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
+
+            if (title == null) {
+                throw new IllegalStateException("undefined workplan type");
+            }
+
+            if (!opComps.containsKey(title)) {
+                opComps.put(title, new ArrayList<Entity>());
+            }
+
+            opComps2Order.put(operationComponent, order);
+            opComps.get(title).add(operationComponent);
+        }
+    }
+
     Map<PrioritizedString, List<Entity>> getOperationComponentsWithDistinction(final Entity workPlan,
             final Map<Entity, Entity> operationComponent2order, final Locale locale) {
         Map<PrioritizedString, List<Entity>> operationComponentsWithDistinction = new TreeMap<PrioritizedString, List<Entity>>();
@@ -381,22 +416,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
             if (technology == null) {
                 continue;
             }
-            EntityTree operationComponents = technology.getTreeField("operationComponents");
 
-            for (Entity operationComponent : operationComponents) {
-                PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
-
-                if (title == null) {
-                    throw new IllegalStateException("undefined workplan type");
-                }
-
-                if (!operationComponentsWithDistinction.containsKey(title)) {
-                    operationComponentsWithDistinction.put(title, new ArrayList<Entity>());
-                }
-
-                operationComponent2order.put(operationComponent, order);
-                operationComponentsWithDistinction.get(title).add(operationComponent);
-            }
+            fetchOperationComponentsFromTechnology(technology, workPlan, order, locale, operationComponent2order,
+                    operationComponentsWithDistinction);
         }
 
         for (List<Entity> operationComponents : operationComponentsWithDistinction.values()) {
@@ -548,7 +570,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
     }
 
-    List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
+    private List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
         List<Entity> columns = new LinkedList<Entity>();
 
         final String columnDefinitionModel;

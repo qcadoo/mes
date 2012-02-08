@@ -166,9 +166,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal machineUtilization = getBigDecimal(operationComponent.getField("machineUtilization"));
         BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
 
-        long techOperCompId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
-        // TODO MICI, to avoid ProxyEntity equals thing
-        Entity techOperComp = getTechnologyOperationFromDD(techOperCompId);
+        Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
         int dur = realizationTimes.get(techOperComp);
         BigDecimal duration = BigDecimal.valueOf(dur);
 
@@ -195,12 +193,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 resultsMap.get(LABOR_HOURLY_COST).add(operationLaborCost, numberService.getMathContext()));
 
         return resultsMap;
-    }
-
-    private Entity getTechnologyOperationFromDD(long techOperCompId) {
-        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        return dd.get(techOperCompId);
     }
 
     private BigDecimal countNumberOfOutputProducts(final Entity givenTechnologyOperation) {

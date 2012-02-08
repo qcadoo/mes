@@ -67,8 +67,8 @@ public class TechnologyServiceTest {
 
         MockitoAnnotations.initMocks(this);
 
-        when(product1.getId()).thenReturn(1l);
-        when(product2.getId()).thenReturn(2l);
+        when(product1.getId()).thenReturn(1L);
+        when(product2.getId()).thenReturn(2L);
 
         when(opComp1.getBelongsToField("parent")).thenReturn(null);
         when(opComp2.getBelongsToField("parent")).thenReturn(opComp1);

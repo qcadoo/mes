@@ -37,7 +37,6 @@ import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
@@ -58,7 +56,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -83,27 +80,22 @@ public class ProductionRecordService {
     @Autowired
     private NumberService numberService;
 
-    private static final String FIELD_ORDER = "order";
+    private static final String ORDER_L = "order";
 
     private static final String FIELD_ORDER_OPERATION_COMPONENT = "orderOperationComponent";
 
-    private static final String FIELD_TYPE_OF_PRODUCTION_RCORDING = "typeOfProductionRecording";
-
-    @Autowired
-    private SecurityService securityService;
+    private static final String TYPE_OF_PRODUCTION_RCORDING_L = "typeOfProductionRecording";
 
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField("number") == null) {
             productionRecord.setField("number", numberGeneratorService.generateNumber(
                     ProductionCountingConstants.PLUGIN_IDENTIFIER, productionRecord.getDataDefinition().getName()));
         }
-        productionRecord.setField("creationTime", new Date());
-        productionRecord.setField("worker", securityService.getCurrentUserName());
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-        final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        final Entity order = productionRecord.getBelongsToField(ORDER_L);
+        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         return isValidTypeOfProductionRecording(productionRecord, typeOfProductionRecording, productionRecordDD);
     }
 
@@ -111,26 +103,25 @@ public class ProductionRecordService {
             final DataDefinition productionRecordDD) {
         boolean validTypeOfRecording = true;
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionCounting.validate.global.error.productionRecord.orderError");
             validTypeOfRecording = false;
         }
         if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
             validTypeOfRecording = false;
         }
         return validTypeOfRecording;
     }
 
-    // checkIfJustOneChoosen
     public boolean checkIfPartialIsAllowed(final DataDefinition productionRecordDD, final Entity productionRecord) {
         boolean isAllowed = true;
-        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-        final Boolean justOne = getBooleanValue(order.getField("justOne"));
-        final Boolean lastRecord = getBooleanValue(productionRecord.getField("lastRecord"));
+        final Entity order = productionRecord.getBelongsToField(ORDER_L);
+        final Boolean justOne = order.getBooleanField("justOne");
+        final Boolean lastRecord = productionRecord.getBooleanField("lastRecord");
         if (!lastRecord && justOne) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionCounting.validate.global.error.productionRecord.orderError.justOne");
             isAllowed = false;
         }
@@ -141,12 +132,12 @@ public class ProductionRecordService {
         boolean finalExist = true;
         if (productionRecord.getId() == null) {
 
-            final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-            final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+            final Entity order = productionRecord.getBelongsToField(ORDER_L);
+            final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
 
             final SearchCriteriaBuilder searchBuilder = productionRecordDD.find();
             searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
-            searchBuilder.add(SearchRestrictions.belongsTo(FIELD_ORDER, order));
+            searchBuilder.add(SearchRestrictions.belongsTo(ORDER_L, order));
             searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
             if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
@@ -154,7 +145,7 @@ public class ProductionRecordService {
                         productionRecord.getBelongsToField("orderOperationComponents")));
             }
             if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-                productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+                productionRecord.addError(productionRecordDD.getField(ORDER_L),
                         "productionCounting.record.messages.error.finalExists");
                 finalExist = false;
             }
@@ -164,37 +155,31 @@ public class ProductionRecordService {
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         boolean isStarted = true;
-        final String orderState = entity.getBelongsToField(FIELD_ORDER).getStringField("state");
+        final String orderState = entity.getBelongsToField(ORDER_L).getStringField("state");
         if (orderState == null || "01pending".equals(orderState) || "02accepted".equals(orderState)
                 || "05declined".equals(orderState) || "07abandoned".equals(orderState)) {
-            entity.addError(dd.getField(FIELD_ORDER), "productionCounting.record.messages.error.orderIsNotStarted");
+            entity.addError(dd.getField(ORDER_L), "productionCounting.record.messages.error.orderIsNotStarted");
             isStarted = false;
         }
         return isStarted;
     }
 
     public void copyProductsFromOrderOperation(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER_L);
         if (order == null) {
             return;
         }
-        String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         if (typeOfProductionRecording == null) {
             return;
         }
         List<Entity> operationComponents = null;
 
-        Boolean registerInput = getBooleanValue(order.getField(PARAM_REGISTER_IN_PRODUCTS));
-        Boolean registerOutput = getBooleanValue(order.getField(PARAM_REGISTER_OUT_PRODUCTS));
+        Boolean registerInput = order.getBooleanField(PARAM_REGISTER_IN_PRODUCTS);
+        Boolean registerOutput = order.getBooleanField(PARAM_REGISTER_OUT_PRODUCTS);
 
         if (!registerInput && !registerOutput) {
             return;
-        }
-
-        for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
-            if (productionRecord.getHasManyField(fieldName) != null) {
-                return;
-            }
         }
 
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
@@ -280,7 +265,7 @@ public class ProductionRecordService {
     }
 
     public boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        String recordingMode = productionRecord.getBelongsToField(FIELD_ORDER).getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String recordingMode = productionRecord.getBelongsToField(ORDER_L).getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         Object orderOperation = productionRecord.getField(FIELD_ORDER_OPERATION_COMPONENT);
 
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
@@ -292,15 +277,15 @@ public class ProductionRecordService {
     }
 
     public void countPlannedTimeAndBalance(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER_L);
         if (order == null) {
             return;
         }
 
-        if (!getBooleanValue(order.getField("registerProductionTime"))) {
+        if (!order.getBooleanField("registerProductionTime")) {
             return;
         }
-        String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         List<Entity> operationComponents = null;
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField("orderOperationComponents");
@@ -309,30 +294,6 @@ public class ProductionRecordService {
         }
         countPlannedTime(productionRecord, operationComponents);
         countTimeBalance(productionRecord);
-    }
-
-    public void logCreateEvent(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        final Date logDate = new Date();
-        final Entity logEntity = createStateLog();
-
-        logEntity.setField("currentState", ProductionCountingStates.DRAFT.getStringValue());
-        logEntity.setField("worker", securityService.getCurrentUserName());
-        logEntity.setField("dateAndTime", logDate);
-
-        productionRecord.setField("loggings", Lists.newArrayList(logEntity));
-    }
-
-    public void logStateChange(final Entity productionRecord, final ProductionCountingStates oldState,
-            final ProductionCountingStates newState) {
-        final Date logDate = new Date();
-        final Entity logEntity = createStateLog();
-
-        logEntity.setField("previousState", oldState.getStringValue());
-        logEntity.setField("currentState", newState.getStringValue());
-        logEntity.setField("worker", securityService.getCurrentUserName());
-        logEntity.setField("dateAndTime", logDate);
-        logEntity.setField("productionRecord", productionRecord);
-        logEntity.getDataDefinition().save(logEntity);
     }
 
     public final void changeStateToDefault(final DataDefinition productionRecordDD, final Entity productionRecord) {
@@ -408,19 +369,6 @@ public class ProductionRecordService {
         }
     }
 
-    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
-        return (FieldComponent) view.getComponentByReference(name);
-    }
-
-    private Entity createStateLog() {
-        return getLoggingDataDefinition().create();
-    }
-
-    private DataDefinition getLoggingDataDefinition() {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_RECORD_LOGGING);
-    }
-
     private void countPlannedTime(final Entity productionRecord, final List<Entity> operationComponents) {
         if (checkIfOperationListIsEmpty(operationComponents)) {
             return;
@@ -464,6 +412,10 @@ public class ProductionRecordService {
 
     private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
+    }
+
+    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
+        return (FieldComponent) view.getComponentByReference(name);
     }
 
     public static BigDecimal getBigDecimal(final Object value) {
