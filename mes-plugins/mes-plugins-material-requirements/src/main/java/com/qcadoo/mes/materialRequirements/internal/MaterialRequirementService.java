@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,7 @@ import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -77,6 +79,9 @@ public class MaterialRequirementService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private FileService fileService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -187,7 +192,7 @@ public class MaterialRequirementService {
                 viewDefinitionState.redirectTo(
                         "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
                                 + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
-                                + state.getFieldValue() + "&fieldDate=date", true, false);
+                                + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -211,7 +216,7 @@ public class MaterialRequirementService {
             viewDefinitionState.redirectTo(
                     "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
                             + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
-                            + materialRequirement.getId() + "&fieldDate=date", true, false);
+                            + materialRequirement.getId(), true, false);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (DocumentException e) {
@@ -221,8 +226,11 @@ public class MaterialRequirementService {
 
     private void generateMaterialReqDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException {
-        Entity materialRequirementWithFileName = materialRequirementPdfService.updateFileName(materialRequirement,
-                "Material_requirement");
+        Entity materialRequirementWithFileName = fileService.updateReportFileName(
+                materialRequirement,
+                "date",
+                translationService.translate("materialRequirements.materialRequirement.report.fileName",
+                        LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
