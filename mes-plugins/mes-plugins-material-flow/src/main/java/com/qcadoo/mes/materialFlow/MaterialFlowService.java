@@ -26,8 +26,6 @@ package com.qcadoo.mes.materialFlow;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +51,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class MaterialFlowService {
@@ -93,6 +92,9 @@ public class MaterialFlowService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    TimeConverterService timeConverterService;
 
     public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final Date forDate) {
 
@@ -180,20 +182,14 @@ public class MaterialFlowService {
                 Long stockAreasNumber = (Long) stockAreas.getFieldValue();
                 String productNumber = product.getFieldValue().toString();
 
-                String stringDate = date.getFieldValue().toString();
+                Date forDate = timeConverterService.getDateFromField(date.getFieldValue());
 
-                DateFormat format = DateFormat.getDateInstance(DateFormat.DEFAULT, state.getLocale());
-                try {
-                    Date forDate = format.parse(stringDate);
-                    BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+                BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
 
-                    if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                        should.setFieldValue(shouldBe);
-                    } else {
-                        should.setFieldValue(BigDecimal.ZERO);
-                    }
-                } catch (ParseException parseException) {
-                    throw new IllegalStateException(parseException);
+                if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
+                    should.setFieldValue(shouldBe);
+                } else {
+                    should.setFieldValue(BigDecimal.ZERO);
                 }
             }
         }

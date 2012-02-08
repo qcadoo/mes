@@ -82,8 +82,6 @@ public interface OrderRealizationTimeService {
      */
     Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz);
 
-    Date getDateFromField(final Object value);
-
     Object setDateToField(final Date date);
 
 }
