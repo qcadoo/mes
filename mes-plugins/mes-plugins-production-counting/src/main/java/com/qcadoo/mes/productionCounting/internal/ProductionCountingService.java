@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -43,6 +44,7 @@ import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfSer
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -66,6 +68,9 @@ public class ProductionCountingService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private ProductionCountingPdfService productionCountingPdfService;
@@ -197,8 +202,8 @@ public class ProductionCountingService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
-                        + ProductionCountingConstants.MODEL_PRODUCTION_COUNTING + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=date", true, false);
+                        + ProductionCountingConstants.MODEL_PRODUCTION_COUNTING + "." + args[0] + "?id=" + state.getFieldValue(),
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -213,8 +218,11 @@ public class ProductionCountingService {
 
     private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)
             throws IOException, DocumentException {
-        Entity productionCountingWithFileName = productionCountingPdfService.updateFileName(productionCounting,
-                "Production_counting");
+        Entity productionCountingWithFileName = fileService.updateReportFileName(
+                productionCounting,
+                "date",
+                translationService.translate("productionCounting.productionCounting.report.fileName",
+                        LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());

@@ -290,15 +290,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                         "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                         inputProduct.getField("plannedQuantity")), PdfUtil.getArialRegular9Dark()));
                 if (inputProduct.getField(USED_QUANTITY_LITERAL) == null) {
                     inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                     inputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 } else {
-                    inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                    inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                             inputProduct.getField(USED_QUANTITY_LITERAL)), PdfUtil.getArialRegular9Dark()));
-                    inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                    inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                             inputProduct.getField("balance")), PdfUtil.getArialRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
@@ -360,15 +360,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                         "basic.product.globalTypeOfMaterial.value." + type, locale), PdfUtil.getArialRegular9Dark()));
 
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-                outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                         outputProduct.getField("plannedQuantity")), PdfUtil.getArialRegular9Dark()));
                 if (outputProduct.getField(USED_QUANTITY_LITERAL) == null) {
                     outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                     outputProductsTable.addCell(new Phrase(N_A_LITERAL, PdfUtil.getArialRegular9Dark()));
                 } else {
-                    outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                    outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                             outputProduct.getField(USED_QUANTITY_LITERAL)), PdfUtil.getArialRegular9Dark()));
-                    outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
+                    outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat().format(
                             outputProduct.getField("balance")), PdfUtil.getArialRegular9Dark()));
                 }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
@@ -578,7 +578,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("productionCounting.productionBalance.report.title", locale);
     }
 

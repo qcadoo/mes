@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,6 +39,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -56,6 +58,9 @@ public class CostCalculationReportService {
     @Autowired
     CostCalculationPdfService costCalculationPdfService;
 
+    @Autowired
+    private FileService fileService;
+
     // TODO KRNA print generic
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -67,8 +72,8 @@ public class CostCalculationReportService {
                         MessageType.FAILURE);
             } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculationConstants.PLUGIN_IDENTIFIER + "/"
-                        + CostCalculationConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=dateOfCalculation", true, false);
+                        + CostCalculationConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue(), true,
+                        false);
             } else {
                 state.addMessage(translationService.translate(
                         "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
@@ -133,8 +138,8 @@ public class CostCalculationReportService {
 
     private void generateCostCalDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
             DocumentException {
-        Entity costCalculationWithFileName = costCalculationPdfService.updateFileName(costCalculation, "dateOfCalculation",
-                "Cost_calculation");
+        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "dateOfCalculation",
+                translationService.translate("costCalculation.costCalculation.report.fileName", LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         costCalculationPdfService.generateDocument(costCalculationWithFileName, company, state.getLocale());

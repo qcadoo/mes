@@ -195,12 +195,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return resultsMap;
     }
 
-    private Entity getTechnologyOperationFromDD(long techOperCompId) {
-        DataDefinition dd = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        return dd.get(techOperCompId);
-    }
-
     private BigDecimal countNumberOfOutputProducts(final Entity givenTechnologyOperation) {
         if (givenTechnologyOperation == null) {
             return BigDecimal.ZERO;
