@@ -46,6 +46,7 @@ import com.qcadoo.mes.workPlans.print.WorkPlanPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -63,15 +64,21 @@ public class WorkPlanServiceImpl implements WorkPlanService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private FileService fileService;
+
+    @Override
     @Transactional
     public final void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
-        Entity workPlanWithFilename = workPlanPdfService.updateFileName(workPlan, "Work_plan");
+        Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, "date",
+                translationService.translate("workPlans.workPlan.report.fileName", LocaleContextHolder.getLocale()));
         workPlanPdfService.generateDocument(workPlanWithFilename, company, state.getLocale());
     }
 
+    @Override
     public final Entity generateWorkPlanEntity(final List<Entity> orders) {
         Entity workPlan = getWorkPlanDataDefinition().create();
         workPlan.setField("orders", orders);
@@ -81,6 +88,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         return workPlan.getDataDefinition().save(workPlan);
     }
 
+    @Override
     public final List<Entity> getSelectedOrders(final Set<Long> selectedOrderIds) {
         List<Entity> orders = Lists.newArrayList();
         if (selectedOrderIds.isEmpty()) {
@@ -97,6 +105,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
         return orders;
     }
 
+    @Override
     public final Entity getWorkPlan(final Long workPlanId) {
         return getWorkPlanDataDefinition().get(workPlanId);
     }

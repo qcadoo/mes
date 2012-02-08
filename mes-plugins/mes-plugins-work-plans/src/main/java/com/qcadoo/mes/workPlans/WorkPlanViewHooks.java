@@ -206,7 +206,6 @@ public class WorkPlanViewHooks {
         url.append(WorkPlansConstants.MODEL_WORK_PLAN);
         url.append(".pdf?id=");
         url.append(workPlanId);
-        url.append("&fieldDate=date");
         return url.toString();
     }
 }
