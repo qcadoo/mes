@@ -68,7 +68,6 @@ public class CostNormsForProductServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenViewDefinitionStateIsNull() throws Exception {
-        costNormsForProductService.fillInProductsGrid(null);
         costNormsForProductService.fillCostTabCurrency(null);
         costNormsForProductService.fillCostTabUnit(null);
     }

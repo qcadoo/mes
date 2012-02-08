@@ -30,20 +30,20 @@
 	plugin="basic" view="productDetails">
 
 	<windowTab name="costTab" reference="costTab">
-	 <script> 
-	 <![CDATA[ 
-	 jQuery(document).ready(function() { 
-		var productUnit = $("#window\\.mainTab\\.product\\.gridLayout\\.unit_input"); 
-		var costUnit = $("#window\\.costTab\\.gridLayout\\.unitGridLayout\\.unit_input"); 
-	 	productUnit.bind('blur', function() { 
-			#{costTabUnit}.setEnabled(true, true); 
-	 		costUnit.attr('value', productUnit.val()); 
-	 		#{costTabUnit}.performUpdateState(); 
-	 		#{costTabUnit}.setEnabled(false, true); 
-	 	}); 
-	 }); 
-	 ]]> 
-	 </script> 
+		<script> 
+			<![CDATA[ 
+				jQuery(document).ready(function() { 
+				var productUnit = $("#window\\.mainTab\\.product\\.gridLayout\\.unit_input"); 
+				var costUnit = $("#window\\.costTab\\.gridLayout\\.unitGridLayout\\.unit_input"); 
+					productUnit.bind('blur', function() { 
+					#{costTabUnit}.setEnabled(true, true); 
+						costUnit.attr('value', productUnit.val()); 
+						#{costTabUnit}.performUpdateState(); 
+						#{costTabUnit}.setEnabled(false, true); 
+					}); 
+				}); 
+			 ]]> 
+		</script>
 		<component type="gridLayout" name="gridLayout" hasBorders="false" columns="3" rows="4">
 			<layoutElement column="1" row="1">
 			    <component type="input" name="costForNumber" field="#{form}.costForNumber">
@@ -57,45 +57,42 @@
 			         </layoutElement>
 			    </component>
 			</layoutElement>
-			
 			<layoutElement column="1" row="2">
-			    <component type="input" name="nominalCost" reference="nominalCost" field="#{form}.nominalCost">
+				<component type="input" name="nominalCost" reference="nominalCost" field="#{form}.nominalCost">
 			    	<option type="alignment" value="right" />
 			    </component>
 			</layoutElement>
 			<layoutElement column="2" row="2">
-                <component type="gridLayout" name="nominalCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-                     <layoutElement column="1" row="1">
-                         <component type="input" name="nominalCostCurrency" reference="nominalCostCurrency" hasLabel="false" defaultEnable="false" />
-                     </layoutElement>
+             	<component type="gridLayout" name="nominalCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
+                	<layoutElement column="1" row="1">
+                		<component type="input" name="nominalCostCurrency" reference="nominalCostCurrency" hasLabel="false" defaultEnable="false" />
+                	</layoutElement>
                 </component>
-            </layoutElement>
-			
+			</layoutElement>
 			<layoutElement column="1" row="3">
-                <component type="input" name="lastPurchaseCost" reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
-                	<option type="alignment" value="right" />
-                </component>
-            </layoutElement>
-            <layoutElement column="2" row="3">
-                <component type="gridLayout" name="lastPurchaseCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-                     <layoutElement column="1" row="1">
-                         <component type="input" name="lastPurchaseCostCurrency" reference="lastPurchaseCostCurrency" hasLabel="false" defaultEnable="false" />
-                     </layoutElement>
-                </component>
-            </layoutElement>
-            
-            <layoutElement column="1" row="4">
-                <component type="input" name="averageCost" reference="averageCost" field="#{form}.averageCost">
-                	<option type="alignment" value="right" />
-                </component>
-            </layoutElement>
-            <layoutElement column="2" row="4">
-                <component type="gridLayout" name="averageCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-                     <layoutElement column="1" row="1">
-                         <component type="input" name="averageCostCurrency" reference="averageCostCurrency" hasLabel="false" defaultEnable="false" />
-                     </layoutElement>
-                </component>
-            </layoutElement>
+				<component type="input" name="lastPurchaseCost" reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
+					<option type="alignment" value="right" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="3">
+				<component type="gridLayout" name="lastPurchaseCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
+					<layoutElement column="1" row="1">
+		            	<component type="input" name="lastPurchaseCostCurrency" reference="lastPurchaseCostCurrency" hasLabel="false" defaultEnable="false" />
+		            </layoutElement>
+		        </component>
+		    </layoutElement>
+		    <layoutElement column="1" row="4">
+		        <component type="input" name="averageCost" reference="averageCost" field="#{form}.averageCost">
+		        	<option type="alignment" value="right" />
+		        </component>
+		    </layoutElement>
+		    <layoutElement column="2" row="4">
+		    	<component type="gridLayout" name="averageCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="input" name="averageCostCurrency" reference="averageCostCurrency" hasLabel="false" defaultEnable="false" />
+					</layoutElement>
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
 
