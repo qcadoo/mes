@@ -80,11 +80,11 @@ public class ProductionRecordService {
     @Autowired
     private NumberService numberService;
 
-    private static final String FIELD_ORDER = "order";
+    private static final String ORDER_L = "order";
 
     private static final String FIELD_ORDER_OPERATION_COMPONENT = "orderOperationComponent";
 
-    private static final String FIELD_TYPE_OF_PRODUCTION_RCORDING = "typeOfProductionRecording";
+    private static final String TYPE_OF_PRODUCTION_RCORDING_L = "typeOfProductionRecording";
 
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField("number") == null) {
@@ -94,8 +94,8 @@ public class ProductionRecordService {
     }
 
     public boolean checkTypeOfProductionRecording(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-        final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        final Entity order = productionRecord.getBelongsToField(ORDER_L);
+        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         return isValidTypeOfProductionRecording(productionRecord, typeOfProductionRecording, productionRecordDD);
     }
 
@@ -103,26 +103,25 @@ public class ProductionRecordService {
             final DataDefinition productionRecordDD) {
         boolean validTypeOfRecording = true;
         if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionCounting.validate.global.error.productionRecord.orderError");
             validTypeOfRecording = false;
         }
         if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
             validTypeOfRecording = false;
         }
         return validTypeOfRecording;
     }
 
-    // checkIfJustOneChoosen
     public boolean checkIfPartialIsAllowed(final DataDefinition productionRecordDD, final Entity productionRecord) {
         boolean isAllowed = true;
-        final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        final Entity order = productionRecord.getBelongsToField(ORDER_L);
         final Boolean justOne = order.getBooleanField("justOne");
         final Boolean lastRecord = productionRecord.getBooleanField("lastRecord");
         if (!lastRecord && justOne) {
-            productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+            productionRecord.addError(productionRecordDD.getField(ORDER_L),
                     "productionCounting.validate.global.error.productionRecord.orderError.justOne");
             isAllowed = false;
         }
@@ -133,12 +132,12 @@ public class ProductionRecordService {
         boolean finalExist = true;
         if (productionRecord.getId() == null) {
 
-            final Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
-            final String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+            final Entity order = productionRecord.getBelongsToField(ORDER_L);
+            final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
 
             final SearchCriteriaBuilder searchBuilder = productionRecordDD.find();
             searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
-            searchBuilder.add(SearchRestrictions.belongsTo(FIELD_ORDER, order));
+            searchBuilder.add(SearchRestrictions.belongsTo(ORDER_L, order));
             searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
             if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
@@ -146,7 +145,7 @@ public class ProductionRecordService {
                         productionRecord.getBelongsToField("orderOperationComponents")));
             }
             if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-                productionRecord.addError(productionRecordDD.getField(FIELD_ORDER),
+                productionRecord.addError(productionRecordDD.getField(ORDER_L),
                         "productionCounting.record.messages.error.finalExists");
                 finalExist = false;
             }
@@ -156,21 +155,21 @@ public class ProductionRecordService {
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {
         boolean isStarted = true;
-        final String orderState = entity.getBelongsToField(FIELD_ORDER).getStringField("state");
+        final String orderState = entity.getBelongsToField(ORDER_L).getStringField("state");
         if (orderState == null || "01pending".equals(orderState) || "02accepted".equals(orderState)
                 || "05declined".equals(orderState) || "07abandoned".equals(orderState)) {
-            entity.addError(dd.getField(FIELD_ORDER), "productionCounting.record.messages.error.orderIsNotStarted");
+            entity.addError(dd.getField(ORDER_L), "productionCounting.record.messages.error.orderIsNotStarted");
             isStarted = false;
         }
         return isStarted;
     }
 
     public void copyProductsFromOrderOperation(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER_L);
         if (order == null) {
             return;
         }
-        String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         if (typeOfProductionRecording == null) {
             return;
         }
@@ -181,12 +180,6 @@ public class ProductionRecordService {
 
         if (!registerInput && !registerOutput) {
             return;
-        }
-
-        for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
-            if (productionRecord.getHasManyField(fieldName) != null) {
-                return;
-            }
         }
 
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
@@ -272,7 +265,7 @@ public class ProductionRecordService {
     }
 
     public boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        String recordingMode = productionRecord.getBelongsToField(FIELD_ORDER).getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String recordingMode = productionRecord.getBelongsToField(ORDER_L).getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         Object orderOperation = productionRecord.getField(FIELD_ORDER_OPERATION_COMPONENT);
 
         if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
@@ -284,7 +277,7 @@ public class ProductionRecordService {
     }
 
     public void countPlannedTimeAndBalance(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        Entity order = productionRecord.getBelongsToField(FIELD_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER_L);
         if (order == null) {
             return;
         }
@@ -292,7 +285,7 @@ public class ProductionRecordService {
         if (!order.getBooleanField("registerProductionTime")) {
             return;
         }
-        String typeOfProductionRecording = order.getStringField(FIELD_TYPE_OF_PRODUCTION_RCORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
         List<Entity> operationComponents = null;
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField("orderOperationComponents");

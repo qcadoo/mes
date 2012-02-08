@@ -419,22 +419,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
             fetchOperationComponentsFromTechnology(technology, workPlan, order, locale, operationComponent2order,
                     operationComponentsWithDistinction);
-
-            // if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-            //
-            // }
-            // PrioritizedString title = generateOperationSectionTitle(workPlan, technology, operationComponent, locale);
-            //
-            // if (title == null) {
-            // throw new IllegalStateException("undefined workplan type");
-            // }
-            //
-            // if (!operationComponentsWithDistinction.containsKey(title)) {
-            // operationComponentsWithDistinction.put(title, new ArrayList<Entity>());
-            // }
-            //
-            // operationComponent2order.put(operationComponent, order);
-            // operationComponentsWithDistinction.get(title).add(operationComponent);
         }
 
         for (List<Entity> operationComponents : operationComponentsWithDistinction.values()) {
@@ -586,7 +570,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 (Date) entity.getField("date"), securityService.getCurrentUserName());
     }
 
-    List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
+    private List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
         List<Entity> columns = new LinkedList<Entity>();
 
         final String columnDefinitionModel;

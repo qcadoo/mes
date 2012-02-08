@@ -113,8 +113,7 @@
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							
-							enableGeneration(true);
+							generate.disable("#{translate(recordNotCreated)}");
 						}
 					}
 				]]>

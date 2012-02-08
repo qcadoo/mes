@@ -166,9 +166,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal machineUtilization = getBigDecimal(operationComponent.getField("machineUtilization"));
         BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
 
-        long techOperCompId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
-        // TODO MICI, to avoid ProxyEntity equals thing
-        Entity techOperComp = getTechnologyOperationFromDD(techOperCompId);
+        Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
         int dur = realizationTimes.get(techOperComp);
         BigDecimal duration = BigDecimal.valueOf(dur);
 

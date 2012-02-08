@@ -245,3 +245,5 @@ CREATE TABLE productioncounting_productionrecordlogging
 );
 
 -- end
+
+ALTER TABLE basic_product ADD COLUMN description character varying(255);
