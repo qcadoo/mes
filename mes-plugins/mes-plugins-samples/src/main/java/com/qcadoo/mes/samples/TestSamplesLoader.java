@@ -75,7 +75,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_MODEL
 import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -94,6 +93,7 @@ import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 
@@ -111,6 +111,9 @@ public class TestSamplesLoader extends SamplesLoader {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Value("${setAsDemoEnviroment}")
     private boolean setAsDemoEnviroment;
@@ -362,7 +365,7 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addSubstituteComponent(final Entity substitute, final Entity product, final double quantity) {
         Entity substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").create();
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
-        substituteComponent.setField(FIELD_QUANTITY, new BigDecimal(quantity).setScale(3, RoundingMode.HALF_EVEN));
+        substituteComponent.setField(FIELD_QUANTITY, numberService.setScale(new BigDecimal(quantity)));
         substituteComponent.setField(BASIC_MODEL_SUBSTITUTE, substitute);
 
         if (LOG.isDebugEnabled()) {

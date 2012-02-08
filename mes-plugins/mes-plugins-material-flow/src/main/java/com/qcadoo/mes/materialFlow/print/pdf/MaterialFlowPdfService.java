@@ -104,7 +104,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
             table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.getDecimalFormat().format(data.getValue()), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(data.getValue()), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }

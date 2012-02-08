@@ -78,7 +78,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(data.getKey().getStringField("number"));
             row.createCell(1).setCellValue(data.getKey().getStringField("name"));
-            row.createCell(2).setCellValue(numberService.getDecimalFormat().format(data.getValue()));
+            row.createCell(2).setCellValue(numberService.format(data.getValue()));
             row.createCell(3).setCellValue(data.getKey().getStringField("unit"));
         }
         sheet.autoSizeColumn((short) 0);

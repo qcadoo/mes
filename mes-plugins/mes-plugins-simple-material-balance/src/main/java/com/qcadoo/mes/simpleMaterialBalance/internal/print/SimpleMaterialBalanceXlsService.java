@@ -119,17 +119,16 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             row.createCell(0).setCellValue(product.getKey().getField(NUMBER_FIELD).toString());
             row.createCell(1).setCellValue(product.getKey().getField(NAME_FIELD).toString());
             row.createCell(2).setCellValue(product.getKey().getField(UNIT_FIELD).toString());
-            row.createCell(3).setCellValue(numberService.getDecimalFormat().format(product.getValue()));
+            row.createCell(3).setCellValue(numberService.format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId().toString(),
                         (Date) simpleMaterialBalance.getField(DATE_FIELD)), numberService.getMathContext());
             }
-            row.createCell(4).setCellValue(numberService.getDecimalFormat().format(available));
+            row.createCell(4).setCellValue(numberService.format(available));
             row.createCell(5).setCellValue(
-                    numberService.getDecimalFormat().format(
-                            available.subtract(product.getValue(), numberService.getMathContext())));
+                    numberService.format(available.subtract(product.getValue(), numberService.getMathContext())));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);

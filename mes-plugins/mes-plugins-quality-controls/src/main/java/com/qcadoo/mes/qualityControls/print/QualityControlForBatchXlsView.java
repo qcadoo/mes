@@ -24,7 +24,6 @@
 package com.qcadoo.mes.qualityControls.print;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.ReportXlsView;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -50,6 +50,9 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
 
     @Autowired
     private QualityControlsReportService qualityControlsReportService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     protected final String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
@@ -110,12 +113,11 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
                 row.createCell(1).setCellValue(order.getField("batchNr") == null ? "" : order.getField("batchNr").toString());
                 row.createCell(2).setCellValue(order.getField("number").toString());
                 row.createCell(3).setCellValue(
-                        ((BigDecimal) order.getField("controlledQuantity")).setScale(3, RoundingMode.HALF_EVEN).doubleValue());
+                        numberService.setScale((BigDecimal) order.getField("controlledQuantity")).doubleValue());
                 row.createCell(4).setCellValue(
-                        ((BigDecimal) order.getField("rejectedQuantity")).setScale(3, RoundingMode.HALF_EVEN).doubleValue());
+                        numberService.setScale((BigDecimal) order.getField("rejectedQuantity")).doubleValue());
                 row.createCell(5).setCellValue(
-                        ((BigDecimal) order.getField("acceptedDefectsQuantity")).setScale(3, RoundingMode.HALF_EVEN)
-                                .doubleValue());
+                        numberService.setScale((BigDecimal) order.getField("acceptedDefectsQuantity")).doubleValue());
             }
         }
         sheet.autoSizeColumn((short) 0);

@@ -38,7 +38,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL
 import static java.util.Collections.singletonMap;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +51,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Preconditions;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
@@ -95,6 +95,9 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Value("${generatorIterations}")
     private int iterations;
@@ -242,8 +245,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operation.setField("tj", RANDOM.nextInt(1000));
         operation.setField("productionInOneCycle", RANDOM.nextInt(20));
         operation.setField("countRealized", RANDOM.nextInt(10));
-        operation.setField("machineUtilization", new BigDecimal(RANDOM.nextDouble()).abs().setScale(3, RoundingMode.HALF_EVEN));
-        operation.setField("laborUtilization", new BigDecimal(RANDOM.nextDouble()).abs().setScale(3, RoundingMode.HALF_EVEN));
+        operation.setField("machineUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
+        operation.setField("laborUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("countMachineOperation", RANDOM.nextInt(15));
         operation.setField("countRealizedOperation", "01all");
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
@@ -583,7 +586,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     private void addSubstituteComponent(final Entity substitute, final Entity product, final double quantity) {
         Entity substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").create();
 
-        substituteComponent.setField("quantity", new BigDecimal(quantity + 1).abs().setScale(3, RoundingMode.HALF_EVEN));
+        substituteComponent.setField("quantity", numberService.setScale(new BigDecimal(quantity + 1).abs()));
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
         substituteComponent.setField("substitute", substitute);
 

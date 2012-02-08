@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
-import static java.math.BigDecimal.ROUND_UP;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -77,7 +76,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         }
 
         result = result.multiply(quantity, numberService.getMathContext());
-        costCalculation.setField("totalMaterialCosts", result.setScale(3, ROUND_UP));
+        costCalculation.setField("totalMaterialCosts", numberService.setScale(result));
     }
 
     private ProductsCostCalculationConstants getProductModeFromField(final Object value) {

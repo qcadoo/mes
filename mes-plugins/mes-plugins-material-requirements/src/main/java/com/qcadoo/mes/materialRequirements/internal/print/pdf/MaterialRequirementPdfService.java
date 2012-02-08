@@ -134,7 +134,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.addCell(new Phrase(unit.toString(), PdfUtil.getArialRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.getDecimalFormat().format(entry.getValue()), PdfUtil.getArialBold9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue()), PdfUtil.getArialBold9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
@@ -168,7 +168,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_FIELD);
             plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
-            table.addCell(new Phrase(numberService.getDecimalFormat().format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(plannedQuantity), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
