@@ -142,7 +142,13 @@
 		<model:model-hook model="technology" plugin="technologies">
 			<model:validatesWith class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyModelValidators" method="checkIfAllOperationComponenthHaveTJSet"/>
 		</model:model-hook>
-
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:onCreate
+				class="com.qcadoo.mes.productionTimeNorms.NormService"
+				method="copyTimeNormsToTechnologyOperationComponent" />
+		</model:model-hook>
+		
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 
