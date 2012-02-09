@@ -410,8 +410,8 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis();
         long endDate = startDate;
-        long MILLS_IN_HOUR = 3600000;
-        long MILLS_IN_MINUTE = 60000;
+        long millsInHour = 3600000;
+        long millsInMinute = 60000;
 
         if (!values.get("scheduled_start_date").isEmpty()) {
             try {
@@ -422,13 +422,13 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if ("000001".equals(values.get("order_nr"))) {
-            endDate = startDate + MILLIS_IN_DAY + 1 * MILLS_IN_HOUR + 45 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 1 * millsInHour + 45 * millsInMinute;
         } else if ("000002".equals(values.get("order_nr"))) {
             startDate -= 2 * MILLIS_IN_DAY;
-            endDate = startDate + MILLIS_IN_DAY + 3 * MILLS_IN_HOUR + 40 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 3 * millsInHour + 40 * millsInMinute;
         } else if ("000003".equals(values.get("order_nr"))) {
             startDate += 2 * MILLIS_IN_DAY;
-            endDate = startDate + 6 * MILLS_IN_HOUR + 50 * MILLS_IN_MINUTE;
+            endDate = startDate + 6 * millsInHour + 50 * millsInMinute;
         }
 
         if (!values.get("scheduled_end_date").isEmpty()) {

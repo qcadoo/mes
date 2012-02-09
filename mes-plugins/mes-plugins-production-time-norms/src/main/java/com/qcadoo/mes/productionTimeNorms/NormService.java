@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -43,6 +44,8 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class NormService {
+
+    private static final String OPERATION = "operation";
 
     private static final String TIME_NEXT_OPERATION = "timeNextOperation";
 
@@ -127,9 +130,9 @@ public class NormService {
     public void copyTimeNormsFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
 
-        ComponentState operationLookup = view.getComponentByReference("operation");
+        ComponentState operationLookup = view.getComponentByReference(OPERATION);
         if (operationLookup.getFieldValue() == null) {
-            if (!"operation".equals(operationLookupState.getName())) {
+            if (!OPERATION.equals(operationLookupState.getName())) {
                 view.getComponentByReference("form").addMessage(
                         translationService.translate("productionTimeNorms.messages.info.missingOperationReference",
                                 view.getLocale()), INFO);
@@ -195,6 +198,41 @@ public class NormService {
     public void inheritOperationNormValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
         copyTimeNormsFromOperation(viewDefinitionState, componentState, args);
+    }
+
+    public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
+        if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
+            return;
+        }
+        if (technologyOperationComponent.getBelongsToField(OPERATION) == null) {
+            return;
+        }
+        copyTimeValuesFromGivenOperation(technologyOperationComponent, technologyOperationComponent.getBelongsToField(OPERATION));
+    }
+
+    private void copyTimeValuesFromGivenOperation(final Entity target, final Entity source) {
+        checkArgument(target != null, "given target is null");
+        checkArgument(source != null, "given source is null");
+
+        if (!shouldPropagateValuesFromLowerInstance(target)) {
+            return;
+        }
+
+        for (String fieldName : FIELDS_OPERATION) {
+            if (source.getField(fieldName) == null) {
+                continue;
+            }
+            target.setField(fieldName, source.getField(fieldName));
+        }
+    }
+
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyOperationComponent) {
+        for (String fieldName : FIELDS_OPERATION) {
+            if (technologyOperationComponent.getField(fieldName) != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
