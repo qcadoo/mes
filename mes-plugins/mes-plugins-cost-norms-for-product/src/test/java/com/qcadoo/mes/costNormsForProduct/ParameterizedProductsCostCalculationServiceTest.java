@@ -46,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
@@ -163,8 +164,9 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
         // then
         ArgumentCaptor<BigDecimal> argument = ArgumentCaptor.forClass(BigDecimal.class);
-        Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), argument.capture());
-        assertEquals(expectedResult.setScale(3), argument.getValue());
+        Mockito.verify(numberService).setScale(argument.capture());
+        Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), Matchers.any(BigDecimal.class));
+        assertEquals(expectedResult, argument.getValue());
     }
 
     @Test(expected = IllegalArgumentException.class)
