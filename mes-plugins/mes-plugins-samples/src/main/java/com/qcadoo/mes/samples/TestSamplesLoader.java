@@ -521,6 +521,7 @@ public class TestSamplesLoader extends SamplesLoader {
         batch.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
         batch.setField("product", getProductByNumber(values.get("product_nr")));
         batch.setField("manufacturer", getManufacturerByNumber(values.get("manufacturer_nr")));
+        batch.setField("state", "01tracked");
 
         batch = batch.getDataDefinition().save(batch);
         validateEntity(batch);
@@ -532,6 +533,7 @@ public class TestSamplesLoader extends SamplesLoader {
         trackingRecord.setField("entityType", values.get("entity_type"));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
+        trackingRecord.setField("state", "01draft");
 
         trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
         validateEntity(trackingRecord);
