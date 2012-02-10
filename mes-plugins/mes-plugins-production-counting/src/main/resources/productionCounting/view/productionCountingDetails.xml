@@ -47,6 +47,7 @@
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
 					var entityExists = false;
 					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+					var deletedRibbonItem = #{window}.getRibbonItem("actions.delete");
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (!value || !value.content) {
@@ -71,6 +72,7 @@
 								saveNew.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 								copyRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 								generatedRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+								deletedRibbonItem.enable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 							} else {
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								save.enable();
@@ -78,6 +80,7 @@
 								saveNew.enable();
 								copyRibbonItem.enable();
 								generatedRibbonItem.enable();
+								deletedRibbonItem.enable();
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
@@ -86,7 +89,8 @@
 							saveBack.enable();
 							saveNew.enable();
 							copyRibbonItem.enable();
-							generatedRibbonItem.enable();
+							generatedRibbonItem.disable();
+							deletedRibbonItem.enable();
 						}
 					}
 				]]>
@@ -157,8 +161,8 @@
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
-			method="setGenerateButtonState" />
+		<!-- <beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingService"
+			method="setGenerateButtonState" /> -->
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService"
 			method="fillProductionRecordsGrid" />
 		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionCountingViewService" method="disableFieldsWhenGenerated" />
