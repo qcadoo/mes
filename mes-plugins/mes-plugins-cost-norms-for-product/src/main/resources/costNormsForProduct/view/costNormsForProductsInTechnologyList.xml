@@ -38,7 +38,7 @@
 			<component type="form" name="technologies" reference="technology" />
 			
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="gridLayout" hasBorders="false" columns="1" rows="2">
+				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="2">
 					<layoutElement column="1" row="1">
 						<component type="label" name="description">
 							<option type="labelStyle" value="text" />

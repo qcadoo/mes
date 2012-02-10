@@ -31,14 +31,56 @@
 	<component type="window" name="window" reference="window">
 		
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
+			
+			<group name="costs">
+				<bigButton name="copyCostsFromProducts" icon="copyIcon24.png"  state="enabled" action="#{form}.fireEvent(copyCostsFromProducts);" />
+			</group>
 		</ribbon>
 		
 		<windowTab name="mainTab" reference="inProductsCostTab">
 			<component type="form" name="order" reference="order" />
 			
 			<component type="form" name="form" reference="form">
-
+				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="grid" name="inProductsGrid" source="#{order}.orderOperationProductInComponents" reference="grid">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']"
+								 width="100" link="true" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']"
+								width="200" link="true" />
+							<option type="column" name="nominalCost" fields="nominalCost"
+								expression="#nominalCost != null ? 
+								#nominalCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" /> 
+							<option type="column" name="lastPurchaseCost" fields="lastPurchaseCost"
+								expression="#lastPurchaseCost != null ? 
+								#lastPurchaseCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" />
+							<option type="column" name="averageCost" fields="averageCost" 
+								expression="#averageCost != null ? 
+								#averageCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" /> 
+							<option type="column" name="costForOrder" fields="costForOrder" 
+								expression="#costForOrder != null ? 
+								#costForOrder + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" />
+								
+							<option type="order" column="name" direction="asc" />
+							
+							<option type="correspondingView" value="costNormsForProduct/costNormsForProductsInOrderDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="true" />
+							
+						</component>
+					</layoutElement>
+				</component>
+				
+				<listener event="copyCostsFromProducts"
+					class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+					method="copyCostsFromProducts" />
 			</component>
 		</windowTab>
 	</component>

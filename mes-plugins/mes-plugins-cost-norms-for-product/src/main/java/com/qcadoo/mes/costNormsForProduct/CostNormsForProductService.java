@@ -27,9 +27,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,9 +39,12 @@ import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -70,18 +73,23 @@ public class CostNormsForProductService {
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
-    /* ****** VIEW HOOKS ******* */
+    public void fillUnitFieldInProduct(final ViewDefinitionState viewDefinitionState) {
+        fillUnitField(viewDefinitionState, "costForNumberUnit");
+    }
 
-    public void fillCostTabUnit(final ViewDefinitionState viewDefinitionState) {
+    public void fillUnitFieldInOrder(final ViewDefinitionState viewDefinitionState) {
+        fillUnitField(viewDefinitionState, "costForNumberUnit");
+    }
+
+    private void fillUnitField(final ViewDefinitionState viewDefinitionState, final String fieldName) {
         checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        FieldComponent costUnit = (FieldComponent) viewDefinitionState.getComponentByReference("costTabUnit");
-        if (form == null || costUnit == null) {
+
+        if (form == null || form.getEntityId() == null) {
             return;
         }
-        if (form.getEntityId() == null) {
-            return;
-        }
+
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                 form.getEntityId());
 
@@ -89,67 +97,213 @@ public class CostNormsForProductService {
             return;
         }
 
-        costUnit.setFieldValue(product.getStringField("unit"));
-        costUnit.requestComponentUpdateState();
-        costUnit.setEnabled(false);
+        String unit = product.getStringField("unit");
+
+        FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
+
+        fillField(unitField, unit);
     }
 
-    public void fillCostTabCurrency(final ViewDefinitionState viewDefinitionState) {
+    public void fillCurrencyFieldsInProduct(final ViewDefinitionState viewDefinitionState) {
+        fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_PRODUCT);
+    }
+
+    public void fillCurrencyFieldsInOrder(final ViewDefinitionState viewDefinitionState) {
+        fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_ORDER);
+    }
+
+    public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {
         checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
-        String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-        if (currencyAlphabeticCode == null) {
+
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+
+        if (form == null || form.getEntityId() == null) {
             return;
         }
-        for (String componentReference : Arrays.asList("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency")) {
-            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            field.setEnabled(true);
-            field.setFieldValue(currencyAlphabeticCode);
-            field.setEnabled(false);
-            field.requestComponentUpdateState();
+
+        String currency = currencyService.getCurrencyAlphabeticCode();
+
+        if (currency == null) {
+            return;
         }
+
+        for (String fieldName : fieldNames) {
+            FieldComponent currencyField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
+
+            fillField(currencyField, currency);
+        }
+    }
+
+    public void fillField(final FieldComponent fieldComponent, final String fieldValue) {
+        checkArgument(fieldComponent != null, "fieldComponent is null");
+
+        fieldComponent.setFieldValue(fieldValue);
+        fieldComponent.requestComponentUpdateState();
+        fieldComponent.setEnabled(false);
     }
 
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {
         checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
-        Long technologyId = ((FormComponent) viewDefinitionState.getComponentByReference("technology")).getEntityId();
-        if (technologyId == null || grid == null) {
+
+        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference("technology");
+
+        if ((technology == null) || (technology.getEntityId() == null)) {
             return;
         }
 
+        Long technologyId = technology.getEntityId();
+
+        List<Entity> inputProducts = Lists.newArrayList();
+
+        Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
+
+        if (productQuantities != null) {
+            for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                Entity product = productQuantity.getKey();
+                BigDecimal quantity = productQuantity.getValue();
+
+                Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+
+                operationProductInComponent.setField("product", product);
+                operationProductInComponent.setField("quantity", quantity);
+
+                inputProducts.add(operationProductInComponent);
+            }
+        }
+
+        grid.setEntities(inputProducts);
+    }
+
+    public void copyCostsFromProducts(final ViewDefinitionState viewDefinitionState, final ComponentState component,
+            final String[] args) {
+        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
+
+        FormComponent order = (FormComponent) viewDefinitionState.getComponentByReference("order");
+
+        if ((order == null) || (order.getEntityId() == null)) {
+            return;
+        }
+
+        Long orderId = order.getEntityId();
+
+        List<Entity> inputProducts = Lists.newArrayList();
+
+        Entity existingOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                orderId);
+
+        List<Entity> orderOperationProductIncomponents = existingOrder
+                .getHasManyField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        if (orderOperationProductIncomponents != null) {
+            for (Entity orderOperationProductIncomponent : orderOperationProductIncomponents) {
+                Entity product = orderOperationProductIncomponent.getBelongsToField("product");
+
+                orderOperationProductIncomponent.setField("costForNumber", product.getField("costForNumber"));
+                orderOperationProductIncomponent.setField("nominalCost", product.getField("nominalCost"));
+                orderOperationProductIncomponent.setField("lastPurchaseCost", product.getField("lastPurchaseCost"));
+                orderOperationProductIncomponent.setField("averageCost", product.getField("averageCost"));
+
+                orderOperationProductIncomponent = orderOperationProductIncomponent.getDataDefinition().save(
+                        orderOperationProductIncomponent);
+
+                inputProducts.add(orderOperationProductIncomponent);
+            }
+        }
+
+        grid.setEntities(inputProducts);
+    }
+
+    public void fillOrderOperationProductsInComponents(final DataDefinition orderDD, final Entity order) {
+        if (order.getId() == null) {
+            return;
+        }
+
+        Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        if (!shouldFill(order, technology)) {
+            return;
+        }
+
+        Long technologyId = technology.getId();
+
+        List<Entity> orderOperationProductInComponents = Lists.newArrayList();
+
+        Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
+
+        if (productQuantities != null) {
+            for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                Entity product = productQuantity.getKey();
+
+                Entity orderOperationProductInComponent = dataDefinitionService.get(
+                        CostNormsForProductConstants.PLUGIN_IDENTIFIER,
+                        CostNormsForProductConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).create();
+
+                orderOperationProductInComponent.setField("order", order);
+                orderOperationProductInComponent.setField("product", product);
+                orderOperationProductInComponent.setField("costForNumber", product.getField("costForNumber"));
+                orderOperationProductInComponent.setField("nominalCost", product.getField("nominalCost"));
+                orderOperationProductInComponent.setField("lastPurchaseCost", product.getField("lastPurchaseCost"));
+                orderOperationProductInComponent.setField("averageCost", product.getField("averageCost"));
+
+                orderOperationProductInComponent = orderOperationProductInComponent.getDataDefinition().save(
+                        orderOperationProductInComponent);
+
+                orderOperationProductInComponents.add(orderOperationProductInComponent);
+            }
+        }
+
+        order.setField("orderOperationProductInComponents", orderOperationProductInComponents);
+    }
+
+    private boolean shouldFill(final Entity order, final Entity technology) {
+        return (technology != null) && (technology.getId() != null)
+                && (hasTechnologyChanged(order) || !hasOrderOperationProductInComponents(order));
+    }
+
+    private Map<Entity, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
         Entity operationComponentRoot = technology.getTreeField("operationComponents").getRoot();
 
-        List<Entity> products = Lists.newArrayList();
-
         if (operationComponentRoot == null) {
-            return;
+            return null;
         } else {
             BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
             Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                     giventQty, true);
 
-            for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
-                Entity proxyProduct = productQuantity.getKey();
-                BigDecimal quantity = productQuantity.getValue();
-
-                Entity operationProductInComponent = dataDefinitionService.get("technologies", "operationProductInComponent")
-                        .create();
-
-                operationProductInComponent.setField("product", proxyProduct);
-                operationProductInComponent.setField("quantity", quantity);
-
-                products.add(operationProductInComponent);
-            }
+            return productQuantities;
         }
-
-        grid.setEntities(products);
     }
 
-    /* ******* MODEL HOOKS ******* */
+    private boolean hasOrderOperationProductInComponents(final Entity order) {
+        return (order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) == null);
+    }
+
+    private boolean hasTechnologyChanged(final Entity order) {
+        Entity existingOrder = getExistingOrder(order);
+        if (existingOrder == null) {
+            return false;
+        }
+
+        Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
+        Entity existingOrderTechnology = existingOrder.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
+        return !existingOrderTechnology.equals(technology);
+    }
+
+    private Entity getExistingOrder(final Entity order) {
+        if (order.getId() == null) {
+            return null;
+        }
+        return order.getDataDefinition().get(order.getId());
+    }
 
     public void checkTechnologyProductsInNorms(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -163,14 +317,14 @@ public class CostNormsForProductService {
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) form.getFieldValue());
         List<Entity> operationComponents = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo("technology", technology)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
         List<Entity> productInComponents = new ArrayList<Entity>();
         for (Entity operationComponent : operationComponents) {
-            productInComponents.addAll(operationComponent.getHasManyField("operationProductInComponents"));
+            productInComponents.addAll(operationComponent.getHasManyField(TechnologiesConstants.OPERATION_PRODUCT_IN_COMPONENTS));
         }
         List<Entity> products = new ArrayList<Entity>();
         for (Entity productInComponent : productInComponents) {
-            products.add(productInComponent.getBelongsToField("product"));
+            products.add(productInComponent.getBelongsToField(BasicConstants.MODEL_PRODUCT));
         }
         for (Entity product : products) {
             if (technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)
