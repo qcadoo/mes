@@ -129,10 +129,12 @@
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="staff" reference="staff"
 							field="staff">
-							<option type="fieldCode" value="name" />
-							<option type="expression" value="#name" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
 							
 							<listener event="onSelectedEntityChange" 
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" 
@@ -152,11 +154,12 @@
 					<layoutElement column="2" row="3">
 						<component type="lookup" name="workstationType" reference="workstationType"
 							field="workstationType">
-							<option type="fieldCode" value="name" />
-							<option type="expression" value="#name" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
-							
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange" 
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService" 
 								method="fillDivisionField" />
@@ -165,10 +168,12 @@
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="division" reference="division"
 							field="division">
-							<option type="fieldCode" value="name" />
-							<option type="expression" value="#name" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="5">

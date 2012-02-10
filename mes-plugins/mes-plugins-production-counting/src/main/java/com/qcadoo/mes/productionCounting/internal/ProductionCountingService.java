@@ -150,9 +150,8 @@ public class ProductionCountingService {
 
     public void printProductionCounting(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = ProductionCountingConstants.PLUGIN_IDENTIFIER;
-        args[2] = ProductionCountingConstants.MODEL_PRODUCTION_COUNTING;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_COUNTING });
     }
 
     private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)
