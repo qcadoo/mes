@@ -35,7 +35,7 @@
 			<template name="standardGridTemplate" />
 			<group name="exportWorkPlan">
 				<bigButton name="printWorkPlan" icon="pdfIcon24.png"
-					action="#{grid}.fireEvent(printWorkPlan);" state="disabled" />
+					action="#{grid}.fireEvent(printWorkPlan,pdf);" state="disabled" />
 			</group>
 		</ribbon>
 		<component type="grid" name="workPlans" reference="grid">
