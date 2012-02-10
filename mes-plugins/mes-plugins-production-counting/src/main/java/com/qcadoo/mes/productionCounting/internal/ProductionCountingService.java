@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -46,14 +45,13 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionCountingService {
@@ -75,53 +73,15 @@ public class ProductionCountingService {
     @Autowired
     private ProductionCountingPdfService productionCountingPdfService;
 
+    @Autowired
+    private ReportService reportService;
+
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("date", null);
         entity.setField(FIELD_GENERATED, false);
         entity.setField("fileName", null);
         entity.setField("worker", null);
         return true;
-    }
-
-    public void setGenerateButtonState(final ViewDefinitionState state) {
-        setGenerateButtonState(state, state.getLocale(), ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_COUNTING);
-    }
-
-    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
-            final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
-        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
-
-        if (form.getEntityId() == null) {
-            generateButton.setMessage("recordNotCreated");
-            generateButton.setEnabled(false);
-            deleteButton.setMessage(null);
-            deleteButton.setEnabled(false);
-        } else {
-            Entity productionCounting = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
-
-            if (productionCounting.getField(FIELD_GENERATED) == null) {
-                productionCounting.setField(FIELD_GENERATED, "0");
-            }
-
-            if ("1".equals(productionCounting.getField(FIELD_GENERATED))) {
-                generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
-                generateButton.setEnabled(false);
-                deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
-                deleteButton.setEnabled(false);
-            } else {
-                generateButton.setMessage(null);
-                generateButton.setEnabled(true);
-                deleteButton.setMessage(null);
-                deleteButton.setEnabled(true);
-            }
-        }
-        generateButton.requestUpdate(true);
-        deleteButton.requestUpdate(true);
-        window.requestRibbonRender();
     }
 
     @Transactional
@@ -190,30 +150,9 @@ public class ProductionCountingService {
 
     public void printProductionCounting(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity productionCounting = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    ProductionCountingConstants.MODEL_PRODUCTION_COUNTING).get((Long) state.getFieldValue());
-            if (productionCounting == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (!StringUtils.hasText(productionCounting.getStringField("fileName"))) {
-                state.addMessage(translationService.translate(
-                        "productionCounting.productionBalance.report.error.documentsWasNotGenerated", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
-                        + ProductionCountingConstants.MODEL_PRODUCTION_COUNTING + "." + args[0] + "?id=" + state.getFieldValue(),
-                        true, false);
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
+        args[1] = ProductionCountingConstants.PLUGIN_IDENTIFIER;
+        args[2] = ProductionCountingConstants.MODEL_PRODUCTION_COUNTING;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)

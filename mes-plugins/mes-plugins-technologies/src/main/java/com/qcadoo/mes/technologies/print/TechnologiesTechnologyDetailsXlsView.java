@@ -43,13 +43,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.xls.ReportXlsView;
-import com.qcadoo.report.api.xls.XlsUtil;
+import com.qcadoo.report.api.xls.XlsHelper;
 
 @Component(value = "technologiesTechnologyDetailsXlsView")
 public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
@@ -60,13 +61,19 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private XlsHelper xlsHelper;
+
     @Override
     protected String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
-        HSSFSheet sheet = workbook.createSheet(getTranslationService().translate(
+        HSSFSheet sheet = workbook.createSheet(translationService.translate(
                 "technologies.technologiesTechnologyDetails.report.title", locale));
         addOrderHeader(sheet, locale);
         addOrderSeries(model, sheet, locale);
-        return getTranslationService().translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
+        return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
     }
 
     private void addOrderHeader(final HSSFSheet sheet, final Locale locale) {
@@ -74,9 +81,9 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         int columnCounter = 0;
         for (String headerText : newArrayList("level", "name", "direction", "product", "quantity", "unit")) {
             HSSFCell cell = header.createCell(columnCounter);
-            cell.setCellValue(getTranslationService().translate(
-                    "technologies.technologiesTechnologyDetails.report.columnHeader." + headerText, locale));
-            cell.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+            cell.setCellValue(translationService.translate("technologies.technologiesTechnologyDetails.report.columnHeader."
+                    + headerText, locale));
+            xlsHelper.setCellStyle(sheet, cell);
             columnCounter++;
         }
     }
@@ -108,7 +115,7 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
                 }
                 row.createCell(0).setCellValue(nodeNumber);
                 row.createCell(1).setCellValue(operationName);
-                row.createCell(2).setCellValue(getTranslationService().translate(productType, locale));
+                row.createCell(2).setCellValue(translationService.translate(productType, locale));
                 row.createCell(3).setCellValue(product.getBelongsToField("product").getStringField("name"));
                 row.createCell(4).setCellValue(product.getField("quantity").toString());
                 row.createCell(5).setCellValue(product.getBelongsToField("product").getStringField("unit"));

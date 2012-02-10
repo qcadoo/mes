@@ -69,8 +69,9 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 public class WorkPlanPdfServiceTest {
@@ -95,6 +96,9 @@ public class WorkPlanPdfServiceTest {
 
     @Mock
     private DataDefinitionService dataDefinitionService;
+
+    @Mock
+    private PdfHelper pdfHelper;
 
     @Mock
     private Document document;
@@ -140,6 +144,7 @@ public class WorkPlanPdfServiceTest {
         ReflectionTestUtils.setField(workPlanPdfService, "translationService", translationService);
         ReflectionTestUtils.setField(workPlanPdfService, "securityService", securityService);
         ReflectionTestUtils.setField(workPlanPdfService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(workPlanPdfService, "pdfHelper", pdfHelper);
 
         locale = Locale.getDefault();
 
@@ -325,11 +330,11 @@ public class WorkPlanPdfServiceTest {
         assertEquals(df.format(quantity) + " productUnit", phrase.getAllValues().get(3).getContent());
         assertEquals(simpleDateFormat.format(now), phrase.getAllValues().get(4).getContent());
 
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(0).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(1).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(2).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(3).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(0).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(1).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(2).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(3).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
     @Test
@@ -368,11 +373,11 @@ public class WorkPlanPdfServiceTest {
         assertEquals(df.format(quantity), phrase.getAllValues().get(3).getContent());
         assertEquals(simpleDateFormat.format(now), phrase.getAllValues().get(4).getContent());
 
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(0).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(1).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(2).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(3).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(0).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(1).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(2).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(3).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
     @Test
@@ -498,9 +503,13 @@ public class WorkPlanPdfServiceTest {
         // given
         Entity operationComponent = mock(Entity.class);
         Entity operation = mock(Entity.class);
+        PdfPTable table = mock(PdfPTable.class);
+        PdfPCell cell = mock(PdfPCell.class);
         when(operation.getStringField("comment")).thenReturn("comment");
         when(operationComponent.getBelongsToField("operation")).thenReturn(operation);
         when(operationComponent.getField("hideDescriptionInWorkPlans")).thenReturn(false);
+        when(pdfHelper.createPanelTable(1)).thenReturn(table);
+        when(table.getDefaultCell()).thenReturn(cell);
 
         // when
         workPlanPdfService.addOperationComment(document, operationComponent, locale);

@@ -36,11 +36,12 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.ReportXlsView;
-import com.qcadoo.report.api.xls.XlsUtil;
+import com.qcadoo.report.api.xls.XlsHelper;
 
 @Component(value = "qualityControlForOperationXlsView")
 public class QualityControlForOperationXlsView extends ReportXlsView {
@@ -48,33 +49,39 @@ public class QualityControlForOperationXlsView extends ReportXlsView {
     @Autowired
     private QualityControlsReportService qualityControlsReportService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private XlsHelper xlsHelper;
+
     @Override
     protected final String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
-        HSSFSheet sheet = workbook.createSheet(getTranslationService().translate(
+        HSSFSheet sheet = workbook.createSheet(translationService.translate(
                 "qualityControls.qualityControlForOperation.report.title", locale));
         sheet.setZoom(4, 3);
         addOrderHeader(sheet, locale);
         addOrderSeries(model, sheet, locale);
-        return getTranslationService().translate("qualityControls.qualityControlForOperation.report.fileName", locale);
+        return translationService.translate("qualityControls.qualityControlForOperation.report.fileName", locale);
     }
 
     private void addOrderHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate("qualityControls.qualityControl.report.operation.number", locale));
-        cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell0.setCellValue(translationService.translate("qualityControls.qualityControl.report.operation.number", locale));
+        xlsHelper.setCellStyle(sheet, cell0);
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService()
+        cell1.setCellValue(translationService
                 .translate(
                         "qualityControlsForOperation.qualityControlForOperationDetails.window.mainTab.qualityControlForOperation.number.label",
                         locale));
-        cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell1);
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService()
+        cell2.setCellValue(translationService
                 .translate(
                         "qualityControlsForOperation.qualityControlForOperationDetails.window.mainTab.qualityControlForOperation.controlResult.label",
                         locale));
-        cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell2);
     }
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet, final Locale locale) {
@@ -91,13 +98,12 @@ public class QualityControlForOperationXlsView extends ReportXlsView {
                 row.createCell(1).setCellValue(order.getField("number").toString());
                 String result = "";
                 if ("01correct".equals(order.getField("controlResult"))) {
-                    result = getTranslationService().translate("qualityControls.qualityControl.controlResult.value.01correct",
-                            locale);
+                    result = translationService.translate("qualityControls.qualityControl.controlResult.value.01correct", locale);
                 } else if ("02incorrect".equals(order.getField("controlResult"))) {
-                    result = getTranslationService().translate("qualityControls.qualityControl.controlResult.value.02incorrect",
+                    result = translationService.translate("qualityControls.qualityControl.controlResult.value.02incorrect",
                             locale);
                 } else if ("03objection".equals(order.getField("controlResult"))) {
-                    result = getTranslationService().translate("qualityControls.qualityControl.controlResult.value.03objection",
+                    result = translationService.translate("qualityControls.qualityControl.controlResult.value.03objection",
                             locale);
                 }
                 row.createCell(2).setCellValue(result);

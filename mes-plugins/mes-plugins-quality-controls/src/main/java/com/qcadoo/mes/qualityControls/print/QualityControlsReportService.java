@@ -56,7 +56,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -133,15 +133,15 @@ public class QualityControlsReportService {
             throws DocumentException {
         if (!model.containsKey(ENTITIES)) {
             Paragraph firstParagraphTitle = new Paragraph(new Phrase(translationService.translate(
-                    "qualityControls.qualityControl.report.paragrah", locale), PdfUtil.getArialBold11Light()));
-            firstParagraphTitle.add(new Phrase(" " + model.get("dateFrom") + " - " + model.get("dateTo"), PdfUtil
-                    .getArialBold11Light()));
+                    "qualityControls.qualityControl.report.paragrah", locale), FontUtils.getDejavuBold11Light()));
+            firstParagraphTitle.add(new Phrase(" " + model.get("dateFrom") + " - " + model.get("dateTo"), FontUtils
+                    .getDejavuBold11Light()));
             firstParagraphTitle.setSpacingBefore(20);
             document.add(firstParagraphTitle);
 
         }
         Paragraph secondParagraphTitle = new Paragraph(new Phrase(translationService.translate(
-                "qualityControls.qualityControl.report.paragrah2", locale), PdfUtil.getArialBold11Light()));
+                "qualityControls.qualityControl.report.paragrah2", locale), FontUtils.getDejavuBold11Light()));
         secondParagraphTitle.setSpacingBefore(20);
         document.add(secondParagraphTitle);
     }
@@ -327,17 +327,17 @@ public class QualityControlsReportService {
         Paragraph title = new Paragraph();
 
         if ("batch".equals(type)) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah3", locale), PdfUtil
-                    .getArialBold11Light()));
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah3", locale),
+                    FontUtils.getDejavuBold11Light()));
         } else if (MODEL_ORDER.equals(type)) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah4", locale), PdfUtil
-                    .getArialBold11Light()));
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah4", locale),
+                    FontUtils.getDejavuBold11Light()));
         } else if ("unit".equals(type)) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah5", locale), PdfUtil
-                    .getArialBold11Light()));
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah5", locale),
+                    FontUtils.getDejavuBold11Light()));
         } else if (MODEL_OPERATION.equals(type)) {
-            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah6", locale), PdfUtil
-                    .getArialBold11Light()));
+            title.add(new Phrase(translationService.translate("qualityControls.qualityControl.report.paragrah6", locale),
+                    FontUtils.getDejavuBold11Light()));
         }
 
         String name = "";
@@ -349,7 +349,7 @@ public class QualityControlsReportService {
                 name = product.getField("name").toString();
             }
         }
-        title.add(new Phrase(" " + name, PdfUtil.getArialBold11Dark()));
+        title.add(new Phrase(" " + name, FontUtils.getDejavuBold11Dark()));
 
         return title;
     }

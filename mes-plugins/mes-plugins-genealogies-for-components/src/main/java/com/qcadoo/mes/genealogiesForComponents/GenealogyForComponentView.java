@@ -46,7 +46,8 @@ import com.qcadoo.mes.genealogiesForComponents.util.EntityOrderNumberComparator;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
@@ -64,6 +65,9 @@ public class GenealogyForComponentView extends ReportPdfView {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
@@ -72,10 +76,11 @@ public class GenealogyForComponentView extends ReportPdfView {
         String documentTitle = translationService
                 .translate("genealogiesForComponents.genealogyForComponent.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper
+                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
         String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-        PdfUtil.addEndOfDocument(document, writer, text);
+        pdfHelper.addEndOfDocument(document, writer, text);
         return translationService.translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }
 
@@ -92,23 +97,24 @@ public class GenealogyForComponentView extends ReportPdfView {
         orderHeader.add(translationService
                 .translate("genealogiesForComponents.genealogyForComponent.report.productBatch", locale));
         Paragraph productTitle = new Paragraph(new Phrase(translationService.translate(
-                "genealogiesForComponents.genealogyForComponent.report.paragrah.product", locale), PdfUtil.getArialBold11Light()));
+                "genealogiesForComponents.genealogyForComponent.report.paragrah.product", locale),
+                FontUtils.getDejavuBold11Light()));
         productTitle.setSpacingBefore(20);
         document.add(productTitle);
-        PdfPTable headerData = PdfUtil.createPanelTable(3);
+        PdfPTable headerData = pdfHelper.createPanelTable(3);
         headerData.setSpacingBefore(7);
         Entity product = entity.getBelongsToField("productInComponent").getBelongsToField("productInComponent")
                 .getBelongsToField("product");
-        PdfUtil.addTableCellAsTable(headerData, translationService.translate("basic.product.number.label", locale),
-                product.getField("number"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(headerData, translationService.translate("basic.product.name.label", locale),
-                product.getField("name"), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(headerData,
+        pdfHelper.addTableCellAsOneColumnTable(headerData, translationService.translate("basic.product.number.label", locale),
+                product.getField("number"));
+        pdfHelper.addTableCellAsOneColumnTable(headerData, translationService.translate("basic.product.name.label", locale),
+                product.getField("name"));
+        pdfHelper.addTableCellAsOneColumnTable(headerData,
                 translationService.translate("genealogiesForComponents.productInBatch.batch.label", locale),
-                entity.getField(BATCH_FIELD), "", PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+                entity.getField(BATCH_FIELD));
         document.add(headerData);
         Paragraph orderTitle = new Paragraph(new Phrase(translationService.translate(
-                "genealogiesForComponents.genealogyForComponent.report.paragrah.order", locale), PdfUtil.getArialBold11Light()));
+                "genealogiesForComponents.genealogyForComponent.report.paragrah.order", locale), FontUtils.getDejavuBold11Light()));
         orderTitle.setSpacingBefore(20);
         document.add(orderTitle);
         addOrderSeries(document, entity, orderHeader);
@@ -116,20 +122,20 @@ public class GenealogyForComponentView extends ReportPdfView {
 
     private void addOrderSeries(final Document document, final Entity entity, final List<String> orderHeader)
             throws DocumentException {
-        PdfPTable table = PdfUtil.createTableWithHeader(4, orderHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(4, orderHeader, false);
         List<Entity> genealogies = getGenealogies(entity);
         Collections.sort(genealogies, new EntityOrderNumberComparator());
         for (Entity genealogy : genealogies) {
             Entity order = (Entity) genealogy.getField("order");
-            table.addCell(new Phrase(order.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(order.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(order.getField("number").toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(order.getField("name").toString(), FontUtils.getDejavuRegular9Dark()));
             Entity product = (Entity) order.getField("product");
             if (product == null) {
-                table.addCell(new Phrase("", PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
             } else {
-                table.addCell(new Phrase(product.getField("name").toString(), PdfUtil.getArialRegular9Dark()));
+                table.addCell(new Phrase(product.getField("name").toString(), FontUtils.getDejavuRegular9Dark()));
             }
-            table.addCell(new Phrase(genealogy.getField(BATCH_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(genealogy.getField(BATCH_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
         }
         document.add(table);
     }

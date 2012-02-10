@@ -46,6 +46,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -83,6 +84,9 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private ReportService reportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(DATE_FIELD, null);
@@ -238,33 +242,9 @@ public class SimpleMaterialBalanceService {
 
     public void printSimpleMaterialBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity simpleMaterialBalance = dataDefinitionService.get(SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER,
-                    SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE).get((Long) state.getFieldValue());
-            if (simpleMaterialBalance == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (!StringUtils.hasText(simpleMaterialBalance.getStringField(FILE_NAME_FIELD))) {
-                state.addMessage(
-                        translationService
-                                .translate(
-                                        "simpleMaterialBalance.simpleMaterialBalanceDetails.window.simpleMaterialBalance.documentsWasNotGenerated",
-                                        state.getLocale()), MessageType.FAILURE);
-            } else {
-                viewDefinitionState.redirectTo(
-                        "/generateSavedReport/" + SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER + "/"
-                                + SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE + "." + args[0] + "?id="
-                                + state.getFieldValue(), true, false);
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
+        args[1] = SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER;
+        args[2] = SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)

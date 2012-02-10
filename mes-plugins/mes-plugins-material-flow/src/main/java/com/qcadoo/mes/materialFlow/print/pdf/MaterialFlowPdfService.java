@@ -42,8 +42,9 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.PdfHelper;
 
 @Service
 public final class MaterialFlowPdfService extends PdfDocumentService {
@@ -57,6 +58,9 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
     @Override
     protected void buildPdfContent(final Document document, final Entity materialsInStockAreas, final Locale locale)
             throws DocumentException {
@@ -64,19 +68,16 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
 
         String documenTitle = translationService.translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
+        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
                 materialsInStockAreas.getStringField("worker"));
 
-        PdfPTable panelTable = PdfUtil.createPanelTable(2);
-        PdfUtil.addTableCellAsTable(panelTable,
+        PdfPTable panelTable = pdfHelper.createPanelTable(2);
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
-                ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString(), null, PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable,
+                ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString());
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.time", locale),
-                ((Date) materialsInStockAreas.getField("time")).toString(), null, PdfUtil.getArialBold10Dark(),
-
-                PdfUtil.getArialRegular10Dark());
+                ((Date) materialsInStockAreas.getField("time")).toString());
 
         List<Entity> stockAreas = materialsInStockAreas.getHasManyField("stockAreas");
         List<String> names = new ArrayList<String>();
@@ -84,10 +85,9 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
             Entity stockArea = (Entity) component.getField("stockAreas");
             names.add(stockArea.getField("number").toString());
         }
-        PdfUtil.addTableCellAsTable(panelTable,
-                translationService.translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names, null,
-                PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable, "", "", null, PdfUtil.getArialBold10Dark(), PdfUtil.getArialRegular10Dark());
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names);
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
 
         panelTable.setSpacingBefore(20);
         panelTable.setSpacingAfter(20);
@@ -98,15 +98,15 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.name", locale));
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.quantity", locale));
         tableHeader.add(translationService.translate("materialFlow.materialFlow.report.columnHeader.unit", locale));
-        PdfPTable table = PdfUtil.createTableWithHeader(4, tableHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
-            table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("number"), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("name"), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(data.getValue()), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(data.getValue()), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField("unit"), FontUtils.getDejavuRegular9Dark()));
         }
         document.add(table);
     }

@@ -40,6 +40,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -62,6 +63,9 @@ public class WorkPlanViewHooks {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private ReportService reportService;
 
     public final void addSelectedOrdersToWorkPlan(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
@@ -175,37 +179,13 @@ public class WorkPlanViewHooks {
     }
 
     public final void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Long workPlanId = (Long) state.getFieldValue();
-            Entity workPlan = workPlanService.getWorkPlan(workPlanId);
-            if (workPlan == null) {
-                addFailureMessage(state, "qcadooView.message.entityNotFound");
-            } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                String url = getUrlForReport((Long) state.getFieldValue());
-                viewDefinitionState.redirectTo(url, true, false);
-            } else {
-                addFailureMessage(state, "workPlans.workPlan.window.workPlan.documentsWasNotGenerated");
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                addFailureMessage(state, "qcadooView.form.entityWithoutIdentifier");
-            } else {
-                addFailureMessage(state, "qcadooView.grid.noRowSelectedError");
-            }
-        }
+        args[1] = WorkPlansConstants.PLUGIN_IDENTIFIER;
+        args[2] = WorkPlansConstants.MODEL_WORK_PLAN;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     private void addFailureMessage(final ComponentState component, final String messageKey) {
         component.addMessage(translationService.translate(messageKey, component.getLocale()), MessageType.FAILURE);
     }
 
-    private String getUrlForReport(final Long workPlanId) {
-        StringBuilder url = new StringBuilder("/generateSavedReport/");
-        url.append(WorkPlansConstants.PLUGIN_IDENTIFIER);
-        url.append("/");
-        url.append(WorkPlansConstants.MODEL_WORK_PLAN);
-        url.append(".pdf?id=");
-        url.append(workPlanId);
-        return url.toString();
-    }
 }
