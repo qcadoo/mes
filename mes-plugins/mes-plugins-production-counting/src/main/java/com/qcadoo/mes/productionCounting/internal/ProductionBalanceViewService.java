@@ -139,7 +139,7 @@ public class ProductionBalanceViewService {
         productField.setFieldValue(order.getBelongsToField("product").getId());
         FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference("recordsNumber");
         Integer recordsNumberValue = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_COUNTING)
                 .find("where order.id=" + order.getId().toString()).list().getEntities().size();
         recordsNumberField.setFieldValue(recordsNumberValue);
     }
