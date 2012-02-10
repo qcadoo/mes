@@ -71,6 +71,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 public class WorkPlanPdfServiceTest {
@@ -95,6 +96,9 @@ public class WorkPlanPdfServiceTest {
 
     @Mock
     private DataDefinitionService dataDefinitionService;
+
+    @Mock
+    private PdfHelper pdfHelper;
 
     @Mock
     private Document document;
@@ -140,6 +144,7 @@ public class WorkPlanPdfServiceTest {
         ReflectionTestUtils.setField(workPlanPdfService, "translationService", translationService);
         ReflectionTestUtils.setField(workPlanPdfService, "securityService", securityService);
         ReflectionTestUtils.setField(workPlanPdfService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(workPlanPdfService, "pdfHelper", pdfHelper);
 
         locale = Locale.getDefault();
 
@@ -498,9 +503,13 @@ public class WorkPlanPdfServiceTest {
         // given
         Entity operationComponent = mock(Entity.class);
         Entity operation = mock(Entity.class);
+        PdfPTable table = mock(PdfPTable.class);
+        PdfPCell cell = mock(PdfPCell.class);
         when(operation.getStringField("comment")).thenReturn("comment");
         when(operationComponent.getBelongsToField("operation")).thenReturn(operation);
         when(operationComponent.getField("hideDescriptionInWorkPlans")).thenReturn(false);
+        when(pdfHelper.createPanelTable(1)).thenReturn(table);
+        when(table.getDefaultCell()).thenReturn(cell);
 
         // when
         workPlanPdfService.addOperationComment(document, operationComponent, locale);
