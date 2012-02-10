@@ -181,9 +181,8 @@ public class MaterialRequirementService {
 
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = MaterialRequirementsConstants.PLUGIN_IDENTIFIER;
-        args[2] = MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                MaterialRequirementsConstants.PLUGIN_IDENTIFIER, MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT });
     }
 
     public void printMaterialReqForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,

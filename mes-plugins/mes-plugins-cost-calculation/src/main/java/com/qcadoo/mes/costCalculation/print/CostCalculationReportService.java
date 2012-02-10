@@ -67,9 +67,8 @@ public class CostCalculationReportService {
 
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = CostCalculationConstants.PLUGIN_IDENTIFIER;
-        args[2] = CostCalculationConstants.MODEL_COST_CALCULATION;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COST_CALCULATION });
     }
 
     public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,

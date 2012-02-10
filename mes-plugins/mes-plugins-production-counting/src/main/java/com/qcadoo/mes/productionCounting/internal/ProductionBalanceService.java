@@ -177,9 +177,8 @@ public class ProductionBalanceService {
 
     public void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = ProductionCountingConstants.PLUGIN_IDENTIFIER;
-        args[2] = ProductionCountingConstants.MODEL_PRODUCTION_BALANCE;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE });
     }
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
