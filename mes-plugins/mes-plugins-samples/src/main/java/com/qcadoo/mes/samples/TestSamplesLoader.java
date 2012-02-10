@@ -410,8 +410,8 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis();
         long endDate = startDate;
-        long MILLS_IN_HOUR = 3600000;
-        long MILLS_IN_MINUTE = 60000;
+        long millsInHour = 3600000;
+        long millsInMinute = 60000;
 
         if (!values.get("scheduled_start_date").isEmpty()) {
             try {
@@ -422,13 +422,13 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if ("000001".equals(values.get("order_nr"))) {
-            endDate = startDate + MILLIS_IN_DAY + 1 * MILLS_IN_HOUR + 45 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 1 * millsInHour + 45 * millsInMinute;
         } else if ("000002".equals(values.get("order_nr"))) {
             startDate -= 2 * MILLIS_IN_DAY;
-            endDate = startDate + MILLIS_IN_DAY + 3 * MILLS_IN_HOUR + 40 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 3 * millsInHour + 40 * millsInMinute;
         } else if ("000003".equals(values.get("order_nr"))) {
             startDate += 2 * MILLIS_IN_DAY;
-            endDate = startDate + 6 * MILLS_IN_HOUR + 50 * MILLS_IN_MINUTE;
+            endDate = startDate + 6 * millsInHour + 50 * millsInMinute;
         }
 
         if (!values.get("scheduled_end_date").isEmpty()) {
@@ -521,6 +521,7 @@ public class TestSamplesLoader extends SamplesLoader {
         batch.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
         batch.setField("product", getProductByNumber(values.get("product_nr")));
         batch.setField("manufacturer", getManufacturerByNumber(values.get("manufacturer_nr")));
+        batch.setField("state", "01tracked");
 
         batch = batch.getDataDefinition().save(batch);
         validateEntity(batch);
@@ -532,6 +533,7 @@ public class TestSamplesLoader extends SamplesLoader {
         trackingRecord.setField("entityType", values.get("entity_type"));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
+        trackingRecord.setField("state", "01draft");
 
         trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
         validateEntity(trackingRecord);
