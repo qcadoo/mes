@@ -136,8 +136,7 @@ public class OrderService {
 
         return translationService.translate("orders.order.name.default", locale, productEntity.getStringField("name"),
                 productEntity.getStringField(FIELD_NUMBER), technologyNumber,
-                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH) + 1)
-                + "." + cal.get(Calendar.DAY_OF_MONTH);
+                cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
     }
 
     private Entity getProductById(final Long id) {

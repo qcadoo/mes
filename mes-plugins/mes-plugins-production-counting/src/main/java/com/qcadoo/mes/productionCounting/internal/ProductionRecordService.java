@@ -230,18 +230,8 @@ public class ProductionRecordService {
 
             for (Entry<Entity, BigDecimal> prodCompQty : productComponentQuantities.entrySet()) {
                 Entity product = prodCompQty.getKey().getBelongsToField("product");
-                Entity technology = order.getBelongsToField("technology");
-                String type = technologyService.getProductType(product, technology);
 
-                if (TechnologyService.WASTE.equals(type)) {
-                    continue;
-                }
-
-                if (orderOperationComponent == null) {
-                    if (!TechnologyService.COMPONENT.equals(type) && !TechnologyService.PRODUCT.equals(type)) {
-                        continue;
-                    }
-                } else {
+                if (orderOperationComponent != null) {
                     Entity operation = orderOperationComponent.getBelongsToField("operation");
                     Entity currentOperation = prodCompQty.getKey().getBelongsToField("operationComponent")
                             .getBelongsToField("operation");

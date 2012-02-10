@@ -168,6 +168,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal laborUtilization = getBigDecimal(operationComponent.getField("laborUtilization"));
 
         Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
+
+        // TODO mici, proxy entity thing. I think we should tweak hashCode too.
+        techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperComp.getId());
+
         int dur = realizationTimes.get(techOperComp);
         BigDecimal duration = BigDecimal.valueOf(dur);
 
