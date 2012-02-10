@@ -121,6 +121,7 @@ public class MaterialRequirementService {
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT);
     }
 
+    // TODO KRNA generic candidate
     @Transactional
     public void generateMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
