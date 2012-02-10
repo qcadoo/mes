@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -52,8 +51,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionCountingService {
@@ -81,47 +78,6 @@ public class ProductionCountingService {
         entity.setField("fileName", null);
         entity.setField("worker", null);
         return true;
-    }
-
-    public void setGenerateButtonState(final ViewDefinitionState state) {
-        setGenerateButtonState(state, state.getLocale(), ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_COUNTING);
-    }
-
-    public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
-            final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
-        RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
-
-        if (form.getEntityId() == null) {
-            generateButton.setMessage("recordNotCreated");
-            generateButton.setEnabled(false);
-            deleteButton.setMessage(null);
-            deleteButton.setEnabled(false);
-        } else {
-            Entity productionCounting = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
-
-            if (productionCounting.getField(FIELD_GENERATED) == null) {
-                productionCounting.setField(FIELD_GENERATED, "0");
-            }
-
-            if ("1".equals(productionCounting.getField(FIELD_GENERATED))) {
-                generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
-                generateButton.setEnabled(false);
-                deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
-                deleteButton.setEnabled(false);
-            } else {
-                generateButton.setMessage(null);
-                generateButton.setEnabled(true);
-                deleteButton.setMessage(null);
-                deleteButton.setEnabled(true);
-            }
-        }
-        generateButton.requestUpdate(true);
-        deleteButton.requestUpdate(true);
-        window.requestRibbonRender();
     }
 
     @Transactional
