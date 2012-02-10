@@ -72,7 +72,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         // clear the previous results
         for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
-            costCalculation.setField(fieldName, BigDecimal.ZERO.setScale(3));
+            costCalculation.setField(fieldName, numberService.setScale(BigDecimal.ZERO));
         }
 
         costCalculation.setField("dateOfCalculation", new Date());

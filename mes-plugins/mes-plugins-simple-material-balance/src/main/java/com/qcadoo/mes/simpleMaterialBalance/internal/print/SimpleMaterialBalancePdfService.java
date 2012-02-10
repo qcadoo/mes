@@ -165,17 +165,16 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(entry.getKey().getField(UNIT_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(entry.getValue()), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue()), PdfUtil.getArialRegular9Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), entry.getKey().getId().toString(),
                         (Date) simpleMaterialBalance.getField(DATE_FIELD)));
             }
-            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(available), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
-                    available.subtract(entry.getValue(), numberService.getMathContext())), PdfUtil.getArialBold9Dark()));
+            table.addCell(new Phrase(numberService.format(available), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
+                    PdfUtil.getArialBold9Dark()));
         }
         document.add(table);
     }
@@ -228,7 +227,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
     }
 

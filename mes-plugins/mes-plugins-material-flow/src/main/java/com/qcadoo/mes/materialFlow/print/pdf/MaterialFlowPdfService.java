@@ -104,8 +104,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
             table.addCell(new Phrase(data.getKey().getStringField("number"), PdfUtil.getArialRegular9Dark()));
             table.addCell(new Phrase(data.getKey().getStringField("name"), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(data.getValue()), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(data.getValue()), PdfUtil.getArialRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             table.addCell(new Phrase(data.getKey().getStringField("unit"), PdfUtil.getArialRegular9Dark()));
         }
@@ -113,7 +112,7 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("materialFlow.materialFlow.report.title", locale);
     }
 }

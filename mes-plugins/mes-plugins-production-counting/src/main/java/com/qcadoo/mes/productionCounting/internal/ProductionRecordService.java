@@ -182,6 +182,12 @@ public class ProductionRecordService {
             return;
         }
 
+        for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
+            if (productionRecord.getHasManyField(fieldName) != null) {
+                return;
+            }
+        }
+
         if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField("orderOperationComponents");
         } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {

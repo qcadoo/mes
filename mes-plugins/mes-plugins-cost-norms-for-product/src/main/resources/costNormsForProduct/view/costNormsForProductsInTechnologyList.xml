@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.2
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="costNormsForProductsInTechnologyList" modelPlugin="technologies" modelName="operationProductInComponent">
+
+	<component type="window" name="window" reference="window">
+		
+		<ribbon>
+			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
+		</ribbon>
+		
+		<windowTab name="mainTab" reference="inProductsCostTab">
+			<component type="form" name="technologies" reference="technology" />
+			
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="gridLayout" hasBorders="false" columns="1" rows="2">
+					<layoutElement column="1" row="1">
+						<component type="label" name="description">
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="grid" name="inProductsGrid" reference="grid">
+							<option type="column" name="number" fields="product"
+								expression="#product['number']"
+								 width="100" />
+							<option type="column" name="name" fields="product"
+								expression="#product['name']"
+								width="200" />
+							<option type="column" name="nominalCost" fields="product"
+								expression="#product.get('nominalCost') != null ? 
+								#product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+							<option type="column" name="lastPurchaseCost" fields="product"
+								expression="#product.get('lastPurchaseCost') != null ? 
+								#product.get('lastPurchaseCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" />
+							<option type="column" name="averageCost" fields="product" 
+								expression="#product.get('averageCost') != null ? 
+								#product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+								
+							<option type="order" column="name" direction="asc" />
+						</component>
+					</layoutElement>
+				</component>
+			</component>
+		</windowTab>
+	</component>
+	
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillInProductsGridInTechnology" />
+	</hooks>
+	
+</view>

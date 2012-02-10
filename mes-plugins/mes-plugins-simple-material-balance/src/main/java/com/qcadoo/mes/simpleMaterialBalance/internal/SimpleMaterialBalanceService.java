@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -43,6 +44,7 @@ import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalance
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -78,6 +80,9 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private SimpleMaterialBalanceXlsService simpleMaterialBalanceXlsService;
+
+    @Autowired
+    private FileService fileService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(DATE_FIELD, null);
@@ -249,7 +254,7 @@ public class SimpleMaterialBalanceService {
                 viewDefinitionState.redirectTo(
                         "/generateSavedReport/" + SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER + "/"
                                 + SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE + "." + args[0] + "?id="
-                                + state.getFieldValue() + "&fieldDate=date", true, false);
+                                + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -264,12 +269,14 @@ public class SimpleMaterialBalanceService {
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)
             throws IOException, DocumentException {
-        Entity simpleMaterialBalanceWithFileName = simpleMaterialBalancePdfService.updateFileName(simpleMaterialBalance,
-                "Simple_material_balance");
+        Entity simpleMaterialBalanceWithFileName = fileService.updateReportFileName(
+                simpleMaterialBalance,
+                "date",
+                translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.fileName",
+                        LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
         simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
     }
-
 }

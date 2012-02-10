@@ -331,8 +331,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 if (productIn.getField(FIELD_USED_QUANTITY) == null) {
                     inputProductsTable.addCell(new Phrase(NOT_AVAILABLE, PdfUtil.getArialRegular9Dark()));
                 } else {
-                    inputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
-                            productIn.getField(FIELD_USED_QUANTITY)), PdfUtil.getArialRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(numberService.format(productIn.getField(FIELD_USED_QUANTITY)), PdfUtil
+                            .getArialRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField("unit"), PdfUtil
@@ -379,8 +379,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 if (productOut.getField(FIELD_USED_QUANTITY) == null) {
                     outputProductsTable.addCell(new Phrase(NOT_AVAILABLE, PdfUtil.getArialRegular9Dark()));
                 } else {
-                    outputProductsTable.addCell(new Phrase(numberService.getDecimalFormat(locale).format(
-                            productOut.getField(FIELD_USED_QUANTITY)), PdfUtil.getArialRegular9Dark()));
+                    outputProductsTable.addCell(new Phrase(numberService.format(productOut.getField(FIELD_USED_QUANTITY)),
+                            PdfUtil.getArialRegular9Dark()));
                 }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
                 outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(FIELD_PRODUCT).getStringField("unit"),
@@ -392,7 +392,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("productionCounting.productionBalance.report.title", locale);
     }
 

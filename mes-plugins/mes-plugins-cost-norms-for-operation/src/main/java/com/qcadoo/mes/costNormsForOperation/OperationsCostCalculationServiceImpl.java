@@ -136,8 +136,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
                     quantity, realizationTimes);
-            costCalculation.setField("totalMachineHourlyCosts", hourlyResultsMap.get(MACHINE_HOURLY_COST).setScale(3, ROUND_UP));
-            costCalculation.setField("totalLaborHourlyCosts", hourlyResultsMap.get(LABOR_HOURLY_COST).setScale(3, ROUND_UP));
+            costCalculation
+                    .setField("totalMachineHourlyCosts", numberService.setScale(hourlyResultsMap.get(MACHINE_HOURLY_COST)));
+            costCalculation.setField("totalLaborHourlyCosts", numberService.setScale(hourlyResultsMap.get(LABOR_HOURLY_COST)));
         }
 
         costCalculation.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, operationComponents);
@@ -179,10 +180,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationMarginCost = operationCost.multiply(
                 margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext());
 
-        operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
-        operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
-        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost, numberService.getMathContext())
-                .setScale(3, ROUND_UP));
+        operationComponent.setField("operationCost", numberService.setScale(operationCost));
+        operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
+        operationComponent.setField("totalOperationCost",
+                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
         operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
@@ -231,11 +232,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100),
                 numberService.getMathContext()));
 
-        operationComponent.setField("pieces", pieces.setScale(3, ROUND_UP));
-        operationComponent.setField("operationCost", operationCost.setScale(3, ROUND_UP));
-        operationComponent.setField("operationMarginCost", operationMarginCost.setScale(3, ROUND_UP));
-        operationComponent.setField("totalOperationCost", operationCost.add(operationMarginCost, numberService.getMathContext())
-                .setScale(3, ROUND_UP));
+        operationComponent.setField("pieces", numberService.setScale(pieces));
+        operationComponent.setField("operationCost", numberService.setScale(operationCost));
+        operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
+        operationComponent.setField("totalOperationCost",
+                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
 
         checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
 

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -47,6 +48,7 @@ import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
@@ -84,6 +86,9 @@ public class MaterialsInStockAreasService {
 
     @Autowired
     private MaterialFlowXlsService materialFlowXlsService;
+
+    @Autowired
+    private FileService fileService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FILE_NAME_FIELD, null);
@@ -276,8 +281,11 @@ public class MaterialsInStockAreasService {
 
     private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas)
             throws IOException, DocumentException {
-        Entity materialFlowWithFileName = materialFlowPdfService.updateFileName(materialsInStockAreas, TIME_FIELD,
-                "Material_in_stock_areas");
+        Entity materialFlowWithFileName = fileService.updateReportFileName(
+                materialsInStockAreas,
+                TIME_FIELD,
+                translationService.translate("materialFlow.materialsInStockAreas.report.fileName",
+                        LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
@@ -298,8 +306,7 @@ public class MaterialsInStockAreasService {
                         state.getLocale()), MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + MaterialFlowConstants.PLUGIN_IDENTIFIER + "/"
-                        + MODEL_MATERIALS_IN_STOCK_AREAS + "." + args[0] + "?id=" + state.getFieldValue() + "&fieldDate=time",
-                        true, false);
+                        + MODEL_MATERIALS_IN_STOCK_AREAS + "." + args[0] + "?id=" + state.getFieldValue(), true, false);
             }
         } else {
             if (state instanceof FormComponent) {

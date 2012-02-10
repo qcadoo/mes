@@ -44,7 +44,7 @@
        http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Production Counting and Balance</name>
+		<name>MES - Production Counting and Balance</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>

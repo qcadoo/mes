@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.samples;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONTRACTOR;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
@@ -38,12 +37,13 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL
 import static java.util.Collections.singletonMap;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +52,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Preconditions;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
@@ -96,19 +97,21 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
+    @Autowired
+    private NumberService numberService;
+
     @Value("${generatorIterations}")
     private int iterations;
 
     @Override
     void loadData(final String dataset, final String locale) {
-        // TODO BAKU add company
         generateAndAddUser();
         generateAndAddDictionary();
         addParameters(singletonMap("code", "PLN"));
+        generateAndAddCompany();
         for (int i = 0; i < iterations; i++) {
             generateAndAddProduct();
             generateAndAddWorkstationType();
-            generateAndAddContractor();
             generateAndAddStaff();
         }
         for (int i = 0; i < 10; i++) {
@@ -242,8 +245,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operation.setField("tj", RANDOM.nextInt(1000));
         operation.setField("productionInOneCycle", RANDOM.nextInt(20));
         operation.setField("countRealized", RANDOM.nextInt(10));
-        operation.setField("machineUtilization", new BigDecimal(RANDOM.nextDouble()).abs().setScale(3, RoundingMode.HALF_EVEN));
-        operation.setField("laborUtilization", new BigDecimal(RANDOM.nextDouble()).abs().setScale(3, RoundingMode.HALF_EVEN));
+        operation.setField("machineUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
+        operation.setField("laborUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("countMachineOperation", RANDOM.nextInt(15));
         operation.setField("countRealizedOperation", "01all");
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
@@ -393,20 +396,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         }
     }
 
-    private void generateAndAddContractor() {
-        Entity contractor = dataDefinitionService.get("basic", BASIC_MODEL_CONTRACTOR).create();
-
-        String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
-
-        contractor.setField("externalNumber", generateString(CHARS_AND_DIGITS, 10));
-        contractor.setField(FIELD_NUMBER, number);
-        contractor.setField(FIELD_NAME, getNameFromNumberAndPrefix("Contractor-", number));
-
-        contractor = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONTRACTOR).save(contractor);
-
-        validateEntity(contractor);
-    }
-
     private Entity getDefaultTechnologyForProduct(final Entity product) {
         if (product == null) {
             return null;
@@ -438,7 +427,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
         order.setField("state", "01pending");
-        order.setField(BASIC_MODEL_CONTRACTOR, getRandomContractor());
         order.setField(BASIC_MODEL_PRODUCT, product);
         order.setField("plannedQuantity", RANDOM.nextInt(100) + 100);
         order.setField("doneQuantity", RANDOM.nextInt(100) + 1);
@@ -450,10 +438,6 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
 
         validateEntity(order);
-    }
-
-    private Entity getRandomContractor() {
-        return getRandomEntity(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONTRACTOR);
     }
 
     private Long generateRandomDate(final Long dateFrom) {
@@ -583,7 +567,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     private void addSubstituteComponent(final Entity substitute, final Entity product, final double quantity) {
         Entity substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").create();
 
-        substituteComponent.setField("quantity", new BigDecimal(quantity + 1).abs().setScale(3, RoundingMode.HALF_EVEN));
+        substituteComponent.setField("quantity", numberService.setScale(new BigDecimal(quantity + 1).abs()));
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
         substituteComponent.setField("substitute", substitute);
 
@@ -608,6 +592,26 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
 
         validateEntity(user);
+    }
+
+    private void generateAndAddCompany() {
+        Map<String, String> values = new HashMap<String, String>();
+        values.put(FIELD_NUMBER, generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5));
+        values.put(FIELD_NAME, generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("tax", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("street", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("house", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("flat", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("zipCode", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("city", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("state", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("country", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("email", generateRandomEmail());
+        values.put("website", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("phone", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put("owner", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+
+        addCompany(values);
     }
 
     private String generateRandomEmail() {

@@ -70,7 +70,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity materialsInStockAreas, final Locale locale) {
+    protected void addSeries(final HSSFSheet sheet, final Entity materialsInStockAreas) {
         Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
 
         int rowNum = 1;
@@ -78,7 +78,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(data.getKey().getStringField("number"));
             row.createCell(1).setCellValue(data.getKey().getStringField("name"));
-            row.createCell(2).setCellValue(numberService.getDecimalFormat(locale).format(data.getValue()));
+            row.createCell(2).setCellValue(numberService.format(data.getValue()));
             row.createCell(3).setCellValue(data.getKey().getStringField("unit"));
         }
         sheet.autoSizeColumn((short) 0);
@@ -88,7 +88,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("materialFlow.materialFlow.report.title", locale);
     }
 }

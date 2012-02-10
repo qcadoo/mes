@@ -75,7 +75,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_MODEL
 import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -94,6 +93,7 @@ import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 
@@ -111,6 +111,9 @@ public class TestSamplesLoader extends SamplesLoader {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Value("${setAsDemoEnviroment}")
     private boolean setAsDemoEnviroment;
@@ -362,7 +365,7 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addSubstituteComponent(final Entity substitute, final Entity product, final double quantity) {
         Entity substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").create();
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
-        substituteComponent.setField(FIELD_QUANTITY, new BigDecimal(quantity).setScale(3, RoundingMode.HALF_EVEN));
+        substituteComponent.setField(FIELD_QUANTITY, numberService.setScale(new BigDecimal(quantity)));
         substituteComponent.setField(BASIC_MODEL_SUBSTITUTE, substitute);
 
         if (LOG.isDebugEnabled()) {
@@ -407,8 +410,8 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis();
         long endDate = startDate;
-        long MILLS_IN_HOUR = 3600000;
-        long MILLS_IN_MINUTE = 60000;
+        long millsInHour = 3600000;
+        long millsInMinute = 60000;
 
         if (!values.get("scheduled_start_date").isEmpty()) {
             try {
@@ -419,13 +422,13 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if ("000001".equals(values.get("order_nr"))) {
-            endDate = startDate + MILLIS_IN_DAY + 1 * MILLS_IN_HOUR + 45 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 1 * millsInHour + 45 * millsInMinute;
         } else if ("000002".equals(values.get("order_nr"))) {
             startDate -= 2 * MILLIS_IN_DAY;
-            endDate = startDate + MILLIS_IN_DAY + 3 * MILLS_IN_HOUR + 40 * MILLS_IN_MINUTE;
+            endDate = startDate + MILLIS_IN_DAY + 3 * millsInHour + 40 * millsInMinute;
         } else if ("000003".equals(values.get("order_nr"))) {
             startDate += 2 * MILLIS_IN_DAY;
-            endDate = startDate + 6 * MILLS_IN_HOUR + 50 * MILLS_IN_MINUTE;
+            endDate = startDate + 6 * millsInHour + 50 * millsInMinute;
         }
 
         if (!values.get("scheduled_end_date").isEmpty()) {
@@ -518,6 +521,7 @@ public class TestSamplesLoader extends SamplesLoader {
         batch.setField(FIELD_NUMBER, values.get(FIELD_NUMBER));
         batch.setField("product", getProductByNumber(values.get("product_nr")));
         batch.setField("manufacturer", getManufacturerByNumber(values.get("manufacturer_nr")));
+        batch.setField("state", "01tracked");
 
         batch = batch.getDataDefinition().save(batch);
         validateEntity(batch);
@@ -529,6 +533,7 @@ public class TestSamplesLoader extends SamplesLoader {
         trackingRecord.setField("entityType", values.get("entity_type"));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
+        trackingRecord.setField("state", "01draft");
 
         trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
         validateEntity(trackingRecord);

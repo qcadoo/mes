@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -45,6 +46,7 @@ import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingState
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -77,6 +79,9 @@ public class ProductionBalanceService {
 
     @Autowired
     private ProductionBalancePdfService productionBalancePdfService;
+
+    @Autowired
+    private FileService fileService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FILE_NAME_FIELD, null);
@@ -224,8 +229,8 @@ public class ProductionBalanceService {
                         MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
-                        + ProductionCountingConstants.MODEL_PRODUCTION_BALANCE + "." + args[0] + "?id=" + state.getFieldValue()
-                        + "&fieldDate=date", true, false);
+                        + ProductionCountingConstants.MODEL_PRODUCTION_BALANCE + "." + args[0] + "?id=" + state.getFieldValue(),
+                        true, false);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -240,8 +245,11 @@ public class ProductionBalanceService {
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
             throws IOException, DocumentException {
-        Entity productionBalanceWithFileName = productionBalancePdfService
-                .updateFileName(productionBalance, "Production_balance");
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(
+                productionBalance,
+                "date",
+                translationService.translate("productionCounting.productionBalance.report.fileName",
+                        LocaleContextHolder.getLocale()));
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, state.getLocale());

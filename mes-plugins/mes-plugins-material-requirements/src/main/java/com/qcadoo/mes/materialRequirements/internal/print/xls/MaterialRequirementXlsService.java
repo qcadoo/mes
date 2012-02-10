@@ -24,7 +24,6 @@
 package com.qcadoo.mes.materialRequirements.internal.print.xls;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,6 +39,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsUtil;
@@ -52,6 +52,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
@@ -71,7 +74,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity entity, final Locale locale) {
+    protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
         Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
@@ -83,7 +86,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
             row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(entry.getValue().setScale(3, RoundingMode.HALF_EVEN).doubleValue());
+            row.createCell(2).setCellValue(numberService.setScale(entry.getValue()).doubleValue());
             Object unit = entry.getKey().getField("unit");
             if (unit == null) {
                 row.createCell(3).setCellValue("");
@@ -98,7 +101,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected String getReportTitle(final Locale locale) {
+    public String getReportTitle(final Locale locale) {
         return translationService.translate("materialRequirements.materialRequirement.report.title", locale);
     }
 }

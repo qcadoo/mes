@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderTimePredictionService {
@@ -67,6 +68,9 @@ public class OrderTimePredictionService {
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
+
+    @Autowired
+    private TimeConverterService timeConverterService;
 
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
@@ -160,7 +164,7 @@ public class OrderTimePredictionService {
             dateTo.setFieldValue(null);
         } else {
             realizationTime.setFieldValue(maxPathTime);
-            Date startTime = orderRealizationTimeService.getDateFromField(dateFrom.getFieldValue());
+            Date startTime = timeConverterService.getDateFromField(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
             if (stopTime != null) {

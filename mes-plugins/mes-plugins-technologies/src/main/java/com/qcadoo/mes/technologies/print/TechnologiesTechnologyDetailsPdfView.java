@@ -152,8 +152,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 table.addCell(new Phrase(translationService.translate(productType, locale), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField(FIELD_NAME), PdfUtil
                         .getArialRegular9Dark()));
-                table.addCell(new Phrase(numberService.getDecimalFormat(locale).format(product.getField("quantity")), PdfUtil
-                        .getArialRegular9Dark()));
+                table.addCell(new Phrase(numberService.format(product.getField("quantity")), PdfUtil.getArialRegular9Dark()));
                 table.addCell(new Phrase(product.getBelongsToField(MODEL_BASIC_PRODUCT).getStringField("unit"), PdfUtil
                         .getArialRegular9Dark()));
             }
