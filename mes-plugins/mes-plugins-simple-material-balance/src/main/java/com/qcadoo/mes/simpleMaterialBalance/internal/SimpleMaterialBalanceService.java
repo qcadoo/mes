@@ -242,9 +242,8 @@ public class SimpleMaterialBalanceService {
 
     public void printSimpleMaterialBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER;
-        args[2] = SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER, SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE });
     }
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)

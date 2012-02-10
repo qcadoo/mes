@@ -179,9 +179,8 @@ public class WorkPlanViewHooks {
     }
 
     public final void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        args[1] = WorkPlansConstants.PLUGIN_IDENTIFIER;
-        args[2] = WorkPlansConstants.MODEL_WORK_PLAN;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN });
     }
 
     private void addFailureMessage(final ComponentState component, final String messageKey) {

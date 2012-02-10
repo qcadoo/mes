@@ -298,9 +298,8 @@ public class MaterialsInStockAreasService {
 
     public void printMaterialsInStockAreasDocuments(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        args[1] = MaterialFlowConstants.PLUGIN_IDENTIFIER;
-        args[2] = MODEL_MATERIALS_IN_STOCK_AREAS;
-        reportService.printGeneratedReport(viewDefinitionState, state, args);
+        reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
+                MaterialFlowConstants.PLUGIN_IDENTIFIER, MODEL_MATERIALS_IN_STOCK_AREAS });
     }
 
 }
