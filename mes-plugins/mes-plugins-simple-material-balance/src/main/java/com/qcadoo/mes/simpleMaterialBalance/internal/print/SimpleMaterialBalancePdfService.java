@@ -50,9 +50,10 @@ import com.qcadoo.mes.simpleMaterialBalance.util.EntityStockAreasNumberComparato
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
@@ -91,13 +92,16 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
     @Override
     protected void buildPdfContent(final Document document, final Entity simpleMaterialBalance, final Locale locale)
             throws DocumentException {
         String documentTitle = translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) simpleMaterialBalance.getField(DATE_FIELD),
-                securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor,
+                (Date) simpleMaterialBalance.getField(DATE_FIELD), securityService.getCurrentUserName());
         addPanel(document, simpleMaterialBalance, locale);
         addBalance(document, simpleMaterialBalance, locale);
         addOrders(document, simpleMaterialBalance, locale);
@@ -106,29 +110,25 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
 
     private void addPanel(final Document document, final Entity simpleMaterialBalance, final Locale locale)
             throws DocumentException {
-        PdfPTable panelTable = PdfUtil.createPanelTable(2);
-        PdfUtil.addTableCellAsTable(
+        PdfPTable panelTable = pdfHelper.createPanelTable(2);
+        pdfHelper.addTableCellAsOneColumnTable(
                 panelTable,
                 translationService.translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.date", locale),
                 DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT, locale).format(
-                        (Date) simpleMaterialBalance.getField(DATE_FIELD)), null, PdfUtil.getArialBold10Dark(), PdfUtil
-                        .getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable, translationService.translate(
+                        (Date) simpleMaterialBalance.getField(DATE_FIELD)));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.name", locale),
-                simpleMaterialBalance.getStringField(NAME_FIELD), null, PdfUtil.getArialBold10Dark(), PdfUtil
-                        .getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(panelTable, translationService.translate(
+                simpleMaterialBalance.getStringField(NAME_FIELD));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.worker", locale),
-                simpleMaterialBalance.getStringField(WORKER_FIELD), null, PdfUtil.getArialBold10Dark(), PdfUtil
-                        .getArialRegular10Dark());
-        PdfUtil.addTableCellAsTable(
+                simpleMaterialBalance.getStringField(WORKER_FIELD));
+        pdfHelper.addTableCellAsOneColumnTable(
                 panelTable,
                 translationService.translate(
                         "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.onlyComponents", locale),
                 (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD) ? translationService.translate("qcadooView.true",
-                        locale) : translationService.translate("qcadooView.false", locale), null, PdfUtil.getArialBold10Dark(),
-                PdfUtil.getArialRegular10Dark());
+                        locale) : translationService.translate("qcadooView.false", locale));
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
@@ -137,7 +137,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     private void addBalance(final Document document, final Entity simpleMaterialBalance, final Locale locale)
             throws DocumentException {
         document.add(new Paragraph(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.paragrah",
-                locale), PdfUtil.getArialBold11Dark()));
+                locale), FontUtils.getDejavuBold11Dark()));
 
         List<String> simpleMaterialBalanceTableHeader = new ArrayList<String>();
         simpleMaterialBalanceTableHeader.add(translationService.translate(
@@ -152,7 +152,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         simpleMaterialBalanceTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false);
         List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
         Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
 
@@ -162,19 +162,19 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(UNIT_FIELD).toString(), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(entry.getValue()), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey().getField(UNIT_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuRegular9Dark()));
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
                         stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), entry.getKey().getId().toString(),
                         (Date) simpleMaterialBalance.getField(DATE_FIELD)));
             }
-            table.addCell(new Phrase(numberService.format(available), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(available), FontUtils.getDejavuRegular9Dark()));
             table.addCell(new Phrase(numberService.format(available.subtract(entry.getValue(), numberService.getMathContext())),
-                    PdfUtil.getArialBold9Dark()));
+                    FontUtils.getDejavuBold9Dark()));
         }
         document.add(table);
     }
@@ -183,7 +183,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.paragrah2",
-                locale), PdfUtil.getArialBold11Dark()));
+                locale), FontUtils.getDejavuBold11Dark()));
 
         List<String> simpleMaterialBalanceOrdersTableHeader = new ArrayList<String>();
         simpleMaterialBalanceOrdersTableHeader.add(translationService.translate(
@@ -191,13 +191,14 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         simpleMaterialBalanceOrdersTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(2, simpleMaterialBalanceOrdersTableHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(2, simpleMaterialBalanceOrdersTableHeader, false);
         List<Entity> orders = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(ORDERS_FIELD));
         Collections.sort(orders, new EntityOrderNumberComparator());
         for (Entity e : orders) {
-            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NAME_FIELD), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NUMBER_FIELD), FontUtils
+                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(ORDER_FIELD).getStringField(NAME_FIELD), FontUtils
+                    .getDejavuRegular9Dark()));
         }
         document.add(table);
     }
@@ -206,7 +207,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.paragrah3",
-                locale), PdfUtil.getArialBold11Dark()));
+                locale), FontUtils.getDejavuBold11Dark()));
 
         List<String> simpleMaterialBalancestockAreassTableHeader = new ArrayList<String>();
         simpleMaterialBalancestockAreassTableHeader.add(translationService.translate(
@@ -214,14 +215,14 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         simpleMaterialBalancestockAreassTableHeader.add(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name", locale));
 
-        PdfPTable table = PdfUtil.createTableWithHeader(2, simpleMaterialBalancestockAreassTableHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(2, simpleMaterialBalancestockAreassTableHeader, false);
         List<Entity> stockAreas = new ArrayList<Entity>(simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD));
         Collections.sort(stockAreas, new EntityStockAreasNumberComparator());
         for (Entity e : stockAreas) {
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NUMBER_FIELD), FontUtils
+                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(e.getBelongsToField(STOCK_AREAS_FIELD).getStringField(NAME_FIELD), FontUtils
+                    .getDejavuRegular9Dark()));
         }
         document.add(table);
     }

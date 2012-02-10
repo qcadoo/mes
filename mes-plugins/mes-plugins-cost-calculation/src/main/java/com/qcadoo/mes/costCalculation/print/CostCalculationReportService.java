@@ -41,6 +41,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -61,33 +62,14 @@ public class CostCalculationReportService {
     @Autowired
     private FileService fileService;
 
-    // TODO KRNA print generic
+    @Autowired
+    private ReportService reportService;
+
     public void printCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
-                    CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
-            if (costCalculation == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
-                viewDefinitionState.redirectTo("/generateSavedReport/" + CostCalculationConstants.PLUGIN_IDENTIFIER + "/"
-                        + CostCalculationConstants.MODEL_COST_CALCULATION + "." + args[0] + "?id=" + state.getFieldValue(), true,
-                        false);
-            } else {
-                state.addMessage(translationService.translate(
-                        "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
-                        state.getLocale()), MessageType.FAILURE);
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
+        args[1] = CostCalculationConstants.PLUGIN_IDENTIFIER;
+        args[2] = CostCalculationConstants.MODEL_COST_CALCULATION;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -103,8 +85,7 @@ public class CostCalculationReportService {
                 state.addMessage(message, MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
-                String message = translationService.translate(
-                        "costCalculation.costCalculationDetails.window.costCalculation.documentsWasNotGenerated",
+                String message = translationService.translate("qcadooReport.errorMessage.documentsWasNotGenerated",
                         state.getLocale());
                 state.addMessage(message, MessageType.FAILURE);
                 return;

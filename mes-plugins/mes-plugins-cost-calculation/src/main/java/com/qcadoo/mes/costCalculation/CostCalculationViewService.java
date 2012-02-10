@@ -347,14 +347,6 @@ public class CostCalculationViewService {
         return form.getEntity();
     }
 
-    private String getStringValueFromBigDecimal(final Object value) {
-        // FIXME MAKU check locales (dots or commas?)
-        if (value == null) {
-            return "0.000";
-        }
-        return numberService.setScale(getBigDecimal(value)).toString();
-    }
-
     private BigDecimal getBigDecimal(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
@@ -376,7 +368,7 @@ public class CostCalculationViewService {
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            fieldComponent.setFieldValue(getStringValueFromBigDecimal(costCalculation.getField(referenceName)));
+            fieldComponent.setFieldValue(numberService.format(getBigDecimal(costCalculation.getField(referenceName))));
         }
     }
 

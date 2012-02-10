@@ -49,6 +49,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -82,6 +83,9 @@ public class MaterialRequirementService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private ReportService reportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -177,32 +181,9 @@ public class MaterialRequirementService {
 
     public void printMaterialRequirement(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
-        if (state.getFieldValue() instanceof Long) {
-            Entity materialRequirement = dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
-                    MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
-            if (materialRequirement == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (!StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
-                state.addMessage(translationService.translate(
-                        "materialRequirements.materialRequirementDetails.window.materialRequirement.documentsWasNotGenerated",
-                        state.getLocale()), MessageType.FAILURE);
-            } else {
-                viewDefinitionState.redirectTo(
-                        "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
-                                + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
-                                + state.getFieldValue(), true, false);
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
+        args[1] = MaterialRequirementsConstants.PLUGIN_IDENTIFIER;
+        args[2] = MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     public void printMaterialReqForOrder(final ViewDefinitionState viewDefinitionState, final ComponentState state,

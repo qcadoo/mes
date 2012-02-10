@@ -44,7 +44,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
-import com.qcadoo.report.api.xls.XlsUtil;
+import com.qcadoo.report.api.xls.XlsHelper;
 
 @Service
 public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
@@ -75,32 +75,35 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private XlsHelper xlsHelper;
+
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
         cell0.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.number",
                 locale));
-        cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell0);
         HSSFCell cell1 = header.createCell(1);
         cell1.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.name",
                 locale));
-        cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell1);
         HSSFCell cell2 = header.createCell(2);
         cell2.setCellValue(translationService.translate("basic.product.unit.label", locale));
-        cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell2);
         HSSFCell cell3 = header.createCell(3);
         cell3.setCellValue(translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.needed",
                 locale));
-        cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell3);
         HSSFCell cell4 = header.createCell(4);
         cell4.setCellValue(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inStoch", locale));
-        cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell4);
         HSSFCell cell5 = header.createCell(5);
         cell5.setCellValue(translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.balance", locale));
-        cell5.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell5);
     }
 
     @Override

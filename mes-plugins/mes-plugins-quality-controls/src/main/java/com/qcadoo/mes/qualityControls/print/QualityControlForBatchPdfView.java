@@ -47,8 +47,10 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.print.utils.EntityBatchNumberComparator;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
-import com.qcadoo.report.api.pdf.PdfUtil;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
@@ -64,12 +66,19 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
+    @Autowired
+    private NumberService numberService;
+
     @Override
     protected final String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = translationService.translate("qualityControls.qualityControlForBatch.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        PdfUtil.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper
+                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForBatch");
@@ -85,7 +94,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             addProductSeries(document, entry, locale);
         }
         String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-        PdfUtil.addEndOfDocument(document, writer, text);
+        pdfHelper.addEndOfDocument(document, writer, text);
         return translationService.translate("qualityControls.qualityControlForBatch.report.fileName", locale);
     }
 
@@ -113,14 +122,14 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
                         .translate(
                                 "qualityControlsForBatch.qualityControlForBatchDetails.window.mainTab.qualityControlForBatch.acceptedDefectsQuantity.label",
                                 locale));
-        PdfPTable table = PdfUtil.createTableWithHeader(4, qualityHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(4, qualityHeader, false);
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
-            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getField("number").toString(), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getField("number").toString(), FontUtils
+                    .getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(0)), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(1)), PdfUtil.getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format(entry.getValue().get(2)), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue().get(0)), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue().get(1)), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entry.getValue().get(2)), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);
@@ -138,23 +147,22 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         productHeader.add(translationService.translate("qualityControls.qualityControl.report.rejected.quantity", locale));
         productHeader
                 .add(translationService.translate("qualityControls.qualityControl.report.accepted.defects.quantity", locale));
-        PdfPTable table = PdfUtil.createTableWithHeader(5, productHeader, false);
+        PdfPTable table = pdfHelper.createTableWithHeader(5, productHeader, false);
 
         List<Entity> sortedOrders = entry.getValue();
 
         Collections.sort(sortedOrders, new EntityBatchNumberComparator());
 
         for (Entity entity : sortedOrders) {
-            table.addCell(new Phrase(entity.getField("batchNr") == null ? "" : entity.getField("batchNr").toString(), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("number").toString(), PdfUtil.getArialRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("batchNr") == null ? "" : entity.getField("batchNr").toString(), FontUtils
+                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entity.getField("number").toString(), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("controlledQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("rejectedQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
-            table.addCell(new Phrase(getDecimalFormat().format(entity.getField("acceptedDefectsQuantity")), PdfUtil
-                    .getArialRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entity.getField("controlledQuantity")), FontUtils
+                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entity.getField("rejectedQuantity")), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entity.getField("acceptedDefectsQuantity")), FontUtils
+                    .getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
 

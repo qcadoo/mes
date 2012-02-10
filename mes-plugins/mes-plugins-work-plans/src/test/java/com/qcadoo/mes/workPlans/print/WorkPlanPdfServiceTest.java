@@ -69,8 +69,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
-import com.qcadoo.report.api.pdf.PdfUtil;
 import com.qcadoo.security.api.SecurityService;
 
 public class WorkPlanPdfServiceTest {
@@ -325,11 +325,11 @@ public class WorkPlanPdfServiceTest {
         assertEquals(df.format(quantity) + " productUnit", phrase.getAllValues().get(3).getContent());
         assertEquals(simpleDateFormat.format(now), phrase.getAllValues().get(4).getContent());
 
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(0).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(1).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(2).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(3).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(0).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(1).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(2).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(3).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
     @Test
@@ -368,11 +368,11 @@ public class WorkPlanPdfServiceTest {
         assertEquals(df.format(quantity), phrase.getAllValues().get(3).getContent());
         assertEquals(simpleDateFormat.format(now), phrase.getAllValues().get(4).getContent());
 
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(0).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(1).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(2).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(3).getFont());
-        assertEquals(PdfUtil.getArialRegular9Dark(), phrase.getAllValues().get(4).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(0).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(1).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(2).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(3).getFont());
+        assertEquals(FontUtils.getDejavuRegular9Dark(), phrase.getAllValues().get(4).getFont());
     }
 
     @Test

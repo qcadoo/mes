@@ -37,12 +37,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.print.utils.EntityNumberComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.ReportXlsView;
-import com.qcadoo.report.api.xls.XlsUtil;
+import com.qcadoo.report.api.xls.XlsHelper;
 
 @Component(value = "qualityControlForUnitXlsView")
 public class QualityControlForUnitXlsView extends ReportXlsView {
@@ -53,41 +54,47 @@ public class QualityControlForUnitXlsView extends ReportXlsView {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private XlsHelper xlsHelper;
+
     @Override
     protected final String addContent(final Map<String, Object> model, final HSSFWorkbook workbook, final Locale locale) {
-        HSSFSheet sheet = workbook.createSheet(getTranslationService().translate(
-                "qualityControls.qualityControlForUnit.report.title", locale));
+        HSSFSheet sheet = workbook.createSheet(translationService.translate("qualityControls.qualityControlForUnit.report.title",
+                locale));
         sheet.setZoom(4, 3);
         addOrderHeader(sheet, locale);
         addOrderSeries(model, sheet);
-        return getTranslationService().translate("qualityControls.qualityControlForUnit.report.fileName", locale);
+        return translationService.translate("qualityControls.qualityControlForUnit.report.fileName", locale);
     }
 
     private void addOrderHeader(final HSSFSheet sheet, final Locale locale) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
-        cell0.setCellValue(getTranslationService().translate("qualityControls.qualityControl.report.product.number", locale));
-        cell0.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        cell0.setCellValue(translationService.translate("qualityControls.qualityControl.report.product.number", locale));
+        xlsHelper.setCellStyle(sheet, cell0);
         HSSFCell cell1 = header.createCell(1);
-        cell1.setCellValue(getTranslationService().translate(
+        cell1.setCellValue(translationService.translate(
                 "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.number.label", locale));
-        cell1.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell1);
         HSSFCell cell2 = header.createCell(2);
-        cell2.setCellValue(getTranslationService().translate(
+        cell2.setCellValue(translationService.translate(
                 "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.controlledQuantity.label",
                 locale));
-        cell2.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell2);
         HSSFCell cell3 = header.createCell(3);
-        cell3.setCellValue(getTranslationService().translate(
+        cell3.setCellValue(translationService.translate(
                 "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.rejectedQuantity.label",
                 locale));
-        cell3.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell3);
         HSSFCell cell4 = header.createCell(4);
-        cell4.setCellValue(getTranslationService()
+        cell4.setCellValue(translationService
                 .translate(
                         "qualityControls.qualityControlForUnitDetails.window.mainTab.qualityControlForUnit.acceptedDefectsQuantity.label",
                         locale));
-        cell4.setCellStyle(XlsUtil.getHeaderStyle(sheet.getWorkbook()));
+        xlsHelper.setCellStyle(sheet, cell4);
     }
 
     private void addOrderSeries(final Map<String, Object> model, final HSSFSheet sheet) {

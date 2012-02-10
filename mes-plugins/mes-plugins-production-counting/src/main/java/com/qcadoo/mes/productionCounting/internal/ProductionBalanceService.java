@@ -48,6 +48,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -82,6 +83,9 @@ public class ProductionBalanceService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private ReportService reportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FILE_NAME_FIELD, null);
@@ -217,30 +221,9 @@ public class ProductionBalanceService {
 
     public void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state.getFieldValue() instanceof Long) {
-            Entity productionBalance = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
-            if (productionBalance == null) {
-                state.addMessage(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()),
-                        MessageType.FAILURE);
-            } else if (!StringUtils.hasText(productionBalance.getStringField(FILE_NAME_FIELD))) {
-                state.addMessage(translationService.translate(
-                        "productionCounting.productionBalance.report.error.documentsWasNotGenerated", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                viewDefinitionState.redirectTo("/generateSavedReport/" + ProductionCountingConstants.PLUGIN_IDENTIFIER + "/"
-                        + ProductionCountingConstants.MODEL_PRODUCTION_BALANCE + "." + args[0] + "?id=" + state.getFieldValue(),
-                        true, false);
-            }
-        } else {
-            if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
-            } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
-            }
-        }
+        args[1] = ProductionCountingConstants.PLUGIN_IDENTIFIER;
+        args[2] = ProductionCountingConstants.MODEL_PRODUCTION_BALANCE;
+        reportService.printGeneratedReport(viewDefinitionState, state, args);
     }
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
