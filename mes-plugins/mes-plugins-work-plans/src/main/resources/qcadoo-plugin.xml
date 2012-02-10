@@ -210,7 +210,7 @@
             <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks" method="copyColumnForProducts" />
         </model:model-hook>
         
-        <!-- TODO: maybe used in future-->
+        <!-- TODO LUPO maybe used in future-->
 		<!-- <model:model-hook plugin="productionScheduling" model="orderOperationComponent"> -->
 		<!--     <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" method="copyColumnForProducts" /> -->
 		<!-- </model:model-hook> -->
@@ -237,7 +237,7 @@
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		
-		<!-- TODO: maybe used in future-->
+		<!-- TODO LUPO maybe used in future-->
 		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" /> -->
 		
 		<view:view-listener plugin="orders"
