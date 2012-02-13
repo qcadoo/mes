@@ -270,7 +270,7 @@ CREATE TABLE costnormsforproduct_orderoperationproductincomponent
   costfororder numeric(10,3) DEFAULT 0::numeric,
   CONSTRAINT costnormsforproduct_orderoperationproductincomponent_pkey PRIMARY KEY (id ),
   CONSTRAINT costnormsforproduct_orderoperationproductincomponent_p_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
+      REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT costnormsforproduct_orderoperationproductincomponent_o_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
 );
