@@ -60,7 +60,9 @@
 
 	<modules>
 		<localization:translation path="locales" />
-
+	
+		<model:model model="orderOperationProductInComponent" resource="model/orderOperationProductInComponent.xml" />
+		
 		<!-- product -->
 		<model:model-field plugin="basic" model="product">
 			<model:decimal name="costForNumber" default="1">
@@ -87,10 +89,21 @@
 			</model:decimal>
 		</model:model-field>
 		
+		<!-- order -->
+		<model:model-field plugin="orders" model="order">
+			<model:hasMany name="orderOperationProductInComponents" plugin="costNormsForProduct" model="orderOperationProductInComponent" joinField="order" cascade="delete" copyable="true" />
+		</model:model-field>
+		
+		<model:model-hook plugin="orders" model="order">
+			<model:onSave class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+				method="fillOrderOperationProductsInComponents" />
+		</model:model-hook>
+		
 		<view:resource uri="public/**/*" />
 	
 		<view:view resource="view/costNormsForProductsInTechnologyList.xml" />
 		<view:view resource="view/costNormsForProductsInOrderList.xml" />
+		<view:view resource="view/costNormsForProductsInOrderDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
 		
@@ -99,15 +112,15 @@
 				
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
-			method="fillCostTabUnit" />
+			method="fillUnitFieldInProduct" />
+		
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillCurrencyFieldsInProduct" />
 			
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
 			method="enabledFieldForExternalID" />
-
-		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
-			method="fillCostTabCurrency" />
 
 		<view:view-listener plugin="technologies" view="technologyDetails"
 			component="form" event="save"

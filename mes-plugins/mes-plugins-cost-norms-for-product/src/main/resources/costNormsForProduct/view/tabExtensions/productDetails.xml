@@ -36,10 +36,10 @@
 				var productUnit = $("#window\\.mainTab\\.product\\.gridLayout\\.unit_input"); 
 				var costUnit = $("#window\\.costTab\\.gridLayout\\.unitGridLayout\\.unit_input"); 
 					productUnit.bind('blur', function() { 
-					#{costTabUnit}.setEnabled(true, true); 
+					#{costForNumberUnit}.setEnabled(true, true); 
 						costUnit.attr('value', productUnit.val()); 
-						#{costTabUnit}.performUpdateState(); 
-						#{costTabUnit}.setEnabled(false, true); 
+						#{costForNumberUnit}.performUpdateState(); 
+						#{costForNumberUnit}.setEnabled(false, true); 
 					}); 
 				}); 
 			 ]]> 
@@ -51,9 +51,9 @@
 			    </component>
 			</layoutElement>
 			<layoutElement column="2" row="1">
-			    <component type="gridLayout" name="unitGridLayout" hasBorders="false" columns="3" rows="1">
+			    <component type="gridLayout" name="costForNumberUnitGridLayout" hasBorders="false" columns="5" rows="1">
 			         <layoutElement column="1" row="1">
-			             <component type="input" name="unit" reference="costTabUnit" hasLabel="false" defaultEnable="false" />
+			             <component type="input" name="costForNumberUnit" reference="costForNumberUnit" hasLabel="false" defaultEnable="false" />
 			         </layoutElement>
 			    </component>
 			</layoutElement>

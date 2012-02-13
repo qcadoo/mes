@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.2
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="costNormsForProductsInOrderDetails" modelPlugin="costNormsForProduct" modelName="orderOperationProductInComponent">
+
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" excludeItems="actions.saveNew, actions.copy, actions.delete" />
+		</ribbon>
+		
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="costNormsForProductsGridLayout" columns="4" rows="6" hasBorders="false">
+					<layoutElement column="1" row="1" width="3">
+						<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="2" width="3">
+						<component type="input" name="costForNumber" field="costForNumber" reference="costForNumber">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="2">
+						<component type="gridLayout" name="costForNumberUnitGridLayout" hasBorders="false" columns="2" rows="1">
+                			<layoutElement column="1" row="1">
+								<component type="input" name="costForNumberUnit" persistent="false" reference="costForNumberUnit" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="3" width="3">
+						<component type="input" name="nominalCost" field="nominalCost" reference="nominalCost">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="3">
+						<component type="gridLayout" name="nominalCostCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+                			<layoutElement column="1" row="1">
+								<component type="input" name="nominalCostCurrency" persistent="false" reference="nominalCostCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="4" width="3">
+						<component type="input" name="lastPurchaseCost" field="lastPurchaseCost" reference="lastPurchaseCost">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="4">
+						<component type="gridLayout" name="lastPurchaseCostCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="input" name="lastPurchaseCostCurrency" persistent="false" reference="lastPurchaseCostCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="5" width="3">
+						<component type="input" name="averageCost" field="averageCost" reference="averageCost">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="5">
+						<component type="gridLayout" name="averageCostCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="input" name="averageCostCurrency" persistent="false" reference="averageCostCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="6" width="3">
+						<component type="input" name="costForOrder" field="costForOrder" reference="costForOrder">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="6">
+						<component type="gridLayout" name="costForOrderCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="input" name="costForOrderCurrency" persistent="false" reference="costForOrderCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+				</component>
+				
+				<option type="header" value="true" />
+				<option type="expression" value="" />
+			</component>
+		</windowTab>
+		 
+	</component>
+	
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillUnitFieldInOrder" />
+		<beforeRender
+			class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="fillCurrencyFieldsInOrder" />
+	</hooks>
+</view>

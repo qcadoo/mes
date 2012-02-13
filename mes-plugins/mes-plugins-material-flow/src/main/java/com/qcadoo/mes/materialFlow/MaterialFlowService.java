@@ -335,6 +335,9 @@ public class MaterialFlowService {
         DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
         Long id = transferDataDefinition.find().add(SearchRestrictions.eq(NUMBER_FIELD, number)).uniqueResult().getId();
+        if (id == null) {
+            return;
+        }
 
         Entity transferCopy = transferDataDefinition.get(id);
 
