@@ -400,25 +400,6 @@ public class TechnologyService {
         return copy;
     }
 
-    private List<Entity> copyProductComponents(final EntityList entities) {
-        List<Entity> copies = new ArrayList<Entity>();
-        for (Entity entity : entities) {
-            Entity copy = entity.copy();
-            copy.setId(null);
-            copy.setField(CONST_OPERATION_COMPONENT, null);
-            copies.add(copy);
-        }
-        return copies;
-    }
-
-    private List<Entity> copyOperationsChildren(final List<EntityTreeNode> entities, final Entity technology) {
-        List<Entity> copies = new ArrayList<Entity>();
-        for (EntityTreeNode entity : entities) {
-            copies.add(copyReferencedTechnologyOperations(entity, technology));
-        }
-        return copies;
-    }
-
     public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
         boolean isValid = true;
         if (CONST_OPERATION.equals(entity.getStringField(CONST_ENTITY_TYPE))) {

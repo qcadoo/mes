@@ -219,7 +219,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 productQuantities.put(productComponent, neededQty);
             }
 
-            operationRuns.put(operationComponent, new BigDecimal(1));
+            operationRuns.put(operationComponent, BigDecimal.ONE);
         }
     }
 
