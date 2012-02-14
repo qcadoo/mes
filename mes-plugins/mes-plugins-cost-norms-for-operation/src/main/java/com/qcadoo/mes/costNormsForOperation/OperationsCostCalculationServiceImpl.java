@@ -170,10 +170,17 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
 
         // TODO mici, proxy entity thing. I think we should tweak hashCode too.
-        techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperComp.getId());
+        // this thing is a b*** we gotta get back to it ASAP
 
-        int dur = realizationTimes.get(techOperComp);
+        Integer dur = realizationTimes.get(techOperComp);
+
+        // don't even look at this
+        if (dur == null) {
+            techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperComp.getId());
+            dur = realizationTimes.get(techOperComp);
+        }
+
         BigDecimal duration = BigDecimal.valueOf(dur);
 
         BigDecimal durationInHours = duration.divide(BigDecimal.valueOf(3600), numberService.getMathContext());
