@@ -531,6 +531,7 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity trackingRecord = dataDefinitionService.get("advancedGenealogy", "trackingRecord").create();
 
         trackingRecord.setField("entityType", values.get("entity_type"));
+        trackingRecord.setField("number", values.get("number"));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
         trackingRecord.setField("state", "01draft");
