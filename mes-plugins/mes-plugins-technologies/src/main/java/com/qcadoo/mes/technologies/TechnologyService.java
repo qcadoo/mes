@@ -302,7 +302,7 @@ public class TechnologyService {
 
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
                 product.getStringField(NAME_FIELD), product.getStringField(NUMBER),
-                cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH) + 1));
+                cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1)));
     }
 
     public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
@@ -341,16 +341,16 @@ public class TechnologyService {
 
         if (copy) {
             EntityTreeNode root = referencedTechnology.getTreeField(CONST_OPERATION_COMPONENTS).getRoot();
-
             Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField(CONST_TECHNOLOGY));
+
+            for (Entry<String, Object> entry : copiedRoot.getFields().entrySet()) {
+                if (!(entry.getKey().equals("id") || entry.getKey().equals("parent"))) {
+                    entity.setField(entry.getKey(), entry.getValue());
+                }
+            }
 
             entity.setField(CONST_ENTITY_TYPE, CONST_OPERATION);
             entity.setField(REFERENCE_TECHNOLOGY, null);
-            entity.setField(QUALITY_CONTROL_REQUIRED_FIELD, copiedRoot.getField(QUALITY_CONTROL_REQUIRED_FIELD));
-            entity.setField(CONST_OPERATION, copiedRoot.getField(CONST_OPERATION));
-            entity.setField(CHILDREN_FIELD, copiedRoot.getField(CHILDREN_FIELD));
-            entity.setField(CONST_OPERATION_COMP_PRODUCT_IN, copiedRoot.getField(CONST_OPERATION_COMP_PRODUCT_IN));
-            entity.setField(CONST_OPERATION_COMP_PRODUCT_OUT, copiedRoot.getField(CONST_OPERATION_COMP_PRODUCT_OUT));
         }
 
         return true;
@@ -377,36 +377,27 @@ public class TechnologyService {
         return false;
     }
 
-    private Entity copyReferencedTechnologyOperations(final EntityTreeNode node, final Entity technology) {
+    private Entity copyReferencedTechnologyOperations(final Entity node, final Entity technology) {
         Entity copy = node.copy();
+
         copy.setId(null);
         copy.setField(PARENT_FIELD, null);
         copy.setField(CONST_TECHNOLOGY, technology);
-        copy.setField(CHILDREN_FIELD, copyOperationsChildren(node.getChildren(), technology));
-        copy.setField(CONST_OPERATION_COMP_PRODUCT_IN,
-                copyProductComponents(copy.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN)));
-        copy.setField(CONST_OPERATION_COMP_PRODUCT_OUT,
-                copyProductComponents(copy.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT)));
+
+        for (Entry<String, Object> entry : node.getFields().entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof EntityList) {
+                EntityList entities = (EntityList) value;
+                List<Entity> copies = new ArrayList<Entity>();
+                for (Entity entity : entities) {
+                    copies.add(copyReferencedTechnologyOperations(entity, technology));
+                }
+
+                copy.setField(entry.getKey(), copies);
+            }
+        }
+
         return copy;
-    }
-
-    private List<Entity> copyProductComponents(final EntityList entities) {
-        List<Entity> copies = new ArrayList<Entity>();
-        for (Entity entity : entities) {
-            Entity copy = entity.copy();
-            copy.setId(null);
-            copy.setField(CONST_OPERATION_COMPONENT, null);
-            copies.add(copy);
-        }
-        return copies;
-    }
-
-    private List<Entity> copyOperationsChildren(final List<EntityTreeNode> entities, final Entity technology) {
-        List<Entity> copies = new ArrayList<Entity>();
-        for (EntityTreeNode entity : entities) {
-            copies.add(copyReferencedTechnologyOperations(entity, technology));
-        }
-        return copies;
     }
 
     public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {

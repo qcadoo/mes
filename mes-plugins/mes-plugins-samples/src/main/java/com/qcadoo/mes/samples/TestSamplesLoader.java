@@ -506,7 +506,7 @@ public class TestSamplesLoader extends SamplesLoader {
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
         validateEntity(order);
 
-        // TODO MICI: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
+        // TODO MASZ: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
         // if ("000001".equals(values.get("order_nr")) || "000002".equals(values.get("order_nr"))
         // ||"000003".equals(values.get("order_nr"))) {
         // order.setField("state", "02accepted");
@@ -537,6 +537,7 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity trackingRecord = dataDefinitionService.get("advancedGenealogy", "trackingRecord").create();
 
         trackingRecord.setField("entityType", values.get("entity_type"));
+        trackingRecord.setField("number", values.get("number"));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField("order", getOrderByNumber(values.get("order_no")));
         trackingRecord.setField("state", "01draft");
@@ -673,7 +674,7 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("technologyBatchRequired", false);
 
             // if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
-            // // TODO MICI: it looks like extended enum's don't work in samples, this is required by quality controls
+            // // TODO MASZ: it looks like extended enum's don't work in samples, this is required by quality controls
             // // technology.setField("qualityControlType", "04forOperation");
             // } else if (isEnabled("qualityControls")
             if (!(isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type")))

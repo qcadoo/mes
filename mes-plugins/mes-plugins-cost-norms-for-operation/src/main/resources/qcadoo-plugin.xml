@@ -208,7 +208,6 @@
 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 			method="copyCostValuesFromOperation" />
 
-
 		<!-- operation - instance of technology -->
 		
 		<model:model-hook model="orderOperationComponent"
