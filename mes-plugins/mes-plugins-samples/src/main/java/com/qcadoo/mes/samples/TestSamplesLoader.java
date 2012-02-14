@@ -157,6 +157,10 @@ public class TestSamplesLoader extends SamplesLoader {
             readDataFromXML(dataset, "transfer", locale);
             readDataFromXML(dataset, "stockCorrection", locale);
         }
+
+        if (isEnabled("qualityControls")) {
+            readDataFromXML(dataset, "qualityControls", locale);
+        }
         if (isEnabled("advancedGenealogy")) {
             readDataFromXML(dataset, "batches", locale);
             if (isEnabled("advancedGenealogyForOrders")) {
@@ -221,6 +225,8 @@ public class TestSamplesLoader extends SamplesLoader {
             addTrackingRecord(values);
         } else if ("genealogyTables".equals(type)) {
             addGenealogyTables(values);
+        } else if ("qualityControls".equals(type)) {
+            addQualityControl(values);
         }
     }
 
@@ -882,6 +888,41 @@ public class TestSamplesLoader extends SamplesLoader {
 
         workPlan = workPlan.getDataDefinition().save(workPlan);
         validateEntity(workPlan);
+    }
+
+    void addQualityControl(final Map<String, String> values) {
+
+        Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.QUALITYCONTROL_PLUGIN_IDENTIFIER,
+                SamplesConstants.QUALITYCONTROL_MODEL_QUALITYCONTROL).create();
+
+        if ("qualityControlsForUnit".equals(values.get("qualitycontroltype"))) {
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            qualitycontrol.setField("comment", values.get("comment"));
+            qualitycontrol.setField("closed", values.get("closed"));
+            qualitycontrol.setField("controlledQuantity", values.get("controlledquantity"));
+            qualitycontrol.setField("takenForControlQuantity", values.get("takenforcontrolquantity"));
+            qualitycontrol.setField("rejectedQuantity", values.get("rejectedquantity"));
+            qualitycontrol.setField("acceptedDefectsQuantity", values.get("accepteddefectsquantity"));
+            // qualitycontrol.setField("staff", values.get("staff"));
+            // qualitycontrol.setField("date", values.get("date"));
+            // qualitycontrol.setField("controlInstruction", values.get("controlinstruction"));
+
+        } else if ("qualityControlsForOrder".equals(values.get("qualitycontroltype"))) {
+
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            // qualitycontrol.setField("controlResult", values.get("controlresult"));
+
+        } else if ("qualityControlsForOperation".equals(values.get("qualitycontroltype"))) {
+
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            // qualitycontrol.setField("operationNumber", getOperationByNumber("operationnumber"));
+        }
+
+        qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
+        validateEntity(qualitycontrol);
     }
 
     private Entity getRandomStaff() {
