@@ -49,7 +49,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -59,7 +58,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -73,9 +71,6 @@ public class ProductionRecordService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Autowired
     private NumberService numberService;
@@ -301,13 +296,8 @@ public class ProductionRecordService {
     }
 
     public final void fillShiftField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
         FieldComponent staffLookup = getFieldComponent(view, "staff");
         FieldComponent shiftLookup = getFieldComponent(view, "shift");
-
-        if (form.getEntityId() == null) {
-            return;
-        }
 
         if (staffLookup.getFieldValue() == null) {
             shiftLookup.setFieldValue(null);
@@ -335,13 +325,8 @@ public class ProductionRecordService {
     }
 
     public final void fillDivisionField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
         FieldComponent workstationTypeLookup = getFieldComponent(view, "workstationType");
         FieldComponent divisionLookup = getFieldComponent(view, "division");
-
-        if (form.getEntityId() == null) {
-            return;
-        }
 
         if (workstationTypeLookup.getFieldValue() == null) {
             divisionLookup.setFieldValue(null);
