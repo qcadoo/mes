@@ -41,7 +41,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class BasicProductionRecordChangeListener extends RecordStateListener {
 
-    private static final String PRODUCT_FIELD = "product";
+    private static final String PRODUCT_L = "product";
 
     private static final String ORDER_FIELD = "order";
 
@@ -62,12 +62,12 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
     private void setOrderDoneQuantity(final Entity productionRecord) {
         final Entity order = productionRecord.getBelongsToField(ORDER_FIELD);
-        final Entity product = order.getBelongsToField(PRODUCT_FIELD);
+        final Entity product = order.getBelongsToField(PRODUCT_L);
 
         final List<Entity> productionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).add(SearchRestrictions.belongsTo(PRODUCT_FIELD, product))
+                .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).add(SearchRestrictions.belongsTo(PRODUCT_L, product))
                 .list().getEntities();
 
         Preconditions.checkArgument(productionCountings.size() == 1,
@@ -90,16 +90,15 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         return super.onDeclined(productionRecord, prevState);
     }
 
-    private Entity getProductCount(final Entity productIn, final List<Entity> productionCountings) {
-        Entity product = productIn.getBelongsToField(PRODUCT_FIELD);
-
-        product = product.getDataDefinition().get(product.getId());
+    private Entity getProductionCounting(final Entity productIn, final List<Entity> productionCountings) {
+        Entity product = productIn.getBelongsToField(PRODUCT_L);
 
         for (Entity productionCounting : productionCountings) {
-            if (productionCounting.getBelongsToField(PRODUCT_FIELD).getId().equals(product.getId())) {
+            if (productionCounting.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
                 return productionCounting;
             }
         }
+
         throw new IllegalStateException("No material requirement found for product");
     }
 
@@ -165,7 +164,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         final List<Entity> productsOut = productionRecord.getHasManyField("recordOperationProductOutComponents");
 
         for (Entity productIn : productsIn) {
-            Entity productionCounting = getProductCount(productIn, productionCountings);
+            Entity productionCounting = getProductionCounting(productIn, productionCountings);
             final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
             final BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
@@ -174,7 +173,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         }
 
         for (Entity productOut : productsOut) {
-            Entity productionCounting = getProductCount(productOut, productionCountings);
+            Entity productionCounting = getProductionCounting(productOut, productionCountings);
             final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
             final BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
