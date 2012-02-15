@@ -26,6 +26,7 @@ package com.qcadoo.mes.costCalculation.print;
 import static com.google.common.collect.Lists.newLinkedList;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -236,7 +237,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 tabInText + translationService.translate("costCalculation.costCalculation.productionCostMargin.label", locale)
                         + ":",
                 (reportData == null ? "" : numberService.format(reportData)
-                        + (reportData2 == null ? "" : " ("
+                        + (reportData2 == null ? "" : " % ("
                                 + translationService.translate("costCalculation.costCalculation.productionCostMarginValue.label",
                                         locale) + ": " + reportData2.toString() + " "
                                 + currencyService.getCurrencyAlphabeticCode() + ")")));
@@ -247,7 +248,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 tabInText + translationService.translate("costCalculation.costCalculation.materialCostMargin.label", locale)
                         + ":",
                 (reportData == null ? "" : numberService.format(reportData)
-                        + (reportData2 == null ? "" : " ("
+                        + (reportData2 == null ? "" : " % ("
                                 + translationService.translate("costCalculation.costCalculation.materialCostMarginValue.label",
                                         locale) + ": " + reportData2.toString() + " "
                                 + currencyService.getCurrencyAlphabeticCode() + ")")));
@@ -318,13 +319,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTable.addCell(new Phrase(numberService.format(costPerUnit), FontUtils.getDejavuRegular9Dark()));
             BigDecimal costs = product.getValue().multiply(costPerUnit, numberService.getMathContext());
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
-            Object reportData = costCalculation.getField("materialCostMargin");
-            if (reportData == null) {
+            BigDecimal margin = (BigDecimal) costCalculation.getField("materialCostMargin");
+            if (margin == null) {
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
             } else {
-                materialsTable.addCell(new Phrase(numberService.format(reportData), FontUtils.getDejavuRegular9Dark()));
-                BigDecimal totalCosts = costs.add((BigDecimal) reportData, numberService.getMathContext());
+                MathContext mc = numberService.getMathContext();
+                BigDecimal overhead = costs.multiply(margin.divide(new BigDecimal(100), mc), mc);
+                materialsTable.addCell(new Phrase(numberService.format(overhead), FontUtils.getDejavuRegular9Dark()));
+                BigDecimal totalCosts = costs.add(overhead, mc);
                 materialsTable.addCell(new Phrase(numberService.format(totalCosts), FontUtils.getDejavuRegular9Dark()));
             }
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
