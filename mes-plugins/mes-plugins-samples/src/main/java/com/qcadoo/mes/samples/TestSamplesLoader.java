@@ -157,6 +157,15 @@ public class TestSamplesLoader extends SamplesLoader {
             readDataFromXML(dataset, "transfer", locale);
             readDataFromXML(dataset, "stockCorrection", locale);
         }
+
+        if (isEnabled("qualityControls")) {
+            readDataFromXML(dataset, "qualityControls", locale);
+        }
+
+        // if (isEnabled("productionCounting")) {
+        // readDataFromXML(dataset, "productionBalance", locale);
+        // }
+
         if (isEnabled("advancedGenealogy")) {
             readDataFromXML(dataset, "batches", locale);
             if (isEnabled("advancedGenealogyForOrders")) {
@@ -221,6 +230,10 @@ public class TestSamplesLoader extends SamplesLoader {
             addTrackingRecord(values);
         } else if ("genealogyTables".equals(type)) {
             addGenealogyTables(values);
+        } else if ("qualityControls".equals(type)) {
+            addQualityControl(values);
+        } else if ("productionBalance".equals(type)) {
+            // addProductionBalance(values);
         }
     }
 
@@ -452,7 +465,7 @@ public class TestSamplesLoader extends SamplesLoader {
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
         order.setField("trackingRecordTreatment", "01duringProduction");
-        order.setField(ORDER_STATE, "01pending");
+        order.setField(ORDER_STATE, values.get("status"));
 
         Entity product = getProductByNumber(values.get(PRODUCT_NUMBER));
 
@@ -500,7 +513,7 @@ public class TestSamplesLoader extends SamplesLoader {
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
         validateEntity(order);
 
-        // TODO MASZ: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
+        // TODO MACS: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
         // if ("000001".equals(values.get("order_nr")) || "000002".equals(values.get("order_nr"))
         // ||"000003".equals(values.get("order_nr"))) {
         // order.setField("state", "02accepted");
@@ -668,7 +681,7 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("technologyBatchRequired", false);
 
             // if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
-            // // TODO MASZ: it looks like extended enum's don't work in samples, this is required by quality controls
+            // // TODO MACS: it looks like extended enum's don't work in samples, this is required by quality controls
             // // technology.setField("qualityControlType", "04forOperation");
             // } else if (isEnabled("qualityControls")
             if (!(isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type")))
@@ -883,6 +896,72 @@ public class TestSamplesLoader extends SamplesLoader {
 
         workPlan = workPlan.getDataDefinition().save(workPlan);
         validateEntity(workPlan);
+    }
+
+    void addProductionBalance(final Map<String, String> values) {
+        Entity productionbalance = dataDefinitionService.get(SamplesConstants.PRODUCTIONBALANCE_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE).create();
+        productionbalance.setField("generated", values.get("generated"));
+        productionbalance.setField("order", getOrderByNumber(values.get("order")));
+        productionbalance.setField("product", getProductByNumber(values.get("product")));
+        productionbalance.setField("name", values.get("name"));
+        productionbalance.setField("date", values.get("date"));
+        productionbalance.setField("worker", values.get("worker"));
+        productionbalance.setField("recordsNumber", values.get("recordsnumber"));
+        productionbalance.setField("description", values.get("description"));
+        productionbalance.setField("fileName", values.get("filename"));
+
+        productionbalance = productionbalance.getDataDefinition().save(productionbalance);
+        validateEntity(productionbalance);
+
+    }
+
+    void addQualityControl(final Map<String, String> values) {
+
+        Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.QUALITYCONTROL_PLUGIN_IDENTIFIER,
+                SamplesConstants.QUALITYCONTROL_MODEL_QUALITYCONTROL).create();
+
+        if ("qualityControlsForUnit".equals(values.get("qualitycontroltype"))) {
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            qualitycontrol.setField("comment", values.get("comment"));
+            qualitycontrol.setField("closed", values.get("closed"));
+            qualitycontrol.setField("controlledQuantity", values.get("controlledquantity"));
+            qualitycontrol.setField("takenForControlQuantity", values.get("takenforcontrolquantity"));
+            qualitycontrol.setField("rejectedQuantity", values.get("rejectedquantity"));
+            qualitycontrol.setField("acceptedDefectsQuantity", values.get("accepteddefectsquantity"));
+            qualitycontrol.setField("staff", values.get("staff"));
+            qualitycontrol.setField("date", values.get("date"));
+            qualitycontrol.setField("controlInstruction", values.get("controlinstruction"));
+            qualitycontrol.setField("qualityControlType", values.get("qualitycontroltype"));
+
+        } else if ("qualityControlsForOrder".equals(values.get("qualitycontroltype"))) {
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            qualitycontrol.setField("ControlResult", values.get("controlresult"));
+            qualitycontrol.setField("comment", values.get("comment"));
+            qualitycontrol.setField("closed", values.get("closed"));
+            qualitycontrol.setField("controlInstruction", values.get("controlinstruction"));
+            qualitycontrol.setField("staff", values.get("staff"));
+            qualitycontrol.setField("date", values.get("date"));
+            qualitycontrol.setField("qualityControlType", values.get("qualitycontroltype"));
+
+        } else if ("qualityControlsForOperation".equals(values.get("qualitycontroltype"))) {
+            qualitycontrol.setField("number", values.get("number"));
+            qualitycontrol.setField("order", getOrderByNumber(values.get("order")));
+            qualitycontrol.setField("name", values.get("name"));
+            qualitycontrol.setField("operation", getOperationByNumber(values.get("operation")));
+            qualitycontrol.setField("ControlResult", values.get("controlresult"));
+            qualitycontrol.setField("comment", values.get("comment"));
+            qualitycontrol.setField("closed", values.get("closed"));
+            qualitycontrol.setField("staff", values.get("staff"));
+            qualitycontrol.setField("date", values.get("date"));
+            qualitycontrol.setField("qualityControlType", values.get("qualitycontroltype"));
+
+        }
+
+        qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
+        validateEntity(qualitycontrol);
     }
 
     private Entity getRandomStaff() {

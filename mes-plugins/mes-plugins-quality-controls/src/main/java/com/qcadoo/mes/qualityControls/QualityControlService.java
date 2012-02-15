@@ -596,7 +596,8 @@ public final class QualityControlService {
     }
 
     public boolean setStaffAndDateIfClosed(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField(CLOSED_LITERAL)) {
+
+        if (entity.getBooleanField(CLOSED_LITERAL)) {
             entity.setField(DATE_LITERAL, new Date());
             entity.setField(STAFF_LITERAL, securityService.getCurrentUserName());
         }
