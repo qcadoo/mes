@@ -231,10 +231,6 @@ public class CostNormsForProductService {
     }
 
     public void fillOrderOperationProductsInComponents(final DataDefinition orderDD, final Entity order) {
-        if (order.getId() == null) {
-            return;
-        }
-
         Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
 
         if (!shouldFill(order, technology)) {
@@ -296,7 +292,7 @@ public class CostNormsForProductService {
     }
 
     private boolean hasOrderOperationProductInComponents(final Entity order) {
-        return (order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) == null);
+        return (order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null);
     }
 
     private boolean hasTechnologyChanged(final Entity order) {
