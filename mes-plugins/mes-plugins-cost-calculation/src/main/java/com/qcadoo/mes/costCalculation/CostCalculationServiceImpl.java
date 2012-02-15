@@ -98,9 +98,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
         costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
-        costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
         costCalculation.setField("materialCostMarginValue", materialCostMarginValue);
         costCalculation.setField("additionalOverheadValue", additionalOverhead);
+
         costCalculation.setField("totalOverhead", totalOverhead);
         costCalculation.setField("totalTechnicalProductionCosts", totalTechnicalProductionCosts);
         costCalculation.setField("totalCosts", totalCosts);
