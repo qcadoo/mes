@@ -31,14 +31,13 @@
 		<string name="number" unique="true" >
 			<validatesLength max="255"/> 
 		</string>
-		<belongsTo name="order" model="order" plugin="orders"
-			required="true" />
-		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
-			plugin="productionScheduling" />
-		<belongsTo name="shift" model="shift" plugin="basic"
-			required="true" />
+		<belongsTo name="order" model="order" plugin="orders" required="true" />
+		<belongsTo name="orderOperationComponent" model="orderOperationComponent" plugin="productionScheduling" />
+		<belongsTo name="shift" model="shift" plugin="basic"/>
+		
 		<enum name="state" values="01draft,02accepted,03declined"
 			default="01draft" required="true" />
+			
 		<hasMany name="recordOperationProductInComponents" joinField="productionRecord"
 			model="recordOperationProductInComponent" cascade="delete" />
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
