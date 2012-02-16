@@ -270,7 +270,7 @@ public class CostNormsForProductService {
 
     private boolean shouldFill(final Entity order, final Entity technology) {
         return (technology != null) && (technology.getId() != null)
-                && (hasTechnologyChanged(order) || !hasOrderOperationProductInComponents(order));
+                && (hasTechnologyChanged(order, technology) || !hasOrderOperationProductInComponents(order));
     }
 
     private Map<Entity, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
@@ -295,14 +295,15 @@ public class CostNormsForProductService {
         return (order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null);
     }
 
-    private boolean hasTechnologyChanged(final Entity order) {
+    private boolean hasTechnologyChanged(final Entity order, final Entity technology) {
         Entity existingOrder = getExistingOrder(order);
         if (existingOrder == null) {
             return false;
         }
-
-        Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
         Entity existingOrderTechnology = existingOrder.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
+        if (existingOrderTechnology == null) {
+            return false;
+        }
         return !existingOrderTechnology.equals(technology);
     }
 

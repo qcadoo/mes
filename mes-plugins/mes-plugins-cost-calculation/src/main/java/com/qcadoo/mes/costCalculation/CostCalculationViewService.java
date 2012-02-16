@@ -64,6 +64,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -136,6 +137,9 @@ public class CostCalculationViewService {
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
             technology = order.getBelongsToField(TECHNOLOGY);
+            if (technology == null) {
+                return;
+            }
         } else {
             order = null;
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -146,6 +150,10 @@ public class CostCalculationViewService {
     }
 
     private void applyValuesToFields(final ViewDefinitionState viewDefinitionState, final Entity technology, final Entity order) {
+        if (technology == null) {
+            clearValueFromField(viewDefinitionState);
+            return;
+        }
         Boolean cameFromOrder = false;
         Boolean cameFromTechnology = false;
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY));
@@ -178,6 +186,14 @@ public class CostCalculationViewService {
         componentsMap.get(QUANTITY).setEnabled(!cameFromOrder);
         componentsMap.get(PRODUCT).setFieldValue(technology.getBelongsToField(PRODUCT).getId());
         componentsMap.get(PRODUCT).setEnabled(false);
+    }
+
+    private void clearValueFromField(final ViewDefinitionState view) {
+        view.getComponentByReference(ORDER).addMessage("costCalculation.messages.lackOfTechnology", MessageType.FAILURE);
+        view.getComponentByReference(DEFAULT_TECHNOLOGY).setFieldValue(EMPTY);
+        view.getComponentByReference(TECHNOLOGY).setFieldValue(EMPTY);
+        view.getComponentByReference(QUANTITY).setFieldValue(EMPTY);
+        view.getComponentByReference(PRODUCT).setFieldValue(EMPTY);
     }
 
     private void generateNumber(final ViewDefinitionState viewDefinitionState) {
@@ -262,6 +278,7 @@ public class CostCalculationViewService {
             return;
         }
         Entity technology = order.getBelongsToField(TECHNOLOGY);
+
         applyValuesToFields(viewDefinitionState, technology, order);
     }
 
