@@ -53,7 +53,6 @@ import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationC
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -66,8 +65,6 @@ import com.qcadoo.model.api.NumberService;
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
     private static final String QUANTITY_FIELD = "quantity";
-
-    private static final String PRODUCT_FIELD = "product";
 
     private static final String TECHNOLOGY_FIELD = "technology";
 
@@ -87,9 +84,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -130,7 +124,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Entity technology = costCalculation.getBelongsToField("technology");
         Entity order = costCalculation.getBelongsToField("order");
         if (order != null) {
-            technology = order;
+            Entity technologyFromOrder = order.getBelongsToField("technology");
+            technology = dataDefinitionService.get(PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(
+                    technologyFromOrder.getId());
         }
 
         if (mode == PIECEWORK) {

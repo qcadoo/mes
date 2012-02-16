@@ -46,7 +46,6 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
@@ -92,12 +91,6 @@ public class OperationsCostCalculationServiceTest {
         EntityTree entityTree = mock(EntityTree.class);
         when(entityTree.iterator()).thenReturn(list.iterator());
         return entityTree;
-    }
-
-    private static EntityList mockEntityListIterator(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
-        return entityList;
     }
 
     @Before
