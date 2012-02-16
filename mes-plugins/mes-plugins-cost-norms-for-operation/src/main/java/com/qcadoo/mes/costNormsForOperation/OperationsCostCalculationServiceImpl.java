@@ -125,8 +125,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Entity order = costCalculation.getBelongsToField("order");
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField("technology");
-            technology = dataDefinitionService.get(PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(
-                    technologyFromOrder.getId());
+            technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
 
         if (mode == PIECEWORK) {
