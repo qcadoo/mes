@@ -62,7 +62,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         Entity technology = costCalculation.getBelongsToField("technology");
 
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                BigDecimal.ONE, true);
+                quantity, true);
 
         for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantity.getKey();
@@ -71,11 +71,11 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
             BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
-            result = result.add(costPerUnit.multiply(productQuantity.getValue(), numberService.getMathContext()),
-                    numberService.getMathContext());
+            BigDecimal thisProductsCost = costPerUnit.multiply(productQuantity.getValue(), numberService.getMathContext());
+
+            result = result.add(thisProductsCost, numberService.getMathContext());
         }
 
-        result = result.multiply(quantity, numberService.getMathContext());
         costCalculation.setField("totalMaterialCosts", numberService.setScale(result));
     }
 

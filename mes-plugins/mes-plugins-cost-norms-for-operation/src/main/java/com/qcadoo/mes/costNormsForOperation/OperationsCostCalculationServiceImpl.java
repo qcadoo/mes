@@ -185,8 +185,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         // don't even look at this
         if (dur == null) {
-            techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperComp.getId());
+            techOperComp = techOperComp.getDataDefinition().get(techOperComp.getId());
             dur = realizationTimes.get(techOperComp);
         }
 

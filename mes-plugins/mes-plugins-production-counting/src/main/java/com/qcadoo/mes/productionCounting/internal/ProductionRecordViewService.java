@@ -59,6 +59,10 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ProductionRecordViewService {
 
+    private static final String LAST_RECORD = "lastRecord";
+
+    private static final String SHIFT = "shift";
+
     private static final String OPTION_01BASIC = "01basic";
 
     private static final String COMPONENT_ALLOW_TO_CLOSE = "allowToClose";
@@ -252,7 +256,7 @@ public class ProductionRecordViewService {
         Boolean autoCloseOrder = order.getBooleanField(FIELD_AUTO_CLOSE_ORDER);
         String orderState = order.getStringField(COMPONENT_STATE);
         if (autoCloseOrder
-                && "1".equals(view.getComponentByReference("lastRecord").getFieldValue())
+                && "1".equals(view.getComponentByReference(LAST_RECORD).getFieldValue())
                 && view.getComponentByReference(COMPONENT_STATE).getFieldValue()
                         .equals(ProductionCountingStates.ACCEPTED.getStringValue()) && "03inProgress".equals(orderState)) {
             order.setField(COMPONENT_STATE, CLOSED_ORDER);
@@ -311,7 +315,7 @@ public class ProductionRecordViewService {
         if (order == null) {
             return;
         }
-        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference("lastRecord");
+        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(LAST_RECORD);
         if (order.getField(FIELD_JUST_ONE) != null && (Boolean) order.getField(FIELD_JUST_ONE)) {
             lastRecord.setFieldValue(true);
             lastRecord.setEnabled(false);
@@ -463,7 +467,7 @@ public class ProductionRecordViewService {
             return;
         }
 
-        List<String> components = Arrays.asList("shift", COMPONENT_MACHINE_TIME, COMPONENT_LABOR_TIME, "lastRecord");
+        List<String> components = Arrays.asList(SHIFT, COMPONENT_MACHINE_TIME, COMPONENT_LABOR_TIME, LAST_RECORD);
         for (String componentName : components) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
             if (OPTION_01BASIC.equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
