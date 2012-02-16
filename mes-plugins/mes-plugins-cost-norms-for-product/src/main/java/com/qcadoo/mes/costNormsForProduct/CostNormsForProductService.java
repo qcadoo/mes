@@ -167,7 +167,7 @@ public class CostNormsForProductService {
 
         Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
 
-        if (productQuantities != null) {
+        if (!productQuantities.isEmpty()) {
             for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
                 Entity product = productQuantity.getKey();
                 BigDecimal quantity = productQuantity.getValue();
@@ -239,7 +239,7 @@ public class CostNormsForProductService {
 
         Map<Entity, BigDecimal> productQuantities = getProductQuantitiesFromTechnology(technologyId);
 
-        if (productQuantities != null) {
+        if (!productQuantities.isEmpty()) {
             for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
                 Entity product = productQuantity.getKey();
 
@@ -275,9 +275,7 @@ public class CostNormsForProductService {
 
         Entity operationComponentRoot = technology.getTreeField(TechnologiesConstants.OPERATION_COMPONENTS).getRoot();
 
-        if (operationComponentRoot == null) {
-            return null;
-        } else {
+        if (operationComponentRoot != null) {
             BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
             Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
@@ -285,6 +283,8 @@ public class CostNormsForProductService {
 
             return productQuantities;
         }
+
+        return Maps.newHashMap();
     }
 
     private boolean hasOrderOperationProductInComponents(final Entity order) {
