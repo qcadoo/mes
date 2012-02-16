@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -64,9 +63,6 @@ public class TimeTechnologyInOrderService {
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -120,9 +116,7 @@ public class TimeTechnologyInOrderService {
                         viewDefinitionState.getLocale()));
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
-            state.addMessage(
-                    translationService.translate("orders.validate.global.error.RealizationTimeIsToLong",
-                            viewDefinitionState.getLocale()), MessageType.FAILURE);
+            state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
             realizationTime.setFieldValue(null);
             stopTime.setFieldValue(null);
         } else {

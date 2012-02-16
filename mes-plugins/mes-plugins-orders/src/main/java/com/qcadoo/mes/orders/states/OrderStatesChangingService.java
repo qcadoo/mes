@@ -31,6 +31,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.model.api.Entity;
@@ -39,7 +40,7 @@ import com.qcadoo.model.api.Entity;
 public class OrderStatesChangingService {
 
     @Autowired
-    OrderStateValidationService orderStateValidationService;
+    private OrderStateValidationService orderStateValidationService;
 
     private final Set<OrderStateListener> listeners = Sets.newHashSet();
 
@@ -75,83 +76,84 @@ public class OrderStatesChangingService {
             return performAbandoned(newEntity, oldEntity);
         }
 
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performAccepted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationAccepted(newEntity);
-        if (errorMessages.size() > 0) {
+        if (!errorMessages.isEmpty()) {
             return errorMessages;
         }
+
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onAccepted(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performInProgress(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
-        if (errorMessages.size() > 0) {
+        if (!errorMessages.isEmpty()) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onInProgress(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performCompleted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationCompleted(newEntity);
-        if (errorMessages.size() > 0) {
+        if (!errorMessages.isEmpty()) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onCompleted(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performInterrupted(final Entity newEntity, final Entity oldEntity) {
         List<ChangeOrderStateMessage> errorMessages = orderStateValidationService.validationInProgress(newEntity);
-        if (errorMessages.size() > 0) {
+        if (!errorMessages.isEmpty()) {
             return errorMessages;
         }
         for (OrderStateListener listener : listeners) {
             errorMessages = listener.onInterrupted(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performDeclined(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
             List<ChangeOrderStateMessage> errorMessages = listener.onDeclined(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
     List<ChangeOrderStateMessage> performAbandoned(final Entity newEntity, final Entity oldEntity) {
         for (OrderStateListener listener : listeners) {
             List<ChangeOrderStateMessage> errorMessages = listener.onAbandoned(newEntity);
-            if (errorMessages != null && errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 return errorMessages;
             }
         }
-        return null;
+        return Lists.newArrayList();
     }
 
 }

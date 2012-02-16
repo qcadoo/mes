@@ -30,7 +30,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
@@ -57,9 +56,6 @@ public class ProductionCountingViewService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private TranslationService translationService;
-
     public void fillProductWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -82,9 +78,9 @@ public class ProductionCountingViewService {
                 || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
             viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
             viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(translationService.translate(
+            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
-                    viewDefinitionState.getLocale()), ComponentState.MessageType.FAILURE);
+                    ComponentState.MessageType.FAILURE);
             return;
         }
 

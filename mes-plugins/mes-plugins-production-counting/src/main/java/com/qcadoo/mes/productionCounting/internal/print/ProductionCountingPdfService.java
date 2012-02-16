@@ -79,13 +79,13 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     private static final String FIELD_ORDER = "order";
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    SecurityService securityService;
+    private SecurityService securityService;
 
     @Autowired
-    TimeConverterService timeConverterService;
+    private TimeConverterService timeConverterService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -150,8 +150,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         final PdfPTable leftPanel = pdfHelper.createPanelTable(1);
 
         addTableCellAsTable(leftPanel, translationService.translate("productionCounting.productionCounting.report.title", locale)
-                + ":", productionCounting.getId().toString(), null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(),
-                null);
+                + ":", productionCounting.getId().toString(), null, FontUtils.getDejavuBold9Dark(),
+                FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.order", locale),
                 productionCounting.getBelongsToField(FIELD_ORDER).getStringField(FIELD_NAME), null,
@@ -186,7 +186,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                 + " "
                                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField(
                                         "registerQuantityInProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
-                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
+                                .getDejavuBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
                         TAB_SPACE_LITERAL
@@ -195,7 +196,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                                 + " "
                                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField(
                                         "registerQuantityOutProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
-                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
+                                .getDejavuBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
                         TAB_SPACE_LITERAL
@@ -209,20 +211,20 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 + translationService.translate("productionCounting.productionBalance.report.panel.justOne", locale)
                 + " "
                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("justOne") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
-                .getDejavuBold9Dark()));
+                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
+                FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
                 + translationService.translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
                 + " "
                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("allowToClose") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
-                .getDejavuBold9Dark()));
+                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
+                FontUtils.getDejavuBold9Dark()));
         rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
                 + translationService.translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
                 + " "
                 + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("autoCloseOrder") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
-                .getDejavuBold9Dark()));
+                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
+                FontUtils.getDejavuBold9Dark()));
 
         return rightPanel;
     }
@@ -335,12 +337,12 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 if (productIn.getField(FIELD_USED_QUANTITY) == null) {
                     inputProductsTable.addCell(new Phrase(NOT_AVAILABLE, FontUtils.getDejavuRegular9Dark()));
                 } else {
-                    inputProductsTable.addCell(new Phrase(numberService.format(productIn.getField(FIELD_USED_QUANTITY)), FontUtils
-                            .getDejavuRegular9Dark()));
+                    inputProductsTable.addCell(new Phrase(numberService.format(productIn.getField(FIELD_USED_QUANTITY)),
+                            FontUtils.getDejavuRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField("unit"), FontUtils
-                        .getDejavuRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField("unit"),
+                        FontUtils.getDejavuRegular9Dark()));
             }
         }
 

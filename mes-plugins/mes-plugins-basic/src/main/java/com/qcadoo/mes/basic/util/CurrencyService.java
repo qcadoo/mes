@@ -35,7 +35,7 @@ import com.qcadoo.model.api.Entity;
 public class CurrencyService {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     public Entity getCurrentCurrency() {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);

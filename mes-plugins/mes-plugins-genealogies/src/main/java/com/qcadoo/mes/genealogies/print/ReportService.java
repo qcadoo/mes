@@ -28,10 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -44,9 +42,6 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class ReportService {
-
-    @Autowired
-    private TranslationService translationService;
 
     public void changeProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
@@ -92,17 +87,13 @@ public class ReportService {
         GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
         if (state instanceof FormComponent) {
             if ((batchState == null) || (batchState.getFieldValue() == null)) {
-                state.addMessage(
-                        translationService.translate("genealogies.genealogyForProduct.report.noBatch",
-                                viewDefinitionState.getLocale()), MessageType.FAILURE);
+                state.addMessage("genealogies.genealogyForProduct.report.noBatch", MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo("/genealogies/genealogyForProduct.pdf?value=" + batchState.getFieldValue(), true,
                         false);
             }
         } else {
-            state.addMessage(
-                    translationService.translate("genealogies.genealogyForProduct.report.noBatch",
-                            viewDefinitionState.getLocale()), MessageType.FAILURE);
+            state.addMessage("genealogies.genealogyForProduct.report.noBatch", MessageType.FAILURE);
         }
     }
 }

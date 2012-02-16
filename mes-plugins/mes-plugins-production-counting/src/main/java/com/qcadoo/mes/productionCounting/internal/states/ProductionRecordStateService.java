@@ -93,7 +93,7 @@ public class ProductionRecordStateService {
             errorMessages.addAll(savedRecord.getGlobalErrors());
 
             for (ErrorMessage message : errorMessages) {
-                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO);
+                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.INFO, message.getVars());
             }
         }
 

@@ -50,7 +50,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
@@ -88,9 +87,6 @@ public class CostCalculationViewService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private NumberService numberService;
@@ -306,10 +302,7 @@ public class CostCalculationViewService {
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity costCalculation = getEntityFromForm(view);
         if (costCalculation.getId() == null) {
-            view.getComponentByReference(FORM)
-                    .addMessage(
-                            translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
-                                    view.getLocale()), FAILURE);
+            view.getComponentByReference(FORM).addMessage("costCalculation.messages.failure.calculationOnUnsavedEntity", FAILURE);
             return;
         }
         attachBelongsToFields(costCalculation);
@@ -317,8 +310,7 @@ public class CostCalculationViewService {
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
         fillFields(view, costCalculation);
         costCalculationReportService.generateCostCalculationReport(view, componentState, args);
-        view.getComponentByReference(FORM).addMessage(
-                translationService.translate("costCalculation.messages.success.calculationComplete", view.getLocale()), SUCCESS);
+        view.getComponentByReference(FORM).addMessage("costCalculation.messages.success.calculationComplete", SUCCESS);
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {

@@ -30,13 +30,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
@@ -49,6 +47,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -77,9 +76,6 @@ public class MaterialRequirementService {
 
     @Autowired
     private OrderReportService orderReportService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private FileService fileService;
@@ -134,20 +130,16 @@ public class MaterialRequirementService {
                     MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT).get((Long) state.getFieldValue());
 
             if (materialRequirement == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
-                String message = translationService.translate(
+                state.addMessage(
                         "materialRequirements.materialRequirementDetails.window.materialRequirement.documentsWasGenerated",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                        MessageType.FAILURE);
                 return;
             } else if (materialRequirement.getManyToManyField("orders").isEmpty()) {
-                String message = translationService.translate(
-                        "materialRequirements.materialRequirement.window.materialRequirement.missingAssosiatedOrders",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("materialRequirements.materialRequirement.window.materialRequirement.missingAssosiatedOrders",
+                        MessageType.FAILURE);
                 return;
             }
 
@@ -207,11 +199,8 @@ public class MaterialRequirementService {
 
     private void generateMaterialReqDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException {
-        Entity materialRequirementWithFileName = fileService.updateReportFileName(
-                materialRequirement,
-                "date",
-                translationService.translate("materialRequirements.materialRequirement.report.fileName",
-                        LocaleContextHolder.getLocale()));
+        Entity materialRequirementWithFileName = fileService.updateReportFileName(materialRequirement, "date",
+                "materialRequirements.materialRequirement.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
@@ -226,12 +215,10 @@ public class MaterialRequirementService {
         OrderReportService.OrderValidator orderValidator = new OrderReportService.OrderValidator() {
 
             @Override
-            public String validateOrder(final Entity order) {
+            public ErrorMessage validateOrder(final Entity order) {
                 if (order.getField("technology") == null) {
-                    return order.getField("number")
-                            + ": "
-                            + translationService.translate("orders.validate.global.error.orderMustHaveTechnology",
-                                    state.getLocale());
+                    return new ErrorMessage("orders.validate.global.error.orderMustHaveTechnology",
+                            order.getStringField("number"));
                 }
                 return null;
             }

@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,9 +50,6 @@ public class CostNormsForOperationService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private CurrencyService currencyService;
 
     /* ****** VIEW EVENT LISTENERS ******* */
@@ -63,9 +59,8 @@ public class CostNormsForOperationService {
         ComponentState operationLookup = view.getComponentByReference(OPERATION_FIELD);
         if (operationLookup.getFieldValue() == null) {
             if (!OPERATION_FIELD.equals(operationLookupState.getName())) {
-                view.getComponentByReference("form").addMessage(
-                        translationService.translate("costNormsForOperation.messages.info.missingOperationReference",
-                                view.getLocale()), INFO);
+                view.getComponentByReference("form").addMessage("costNormsForOperation.messages.info.missingOperationReference",
+                        INFO);
             }
             return;
         }

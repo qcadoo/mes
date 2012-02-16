@@ -25,7 +25,6 @@ package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -53,9 +52,6 @@ public class OrderStateValidationService {
 
     @Autowired
     private ShiftsServiceImpl shiftsServiceImpl;
-
-    @Autowired
-    TranslationService translationService;
 
     public void saveLogging(final Entity order, final String previousState, final String currentState) {
         Entity logging = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING).create();
@@ -95,7 +91,7 @@ public class OrderStateValidationService {
 
     private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
         checkArgument(entity != null, ENTITY_IS_NULL);
-        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
+        List<ChangeOrderStateMessage> errors = Lists.newArrayList();
         for (String reference : references) {
             if (entity.getField(reference) == null) {
                 errors.add(ChangeOrderStateMessage.errorForComponent("orders.order.orderStates.fieldRequired", reference));

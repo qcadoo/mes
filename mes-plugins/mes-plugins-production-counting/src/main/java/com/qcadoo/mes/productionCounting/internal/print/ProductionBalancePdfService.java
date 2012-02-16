@@ -88,10 +88,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     private TechnologyService technologyService;
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    SecurityService securityService;
+    private SecurityService securityService;
 
     @Autowired
     private ProductionBalanceReportDataService productionBalanceReportDataService;
@@ -169,8 +169,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         PdfPTable leftPanel = pdfHelper.createPanelTable(1);
 
         addTableCellAsTable(leftPanel, translationService.translate("productionCounting.productionBalance.report.title", locale)
-                + ":", productionBalance.getId().toString(), null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(),
-                null);
+                + ":", productionBalance.getId().toString(), null, FontUtils.getDejavuBold9Dark(),
+                FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.order", locale),
                 productionBalance.getBelongsToField(ORDER_LITERAL).getStringField(NAME_LITERAL), null,

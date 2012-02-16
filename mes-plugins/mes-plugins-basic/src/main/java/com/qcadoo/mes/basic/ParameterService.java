@@ -46,21 +46,15 @@ public class ParameterService {
                 BasicConstants.MODEL_PARAMETER);
         SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
 
-        if (searchResult.getEntities().size() > 0) {
-            return searchResult.getEntities().get(0).getId();
-        } else {
-
+        if (searchResult.getEntities().isEmpty()) {
             Entity newParameter = dataDefinition.create();
-
             newParameter.setField("checkDoneOrderForQuality", false);
             newParameter.setField("batchForDoneOrder", "01none");
-
             Entity savedParameter = dataDefinition.save(newParameter);
-
             return savedParameter.getId();
-
+        } else {
+            return searchResult.getEntities().get(0).getId();
         }
-
     }
 
 }

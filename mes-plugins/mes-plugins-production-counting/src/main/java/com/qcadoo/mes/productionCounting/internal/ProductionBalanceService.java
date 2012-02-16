@@ -30,13 +30,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
@@ -68,9 +66,6 @@ public class ProductionBalanceService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
@@ -125,13 +120,10 @@ public class ProductionBalanceService {
                     ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
 
             if (productionBalance == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME_FIELD))) {
-                String message = translationService.translate(
-                        "productionCounting.productionBalance.report.error.documentsWasGenerated", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
                 return;
             }
 
@@ -183,11 +175,8 @@ public class ProductionBalanceService {
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)
             throws IOException, DocumentException {
-        Entity productionBalanceWithFileName = fileService.updateReportFileName(
-                productionBalance,
-                "date",
-                translationService.translate("productionCounting.productionBalance.report.fileName",
-                        LocaleContextHolder.getLocale()));
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, "date",
+                "productionCounting.productionBalance.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, state.getLocale());

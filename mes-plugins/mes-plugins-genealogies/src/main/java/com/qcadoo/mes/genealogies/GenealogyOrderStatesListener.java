@@ -29,10 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
@@ -75,13 +73,10 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
     private static final String BATCH_FOR_DONE_ORDER_FIELD = "batchForDoneOrder";
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    AutoGenealogyService autoGenealogyService;
-
-    @Autowired
-    TranslationService translationService;
+    private AutoGenealogyService autoGenealogyService;
 
     @Override
     public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
@@ -101,8 +96,7 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
                 listOfMessage = autoGenealogyService.createGenealogy(newEntity, true);
             }
             if (checkAutogenealogyRequired() && !checkRequiredBatch(newEntity)) {
-                listOfMessage.add(ChangeOrderStateMessage.error(translationService.translate("genealogies.message.batchNotFound",
-                        LocaleContextHolder.getLocale())));
+                listOfMessage.add(ChangeOrderStateMessage.error("genealogies.message.batchNotFound"));
             }
         }
         return listOfMessage;

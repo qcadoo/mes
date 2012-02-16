@@ -33,13 +33,11 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
@@ -75,9 +73,6 @@ public class MaterialsInStockAreasService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
@@ -237,20 +232,16 @@ public class MaterialsInStockAreasService {
                     MODEL_MATERIALS_IN_STOCK_AREAS).get((Long) state.getFieldValue());
 
             if (materialsInStockAreas == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(materialsInStockAreas.getStringField(FILE_NAME_FIELD))) {
-                String message = translationService.translate(
-                        "materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasGenerated",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasGenerated",
+                        MessageType.FAILURE);
                 return;
             } else if (materialsInStockAreas.getHasManyField("stockAreas").isEmpty()) {
-                String message = translationService.translate(
+                state.addMessage(
                         "materialFlow.materialsInStockAreasDetails.window.materialRequirement.missingAssosiatedStockAreas",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                        MessageType.FAILURE);
                 return;
             }
 
@@ -285,11 +276,8 @@ public class MaterialsInStockAreasService {
 
     private void generatePdfAndXlsDocumentsForMaterialsInStockAreas(final ComponentState state, final Entity materialsInStockAreas)
             throws IOException, DocumentException {
-        Entity materialFlowWithFileName = fileService.updateReportFileName(
-                materialsInStockAreas,
-                TIME_FIELD,
-                translationService.translate("materialFlow.materialsInStockAreas.report.fileName",
-                        LocaleContextHolder.getLocale()));
+        Entity materialFlowWithFileName = fileService.updateReportFileName(materialsInStockAreas, TIME_FIELD,
+                "materialFlow.materialsInStockAreas.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());

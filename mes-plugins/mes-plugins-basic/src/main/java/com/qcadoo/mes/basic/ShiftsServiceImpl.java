@@ -67,7 +67,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     private static final String FROM_DATE_FIELD = "fromDate";
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     private static final String[] WEEK_DAYS = { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" };
 

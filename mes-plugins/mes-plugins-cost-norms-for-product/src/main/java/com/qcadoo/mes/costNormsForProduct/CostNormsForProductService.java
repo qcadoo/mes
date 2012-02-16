@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
@@ -75,9 +74,6 @@ public class CostNormsForProductService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -338,9 +334,7 @@ public class CostNormsForProductService {
             if (technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)
                     && (product.getField(COST_FOR_NUMBER_L) == null || product.getField(NOMINAL_COST_L) == null
                             || product.getField(LAST_PURCHASE_COST_L) == null || product.getField(AVERAGE_COST_L) == null)) {
-                form.addMessage(translationService.translate(
-                        "technologies.technologyDetails.error.inputProductsWithoutCostNorms", viewDefinitionState.getLocale()),
-                        MessageType.INFO, false);
+                form.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO, false);
                 break;
             }
         }

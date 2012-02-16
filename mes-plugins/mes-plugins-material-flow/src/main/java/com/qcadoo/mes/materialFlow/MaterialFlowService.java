@@ -94,7 +94,7 @@ public class MaterialFlowService {
     private NumberService numberService;
 
     @Autowired
-    TimeConverterService timeConverterService;
+    private TimeConverterService timeConverterService;
 
     public BigDecimal calculateShouldBeInStockArea(final Long stockAreas, final String product, final Date forDate) {
 

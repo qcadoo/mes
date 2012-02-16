@@ -29,13 +29,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceConstants;
@@ -69,9 +67,6 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
@@ -188,26 +183,22 @@ public class SimpleMaterialBalanceService {
                     SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE).get((Long) state.getFieldValue());
 
             if (simpleMaterialBalance == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(simpleMaterialBalance.getStringField(FILE_NAME_FIELD))) {
-                String message = translationService.translate(
+                state.addMessage(
                         "simpleMaterialBalance.simpleMaterialBalanceDetails.window.simpleMaterialBalance.documentsWasGenerated",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                        MessageType.FAILURE);
                 return;
             } else if (simpleMaterialBalance.getHasManyField("orders").isEmpty()) {
-                String message = translationService.translate(
+                state.addMessage(
                         "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedOrders",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                        MessageType.FAILURE);
                 return;
             } else if (simpleMaterialBalance.getHasManyField("stockAreas").isEmpty()) {
-                String message = translationService.translate(
+                state.addMessage(
                         "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedStockAreas",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                        MessageType.FAILURE);
                 return;
             }
 
@@ -248,11 +239,8 @@ public class SimpleMaterialBalanceService {
 
     private void generateSimpleMaterialBalanceDocuments(final ComponentState state, final Entity simpleMaterialBalance)
             throws IOException, DocumentException {
-        Entity simpleMaterialBalanceWithFileName = fileService.updateReportFileName(
-                simpleMaterialBalance,
-                "date",
-                translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.fileName",
-                        LocaleContextHolder.getLocale()));
+        Entity simpleMaterialBalanceWithFileName = fileService.updateReportFileName(simpleMaterialBalance, "date",
+                "simpleMaterialBalance.simpleMaterialBalance.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());

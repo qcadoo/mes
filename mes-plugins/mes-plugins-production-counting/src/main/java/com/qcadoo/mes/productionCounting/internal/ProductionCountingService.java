@@ -29,13 +29,11 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
@@ -60,9 +58,6 @@ public class ProductionCountingService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
@@ -98,13 +93,10 @@ public class ProductionCountingService {
                     ProductionCountingConstants.MODEL_PRODUCTION_COUNTING).get((Long) state.getFieldValue());
 
             if (productionCounting == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(productionCounting.getStringField("fileName"))) {
-                String message = translationService.translate(
-                        "productionCounting.productionBalance.report.error.documentsWasGenerated", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
                 return;
             }
 
@@ -156,11 +148,8 @@ public class ProductionCountingService {
 
     private void generateProductionCountingDocuments(final ComponentState state, final Entity productionCounting)
             throws IOException, DocumentException {
-        Entity productionCountingWithFileName = fileService.updateReportFileName(
-                productionCounting,
-                "date",
-                translationService.translate("productionCounting.productionCounting.report.fileName",
-                        LocaleContextHolder.getLocale()));
+        Entity productionCountingWithFileName = fileService.updateReportFileName(productionCounting, "date",
+                "productionCounting.productionCounting.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());

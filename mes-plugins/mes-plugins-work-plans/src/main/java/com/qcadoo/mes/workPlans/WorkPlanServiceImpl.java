@@ -73,8 +73,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
             DocumentException {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
-        Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, "date",
-                translationService.translate("workPlans.workPlan.report.fileName", LocaleContextHolder.getLocale()));
+        Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, "date", "workPlans.workPlan.report.fileName");
         workPlanPdfService.generateDocument(workPlanWithFilename, company, state.getLocale());
     }
 

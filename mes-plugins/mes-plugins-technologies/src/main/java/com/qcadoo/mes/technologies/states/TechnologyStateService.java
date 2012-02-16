@@ -104,7 +104,7 @@ public class TechnologyStateService {
             errorMessages.addAll(savedTechnology.getGlobalErrors());
 
             for (ErrorMessage message : errorMessages) {
-                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.FAILURE);
+                view.getComponentByReference("grid").addMessage(message.getMessage(), MessageType.FAILURE, message.getVars());
             }
             return;
         }
