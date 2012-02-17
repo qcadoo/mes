@@ -41,7 +41,7 @@
        http://schema.qcadoo.org/modules/report
        http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd" >
 
 	<information>
 		<name>MES - Cost Norms for Product</name>
@@ -66,6 +66,7 @@
 		<!-- product -->
 		<model:model-field plugin="basic" model="product">
 			<model:decimal name="costForNumber" default="1">
+				<model:validatesRange from="0" exclusively="true" />
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
@@ -98,7 +99,7 @@
 			<model:onSave class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
 				method="fillOrderOperationProductsInComponents" />
 		</model:model-hook>
-		
+				
 		<view:resource uri="public/**/*" />
 	
 		<view:view resource="view/costNormsForProductsInTechnologyList.xml" />
