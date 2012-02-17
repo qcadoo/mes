@@ -35,99 +35,103 @@
 		</ribbon>
 		<component type="form" name="shift" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="9"
-				rows="9" hasBorders="false">
+				rows="10" hasBorders="false">
 				<layoutElement column="1" row="1" width="2" height="2">
 					<component type="textarea" name="name" field="name">
 						<option type="labelWidth" value="20" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="3" width="2">
+					<component type="label" name="timeDataPatternDescription"></component>
+				</layoutElement>
+				
+				<layoutElement column="1" row="4">
 					<component type="checkbox" name="mondayWorking" field="mondayWorking" reference="mondayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="3">
+				<layoutElement column="2" row="4">
 					<component type="input" name="mondayHours" field="mondayHours" hasLabel="false" reference="mondayHours">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="4">
+				<layoutElement column="1" row="5">
 					<component type="checkbox" name="tuesdayWorking" field="tuesdayWorking" reference="tuesdayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="4">
+				<layoutElement column="2" row="5">
 					<component type="input" name="tuesdayHours" field="tuesdayHours" reference="tuesdayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="5">
+				<layoutElement column="1" row="6">
 					<component type="checkbox" name="wensdayWorking" field="wensdayWorking" reference="wensdayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 						</component>
 				</layoutElement>
-				<layoutElement column="2" row="5">
+				<layoutElement column="2" row="6">
 					<component type="input" name="wensdayHours" field="wensdayHours" reference="wensdayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="6">
+				<layoutElement column="1" row="7">
 					<component type="checkbox" name="thursdayWorking" field="thursdayWorking" reference="thursdayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="6">
+				<layoutElement column="2" row="7">
 					<component type="input" name="thursdayHours" field="thursdayHours" reference="thursdayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="7">
+				<layoutElement column="1" row="8">
 					<component type="checkbox" name="fridayWorking" field="fridayWorking" reference="fridayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="7">
+				<layoutElement column="2" row="8">
 					<component type="input" name="fridayHours" field="fridayHours" reference="fridayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="8">
+				<layoutElement column="1" row="9">
 					<component type="checkbox" name="saturdayWorking" field="saturdayWorking" reference="saturdayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="8">
+				<layoutElement column="2" row="9">
 					<component type="input" name="saturdayHours" field="saturdayHours" reference="saturdayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
 				
-				<layoutElement column="1" row="9">
+				<layoutElement column="1" row="10">
 					<component type="checkbox" name="sundayWorking" field="sundayWorking" reference="sundayWorking">
 						<option type="labelWidth" value="70" />
 						<listener event="onChange" class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 								method="onDayCheckboxChange" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="9">
+				<layoutElement column="2" row="10">
 					<component type="input" name="sundayHours" field="sundayHours" reference="sundayHours" hasLabel="false">
 						<option type="alignment" value="right" />
 					</component>
