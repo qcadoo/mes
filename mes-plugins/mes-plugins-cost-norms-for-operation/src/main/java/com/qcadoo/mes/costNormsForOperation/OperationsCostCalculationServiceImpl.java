@@ -132,6 +132,13 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (mode == PIECEWORK) {
 
             productQuantitiesService.getProductComponentQuantities(technology, quantity, productComponentQuantities);
+            if (operationComponents.getRoot() == null) {
+                costCalculation.addError(costCalculation.getDataDefinition().getField("order"),
+                        "costCalculation.lackOfTreeComponents");
+                costCalculation.addError(costCalculation.getDataDefinition().getField("technology"),
+                        "costCalculation.lackOfTreeComponents");
+                return;
+            }
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(),
                     productComponentQuantities, margin, quantity);
             costCalculation.setField("totalPieceworkCosts", totalPieceworkCost);
