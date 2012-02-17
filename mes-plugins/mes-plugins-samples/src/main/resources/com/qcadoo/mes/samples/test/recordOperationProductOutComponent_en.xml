@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<productionBalance>
-	<row GENERATED="false" ORDER="000005" PRODUCT="000025" NAME="123" DATE="" WORKER="123" RECORDSNUMBER="1" DESCRIPTION="123" FILENAME="123"/>
-</productionBalance>
+<recordOperationProductOutComponent>
+	<row PRODUCTIONRECORD ="1" PRODUCT="24" USEDQUANTITY ="10" PLANNEDQUANTITY="1" BALANCE="1"/>
+</recordOperationProductOutComponent>

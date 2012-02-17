@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<productionBalance>
-	<row GENERATED="false" ORDER="000005" PRODUCT="000025" NAME="123" DATE="" WORKER="123" RECORDSNUMBER="1" DESCRIPTION="123" FILENAME="123"/>
-</productionBalance>
+<workplans>
+	<row NAME="Dla zleceń dot. produktu: stół" GENERATED="false" DATE="" WORKER="" TYPE="02byEndProduct"  FILENAME="" ORDER="000003"/>
+</workplans>

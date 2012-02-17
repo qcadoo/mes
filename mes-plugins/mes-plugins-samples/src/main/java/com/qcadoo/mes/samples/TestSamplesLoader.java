@@ -71,8 +71,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.PROD_NR_33;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -145,9 +143,7 @@ public class TestSamplesLoader extends SamplesLoader {
                 readDataFromXML(dataset, "orderGroups", locale);
             }
         }
-        if (isEnabled("materialRequirements")) {
-            addMaterialRequirements();
-        }
+
         if (isEnabled("costCalculation")) {
             readDataFromXML(dataset, "costCalculation", locale);
         }
@@ -162,19 +158,27 @@ public class TestSamplesLoader extends SamplesLoader {
             readDataFromXML(dataset, "qualityControls", locale);
         }
 
-        // if (isEnabled("productionCounting")) {
-        // readDataFromXML(dataset, "productionBalance", locale);
-        // }
+        if (isEnabled("materialRequirements")) {
+            readDataFromXML(dataset, "materialRequirements", locale);
+        }
 
+        if (isEnabled("workPlans")) {
+            readDataFromXML(dataset, "workPlans", locale);
+        }
+
+        if (isEnabled("productionCounting")) {
+
+            readDataFromXML(dataset, "productionRecord", locale);
+            readDataFromXML(dataset, "productionCounting", locale);
+            readDataFromXML(dataset, "productionBalance", locale);
+
+        }
         if (isEnabled("advancedGenealogy")) {
             readDataFromXML(dataset, "batches", locale);
             if (isEnabled("advancedGenealogyForOrders")) {
                 readDataFromXML(dataset, "trackingRecords", locale);
             }
             readDataFromXML(dataset, "genealogyTables", locale);
-        }
-        if (isEnabled(WORK_PLANS_PLUGIN_IDENTIFIER)) {
-            addWorkPlans();
         }
     }
 
@@ -232,8 +236,16 @@ public class TestSamplesLoader extends SamplesLoader {
             addGenealogyTables(values);
         } else if ("qualityControls".equals(type)) {
             addQualityControl(values);
+        } else if ("materialRequirements".equals(type)) {
+            addMaterialRequirements(values);
+        } else if ("workPlans".equals(type)) {
+            addWorkPlan(values);
+        } else if ("productionRecord".equals(type)) {
+            addProductionRecord(values);
+        } else if ("productionCounting".equals(type)) {
+            addProductionCounting(values);
         } else if ("productionBalance".equals(type)) {
-            // addProductionBalance(values);
+            addProductionBalance(values);
         }
     }
 
@@ -777,6 +789,30 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
     }
 
+    private Entity addRecordOperationProductInComponent(Entity product, BigDecimal usedQuantity, BigDecimal plannedQuantity,
+            BigDecimal balance) {
+        Entity productInComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT).create();
+        productInComponent.setField("product", product);
+        productInComponent.setField("usedQuantity", usedQuantity);
+        productInComponent.setField("plannedQuantity", plannedQuantity);
+        productInComponent.setField("balance", balance);
+
+        return productInComponent;
+    }
+
+    private Entity addRecordOperationProductOutComponent(Entity product, BigDecimal usedQuantity, BigDecimal plannedQuantity,
+            BigDecimal balance) {
+        Entity productOutComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT).create();
+        productOutComponent.setField("product", product);
+        productOutComponent.setField("usedQuantity", usedQuantity);
+        productOutComponent.setField("plannedQuantity", plannedQuantity);
+        productOutComponent.setField("balance", balance);
+
+        return productOutComponent;
+    }
+
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
         Entity component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").create();
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
@@ -846,19 +882,18 @@ public class TestSamplesLoader extends SamplesLoader {
         }
     }
 
-    private void addMaterialRequirements() {
-        for (int i = 0; i < 50; i++) {
-            addMaterialRequirement();
-        }
-    }
-
-    private void addMaterialRequirement() {
-        Entity requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").create();
-        requirement.setField(FIELD_NAME, getRandomProduct().getField(FIELD_NAME));
-        requirement.setField(FIELD_GENERATED, false);
-        requirement.setField(FIELD_DATE, null);
-        requirement.setField("onlyComponents", RANDOM.nextBoolean());
-        requirement.setField(FIELD_WORKER, null);
+    private void addMaterialRequirements(final Map<String, String> values) {
+        Entity requirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
+                SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).create();
+        requirement.setField("name", values.get("name"));
+        requirement.setField("date", values.get("date"));
+        requirement.setField("worker", values.get("worker"));
+        requirement.setField("onlyComponents", values.get("onlycomponents"));
+        requirement.setField("date", values.get("date"));
+        requirement.setField("generated", values.get("generated"));
+        requirement.setField("fileName", values.get("filename"));
+        requirement.setField("orders",
+                Lists.newArrayList(getOrderByNumber(values.get("order1")), getOrderByNumber(values.get("order2"))));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + requirement.getField(FIELD_NAME) + ", date="
@@ -866,25 +901,22 @@ public class TestSamplesLoader extends SamplesLoader {
                     + requirement.getField("onlyComponents") + ", generated=" + requirement.getField(FIELD_GENERATED) + "}");
         }
 
-        requirement.setField(ORDERS_PLUGIN_IDENTIFIER, Lists.newArrayList(getRandomOrder(), getRandomOrder(), getRandomOrder()));
-
-        requirement = dataDefinitionService.get("materialRequirements", "materialRequirement").save(requirement);
+        requirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
+                SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).save(requirement);
         validateEntity(requirement);
     }
 
-    private void addWorkPlans() {
-        for (int i = 0; i < 50; i++) {
-            addWorkPlan();
-        }
-    }
+    private void addWorkPlan(final Map<String, String> values) {
 
-    private void addWorkPlan() {
-        Entity workPlan = dataDefinitionService.get(WORK_PLANS_PLUGIN_IDENTIFIER, WORK_PLANS_MODEL_WORK_PLAN).create();
-        workPlan.setField(FIELD_NAME, getRandomProduct().getField(FIELD_NAME));
-        workPlan.setField(FIELD_GENERATED, false);
-        workPlan.setField(FIELD_DATE, null);
-        workPlan.setField(FIELD_WORKER, null);
-        workPlan.setField("type", "01noDistinction");
+        Entity workPlan = dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER,
+                SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN).create();
+        workPlan.setField(FIELD_NAME, values.get("name"));
+        workPlan.setField(FIELD_GENERATED, values.get("generated"));
+        workPlan.setField(FIELD_DATE, values.get("date"));
+        workPlan.setField(FIELD_WORKER, values.get("worker"));
+        workPlan.setField("type", values.get("type"));
+        workPlan.setField("fileName", values.get("filename"));
+        workPlan.setField("orders", Lists.newArrayList(getOrderByNumber(values.get("order"))));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + workPlan.getField(FIELD_NAME) + ", date="
@@ -892,10 +924,65 @@ public class TestSamplesLoader extends SamplesLoader {
                     + workPlan.getField(FIELD_GENERATED) + "}");
         }
 
-        workPlan.setField("orders", Lists.newArrayList(getRandomOrder()));
-
-        workPlan = workPlan.getDataDefinition().save(workPlan);
+        workPlan = dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER,
+                SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN).save(workPlan);
         validateEntity(workPlan);
+    }
+
+    void addProductionRecord(final Map<String, String> values) {
+        Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_RECORD_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
+        productionRecord.setField("number", ("000001"));
+        productionRecord.setField("name", values.get("name"));
+        productionRecord.setField("order", getOrderByNumber(values.get("order")));
+        productionRecord.setField("orderOperationComponent",
+                getOrderOperationComponentByNumber(values.get("orderoperationcomponent"), getOrderByNumber(values.get("order"))));
+        productionRecord.setField("shift", getShiftByName(values.get("shift")));
+        productionRecord.setField("state", values.get("state"));
+        productionRecord.setField("lastRecord", values.get("lastrecord"));
+        productionRecord.setField("machineTime", values.get("machineTime"));
+        productionRecord.setField("machineTimeBalance", values.get("machinetimebalance"));
+        productionRecord.setField("laborTime", values.get("labortime"));
+        productionRecord.setField("laborTimeBalance", values.get("labortimebalance"));
+        productionRecord.setField("plannedTime", values.get("plannedtime"));
+        productionRecord.setField("plannedLaborTime", values.get("plannedlabortime"));
+        productionRecord.setField("staff", getStaffByNumber(values.get("staff")));
+        productionRecord.setField("workstationType", getWorkstationTypeByNumber(values.get("workstationtype")));
+        productionRecord.setField("division", getDivisionByNumber(values.get("division")));
+
+        String idString3 = values.get("loggings");
+        Long id3 = Long.valueOf(idString3);
+        Entity loggings = GetLoggingsByNumber(id3);
+        List<Entity> loggings1 = Lists.newArrayList(loggings);
+        productionRecord.setField("loggings", loggings1);
+
+        List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(
+                getProductByNumber("000025"), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+        productionRecord.setField("recordOperationProductInComponents", recOpProdInComponents);
+
+        List<Entity> recOpProdOutComponents1 = Lists.newArrayList(addRecordOperationProductOutComponent(
+                getProductByNumber("000025"), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+        productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
+
+        productionRecord = productionRecord.getDataDefinition().save(productionRecord);
+        validateEntity(productionRecord);
+    }
+
+    void addProductionCounting(final Map<String, String> values) {
+        Entity productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).create();
+        productionCounting.setField(FIELD_GENERATED, values.get("generated"));
+        productionCounting.setField("order", getOrderByNumber(values.get("order")));
+        productionCounting.setField("product", getProductByNumber(values.get("product")));
+        productionCounting.setField(FIELD_NAME, values.get("name"));
+        productionCounting.setField(FIELD_DATE, values.get("date"));
+        productionCounting.setField(FIELD_WORKER, values.get("worker"));
+        productionCounting.setField("description", values.get("description"));
+        productionCounting.setField("fileName", values.get("filename"));
+
+        productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).save(productionCounting);
+        validateEntity(productionCounting);
     }
 
     void addProductionBalance(final Map<String, String> values) {
@@ -999,6 +1086,22 @@ public class TestSamplesLoader extends SamplesLoader {
         }
     }
 
+    private Entity getOrderOperationComponentByNumber(final String number, final Entity order) {
+        Entity operation = dataDefinitionService
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
+                .add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService
+                .get(SamplesConstants.PRODUCTION_SCHEDULING_PLUGIN_IDENTIFIER,
+                        SamplesConstants.PRODUCTION_SCHEDULING_MODEL_PRODUCTION_SCHEDULING).find()
+                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("operation", operation))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getShiftByName(final String name) {
+        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT).find()
+                .add(SearchRestrictions.eq("name", name)).setMaxResults(1).uniqueResult();
+    }
+
     private Entity getOrderByNumber(String number) {
         return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq("number", number)).setMaxResults(1).uniqueResult();
@@ -1006,6 +1109,13 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
+                .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getProductionRecordByNumber(final String number) {
+        return dataDefinitionService
+                .get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                        SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq(FIELD_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
@@ -1017,6 +1127,20 @@ public class TestSamplesLoader extends SamplesLoader {
     private Entity getStaffByNumber(String number) {
         return dataDefinitionService.get("basic", "staff").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getWorkstationTypeByNumber(String number) {
+        return dataDefinitionService.get("basic", "workstationType").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getDivisionByNumber(String number) {
+        return dataDefinitionService.get("basic", "division").find().add(SearchRestrictions.eq(FIELD_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity GetLoggingsByNumber(Long id3) {
+        return dataDefinitionService.get("productionCounting", "productionRecordLogging").get(id3);
     }
 
     private Entity getTransformationByNumber(String number) {
@@ -1043,13 +1167,6 @@ public class TestSamplesLoader extends SamplesLoader {
         Long total = (long) dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find().list()
                 .getTotalNumberOfEntities();
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
-                .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private Entity getRandomOrder() {
-        Long total = (long) dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find().list()
-                .getTotalNumberOfEntities();
-        return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
     }
 

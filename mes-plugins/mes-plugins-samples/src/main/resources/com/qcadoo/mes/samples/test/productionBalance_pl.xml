@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<productionbalance>
-	<row GENERATED="false" ORDER="000003" PRODUCT="000017" NAME="123" DATE="" WORKER="123" RECORDSNUMBER="1" DESCRIPTION="123" FILENAME=""/>
-</productionbalance>
+<productionBalance>
+	<row GENERATED="false" ORDER="000005" PRODUCT="000025" NAME="123" DATE="" WORKER="123" RECORDSNUMBER="1" DESCRIPTION="123" FILENAME=""/>
+</productionBalance>
