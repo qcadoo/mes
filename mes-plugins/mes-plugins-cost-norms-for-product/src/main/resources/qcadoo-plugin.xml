@@ -121,7 +121,11 @@
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
 			method="enabledFieldForExternalID" />
-
+		
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			method="updateViewCostsButtonState" />
+		
 		<view:view-listener plugin="technologies" view="technologyDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
