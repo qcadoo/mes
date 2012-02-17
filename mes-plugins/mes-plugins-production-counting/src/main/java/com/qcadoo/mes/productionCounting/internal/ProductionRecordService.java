@@ -178,7 +178,7 @@ public class ProductionRecordService {
         }
 
         for (String fieldName : newArrayList("recordOperationProductInComponents", "recordOperationProductOutComponents")) {
-            if (productionRecord.getHasManyField(fieldName) != null) {
+            if (productionRecord.getField(fieldName) != null) {
                 return;
             }
         }

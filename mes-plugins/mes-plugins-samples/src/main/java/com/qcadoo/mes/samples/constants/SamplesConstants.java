@@ -47,9 +47,17 @@ public interface SamplesConstants {
 
     String QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
 
+    String MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS = "materialRequirement";
+
+    String MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER = "materialRequirements";
+
     String PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE = "productionBalance";
 
     String PRODUCTIONBALANCE_PLUGIN_IDENTIFIER = "productionCounting";
+
+    String PRODUCTION_RECORD_PLUGIN_IDENTIFIER = "productionCounting";
+
+    String PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD = "productionRecord";
 
     String BASIC_MODEL_SUBSTITUTE = "substitute";
 
@@ -61,9 +69,21 @@ public interface SamplesConstants {
 
     String WORK_PLANS_MODEL_WORK_PLAN = "workPlan";
 
+    String PRODUCTION_COUNTING_PLUGIN_IDENTIFIER = "productionCounting";
+
+    String RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT = "recordOperationProductInComponent";
+
+    String RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT = "recordOperationProductOutComponent";
+
+    String PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING = "productionCounting";
+
     String ORDERS_PLUGIN_IDENTIFIER = "orders";
 
     String ORDERS_MODEL_ORDER = "order";
+
+    String PRODUCTION_SCHEDULING_PLUGIN_IDENTIFIER = "productionScheduling";
+
+    String PRODUCTION_SCHEDULING_MODEL_PRODUCTION_SCHEDULING = "orderOperationComponent";
 
     String TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
 
@@ -74,6 +94,8 @@ public interface SamplesConstants {
     String FIELD_DESCRIPTION = "description";
 
     String FIELD_NUMBER = "number";
+
+    String FIELD_ID = "id";
 
     String FIELD_EAN = "ean";
 

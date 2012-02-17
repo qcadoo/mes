@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<productionBalance>
-	<row GENERATED="false" ORDER="000005" PRODUCT="000025" NAME="123" DATE="" WORKER="123" RECORDSNUMBER="1" DESCRIPTION="123" FILENAME="123"/>
-</productionBalance>
+<materialrequirements>
+	<row NAME="Zapotrzebowanie dla zleceń na taborety i stołki" DATE="" WORKER="" ONLYCOMPONENTS="true" GENERATED="false" FILENAME="" ORDER1="000003" ORDER2="000002"/>
+</materialrequirements>
