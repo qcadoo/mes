@@ -318,6 +318,7 @@ public class CostCalculationViewService {
     /* Event handler, fire total calculation */
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity costCalculation = getEntityFromForm(view);
+
         if (costCalculation.getId() == null) {
             view.getComponentByReference(FORM).addMessage("costCalculation.messages.failure.calculationOnUnsavedEntity", FAILURE);
             return;
@@ -353,7 +354,9 @@ public class CostCalculationViewService {
         FormComponent form = (FormComponent) view.getComponentByReference(FORM);
         checkArgument(form != null, "form is null");
         checkArgument(form.isValid(), "invalid form");
-        return form.getEntity();
+
+        Long id = form.getEntityId();
+        return form.getEntity().getDataDefinition().get(id);
     }
 
     private BigDecimal getBigDecimal(final Object value) {
@@ -373,7 +376,7 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
                 "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit", "additionalOverheadValue");
+                "totalTechnicalProductionCosts", "totalCosts", "costPerUnit", "additionalOverheadValue");
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
