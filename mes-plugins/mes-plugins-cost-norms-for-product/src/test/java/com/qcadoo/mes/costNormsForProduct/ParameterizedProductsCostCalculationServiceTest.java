@@ -27,7 +27,6 @@ import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculati
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 import static java.math.BigDecimal.valueOf;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -45,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -82,12 +80,12 @@ public class ParameterizedProductsCostCalculationServiceTest {
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(1), valueOf(1), valueOf(10) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(2), valueOf(1), valueOf(20) },
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(1), valueOf(30) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(2), valueOf(120) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(3), valueOf(270) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(4), valueOf(480) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(2), valueOf(60) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(3), valueOf(135) },
-                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(240) } });
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(2), valueOf(60) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(3), valueOf(90) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(1), valueOf(3), valueOf(4), valueOf(120) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(2), valueOf(30) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(3), valueOf(45) },
+                { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(60) } });
     }
 
     public ParameterizedProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, BigDecimal average,
@@ -153,7 +151,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
         productQuantities.put(product, inputQuantity.multiply(orderQuantity, numberService.getMathContext()));
 
-        when(productQuantitiesService.getNeededProductQuantities(technology, BigDecimal.ONE, true)).thenReturn(productQuantities);
+        when(productQuantitiesService.getNeededProductQuantities(technology, orderQuantity, true)).thenReturn(productQuantities);
 
     }
 
@@ -163,10 +161,8 @@ public class ParameterizedProductsCostCalculationServiceTest {
         productCostCalc.calculateProductsCost(costCalculation);
 
         // then
-        ArgumentCaptor<BigDecimal> argument = ArgumentCaptor.forClass(BigDecimal.class);
-        Mockito.verify(numberService).setScale(argument.capture());
+        Mockito.verify(numberService).setScale(expectedResult);
         Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), Matchers.any(BigDecimal.class));
-        assertEquals(expectedResult, argument.getValue());
     }
 
     @Test(expected = IllegalArgumentException.class)

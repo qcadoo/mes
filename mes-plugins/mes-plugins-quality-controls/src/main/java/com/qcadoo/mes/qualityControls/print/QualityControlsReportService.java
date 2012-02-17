@@ -89,20 +89,17 @@ public class QualityControlsReportService {
             FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
 
             if (dateFrom == null || dateTo == null || dateFrom.getFieldValue() == null || dateTo.getFieldValue() == null) {
-                state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qualityControl.report.invalidDates", MessageType.FAILURE);
             } else {
                 if (dateFrom.getFieldValue().toString().compareTo(dateTo.getFieldValue().toString()) > 0) {
-                    state.addMessage(translationService.translate("qualityControl.report.invalidDates.fromBiggerThanTo",
-                            state.getLocale()), MessageType.FAILURE);
+                    state.addMessage("qualityControl.report.invalidDates.fromBiggerThanTo", MessageType.FAILURE);
                 } else {
                     viewDefinitionState.redirectTo("/qualityControl/qualityControlByDates." + args[0] + "?type=" + args[1]
                             + "&dateFrom=" + dateFrom.getFieldValue() + "&dateTo=" + dateTo.getFieldValue(), true, false);
                 }
             }
         } else {
-            state.addMessage(translationService.translate("qualityControl.report.invalidDates", state.getLocale()),
-                    MessageType.FAILURE);
+            state.addMessage("qualityControl.report.invalidDates", MessageType.FAILURE);
         }
     }
 
@@ -113,8 +110,7 @@ public class QualityControlsReportService {
         }
         GridComponent gridState = (GridComponent) state;
         if (gridState.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                    MessageType.FAILURE);
+            state.addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
             return;
         }
         StringBuilder redirectUrl = new StringBuilder();

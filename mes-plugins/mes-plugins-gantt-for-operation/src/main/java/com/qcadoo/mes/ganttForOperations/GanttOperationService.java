@@ -29,7 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -59,9 +58,6 @@ public class GanttOperationService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     private Long orderId;
 
@@ -158,8 +154,7 @@ public class GanttOperationService {
 
         Object realizationTime = order.getField("realizationTime");
         if (realizationTime == null || "0".equals(realizationTime.toString()) || "".equals(realizationTime.toString())) {
-            form.addMessage(translationService.translate("orders.order.report.realizationTime", viewDefinitionState.getLocale()),
-                    MessageType.INFO, false);
+            form.addMessage("orders.order.report.realizationTime", MessageType.INFO, false);
         }
     }
 

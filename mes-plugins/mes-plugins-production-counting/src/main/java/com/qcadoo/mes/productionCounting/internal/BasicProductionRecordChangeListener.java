@@ -33,6 +33,7 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ChangeRecordStateMessage;
 import com.qcadoo.mes.productionCounting.internal.states.RecordStateListener;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -52,6 +53,9 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Override
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
@@ -99,7 +103,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             }
         }
 
-        throw new IllegalStateException("No material requirement found for product");
+        throw new IllegalStateException("No basic production counting found for product");
     }
 
     private interface Operation {
@@ -173,7 +177,14 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         }
 
         for (Entity productOut : productsOut) {
-            Entity productionCounting = getProductionCounting(productOut, productionCountings);
+            Entity productionCounting;
+
+            try {
+                productionCounting = getProductionCounting(productOut, productionCountings);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
             final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
             final BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);

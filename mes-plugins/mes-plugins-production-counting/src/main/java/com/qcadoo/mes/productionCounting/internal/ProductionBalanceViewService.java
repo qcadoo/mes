@@ -32,7 +32,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
@@ -69,9 +68,6 @@ public class ProductionBalanceViewService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private ProductionBalanceReportDataService productionBalanceReportDataService;
 
     @Autowired
@@ -102,9 +98,9 @@ public class ProductionBalanceViewService {
                 || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
             setGridsVisibility(viewDefinitionState, false);
             clearFieldValues(viewDefinitionState);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(translationService.translate(
+            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
-                    viewDefinitionState.getLocale()), ComponentState.MessageType.FAILURE);
+                    ComponentState.MessageType.FAILURE);
             return;
         }
 
@@ -136,11 +132,14 @@ public class ProductionBalanceViewService {
 
     private void setFieldValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
         FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference("product");
-        productField.setFieldValue(order.getBelongsToField("product").getId());
         FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference("recordsNumber");
+
+        productField.setFieldValue(order.getBelongsToField("product").getId());
+
         Integer recordsNumberValue = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_COUNTING)
-                .find("where order.id=" + order.getId().toString()).list().getEntities().size();
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_COUNTING).find()
+                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities().size();
+
         recordsNumberField.setFieldValue(recordsNumberValue);
     }
 

@@ -36,7 +36,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -48,7 +47,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -77,9 +75,6 @@ public class BasicProductionCountingService {
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private TranslationService translationService;
 
     public void generateProducedProducts(final ViewDefinitionState state) {
         final String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
@@ -342,9 +337,7 @@ public class BasicProductionCountingService {
                     return;
                 }
                 if (!order.isValid()) {
-                    producedQuantity.addMessage(
-                            translationService.translate(order.getError("doneQuantity").getMessage(), viewState.getLocale()),
-                            MessageType.FAILURE);
+                    producedQuantity.addMessage(order.getError("doneQuantity"));
                 }
             }
         }

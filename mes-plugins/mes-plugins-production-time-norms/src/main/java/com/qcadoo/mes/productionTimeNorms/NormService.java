@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -61,9 +60,6 @@ public class NormService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
@@ -133,9 +129,8 @@ public class NormService {
         ComponentState operationLookup = view.getComponentByReference(OPERATION);
         if (operationLookup.getFieldValue() == null) {
             if (!OPERATION.equals(operationLookupState.getName())) {
-                view.getComponentByReference("form").addMessage(
-                        translationService.translate("productionTimeNorms.messages.info.missingOperationReference",
-                                view.getLocale()), INFO);
+                view.getComponentByReference("form").addMessage("productionTimeNorms.messages.info.missingOperationReference",
+                        INFO);
             }
             return;
         }
@@ -178,9 +173,6 @@ public class NormService {
             view.getComponentByReference(COUNT_MACHINE).setFieldValue("0");
         }
 
-        // FIXME MAKU fix problem with double notifications after operation changed
-        // view.getComponentByReference("form").addMessage(translationService.translate("productionTimeNorms.messages.success.copyTimeNormsSuccess",
-        // view.getLocale()), SUCCESS);
     }
 
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {

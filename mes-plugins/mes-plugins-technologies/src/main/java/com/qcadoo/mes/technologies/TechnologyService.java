@@ -141,7 +141,7 @@ public class TechnologyService {
     private TranslationService translationService;
 
     @Autowired
-    ProductQuantitiesService productQuantitiesService;
+    private ProductQuantitiesService productQuantitiesService;
 
     private enum ProductDirection {
         IN, OUT;

@@ -61,7 +61,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Override
     public Entity calculateTotalCost(final Entity costCalculation) {
-
         BigDecimal productionCosts;
         BigDecimal materialCostMargin = getBigDecimal(costCalculation.getField("materialCostMargin"));
         BigDecimal productionCostMargin = getBigDecimal(costCalculation.getField("productionCostMargin"));
@@ -88,23 +87,30 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         }
 
         BigDecimal materialCosts = getBigDecimal(costCalculation.getField("totalMaterialCosts"));
+
         BigDecimal productionCostMarginValue = productionCosts.multiply(productionCostMargin, numberService.getMathContext())
                 .divide(BigDecimal.valueOf(100), numberService.getMathContext());
         BigDecimal materialCostMarginValue = materialCosts.multiply(materialCostMargin, numberService.getMathContext()).divide(
                 BigDecimal.valueOf(100), numberService.getMathContext());
+
+        // TODO mici, I think we should clamp it to get the consisted result, because DB clamps it to the setScale(3) anyway.
+        productionCostMarginValue = numberService.setScale(productionCostMarginValue);
+        materialCostMarginValue = numberService.setScale(materialCostMarginValue);
+
         BigDecimal totalTechnicalProductionCosts = productionCosts.add(materialCosts, numberService.getMathContext());
         BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext()).add(
                 additionalOverhead, numberService.getMathContext());
         BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
-        costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
-        costCalculation.setField("productionCostMarginValue", productionCostMarginValue);
-        costCalculation.setField("materialCostMarginValue", materialCostMarginValue);
-        costCalculation.setField("additionalOverheadValue", additionalOverhead);
-        costCalculation.setField("totalOverhead", totalOverhead);
-        costCalculation.setField("totalTechnicalProductionCosts", totalTechnicalProductionCosts);
-        costCalculation.setField("totalCosts", totalCosts);
-        costCalculation.setField("totalCostsPerUnit", totalCosts.divide(quantity, numberService.getMathContext()));
+        costCalculation.setField("productionCostMarginValue", numberService.setScale(productionCostMarginValue));
+        costCalculation.setField("materialCostMarginValue", numberService.setScale(materialCostMarginValue));
+        costCalculation.setField("additionalOverheadValue", numberService.setScale(additionalOverhead));
+
+        costCalculation.setField("totalOverhead", numberService.setScale(totalOverhead));
+        costCalculation.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
+        costCalculation.setField("totalCosts", numberService.setScale(totalCosts));
+        costCalculation.setField("costPerUnit",
+                numberService.setScale(totalCosts.divide(quantity, numberService.getMathContext())));
 
         return costCalculation.getDataDefinition().save(costCalculation);
     }

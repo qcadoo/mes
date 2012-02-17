@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -214,8 +215,8 @@ public class ProductionRecordViewService {
         if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)
                 && !PARAM_RECORDING_TYPE_BASIC.equals(recordingType)) {
             ((FieldComponent) view.getComponentByReference(COMPONENT_ORDER)).addMessage(
-                    translationService.translate("productionRecord.productionRecord.report.error.orderWithoutRecordingType",
-                            view.getLocale()), ComponentState.MessageType.FAILURE);
+                    "productionRecord.productionRecord.report.error.orderWithoutRecordingType",
+                    ComponentState.MessageType.FAILURE);
             view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(false);
             view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(false);
             view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(false);
@@ -263,25 +264,27 @@ public class ProductionRecordViewService {
             dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
             if (orderFromDB.getStringField(COMPONENT_STATE).equals(CLOSED_ORDER)) {
-                form.addMessage(translationService.translate("productionCounting.order.orderClosed", view.getLocale()),
-                        MessageType.INFO, false);
+                form.addMessage("productionCounting.order.orderClosed", MessageType.INFO, false);
             } else {
-                form.addMessage(translationService.translate("productionCounting.order.orderCannotBeClosed", view.getLocale()),
-                        MessageType.INFO, false);
-                for (ErrorMessage message : order.getErrors().values()) {
-                    StringBuilder error = new StringBuilder();
-                    error = error.append(translationService.translate("orders.order.orderStates.error", form.getLocale()));
-                    error = error.append(" ");
-                    error = error.append(message.getMessage());
-                    form.addMessage(error.toString(), MessageType.FAILURE, false);
+                form.addMessage("productionCounting.order.orderCannotBeClosed", MessageType.INFO, false);
+
+                List<ErrorMessage> errors = Lists.newArrayList();
+                if (!order.getErrors().isEmpty()) {
+                    errors.addAll(order.getErrors().values());
                 }
-                for (ErrorMessage message : order.getGlobalErrors()) {
-                    StringBuilder error = new StringBuilder();
-                    error = error.append(translationService.translate("orders.order.orderStates.error", form.getLocale()));
-                    error = error.append(" ");
-                    error = error.append(message.getMessage());
-                    form.addMessage(error.toString(), MessageType.FAILURE, false);
+                if (!order.getGlobalErrors().isEmpty()) {
+                    errors.addAll(order.getGlobalErrors());
                 }
+
+                StringBuilder errorMessages = new StringBuilder();
+                for (ErrorMessage message : errors) {
+                    String translatedErrorMessage = translationService.translate(message.getMessage(), view.getLocale(),
+                            message.getVars());
+                    errorMessages.append(translatedErrorMessage);
+                    errorMessages.append(", ");
+                }
+                form.addMessage("orders.order.orderStates.error", MessageType.FAILURE, false, errorMessages.toString());
+
             }
         }
     }
@@ -348,9 +351,6 @@ public class ProductionRecordViewService {
             }
             typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             typeOfProductionRecording.setEnabled(false);
-            // typeOfProductionRecording.addMessage(translationService.translate(
-            // "orders.orderDetails.window.productionCounting.typeOfProductionRecording.error.saveOrderFirst",
-            // view.getLocale()), MessageType.SUCCESS);
         } else {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     form.getEntityId());
@@ -492,8 +492,7 @@ public class ProductionRecordViewService {
         FieldComponent isDisabled = (FieldComponent) view.getComponentByReference("isDisabled");
 
         if (OPTION_01BASIC.equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
-            orderComponent.addMessage(translationService.translate(
-                    "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting", view.getLocale()),
+            orderComponent.addMessage("productionRecord.productionRecord.report.error.orderWithBasicProductionCounting",
                     ComponentState.MessageType.INFO);
             isDisabled.setFieldValue(true);
         } else {

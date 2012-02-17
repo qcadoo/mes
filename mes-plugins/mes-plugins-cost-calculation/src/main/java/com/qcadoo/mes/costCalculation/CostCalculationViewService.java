@@ -50,7 +50,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
@@ -64,6 +63,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -88,9 +88,6 @@ public class CostCalculationViewService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private NumberService numberService;
@@ -136,6 +133,9 @@ public class CostCalculationViewService {
         if (cameFromOrder) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
             technology = order.getBelongsToField(TECHNOLOGY);
+            if (technology == null) {
+                return;
+            }
         } else {
             order = null;
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -146,6 +146,10 @@ public class CostCalculationViewService {
     }
 
     private void applyValuesToFields(final ViewDefinitionState viewDefinitionState, final Entity technology, final Entity order) {
+        if (technology == null) {
+            clearValueFromField(viewDefinitionState);
+            return;
+        }
         Boolean cameFromOrder = false;
         Boolean cameFromTechnology = false;
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY));
@@ -178,6 +182,14 @@ public class CostCalculationViewService {
         componentsMap.get(QUANTITY).setEnabled(!cameFromOrder);
         componentsMap.get(PRODUCT).setFieldValue(technology.getBelongsToField(PRODUCT).getId());
         componentsMap.get(PRODUCT).setEnabled(false);
+    }
+
+    private void clearValueFromField(final ViewDefinitionState view) {
+        view.getComponentByReference(ORDER).addMessage("costCalculation.messages.lackOfTechnology", MessageType.FAILURE);
+        view.getComponentByReference(DEFAULT_TECHNOLOGY).setFieldValue(EMPTY);
+        view.getComponentByReference(TECHNOLOGY).setFieldValue(EMPTY);
+        view.getComponentByReference(QUANTITY).setFieldValue(EMPTY);
+        view.getComponentByReference(PRODUCT).setFieldValue(EMPTY);
     }
 
     private void generateNumber(final ViewDefinitionState viewDefinitionState) {
@@ -262,6 +274,7 @@ public class CostCalculationViewService {
             return;
         }
         Entity technology = order.getBelongsToField(TECHNOLOGY);
+
         applyValuesToFields(viewDefinitionState, technology, order);
     }
 
@@ -305,11 +318,9 @@ public class CostCalculationViewService {
     /* Event handler, fire total calculation */
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity costCalculation = getEntityFromForm(view);
+
         if (costCalculation.getId() == null) {
-            view.getComponentByReference(FORM)
-                    .addMessage(
-                            translationService.translate("costCalculation.messages.failure.calculationOnUnsavedEntity",
-                                    view.getLocale()), FAILURE);
+            view.getComponentByReference(FORM).addMessage("costCalculation.messages.failure.calculationOnUnsavedEntity", FAILURE);
             return;
         }
         attachBelongsToFields(costCalculation);
@@ -317,8 +328,7 @@ public class CostCalculationViewService {
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
         fillFields(view, costCalculation);
         costCalculationReportService.generateCostCalculationReport(view, componentState, args);
-        view.getComponentByReference(FORM).addMessage(
-                translationService.translate("costCalculation.messages.success.calculationComplete", view.getLocale()), SUCCESS);
+        view.getComponentByReference(FORM).addMessage("costCalculation.messages.success.calculationComplete", SUCCESS);
     }
 
     private void attachBelongsToFields(final Entity costCalculation) {
@@ -344,7 +354,9 @@ public class CostCalculationViewService {
         FormComponent form = (FormComponent) view.getComponentByReference(FORM);
         checkArgument(form != null, "form is null");
         checkArgument(form.isValid(), "invalid form");
-        return form.getEntity();
+
+        Long id = form.getEntityId();
+        return form.getEntity().getDataDefinition().get(id);
     }
 
     private BigDecimal getBigDecimal(final Object value) {
@@ -364,7 +376,7 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
                 "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-                "totalTechnicalProductionCosts", "totalCosts", "totalCostsPerUnit", "additionalOverheadValue");
+                "totalTechnicalProductionCosts", "totalCosts", "costPerUnit", "additionalOverheadValue");
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);

@@ -35,7 +35,6 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
@@ -57,9 +56,6 @@ public class WorkPlanViewHooks {
 
     @Autowired
     private RibbonReportService ribbonReportService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;
@@ -141,13 +137,13 @@ public class WorkPlanViewHooks {
             Entity workPlan = workPlanService.getWorkPlan((Long) state.getFieldValue());
 
             if (workPlan == null) {
-                addFailureMessage(state, "qcadooView.message.entityNotFound");
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
-                addFailureMessage(state, "workPlans.workPlanDetails.window.workPlan.documentsWasGenerated");
+                state.addMessage("workPlans.workPlanDetails.window.workPlan.documentsWasGenerated", MessageType.FAILURE);
                 return;
             } else if (workPlan.getHasManyField("orders") == null) {
-                addFailureMessage(state, "workPlans.workPlan.window.workPlan.missingAssosiatedOrders");
+                state.addMessage("workPlans.workPlan.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
                 return;
             }
 
@@ -181,10 +177,6 @@ public class WorkPlanViewHooks {
     public final void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
                 WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN });
-    }
-
-    private void addFailureMessage(final ComponentState component, final String messageKey) {
-        component.addMessage(translationService.translate(messageKey, component.getLocale()), MessageType.FAILURE);
     }
 
 }

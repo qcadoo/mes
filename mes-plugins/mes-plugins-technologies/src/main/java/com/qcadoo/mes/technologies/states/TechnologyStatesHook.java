@@ -23,14 +23,11 @@
  */
 package com.qcadoo.mes.technologies.states;
 
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.logging.TechnologyLoggingService;
 import com.qcadoo.model.api.DataDefinition;
@@ -39,9 +36,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class TechnologyStatesHook {
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TechnologyStateChangeNotifierService technologyStateNotifier;
@@ -87,8 +81,7 @@ public class TechnologyStatesHook {
         DataDefinition technologyDD = technology.getDataDefinition();
         for (MessageHolder validationMessage : validationMessages) {
             if (validationMessage.getTargetReferenceName() == null) {
-                technology.addGlobalError(translationService.translate(validationMessage.getMessageKey(), getLocale(),
-                        validationMessage.getVars()));
+                technology.addGlobalError(validationMessage.getMessageKey(), validationMessage.getVars());
                 continue;
             }
             technology.addError(technologyDD.getField(validationMessage.getTargetReferenceName()),

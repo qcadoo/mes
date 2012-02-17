@@ -31,7 +31,6 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,9 +44,6 @@ public class QuantityService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     public void checkMinimalAffordableQuantity(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
@@ -74,21 +70,20 @@ public class QuantityService {
     }
 
     private void checkMinimalQuantityValue(final ViewDefinitionState view, final Entity technologyEntity) {
-        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
-        BigDecimal plannedQuantityBigDecFormat = getBigDecimalFromField(plannedQuantity.getFieldValue(), view.getLocale());
-        BigDecimal technologyBigDecimal = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"), view.getLocale());
+        FieldComponent plannedQuantityComponent = (FieldComponent) view.getComponentByReference("plannedQuantity");
+        BigDecimal plannedQuantity = getBigDecimalFromField(plannedQuantityComponent.getFieldValue(), view.getLocale());
+        BigDecimal minimalQuantity = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"), view.getLocale());
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                 technologyEntity.getBelongsToField("product").getId());
         String unit = product.getStringField("unit");
 
-        if (plannedQuantityBigDecFormat.compareTo(technologyBigDecimal) < 0) {
-            String message = translationService.translate("orders.order.report.minimalQuantity", view.getLocale());
+        if (plannedQuantity.compareTo(minimalQuantity) < 0) {
             ComponentState form = (ComponentState) view.getComponentByReference("form");
-            form.addMessage(message + " (" + technologyBigDecimal + " " + unit + ")", MessageType.INFO, false);
+            form.addMessage("orders.order.report.minimalQuantity", MessageType.INFO, false, minimalQuantity.toString(), unit);
         }
     }
 
-    public BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
+    private BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
         try {
             DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
             format.setParseBigDecimal(true);

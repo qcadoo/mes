@@ -125,15 +125,14 @@ public class OrderStatesService {
         order.getDataDefinition().save(order);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderFromDB.getStringField(FIELD_STATE).equals(newState.getStringValue())) {
+            StringBuilder errorMessages = new StringBuilder();
             for (ErrorMessage message : order.getErrors().values()) {
-                StringBuilder error = new StringBuilder();
-                error = error.append(translationService.translate("orders.order.orderStates.error", state.getLocale()));
-                error = error.append(" ");
-                error = error.append(orderFromDB.getStringField("name"));
-                error = error.append(" ");
-                error = error.append(message.getMessage());
-                state.addMessage(error.toString(), MessageType.FAILURE, false);
+                errorMessages.append(translationService.translate(message.getMessage(), state.getLocale(), message.getVars()));
+                errorMessages.append(", ");
             }
+            state.addMessage("orders.order.orderStates.error", MessageType.FAILURE, false, orderFromDB.getStringField("name"),
+                    errorMessages.toString());
+
         }
 
     }

@@ -31,7 +31,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -134,9 +133,6 @@ public final class QualityControlService {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private QualityControlForNumberService qualityControlForNumber;
@@ -251,11 +247,9 @@ public final class QualityControlService {
     public void closeQualityControl(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (state.getFieldValue() == null) {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.form.entityWithoutIdentifier", MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
             }
 
         } else {
@@ -267,12 +261,8 @@ public final class QualityControlService {
 
                 if (hasControlResult(qualityControlType) && controlResult != null
                         && (controlResult.getFieldValue() == null || ((String) controlResult.getFieldValue()).isEmpty())) {
-                    controlResult.addMessage(
-                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
-                            MessageType.FAILURE);
-                    state.addMessage(
-                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
-                            MessageType.FAILURE);
+                    controlResult.addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
+                    state.addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
                     return;
                 } else if (!hasControlResult(qualityControlType)
                         || (controlResult != null && ((controlResult.getFieldValue() != null) || !((String) controlResult
@@ -302,9 +292,7 @@ public final class QualityControlService {
 
                 if (hasControlResult(qualityControlType) && controlResultField != null
                         && (controlResult == null || controlResult.toString().isEmpty())) {
-                    state.addMessage(
-                            translationService.translate("qualityControls.quality.control.result.missing", state.getLocale()),
-                            MessageType.FAILURE);
+                    state.addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
                     return;
                 } else if (!hasControlResult(qualityControlType)
                         || (controlResultField == null || (controlResult != null && !controlResult.toString().isEmpty()))) {
@@ -317,8 +305,7 @@ public final class QualityControlService {
                     state.performEvent(viewDefinitionState, "refresh", new String[0]);
                 }
             }
-            state.addMessage(translationService.translate("qualityControls.quality.control.closed.success", state.getLocale()),
-                    MessageType.SUCCESS);
+            state.addMessage("qualityControls.quality.control.closed.success", MessageType.SUCCESS);
         }
     }
 
@@ -355,11 +342,9 @@ public final class QualityControlService {
             final String[] args) {
         if (state.getFieldValue() == null) {
             if (state instanceof FormComponent) {
-                state.addMessage(translationService.translate("qcadooView.form.entityWithoutIdentifier", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.form.entityWithoutIdentifier", MessageType.FAILURE);
             } else {
-                state.addMessage(translationService.translate("qcadooView.grid.noRowSelectedError", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
             }
         } else {
             DataDefinition orderDataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
@@ -373,22 +358,16 @@ public final class QualityControlService {
             }
 
             if (technology.getField(QUALITY_CONTROL_TYPE_LITERAL) == null) {
-                state.addMessage(
-                        translationService.translate("qualityControls.qualityControls.qualityType.missing", state.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qualityControls.qualityControls.qualityType.missing", MessageType.FAILURE);
             } else {
                 String qualityControlType = technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString();
 
                 if (isQualityControlForOrderExists(order)) {
-                    state.addMessage(
-                            translationService.translate("qualityControls.qualityControls.generated.failure", state.getLocale()),
-                            MessageType.FAILURE);
+                    state.addMessage("qualityControls.qualityControls.generated.failure", MessageType.FAILURE);
                 } else {
                     generateQualityControlForGivenType(qualityControlType, technology, order);
 
-                    state.addMessage(
-                            translationService.translate("qualityControls.qualityControls.generated.success", state.getLocale()),
-                            MessageType.SUCCESS);
+                    state.addMessage("qualityControls.qualityControls.generated.success", MessageType.SUCCESS);
                 }
 
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);

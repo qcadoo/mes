@@ -25,14 +25,13 @@ package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -50,10 +49,7 @@ public class ChangeStateHook {
     private OrderStateValidationService orderStateValidationService;
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
+    private DataDefinitionService dataDefinitionService;
 
     public void changedState(final DataDefinition dataDefinition, final Entity newEntity) {
         checkArgument(newEntity != null, "entity is null");
@@ -68,30 +64,29 @@ public class ChangeStateHook {
         }
         if (oldEntity.getStringField(FIELD_STATE).equals(newEntity.getStringField(FIELD_STATE))) {
             String state = oldEntity.getStringField(FIELD_STATE);
-            List<ChangeOrderStateMessage> errors = null;
+            List<ChangeOrderStateMessage> errors = Lists.newArrayList();
             if (state.equals(OrderStates.ACCEPTED.getStringValue())) {
-                errors = orderStateValidationService.validationAccepted(newEntity);
+                errors.addAll(orderStateValidationService.validationAccepted(newEntity));
             } else if (state.equals(OrderStates.IN_PROGRESS.getStringValue())
                     || state.equals(OrderStates.INTERRUPTED.getStringValue())) {
-                errors = orderStateValidationService.validationInProgress(newEntity);
+                errors.addAll(orderStateValidationService.validationInProgress(newEntity));
             } else if (state.equals(OrderStates.COMPLETED.getStringValue())) {
-                errors = orderStateValidationService.validationCompleted(newEntity);
+                errors.addAll(orderStateValidationService.validationCompleted(newEntity));
             }
-            if (errors != null && errors.size() > 0) {
+            if (!errors.isEmpty()) {
                 for (ChangeOrderStateMessage error : errors) {
                     if (error.getReferenceToField() == null) {
-                        newEntity
-                                .addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
-                                        error.getMessage() + "." + error.getReferenceToField(), getLocale()));
+                        newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
+                                error.getMessage() + "." + error.getReferenceToField());
                     } else {
-                        newEntity.addGlobalError(translationService.translate(error.getMessage(), getLocale(), error.getVars()));
+                        newEntity.addGlobalError(error.getMessage(), error.getVars());
                     }
                 }
             }
             return;
         }
         List<ChangeOrderStateMessage> errors = orderStatesChangingService.performChangeState(newEntity, oldEntity);
-        if (errors != null && errors.size() > 0) {
+        if (!errors.isEmpty()) {
             if (errors.size() == 1 && errors.get(0).getType().equals(MessageType.INFO)) {
                 return;
             }
@@ -100,9 +95,6 @@ public class ChangeStateHook {
                 if (error.getReferenceToField() == null) {
                     newEntity.addGlobalError(error.getMessage(), error.getVars());
                 } else {
-                    // newEntity.addError(dataDefinition.getField(error.getReferenceToField()), translationService.translate(
-                    // error.getMessage() + "." + error.getReferenceToField(), getLocale(), error.getVars()));
-                    //
                     newEntity.addError(dataDefinition.getField(error.getReferenceToField()),
                             error.getMessage() + "." + error.getReferenceToField(), error.getVars());
                 }

@@ -46,7 +46,6 @@ import org.mockito.Mockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -74,8 +73,6 @@ public class QualityControlServiceTest {
 
     private DataDefinitionService dataDefinitionService;
 
-    private TranslationService translationService;
-
     private QualityControlForNumberService qualityControlForNumber;
 
     private NumberService numberService;
@@ -89,12 +86,10 @@ public class QualityControlServiceTest {
         securityService = mock(SecurityService.class);
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         qualityControlService = new QualityControlService();
-        translationService = mock(TranslationService.class);
         numberService = mock(NumberService.class);
         qualityControlForNumber = mock(QualityControlForNumberService.class);
         setField(qualityControlService, "dataDefinitionService", dataDefinitionService);
         setField(qualityControlService, "securityService", securityService);
-        setField(qualityControlService, "translationService", translationService);
         setField(qualityControlService, "qualityControlForNumber", qualityControlForNumber);
         setField(qualityControlService, "numberService", numberService);
 
@@ -228,8 +223,6 @@ public class QualityControlServiceTest {
         given(qualityControlType.getFieldValue().equals("qualityControlsForOperation")).willReturn(false);
         given(controlResult.getFieldValue()).willReturn("03objection");
         given(securityService.getCurrentUserName()).willReturn("admin");
-        given(translationService.translate("qualityControls.quality.control.closed.success", Locale.ENGLISH)).willReturn(
-                "qualityControls.quality.control.closed.success.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityForOrder" });
@@ -257,8 +250,6 @@ public class QualityControlServiceTest {
         given(state.getFieldValue()).willReturn(7L);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(securityService.getCurrentUserName()).willReturn("admin");
-        given(translationService.translate("qualityControls.quality.control.closed.success", Locale.ENGLISH)).willReturn(
-                "qualityControls.quality.control.closed.success.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControl" });
@@ -266,7 +257,7 @@ public class QualityControlServiceTest {
         // then
         verify(qualityControl).setField("staff", "admin");
         verify(qualityControl).setField("closed", true);
-        verify(state).addMessage("qualityControls.quality.control.closed.success.pl", MessageType.SUCCESS);
+        verify(state).addMessage("qualityControls.quality.control.closed.success", MessageType.SUCCESS);
     }
 
     @Test
@@ -293,15 +284,13 @@ public class QualityControlServiceTest {
                 "qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOperation");
-        given(translationService.translate("qualityControls.quality.control.result.missing", Locale.ENGLISH)).willReturn(
-                "qualityControls.quality.control.result.missing.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(controlResult).addMessage("qualityControls.quality.control.result.missing.pl", MessageType.FAILURE);
-        verify(state).addMessage("qualityControls.quality.control.result.missing.pl", MessageType.FAILURE);
+        verify(controlResult).addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
+        verify(state).addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
     }
 
     @Test
@@ -329,14 +318,12 @@ public class QualityControlServiceTest {
         given((String) qualityControl.getField("qualityControlType")).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOperation");
-        given(translationService.translate("qualityControls.quality.control.result.missing", Locale.ENGLISH)).willReturn(
-                "qualityControls.quality.control.result.missing.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("qualityControls.quality.control.result.missing.pl", MessageType.FAILURE);
+        verify(state).addMessage("qualityControls.quality.control.result.missing", MessageType.FAILURE);
     }
 
     @Test
@@ -347,14 +334,12 @@ public class QualityControlServiceTest {
 
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier", MessageType.FAILURE);
     }
 
     @Test
@@ -365,14 +350,12 @@ public class QualityControlServiceTest {
 
         given(state.getFieldValue()).willReturn(null);
         given(state.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         qualityControlService.closeQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
     }
 
     @Test
@@ -414,8 +397,6 @@ public class QualityControlServiceTest {
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
-        given(translationService.translate("qualityControls.qualityControls.generated.success", Locale.ENGLISH)).willReturn(
-                "qualityControls.qualityControls.generated.success.pl");
 
         DataAccessService dataAccessService = mock(DataAccessService.class);
         given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
@@ -433,7 +414,7 @@ public class QualityControlServiceTest {
         qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("qualityControls.qualityControls.generated.success.pl", MessageType.SUCCESS);
+        verify(state).addMessage("qualityControls.qualityControls.generated.success", MessageType.SUCCESS);
     }
 
     @Test
@@ -453,8 +434,6 @@ public class QualityControlServiceTest {
         given(technology.getField("qualityControlType")).willReturn("02forUnit");
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
-        given(translationService.translate("qualityControls.qualityControls.generated.success", Locale.ENGLISH)).willReturn(
-                "qualityControls.qualityControls.generated.success.pl");
         given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
         given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
         given(
@@ -479,7 +458,7 @@ public class QualityControlServiceTest {
         qualityControlService.generateQualityControl(viewDefinitionState, state, new String[] { "qualityControls" });
 
         // then
-        verify(state).addMessage("qualityControls.qualityControls.generated.success.pl", MessageType.SUCCESS);
+        verify(state).addMessage("qualityControls.qualityControls.generated.success", MessageType.SUCCESS);
     }
 
     @Test

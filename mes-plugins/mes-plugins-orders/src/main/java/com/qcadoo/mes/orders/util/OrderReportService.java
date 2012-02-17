@@ -25,7 +25,6 @@ package com.qcadoo.mes.orders.util;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,6 +39,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -71,34 +71,34 @@ public class OrderReportService {
         GridComponent gridState = (GridComponent) state;
         Set<Entity> ordersEntities = new HashSet<Entity>();
         if (gridState.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage(translationService.translate("qcadooView.message.noRecordSelected", state.getLocale()),
-                    MessageType.FAILURE);
+            state.addMessage("qcadooView.message.noRecordSelected", MessageType.FAILURE);
             return null;
         }
-        List<String> errors = new LinkedList<String>();
+        List<ErrorMessage> errors = Lists.newLinkedList();
         for (Long orderId : gridState.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
             if (order == null) {
-                errors.add(translationService.translate("qcadooView.message.entityNotFound", state.getLocale()));
+                errors.add(new ErrorMessage("qcadooView.message.entityNotFound"));
                 continue;
             }
-            String validateMessage = orderValidator.validateOrder(order);
-            if (validateMessage == null) {
+            ErrorMessage errorMessage = orderValidator.validateOrder(order);
+            if (errorMessage == null) {
                 ordersEntities.add(order);
             } else {
-                errors.add(validateMessage);
+                errors.add(errorMessage);
             }
         }
         if (errors.size() == 0) {
             return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
         } else {
-            StringBuilder errorMessage = new StringBuilder();
-            for (String error : errors) {
-                errorMessage.append(" - ");
-                errorMessage.append(error);
-                errorMessage.append("\n");
+            StringBuilder errorMessages = new StringBuilder();
+            for (ErrorMessage error : errors) {
+                errorMessages.append(" - ");
+                String translatedError = translationService.translate(error.getMessage(), state.getLocale(), error.getVars());
+                errorMessages.append(translatedError);
+                errorMessages.append("\n");
             }
-            state.addMessage(errorMessage.toString(), MessageType.FAILURE, false);
+            state.addMessage(errorMessages.toString(), MessageType.FAILURE, false);
         }
         return null;
     }
@@ -159,7 +159,7 @@ public class OrderReportService {
 
     public interface OrderValidator {
 
-        String validateOrder(Entity order);
+        ErrorMessage validateOrder(Entity order);
     }
 
 }

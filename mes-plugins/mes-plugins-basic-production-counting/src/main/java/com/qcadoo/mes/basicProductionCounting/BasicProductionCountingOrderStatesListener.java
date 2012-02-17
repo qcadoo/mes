@@ -24,7 +24,6 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
@@ -61,8 +61,6 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
                 .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
 
-        List<ChangeOrderStateMessage> messages = new ArrayList<ChangeOrderStateMessage>();
-
         if (prodCountings == null || prodCountings.isEmpty()) {
             final Map<Entity, BigDecimal> productsReq = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order),
                     false);
@@ -84,6 +82,6 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
             productionCounting.getDataDefinition().save(productionCounting);
         }
 
-        return messages;
+        return Lists.newArrayList();
     }
 }

@@ -291,13 +291,15 @@ public class ProductionRecordService {
         productionRecord.setField("state", ProductionCountingStates.DRAFT.getStringValue());
     }
 
-    public final void fillShiftField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        fillShiftField(view);
+    public final void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component,
+            final String[] args) {
+        fillShiftAndDivisionField(view);
     }
 
-    public final void fillShiftField(final ViewDefinitionState view) {
+    public final void fillShiftAndDivisionField(final ViewDefinitionState view) {
         FieldComponent staffLookup = getFieldComponent(view, "staff");
         FieldComponent shiftLookup = getFieldComponent(view, "shift");
+        FieldComponent divisionLookup = getFieldComponent(view, "division");
 
         if (staffLookup.getFieldValue() == null) {
             shiftLookup.setFieldValue(null);
@@ -317,6 +319,14 @@ public class ProductionRecordService {
             shiftLookup.setFieldValue(null);
         } else {
             shiftLookup.setFieldValue(shift.getId());
+        }
+
+        Entity division = staff.getBelongsToField("division");
+
+        if (division == null) {
+            divisionLookup.setFieldValue(null);
+        } else {
+            divisionLookup.setFieldValue(division.getId());
         }
     }
 

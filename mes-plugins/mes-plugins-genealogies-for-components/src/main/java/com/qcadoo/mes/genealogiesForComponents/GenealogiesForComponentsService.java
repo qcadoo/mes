@@ -30,7 +30,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.genealogies.print.ReportService;
 import com.qcadoo.mes.genealogiesForComponents.constants.GenealogiesForComponentsConstants;
@@ -61,9 +60,6 @@ public class GenealogiesForComponentsService {
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private ReportService reportService;
@@ -171,15 +167,13 @@ public class GenealogiesForComponentsService {
         if (state instanceof FormComponent) {
             GridComponent batchState = (GridComponent) viewDefinitionState.getComponentByReference("batches");
             if ((batchState == null) || (batchState.getFieldValue() == null)) {
-                state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                        viewDefinitionState.getLocale()), MessageType.FAILURE);
+                state.addMessage("genealogiesForComponents.genealogyForComponent.report.noBatch", MessageType.FAILURE);
             } else {
                 viewDefinitionState.redirectTo(
                         "/genealogiesForComponents/genealogyForComponent.pdf?value=" + batchState.getFieldValue(), true, false);
             }
         } else {
-            state.addMessage(translationService.translate("genealogiesForComponents.genealogyForComponent.report.noBatch",
-                    viewDefinitionState.getLocale()), MessageType.FAILURE);
+            state.addMessage("genealogiesForComponents.genealogyForComponent.report.noBatch", MessageType.FAILURE);
         }
     }
 

@@ -29,10 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
@@ -46,22 +44,18 @@ import com.qcadoo.model.api.search.SearchResult;
 public class QualityControlOrderStatesListener extends OrderStateListener {
 
     @Autowired
-    TranslationService translationService;
-
-    @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-
         checkArgument(newEntity != null, "entity is null");
+
         List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(newEntity)) {
-            listOfMessage.add(ChangeOrderStateMessage.error(translationService.translate(
-                    "qualityControls.qualityControls.not.closed", LocaleContextHolder.getLocale())));
+            listOfMessage.add(ChangeOrderStateMessage.error("qualityControls.qualityControls.not.closed"));
         }
-        return listOfMessage;
 
+        return listOfMessage;
     }
 
     private boolean isQualityControlAutoCheckEnabled() {

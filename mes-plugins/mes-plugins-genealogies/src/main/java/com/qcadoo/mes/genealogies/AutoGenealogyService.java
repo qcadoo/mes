@@ -23,20 +23,16 @@
  */
 package com.qcadoo.mes.genealogies;
 
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -125,9 +121,6 @@ public class AutoGenealogyService extends OrderStateListener {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TranslationService translationService;
-
-    @Autowired
     private SecurityService securityService;
 
     @Autowired
@@ -167,24 +160,18 @@ public class AutoGenealogyService extends OrderStateListener {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     (Long) state.getFieldValue());
             if (order == null) {
-                state.addMessage(
-                        translationService.translate("qcadooView.message.entityNotFound", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
             } else {
                 List<ChangeOrderStateMessage> listOfMessage = createGenealogy(order, Boolean.parseBoolean(args[0]));
                 for (ChangeOrderStateMessage message : listOfMessage) {
-                    state.addMessage(message.getMessage(), message.getType());
+                    state.addMessage(message.getMessage(), message.getType(), message.getVars());
                 }
             }
         } else {
             if (state instanceof FormComponent) {
-                state.addMessage(
-                        translationService.translate("qcadooView.form.entityWithoutIdentifier", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.form.entityWithoutIdentifier", MessageType.FAILURE);
             } else {
-                state.addMessage(
-                        translationService.translate("qcadooView.grid.noRowSelectedError", viewDefinitionState.getLocale()),
-                        MessageType.FAILURE);
+                state.addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
             }
         }
     }
@@ -239,8 +226,7 @@ public class AutoGenealogyService extends OrderStateListener {
         Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
         List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (mainProduct == null || technology == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
-                    "genealogies.message.autoGenealogy.failure.product", getLocale())));
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure.product"));
             return listOfMessage;
         }
         Object mainBatch = null;
@@ -250,13 +236,11 @@ public class AutoGenealogyService extends OrderStateListener {
             mainBatch = mainProduct.getField(BATCH_MODEL);
         }
         if (mainBatch == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
-                    "genealogies.message.autoGenealogy.missingMainBatch", getLocale())));
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.missingMainBatch"));
             return listOfMessage;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
-            listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
-                    "genealogies.message.autoGenealogy.genealogyExist", getLocale())));
+            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
             return listOfMessage;
         }
         DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
@@ -274,20 +258,13 @@ public class AutoGenealogyService extends OrderStateListener {
         }
 
         if (genealogy.isValid()) {
-            listOfMessage.add(ChangeOrderStateMessage.success(translationService.translate(
-                    "genealogies.message.autoGenealogy.success", getLocale())));
+            listOfMessage.add(ChangeOrderStateMessage.success("genealogies.message.autoGenealogy.success"));
         } else {
             if (genealogy.getGlobalErrors().isEmpty()) {
-                listOfMessage.add(ChangeOrderStateMessage.info(translationService.translate(
-                        "genealogies.message.autoGenealogy.failure", getLocale())));
+                listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure"));
             } else {
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
-                    StringBuilder message = new StringBuilder(error.getMessage());
-                    for (String var : error.getVars()) {
-                        message.append("\n" + var);
-                    }
-                    listOfMessage
-                            .add(ChangeOrderStateMessage.error(translationService.translate(message.toString(), getLocale())));
+                    listOfMessage.add(ChangeOrderStateMessage.error(error.getMessage(), error.getVars()));
                 }
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -328,8 +305,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 shift.setField(VALUE_FIELD, currentAttribute.getField(SHIFT_FIELD));
             }
             if (shift.getField(VALUE_FIELD) == null) {
-                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingShift",
-                        getLocale()));
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingShift");
             } else {
                 genealogy.setField(SHIFT_FEATURES_FIELD, Collections.singletonList(shift));
             }
@@ -346,8 +322,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 other.setField(VALUE_FIELD, currentAttribute.getField(OTHER_FIELD));
             }
             if (other.getField(VALUE_FIELD) == null) {
-                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingOther",
-                        getLocale()));
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingOther");
             } else {
                 genealogy.setField(OTHER_FEATURES_FIELD, Collections.singletonList(other));
             }
@@ -364,8 +339,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 post.setField(VALUE_FIELD, currentAttribute.getField(POST_FIELD));
             }
             if (post.getField(VALUE_FIELD) == null) {
-                genealogy.addGlobalError(translationService.translate("genealogies.message.autoGenealogy.missingPost",
-                        getLocale()));
+                genealogy.addGlobalError("genealogies.message.autoGenealogy.missingPost");
             } else {
                 genealogy.setField(POST_FEATURES_FIELD, Collections.singletonList(post));
             }
@@ -411,9 +385,7 @@ public class AutoGenealogyService extends OrderStateListener {
             }
         }
         if (componentsWithoutBatch.size() > 0) {
-            genealogy.addGlobalError(
-                    translationService.translate("genealogies.message.autoGenealogy.missingBatch",
-                            LocaleContextHolder.getLocale()),
+            genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch",
                     componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }
     }

@@ -28,12 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
@@ -51,13 +49,10 @@ import com.qcadoo.view.api.components.FormComponent;
 public class CostCalculationReportService {
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    TranslationService translationService;
-
-    @Autowired
-    CostCalculationPdfService costCalculationPdfService;
+    private CostCalculationPdfService costCalculationPdfService;
 
     @Autowired
     private FileService fileService;
@@ -80,13 +75,10 @@ public class CostCalculationReportService {
                     CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
 
             if (costCalculation == null) {
-                String message = translationService.translate("qcadooView.message.entityNotFound", state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
             } else if (StringUtils.hasText(costCalculation.getStringField("fileName"))) {
-                String message = translationService.translate("qcadooReport.errorMessage.documentsWasNotGenerated",
-                        state.getLocale());
-                state.addMessage(message, MessageType.FAILURE);
+                state.addMessage("qcadooReport.errorMessage.documentsWasNotGenerated", MessageType.FAILURE);
                 return;
             }
 
@@ -119,7 +111,7 @@ public class CostCalculationReportService {
     private void generateCostCalDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
             DocumentException {
         Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "dateOfCalculation",
-                translationService.translate("costCalculation.costCalculation.report.fileName", LocaleContextHolder.getLocale()));
+                "costCalculation.costCalculation.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         costCalculationPdfService.generateDocument(costCalculationWithFileName, company, state.getLocale());

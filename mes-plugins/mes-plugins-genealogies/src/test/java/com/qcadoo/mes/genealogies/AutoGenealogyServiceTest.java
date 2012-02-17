@@ -50,7 +50,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -77,8 +76,6 @@ public class AutoGenealogyServiceTest {
 
     private DataDefinitionService dataDefinitionService;
 
-    private TranslationService translationService;
-
     private SecurityService securityService;
 
     private PluginManager pluginManager;
@@ -88,14 +85,12 @@ public class AutoGenealogyServiceTest {
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        translationService = mock(TranslationService.class);
         securityService = mock(SecurityService.class);
         pluginManager = mock(PluginManager.class);
         entity = mock(Entity.class);
         autoGenealogyService = new AutoGenealogyService();
 
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
-        setField(autoGenealogyService, "translationService", translationService);
         setField(autoGenealogyService, "securityService", securityService);
         setField(autoGenealogyService, "pluginManager", pluginManager);
         given(pluginManager.isPluginEnabled("genealogiesForComponents")).willReturn(true);
@@ -108,14 +103,12 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "qcadooView.grid.noRowSelectedError.pl");
 
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("qcadooView.grid.noRowSelectedError.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.grid.noRowSelectedError", MessageType.FAILURE);
     }
 
     @Test
@@ -125,14 +118,12 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "qcadooView.form.entityWithoutIdentifier.pl");
 
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
-        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.form.entityWithoutIdentifier", MessageType.FAILURE);
     }
 
     @Test
@@ -146,14 +137,12 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
                 .willReturn(null);
 
-        given(translationService.translate("qcadooView.message.entityNotFound", Locale.ENGLISH)).willReturn(
-                "qcadooView.message.entityNotFound.pl");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
         // then
         verify(state, times(2)).getFieldValue();
-        verify(state).addMessage("qcadooView.message.entityNotFound.pl", MessageType.FAILURE);
+        verify(state).addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
     }
 
     @Test
@@ -170,8 +159,6 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
                 order);
 
-        given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.failure.product");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
@@ -193,8 +180,6 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
                 order);
 
-        given(translationService.translate("genealogies.message.autoGenealogy.failure.product", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.failure.product");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
@@ -219,8 +204,6 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
                 order);
 
-        given(translationService.translate("genealogies.message.autoGenealogy.missingMainBatch", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.missingMainBatch");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
@@ -267,8 +250,6 @@ public class AutoGenealogyServiceTest {
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
                         .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
 
-        given(translationService.translate("genealogies.message.autoGenealogy.genealogyExist", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.genealogyExist");
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
 
@@ -318,9 +299,6 @@ public class AutoGenealogyServiceTest {
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
                         .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
 
-        given(translationService.translate("genealogies.message.autoGenealogy.failure", Locale.ENGLISH)).willReturn(
-                "genealogies.message.autoGenealogy.failure");
-
         given(
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create()
                         .isValid()).willReturn(true);
@@ -346,8 +324,6 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.grid.noRowSelectedError", Locale.ENGLISH)).willReturn(
-                "qcadooView.grid.noRowSelectedError");
         Entity parameter = mock(Entity.class);
         SearchResult searchResult = mock(SearchResult.class);
         given(
@@ -369,8 +345,6 @@ public class AutoGenealogyServiceTest {
         given(state.getFieldValue()).willReturn(null);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        given(translationService.translate("qcadooView.form.entityWithoutIdentifier", Locale.ENGLISH)).willReturn(
-                "qcadooView.form.entityWithoutIdentifier");
 
         Entity parameter = mock(Entity.class);
         SearchResult searchResult = mock(SearchResult.class);
@@ -398,8 +372,6 @@ public class AutoGenealogyServiceTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
                 .willReturn(null);
 
-        given(translationService.translate("qcadooView.message.entityNotFound", Locale.ENGLISH)).willReturn(
-                "qcadooView.message.entityNotFound.pl");
         Entity parameter = mock(Entity.class);
         SearchResult searchResult = mock(SearchResult.class);
         given(
