@@ -504,7 +504,7 @@
 								</layoutElement>
 								<layoutElement column="1" row="4" width="2">
 									<component type="input" name="costPerUnit" field="#{form}.costPerUnit"
-										defaultEnabled="false" reference="totalCostsPerUnit" hasLabel="false">
+										defaultEnabled="false" reference="costPerUnit" hasLabel="false">
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
