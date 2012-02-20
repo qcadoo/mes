@@ -57,6 +57,10 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class BasicProductionCountingService {
 
+    private static final String PRODUCED_QUANTITY_L = "producedQuantity";
+
+    private static final String FORM_L = "form";
+
     private static final String COMPONENT = "01component";
 
     private static final String INTERMEDIATE = "02intermediate";
@@ -160,7 +164,7 @@ public class BasicProductionCountingService {
 
     public void getProductNameFromCounting(final ViewDefinitionState view) {
         FieldComponent productField = (FieldComponent) view.getComponentByReference(MODEL_FIELD_PRODUCT);
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM_L);
         if (formComponent.getEntityId() == null) {
             return;
         }
@@ -175,7 +179,7 @@ public class BasicProductionCountingService {
     }
 
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(FORM_L);
         if (form.getEntity() == null) {
             return;
         }
@@ -213,7 +217,7 @@ public class BasicProductionCountingService {
     }
 
     public void fillFieldsCurrency(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(FORM_L);
         if (form.getEntity() == null) {
             return;
         }
@@ -250,8 +254,8 @@ public class BasicProductionCountingService {
     }
 
     public void shouldDisableUsedProducedField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        FieldComponent producedField = (FieldComponent) view.getComponentByReference("producedQuantity");
+        FormComponent form = (FormComponent) view.getComponentByReference(FORM_L);
+        FieldComponent producedField = (FieldComponent) view.getComponentByReference(PRODUCED_QUANTITY_L);
         FieldComponent usedField = (FieldComponent) view.getComponentByReference("usedQuantity");
 
         if (form.getEntityId() != null) {
@@ -314,8 +318,8 @@ public class BasicProductionCountingService {
     };
 
     public void fillDoneQuantityField(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
-        final FormComponent form = (FormComponent) viewState.getComponentByReference("form");
-        final FieldComponent producedQuantity = (FieldComponent) viewState.getComponentByReference("producedQuantity");
+        final FormComponent form = (FormComponent) viewState.getComponentByReference(FORM_L);
+        final FieldComponent producedQuantity = (FieldComponent) viewState.getComponentByReference(PRODUCED_QUANTITY_L);
         final Long countingId = form.getEntityId();
         if (countingId != null) {
             final Entity counting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -345,7 +349,7 @@ public class BasicProductionCountingService {
 
     public boolean checkValueOfQuantity(final DataDefinition dataDefinition, final Entity entity) {
         BigDecimal usedQuantity = (BigDecimal) entity.getField("usedQuantity");
-        BigDecimal producedQuantity = (BigDecimal) entity.getField("producedQuantity");
+        BigDecimal producedQuantity = (BigDecimal) entity.getField(PRODUCED_QUANTITY_L);
         if (usedQuantity == null && producedQuantity == null) {
             return true;
         }
@@ -353,7 +357,7 @@ public class BasicProductionCountingService {
             entity.addError(dataDefinition.getField("usedQuantity"), "basic.production.counting.value.lower.zero");
         }
         if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            entity.addError(dataDefinition.getField("producedQuantity"), "basic.production.counting.value.lower.zero");
+            entity.addError(dataDefinition.getField(PRODUCED_QUANTITY_L), "basic.production.counting.value.lower.zero");
         }
         if (!entity.getGlobalErrors().isEmpty() || !entity.getErrors().isEmpty()) {
             return false;

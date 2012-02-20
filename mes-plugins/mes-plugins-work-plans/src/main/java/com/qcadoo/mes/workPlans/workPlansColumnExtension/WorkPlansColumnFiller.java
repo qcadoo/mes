@@ -46,6 +46,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     // TODO mici, those constants will end up as duplication somewhere,
     // in the columnLoader probably, they should be either here or there.
 
+    private static final String REFERENCE_TECHNOLOGY_L = "referenceTechnology";
+
     private static final String PRODUCT_COLUMN = "productName";
 
     private static final String QUANTITY_COLUMN = "plannedQuantity";
@@ -78,8 +80,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
 
         for (Entity operationComponent : operationComponents) {
-            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+            if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
                 fillProductNames(refTech, valuesMap);
                 continue;
             }
@@ -112,8 +114,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
 
         for (Entity operationComponent : operationComponents) {
-            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+            if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
                 fillPlannedQuantities(refTech, productQuantities, valuesMap);
                 continue;
             }

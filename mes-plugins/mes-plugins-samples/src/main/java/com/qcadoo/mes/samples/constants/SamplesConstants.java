@@ -53,10 +53,6 @@ public interface SamplesConstants {
 
     String PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE = "productionBalance";
 
-    String PRODUCTIONBALANCE_PLUGIN_IDENTIFIER = "productionCounting";
-
-    String PRODUCTION_RECORD_PLUGIN_IDENTIFIER = "productionCounting";
-
     String PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD = "productionRecord";
 
     String BASIC_MODEL_SUBSTITUTE = "substitute";

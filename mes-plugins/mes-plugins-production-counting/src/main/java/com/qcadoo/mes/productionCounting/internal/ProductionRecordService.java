@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_DIVISION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
@@ -299,7 +300,7 @@ public class ProductionRecordService {
     public final void fillShiftAndDivisionField(final ViewDefinitionState view) {
         FieldComponent staffLookup = getFieldComponent(view, "staff");
         FieldComponent shiftLookup = getFieldComponent(view, "shift");
-        FieldComponent divisionLookup = getFieldComponent(view, "division");
+        FieldComponent divisionLookup = getFieldComponent(view, MODEL_DIVISION);
 
         if (staffLookup.getFieldValue() == null) {
             shiftLookup.setFieldValue(null);
@@ -321,7 +322,7 @@ public class ProductionRecordService {
             shiftLookup.setFieldValue(shift.getId());
         }
 
-        Entity division = staff.getBelongsToField("division");
+        Entity division = staff.getBelongsToField(MODEL_DIVISION);
 
         if (division == null) {
             divisionLookup.setFieldValue(null);
@@ -336,7 +337,7 @@ public class ProductionRecordService {
 
     public final void fillDivisionField(final ViewDefinitionState view) {
         FieldComponent workstationTypeLookup = getFieldComponent(view, "workstationType");
-        FieldComponent divisionLookup = getFieldComponent(view, "division");
+        FieldComponent divisionLookup = getFieldComponent(view, MODEL_DIVISION);
 
         if (workstationTypeLookup.getFieldValue() == null) {
             divisionLookup.setFieldValue(null);
@@ -351,7 +352,7 @@ public class ProductionRecordService {
             return;
         }
 
-        Entity division = workstationType.getBelongsToField("division");
+        Entity division = workstationType.getBelongsToField(MODEL_DIVISION);
 
         if (division == null) {
             divisionLookup.setFieldValue(null);
