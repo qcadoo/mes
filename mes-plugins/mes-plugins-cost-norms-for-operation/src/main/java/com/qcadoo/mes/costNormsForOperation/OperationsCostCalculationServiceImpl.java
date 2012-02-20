@@ -66,7 +66,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private static final String QUANTITY_FIELD = "quantity";
 
-    private static final String TECHNOLOGY_FIELD = "technology";
+    private static final String TECHNOLOGY_FIELD = TECHNOLOGY_FIELD;
 
     private static final String ORDER_L = "order";
 
@@ -121,10 +121,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         checkArgument(operationComponents != null, "given operation components is null");
 
-        Entity technology = costCalculation.getBelongsToField("technology");
+        Entity technology = costCalculation.getBelongsToField(TECHNOLOGY_FIELD);
         Entity order = costCalculation.getBelongsToField("order");
         if (order != null) {
-            Entity technologyFromOrder = order.getBelongsToField("technology");
+            Entity technologyFromOrder = order.getBelongsToField(TECHNOLOGY_FIELD);
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
@@ -135,7 +135,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             if (operationComponents.getRoot() == null) {
                 costCalculation.addError(costCalculation.getDataDefinition().getField("order"),
                         "costCalculation.lackOfTreeComponents");
-                costCalculation.addError(costCalculation.getDataDefinition().getField("technology"),
+                costCalculation.addError(costCalculation.getDataDefinition().getField(TECHNOLOGY_FIELD),
                         "costCalculation.lackOfTreeComponents");
                 return;
             }
