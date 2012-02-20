@@ -228,7 +228,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
         multiplier = multiplier.setScale(0, RoundingMode.CEILING); // we need this CEIL here, because an operation cannot be run
                                                                    // partially
-
         operationRuns.put(operationComponent, multiplier);
 
         for (Entity currentOut : operationComponent.getHasManyField("operationProductOutComponents")) {

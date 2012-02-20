@@ -380,7 +380,7 @@ public class CostCalculationViewService {
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            fieldComponent.setFieldValue(numberService.format(getBigDecimal(costCalculation.getField(referenceName))));
+            fieldComponent.setFieldValue(getBigDecimal(costCalculation.getField(referenceName)));
         }
     }
 
