@@ -123,6 +123,9 @@ public class NormOrderService {
 
         Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
         Entity existingOrderTechnology = existingOrder.getBelongsToField(TECHNOLOGY_FIELD);
+        if (existingOrderTechnology == null) {
+            return true;
+        }
         return !existingOrderTechnology.equals(technology);
     }
 
