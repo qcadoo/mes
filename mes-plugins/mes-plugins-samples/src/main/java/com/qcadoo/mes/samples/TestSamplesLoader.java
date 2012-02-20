@@ -525,19 +525,6 @@ public class TestSamplesLoader extends SamplesLoader {
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
         validateEntity(order);
 
-        // TODO MACS: For some reason can't change order state in samples (orders with numbers 1-3 have to be accepted)
-        // if ("000001".equals(values.get("order_nr")) || "000002".equals(values.get("order_nr"))
-        // ||"000003".equals(values.get("order_nr"))) {
-        // order.setField("state", "02accepted");
-        //
-        // order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
-        // validateEntity(order);
-        //
-        // order.setField("state", "03inProgress");
-        //
-        // order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
-        // validateEntity(order);
-        // }
     }
 
     private void addBatches(final Map<String, String> values) {
@@ -692,10 +679,11 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
 
-            // if (isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type"))) {
-            // // TODO MACS: it looks like extended enum's don't work in samples, this is required by quality controls
-            // // technology.setField("qualityControlType", "04forOperation");
-            // } else if (isEnabled("qualityControls")
+            if (isEnabled("qualityControlsForOperation")
+                    && "qualityControlsForOperation".equals(values.get("qualitycontroltype"))) {
+                technology.setField("qualityControlType", "qualityControlsForOperation");
+            }
+
             if (!(isEnabled("qualityControlsForOperation") && "04forOperation".equals(values.get("quality_control_type")))
                     && isEnabled("qualityControls")
                     && ("02forUnit".equals(values.get("quality_control_type")) || "03forOrder".equals(values
@@ -932,7 +920,7 @@ public class TestSamplesLoader extends SamplesLoader {
     void addProductionRecord(final Map<String, String> values) {
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_RECORD_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
-        productionRecord.setField("number", ("000001"));
+        productionRecord.setField("number", getProductionRecordByNumber("number"));
         productionRecord.setField("name", values.get("name"));
         productionRecord.setField("order", getOrderByNumber(values.get("order")));
         productionRecord.setField("orderOperationComponent",
@@ -940,7 +928,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField("shift", getShiftByName(values.get("shift")));
         productionRecord.setField("state", values.get("state"));
         productionRecord.setField("lastRecord", values.get("lastrecord"));
-        productionRecord.setField("machineTime", values.get("machineTime"));
+        productionRecord.setField("machineTime", values.get("machinetime"));
         productionRecord.setField("machineTimeBalance", values.get("machinetimebalance"));
         productionRecord.setField("laborTime", values.get("labortime"));
         productionRecord.setField("laborTimeBalance", values.get("labortimebalance"));
@@ -957,11 +945,32 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField("loggings", loggings1);
 
         List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(
-                getProductByNumber("000025"), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+                getProductByNumber("000018"), new BigDecimal("150"), new BigDecimal("152"), new BigDecimal("2")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000019"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000020"), new BigDecimal("2400"),
+                new BigDecimal("2400"), new BigDecimal("0")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000021"), new BigDecimal("2400"),
+                new BigDecimal("2400"), new BigDecimal("0")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000022"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000023"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000024"), new BigDecimal("150"),
+                new BigDecimal("182"), new BigDecimal("32")));
+
         productionRecord.setField("recordOperationProductInComponents", recOpProdInComponents);
 
         List<Entity> recOpProdOutComponents1 = Lists.newArrayList(addRecordOperationProductOutComponent(
-                getProductByNumber("000025"), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+                getProductByNumber("000017"), new BigDecimal("150"), new BigDecimal("150"), new BigDecimal("0")));
+
+        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000019"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000022"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000023"), new BigDecimal("600"),
+                new BigDecimal("600"), new BigDecimal("0")));
+
         productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
 
         productionRecord = productionRecord.getDataDefinition().save(productionRecord);
