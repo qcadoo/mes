@@ -66,7 +66,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private static final String QUANTITY_FIELD = "quantity";
 
-    private static final String TECHNOLOGY_FIELD = TECHNOLOGY_FIELD;
+    private static final String TECHNOLOGY_FIELD = "technology";
 
     private static final String ORDER_L = "order";
 
