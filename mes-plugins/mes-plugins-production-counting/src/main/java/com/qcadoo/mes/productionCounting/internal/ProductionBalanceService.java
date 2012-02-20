@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -88,18 +90,18 @@ public class ProductionBalanceService {
     }
 
     public boolean validateOrder(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getBelongsToField("order").getStringField("typeOfProductionRecording") == null
-                || entity.getBelongsToField("order").getStringField("typeOfProductionRecording").equals("01none")) {
-            entity.addError(dataDefinition.getField("order"),
+        if (entity.getBelongsToField(MODEL_ORDER).getStringField("typeOfProductionRecording") == null
+                || entity.getBelongsToField(MODEL_ORDER).getStringField("typeOfProductionRecording").equals("01none")) {
+            entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
             return false;
         }
         List<Entity> productionRecordList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo("order", entity.getBelongsToField("order"))).list().getEntities();
+                .add(SearchRestrictions.belongsTo(MODEL_ORDER, entity.getBelongsToField(MODEL_ORDER))).list().getEntities();
         if (productionRecordList.size() == 0) {
-            entity.addError(dataDefinition.getField("order"),
+            entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
             return false;
         }
@@ -115,7 +117,7 @@ public class ProductionBalanceService {
             ComponentState worker = viewDefinitionState.getComponentByReference(WORKER_FIELD);
             FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference("name");
             FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference("description");
-            FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference("order");
+            FieldComponent order = (FieldComponent) viewDefinitionState.getComponentByReference(MODEL_ORDER);
             Entity productionBalance = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
 
@@ -161,7 +163,7 @@ public class ProductionBalanceService {
     }
 
     private void requestComponentUpdateState(final ViewDefinitionState view) {
-        for (String reference : Arrays.asList("name", "description", "order", WORKER_FIELD, GENERATED_FIELD, DATE_FIELD)) {
+        for (String reference : Arrays.asList("name", "description", MODEL_ORDER, WORKER_FIELD, GENERATED_FIELD, DATE_FIELD)) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.requestComponentUpdateState();
         }

@@ -63,6 +63,8 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class MaterialsInStockAreasService {
 
+    private static final String STOCK_AREAS_L = "stockAreas";
+
     private static final String FILE_NAME_FIELD = "fileName";
 
     private static final String WORKER_FIELD = "worker";
@@ -117,7 +119,7 @@ public class MaterialsInStockAreasService {
         } else {
 
             Entity materialsInStockAreasEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
-            List<Entity> stockAreaComponents = (List<Entity>) materialsInStockAreasEntity.getField("stockAreas");
+            List<Entity> stockAreaComponents = (List<Entity>) materialsInStockAreasEntity.getField(STOCK_AREAS_L);
 
             if (materialsInStockAreasEntity.getField(GENERATED_FIELD) == null) {
                 materialsInStockAreasEntity.setField(GENERATED_FIELD, "0");
@@ -201,18 +203,18 @@ public class MaterialsInStockAreasService {
     }
 
     public boolean checkMaterialFlowComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity stockAreas = entity.getBelongsToField("stockAreas");
+        Entity stockAreas = entity.getBelongsToField(STOCK_AREAS_L);
         Entity materialsInStockAreas = entity.getBelongsToField("materialsInStockAreas");
 
         if (materialsInStockAreas == null || stockAreas == null) {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo("stockAreas", stockAreas))
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo(STOCK_AREAS_L, stockAreas))
                 .add(SearchRestrictions.belongsTo("materialsInStockAreas", materialsInStockAreas)).list();
 
         if (searchResult.getTotalNumberOfEntities() == 1 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField("stockAreas"),
+            entity.addError(dataDefinition.getField(STOCK_AREAS_L),
                     "materialFlow.validate.global.error.mmaterialsInStockAreasDuplicated");
             return false;
         } else {
@@ -238,7 +240,7 @@ public class MaterialsInStockAreasService {
                 state.addMessage("materialFlow.materialsInStockAreasDetails.window.materialRequirement.documentsWasGenerated",
                         MessageType.FAILURE);
                 return;
-            } else if (materialsInStockAreas.getHasManyField("stockAreas").isEmpty()) {
+            } else if (materialsInStockAreas.getHasManyField(STOCK_AREAS_L).isEmpty()) {
                 state.addMessage(
                         "materialFlow.materialsInStockAreasDetails.window.materialRequirement.missingAssosiatedStockAreas",
                         MessageType.FAILURE);

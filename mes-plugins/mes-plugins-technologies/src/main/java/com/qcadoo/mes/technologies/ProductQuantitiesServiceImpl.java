@@ -42,6 +42,12 @@ import com.qcadoo.model.api.NumberService;
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
+    private static final String OPERATION_PRODUCT_IN_COMPONENTS_L = "operationProductInComponents";
+
+    private static final String OPERATION_PRODUCT_OUT_COMPONENTS_L = "operationProductOutComponents";
+
+    private static final String REFERENCE_TECHNOLOGY_L = "referenceTechnology";
+
     private static final String PRODUCT_L = "product";
 
     private static final String IN_PRODUCT = "operationProductInComponent";
@@ -202,19 +208,19 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private void preloadProductQuantitiesAndOperationRuns(final EntityTree tree, final Map<Entity, BigDecimal> productQuantities,
             Map<Entity, BigDecimal> operationRuns) {
         for (Entity operationComponent : tree) {
-            if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-                Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+            if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
                 EntityTree refTree = refTech.getTreeField("operationComponents");
                 preloadProductQuantitiesAndOperationRuns(refTree, productQuantities, operationRuns);
                 continue;
             }
 
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductInComponents")) {
+            for (Entity productComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_L)) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
                 productQuantities.put(productComponent, neededQty);
             }
 
-            for (Entity productComponent : operationComponent.getHasManyField("operationProductOutComponents")) {
+            for (Entity productComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS_L)) {
                 BigDecimal neededQty = (BigDecimal) productComponent.getField("quantity");
                 productQuantities.put(productComponent, neededQty);
             }
@@ -230,12 +236,12 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                                                                    // partially
         operationRuns.put(operationComponent, multiplier);
 
-        for (Entity currentOut : operationComponent.getHasManyField("operationProductOutComponents")) {
+        for (Entity currentOut : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS_L)) {
             BigDecimal currentOutQty = mapWithQuantities.get(currentOut);
             mapWithQuantities.put(currentOut, currentOutQty.multiply(multiplier, numberService.getMathContext()));
         }
 
-        for (Entity currentIn : operationComponent.getHasManyField("operationProductInComponents")) {
+        for (Entity currentIn : operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_L)) {
             BigDecimal currentInQuantity = mapWithQuantities.get(currentIn);
             mapWithQuantities.put(currentIn, currentInQuantity.multiply(multiplier, numberService.getMathContext()));
         }
@@ -245,8 +251,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private void traverse(final Entity operationComponent, final Entity previousOperationComponent,
             final Map<Entity, BigDecimal> productQuantities, final Set<Entity> nonComponents, final BigDecimal plannedQty,
             final Entity technology, final Map<Entity, BigDecimal> operationRuns) {
-        if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-            Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
+        if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
+            Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
             EntityTree refTree = refTech.getTreeField("operationComponents");
             traverse(refTree.getRoot(), previousOperationComponent, productQuantities, nonComponents, plannedQty, refTech,
                     operationRuns);
@@ -256,7 +262,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         if (previousOperationComponent == null) {
             Entity outProduct = technology.getBelongsToField(PRODUCT_L);
 
-            for (Entity out : operationComponent.getHasManyField("operationProductOutComponents")) {
+            for (Entity out : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS_L)) {
                 if (out.getBelongsToField(PRODUCT_L).getId().equals(outProduct.getId())) {
 
                     BigDecimal outQuantity = productQuantities.get(out);
@@ -267,10 +273,10 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 }
             }
         } else {
-            for (Entity in : previousOperationComponent.getHasManyField("operationProductInComponents")) {
+            for (Entity in : previousOperationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS_L)) {
                 boolean isntComponent = false;
 
-                for (Entity out : operationComponent.getHasManyField("operationProductOutComponents")) {
+                for (Entity out : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS_L)) {
                     if (out.getBelongsToField(PRODUCT_L).getId().equals(in.getBelongsToField(PRODUCT_L).getId())) {
                         isntComponent = true;
 

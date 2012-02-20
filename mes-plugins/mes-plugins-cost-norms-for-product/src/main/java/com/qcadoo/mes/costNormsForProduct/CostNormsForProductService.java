@@ -61,6 +61,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class CostNormsForProductService {
 
+    private static final String VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
+
     private static final String FORM_L = "form";
 
     private static final String AVERAGE_COST_L = "averageCost";
@@ -94,7 +96,7 @@ public class CostNormsForProductService {
     }
 
     private void fillUnitField(final ViewDefinitionState viewDefinitionState, final String fieldName) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
 
@@ -125,7 +127,7 @@ public class CostNormsForProductService {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
 
@@ -155,7 +157,7 @@ public class CostNormsForProductService {
     }
 
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
@@ -191,7 +193,7 @@ public class CostNormsForProductService {
 
     public void copyCostsFromProducts(final ViewDefinitionState viewDefinitionState, final ComponentState component,
             final String[] args) {
-        checkArgument(viewDefinitionState != null, "viewDefinitionState is null");
+        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
