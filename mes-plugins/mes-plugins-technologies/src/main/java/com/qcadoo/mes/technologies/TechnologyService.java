@@ -742,10 +742,10 @@ public class TechnologyService {
 
         if (parentOpComp == null) {
             Entity technology = operationComponent.getBelongsToField("technology");
-            Entity product = technology.getBelongsToField("product");
+            Entity product = technology.getBelongsToField(PRODUCT_L);
 
             for (Entity prodOutComp : prodOutComps) {
-                if (prodOutComp.getBelongsToField("product").getId().equals(product.getId())) {
+                if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
                     return (BigDecimal) prodOutComp.getField("quantity");
                 }
             }
@@ -754,7 +754,7 @@ public class TechnologyService {
 
             for (Entity prodOutComp : prodOutComps) {
                 for (Entity prodInComp : prodInComps) {
-                    if (prodOutComp.getBelongsToField("product").getId().equals(prodInComp.getBelongsToField("product").getId())) {
+                    if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(prodInComp.getBelongsToField(PRODUCT_L).getId())) {
                         return (BigDecimal) prodOutComp.getField("quantity");
                     }
                 }
