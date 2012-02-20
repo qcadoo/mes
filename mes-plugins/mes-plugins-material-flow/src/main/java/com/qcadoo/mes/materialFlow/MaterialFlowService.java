@@ -327,49 +327,6 @@ public class MaterialFlowService {
         return productsFromTransfers;
     }
 
-    public void fillTransferConsumptionDataFromTransformation(final ViewDefinitionState state,
-            final ComponentState componentState, final String[] args) {
-        String number = state.getComponentByReference(NUMBER_FIELD).getFieldValue().toString();
-        componentState.performEvent(state, "save", new String[0]);
-
-        DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFER);
-        Long id = transferDataDefinition.find().add(SearchRestrictions.eq(NUMBER_FIELD, number)).uniqueResult().getId();
-        if (id == null) {
-            return;
-        }
-
-        Entity transferCopy = transferDataDefinition.get(id);
-
-        Entity transformation = transferCopy.getBelongsToField(TRANSFORMATIONS_CONSUMPTION_FIELD);
-        transferCopy.setField(TYPE_FIELD, "Consumption");
-        transferCopy.setField(TIME_FIELD, transformation.getField(TIME_FIELD));
-        transferCopy.setField(STOCK_AREAS_FROM_FIELD, transformation.getField(STOCK_AREAS_FROM_FIELD));
-        transferCopy.setField(STAFF_FIELD, transformation.getField(STAFF_FIELD));
-
-        transferDataDefinition.save(transferCopy);
-    }
-
-    public void fillTransferProductionDataFromTransformation(final ViewDefinitionState state,
-            final ComponentState componentState, final String[] args) {
-        String number = state.getComponentByReference(NUMBER_FIELD).getFieldValue().toString();
-        componentState.performEvent(state, "save", new String[0]);
-
-        DataDefinition transferDataDefinition = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFER);
-        Long id = transferDataDefinition.find().add(SearchRestrictions.eq(NUMBER_FIELD, number)).uniqueResult().getId();
-
-        Entity transferCopy = transferDataDefinition.get(id);
-
-        Entity transformation = transferCopy.getBelongsToField(TRANSFORMATIONS_PRODUCTION_FIELD);
-        transferCopy.setField(TYPE_FIELD, "Production");
-        transferCopy.setField(TIME_FIELD, transformation.getField(TIME_FIELD));
-        transferCopy.setField(STOCK_AREAS_TO_FIELD, transformation.getField(STOCK_AREAS_TO_FIELD));
-        transferCopy.setField(STAFF_FIELD, transformation.getField(STAFF_FIELD));
-
-        transferDataDefinition.save(transferCopy);
-    }
-
     public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState state,
             final ComponentState componentState, final String[] args) {
         disableStockAreaFieldForParticularTransferType(state);

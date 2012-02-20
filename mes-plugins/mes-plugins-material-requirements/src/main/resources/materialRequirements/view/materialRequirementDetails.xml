@@ -85,8 +85,10 @@
 					function updateRibbon() {
 						if (entityExists) {
 							var isGeneratedCheckboxValue = #{generated}.getValue();
+							var generated = false;
 							copyRibbonItem.enable();
 							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								var generated = true;
 								xlsRibbonItem.enable();
 								pdfRibbonItem.enable();
 								generateRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
@@ -94,12 +96,22 @@
 								saveBack.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveNew.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
+							
+							if(containsAtLeastOneOrder && !generated){
 								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								generateRibbonItem.enable();
 								saveRibbonItem.enable();
 								saveBack.enable();
+								saveNew.enable(); } else
+								{
+								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								generateRibbonItem.disable();
+								saveRibbonItem.enable();
+								saveBack.enable();
 								saveNew.enable();
+								}
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");

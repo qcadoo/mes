@@ -43,6 +43,7 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="validateTransfer" />
+		<onSave class="com.qcadoo.mes.materialFlow.hooks.MaterialFlowTransferModelHooks" method="copyProductionOrConsumptionDataFromBelongingTransformation" />
  	</hooks>
 	<identifier expression="#number + ' - ' + #name" />	
 </model>
