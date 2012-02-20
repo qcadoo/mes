@@ -78,13 +78,9 @@ public class TechnologyService {
 
     private static final String REFERENCE_TECHNOLOGY_FIELD = "referenceTechnology";
 
-    private static final String PRODUCT_FIELD = "product";
+    private static final String PRODUCT_L = "product";
 
     private static final String NAME_FIELD = "name";
-
-    private static final String QUALITY_CONTROL_REQUIRED_FIELD = "qualityControlRequired";
-
-    private static final String CHILDREN_FIELD = "children";
 
     private static final String STATE_FIELD = "state";
 
@@ -96,7 +92,7 @@ public class TechnologyService {
 
     public static final String WASTE = "04waste";
 
-    public static final String PRODUCT = "03finalProduct";
+    public static final String FINAL_PRODUCT = "03finalProduct";
 
     public static final String COMPONENT = "01component";
 
@@ -107,8 +103,6 @@ public class TechnologyService {
     private static final String CONST_TECHNOLOGY = "technology";
 
     private static final String CONST_MASTER = "master";
-
-    private static final String CONST_PRODUCT = PRODUCT_FIELD;
 
     private static final String CONST_ENTITY_TYPE = ENTITY_TYPE_FIELD;
 
@@ -157,7 +151,7 @@ public class TechnologyService {
             return;
         }
         SearchCriteriaBuilder searchCriteria = dataDefinition.find();
-        searchCriteria.add(SearchRestrictions.belongsTo(CONST_PRODUCT, entity.getBelongsToField(CONST_PRODUCT)));
+        searchCriteria.add(SearchRestrictions.belongsTo(PRODUCT_L, entity.getBelongsToField(PRODUCT_L)));
         entity.setField(CONST_MASTER, searchCriteria.list().getTotalNumberOfEntities() == 0);
     }
 
@@ -168,7 +162,7 @@ public class TechnologyService {
 
         SearchCriteriaBuilder searchCriteries = dataDefinition.find();
         searchCriteries.add(SearchRestrictions.eq(CONST_MASTER, true));
-        searchCriteries.add(SearchRestrictions.belongsTo(CONST_PRODUCT, entity.getBelongsToField(CONST_PRODUCT)));
+        searchCriteries.add(SearchRestrictions.belongsTo(PRODUCT_L, entity.getBelongsToField(PRODUCT_L)));
 
         if (entity.getId() != null) {
             searchCriteries.add(SearchRestrictions.idNe(entity.getId()));
@@ -225,7 +219,7 @@ public class TechnologyService {
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
 
             inProduct.setField(CONST_OPERATION_COMPONENT, rootOperation);
-            inProduct.setField(CONST_PRODUCT, productQuantity.getKey());
+            inProduct.setField(PRODUCT_L, productQuantity.getKey());
             inProduct.setField(QUANTITY_FIELD, productQuantity.getValue());
             inProducts.add(inProduct);
         }
@@ -443,12 +437,12 @@ public class TechnologyService {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final Entity product = savedTechnology.getBelongsToField(CONST_PRODUCT);
+        final Entity product = savedTechnology.getBelongsToField(PRODUCT_L);
         final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
         final EntityTreeNode root = operations.getRoot();
         final EntityList productOutComps = root.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
         for (Entity productOutComp : productOutComps) {
-            if (product.getId().equals(productOutComp.getBelongsToField(CONST_PRODUCT).getId())) {
+            if (product.getId().equals(productOutComp.getBelongsToField(PRODUCT_L).getId())) {
                 return true;
             }
         }
@@ -493,7 +487,7 @@ public class TechnologyService {
     private boolean checkIfAtLeastOneCommonElement(final List<Entity> prodsIn, final List<Entity> prodsOut) {
         for (Entity prodOut : prodsOut) {
             for (Entity prodIn : prodsIn) {
-                if (prodIn.getBelongsToField(CONST_PRODUCT).getId().equals(prodOut.getBelongsToField(CONST_PRODUCT).getId())) {
+                if (prodIn.getBelongsToField(PRODUCT_L).getId().equals(prodOut.getBelongsToField(PRODUCT_L).getId())) {
                     return true;
                 }
             }
@@ -626,7 +620,7 @@ public class TechnologyService {
         boolean contains = false;
 
         for (Entity entity : components) {
-            if (entity.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
+            if (entity.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
                 contains = true;
                 break;
             }
@@ -661,8 +655,8 @@ public class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            if (technology.getBelongsToField(PRODUCT_FIELD).getId().equals(product.getId())) {
-                return PRODUCT;
+            if (technology.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
+                return FINAL_PRODUCT;
             } else {
                 return WASTE;
             }
@@ -700,7 +694,7 @@ public class TechnologyService {
 
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition dataDefinition, final Entity operationProduct) {
         if (operationProduct.getId() == null) {
-            Entity product = operationProduct.getBelongsToField(CONST_PRODUCT);
+            Entity product = operationProduct.getBelongsToField(PRODUCT_L);
             Entity operationComponent = operationProduct.getBelongsToField(CONST_OPERATION_COMPONENT);
 
             String fieldName;
@@ -718,7 +712,7 @@ public class TechnologyService {
             }
 
             if (products != null && listContainsProduct(products, product)) {
-                operationProduct.addError(dataDefinition.getField(CONST_PRODUCT),
+                operationProduct.addError(dataDefinition.getField(PRODUCT_L),
                         "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
                 return false;
             }
@@ -728,7 +722,7 @@ public class TechnologyService {
 
     private boolean listContainsProduct(final EntityList list, final Entity product) {
         for (Entity prod : list) {
-            if (prod.getBelongsToField(CONST_PRODUCT).getId().equals(product.getId())) {
+            if (prod.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
                 return true;
             }
         }

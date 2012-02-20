@@ -918,7 +918,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     void addProductionRecord(final Map<String, String> values) {
-        Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_RECORD_PLUGIN_IDENTIFIER,
+        Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
         productionRecord.setField("number", getProductionRecordByNumber("number"));
         productionRecord.setField("name", values.get("name"));
@@ -995,7 +995,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     void addProductionBalance(final Map<String, String> values) {
-        Entity productionbalance = dataDefinitionService.get(SamplesConstants.PRODUCTIONBALANCE_PLUGIN_IDENTIFIER,
+        Entity productionbalance = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTIONBALANCE_MODEL_PRODUCTIONBALANCE).create();
         productionbalance.setField("generated", values.get("generated"));
         productionbalance.setField("order", getOrderByNumber(values.get("order")));
