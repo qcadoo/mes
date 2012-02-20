@@ -43,7 +43,9 @@
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
 		<string name="externalNumber"/>
-		<string name="description"/>
+		<string name="description">
+		<validatesLength max="2048"/>
+		</string>
 	</fields>
 	<hooks >
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy"/>
