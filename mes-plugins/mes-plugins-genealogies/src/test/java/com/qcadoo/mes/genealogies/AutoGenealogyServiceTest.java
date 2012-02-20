@@ -209,6 +209,7 @@ public class AutoGenealogyServiceTest {
 
     }
 
+    // TODO LUPO is this test ok? does it test anything?
     @Test
     public void shouldFailAutoCreateGenealogyIfExistingGenealogyWithBatch() throws Exception {
         // given
