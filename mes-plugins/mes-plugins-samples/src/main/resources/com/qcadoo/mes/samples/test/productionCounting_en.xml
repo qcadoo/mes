@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<productioncounting>
-	<row  GENERATED="true" ORDER="000005" PRODUCT="000025" NAME="Dla zleceń dot. produk" DATE="" WORKER=""  DESCRIPTION="lalal"  FILENAME=""/>
-</productioncounting>
+<productionCounting>
+	<row  GENERATED="true" ORDER="000005" PRODUCT="000017" NAME="Dla zlecenia dot. taboretów" DATE="2010-01-01 12:00:00" WORKER=""  DESCRIPTION=""  FILENAME=""/>
+</productionCounting>
