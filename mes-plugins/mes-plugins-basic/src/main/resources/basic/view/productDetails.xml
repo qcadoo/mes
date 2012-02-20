@@ -93,7 +93,7 @@
 					<layoutElement column="2" row="2">
 						<component type="select" name="category" field="category" />
 					</layoutElement>
-					<layoutElement column="2" row="3">
+					<layoutElement column="2" row="3" height="2">
 						<component type="textarea" name="description" field="description" hasDescription="false" />
 					</layoutElement>
 				</component>
