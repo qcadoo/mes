@@ -93,7 +93,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     @Autowired
     private PdfHelper pdfHelper;
 
-    private final String tabInText = "\t \t \t";
+    private static final String tabInText = "\t \t \t";
 
     private static final String NAME_L = "name";
 
