@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -273,7 +274,8 @@ public final class QualityControlService {
                     FieldComponent date = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_LITERAL);
 
                     staff.setFieldValue(securityService.getCurrentUserName());
-                    date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_FORMAT).format(new Date()));
+                    date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_FORMAT, LocaleContextHolder.getLocale())
+                            .format(new Date()));
 
                     closed.setFieldValue(true);
 

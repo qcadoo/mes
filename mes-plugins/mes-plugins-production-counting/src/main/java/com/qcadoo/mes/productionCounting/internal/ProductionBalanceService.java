@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -135,7 +136,8 @@ public class ProductionBalanceService {
                 name.setEnabled(false);
                 order.setEnabled(false);
                 description.setEnabled(false);
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
+                        .format(new Date()));
                 requestComponentUpdateState(viewDefinitionState);
             }
 

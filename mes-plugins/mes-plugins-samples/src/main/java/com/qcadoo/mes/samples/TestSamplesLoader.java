@@ -947,29 +947,29 @@ public class TestSamplesLoader extends SamplesLoader {
         List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(
                 getProductByNumber("000018"), new BigDecimal("150"), new BigDecimal("152"), new BigDecimal("2")));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000019"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000020"), new BigDecimal("2400"),
-                new BigDecimal("2400"), new BigDecimal("0")));
+                new BigDecimal("2400"), BigDecimal.ZERO));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000021"), new BigDecimal("2400"),
-                new BigDecimal("2400"), new BigDecimal("0")));
+                new BigDecimal("2400"), BigDecimal.ZERO));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000022"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000023"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
         recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000024"), new BigDecimal("150"),
                 new BigDecimal("182"), new BigDecimal("32")));
 
         productionRecord.setField("recordOperationProductInComponents", recOpProdInComponents);
 
         List<Entity> recOpProdOutComponents1 = Lists.newArrayList(addRecordOperationProductOutComponent(
-                getProductByNumber("000017"), new BigDecimal("150"), new BigDecimal("150"), new BigDecimal("0")));
+                getProductByNumber("000017"), new BigDecimal("150"), new BigDecimal("150"), BigDecimal.ZERO));
 
         recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000019"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
         recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000022"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
         recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000023"), new BigDecimal("600"),
-                new BigDecimal("600"), new BigDecimal("0")));
+                new BigDecimal("600"), BigDecimal.ZERO));
 
         productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
 
