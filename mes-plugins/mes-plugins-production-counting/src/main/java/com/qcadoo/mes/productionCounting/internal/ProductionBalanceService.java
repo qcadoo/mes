@@ -101,7 +101,7 @@ public class ProductionBalanceService {
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(MODEL_ORDER, entity.getBelongsToField(MODEL_ORDER))).list().getEntities();
-        if (productionRecordList.size() == 0) {
+        if (productionRecordList.isEmpty()) {
             entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
             return false;

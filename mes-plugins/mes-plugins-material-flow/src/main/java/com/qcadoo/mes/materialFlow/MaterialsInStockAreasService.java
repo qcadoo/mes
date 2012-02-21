@@ -126,7 +126,7 @@ public class MaterialsInStockAreasService {
                 materialsInStockAreasEntity.setField(GENERATED_FIELD, "0");
             }
 
-            if (stockAreaComponents.size() == 0) {
+            if (stockAreaComponents.isEmpty()) {
                 generateButton.setMessage("materialFlow.ribbon.message.noStockAreas");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage(null);

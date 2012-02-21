@@ -848,7 +848,7 @@ public class OrderServiceTest {
         // given
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
-        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(true);
         given(order.getField("technology")).willReturn(technology);
         given(technology.getField("batchRequired")).willReturn(true);
 
@@ -865,7 +865,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(true);
         given(technology.getField("batchRequired")).willReturn(false);
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(true);
@@ -883,7 +883,7 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(true);
         given(technology.getField("batchRequired")).willReturn(false);
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(false);
@@ -907,7 +907,7 @@ public class OrderServiceTest {
         Iterator<Entity> iterator2 = mock(Iterator.class);
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(0);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(true);
         given(technology.getField("batchRequired")).willReturn(false);
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(false);
@@ -936,7 +936,7 @@ public class OrderServiceTest {
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(false);
         given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
         given(iterator.hasNext()).willReturn(true, false);
         given(iterator.next()).willReturn(genealogy);
@@ -959,13 +959,13 @@ public class OrderServiceTest {
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(false);
         given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
         given(iterator.hasNext()).willReturn(true, false);
         given(iterator.next()).willReturn(genealogy);
         given(technology.getField("batchRequired")).willReturn(true);
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("shiftFeatures").size()).willReturn(0);
+        given(genealogy.getHasManyField("shiftFeatures").isEmpty()).willReturn(true);
 
         // when
         boolean results = callCheckRequiredBatch(order);
@@ -983,15 +983,15 @@ public class OrderServiceTest {
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(false);
         given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
         given(iterator.hasNext()).willReturn(true, false);
         given(iterator.next()).willReturn(genealogy);
         given(technology.getField("batchRequired")).willReturn(false);
         given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("shiftFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("shiftFeatures").isEmpty()).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("postFeatures").size()).willReturn(0);
+        given(genealogy.getHasManyField("postFeatures").isEmpty()).willReturn(true);
 
         // when
         boolean results = callCheckRequiredBatch(order);
@@ -1016,9 +1016,9 @@ public class OrderServiceTest {
         given(technology.getField("batchRequired")).willReturn(false);
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("postFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("postFeatures").isEmpty()).willReturn(false);
         given(technology.getField("otherFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(0);
+        given(genealogy.getHasManyField("otherFeatures").isEmpty()).willReturn(true);
 
         // when
         boolean results = callCheckRequiredBatch(order);
@@ -1038,7 +1038,7 @@ public class OrderServiceTest {
         Entity technology = mock(Entity.class, RETURNS_DEEP_STUBS);
         Entity genealogy = mock(Entity.class, RETURNS_DEEP_STUBS);
         given(order.getField("technology")).willReturn(technology);
-        given(order.getHasManyField("genealogies").size()).willReturn(1);
+        given(order.getHasManyField("genealogies").isEmpty()).willReturn(false);
         given(order.getHasManyField("genealogies").iterator()).willReturn(iterator);
         given(iterator.hasNext()).willReturn(true, false);
         given(iterator.next()).willReturn(genealogy);
@@ -1046,12 +1046,12 @@ public class OrderServiceTest {
         given(technology.getField("shiftFeatureRequired")).willReturn(false);
         given(technology.getField("postFeatureRequired")).willReturn(false);
         given(technology.getField("otherFeatureRequired")).willReturn(true);
-        given(genealogy.getHasManyField("otherFeatures").size()).willReturn(1);
+        given(genealogy.getHasManyField("otherFeatures").isEmpty()).willReturn(false);
         given(genealogy.getHasManyField("productInComponents").iterator()).willReturn(iterator2);
         given(iterator2.hasNext()).willReturn(true, false);
         given(iterator2.next()).willReturn(productInComponent);
         given(productInComponent.getBelongsToField("productInComponent").getField("batchRequired")).willReturn(true);
-        given(productInComponent.getHasManyField("batch").size()).willReturn(0);
+        given(productInComponent.getHasManyField("batch").isEmpty()).willReturn(true);
 
         // when
         boolean results = callCheckRequiredBatch(order);

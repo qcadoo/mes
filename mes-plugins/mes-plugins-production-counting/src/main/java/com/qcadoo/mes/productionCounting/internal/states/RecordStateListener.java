@@ -23,21 +23,49 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class RecordStateListener {
 
+    private static final String ORDER = "order";
+
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
-        return new ArrayList<ChangeRecordStateMessage>();
+
+        return checkIfExistsFinalRecord(productionRecord);
     }
 
     public List<ChangeRecordStateMessage> onDeclined(final Entity productionRecord, final Entity prevState) {
         return new ArrayList<ChangeRecordStateMessage>();
     }
+
+    public List<ChangeRecordStateMessage> checkIfExistsFinalRecord(final Entity productionRecord) {
+        List<ChangeRecordStateMessage> errorList = new ArrayList<ChangeRecordStateMessage>();
+        final Entity order = productionRecord.getBelongsToField(ORDER);
+        final String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+
+        final SearchCriteriaBuilder searchBuilder = productionRecord.getDataDefinition().find();
+        searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
+        searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
+        searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
+
+        if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+            searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
+                    productionRecord.getBelongsToField("orderOperationComponent")));
+        }
+        if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
+            errorList.add(ChangeRecordStateMessage.error("productionCounting.record.messages.error.finalExists"));
+        }
+        return errorList;
+    }
+
 }

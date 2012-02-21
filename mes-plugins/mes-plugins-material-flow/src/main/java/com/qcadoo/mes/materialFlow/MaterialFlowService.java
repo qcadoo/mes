@@ -176,23 +176,22 @@ public class MaterialFlowService {
         FieldComponent date = (FieldComponent) state.getComponentByReference(STOCK_CORRECTION_DATE_L);
         FieldComponent should = (FieldComponent) state.getComponentByReference(SHOULD_BE_L);
 
-        if (stockAreas != null && product != null && date != null) {
-            if (stockAreas.getFieldValue() != null && product.getFieldValue() != null
-                    && !date.getFieldValue().toString().equals("")) {
-                Long stockAreasNumber = (Long) stockAreas.getFieldValue();
-                String productNumber = product.getFieldValue().toString();
+        if ((stockAreas != null) && (product != null) && (date != null) && (stockAreas.getFieldValue() != null)
+                && (product.getFieldValue() != null) && !date.getFieldValue().toString().equals("")) {
+            Long stockAreasNumber = (Long) stockAreas.getFieldValue();
+            String productNumber = product.getFieldValue().toString();
 
-                Date forDate = timeConverterService.getDateFromField(date.getFieldValue());
+            Date forDate = timeConverterService.getDateFromField(date.getFieldValue());
 
-                BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+            BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
 
-                if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                    should.setFieldValue(shouldBe);
-                } else {
-                    should.setFieldValue(BigDecimal.ZERO);
-                }
+            if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
+                should.setFieldValue(shouldBe);
+            } else {
+                should.setFieldValue(BigDecimal.ZERO);
             }
         }
+
         should.requestComponentUpdateState();
     }
 

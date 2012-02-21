@@ -646,7 +646,7 @@ public class TestSamplesLoader extends SamplesLoader {
         validateEntity(costCalculation);
     }
 
-    private void addStokckArea(Map<String, String> values) {
+    private void addStokckArea(final Map<String, String> values) {
         Entity stockArea = dataDefinitionService.get(MATERIAL_FLOW_L, STOCK_AREAS_L).create();
 
         stockArea.setField(NUMBER_L, values.get(NUMBER_L));
@@ -656,7 +656,7 @@ public class TestSamplesLoader extends SamplesLoader {
         validateEntity(stockArea);
     }
 
-    private void addTransformation(Map<String, String> values) {
+    private void addTransformation(final Map<String, String> values) {
         Entity transformation = dataDefinitionService.get(MATERIAL_FLOW_L, TRANSFORMATIONS_L).create();
 
         transformation.setField(NUMBER_L, values.get(NUMBER_L));
@@ -670,7 +670,7 @@ public class TestSamplesLoader extends SamplesLoader {
         validateEntity(transformation);
     }
 
-    private void addStockCorrection(Map<String, String> values) {
+    private void addStockCorrection(final Map<String, String> values) {
         Entity stockCorrection = dataDefinitionService.get(MATERIAL_FLOW_L, STOCK_CORRECTION_L).create();
 
         stockCorrection.setField(NUMBER_L, values.get(NUMBER_L));
@@ -684,7 +684,7 @@ public class TestSamplesLoader extends SamplesLoader {
         validateEntity(stockCorrection);
     }
 
-    private void addTransfer(Map<String, String> values) {
+    private void addTransfer(final Map<String, String> values) {
         Entity transfer = dataDefinitionService.get(MATERIAL_FLOW_L, TRANSFER_L).create();
 
         transfer.setField(NUMBER_L, values.get(NUMBER_L));
@@ -823,8 +823,8 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(PROD_NR_23));
     }
 
-    private Entity addRecordOperationProductInComponent(Entity product, BigDecimal usedQuantity, BigDecimal plannedQuantity,
-            BigDecimal balance) {
+    private Entity addRecordOperationProductInComponent(final Entity product, final BigDecimal usedQuantity,
+            final BigDecimal plannedQuantity, final BigDecimal balance) {
         Entity productInComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT).create();
         productInComponent.setField(PRODUCT_L, product);
@@ -835,8 +835,8 @@ public class TestSamplesLoader extends SamplesLoader {
         return productInComponent;
     }
 
-    private Entity addRecordOperationProductOutComponent(Entity product, BigDecimal usedQuantity, BigDecimal plannedQuantity,
-            BigDecimal balance) {
+    private Entity addRecordOperationProductOutComponent(final Entity product, final BigDecimal usedQuantity,
+            final BigDecimal plannedQuantity, final BigDecimal balance) {
         Entity productOutComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT).create();
         productOutComponent.setField(PRODUCT_L, product);
@@ -986,7 +986,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         String idString3 = values.get("loggings");
         Long id3 = Long.valueOf(idString3);
-        Entity loggings = GetLoggingsByNumber(id3);
+        Entity loggings = getLoggingsByNumber(id3);
         List<Entity> loggings1 = Lists.newArrayList(loggings);
         productionRecord.setField("loggings", loggings1);
 
@@ -1134,7 +1134,7 @@ public class TestSamplesLoader extends SamplesLoader {
         List<Entity> technologies = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, product)).add(SearchRestrictions.eq("master", true))
                 .setMaxResults(1).list().getEntities();
-        if (technologies.size() > 0) {
+        if (!technologies.isEmpty()) {
             return technologies.get(0);
         } else {
             return null;
@@ -1157,7 +1157,7 @@ public class TestSamplesLoader extends SamplesLoader {
                 .add(SearchRestrictions.eq(NAME_L, name)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getOrderByNumber(String number) {
+    private Entity getOrderByNumber(final String number) {
         return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq(NUMBER_L, number)).setMaxResults(1).uniqueResult();
     }
@@ -1179,41 +1179,41 @@ public class TestSamplesLoader extends SamplesLoader {
                 .add(SearchRestrictions.eq(NUMBER_L, number)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getStaffByNumber(String number) {
+    private Entity getStaffByNumber(final String number) {
         return dataDefinitionService.get("basic", STAFF_L).find().add(SearchRestrictions.eq(NUMBER_L, number)).setMaxResults(1)
                 .uniqueResult();
     }
 
-    private Entity getWorkstationTypeByNumber(String number) {
+    private Entity getWorkstationTypeByNumber(final String number) {
         return dataDefinitionService.get("basic", "workstationType").find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getDivisionByNumber(String number) {
+    private Entity getDivisionByNumber(final String number) {
         return dataDefinitionService.get("basic", DIVISION_L).find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity GetLoggingsByNumber(Long id3) {
-        return dataDefinitionService.get(PRODUCTION_COUNTING_L, "productionRecordLogging").get(id3);
+    private Entity getLoggingsByNumber(final Long id) {
+        return dataDefinitionService.get(PRODUCTION_COUNTING_L, "productionRecordLogging").get(id);
     }
 
-    private Entity getTransformationByNumber(String number) {
+    private Entity getTransformationByNumber(final String number) {
         return dataDefinitionService.get(MATERIAL_FLOW_L, TRANSFORMATIONS_L).find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getStockAreaByNumber(String number) {
+    private Entity getStockAreaByNumber(final String number) {
         return dataDefinitionService.get(MATERIAL_FLOW_L, STOCK_AREAS_L).find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getManufacturerByNumber(String number) {
+    private Entity getManufacturerByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "company").find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getBatchByNumber(String number) {
+    private Entity getBatchByNumber(final String number) {
         return dataDefinitionService.get(ADVANCED_GENEALOGY_L, BATCH_L).find().add(SearchRestrictions.eq(NUMBER_L, number))
                 .setMaxResults(1).uniqueResult();
     }
