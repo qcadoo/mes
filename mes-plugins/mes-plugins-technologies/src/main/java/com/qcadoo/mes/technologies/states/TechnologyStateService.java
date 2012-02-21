@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.mes.technologies.logging.TechnologyLoggingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -46,6 +47,9 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class TechnologyStateService {
+
+    @Autowired
+    private TechnologyLoggingService technologyLoggingService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -113,6 +117,7 @@ public class TechnologyStateService {
         component.performEvent(view, "save", new String[0]);
         Entity savedTechnology = technologyDataDefinition.get(technology.getId());
         stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE_FIELD));
+        technologyLoggingService.logStateChange(technology, oldState, newState);
 
     }
 

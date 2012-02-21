@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.logging.TechnologyLoggingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -39,9 +38,6 @@ public class TechnologyStatesHook {
 
     @Autowired
     private TechnologyStateChangeNotifierService technologyStateNotifier;
-
-    @Autowired
-    private TechnologyLoggingService technologyLoggingService;
 
     private static final String STATE_FIELD = "state";
 
@@ -56,7 +52,6 @@ public class TechnologyStatesHook {
         }
 
         TechnologyState newState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE_FIELD));
-        TechnologyState oldState = TechnologyStateUtils.getStateFromField(existingTechnology.getStringField(STATE_FIELD));
 
         List<MessageHolder> validationMessages = technologyStateNotifier.onTechnologyStateChange(existingTechnology, newState);
         assignValidationMessagesToEntity(technology, validationMessages);
@@ -65,7 +60,6 @@ public class TechnologyStatesHook {
             return;
         }
 
-        technologyLoggingService.logStateChange(technology, oldState, newState);
     }
 
     private boolean hasErrorMessages(final List<MessageHolder> validationMessages) {
