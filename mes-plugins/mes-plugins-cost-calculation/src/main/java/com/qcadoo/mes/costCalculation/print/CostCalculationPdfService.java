@@ -356,7 +356,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
                 columnWitdh);
 
-        if (calculationOperationComponents != null && calculationOperationComponents.size() != 0) {
+        if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), FontUtils
                         .getDejavuRegular9Dark()));
@@ -401,7 +401,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
 
-        if (calculationOperationComponents.size() != 0) {
+        if (!calculationOperationComponents.isEmpty()) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), FontUtils
                         .getDejavuRegular9Dark()));

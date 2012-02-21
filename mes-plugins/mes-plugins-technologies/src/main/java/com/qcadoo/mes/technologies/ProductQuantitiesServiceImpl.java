@@ -62,7 +62,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProductComponentQuantities(orders, operationMultipliers);
     }
 
-    public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders, Map<Entity, BigDecimal> operationRuns) {
+    public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders,
+            final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
 
         Set<Entity> nonComponents = new HashSet<Entity>();
@@ -72,7 +73,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     public Map<Entity, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQty,
-            Map<Entity, BigDecimal> operationRuns) {
+            final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
 
         Set<Entity> nonComponents = new HashSet<Entity>();
@@ -113,8 +114,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, false, OUT_PRODUCT);
     }
 
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, boolean onlyComponents,
-            Map<Entity, BigDecimal> operationRuns) {
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents,
+            final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
@@ -206,7 +207,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private void preloadProductQuantitiesAndOperationRuns(final EntityTree tree, final Map<Entity, BigDecimal> productQuantities,
-            Map<Entity, BigDecimal> operationRuns) {
+            final Map<Entity, BigDecimal> operationRuns) {
         for (Entity operationComponent : tree) {
             if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
                 Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);

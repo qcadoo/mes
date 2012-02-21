@@ -18,7 +18,7 @@ public class CostCalculationModelValidators {
 
     private static final Logger LOG = LoggerFactory.getLogger(CostCalculationModelValidators.class);
 
-    public boolean checkIfTheTechnologyTreeIsntEmpty(DataDefinition dataDefinition, Entity costCalculation) {
+    public boolean checkIfTheTechnologyTreeIsntEmpty(final DataDefinition dataDefinition, final Entity costCalculation) {
         Entity technology = costCalculation.getBelongsToField("technology");
         EntityTree tree = technology.getTreeField("operationComponents");
 

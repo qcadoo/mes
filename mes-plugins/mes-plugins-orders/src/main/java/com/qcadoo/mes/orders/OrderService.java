@@ -378,7 +378,7 @@ public class OrderService {
     public boolean checkRequiredBatch(final Entity order) {
         Entity technology = (Entity) order.getField(TECHNOLOGIES_MODEL_TECHNOLOGY);
         if (technology != null) {
-            if (order.getHasManyField("genealogies").size() == 0) {
+            if (order.getHasManyField("genealogies").isEmpty()) {
                 if ((Boolean) technology.getField(FIELD_BATCH_REQUIRED)) {
                     return false;
                 }
@@ -405,26 +405,26 @@ public class OrderService {
                 }
                 if ((Boolean) technology.getField("shiftFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("shiftFeatures");
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 if ((Boolean) technology.getField("postFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("postFeatures");
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 if ((Boolean) technology.getField("otherFeatureRequired")) {
                     List<Entity> entityList = genealogy.getHasManyField("otherFeatures");
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 for (Entity genealogyProductIn : genealogy.getHasManyField("productInComponents")) {
                     if ((Boolean) (genealogyProductIn.getBelongsToField("productInComponent").getField(FIELD_BATCH_REQUIRED))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField("batch");
-                        if (entityList.size() == 0) {
+                        if (entityList.isEmpty()) {
                             return false;
                         }
                     }

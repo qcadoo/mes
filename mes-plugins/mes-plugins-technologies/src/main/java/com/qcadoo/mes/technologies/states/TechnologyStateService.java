@@ -123,7 +123,7 @@ public class TechnologyStateService {
     private List<Entity> getTechnologiesFromGridComponent(final GridComponent grid) {
         Set<Long> ids = grid.getSelectedEntitiesIds();
         List<Entity> technologies = Lists.newArrayList();
-        if (ids.size() > 0) {
+        if (!ids.isEmpty()) {
             technologies.addAll(getTechnologyDataDefinition().find().add(SearchRestrictions.in("id", ids)).list().getEntities());
         }
         return technologies;

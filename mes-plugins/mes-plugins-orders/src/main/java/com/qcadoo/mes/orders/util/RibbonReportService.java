@@ -63,7 +63,7 @@ public class RibbonReportService {
             Entity materialRequirementEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
             Collection<Entity> orderComponents = (Collection<Entity>) materialRequirementEntity.getField("orders");
 
-            if (orderComponents.size() == 0) {
+            if (orderComponents.isEmpty()) {
                 generateButton.setMessage("orders.ribbon.message.noOrders");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage(null);
@@ -107,7 +107,7 @@ public class RibbonReportService {
         GridComponent grid = (GridComponent) state.getComponentByReference("grid");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().isEmpty()) {
             deleteButton.setMessage(null);
             deleteButton.setEnabled(false);
         } else {

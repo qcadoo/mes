@@ -151,19 +151,19 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
                 }
                 if ((Boolean) technology.getField(SHIFT_FEATURE_REQUIRED_FIELD)) {
                     List<Entity> entityList = genealogy.getHasManyField(SHIFT_FEATURES_FIELD);
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 if ((Boolean) technology.getField(POST_FEATURE_REQUIRED_FIELD)) {
                     List<Entity> entityList = genealogy.getHasManyField(POST_FEATURES_FIELD);
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
                 if ((Boolean) technology.getField(OTHER_FEATURE_REQUIRED_FIELD)) {
                     List<Entity> entityList = genealogy.getHasManyField(OTHER_FEATURES_FIELD);
-                    if (entityList.size() == 0) {
+                    if (entityList.isEmpty()) {
                         return false;
                     }
                 }
@@ -171,7 +171,7 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
                     if ((Boolean) (genealogyProductIn.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD)
                             .getField(BATCH_REQUIRED_FIELD))) {
                         List<Entity> entityList = genealogyProductIn.getHasManyField(BATCH_FIELD);
-                        if (entityList.size() == 0) {
+                        if (entityList.isEmpty()) {
                             return false;
                         }
                     }

@@ -73,7 +73,7 @@ public class ProductionCountingOrderStatesListener extends OrderStateListener {
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list()
                 .getEntities();
 
-        if (allowToClose != null && allowToClose && productionRecordings.size() == 0) {
+        if (allowToClose != null && allowToClose && productionRecordings.isEmpty()) {
             return ChangeOrderStateMessage.error("orders.order.state.allowToClose.failure");
         }
         return null;
@@ -89,7 +89,7 @@ public class ProductionCountingOrderStatesListener extends OrderStateListener {
                     .add(SearchRestrictions.belongsTo("order", order))
                     .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
                     .add(SearchRestrictions.eq("lastRecord", true)).list().getEntities();
-            if (productionRecordings.size() != 0) {
+            if (!productionRecordings.isEmpty()) {
                 numberOfRecord++;
             }
         }

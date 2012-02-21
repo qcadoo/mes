@@ -735,7 +735,7 @@ public class TechnologyService {
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
      *         product/intermediate.
      */
-    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+    public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         Entity parentOpComp = operationComponent.getBelongsToField("parent");
 
         List<Entity> prodOutComps = operationComponent.getHasManyField("operationProductOutComponents");
