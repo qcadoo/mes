@@ -28,7 +28,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAF
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NUMBER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.NUMBER_L;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
@@ -178,7 +178,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         final String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(34) + 5);
 
-        orderGroup.setField(FIELD_NUMBER, number);
+        orderGroup.setField(NUMBER_L, number);
         orderGroup.setField(FIELD_NAME, getNameFromNumberAndPrefix("OrderGroup-", number));
 
         orderGroup = orderGroup.getDataDefinition().save(orderGroup);
@@ -281,7 +281,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         technology.setField("master", defaultTechnology == null);
         technology.setField(FIELD_NAME, getNameFromNumberAndPrefix("Technology-", number));
-        technology.setField(FIELD_NUMBER, number);
+        technology.setField(NUMBER_L, number);
         technology.setField(BASIC_MODEL_PRODUCT, product);
         technology.setField("state", "01draft");
         technology.setField("batchRequired", true);
@@ -422,7 +422,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
                 : getDefaultTechnologyForProduct(product);
 
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(34) + 5);
-        order.setField(FIELD_NUMBER, number);
+        order.setField(NUMBER_L, number);
         order.setField(FIELD_NAME, getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
@@ -455,7 +455,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
 
-        staff.setField(FIELD_NUMBER, number);
+        staff.setField(NUMBER_L, number);
         staff.setField(FIELD_NAME, getNameFromNumberAndPrefix("Staff-", number));
         staff.setField("surname", generateString(CHARS_ONLY, RANDOM.nextInt(12)));
         staff.setField("post", generateString(CHARS_ONLY, RANDOM.nextInt(5)));
@@ -478,7 +478,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(40) + 5);
 
         machine.setField(FIELD_NAME, getNameFromNumberAndPrefix("Workstation type-", number));
-        machine.setField(FIELD_NUMBER, number);
+        machine.setField(NUMBER_L, number);
         machine.setField("description", generateString(CHARS_ONLY, RANDOM.nextInt(100)));
 
         machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
@@ -533,7 +533,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         product.setField(FIELD_NAME, getNameFromNumberAndPrefix("Product-", number));
         product.setField("unit", getRandomDictionaryItem("units"));
         product.setField("globalTypeOfMaterial", generateTypeOfProduct());
-        product.setField(FIELD_NUMBER, number);
+        product.setField(NUMBER_L, number);
 
         product = product.getDataDefinition().save(product);
 
@@ -547,7 +547,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5);
 
-        substitute.setField(FIELD_NUMBER, number);
+        substitute.setField(NUMBER_L, number);
         substitute.setField(FIELD_NAME, getNameFromNumberAndPrefix("ProductSubstitute-", number));
         substitute.setField(BASIC_MODEL_PRODUCT, product);
         substitute.setField("priority", RANDOM.nextInt(7));
@@ -596,7 +596,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private void generateAndAddCompany() {
         Map<String, String> values = new HashMap<String, String>();
-        values.put(FIELD_NUMBER, generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5));
+        values.put(NUMBER_L, generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5));
         values.put(FIELD_NAME, generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("tax", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("street", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
