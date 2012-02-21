@@ -89,9 +89,6 @@
 			method="checkIfOrderIsStarted" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="checkIfExistsFinalRecord" />
-		<validatesWith
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkIfOperationIsSet" />
 	</hooks>
 	<identifier expression="#number" />
