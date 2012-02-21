@@ -62,6 +62,8 @@ import com.qcadoo.security.api.SecurityRolesService;
 @Component
 public class GeneratedSamplesLoader extends SamplesLoader {
 
+    private static final String STATE_L = "state";
+
     private static final String TECHNOLOGIES_PLUGIN = "technologies";
 
     private static final String ORDER_GROUP_LITERAL = "orderGroup";
@@ -283,7 +285,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         technology.setField(FIELD_NAME, getNameFromNumberAndPrefix("Technology-", number));
         technology.setField(NUMBER_L, number);
         technology.setField(BASIC_MODEL_PRODUCT, product);
-        technology.setField("state", "01draft");
+        technology.setField(STATE_L, "01draft");
         technology.setField("batchRequired", true);
         technology.setField("postFeatureRequired", false);
         technology.setField("otherFeatureRequired", false);
@@ -304,7 +306,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
                 dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent"),
                 TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
 
-        technology.setField("state", "02accepted");
+        technology.setField(STATE_L, "02accepted");
         technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         validateEntity(technology);
     }
@@ -426,7 +428,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order.setField(FIELD_NAME, getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
-        order.setField("state", "01pending");
+        order.setField(STATE_L, "01pending");
         order.setField(BASIC_MODEL_PRODUCT, product);
         order.setField("plannedQuantity", RANDOM.nextInt(100) + 100);
         order.setField("doneQuantity", RANDOM.nextInt(100) + 1);
@@ -604,7 +606,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         values.put("flat", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("zipCode", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("city", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
-        values.put("state", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put(STATE_L, generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("country", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("email", generateRandomEmail());
         values.put("website", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
