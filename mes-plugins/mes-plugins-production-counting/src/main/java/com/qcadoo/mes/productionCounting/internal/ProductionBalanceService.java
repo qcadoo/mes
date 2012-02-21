@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -100,7 +101,7 @@ public class ProductionBalanceService {
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(MODEL_ORDER, entity.getBelongsToField(MODEL_ORDER))).list().getEntities();
-        if (productionRecordList.size() == 0) {
+        if (productionRecordList.isEmpty()) {
             entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutProductionRecords");
             return false;
@@ -135,7 +136,8 @@ public class ProductionBalanceService {
                 name.setEnabled(false);
                 order.setEnabled(false);
                 description.setEnabled(false);
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
+                        .format(new Date()));
                 requestComponentUpdateState(viewDefinitionState);
             }
 

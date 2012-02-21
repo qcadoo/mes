@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -125,7 +126,7 @@ public class MaterialsInStockAreasService {
                 materialsInStockAreasEntity.setField(GENERATED_FIELD, "0");
             }
 
-            if (stockAreaComponents.size() == 0) {
+            if (stockAreaComponents.isEmpty()) {
                 generateButton.setMessage("materialFlow.ribbon.message.noStockAreas");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage(null);
@@ -250,7 +251,8 @@ public class MaterialsInStockAreasService {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format(new Date()));
+                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
+                        .format(new Date()));
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);

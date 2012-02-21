@@ -385,13 +385,12 @@ public class CostNormsForProductService {
             if (order != null) {
                 Entity technology = order.getBelongsToField("technology");
 
-                if (technology != null) {
-                    if (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField("state"))) {
-                        viewCosts.setEnabled(true);
-                        viewCosts.requestUpdate(true);
+                if ((technology != null)
+                        && (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField("state")))) {
+                    viewCosts.setEnabled(true);
+                    viewCosts.requestUpdate(true);
 
-                        return;
-                    }
+                    return;
                 }
             }
         }

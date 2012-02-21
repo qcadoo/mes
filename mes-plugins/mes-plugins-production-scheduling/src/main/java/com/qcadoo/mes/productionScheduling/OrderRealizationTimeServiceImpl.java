@@ -136,7 +136,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     @Override
-    public Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz) {
+    public Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
+            final boolean includeTpz) {
         Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
 
         String entityType = entity.getDataDefinition().getName();
@@ -223,12 +224,12 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         if ("01all".equals(operationComponent.getField("countRealized"))
                 || operationComponent.getBelongsToField("parent") == null) {
-            operationTime = (roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))),
-                    numberService.getMathContext())).intValue();
+            operationTime = roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))),
+                    numberService.getMathContext()).intValue();
         } else {
-            operationTime = ((operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
+            operationTime = (operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
                     : (BigDecimal) operationComponent.getField("countMachine")).multiply(
-                    BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))), numberService.getMathContext()))
+                    BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))), numberService.getMathContext())
                     .intValue();
         }
 

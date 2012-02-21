@@ -70,7 +70,7 @@ public class OrderReportService {
 
         GridComponent gridState = (GridComponent) state;
         Set<Entity> ordersEntities = new HashSet<Entity>();
-        if (gridState.getSelectedEntitiesIds().size() == 0) {
+        if (gridState.getSelectedEntitiesIds().isEmpty()) {
             state.addMessage("qcadooView.message.noRecordSelected", MessageType.FAILURE);
             return null;
         }
@@ -88,7 +88,7 @@ public class OrderReportService {
                 errors.add(errorMessage);
             }
         }
-        if (errors.size() == 0) {
+        if (errors.isEmpty()) {
             return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
         } else {
             StringBuilder errorMessages = new StringBuilder();

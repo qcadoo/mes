@@ -89,9 +89,9 @@ public interface SamplesConstants {
 
     String FIELD_DESCRIPTION = "description";
 
-    String FIELD_NUMBER = "number";
+    String NUMBER_L = "number";
 
-    String FIELD_ID = "id";
+    String ID_L = "id";
 
     String FIELD_EAN = "ean";
 
@@ -116,6 +116,92 @@ public interface SamplesConstants {
     String FIELD_TPZ = "tpz";
 
     String BOM_ID = "bom_id";
+
+    String ORDER_GROUPS_L = "orderGroups";
+
+    String COST_CALCULATION_L = "costCalculation";
+
+    String MATERIAL_FLOW_L = "materialFlow";
+
+    String STOCK_AREAS_L = "stockAreas";
+
+    String TRANSFORMATIONS_L = "transformations";
+
+    String STOCK_CORRECTION_L = "stockCorrection";
+
+    String QUALITY_CONTROLS_L = "qualityControls";
+
+    String MATERIAL_REQUIREMENTS_L = "materialRequirements";
+
+    String PRODUCTION_COUNTING_L = "productionCounting";
+
+    String PRODUCTION_RECORD_L = "productionRecord";
+
+    String PRODUCTION_BALANCE_L = "productionBalance";
+
+    String BATCHES_L = "batches";
+
+    String WORK_PLANS_L = "workPlans";
+
+    String TRANSFER_L = "transfer";
+
+    String ADVANCED_GENEALOGY_L = "advancedGenealogy";
+
+    String ADVANCED_GENEALOGY_FOR_ORDERS_L = "advancedGenealogyForOrders";
+
+    String TRACKING_RECORDS_L = "trackingRecords";
+
+    String GENEALOGY_TABLES_L = "genealogyTables";
+
+    String BATCH_L = "batch";
+
+    String DIVISION_L = "division";
+
+    String DATE_FROM_L = "dateFrom";
+
+    String DATE_TO_L = "dateTo";
+
+    String DATE_L = "date";
+
+    String QUALITY_CONTROLS_FOR_OPERATION_L = "qualityControlsForOperation";
+
+    String QUALITY_CONTROL_TYPE_L = "quality_control_type";
+
+    String QUALITY_CONTROL_TYPE2_L = "qualityControlType";
+
+    String QUALITYCONTROLTYPE_3 = "qualitycontroltype";
+
+    String ORDER_NR_L = "order_nr";
+
+    String PLANNED_QUANTITY_L = "plannedQuantity";
+
+    String PRODUCT_L = "product";
+
+    String STATE_L = "state";
+
+    String ORDER_L = "order";
+
+    String TYPE_L = "type";
+
+    String NAME_L = "name";
+
+    String TIME_L = "time";
+
+    String STAFF_L = "staff";
+
+    String DESCRIPTION_L = "description";
+
+    String WORKER_L = "worker";
+
+    String GENERATED_L = "generated";
+
+    String FILE_NAME_L = "fileName";
+
+    String COMMENT_L = "comment";
+
+    String CLOSED_L = "closed";
+
+    String OPERATION_L = "operation";
 
     String PROD_NR_10 = "000010";
 
@@ -164,5 +250,11 @@ public interface SamplesConstants {
     String PROD_NR_32 = "000032";
 
     String PROD_NR_33 = "000033";
+
+    String QUANTITY_150_L = "150";
+
+    String QUANTITY_600_L = "600";
+
+    String QUANTITY_2400_L = "2400";
 
 }

@@ -111,7 +111,7 @@ public class WorkPlanServiceImpl implements WorkPlanService {
 
     private String generateNameForWorkPlan() {
         Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale());
 
         return translationService.translate("workPlans.workPlan.defaults.name", LocaleContextHolder.getLocale(),
                 dateFormat.format(currentDate));

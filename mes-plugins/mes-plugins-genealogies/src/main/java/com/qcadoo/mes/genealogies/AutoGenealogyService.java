@@ -181,7 +181,7 @@ public class AutoGenealogyService extends OrderStateListener {
         DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
-        if (searchResult.getEntities().size() > 0) {
+        if (!searchResult.getEntities().isEmpty()) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField(LAST_USED_SHIFT_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
@@ -193,7 +193,7 @@ public class AutoGenealogyService extends OrderStateListener {
         DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
-        if (searchResult.getEntities().size() > 0) {
+        if (!searchResult.getEntities().isEmpty()) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField(LAST_USED_POST_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
@@ -205,7 +205,7 @@ public class AutoGenealogyService extends OrderStateListener {
         DataDefinition featureDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE);
         SearchResult searchResult = featureDef.find().setMaxResults(1).list();
-        if (searchResult.getEntities().size() > 0) {
+        if (!searchResult.getEntities().isEmpty()) {
             Entity currentAttribute = searchResult.getEntities().get(0);
             currentAttribute.setField(LAST_USED_OTHER_FIELD, entity.getField(VALUE_FIELD));
             featureDef.save(currentAttribute);
@@ -279,7 +279,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 .add(SearchRestrictions.eq(BATCH_MODEL, batch)).add(SearchRestrictions.belongsTo(ORDER_MODEL, order))
                 .setMaxResults(1).list();
 
-        if (searchResult.getEntities().size() > 0) {
+        if (!searchResult.getEntities().isEmpty()) {
             return true;
         }
         return false;
@@ -290,7 +290,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 .get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_CURRENT_ATTRIBUTE).find()
                 .setMaxResults(1).list();
         Entity currentAttribute = null;
-        if (searchResult.getEntities().size() > 0) {
+        if (!searchResult.getEntities().isEmpty()) {
             currentAttribute = searchResult.getEntities().get(0);
         }
         if ((Boolean) technology.getField(SHIFT_FEATURE_REQUIRED_FIELD)) {
@@ -384,7 +384,7 @@ public class AutoGenealogyService extends OrderStateListener {
                 }
             }
         }
-        if (componentsWithoutBatch.size() > 0) {
+        if (!componentsWithoutBatch.isEmpty()) {
             genealogy.addGlobalError("genealogies.message.autoGenealogy.missingBatch",
                     componentsWithoutBatch.toArray(new String[componentsWithoutBatch.size()]));
         }

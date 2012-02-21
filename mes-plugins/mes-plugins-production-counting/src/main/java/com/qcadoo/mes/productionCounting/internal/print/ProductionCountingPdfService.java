@@ -257,8 +257,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             addTableCellAsTable(
                     panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
-                    (new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT).format((Date) productionRecord.getHasManyField("loggings")
-                            .get(0).getField("dateAndTime"))), null, FontUtils.getDejavuBold9Dark(),
+                    new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, locale).format((Date) productionRecord
+                            .getHasManyField("loggings").get(0).getField("dateAndTime")), null, FontUtils.getDejavuBold9Dark(),
                     FontUtils.getDejavuBold9Dark(), null);
             if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerProductionTime")) {
                 addTableCellAsTable(panelTable, translationService.translate(
