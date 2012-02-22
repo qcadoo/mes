@@ -68,6 +68,8 @@
 				</component>
 			</component>
 		</windowTab>
+		
+		<option type="header" value="false" />
 	</component>
 	
 	<hooks>
