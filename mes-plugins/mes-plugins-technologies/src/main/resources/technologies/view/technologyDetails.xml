@@ -69,7 +69,7 @@
 				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="master" field="master" />
+						<component type="checkbox" name="master" field="master" reference="master" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number" reference="number" hasDescription="true">
@@ -146,7 +146,8 @@
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
 								
-								#{window}.setEnabled(isDraft, true); 
+								#{window}.setEnabled(isDraft, true);
+								#{master}.setEnabled(isDraft || isAccepted, true);
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
 								for (var elementKey in toggleRibbonItems) {
@@ -157,7 +158,7 @@
 										continue;
 									}
 									
-									if (isDraft) {
+									if (isDraft || isAccepted) {
 										ribbonItem.enable();
 									} else {
 										ribbonItem.disable("#{translate(technologies.technologyDetails.window.ribbon.status.canNotModifyTechnology)}");
