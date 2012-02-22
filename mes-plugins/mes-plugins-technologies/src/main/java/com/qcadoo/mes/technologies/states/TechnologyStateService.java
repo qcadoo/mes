@@ -113,12 +113,15 @@ public class TechnologyStateService {
             return;
         }
 
+        if (newState.equals(TechnologyState.DECLINED) || newState.equals(TechnologyState.OUTDATED)) {
+            view.getComponentByReference("master").setFieldValue("0");
+        }
+
         stateFieldComponent.setFieldValue(newState.getStringValue());
         component.performEvent(view, "save", new String[0]);
         Entity savedTechnology = technologyDataDefinition.get(technology.getId());
         stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE_FIELD));
         technologyLoggingService.logStateChange(technology, oldState, newState);
-
     }
 
     private DataDefinition getTechnologyDataDefinition() {
