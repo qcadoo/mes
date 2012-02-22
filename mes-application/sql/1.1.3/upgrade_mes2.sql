@@ -276,3 +276,5 @@ CREATE TABLE costnormsforproduct_orderoperationproductincomponent
 );
 
 -- end
+
+update technologies_technology set master = false where state = '03declined' or state = '04outdated';
