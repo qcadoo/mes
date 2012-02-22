@@ -54,8 +54,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -122,31 +120,6 @@ public class ProductionRecordService {
             isAllowed = false;
         }
         return isAllowed;
-    }
-
-    public boolean checkIfExistsFinalRecord(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        boolean finalExist = true;
-        if (productionRecord.getId() == null) {
-
-            final Entity order = productionRecord.getBelongsToField(ORDER_L);
-            final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RCORDING_L);
-
-            final SearchCriteriaBuilder searchBuilder = productionRecordDD.find();
-            searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
-            searchBuilder.add(SearchRestrictions.belongsTo(ORDER_L, order));
-            searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
-
-            if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
-                searchBuilder.add(SearchRestrictions.belongsTo(FIELD_ORDER_OPERATION_COMPONENT,
-                        productionRecord.getBelongsToField("orderOperationComponents")));
-            }
-            if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-                productionRecord.addError(productionRecordDD.getField(ORDER_L),
-                        "productionCounting.record.messages.error.finalExists");
-                finalExist = false;
-            }
-        }
-        return finalExist;
     }
 
     public boolean checkIfOrderIsStarted(final DataDefinition dd, final Entity entity) {

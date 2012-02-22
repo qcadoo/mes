@@ -597,10 +597,9 @@ public class TechnologyService {
 
     private boolean checkIfDeactivated(final DataDefinition dataDefinition, final Entity technology,
             final Entity existingTechnology) {
-        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())) {
-            if (technology.isActive() != existingTechnology.isActive()) {
-                return true;
-            }
+        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())
+                && technology.isActive() != existingTechnology.isActive()) {
+            return true;
         }
         return false;
     }
@@ -735,17 +734,17 @@ public class TechnologyService {
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
      *         product/intermediate.
      */
-    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+    public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         Entity parentOpComp = operationComponent.getBelongsToField("parent");
 
         List<Entity> prodOutComps = operationComponent.getHasManyField("operationProductOutComponents");
 
         if (parentOpComp == null) {
             Entity technology = operationComponent.getBelongsToField("technology");
-            Entity product = technology.getBelongsToField("product");
+            Entity product = technology.getBelongsToField(PRODUCT_L);
 
             for (Entity prodOutComp : prodOutComps) {
-                if (prodOutComp.getBelongsToField("product").getId().equals(product.getId())) {
+                if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
                     return (BigDecimal) prodOutComp.getField("quantity");
                 }
             }
@@ -754,7 +753,7 @@ public class TechnologyService {
 
             for (Entity prodOutComp : prodOutComps) {
                 for (Entity prodInComp : prodInComps) {
-                    if (prodOutComp.getBelongsToField("product").getId().equals(prodInComp.getBelongsToField("product").getId())) {
+                    if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(prodInComp.getBelongsToField(PRODUCT_L).getId())) {
                         return (BigDecimal) prodOutComp.getField("quantity");
                     }
                 }

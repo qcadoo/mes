@@ -8,7 +8,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class MaterialFlowTransferModelHooks {
 
-    public void copyProductionOrConsumptionDataFromBelongingTransformation(DataDefinition dd, Entity transfer) {
+    public void copyProductionOrConsumptionDataFromBelongingTransformation(final DataDefinition dd, final Entity transfer) {
         Entity transformation = transfer.getBelongsToField("transformationsProduction");
 
         if (transformation == null) {

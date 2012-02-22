@@ -95,7 +95,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
-        Entity technology = technologyDD.get(valueOf((model.get("id").toString())));
+        Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
         Map<String, String> panelTableValues = newLinkedHashMap();
         panelTableValues.put(FIELD_NAME, technology.getStringField(FIELD_NAME));
         panelTableValues.put("number", technology.getStringField("number"));
