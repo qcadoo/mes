@@ -409,8 +409,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
 
-        List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField(ORDER_LITERAL)
-                .getHasManyField("productionRecords"));
+        List<Entity> productionRecords = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.belongsTo(ORDER_LITERAL, productionBalance.getBelongsToField(ORDER_LITERAL)))
+                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list()
+                .getEntities();
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
@@ -465,8 +468,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Integer plannedTimeSum = 0;
         Integer registeredTimeSum = 0;
         Integer timeBalanceSum = 0;
-        // List<Entity> productionRecords = new ArrayList<Entity>(productionBalance.getBelongsToField("order").getHasManyField(
-        // "productionRecords"));
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo(ORDER_LITERAL, productionBalance.getBelongsToField(ORDER_LITERAL)))
@@ -509,27 +510,20 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 "productionCounting.productionBalanceDetails.window.productionTime.tabLabel", locale), FontUtils
                 .getDejavuBold11Dark()));
 
-        BigDecimal plannedTime;
         BigDecimal machinePlannedTime = BigDecimal.ZERO;
         BigDecimal laborPlannedTime = BigDecimal.ZERO;
-
-        List<Entity> orderOperationComponents = productionBalance.getBelongsToField(ORDER_LITERAL).getTreeField(
-                "orderOperationComponents");
-        for (Entity orderOperationComponent : orderOperationComponents) {
-            plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tj"), numberService.getMathContext())).add(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")), numberService.getMathContext());
-            machinePlannedTime = machinePlannedTime.add(
-                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("machineUtilization"),
-                            numberService.getMathContext()), numberService.getMathContext());
-            laborPlannedTime = laborPlannedTime.add(
-                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("laborUtilization"),
-                            numberService.getMathContext()), numberService.getMathContext());
-        }
-
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        for (Entity productionRecord : productionBalance.getBelongsToField(ORDER_LITERAL).getHasManyField("productionRecords")) {
+        List<Entity> productionRecordsList = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order"))).list().getEntities();
+
+        for (Entity productionRecord : productionRecordsList) {
+            machinePlannedTime = machinePlannedTime.add(
+                    new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
+            laborPlannedTime = laborPlannedTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
+                    numberService.getMathContext());
             machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
                     numberService.getMathContext());
             laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),

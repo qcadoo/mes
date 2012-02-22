@@ -183,7 +183,7 @@
 			<component type="gridLayout" name="productionTimeGridLayout" reference="productionTimeGridLayout" 
 					   columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false"/>
+					<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
 				</layoutElement>
 				<layoutElement column="2" row="1">
 					<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>

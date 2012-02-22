@@ -225,22 +225,8 @@ public class ProductionBalanceViewService {
     }
 
     private void setTimeValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        BigDecimal plannedTime;
         BigDecimal machinePlannedTime = BigDecimal.ZERO;
         BigDecimal laborPlannedTime = BigDecimal.ZERO;
-
-        List<Entity> orderOperationComponents = order.getTreeField("orderOperationComponents");
-        for (Entity orderOperationComponent : orderOperationComponents) {
-            plannedTime = ((BigDecimal) orderOperationComponent.getField("productionInOneCycle")).multiply(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tj")), numberService.getMathContext()).add(
-                    new BigDecimal((Integer) orderOperationComponent.getField("tpz")), numberService.getMathContext());
-            machinePlannedTime = machinePlannedTime.add(
-                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("machineUtilization"),
-                            numberService.getMathContext()), numberService.getMathContext());
-            laborPlannedTime = laborPlannedTime.add(
-                    plannedTime.multiply((BigDecimal) orderOperationComponent.getField("laborUtilization"),
-                            numberService.getMathContext()), numberService.getMathContext());
-        }
 
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
@@ -249,6 +235,10 @@ public class ProductionBalanceViewService {
                 .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
         for (Entity productionRecord : productionRecordsList) {
+            machinePlannedTime = machinePlannedTime.add(
+                    new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
+            laborPlannedTime = laborPlannedTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
+                    numberService.getMathContext());
             machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
                     numberService.getMathContext());
             laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
