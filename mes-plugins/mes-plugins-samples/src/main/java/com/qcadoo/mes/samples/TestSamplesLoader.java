@@ -635,6 +635,7 @@ public class TestSamplesLoader extends SamplesLoader {
         costCalculation.setField(PRODUCT_L, getProductByNumber(values.get("prod_no")));
         costCalculation.setField("quantity", values.get("quantity"));
         costCalculation.setField("includeTPZ", values.get("include_tpz"));
+        costCalculation.setField("sourceOfMaterialcosts", values.get("sourceofmaterialcosts"));
         costCalculation.setField("calculateMaterialCostsMode", values.get("calculate_material_cost_mode"));
         costCalculation.setField("calculateOperationCostsMode", values.get("calculate_operation_cost_mode"));
         costCalculation.setField("additionalOverhead", values.get("additional_overhead"));
