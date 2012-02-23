@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.2
+    Version: 1.1.3
 
     This file is part of Qcadoo.
 
@@ -22,9 +22,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
-    
--->
 
+-->
 <divisions>
 	<row NUMBER="1" NAME="Milling division" SUPERVISOR="03"/>
 	<row NUMBER="2" NAME="Griding division" SUPERVISOR="02"/>

@@ -198,7 +198,7 @@ ALTER TABLE ordergroups_ordergroup ALTER COLUMN "number" type varchar(255);
 
 -- end
 
-      
+
 -- Table: basic_staff
 -- changed: 27.01.2012
 
@@ -276,3 +276,5 @@ CREATE TABLE costnormsforproduct_orderoperationproductincomponent
 );
 
 -- end
+
+update technologies_technology set master = false where state = '03declined' or state = '04outdated';

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.2
+ * Version: 1.1.3
  *
  * This file is part of Qcadoo.
  *
