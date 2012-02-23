@@ -236,16 +236,18 @@
 		<windowTab name="inputDataTab">
 			<component type="form" name="formInputData" reference="formInputData">
 				<component type="gridLayout" name="inputData" reference="inputData"
-					columns="3" rows="3">
-					<layoutElement column="1" row="1" height="3">
+					columns="3" rows="5">
+					<layoutElement column="1" row="1" height="5">
 						<component type="borderLayout" name="borderLayoutParameters"
 							reference="borderLayoutParameters">
 							<option type="label" value="parameters" />
 							<component type="gridLayout" name="parameters"
-								reference="parameters" columns="1" rows="3">
+								reference="parameters" columns="1" rows="5">
+								
+								
 								<layoutElement column="1" row="1">
-									<component type="checkbox" name="includeTPZ"
-										reference="includeTPZ" field="#{form}.includeTPZ" />
+									<component type="select" name="sourceOfMaterialcosts"
+										reference="sourceOfMaterialcosts" field="#{form}.sourceOfMaterialcosts" />
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="calculateMaterialCostsMode"
@@ -253,8 +255,19 @@
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="select" name="calculateOperationCostsMode"
-										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" />
+										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" >
+										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/> -->
+										</component>
 								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="checkbox" name="includeTPZ"
+										reference="includeTPZ" field="#{form}.includeTPZ" />
+								</layoutElement>
+								<layoutElement column="1" row="5">
+									<component type="checkbox" name="includeAdditionalTime"
+										reference="includeAdditionalTime" field="#{form}.includeAdditionalTime" />
+								</layoutElement>
+								
 							</component>
 						</component>
 					</layoutElement>

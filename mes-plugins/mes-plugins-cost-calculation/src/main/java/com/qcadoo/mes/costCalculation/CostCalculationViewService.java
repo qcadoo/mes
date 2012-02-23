@@ -384,6 +384,21 @@ public class CostCalculationViewService {
         }
     }
 
+    public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
+        FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
+                .getComponentByReference("includeAdditionalTime");
+
+        if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("hourly")) {
+            return;
+        } else if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
+            includeAdditionalTime.setFieldValue(false);
+            includeTPZ.setFieldValue(false);
+        }
+    }
+
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
