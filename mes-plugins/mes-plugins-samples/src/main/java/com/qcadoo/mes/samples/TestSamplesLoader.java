@@ -1091,7 +1091,8 @@ public class TestSamplesLoader extends SamplesLoader {
         } else if (QUALITY_CONTROLS_FOR_OPERATION_L.equals(values.get(QUALITYCONTROLTYPE_3))) {
             qualitycontrol.setField(NUMBER_L, values.get(NUMBER_L));
             qualitycontrol.setField(ORDER_L, getOrderByNumber(values.get(ORDER_L)));
-            qualitycontrol.setField(OPERATION_L, getOperationByNumber(values.get(OPERATION_L)));
+            qualitycontrol.setField(OPERATION_L,
+                    getOrderOperationComponentByNumber(values.get(OPERATION_L), getOrderByNumber(values.get(ORDER_L))));
             qualitycontrol.setField("ControlResult", values.get("controlresult"));
             qualitycontrol.setField(COMMENT_L, values.get(COMMENT_L));
             qualitycontrol.setField(CLOSED_L, values.get(CLOSED_L));
