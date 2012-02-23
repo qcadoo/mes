@@ -391,7 +391,9 @@ public class CostCalculationViewService {
                 .equals("01currentGlobalDefinitionsInProduct"))
                 && (viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").getFieldValue()
                         .equals("04costForOrder"))) {
-            state.addMessage("costCalculation.messages.optionUnavailable", MessageType.FAILURE);
+
+            viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").addMessage(
+                    "costCalculation.messages.optionUnavailable", MessageType.FAILURE);
 
         } else
 
