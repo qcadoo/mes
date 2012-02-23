@@ -256,7 +256,7 @@
 								<layoutElement column="1" row="3">
 									<component type="select" name="calculateOperationCostsMode"
 										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" >
-										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/> -->
+										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/>
 										</component>
 								</layoutElement>
 								<layoutElement column="1" row="4">

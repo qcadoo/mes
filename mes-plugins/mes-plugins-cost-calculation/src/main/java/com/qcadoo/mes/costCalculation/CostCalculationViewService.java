@@ -280,9 +280,9 @@ public class CostCalculationViewService {
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
-                "number", "description", "includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode",
-                "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
-                "additionalOverhead", "additionalOverheadCurrency"));
+                "number", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode", "productionCostMargin",
+                "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc", "additionalOverhead",
+                "additionalOverheadCurrency"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -391,12 +391,25 @@ public class CostCalculationViewService {
         FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
                 .getComponentByReference("includeAdditionalTime");
 
-        if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("hourly")) {
-            return;
-        } else if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
-            includeAdditionalTime.setFieldValue(false);
+        if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
+
             includeTPZ.setFieldValue(false);
+            includeTPZ.setEnabled(false);
+            includeTPZ.requestComponentUpdateState();
+            includeAdditionalTime.setFieldValue(false);
+            includeAdditionalTime.setEnabled(false);
+            includeAdditionalTime.requestComponentUpdateState();
+
+        } else {
+            includeTPZ.setEnabled(true);
+            includeTPZ.setFieldValue(true);
+            includeTPZ.requestComponentUpdateState();
+
+            includeAdditionalTime.setEnabled(true);
+            includeAdditionalTime.requestComponentUpdateState();
+
         }
+
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
