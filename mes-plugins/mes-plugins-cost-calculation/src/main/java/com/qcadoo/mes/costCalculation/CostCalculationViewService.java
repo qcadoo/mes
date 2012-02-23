@@ -384,6 +384,21 @@ public class CostCalculationViewService {
         }
     }
 
+    public void ifCurrentGlobalIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        if ((viewDefinitionState.getComponentByReference("sourceOfMaterialcosts").getFieldValue()
+                .equals("01currentGlobalDefinitionsInProduct"))
+                && (viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").getFieldValue()
+                        .equals("04costForOrder"))) {
+            state.addMessage("costCalculation.messages.optionUnavailable", MessageType.FAILURE);
+
+        } else
+
+            return;
+
+    }
+
     public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
