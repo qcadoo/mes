@@ -93,20 +93,28 @@
 			<validatesLength max="2024" />
 		</string>
 		<boolean name="includeTPZ" default="true" />
-		<enum name="calculateMaterialCostsMode" values="01nominal,03lastPurchase,02average"
-			required="true" default="nominal" />
+		<boolean name="includeAdditionalTime" default="false"/>
+		
+		<enum name="sourceOfMaterialcosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
+			required="true" default="01currentGlobalDefinitionsInProduct"/>
+		
+		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04costForOrder"
+			required="true" default="01nominal" />
+		
 		<enum name="calculateOperationCostsMode" values="piecework,hourly"
 			required="true" default="hourly" />
+			
 		<datetime name="dateOfCalculation" />
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>
 	<hooks>
-		<validatesWith
-			class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators"
-			method="checkIfTheTechnologyTreeIsntEmpty" />
-		<onCopy class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
+		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
+		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyTreeIsntEmpty" />
+		<onCopy
+			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="clearGeneratedOnCopy" />
+			
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

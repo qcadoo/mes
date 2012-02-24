@@ -280,9 +280,9 @@ public class CostCalculationViewService {
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
-                "number", "description", "includeTPZ", "calculateMaterialCostsMode", "calculateOperationCostsMode",
-                "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
-                "additionalOverhead", "additionalOverheadCurrency"));
+                "number", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode", "productionCostMargin",
+                "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc", "additionalOverhead",
+                "additionalOverheadCurrency"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -382,6 +382,76 @@ public class CostCalculationViewService {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
             fieldComponent.setFieldValue(getBigDecimal(costCalculation.getField(referenceName)));
         }
+    }
+
+    public void ifCurrentGlobalIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        if ((viewDefinitionState.getComponentByReference("sourceOfMaterialcosts").getFieldValue()
+                .equals("01currentGlobalDefinitionsInProduct"))
+                && (viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").getFieldValue()
+                        .equals("04costForOrder"))) {
+
+            viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").addMessage(
+                    "costCalculation.messages.optionUnavailable", MessageType.FAILURE);
+
+        } else
+
+            return;
+
+    }
+
+    public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+
+        FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
+        FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
+                .getComponentByReference("includeAdditionalTime");
+
+        FieldComponent machineHourlyCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalMachineHourlyCosts");
+        FieldComponent machineHourlyCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalMachineHourlyCostsCurrency");
+
+        FieldComponent totalLabourHourlyCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalLaborHourlyCosts");
+        FieldComponent totalLaborHourlyCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalLaborHourlyCostsCurrency");
+
+        FieldComponent totalPieceworkCosts = (FieldComponent) viewDefinitionState.getComponentByReference("totalPieceworkCosts");
+        FieldComponent totalPieceworkCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalPieceworkCostsCurrency");
+
+        if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
+
+            includeTPZ.setFieldValue(false);
+            includeTPZ.setEnabled(false);
+            includeTPZ.requestComponentUpdateState();
+            includeAdditionalTime.setFieldValue(false);
+            includeAdditionalTime.setEnabled(false);
+            includeAdditionalTime.requestComponentUpdateState();
+            machineHourlyCosts.setVisible(false);
+            machineHourlyCostsCurrency.setVisible(false);
+            totalLabourHourlyCosts.setVisible(false);
+            totalLaborHourlyCostsCurrency.setVisible(false);
+            totalPieceworkCosts.setVisible(true);
+            totalPieceworkCostsCurrency.setVisible(true);
+
+        } else {
+            includeTPZ.setEnabled(true);
+            includeTPZ.setFieldValue(true);
+
+            includeAdditionalTime.setEnabled(true);
+
+            machineHourlyCosts.setVisible(true);
+            machineHourlyCostsCurrency.setVisible(true);
+            totalLabourHourlyCosts.setVisible(true);
+            totalLaborHourlyCostsCurrency.setVisible(true);
+            totalPieceworkCosts.setVisible(false);
+            totalPieceworkCostsCurrency.setVisible(false);
+
+        }
+
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

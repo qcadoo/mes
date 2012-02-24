@@ -59,4 +59,15 @@ public class CostCalculationModelValidators {
         costCalculation.addError(dataDefinition.getField("technology"), "costNormsForOperation.messages.fail.emptyTree");
         return false;
     }
+
+    public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
+        if ((costCalculation.getField("sourceOfMaterialcosts").equals("01currentGlobalDefinitionsInProduct"))
+                && (costCalculation.getField("calculateMaterialCostsMode").equals("04costForOrder"))) {
+            costCalculation.addError(costCalculationDD.getField("calculateMaterialCostsMode"),
+                    "costCalculation.messages.optionUnavailable");
+            return false;
+        } else
+            return true;
+    }
+
 }

@@ -141,7 +141,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(),
                     productComponentQuantities, margin, quantity);
-            costCalculation.setField("totalPieceworkCosts", totalPieceworkCost);
+            costCalculation.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
         } else {
             Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(technology, quantity,
                     includeTPZ);

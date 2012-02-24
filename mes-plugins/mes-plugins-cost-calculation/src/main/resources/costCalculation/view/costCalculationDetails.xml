@@ -236,25 +236,42 @@
 		<windowTab name="inputDataTab">
 			<component type="form" name="formInputData" reference="formInputData">
 				<component type="gridLayout" name="inputData" reference="inputData"
-					columns="3" rows="3">
-					<layoutElement column="1" row="1" height="3">
+					columns="3" rows="5">
+					<layoutElement column="1" row="1" height="5">
 						<component type="borderLayout" name="borderLayoutParameters"
 							reference="borderLayoutParameters">
 							<option type="label" value="parameters" />
 							<component type="gridLayout" name="parameters"
-								reference="parameters" columns="1" rows="3">
+								reference="parameters" columns="1" rows="5">
+								
+								
 								<layoutElement column="1" row="1">
-									<component type="checkbox" name="includeTPZ"
-										reference="includeTPZ" field="#{form}.includeTPZ" />
+									<component type="select" name="sourceOfMaterialcosts"
+										reference="sourceOfMaterialcosts" field="#{form}.sourceOfMaterialcosts" >
+									<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="calculateMaterialCostsMode"
-										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode" />
+										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode" >
+										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
+										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="select" name="calculateOperationCostsMode"
-										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" />
+										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" >
+										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/>
+										</component>
 								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="checkbox" name="includeTPZ"
+										reference="includeTPZ" field="#{form}.includeTPZ" />
+								</layoutElement>
+								<layoutElement column="1" row="5">
+									<component type="checkbox" name="includeAdditionalTime"
+										reference="includeAdditionalTime" field="#{form}.includeAdditionalTime" />
+								</layoutElement>
+								
 							</component>
 						</component>
 					</layoutElement>
@@ -321,6 +338,7 @@
 									<component type="input" name="totalMaterialCosts"
 										field="#{form}.totalMaterialCosts" reference="totalMaterialCosts"
 										defaultEnabled="false">
+										  <option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -335,6 +353,7 @@
 									<component type="input" name="totalMachineHourlyCosts"
 										reference="totalMachineHourlyCosts" field="#{form}.totalMachineHourlyCosts"
 										defaultEnabled="false">
+										  <option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -350,6 +369,7 @@
 									<component type="input" name="totalLaborHourlyCosts"
 										field="#{form}.totalLaborHourlyCosts" reference="totalLaborHourlyCosts"
 										defaultEnabled="false">
+										  <option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -364,14 +384,15 @@
 								<layoutElement column="1" row="4" width="2">
 									<component type="input" name="totalPieceworkCosts"
 										field="#{form}.totalPieceworkCosts" reference="totalPieceworkCosts"
-										defaultEnabled="false">
+										defaultEnabled="false" defaultVisible="false">
+										  <option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="4">
 									<component type="input" name="totalPieceworkCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency">
+										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency" defaultVisible="false">
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
@@ -408,6 +429,7 @@
 									<component type="input" name="productionCostMarginValue"
 										field="#{form}.productionCostMarginValue" defaultEnabled="false"
 										reference="productionCostMarginValue">
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -423,6 +445,7 @@
 									<component type="input" name="materialCostMarginValue"
 										field="#{form}.materialCostMarginValue" defaultEnabled="false"
 										reference="materialCostMarginValue">
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -438,6 +461,7 @@
 									<component type="input" name="additionalOverheadValue"
 										field="#{form}.additionalOverheadValue" defaultEnabled="false"
 										reference="additionalOverheadValue">
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -452,6 +476,7 @@
 								<layoutElement column="1" row="4">
 									<component type="label" name="totalOverheadLabel"
 										hasLabel="false">
+									  <option type="labelWidth" value="40"/>
 										<option type="labelStyle" value="text" />
 									</component>
 								</layoutElement>
