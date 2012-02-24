@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -124,6 +125,7 @@ public class OperationsCostCalculationServiceTest {
 
     }
 
+    @Ignore
     @Test
     public void shouldCalculateOperationCostForPieceworkCorrectlyFromTechnology() throws Exception {
         // given
