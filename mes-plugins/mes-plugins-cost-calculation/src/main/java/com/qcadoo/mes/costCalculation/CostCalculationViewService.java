@@ -408,6 +408,20 @@ public class CostCalculationViewService {
         FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
                 .getComponentByReference("includeAdditionalTime");
 
+        FieldComponent machineHourlyCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalMachineHourlyCosts");
+        FieldComponent machineHourlyCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalMachineHourlyCostsCurrency");
+
+        FieldComponent totalLabourHourlyCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalLaborHourlyCosts");
+        FieldComponent totalLaborHourlyCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalLaborHourlyCostsCurrency");
+
+        FieldComponent totalPieceworkCosts = (FieldComponent) viewDefinitionState.getComponentByReference("totalPieceworkCosts");
+        FieldComponent totalPieceworkCostsCurrency = (FieldComponent) viewDefinitionState
+                .getComponentByReference("totalPieceworkCostsCurrency");
+
         if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
 
             includeTPZ.setFieldValue(false);
@@ -416,14 +430,25 @@ public class CostCalculationViewService {
             includeAdditionalTime.setFieldValue(false);
             includeAdditionalTime.setEnabled(false);
             includeAdditionalTime.requestComponentUpdateState();
+            machineHourlyCosts.setVisible(false);
+            machineHourlyCostsCurrency.setVisible(false);
+            totalLabourHourlyCosts.setVisible(false);
+            totalLaborHourlyCostsCurrency.setVisible(false);
+            totalPieceworkCosts.setVisible(true);
+            totalPieceworkCostsCurrency.setVisible(true);
 
         } else {
             includeTPZ.setEnabled(true);
             includeTPZ.setFieldValue(true);
-            includeTPZ.requestComponentUpdateState();
 
             includeAdditionalTime.setEnabled(true);
-            includeAdditionalTime.requestComponentUpdateState();
+
+            machineHourlyCosts.setVisible(true);
+            machineHourlyCostsCurrency.setVisible(true);
+            totalLabourHourlyCosts.setVisible(true);
+            totalLaborHourlyCostsCurrency.setVisible(true);
+            totalPieceworkCosts.setVisible(false);
+            totalPieceworkCostsCurrency.setVisible(false);
 
         }
 

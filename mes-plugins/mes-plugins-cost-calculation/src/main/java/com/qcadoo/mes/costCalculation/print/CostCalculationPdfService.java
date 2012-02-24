@@ -166,10 +166,23 @@ public class CostCalculationPdfService extends PdfDocumentService {
         leftPanelColumn.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
-        pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
-                tabInText + translationService.translate("costCalculation.costCalculation.includeTPZ.label", locale) + ":",
-                (Boolean) costCalculation.getField("includeTPZ") ? translationService.translate("qcadooView.true", locale)
-                        : translationService.translate("qcadooView.false", locale));
+
+        if (!costCalculation.getField("calculateOperationCostsMode").equals("piecework")) {
+
+            pdfHelper.addTableCellAsTwoColumnsTable(
+                    leftPanelColumn,
+                    tabInText
+                            + translationService.translate(
+                                    "costCalculation.costCalculationDetails.report.columnHeader.includeAdditionalTime", locale)
+                            + ":",
+                    (Boolean) costCalculation.getField("includeAdditionalTime") ? translationService.translate("qcadooView.true",
+                            locale) : translationService.translate("qcadooView.false", locale));
+
+            pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
+                    tabInText + translationService.translate("costCalculation.costCalculation.includeTPZ.label", locale) + ":",
+                    (Boolean) costCalculation.getField("includeTPZ") ? translationService.translate("qcadooView.true", locale)
+                            : translationService.translate("qcadooView.false", locale));
+        }
 
         Object reportData = costCalculation.getField("calculateMaterialCostsMode");
         pdfHelper.addTableCellAsTwoColumnsTable(

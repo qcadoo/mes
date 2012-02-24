@@ -102,6 +102,7 @@
 		
 		<enum name="calculateOperationCostsMode" values="piecework,hourly"
 			required="true" default="hourly" />
+			
 		<datetime name="dateOfCalculation" />
 		<boolean name="generated" />
 		<string name="fileName" />
