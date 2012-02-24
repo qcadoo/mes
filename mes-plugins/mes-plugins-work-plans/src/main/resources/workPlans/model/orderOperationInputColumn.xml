@@ -24,17 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="orderOperationInputColumn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://schema.qcadoo.org/model"
+<model name="orderOperationInputColumn" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="orderOperationComponent" plugin="productionScheduling" model="orderOperationComponent" required="true" />
-		
-		<belongsTo name="columnForInputProducts" plugin="workPlans" model="columnForInputProducts" required="true" lazy="false" />
-		
+		<belongsTo name="orderOperationComponent" plugin="productionScheduling"
+			model="orderOperationComponent" required="true" />
+
+		<belongsTo name="columnForInputProducts" plugin="workPlans"
+			model="columnForInputProducts" required="true" lazy="false" />
+
 		<priority name="succession" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationColumnModelValidators" method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
+		<validatesWith
+			class="com.qcadoo.mes.workPlans.hooks.OrderOperationColumnModelValidators"
+			method="checkIfColumnForInputProductsIsNotAlreadyUsed" />
 	</hooks>
 </model>

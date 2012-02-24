@@ -25,5 +25,5 @@
 
 -->
 <recordOperationProductInComponent>
-	<row PRODUCTIONRECORD ="1" PRODUCT="24" USEDQUANTITY ="10" PLANNEDQUANTITY="1" BALANCE="1"/>
+	<row PRODUCTIONRECORD="1" PRODUCT="24" USEDQUANTITY="10" PLANNEDQUANTITY="1" BALANCE="1" />
 </recordOperationProductInComponent>

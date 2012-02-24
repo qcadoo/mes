@@ -24,15 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="stoppage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="stoppage" activable="true" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" model="order" plugin="orders" required="true" />
+		<belongsTo name="order" model="order" plugin="orders"
+			required="true" />
 		<integer name="duration" required="true" />
 		<text name="reason" required="true" />
 	</fields>
-	<hooks>
-	
-	</hooks>
+	<hooks />
 </model>

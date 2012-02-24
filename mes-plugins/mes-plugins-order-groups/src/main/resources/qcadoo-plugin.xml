@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/report 
+		http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Order Groups</name>
@@ -52,46 +52,51 @@
 	</information>
 
 	<dependencies>
-        <dependency>
-            <plugin>orders</plugin>
-            <version>[0.4.0</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="orderGroup" resource="model/orderGroup.xml" />
-		
-		<menu:menu-item name="orderGroups" category="orders" view="orderGroupsList" />
+
+		<menu:menu-item name="orderGroups" category="orders"
+			view="orderGroupsList" />
 
 		<view:view resource="view/orderGroupsList.xml" />
 		<view:view resource="view/orderGroupDetails.xml" />
-		
+
 		<view:resource uri="public/**/*" />
-		
-		<model:model-field plugin="orders" model="order" >
-            <model:belongsTo name="orderGroup" plugin="orderGroups" model="orderGroup" /> 
-        </model:model-field>
-        
-        <model:model-field plugin="orders" model="order" >
-            <model:string name="orderGroupName" /> 
-        </model:model-field>
-        
-        <model:model-hook model="order" plugin="orders">
-        	<model:onSave class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="updateOrderGroupName"/>
-        </model:model-hook>
-        
-        <model:model-hook plugin="orders" model="order" >
-            <model:validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService" method="validateOrderDate" />
-        </model:model-hook>
-		
+
+		<model:model-field plugin="orders" model="order">
+			<model:belongsTo name="orderGroup" plugin="orderGroups"
+				model="orderGroup" />
+		</model:model-field>
+
+		<model:model-field plugin="orders" model="order">
+			<model:string name="orderGroupName" />
+		</model:model-field>
+
+		<model:model-hook model="order" plugin="orders">
+			<model:onSave class="com.qcadoo.mes.orderGroups.OrderGroupsService"
+				method="updateOrderGroupName" />
+		</model:model-hook>
+
+		<model:model-hook plugin="orders" model="order">
+			<model:validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService"
+				method="validateOrderDate" />
+		</model:model-hook>
+
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		
-        <view:view-grid-column plugin="orders" view="ordersList" component="grid">
-            <view:column name="orderGroup" fields="orderGroupName" orderable="true" searchable="true" link="false" width="60" />
-        </view:view-grid-column>
-        
+
+		<view:view-grid-column plugin="orders" view="ordersList"
+			component="grid">
+			<view:column name="orderGroup" fields="orderGroupName"
+				orderable="true" searchable="true" link="false" width="60" />
+		</view:view-grid-column>
 	</modules>
 
 </plugin>

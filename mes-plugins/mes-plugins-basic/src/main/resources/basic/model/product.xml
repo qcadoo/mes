@@ -24,15 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="product" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true" auditable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="product" activable="true" auditable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true" >
-			<validatesLength max="1024"/>
+		<string name="name" required="true">
+			<validatesLength max="1024" />
 		</string>
 		<enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste" />
 		<string name="ean" unique="true" />
@@ -42,13 +42,13 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-		<string name="externalNumber"/>
+		<string name="externalNumber" />
 		<string name="description">
-		<validatesLength max="2048"/>
+			<validatesLength max="2048" />
 		</string>
 	</fields>
-	<hooks >
-		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy"/>
+	<hooks>
+		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

@@ -24,20 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="stockCorrection" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="stockCorrection" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
 		<datetime name="stockCorrectionDate" required="true" />
-		<belongsTo name="stockAreas" required="true" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="product" required="true" model="product" plugin="basic" />
-		<decimal name="shouldBe" readonly="true" persistent="false"/>
-		<decimal name="found" required="true"/>
+		<belongsTo name="stockAreas" required="true" model="stockAreas"
+			plugin="materialFlow" />
+		<belongsTo name="product" required="true" model="product"
+			plugin="basic" />
+		<decimal name="shouldBe" readonly="true" persistent="false" />
+		<decimal name="found" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 </model>

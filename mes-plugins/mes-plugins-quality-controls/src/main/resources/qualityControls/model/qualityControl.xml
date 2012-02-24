@@ -24,14 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="qualityControl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="qualityControl" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
-		<belongsTo name="operation" model="orderOperationComponent" plugin="productionScheduling" />
-		<string name="number" required="true"  >
+		<belongsTo name="operation" model="orderOperationComponent"
+			plugin="productionScheduling" />
+		<string name="number" required="true">
 			<validatesLength max="255" />
 		</string>
 		<enum name="controlResult" values="01correct,02incorrect,03objection" />
@@ -51,7 +52,9 @@
 			values="qualityControlsForOrder,qualityControlsForUnit,qualityControlsForBatch,qualityControlsForOperation" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlForNumberService" method="checkUniqueNumber"/>
+		<validatesWith
+			class="com.qcadoo.mes.qualityControls.QualityControlForNumberService"
+			method="checkUniqueNumber" />
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="checkIfCommentForResultOrQuantityIsReq" />
 		<validatesWith class="com.qcadoo.mes.qualityControls.QualityControlService"

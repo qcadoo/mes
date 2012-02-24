@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Work Plans</name>
@@ -64,24 +64,27 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="workPlan" resource="model/workPlan.xml" />
-	
+
 		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
 		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
 		<model:model model="parameterInputColumn" resource="model/parameterInputColumn.xml" />
 		<model:model model="parameterOutputColumn" resource="model/parameterOutputColumn.xml" />
 		<model:model model="operationInputColumn" resource="model/operationInputColumn.xml" />
 		<model:model model="operationOutputColumn" resource="model/operationOutputColumn.xml" />
-		<model:model model="technologyOperationInputColumn" resource="model/technologyOperationInputColumn.xml" />
-		<model:model model="technologyOperationOutputColumn" resource="model/technologyOperationOutputColumn.xml" />
+		<model:model model="technologyOperationInputColumn"
+			resource="model/technologyOperationInputColumn.xml" />
+		<model:model model="technologyOperationOutputColumn"
+			resource="model/technologyOperationOutputColumn.xml" />
 		<model:model model="orderOperationInputColumn" resource="model/orderOperationInputColumn.xml" />
 		<model:model model="orderOperationOutputColumn" resource="model/orderOperationOutputColumn.xml" />
-		
+
 		<model:model-field plugin="orders" model="order">
-			<model:manyToMany name="workPlans" joinField="orders" model="workPlan" plugin="workPlans"/>
+			<model:manyToMany name="workPlans" joinField="orders"
+				model="workPlan" plugin="workPlans" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -100,14 +103,18 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-	
+
 		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="parameterInputColumns" plugin="workPlans" model="parameterInputColumn" joinField="parameter" cascade="delete" copyable="true" />
+			<model:hasMany name="parameterInputColumns" plugin="workPlans"
+				model="parameterInputColumn" joinField="parameter" cascade="delete"
+				copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="parameterOutputColumns" plugin="workPlans" model="parameterOutputColumn" joinField="parameter" cascade="delete" copyable="true" />
+			<model:hasMany name="parameterOutputColumns" plugin="workPlans"
+				model="parameterOutputColumn" joinField="parameter" cascade="delete"
+				copyable="true" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -126,104 +133,148 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="operationInputColumns" plugin="workPlans" model="operationInputColumn" joinField="operation" cascade="delete" copyable="true" />
+			<model:hasMany name="operationInputColumns" plugin="workPlans"
+				model="operationInputColumn" joinField="operation" cascade="delete"
+				copyable="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:hasMany name="operationOutputColumns" plugin="workPlans" model="operationOutputColumn" joinField="operation" cascade="delete" copyable="true" />
+			<model:hasMany name="operationOutputColumns" plugin="workPlans"
+				model="operationOutputColumn" joinField="operation" cascade="delete"
+				copyable="true" />
 		</model:model-field>
-		
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:boolean name="hideDetailsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-		
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="technologyOperationInputColumns" plugin="workPlans" model="technologyOperationInputColumn" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
+
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
+			<model:hasMany name="technologyOperationInputColumns"
+				plugin="workPlans" model="technologyOperationInputColumn" joinField="technologyOperationComponent"
+				cascade="delete" copyable="true" />
 		</model:model-field>
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="technologyOperationOutputColumns" plugin="workPlans" model="technologyOperationOutputColumn" joinField="technologyOperationComponent" cascade="delete" copyable="true" />
+		<model:model-field plugin="technologies"
+			model="technologyOperationComponent">
+			<model:hasMany name="technologyOperationOutputColumns"
+				plugin="workPlans" model="technologyOperationOutputColumn"
+				joinField="technologyOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:boolean name="hideDetailsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-		
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
-			<model:hasMany name="orderOperationInputColumns" plugin="workPlans" model="orderOperationInputColumn" joinField="orderOperationComponent" cascade="delete" copyable="true" />
+
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
+			<model:hasMany name="orderOperationInputColumns"
+				plugin="workPlans" model="orderOperationInputColumn" joinField="orderOperationComponent"
+				cascade="delete" copyable="true" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling" model="orderOperationComponent">
-			<model:hasMany name="orderOperationOutputColumns" plugin="workPlans" model="orderOperationOutputColumn" joinField="orderOperationComponent" cascade="delete" copyable="true" />
+		<model:model-field plugin="productionScheduling"
+			model="orderOperationComponent">
+			<model:hasMany name="orderOperationOutputColumns"
+				plugin="workPlans" model="orderOperationOutputColumn" joinField="orderOperationComponent"
+				cascade="delete" copyable="true" />
 		</model:model-field>
-		
+
 		<model:model-hook plugin="basic" model="parameter">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.ParameterModelValidators" method="checkIfAttachmentExtensionIsValid" />
-        </model:model-hook>
-        
-        <model:model-hook plugin="technologies" model="operation">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OperationModelValidators" method="checkIfAttachmentExtensionIsValid" />
-        </model:model-hook>
-        
-        <model:model-hook plugin="technologies" model="technologyOperationComponent">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators" method="checkIfAttachmentExtensionIsValid" />
-        </model:model-hook>
-        
-        <model:model-hook plugin="productionScheduling" model="orderOperationComponent">
-            <model:validatesWith class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators" method="checkIfAttachmentExtensionIsValid" />
-        </model:model-hook>
-        
-        <model:model-hook plugin="technologies" model="operation">
-            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationModelHooks" method="copyColumnForProducts" />
-        </model:model-hook>
-        
-        <model:model-hook plugin="technologies" model="technologyOperationComponent">
-            <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks" method="copyColumnForProducts" />
-        </model:model-hook>
-        
-        <!-- TODO LUPO maybe used in future-->
+			<model:validatesWith
+				class="com.qcadoo.mes.workPlans.hooks.ParameterModelValidators"
+				method="checkIfAttachmentExtensionIsValid" />
+		</model:model-hook>
+
+		<model:model-hook plugin="technologies" model="operation">
+			<model:validatesWith
+				class="com.qcadoo.mes.workPlans.hooks.OperationModelValidators"
+				method="checkIfAttachmentExtensionIsValid" />
+		</model:model-hook>
+
+		<model:model-hook plugin="technologies"
+			model="technologyOperationComponent">
+			<model:validatesWith
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators"
+				method="checkIfAttachmentExtensionIsValid" />
+		</model:model-hook>
+
+		<model:model-hook plugin="productionScheduling"
+			model="orderOperationComponent">
+			<model:validatesWith
+				class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators"
+				method="checkIfAttachmentExtensionIsValid" />
+		</model:model-hook>
+
+		<model:model-hook plugin="technologies" model="operation">
+			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationModelHooks"
+				method="copyColumnForProducts" />
+		</model:model-hook>
+
+		<model:model-hook plugin="technologies"
+			model="technologyOperationComponent">
+			<model:onCreate
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelHooks"
+				method="copyColumnForProducts" />
+		</model:model-hook>
+
+		<!-- TODO LUPO maybe used in future -->
 		<!-- <model:model-hook plugin="productionScheduling" model="orderOperationComponent"> -->
-		<!--     <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" method="copyColumnForProducts" /> -->
+		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" 
+			method="copyColumnForProducts" /> -->
 		<!-- </model:model-hook> -->
-		
+
 		<menu:menu-category name="reports" />
-		
-		<menu:menu-item name="workPlans" category="reports" view="workPlansList" />
-		
+
+		<menu:menu-item name="workPlans" category="reports"
+			view="workPlansList" />
+
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
-				
+
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
-		
+
 		<view:view resource="view/parameterInputColumnDetails.xml" />
 		<view:view resource="view/parameterOutputColumnDetails.xml" />
 		<view:view resource="view/operationInputColumnDetails.xml" />
@@ -232,28 +283,30 @@
 		<view:view resource="view/technologyOperationOutputColumnDetails.xml" />
 		<view:view resource="view/orderOperationInputColumnDetails.xml" />
 		<view:view resource="view/orderOperationOutputColumnDetails.xml" />
-		
+
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
-		
-		<!-- TODO LUPO maybe used in future-->
-		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" /> -->
-		
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="addSelectedOrdersToWorkPlan"
-			class="com.qcadoo.mes.workPlans.WorkPlanViewHooks" method="addSelectedOrdersToWorkPlan" />
-			
+		<view:view-tab
+			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
+
+		<!-- TODO LUPO maybe used in future -->
+		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" 
+			/> -->
+
+		<view:view-listener plugin="orders" view="ordersList"
+			component="grid" event="addSelectedOrdersToWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			method="addSelectedOrdersToWorkPlan" />
+
 		<view:view-hook plugin="technologies" view="operationDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.workPlans.hooks.OperationViewHooks"
+			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.OperationViewHooks"
 			method="setOperationDefaultValues" />
-			
-		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
-			component="operation" event="onSelectedEntityChange"
+
+		<view:view-listener plugin="technologies"
+			view="technologyOperationComponentDetails" component="operation"
+			event="onSelectedEntityChange"
 			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
-		
+
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanOnStartupService" />
 	</modules>
 

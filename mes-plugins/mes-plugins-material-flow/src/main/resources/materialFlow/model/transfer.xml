@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="transfer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="transfer" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
@@ -35,15 +35,21 @@
 		<datetime name="time" />
 		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
 		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="product" model="product" plugin="basic" required="true" />
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
 		<decimal name="quantity" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="transformationsConsumption" plugin="materialFlow" model="transformations" />
-		<belongsTo name="transformationsProduction" plugin="materialFlow" model="transformations" />
+		<belongsTo name="transformationsConsumption" plugin="materialFlow"
+			model="transformations" />
+		<belongsTo name="transformationsProduction" plugin="materialFlow"
+			model="transformations" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="validateTransfer" />
-		<onSave class="com.qcadoo.mes.materialFlow.hooks.MaterialFlowTransferModelHooks" method="copyProductionOrConsumptionDataFromBelongingTransformation" />
- 	</hooks>
-	<identifier expression="#number + ' - ' + #name" />	
+		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="validateTransfer" />
+		<onSave
+			class="com.qcadoo.mes.materialFlow.hooks.MaterialFlowTransferModelHooks"
+			method="copyProductionOrConsumptionDataFromBelongingTransformation" />
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />
 </model>

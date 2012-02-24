@@ -25,7 +25,7 @@
 
 -->
 <divisions>
-	<row NUMBER="1" NAME="Milling division" SUPERVISOR="03"/>
-	<row NUMBER="2" NAME="Griding division" SUPERVISOR="02"/>
-	<row NUMBER="3" NAME="Planing division" SUPERVISOR="01"/>
+	<row NUMBER="1" NAME="Milling division" SUPERVISOR="03" />
+	<row NUMBER="2" NAME="Griding division" SUPERVISOR="02" />
+	<row NUMBER="3" NAME="Planing division" SUPERVISOR="01" />
 </divisions>

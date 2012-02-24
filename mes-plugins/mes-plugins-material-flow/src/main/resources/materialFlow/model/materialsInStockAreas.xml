@@ -24,18 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="materialsInStockAreas" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="materialsInStockAreas" activable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="name" required="true">
 			<validatesLength max="1024" />
 		</string>
-		<datetime name="materialFlowForDate" required="true"/>
+		<datetime name="materialFlowForDate" required="true" />
 		<datetime name="time" />
 		<string name="worker" />
 		<boolean name="generated" />
-		<string name= "fileName" />
+		<string name="fileName" />
 		<hasMany name="stockAreas" model="materialsInStockAreasComponent"
 			joinField="materialsInStockAreas" cascade="delete" copyable="true" />
 	</fields>

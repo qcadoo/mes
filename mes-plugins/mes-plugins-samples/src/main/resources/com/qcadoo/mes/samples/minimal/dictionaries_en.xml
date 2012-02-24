@@ -24,13 +24,13 @@
     ***************************************************************************
 
 -->
-<units>
-	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram"/>
-	<row NAME="units" ITEM="m" DESCRIPTION="Meter"/>
-	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter"/>
-	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter"/>
-	<row NAME="units" ITEM="l" DESCRIPTION="Liter"/>
-	<row NAME="units" ITEM="pc" DESCRIPTION="Piece"/>
-	<row NAME="units" ITEM="pair" DESCRIPTION="Pair"/>
-	<row NAME="units" ITEM="set" DESCRIPTION="Set"/>
-</units>
+<dictionaries>
+	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
+	<row NAME="units" ITEM="m" DESCRIPTION="Meter" />
+	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
+	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter" />
+	<row NAME="units" ITEM="l" DESCRIPTION="Liter" />
+	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
+	<row NAME="units" ITEM="pair" DESCRIPTION="Pair" />
+	<row NAME="units" ITEM="set" DESCRIPTION="Set" />
+</dictionaries>

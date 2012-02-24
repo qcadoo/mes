@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<workplans>
-	<row NAME="Dla zleceń dot. produktu: stół" GENERATED="false" DATE="" WORKER="" TYPE="02byEndProduct"  FILENAME="" ORDER="000001"/>
-</workplans>
+<workPlans>
+	<row NAME="Dla zleceń dot. produktu: stół" GENERATED="false" DATE="" WORKER="" TYPE="02byEndProduct" FILENAME="" ORDER="000001" />
+</workPlans>

@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/report 
+		http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Minimal affordable quantity</name>
@@ -57,22 +57,24 @@
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
-	
+
 	<modules>
 		<localization:translation path="locales" />
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="minimalQuantity">
 				<model:validatesRange from="0" exclusively="true" />
-				<model:validatesUnscaledValue max="5"/>
+				<model:validatesUnscaledValue max="5" />
 				<model:validatesScale max="3" />
-			</model:decimal>			
+			</model:decimal>
 		</model:model-field>
-		
-		<view:view-tab resource="view/tabExtensions/minimalAffordableQuantity.xml"/>
 
-		<view:view-listener plugin="orders" view="orderDetails" component="form" 
-			event="save" class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService" method="checkMinimalAffordableQuantity" />
+		<view:view-tab resource="view/tabExtensions/minimalAffordableQuantity.xml" />
 
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="save"
+			class="com.qcadoo.mes.minimalAffordableQuantity.QuantityService"
+			method="checkMinimalAffordableQuantity" />
 	</modules>
 
 </plugin>

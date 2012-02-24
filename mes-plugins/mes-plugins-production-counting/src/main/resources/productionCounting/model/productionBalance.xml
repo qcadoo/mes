@@ -24,13 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="productionBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="productionBalance" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="generated" />
-		<belongsTo name="order" plugin="orders" model="order" required="true"/>
-		<belongsTo name="product" plugin="basic" model="product"/>
+		<belongsTo name="order" plugin="orders" model="order"
+			required="true" />
+		<belongsTo name="product" plugin="basic" model="product" />
 		<string name="name" required="true">
 			<validatesLength max="1024" />
 		</string>
@@ -41,9 +42,11 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
-		<onCopy class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+		<onCopy
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="clearGeneratedOnCopy" />
-		<validatesWith class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+		<validatesWith
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="validateOrder" />
 	</hooks>
 	<identifier expression="#name" />

@@ -24,12 +24,12 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="technologyOperationComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="nodeNumber" />
-	
+
 		<belongsTo name="technology" model="technology" required="true" />
 		<hasMany name="children" model="technologyOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />
@@ -52,9 +52,9 @@
 			method="validateTechnologyOperationComponent" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="copyReferencedTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfBelongsToAcceptedTechnology" />
-		<onCreate class="com.qcadoo.mes.technologies.TechnologyService" 
+		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setParentIfRootNodeAlreadyExists" />
 	</hooks>
 </model>

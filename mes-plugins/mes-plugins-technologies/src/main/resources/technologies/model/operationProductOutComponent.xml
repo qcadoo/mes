@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="operationProductOutComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="operationProductOutComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="operationComponent" model="technologyOperationComponent"
@@ -41,7 +41,7 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfBelongsToAcceptedTechnology" />
-					<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfAllreadyInTheSameOperation" />
 	</hooks>
 </model>

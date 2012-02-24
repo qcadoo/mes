@@ -29,16 +29,16 @@
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Simple Material Balance Module</name>
@@ -50,18 +50,22 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="simpleMaterialBalance" resource="model/simpleMaterialBalance.xml" />
-		<model:model model="simpleMaterialBalanceOrdersComponent" resource="model/simpleMaterialBalanceOrdersComponent.xml" />
-		<model:model model="simpleMaterialBalanceStockAreasComponent" resource="model/simpleMaterialBalanceStockAreasComponent.xml" />
-		
+		<model:model model="simpleMaterialBalanceOrdersComponent"
+			resource="model/simpleMaterialBalanceOrdersComponent.xml" />
+		<model:model model="simpleMaterialBalanceStockAreasComponent"
+			resource="model/simpleMaterialBalanceStockAreasComponent.xml" />
+
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceOrdersComponent" joinField="order" cascade="nullify" />
+				model="simpleMaterialBalanceOrdersComponent" joinField="order"
+				cascade="nullify" />
 		</model:model-field>
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas" cascade="nullify" />
+				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas"
+				cascade="nullify" />
 		</model:model-field>
 
 		<menu:menu-category name="reports" />
@@ -73,9 +77,8 @@
 		<view:view resource="view/simpleMaterialBalanceDetails.xml" />
 		<view:view resource="view/simpleMaterialBalanceOrdersComponentDetails.xml" />
 		<view:view resource="view/simpleMaterialBalanceStockAreasComponentDetails.xml" />
-		
+
 		<view:resource uri="public/**/*" />
-		
 	</modules>
 
 </plugin>

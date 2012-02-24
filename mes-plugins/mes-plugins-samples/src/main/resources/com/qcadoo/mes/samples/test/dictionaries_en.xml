@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<categories>
+<dictionaries>
 	<row NAME="categories" ITEM="category 1" DESCRIPTION="" />
 	<row NAME="categories" ITEM="category 2" DESCRIPTION="" />
 	<row NAME="categories" ITEM="category 3" DESCRIPTION="" />
@@ -34,4 +34,4 @@
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
 	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
-</categories>
+</dictionaries>

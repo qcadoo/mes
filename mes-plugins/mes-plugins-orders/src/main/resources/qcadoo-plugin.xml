@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/report 
+		http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
 		<name>MES - Orders</name>
@@ -73,9 +73,11 @@
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="technology" cascade="nullify" />
 		</model:model-field>
-		
+
 		<model:model-hook plugin="technologies" model="technology">
-			<model:validatesWith class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService" method="checkExistingOrders"/>
+			<model:validatesWith
+				class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"
+				method="checkExistingOrders" />
 		</model:model-hook>
 
 		<menu:menu-category name="orders" />
@@ -85,8 +87,9 @@
 
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/orderDetails.xml" />
-		
-		<report:report-template name="order" resource="report/order.jrxml" />
+
+		<report:report-template name="order"
+			resource="report/order.jrxml" />
 	</modules>
 
 </plugin>

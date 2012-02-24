@@ -87,174 +87,166 @@ public interface SamplesConstants {
 
     String TECHNOLOGY_MODEL_OPERATION = "operation";
 
-    String FIELD_DESCRIPTION = "description";
+    String L_DESCRIPTION = "description";
 
-    String NUMBER_L = "number";
+    String L_NUMBER = "number";
 
-    String ID_L = "id";
+    String L_ID = "id";
 
-    String FIELD_EAN = "ean";
+    String L_EAN = "ean";
 
-    String FIELD_NAME = "name";
+    String L_NAME = "name";
 
-    String FIELD_QUANTITY = "quantity";
+    String L_QUANTITY = "quantity";
 
-    String ORDER_STATE = "state";
+    String L_ORDER_STATE = "state";
 
-    String PRODUCT_NUMBER = "product_nr";
+    String L_PRODUCT_NR = "product_nr";
 
-    String FIELD_OPERATION_COMPONENT = "operationComponent";
+    String L_OPERATION_COMPONENT = "operationComponent";
 
-    String FIELD_GENERATED = "generated";
+    String L_GENERATED = "generated";
 
-    String FIELD_DATE = "date";
+    String L_DATE = "date";
 
-    String FIELD_WORKER = "worker";
+    String L_WORKER = "worker";
 
-    String FIELD_SURNAME = "surname";
+    String L_SURNAME = "surname";
 
-    String FIELD_TPZ = "tpz";
+    String L_TPZ = "tpz";
 
-    String BOM_ID = "bom_id";
+    String L_BOM_ID = "bom_id";
 
-    String ORDER_GROUPS_L = "orderGroups";
+    String L_ORDER_GROUPS = "orderGroups";
 
-    String COST_CALCULATION_L = "costCalculation";
+    String L_COST_CALCULATION = "costCalculation";
 
-    String MATERIAL_FLOW_L = "materialFlow";
+    String L_MATERIAL_FLOW = "materialFlow";
 
-    String STOCK_AREAS_L = "stockAreas";
+    String L_STOCK_AREAS = "stockAreas";
 
-    String TRANSFORMATIONS_L = "transformations";
+    String L_TRANSFORMATIONS = "transformations";
 
-    String STOCK_CORRECTION_L = "stockCorrection";
+    String L_STOCK_CORRECTION = "stockCorrection";
 
-    String QUALITY_CONTROLS_L = "qualityControls";
+    String L_QUALITY_CONTROLS = "qualityControls";
 
-    String MATERIAL_REQUIREMENTS_L = "materialRequirements";
+    String L_MATERIAL_REQUIREMENTS = "materialRequirements";
 
-    String PRODUCTION_COUNTING_L = "productionCounting";
+    String L_PRODUCTION_COUNTING = "productionCounting";
 
-    String PRODUCTION_RECORD_L = "productionRecord";
+    String L_PRODUCTION_RECORD = "productionRecord";
 
-    String PRODUCTION_BALANCE_L = "productionBalance";
+    String L_PRODUCTION_BALANCE = "productionBalance";
 
-    String BATCHES_L = "batches";
+    String L_BATCHES = "batches";
 
-    String WORK_PLANS_L = "workPlans";
+    String L_WORK_PLANS = "workPlans";
 
-    String TRANSFER_L = "transfer";
+    String L_TRANSFER = "transfer";
 
-    String ADVANCED_GENEALOGY_L = "advancedGenealogy";
+    String L_ADVANCED_GENEALOGY = "advancedGenealogy";
 
-    String ADVANCED_GENEALOGY_FOR_ORDERS_L = "advancedGenealogyForOrders";
+    String L_ADVANCED_GENEALOGY_FOR_ORDERS = "advancedGenealogyForOrders";
 
-    String TRACKING_RECORDS_L = "trackingRecords";
+    String L_TRACKING_RECORDS = "trackingRecords";
 
-    String GENEALOGY_TABLES_L = "genealogyTables";
+    String L_GENEALOGY_TABLES = "genealogyTables";
 
-    String BATCH_L = "batch";
+    String L_BATCH = "batch";
 
-    String DIVISION_L = "division";
+    String L_SUPPLIER = "supplier";
 
-    String DATE_FROM_L = "dateFrom";
+    String L_DIVISION = "division";
 
-    String DATE_TO_L = "dateTo";
+    String L_DATE_FROM = "dateFrom";
 
-    String DATE_L = "date";
+    String L_DATE_TO = "dateTo";
 
-    String QUALITY_CONTROLS_FOR_OPERATION_L = "qualityControlsForOperation";
+    String L_QUALITY_CONTROLS_FOR_OPERATION = "qualityControlsForOperation";
 
-    String QUALITY_CONTROL_TYPE_L = "quality_control_type";
+    String L_QUALITY_CONTROL_TYPE = "quality_control_type";
 
-    String QUALITY_CONTROL_TYPE2_L = "qualityControlType";
+    String L_QUALITY_CONTROL_TYPE2 = "qualityControlType";
 
-    String QUALITYCONTROLTYPE_3 = "qualitycontroltype";
+    String L_QUALITYCONTROLTYPE_3 = "qualitycontroltype";
 
-    String ORDER_NR_L = "order_nr";
+    String L_ORDER_NR = "order_nr";
 
-    String PLANNED_QUANTITY_L = "plannedQuantity";
+    String L_PLANNED_QUANTITY = "plannedQuantity";
 
-    String PRODUCT_L = "product";
+    String L_PRODUCT = "product";
 
-    String STATE_L = "state";
+    String L_STATE = "state";
 
-    String ORDER_L = "order";
+    String L_ORDER = "order";
 
-    String TYPE_L = "type";
+    String L_TYPE = "type";
 
-    String NAME_L = "name";
+    String L_TIME = "time";
 
-    String TIME_L = "time";
+    String L_STAFF = "staff";
 
-    String STAFF_L = "staff";
+    String L_FILE_NAME = "fileName";
 
-    String DESCRIPTION_L = "description";
+    String L_COMMENT = "comment";
 
-    String WORKER_L = "worker";
+    String L_CLOSED = "closed";
 
-    String GENERATED_L = "generated";
+    String L_OPERATION = "operation";
 
-    String FILE_NAME_L = "fileName";
+    String L_PROD_NR_10 = "000010";
 
-    String COMMENT_L = "comment";
+    String L_PROD_NR_11 = "000011";
 
-    String CLOSED_L = "closed";
+    String L_PROD_NR_12 = "000012";
 
-    String OPERATION_L = "operation";
+    String L_PROD_NR_13 = "000013";
 
-    String PROD_NR_10 = "000010";
+    String L_PROD_NR_14 = "000014";
 
-    String PROD_NR_11 = "000011";
+    String L_PROD_NR_15 = "000015";
 
-    String PROD_NR_12 = "000012";
+    String L_PROD_NR_16 = "000016";
 
-    String PROD_NR_13 = "000013";
+    String L_PROD_NR_17 = "000017";
 
-    String PROD_NR_14 = "000014";
+    String L_PROD_NR_18 = "000018";
 
-    String PROD_NR_15 = "000015";
+    String L_PROD_NR_19 = "000019";
 
-    String PROD_NR_16 = "000016";
+    String L_PROD_NR_20 = "000020";
 
-    String PROD_NR_17 = "000017";
+    String L_PROD_NR_21 = "000021";
 
-    String PROD_NR_18 = "000018";
+    String L_PROD_NR_22 = "000022";
 
-    String PROD_NR_19 = "000019";
+    String L_PROD_NR_23 = "000023";
 
-    String PROD_NR_20 = "000020";
+    String L_PROD_NR_24 = "000024";
 
-    String PROD_NR_21 = "000021";
+    String L_PROD_NR_25 = "000025";
 
-    String PROD_NR_22 = "000022";
+    String L_PROD_NR_26 = "000026";
 
-    String PROD_NR_23 = "000023";
+    String L_PROD_NR_27 = "000027";
 
-    String PROD_NR_24 = "000024";
+    String L_PROD_NR_28 = "000028";
 
-    String PROD_NR_25 = "000025";
+    String L_PROD_NR_29 = "000029";
 
-    String PROD_NR_26 = "000026";
+    String L_PROD_NR_30 = "000030";
 
-    String PROD_NR_27 = "000027";
+    String L_PROD_NR_31 = "000031";
 
-    String PROD_NR_28 = "000028";
+    String L_PROD_NR_32 = "000032";
 
-    String PROD_NR_29 = "000029";
+    String L_PROD_NR_33 = "000033";
 
-    String PROD_NR_30 = "000030";
+    String L_QUANTITY_150 = "150";
 
-    String PROD_NR_31 = "000031";
+    String L_QUANTITY_600 = "600";
 
-    String PROD_NR_32 = "000032";
-
-    String PROD_NR_33 = "000033";
-
-    String QUANTITY_150_L = "150";
-
-    String QUANTITY_600_L = "600";
-
-    String QUANTITY_2400_L = "2400";
+    String L_QUANTITY_2400 = "2400";
 
 }

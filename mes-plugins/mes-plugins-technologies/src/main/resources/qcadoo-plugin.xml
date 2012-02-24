@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Technologies</name>
@@ -57,7 +57,6 @@
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
-
 
 	<modules>
 		<localization:translation path="locales" />
@@ -107,9 +106,8 @@
 		<view:view resource="view/operationProductOutComponentDetails.xml" />
 
 		<view:resource uri="public/**/*" />
-		
-		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule"/>
 
+		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule" />
 	</modules>
 
 </plugin>

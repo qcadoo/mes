@@ -24,15 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="costCalculation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="costCalculation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
 		<tree name="calculationOperationComponents" joinField="costCalculation"
-			model="calculationOperationComponent" plugin="costNormsForOperation" cascade="delete" />
+			model="calculationOperationComponent" plugin="costNormsForOperation"
+			cascade="delete" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"
@@ -88,8 +89,8 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<string name="description" >
-			<validatesLength max="2024"/>
+		<string name="description">
+			<validatesLength max="2024" />
 		</string>
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="false"/>
@@ -113,6 +114,7 @@
 		<onCopy
 			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="clearGeneratedOnCopy" />
+			
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

@@ -24,15 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="genealogy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="genealogy" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="batch" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<belongsTo name="order" plugin="orders" model="order"
-			lazy="false" required="true" />
+		<belongsTo name="order" plugin="orders" model="order" lazy="false"
+			required="true" />
 		<date name="date" readonly="true" />
 		<string name="worker" readonly="true" />
 		<hasMany name="shiftFeatures" model="shiftFeature" joinField="genealogy"

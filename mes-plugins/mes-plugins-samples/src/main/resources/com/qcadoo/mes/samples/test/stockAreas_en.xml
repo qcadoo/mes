@@ -25,12 +25,12 @@
 
 -->
 <stockAreas>
-<row NUMBER="1" NAME="Frezarnia 1"/>
-<row NUMBER="2" NAME="Frezarnia 2"/>
-<row NUMBER="3" NAME="Frezarnia 3"/>
-<row NUMBER="4" NAME="Wydanie surowców"/>
-<row NUMBER="5" NAME="Pakownia 1"/>
-<row NUMBER="6" NAME="Pakownia 2"/>
-<row NUMBER="7" NAME="Montażownia 1"/>
-<row NUMBER="8" NAME="Montażownia 2"/>
+	<row NUMBER="1" NAME="Frezarnia 1" />
+	<row NUMBER="2" NAME="Frezarnia 2" />
+	<row NUMBER="3" NAME="Frezarnia 3" />
+	<row NUMBER="4" NAME="Wydanie surowców" />
+	<row NUMBER="5" NAME="Pakownia 1" />
+	<row NUMBER="6" NAME="Pakownia 2" />
+	<row NUMBER="7" NAME="Montażownia 1" />
+	<row NUMBER="8" NAME="Montażownia 2" />
 </stockAreas>

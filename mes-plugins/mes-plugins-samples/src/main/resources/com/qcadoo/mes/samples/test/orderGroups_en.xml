@@ -25,5 +25,5 @@
 
 -->
 <orderGroups>
-<row NUMBER="1" NAME="Orders under 100 pieces"/>
+	<row NUMBER="1" NAME="Orders under 100 pieces" />
 </orderGroups>

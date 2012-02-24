@@ -24,15 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalanceStockAreasComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="simpleMaterialBalanceStockAreasComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="simpleMaterialBalance" model="simpleMaterialBalance"
 			lazy="false" required="true" />
-		<belongsTo name="stockAreas" plugin="materialFlow" model="stockAreas" lazy="false" required="true" />
+		<belongsTo name="stockAreas" plugin="materialFlow" model="stockAreas"
+			lazy="false" required="true" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 	<identifier expression="#stockAreas['number'] + ' - ' + #stockAreas['name']" />
 </model>	
