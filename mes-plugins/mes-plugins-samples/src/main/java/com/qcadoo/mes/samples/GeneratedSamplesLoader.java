@@ -27,8 +27,8 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PROD
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.FIELD_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.NUMBER_L;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
@@ -146,7 +146,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     private void generateAndAddWorkPlan() {
         Entity workPlan = dataDefinitionService.get("workPlans", "workPlan").create();
 
-        workPlan.setField(FIELD_NAME,
+        workPlan.setField(L_NAME,
                 getNameFromNumberAndPrefix("WorkPlan-", 5 + generateString(CHARS_AND_DIGITS, RANDOM.nextInt(45))));
         workPlan.setField("date", new Date(generateRandomDate()));
         workPlan.setField("worker",
@@ -180,8 +180,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         final String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(34) + 5);
 
-        orderGroup.setField(NUMBER_L, number);
-        orderGroup.setField(FIELD_NAME, getNameFromNumberAndPrefix("OrderGroup-", number));
+        orderGroup.setField(L_NUMBER, number);
+        orderGroup.setField(L_NAME, getNameFromNumberAndPrefix("OrderGroup-", number));
 
         orderGroup = orderGroup.getDataDefinition().save(orderGroup);
 
@@ -282,8 +282,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
 
         technology.setField("master", defaultTechnology == null);
-        technology.setField(FIELD_NAME, getNameFromNumberAndPrefix("Technology-", number));
-        technology.setField(NUMBER_L, number);
+        technology.setField(L_NAME, getNameFromNumberAndPrefix("Technology-", number));
+        technology.setField(L_NUMBER, number);
         technology.setField(BASIC_MODEL_PRODUCT, product);
         technology.setField(STATE_L, "01draft");
         technology.setField("batchRequired", true);
@@ -424,8 +424,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
                 : getDefaultTechnologyForProduct(product);
 
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(34) + 5);
-        order.setField(NUMBER_L, number);
-        order.setField(FIELD_NAME, getNameFromNumberAndPrefix("Order-", number));
+        order.setField(L_NUMBER, number);
+        order.setField(L_NAME, getNameFromNumberAndPrefix("Order-", number));
         order.setField("dateFrom", new Date(dateFrom));
         order.setField("dateTo", new Date(dateTo));
         order.setField(STATE_L, "01pending");
@@ -457,8 +457,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(40) + 5);
 
-        staff.setField(NUMBER_L, number);
-        staff.setField(FIELD_NAME, getNameFromNumberAndPrefix("Staff-", number));
+        staff.setField(L_NUMBER, number);
+        staff.setField(L_NAME, getNameFromNumberAndPrefix("Staff-", number));
         staff.setField("surname", generateString(CHARS_ONLY, RANDOM.nextInt(12)));
         staff.setField("post", generateString(CHARS_ONLY, RANDOM.nextInt(5)));
 
@@ -479,8 +479,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(CHARS_AND_DIGITS, RANDOM.nextInt(40) + 5);
 
-        machine.setField(FIELD_NAME, getNameFromNumberAndPrefix("Workstation type-", number));
-        machine.setField(NUMBER_L, number);
+        machine.setField(L_NAME, getNameFromNumberAndPrefix("Workstation type-", number));
+        machine.setField(L_NUMBER, number);
         machine.setField("description", generateString(CHARS_ONLY, RANDOM.nextInt(100)));
 
         machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
@@ -513,7 +513,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     private void generateAndAddShift() {
         Entity shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "shift").create();
 
-        shift.setField(FIELD_NAME, getNameFromNumberAndPrefix("Shift-", generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5)));
+        shift.setField(L_NAME, getNameFromNumberAndPrefix("Shift-", generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5)));
 
         for (int i = 0; i < SHIFT_HOURS.length; i++) {
             shift.setField(WORK_SHIFT[i], RANDOM.nextBoolean());
@@ -532,10 +532,10 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         product.setField("category", getRandomDictionaryItem("categories"));
         product.setField("ean", generateString(DIGITS_ONLY, 13));
-        product.setField(FIELD_NAME, getNameFromNumberAndPrefix("Product-", number));
+        product.setField(L_NAME, getNameFromNumberAndPrefix("Product-", number));
         product.setField("unit", getRandomDictionaryItem("units"));
         product.setField("globalTypeOfMaterial", generateTypeOfProduct());
-        product.setField(NUMBER_L, number);
+        product.setField(L_NUMBER, number);
 
         product = product.getDataDefinition().save(product);
 
@@ -549,8 +549,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5);
 
-        substitute.setField(NUMBER_L, number);
-        substitute.setField(FIELD_NAME, getNameFromNumberAndPrefix("ProductSubstitute-", number));
+        substitute.setField(L_NUMBER, number);
+        substitute.setField(L_NAME, getNameFromNumberAndPrefix("ProductSubstitute-", number));
         substitute.setField(BASIC_MODEL_PRODUCT, product);
         substitute.setField("priority", RANDOM.nextInt(7));
 
@@ -598,8 +598,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
     private void generateAndAddCompany() {
         Map<String, String> values = new HashMap<String, String>();
-        values.put(NUMBER_L, generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5));
-        values.put(FIELD_NAME, generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
+        values.put(L_NUMBER, generateString(DIGITS_ONLY, RANDOM.nextInt(34) + 5));
+        values.put(L_NAME, generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("tax", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("street", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
         values.put("house", generateString(CHARS_ONLY, RANDOM.nextInt(4) + 3));
@@ -632,7 +632,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         Entity item = dataDefinitionService.get("qcadooModel", "dictionaryItem").create();
         item.setField("dictionary", dictionary);
-        item.setField(FIELD_NAME, generateString(CHARS_ONLY, 8));
+        item.setField(L_NAME, generateString(CHARS_ONLY, 8));
 
         item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
 

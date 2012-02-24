@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Quality Controls</name>
@@ -56,20 +56,16 @@
 			<plugin>productionScheduling</plugin>
 			<version>[0.4.0</version>
 		</dependency>
-		
+
 	</dependencies>
 
-
 	<modules>
-		<custom:custom class="com.qcadoo.mes.qualityControls.QualityControlOnStartupService" />
-	
 		<localization:translation path="locales" />
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
-		
+
 		<model:model-field plugin="technologies" model="technology">
-			<model:enum name="qualityControlType"
-				values="02forUnit,03forOrder" />
+			<model:enum name="qualityControlType" values="02forUnit,03forOrder" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr" />
@@ -81,17 +77,19 @@
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="checkDoneOrderForQuality" required="true" />
+			<model:boolean name="checkDoneOrderForQuality"
+				required="true" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="autoGenerateQualityControl" required="true" />
+			<model:boolean name="autoGenerateQualityControl"
+				required="true" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="orders" model="order">
-			<model:hasMany name="qualityControls" plugin="qualityControls" model="qualityControl"
-				joinField="order" cascade="nullify" />
+			<model:hasMany name="qualityControls" plugin="qualityControls"
+				model="qualityControl" joinField="order" cascade="nullify" />
 		</model:model-field>
-		
+
 		<model:model-hook plugin="genealogies" model="genealogy">
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
@@ -123,19 +121,19 @@
 			type="beforeRender" class="com.qcadoo.mes.qualityControls.QualityControlService"
 			method="changeQualityControlType" />
 
-		<view:view-listener plugin="orders"
-			view="ordersList" component="grid" event="generateQualityControl"
+		<view:view-listener plugin="orders" view="ordersList"
+			component="grid" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
 
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="changeOrderStateForForm"
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="changeOrderStateForForm"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="autoGenerateQualityControl" />
-		<view:view-listener plugin="orders"
-			view="orderDetails" component="form" event="generateQualityControl"
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
-
-
-
+			
+		<custom:custom
+			class="com.qcadoo.mes.qualityControls.QualityControlOnStartupService" />
 	</modules>
 
 </plugin>

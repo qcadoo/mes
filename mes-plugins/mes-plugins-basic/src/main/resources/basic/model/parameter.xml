@@ -30,6 +30,5 @@
 	<fields>
 		<belongsTo name="currency" plugin="basic" model="currency" />
 	</fields>
-	
 	<hooks />
 </model>

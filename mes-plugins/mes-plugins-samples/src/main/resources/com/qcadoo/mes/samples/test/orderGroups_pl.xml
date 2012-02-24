@@ -25,5 +25,5 @@
 
 -->
 <orderGroups>
-<row NUMBER="1" NAME="Zlecenia poniżej 100 sztuk"/>
+	<row NUMBER="1" NAME="Zlecenia poniżej 100 sztuk" />
 </orderGroups>

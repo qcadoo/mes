@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="logging" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	activable="true" xmlns="http://schema.qcadoo.org/model"
+<model name="logging" activable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="technology" model="technology" />
@@ -34,7 +35,5 @@
 		<belongsTo name="shift" model="shift" plugin="basic" />
 		<string name="worker" />
 	</fields>
-	<hooks>
-	</hooks>
-
+	<hooks />
 </model>

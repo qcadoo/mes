@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="company" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="company" activable="true" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true" />
@@ -34,13 +34,13 @@
 		</string>
 		<string name="tax" required="false" />
 		<string name="street" required="false" />
-		<string name="house" required="false" >
+		<string name="house" required="false">
 			<validatesLength max="30" />
 		</string>
-		<string name="flat" required="false" >
+		<string name="flat" required="false">
 			<validatesLength max="30" />
 		</string>
-		<string name="zipCode" required="false" >
+		<string name="zipCode" required="false">
 			<validatesLength max="6" />
 		</string>
 		<string name="city" required="false" />
@@ -50,8 +50,8 @@
 		<string name="website" required="false" />
 		<string name="phone" required="false" />
 		<boolean name="owner" required="false" default="false" />
-		
-		<string name="externalNumber"/>
+
+		<string name="externalNumber" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

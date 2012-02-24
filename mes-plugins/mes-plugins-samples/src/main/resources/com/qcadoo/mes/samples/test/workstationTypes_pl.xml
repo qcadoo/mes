@@ -25,8 +25,8 @@
 
 -->
 <workstationTypes>
-	<row ID="1" NAME="Heblownica" PROD_LINE="false" DESCRIPTION="Heblownica"/>
-	<row ID="2" NAME="Piła" PROD_LINE="true" DESCRIPTION="Piła"/>
-	<row ID="3" NAME="Szlifierka" PROD_LINE="true" DESCRIPTION="Szlifierka"/>
-	<row ID="4" NAME="Frezarka" PROD_LINE="true" DESCRIPTION="Frezarka"/>
+	<row ID="1" NAME="Heblownica" PROD_LINE="false" DESCRIPTION="Heblownica" />
+	<row ID="2" NAME="Piła" PROD_LINE="true" DESCRIPTION="Piła" />
+	<row ID="3" NAME="Szlifierka" PROD_LINE="true" DESCRIPTION="Szlifierka" />
+	<row ID="4" NAME="Frezarka" PROD_LINE="true" DESCRIPTION="Frezarka" />
 </workstationTypes>

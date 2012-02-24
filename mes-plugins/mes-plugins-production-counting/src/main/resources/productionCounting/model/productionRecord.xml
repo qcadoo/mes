@@ -24,20 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="productionRecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" activable="true"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="productionRecord" activable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" unique="true" >
-			<validatesLength max="255"/> 
+		<string name="number" unique="true">
+			<validatesLength max="255" />
 		</string>
-		<belongsTo name="order" model="order" plugin="orders" required="true" />
-		<belongsTo name="orderOperationComponent" model="orderOperationComponent" plugin="productionScheduling" />
-		<belongsTo name="shift" model="shift" plugin="basic"/>
-		
+		<belongsTo name="order" model="order" plugin="orders"
+			required="true" />
+		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
+			plugin="productionScheduling" />
+		<belongsTo name="shift" model="shift" plugin="basic" />
+
 		<enum name="state" values="01draft,02accepted,03declined"
 			default="01draft" required="true" />
-			
+
 		<hasMany name="recordOperationProductInComponents" joinField="productionRecord"
 			model="recordOperationProductInComponent" cascade="delete" />
 		<hasMany name="recordOperationProductOutComponents" joinField="productionRecord"
@@ -52,12 +54,14 @@
 		<integer name="plannedTime" />
 		<integer name="plannedMachineTime" />
 		<integer name="plannedLaborTime" />
-		
+
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="workstationType" model="workstationType" plugin="basic" />
+		<belongsTo name="workstationType" model="workstationType"
+			plugin="basic" />
 		<belongsTo name="division" model="division" plugin="basic" />
-		
-		<hasMany name="loggings" model="productionRecordLogging" joinField="productionRecord" cascade="delete" />
+
+		<hasMany name="loggings" model="productionRecordLogging"
+			joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
 		<onSave
@@ -72,10 +76,10 @@
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="countPlannedTimeAndBalance" />
-		<onCreate 
+		<onCreate
 			class="com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService"
 			method="logCreateEvent" />
-		<onCopy 
+		<onCopy
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="changeStateToDefault" />
 		<validatesWith

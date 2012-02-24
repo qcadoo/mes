@@ -24,18 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="recordOperationProductOutComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="recordOperationProductOutComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="usedQuantity" >
+		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="plannedQuantity" >
+		<decimal name="plannedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />

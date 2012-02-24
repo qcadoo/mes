@@ -24,17 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="simpleMaterialBalanceOrdersComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="simpleMaterialBalanceOrdersComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="simpleMaterialBalance" model="simpleMaterialBalance"
 			lazy="false" required="true" />
-		<belongsTo name="order" plugin="orders" model="order" lazy="false" required="true" />
+		<belongsTo name="order" plugin="orders" model="order" lazy="false"
+			required="true" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkComponentOrderHasTechnology" />
 	</hooks>
 	<identifier expression="#order['number'] + ' - ' + #order['name']" />
-</model>	
+</model>

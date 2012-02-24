@@ -24,13 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="operationProductInComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="operationProductInComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="operationComponent" model="technologyOperationComponent"
 			required="true" />
-		<belongsTo name="product" plugin="basic" model="product" required="true" />
+		<belongsTo name="product" plugin="basic" model="product"
+			required="true" />
 		<decimal name="quantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
@@ -38,9 +39,9 @@
 		</decimal>
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfBelongsToAcceptedTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfAllreadyInTheSameOperation" />
 	</hooks>
 </model>

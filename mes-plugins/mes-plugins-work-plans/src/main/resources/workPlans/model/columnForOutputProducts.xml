@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="columnForOutputProducts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="columnForOutputProducts" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="identifier" required="true">
@@ -34,20 +34,26 @@
 		<string name="name" required="true">
 			<validatesLength max="1024" />
 		</string>
-		<string name="description" >
+		<string name="description">
 			<validatesLength max="2048" />
 		</string>
 		<string name="columnFiller" required="true">
 			<validatesLength max="255" />
 		</string>
-		
-		<hasMany name="parameterOutputColumns" plugin="workPlans" model="parameterOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
-		<hasMany name="orderOutputColumns" plugin="workPlans" model="operationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
-		<hasMany name="technologyOperationOutputColumns" plugin="workPlans" model="technologyOperationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
-		<hasMany name="orderOperationOutputColumns" plugin="workPlans" model="orderOperationOutputColumn" joinField="columnForOutputProducts" cascade="delete" />
-	</fields>
-	<hooks>
 
-	</hooks>
+		<hasMany name="parameterOutputColumns" plugin="workPlans"
+			model="parameterOutputColumn" joinField="columnForOutputProducts"
+			cascade="delete" />
+		<hasMany name="orderOutputColumns" plugin="workPlans"
+			model="operationOutputColumn" joinField="columnForOutputProducts"
+			cascade="delete" />
+		<hasMany name="technologyOperationOutputColumns" plugin="workPlans"
+			model="technologyOperationOutputColumn" joinField="columnForOutputProducts"
+			cascade="delete" />
+		<hasMany name="orderOperationOutputColumns" plugin="workPlans"
+			model="orderOperationOutputColumn" joinField="columnForOutputProducts"
+			cascade="delete" />
+	</fields>
+	<hooks />
 	<identifier expression="#name" />
 </model>

@@ -27,22 +27,21 @@
 <plugin plugin="materialFlow" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu"
-	xmlns:localization="http://schema.qcadoo.org/modules/localization"	
-    xmlns:report="http://schema.qcadoo.org/modules/report" 
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
 	   http://schema.qcadoo.org/modules/report 
-	   http://schema.qcadoo.org/modules/report.xsd
-       http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd">
+	   http://schema.qcadoo.org/modules/report.xsd 
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Material Flow Module</name>
@@ -51,7 +50,7 @@
 			<url>http://www.qcadoo.com</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
 			<plugin>basic</plugin>
@@ -60,35 +59,40 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />
 		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
-		<model:model model="materialsInStockAreasComponent" resource="model/materialsInStockAreasComponent.xml" />
+		<model:model model="materialsInStockAreasComponent"
+			resource="model/materialsInStockAreasComponent.xml" />
 		<model:model model="transformations" resource="model/transformations.xml" />
-		
-		<model:model-field plugin="basic" model="product" >
+
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="transfer" plugin="materialFlow"
-				model="transfer" joinField="product" /> 
+				model="transfer" joinField="product" />
 		</model:model-field>
-		
-		<model:model-field plugin="basic" model="product" >
+
+		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="stockCorrection" plugin="materialFlow"
-				model="stockCorrection" joinField="product" /> 
+				model="stockCorrection" joinField="product" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="materialFlow" model="stockAreas">
 			<model:hasMany name="materialsInStockAreas" plugin="materialFlow"
 				model="materialsInStockAreasComponent" joinField="stockAreas" />
 		</model:model-field>
-		
+
 		<menu:menu-category name="materialFlow" />
 		<menu:menu-category name="reports" />
-		
-		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail" component="form" event="refreshShouldBeInStockCorrectionDetail" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
-		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail" type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
-		
+
+		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail"
+			component="form" event="refreshShouldBeInStockCorrectionDetail"
+			class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
+		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail"
+			type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="refreshShouldBeInStockCorrectionDetail" />
+
 		<menu:menu-item name="stockCorrections" category="materialFlow"
 			view="stockCorrectionList" />
 		<menu:menu-item name="transfers" category="materialFlow"
@@ -99,7 +103,7 @@
 			view="materialsInStockAreasList" />
 		<menu:menu-item name="transformations" category="materialFlow"
 			view="transformationsList" />
-		
+
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
 		<view:view resource="view/stockCorrectionList.xml" />
@@ -107,13 +111,14 @@
 		<view:view resource="view/stockAreasList.xml" />
 		<view:view resource="view/stockAreasDetail.xml" />
 		<view:view resource="view/materialsInStockAreasList.xml" />
-		<view:view resource="view/materialsInStockAreasDetails.xml" />		
+		<view:view resource="view/materialsInStockAreasDetails.xml" />
 		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
 		<view:view resource="view/transformationsList.xml" />
 		<view:view resource="view/transformationsDetail.xml" />
 		<view:view resource="view/transformationsConsumptionDetails.xml" />
 		<view:view resource="view/transformationsProductionDetails.xml" />
-		
+
 		<view:resource uri="public/**/*" />
 	</modules>
+	
 </plugin>

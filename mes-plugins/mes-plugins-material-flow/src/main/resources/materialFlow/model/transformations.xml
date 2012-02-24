@@ -24,24 +24,27 @@
     ***************************************************************************
 
 -->
-<model name="transformations" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="transformations" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
 		<string name="name" required="true">
-			<validatesLength max="1024"/>
+			<validatesLength max="1024" />
 		</string>
-		<datetime name="time" required="true"/>
-		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" required="true" />
-		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" required="true" />
+		<datetime name="time" required="true" />
+		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow"
+			required="true" />
+		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow"
+			required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<hasMany name="transfersConsumption" model="transfer" joinField="transformationsConsumption" cascade="delete" />
-		<hasMany name="transfersProduction" model="transfer" joinField="transformationsProduction" cascade="delete" />
+		<hasMany name="transfersConsumption" model="transfer"
+			joinField="transformationsConsumption" cascade="delete" />
+		<hasMany name="transfersProduction" model="transfer"
+			joinField="transformationsProduction" cascade="delete" />
 	</fields>
-	<hooks>
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />	
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
 </model>

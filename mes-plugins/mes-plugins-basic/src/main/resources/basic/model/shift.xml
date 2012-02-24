@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="shift" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="shift" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="name" required="true" unique="true">
@@ -59,10 +59,11 @@
 		<string name="sundayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<hasMany name="timetableExceptions" model="shiftTimetableException" joinField="shift"
-			cascade="delete" copyable="true" />
+		<hasMany name="timetableExceptions" model="shiftTimetableException"
+			joinField="shift" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.basic.ShiftsServiceImpl" method="validateShiftHoursField"/>
+		<validatesWith class="com.qcadoo.mes.basic.ShiftsServiceImpl"
+			method="validateShiftHoursField" />
 	</hooks>
 </model>

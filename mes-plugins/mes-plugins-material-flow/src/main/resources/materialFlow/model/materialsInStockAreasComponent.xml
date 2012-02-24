@@ -24,16 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="materialsInStockAreasComponent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="materialsInStockAreasComponent" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="materialsInStockAreas" model="materialsInStockAreas"
 			lazy="false" required="true" />
-		<belongsTo name="stockAreas" plugin="materialFlow" model="stockAreas" lazy="false" required="true" />
+		<belongsTo name="stockAreas" plugin="materialFlow" model="stockAreas"
+			lazy="false" required="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService"
+		<validatesWith
+			class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService"
 			method="checkMaterialFlowComponentUniqueness" />
 	</hooks>
 	<identifier expression="#stockAreas['number'] + ' - ' + #stockAreas['name']" />

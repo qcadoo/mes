@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="technology" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	activable="true" xmlns="http://schema.qcadoo.org/model"
+<model name="technology" activable="true" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
@@ -55,8 +55,8 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfUnitSampligNrIsReq" />
-			
-		<!-- <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+
+		<!-- <validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
 			method="invalidateIfBelongsToAcceptedTechnology" /> -->
 
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
@@ -65,7 +65,7 @@
 			method="checkTopComponentsProducesProductForTechnology" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfAllReferenceTechnologiesAreAceepted" />
-			<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfOperationsUsesSubOperationsProds" />
 
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"

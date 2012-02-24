@@ -30,18 +30,18 @@
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
-	   http://schema.qcadoo.org/plugin
-       http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/model
-       http://schema.qcadoo.org/modules/model.xsd
-       http://schema.qcadoo.org/modules/view
-       http://schema.qcadoo.org/modules/view.xsd
-       http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
+		http://schema.qcadoo.org/plugin 
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Basic</name>
@@ -50,74 +50,82 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<modules>
-		<localization:translation-group name="dashboard" prefix="basic.dashboard" />
+		<localization:translation-group name="dashboard"
+			prefix="basic.dashboard" />
 
-		<localization:translation path="locales" basename="basic"/>
+		<localization:translation path="locales"
+			basename="basic" />
 
-		<model:model model="company" resource ="model/company.xml"/>
+		<model:model model="company" resource="model/company.xml" />
 		<model:model model="staff" resource="model/staff.xml" />
-		<model:model model="shift" resource ="model/shift.xml"/>
+		<model:model model="shift" resource="model/shift.xml" />
 		<model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml" />
 		<model:model model="product" resource="model/product.xml" />
 		<model:model model="substitute" resource="model/substitute.xml" />
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
 		<model:model model="workstationType" resource="model/workstationType.xml" />
 		<model:model model="division" resource="model/division.xml" />
-		
+
 		<model:model model="parameter" resource="model/parameter.xml" />
-		
-		<model:model model="currency" resource ="model/currency.xml"/>
-		
+
+		<model:model model="currency" resource="model/currency.xml" />
+
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
 
 		<menu:menu-category name="basic" />
-		
-		<menu:menu-item-url name="home" category="home" url="/dashboard.html" />
-		
-		<menu:menu-item name="companies" category="basic" view="companiesList" />
+
+		<menu:menu-item-url name="home" category="home"
+			url="/dashboard.html" />
+
+		<menu:menu-item name="companies" category="basic"
+			view="companiesList" />
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
-		<menu:menu-item name="shifts" category="basic" view="shiftsList"/>
+		<menu:menu-item name="shifts" category="basic" view="shiftsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
-		<menu:menu-item name="workstationTypes" category="basic" view="workstationTypesList" />
-		<menu:menu-item name="divisions" category="basic" view="divisionsList" />
-		
-		<menu:menu-item-url name="dictionariesInBasic" 
-			category="basic" url="/page/qcadooDictionaries/dictionariesList.html"/>
-		
+		<menu:menu-item name="workstationTypes" category="basic"
+			view="workstationTypesList" />
+		<menu:menu-item name="divisions" category="basic"
+			view="divisionsList" />
+
+		<menu:menu-item-url name="dictionariesInBasic"
+			category="basic" url="/page/qcadooDictionaries/dictionariesList.html" />
+
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
-			
-		<menu:menu-item-url name="company"
-			category="administration" url="/companyView.html" />
-			
+
+		<menu:menu-item-url name="company" category="administration"
+			url="/companyView.html" />
+
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
 		<view:view resource="view/staffDetails.xml" />
-		<view:view resource="view/shiftsList.xml"/>
-		<view:view resource="view/shiftDetails.xml"/>
+		<view:view resource="view/shiftsList.xml" />
+		<view:view resource="view/shiftDetails.xml" />
 		<view:view resource="view/shiftTimetableExceptionDetails.xml" />
 		<view:view resource="view/productsList.xml" />
 		<view:view resource="view/productDetails.xml" />
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
-		
+
 		<view:view resource="view/workstationTypesList.xml" />
 		<view:view resource="view/workstationTypeDetails.xml" />
 
 		<view:view resource="view/divisionsList.xml" />
 		<view:view resource="view/divisionDetails.xml" />
-		
+
 		<view:view resource="view/parameters.xml" />
-		
+
 		<view:view resource="view/companyInAdministrationDetails.xml" />
-				
-		<view:view-hook view="parameters" type="beforeRender" plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency"/>
-		
+
+		<view:view-hook view="parameters" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService"
+			method="applyCurrentCurrency" />
+
 		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
 	</modules>
 

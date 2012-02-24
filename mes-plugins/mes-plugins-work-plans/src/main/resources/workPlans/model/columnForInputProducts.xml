@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="columnForInputProducts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://schema.qcadoo.org/model"
+<model name="columnForInputProducts" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="identifier" required="true">
@@ -38,14 +38,20 @@
 		<string name="columnFiller" required="true">
 			<validatesLength max="2048" />
 		</string>
-		
-		<hasMany name="parameterInputColumns" plugin="workPlans" model="parameterInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="operationInputColumns" plugin="workPlans" model="operationInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="technologyOperationInputColumns" plugin="workPlans" model="technologyOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
-		<hasMany name="orderOperationInputColumns" plugin="workPlans" model="orderOperationInputColumn" joinField="columnForInputProducts" cascade="delete" />
+
+		<hasMany name="parameterInputColumns" plugin="workPlans"
+			model="parameterInputColumn" joinField="columnForInputProducts"
+			cascade="delete" />
+		<hasMany name="operationInputColumns" plugin="workPlans"
+			model="operationInputColumn" joinField="columnForInputProducts"
+			cascade="delete" />
+		<hasMany name="technologyOperationInputColumns" plugin="workPlans"
+			model="technologyOperationInputColumn" joinField="columnForInputProducts"
+			cascade="delete" />
+		<hasMany name="orderOperationInputColumns" plugin="workPlans"
+			model="orderOperationInputColumn" joinField="columnForInputProducts"
+			cascade="delete" />
 	</fields>
-	<hooks>
-		
-	</hooks>
+	<hooks />
 	<identifier expression="#name" />
 </model>
