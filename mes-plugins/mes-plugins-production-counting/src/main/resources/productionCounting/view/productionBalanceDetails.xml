@@ -96,13 +96,21 @@
 						}
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="3" rows="7">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="9">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
+						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
 						<component type="lookup" name="order" field="order" reference="order">
 							<option type="column" name="name" fields="name" link="true" />
 							<option type="required" value="true" />
@@ -115,7 +123,7 @@
 								method="fillFieldsWhenOrderChanged" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="5">
 						<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true" />
 							<option type="required" value="true" />
@@ -125,28 +133,21 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="4" height="2">
+					<layoutElement column="1" row="6" height="2">
 						<component type="textarea" name="name" reference="name" field="name" />
-					</layoutElement>				
-					<layoutElement column="1" row="6">
-						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
 					</layoutElement>
-					<layoutElement column="1" row="7">
-						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
-							<option type="textRepresentationOnDisabled" value="false" />
-						</component>
-					</layoutElement>
+					<layoutElement column="1" row="8" height="2">
+						<component type="textarea" name="description" reference="description" field="description" />
+					</layoutElement>	
 					<layoutElement column="2" row="2">
 						<component type="input" name="recordsNumber" reference="recordsNumber" field="#{form}.recordsNumber" defaultEnabled="false">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3" height="5">
-						<component type="textarea" name="description" reference="description" field="description" />
-					</layoutElement>				
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
+				
 				<listener event="printProductionBalance"
 					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="printProductionBalance" />
 				<listener event="generateProductionBalance"
