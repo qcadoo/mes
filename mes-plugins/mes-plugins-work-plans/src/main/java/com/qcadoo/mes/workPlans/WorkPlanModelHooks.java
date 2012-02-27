@@ -36,6 +36,7 @@ public class WorkPlanModelHooks {
         entity.setField("generated", false);
         entity.setField("date", null);
         entity.setField("worker", null);
+
         return true;
     }
 }

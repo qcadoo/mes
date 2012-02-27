@@ -52,49 +52,49 @@ import com.qcadoo.model.api.search.SearchResult;
 public class WorkPlansColumnLoaderServiceImplTest {
 
     @Mock
-    Entity parameter;
+    private Entity parameter;
 
     @Mock
-    Entity operation;
+    private Entity operation;
 
     @Mock
-    Entity technologyOperationComponent;
+    private Entity technologyOperationComponent;
 
     @Mock
-    Entity orderOperationComponent;
+    private Entity orderOperationComponent;
 
     @Mock
-    List<Entity> operations;
+    private List<Entity> operations;
 
     @Mock
-    List<Entity> technologyOperationComponents;
+    private List<Entity> technologyOperationComponents;
 
     @Mock
-    List<Entity> orderOperationComponents;
+    private List<Entity> orderOperationComponents;
 
     @Mock
-    DataDefinition parameterDD;
+    private DataDefinition parameterDD;
 
     @Mock
-    DataDefinition operationDD;
+    private DataDefinition operationDD;
 
     @Mock
-    DataDefinition technologyOperationComponentDD;
+    private DataDefinition technologyOperationComponentDD;
 
     @Mock
-    DataDefinition orderOperationComponentDD;
+    private DataDefinition orderOperationComponentDD;
 
     @Mock
-    DataDefinition columnForInputProductsDD;
+    private DataDefinition columnForInputProductsDD;
 
     @Mock
-    DataDefinition columnForOutputProductsDD;
+    private DataDefinition columnForOutputProductsDD;
 
     @Mock
-    SearchCriteriaBuilder searchCriteria;
+    private SearchCriteriaBuilder searchCriteria;
 
     @Mock
-    SearchResult searchResult;
+    private SearchResult searchResult;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
