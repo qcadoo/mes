@@ -448,6 +448,11 @@
 					<artifactId>mes-commercial-plugins-advanced-genealogy-for-orders</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-urc-agfo</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
