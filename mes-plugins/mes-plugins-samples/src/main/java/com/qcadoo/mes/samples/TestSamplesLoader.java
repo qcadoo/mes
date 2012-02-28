@@ -518,7 +518,6 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField(L_PLANNED_QUANTITY, values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
-        order.setField("trackingRecordTreatment", "01duringProduction");
         order.setField(L_ORDER_STATE, values.get("status"));
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
@@ -534,6 +533,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+            order.setField("trackingRecordTreatment", "01duringProduction");
             order.setField("trackingRecordForOrderTreatment", values.get("tracking_record_for_order_treatment"));
         }
 
