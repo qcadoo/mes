@@ -33,7 +33,6 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ChangeRecordStateMessage;
 import com.qcadoo.mes.productionCounting.internal.states.RecordStateListener;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -54,9 +53,6 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     @Autowired
     private NumberService numberService;
 
-    @Autowired
-    private TechnologyService technologyService;
-
     @Override
     public List<ChangeRecordStateMessage> onAccepted(final Entity productionRecord, final Entity prevState) {
         updateBasicProductionCounting(productionRecord, new Addition());
@@ -66,18 +62,20 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
     private void setOrderDoneQuantity(final Entity productionRecord) {
         final Entity order = productionRecord.getBelongsToField(ORDER_FIELD);
-        final Entity product = order.getBelongsToField(PRODUCT_L);
 
-        final List<Entity> productionCountings = dataDefinitionService
+        Entity product = order.getBelongsToField(PRODUCT_L);
+        product = product.getDataDefinition().get(product.getId());
+
+        final List<Entity> basicProductionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
                 .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).add(SearchRestrictions.belongsTo(PRODUCT_L, product))
                 .list().getEntities();
 
-        Preconditions.checkArgument(productionCountings.size() == 1,
-                "There is more than one production counting for same order and product");
+        Preconditions.checkArgument(basicProductionCountings.size() == 1,
+                "There should be exactly one production counting for same order and product");
 
-        final Entity productionCounting = productionCountings.get(0);
+        final Entity productionCounting = basicProductionCountings.get(0);
 
         order.setField("doneQuantity", productionCounting.getField("producedQuantity"));
 
@@ -94,7 +92,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         return super.onDeclined(productionRecord, prevState);
     }
 
-    private Entity getProductionCounting(final Entity productIn, final List<Entity> productionCountings) {
+    private Entity getBasicProductionCounting(final Entity productIn, final List<Entity> productionCountings) {
         Entity product = productIn.getBelongsToField(PRODUCT_L);
 
         for (Entity productionCounting : productionCountings) {
@@ -151,7 +149,6 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
                 sub = substrahend;
             }
             return value.subtract(sub, numberService.getMathContext());
-
         }
 
     }
@@ -168,19 +165,26 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
         final List<Entity> productsOut = productionRecord.getHasManyField("recordOperationProductOutComponents");
 
         for (Entity productIn : productsIn) {
-            Entity productionCounting = getProductionCounting(productIn, productionCountings);
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(FIELD_USED_QUANTITY);
+            Entity basicProductionCounting;
+
+            try {
+                basicProductionCounting = getBasicProductionCounting(productIn, productionCountings);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
+            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(FIELD_USED_QUANTITY);
             final BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-            productionCounting.setField(FIELD_USED_QUANTITY, result);
-            productionCounting = productionCounting.getDataDefinition().save(productionCounting);
+            basicProductionCounting.setField(FIELD_USED_QUANTITY, result);
+            basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
         }
 
         for (Entity productOut : productsOut) {
             Entity productionCounting;
 
             try {
-                productionCounting = getProductionCounting(productOut, productionCountings);
+                productionCounting = getBasicProductionCounting(productOut, productionCountings);
             } catch (IllegalStateException e) {
                 continue;
             }

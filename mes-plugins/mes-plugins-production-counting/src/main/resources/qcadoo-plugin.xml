@@ -114,7 +114,9 @@
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="autoCloseOrder" />
 		</model:model-field>
-
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerPiecework" />
+		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
 				default="02cumulated" />
@@ -136,6 +138,9 @@
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="autoCloseOrder" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerPiecework" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionRecords" model="productionRecord"
