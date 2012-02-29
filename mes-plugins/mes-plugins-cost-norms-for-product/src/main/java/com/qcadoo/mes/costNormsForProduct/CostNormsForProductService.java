@@ -299,9 +299,8 @@ public class CostNormsForProductService {
 
     @SuppressWarnings("unchecked")
     private boolean hasOrderOperationProductInComponents(final Entity order) {
-        return (order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null)
-                && (!((List<Entity>) order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS))
-                        .isEmpty());
+        return ((order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null) && !((List<Entity>) order
+                .getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS)).isEmpty());
     }
 
     private boolean hasTechnologyChanged(final Entity order, final Entity technology) {
