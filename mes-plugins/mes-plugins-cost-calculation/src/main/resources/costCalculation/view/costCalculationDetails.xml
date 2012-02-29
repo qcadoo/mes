@@ -132,7 +132,7 @@
 				</script>
 
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+					rows="7">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" field="generated"
 							reference="generated" defaultEnabled="false" />
@@ -216,6 +216,21 @@
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
+					
+					<layoutElement column="2" row="6">
+						<component type="checkbox" name="printCostNormsOfMaterials" field="printCostNormsOfMaterials"
+							reference="printCostNormsOfMaterials" defaultEnabled="true" hasDescription="true" >
+							<option type="labelWidth" value="60"/>
+							</component>
+					</layoutElement>
+					
+					<layoutElement column="2" row="7">
+						<component type="checkbox" name="printOperationNorms" field="printOperationNorms"
+							reference="printOperationNorms" defaultEnabled="true" hasDescription="true">
+							<option type="labelWidth" value="60"/>
+							</component>
+					</layoutElement>
+					
 				</component>
 
 				<option type="header" value="true" />

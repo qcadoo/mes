@@ -25,6 +25,7 @@ package com.qcadoo.mes.costNormsForProduct;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.COSTFORORDER;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 
@@ -89,6 +90,9 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         }
         if ("03lastPurchase".equals(strValue)) {
             return LASTPURCHASE;
+        }
+        if ("04costForOrder".equals(strValue)) {
+            return COSTFORORDER;
         }
         return ProductsCostCalculationConstants.valueOf(strValue);
     }

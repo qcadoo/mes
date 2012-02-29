@@ -94,6 +94,8 @@
 		</string>
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="false"/>
+		<boolean name="printCostNormsOfMaterials" default="true"/>
+		<boolean name="printOperationNorms" default="true"/>
 		
 		<enum name="sourceOfMaterialcosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
 			required="true" default="01currentGlobalDefinitionsInProduct"/>
