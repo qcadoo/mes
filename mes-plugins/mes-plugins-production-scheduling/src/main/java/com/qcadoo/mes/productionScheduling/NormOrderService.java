@@ -111,8 +111,10 @@ public class NormOrderService {
         return !hasOrderOperationComponents(order) || technologyWasChanged(order);
     }
 
+    @SuppressWarnings("unchecked")
     private boolean hasOrderOperationComponents(final Entity order) {
-        return (order.getField(ORDER_OPERATION_COMPONENTS) != null);
+        return ((order.getField(ORDER_OPERATION_COMPONENTS) != null) && !((List<Entity>) order
+                .getField(ORDER_OPERATION_COMPONENTS)).isEmpty());
     }
 
     private boolean technologyWasChanged(final Entity order) {
