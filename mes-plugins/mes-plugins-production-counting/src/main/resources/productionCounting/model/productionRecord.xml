@@ -54,6 +54,8 @@
 		<integer name="plannedTime" />
 		<integer name="plannedMachineTime" />
 		<integer name="plannedLaborTime" />
+		
+		<integer name="executedOperationCycles" />
 
 		<belongsTo name="staff" model="staff" plugin="basic" />
 		<belongsTo name="workstationType" model="workstationType"

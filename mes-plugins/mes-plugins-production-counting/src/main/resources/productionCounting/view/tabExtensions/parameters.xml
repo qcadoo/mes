@@ -30,7 +30,7 @@
 
 	<windowTab name="productionCounting" reference="productionCounting">
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
-			columns="2" rows="7">
+			columns="2" rows="8">
 			<layoutElement column="1" row="1">
 				<component type="checkbox" name="registerQuantityInProduct"
 					reference="registerQuantityInProduct" field="#{form}.registerQuantityInProduct" />
@@ -43,17 +43,21 @@
 				<component type="checkbox" name="registerProductionTime"
 					reference="registerProductionTime" field="#{form}.registerProductionTime" />
 			</layoutElement>
-			<layoutElement column="1" row="5">
+			<layoutElement column="1" row="4">
+				<component type="checkbox" name="registerPiecework"
+					reference="registerPiecework" field="#{form}.registerPiecework" />
+			</layoutElement>
+			<layoutElement column="1" row="6">
 				<component type="checkbox" name="justOne"
 					reference="justOne" field="#{form}.justOne" />
 			</layoutElement>
-			<layoutElement column="1" row="6">
+			<layoutElement column="1" row="7">
 				<component type="checkbox" name="allowToClose" reference="allowToClose"
 					field="#{form}.allowToClose" hasDescription="true" />
 			</layoutElement>
-			<layoutElement column="1" row="7">
+			<layoutElement column="1" row="8">
 				<component type="checkbox" name="autoCloseOrder"
-					reference="autoCloseOrder" field="#{form}.autoCloseOrder"   hasDescription="true"/>
+					reference="autoCloseOrder" field="#{form}.autoCloseOrder" hasDescription="true"/>
 			</layoutElement>
 		</component>
 	</windowTab>

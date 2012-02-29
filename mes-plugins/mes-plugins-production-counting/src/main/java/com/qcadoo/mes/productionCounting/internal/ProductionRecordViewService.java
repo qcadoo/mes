@@ -25,9 +25,6 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.ProductionRecordService.getBooleanValue;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
@@ -60,9 +57,9 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ProductionRecordViewService {
 
-    private static final String LAST_RECORD = "lastRecord";
+    private static final String L_REGISTER_PIECEWORK = "registerPiecework";
 
-    private static final String SHIFT = "shift";
+    private static final String LAST_RECORD = "lastRecord";
 
     private static final String OPTION_01BASIC = "01basic";
 
@@ -80,21 +77,11 @@ public class ProductionRecordViewService {
 
     private static final String FIELD_REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
 
-    private static final String COMPONENT_BORDER_LAYOUT_NONE = "borderLayoutNone";
-
-    private static final String COMPONENT_BORDER_LAYOUT_FOR_EACH = "borderLayoutForEach";
-
-    private static final String COMPONENT_BORDER_LAYOUT_CUMULATED = "borderLayoutCumulated";
-
     private static final String COMPONENT_ORDER_OPERATION_COMPONENT = "orderOperationComponent";
 
-    private static final String COMPONENT_MACHINE_TIME = "machineTime";
+    private static final String L_REGISTER_PRODUCTION_TIME = "registerProductionTime";
 
-    private static final String COMPONENT_LABOR_TIME = "laborTime";
-
-    private static final String COMPONENT_REGISTER_PRODUCTION_TIME = "registerProductionTime";
-
-    private static final String COMPONENT_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String COMPONENT_STATE = "state";
 
@@ -127,23 +114,11 @@ public class ProductionRecordViewService {
         status.requestComponentUpdateState();
 
         Entity order = getOrderFromLookup(view);
-        String typeOfProductionRecording = order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
-
-        view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
-        view.getComponentByReference(COMPONENT_MACHINE_TIME)
-                .setVisible(order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
+        String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+        setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
         view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
-        view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(
-                PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
-                        && order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
-        view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(
-                PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)
-                        && order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME));
-        view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(
-                getBooleanValue(!PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)
-                        && !PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 order.getBooleanField(FIELD_REGISTER_QUANTITY_OUT_PRODUCT));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
@@ -157,7 +132,7 @@ public class ProductionRecordViewService {
         Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER).get(form.getEntityId());
 
         for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
-                COMPONENT_REGISTER_PRODUCTION_TIME)) {
+                L_REGISTER_PRODUCTION_TIME)) {
             FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
             if (parameter == null || parameter.getField(componentReference) == null) {
                 component.setFieldValue(true);
@@ -180,8 +155,7 @@ public class ProductionRecordViewService {
         productsIn.setEntities(new ArrayList<Entity>());
     }
 
-    public void enabledOrDisabledOperationField(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void enabledOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity order = getOrderFromLookup(view);
         if (order == null) {
             if (LOG.isDebugEnabled()) {
@@ -190,60 +164,23 @@ public class ProductionRecordViewService {
             return;
         }
 
-        setComponentVisible((String) order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING), view);
+        String recordingType = (String) order.getField(L_TYPE_OF_PRODUCTION_RECORDING);
+        setTimeAndPiecworkComponentsVisible(recordingType, order, view);
     }
 
-    private void setComponentVisible(final String recordingType, final ViewDefinitionState view) {
+    private void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order,
+            final ViewDefinitionState view) {
         view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
                 PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
         ((FieldComponent) view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT)).requestComponentUpdateState();
 
-        if (PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType)) {
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(true);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(false);
-            view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(true);
-            view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(true);
-        }
-        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)) {
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(true);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(false);
-            view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(true);
-            view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(true);
-        }
-        if (!PARAM_RECORDING_TYPE_CUMULATED.equals(recordingType) && !PARAM_RECORDING_TYPE_FOREACH.equals(recordingType)
-                && !PARAM_RECORDING_TYPE_BASIC.equals(recordingType)) {
-            ((FieldComponent) view.getComponentByReference(COMPONENT_ORDER)).addMessage(
-                    "productionRecord.productionRecord.report.error.orderWithoutRecordingType",
-                    ComponentState.MessageType.FAILURE);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(false);
-            view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(false);
-            view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(true);
-        }
+        boolean registerProductionTime = order.getBooleanField(L_REGISTER_PRODUCTION_TIME);
+        view.getComponentByReference("borderLayoutTime").setVisible(
+                registerProductionTime && !OPTION_01BASIC.equals(recordingType));
 
-    }
-
-    public void registeringProductionTime(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity order = getOrderFromLookup(view);
-        if (order == null) {
-            return;
-        }
-        Boolean registerProductionTime = order.getBooleanField(COMPONENT_REGISTER_PRODUCTION_TIME);
-        if (registerProductionTime && order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING) != null
-                && !("01none".equals(order.getStringField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING)))) {
-            view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(true);
-            view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(true);
-
-        } else {
-            view.getComponentByReference(COMPONENT_MACHINE_TIME).setVisible(false);
-            view.getComponentByReference(COMPONENT_LABOR_TIME).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_CUMULATED).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_FOR_EACH).setVisible(false);
-            view.getComponentByReference(COMPONENT_BORDER_LAYOUT_NONE).setVisible(false);
-        }
+        boolean registerPiecework = order.getBooleanField("registerPiecework");
+        view.getComponentByReference("borderLayoutPiecework").setVisible(
+                registerPiecework && PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
     }
 
     public void closeOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -328,15 +265,13 @@ public class ProductionRecordViewService {
         lastRecord.requestComponentUpdateState();
     }
 
-    // VIEW HOOK for OrderDetails
     public void setOrderDefaultValue(final ViewDefinitionState view) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) view
-                .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
 
         FormComponent form = (FormComponent) view.getComponentByReference(COMPONENT_FORM);
         if (form.getEntityId() == null) {
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME)) {
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK)) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 if (component.getFieldValue() == null) {
                     component.setFieldValue(true);
@@ -344,8 +279,8 @@ public class ProductionRecordViewService {
                 }
             }
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE,
-                    COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
+                    FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 component.setEnabled(false);
             }
@@ -354,11 +289,11 @@ public class ProductionRecordViewService {
         } else {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     form.getEntityId());
-            if (order == null || "".equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
+            if (order == null || "".equals(order.getField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
             }
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME)) {
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK)) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 if (order == null || order.getField(componentReference) == null) {
                     component.setFieldValue(true);
@@ -371,11 +306,11 @@ public class ProductionRecordViewService {
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference(COMPONENT_STATE);
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
+                .getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
         if ("02accepted".equals(orderState.getFieldValue()) || "03inProgress".equals(orderState.getFieldValue())
                 || "04completed".equals(orderState.getFieldValue()) || "06interrupted".equals(orderState.getFieldValue())) {
-            for (String componentName : Arrays.asList(COMPONENT_TYPE_OF_PRODUCTION_RECORDING, FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, COMPONENT_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE,
+            for (String componentName : Arrays.asList(L_TYPE_OF_PRODUCTION_RECORDING, FIELD_REGISTER_QUANTITY_IN_PRODUCT,
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, FIELD_JUST_ONE,
                     COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
@@ -383,7 +318,8 @@ public class ProductionRecordViewService {
         } else if (typeOfProductionRecording.getFieldValue().equals("")
                 || typeOfProductionRecording.getFieldValue().equals(OPTION_01BASIC)) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
-                    COMPONENT_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {
+                    L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
+                    FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
             }
@@ -393,7 +329,7 @@ public class ProductionRecordViewService {
     public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
+                .getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
         if ("".equals(typeOfProductionRecording.getFieldValue())) {
             doneQuantity.setEnabled(true);
@@ -403,7 +339,8 @@ public class ProductionRecordViewService {
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
-                    COMPONENT_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {
+                    L_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER,
+                    L_REGISTER_PIECEWORK)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
             }
@@ -412,7 +349,7 @@ public class ProductionRecordViewService {
 
     public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
+                .getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
         if ("".equals(typeOfProductionRecording.getFieldValue())) {
             doneQuantity.setEnabled(true);
@@ -422,8 +359,7 @@ public class ProductionRecordViewService {
     }
 
     public void setProducedQuantity(final ViewDefinitionState view) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) view
-                .getComponentByReference(COMPONENT_TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference("doneQuantity");
         String orderNumber = (String) view.getComponentByReference(FIELD_NUMBER).getFieldValue();
         Entity order;
@@ -456,48 +392,5 @@ public class ProductionRecordViewService {
                 break;
             }
         }
-    }
-
-    public void disableFieldsIfBasicSelected(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FieldComponent orderComponent = (FieldComponent) view.getComponentByReference(COMPONENT_ORDER);
-        Entity order = getOrderFromLookup(view);
-
-        if (order == null) {
-            return;
-        }
-
-        List<String> components = Arrays.asList(SHIFT, COMPONENT_MACHINE_TIME, COMPONENT_LABOR_TIME, LAST_RECORD);
-        for (String componentName : components) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-            if (OPTION_01BASIC.equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
-                component.setEnabled(false);
-            } else {
-                component.setEnabled(true);
-            }
-            component.requestComponentUpdateState();
-        }
-
-        List<String> times = Arrays.asList(COMPONENT_LABOR_TIME, COMPONENT_MACHINE_TIME);
-        for (String componentName : times) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-            if (OPTION_01BASIC.equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
-                component.setVisible(false);
-            } else {
-                component.setVisible(true);
-            }
-            component.requestComponentUpdateState();
-        }
-
-        FieldComponent isDisabled = (FieldComponent) view.getComponentByReference("isDisabled");
-
-        if (OPTION_01BASIC.equals(order.getField(COMPONENT_TYPE_OF_PRODUCTION_RECORDING))) {
-            orderComponent.addMessage("productionRecord.productionRecord.report.error.orderWithBasicProductionCounting",
-                    ComponentState.MessageType.INFO);
-            isDisabled.setFieldValue(true);
-        } else {
-            isDisabled.setFieldValue(false);
-        }
-        isDisabled.requestComponentUpdateState();
     }
 }

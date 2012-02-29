@@ -103,16 +103,10 @@
 							
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="disableFieldsIfBasicSelected" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="clearFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="enabledOrDisabledOperationField" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-								method="registeringProductionTime" />
+								method="enabledOrDisableFields" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 								method="checkJustOne" />
@@ -360,28 +354,31 @@
 			</component>
 		</windowTab>
 		<windowTab name="timeTab">
-			<component type="gridLayout" name="timeGridLayout" columns="3" rows="3">
+			<component type="gridLayout" name="timeGridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
-				<component type="label" name="borderLayoutCumulated"
-					reference="borderLayoutCumulated" defaultVisible="false">
-					<option type="labelStyle" value="text" />
+				<component type="borderLayout" name="borderLayoutTime" defaultVisible="false" reference="borderLayoutTime">
+					<option type="label" value="time" />
+					<component type="gridLayout" name="timeGridLayout" columns="1" rows="2">
+						<layoutElement column="1" row="1">
+							<component type="time" name="laborTime" reference="laborTime"
+								field="#{form}.laborTime" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="time" name="machineTime" reference="machineTime"
+								field="#{form}.machineTime" />
+						</layoutElement>
+					</component>
 				</component>
-				<component type="label" name="borderLayoutForEach"
-					reference="borderLayoutForEach" defaultVisible="false">
-					<option type="labelStyle" value="text" />
-				</component>
-				<component type="label" name="borderLayoutNone"
-					reference="borderLayoutNone">
-					<option type="labelStyle" value="text" />
-				</component>
-			</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="time" name="laborTime" reference="laborTime"
-						field="#{form}.laborTime" defaultVisible="false" />
 				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="time" name="machineTime" reference="machineTime"
-						field="#{form}.machineTime" defaultVisible="false" />
+				<layoutElement column="2" row="1">
+				<component type="borderLayout" name="borderLayoutPiecework" defaultVisible="false" reference="borderLayoutPiecework">
+					<option type="label" value="piecework" />
+					<component type="gridLayout" name="pieceworkGridLayout" columns="1" rows="1">
+						<layoutElement column="1" row="1">
+							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" />
+						</layoutElement>
+					</component>
+				</component>
 				</layoutElement>
 			</component>
 		</windowTab>

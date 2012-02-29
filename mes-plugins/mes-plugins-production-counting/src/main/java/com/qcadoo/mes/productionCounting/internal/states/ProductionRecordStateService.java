@@ -108,7 +108,7 @@ public class ProductionRecordStateService {
         String states = productionRecord.getStringField(STATE_FIELD);
         if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
             for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "staff", "shift",
-                    "workstationType", "division", "machineTime", "laborTime")) {
+                    "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
                 FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                 field.setEnabled(false);
                 field.requestComponentUpdateState();

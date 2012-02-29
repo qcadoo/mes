@@ -75,7 +75,7 @@
 				link="true" width="300" />
 			<option type="column" name="worker" fields="loggings" expression="#loggings[0].getField('worker')" link="true"
 				width="300" />
-			<option type="column" name="state" fields="state" reference="state" hidden="true"/>
+			<option type="column" name="state" fields="state" reference="state" />
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
