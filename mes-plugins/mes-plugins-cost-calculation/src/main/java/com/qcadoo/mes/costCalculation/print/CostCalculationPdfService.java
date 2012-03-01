@@ -433,24 +433,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
-        Entity technology;
-
-        if (costCalculation.getBelongsToField("order") == null) {
-            technology = costCalculation.getBelongsToField("technology");
-        } else {
-            technology = costCalculation.getBelongsToField("order").getBelongsToField("technology");
-
-        }
-
-        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
-
         List<Entity> calculationOperationComponents = newLinkedList(costCalculation
                 .getTreeField("calculationOperationComponents"));
 
         Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
-
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
             PdfPTable panelTableHeader = pdfHelper.createPanelTable(2);
@@ -536,23 +522,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         int[] columnWidth = { 20, 20, 20 };
 
-        Entity technology;
-        if (costCalculation.getBelongsToField("order") == null) {
-            technology = costCalculation.getBelongsToField("technology");
-        } else {
-            technology = costCalculation.getBelongsToField("order").getBelongsToField("technology");
-
-        }
-
-        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
-
         List<Entity> calculationOperationComponents = newLinkedList(costCalculation
                 .getTreeField("calculationOperationComponents"));
 
         Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
-
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
         PdfPTable printCostNormsOfMaterialTable2 = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false, columnWidth);
