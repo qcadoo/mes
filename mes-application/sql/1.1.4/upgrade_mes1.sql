@@ -22,5 +22,8 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN printcostnormsofmateria
 ALTER TABLE costcalculation_costcalculation ADD COLUMN printoperationnorms boolean;
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN printoperationnorms SET DEFAULT true;
 
+ALTER TABLE costcalculation_costcalculation ADD COLUMN includeadditionaltime boolean;
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime SET DEFAULT false;
+
 -- end
 
