@@ -13,6 +13,7 @@ UPDATE basic_parameter SET batchnumberuniqueness='02supplier' WHERE batchnumberu
 
 -- Table: costcalculation_costcalculation
 -- changed: 29.02.2012
+
 ALTER TABLE costcalculation_costcalculation ADD COLUMN sourceofmaterialcosts character varying(255);
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN sourceofmaterialcosts SET DEFAULT '01currentGlobalDefinitionsInProduct'::character varying;
 
@@ -23,4 +24,3 @@ ALTER TABLE costcalculation_costcalculation ADD COLUMN printoperationnorms boole
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN printoperationnorms SET DEFAULT true;
 
 -- end
-
