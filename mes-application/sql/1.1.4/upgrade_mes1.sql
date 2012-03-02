@@ -27,3 +27,36 @@ ALTER TABLE costcalculation_costcalculation ADD COLUMN includeadditionaltime boo
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime SET DEFAULT false;
 
 -- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 02.03.2012
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN printoperationnorms boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN printoperationnorms SET DEFAULT true;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN calculateoperationcostsmode character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculateoperationcostsmode SET DEFAULT 'hourly'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN includetpz boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN includetpz SET DEFAULT true;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN includeadditionaltime boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN includeadditionaltime SET DEFAULT false;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN sourceofmaterialcosts character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN sourceofmaterialcosts SET DEFAULT '01currentGlobalDefinitionsInProduct'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN calculatematerialcostsmode character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculatematerialcostsmode SET DEFAULT '01nominal'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmargin numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmargin SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmargin numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmargin SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverhead numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverhead SET DEFAULT 0::numeric;
+
+-- end
