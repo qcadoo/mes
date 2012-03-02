@@ -59,4 +59,10 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmargin
 ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverhead numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverhead SET DEFAULT 0::numeric;
 
+ALTER TABLE productioncounting_productionbalance ADD COLUMN averagemachinehourlycost numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagemachinehourlycost SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN averagelaborhourlycost numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagelaborhourlycost SET DEFAULT 0::numeric;
+
 -- end

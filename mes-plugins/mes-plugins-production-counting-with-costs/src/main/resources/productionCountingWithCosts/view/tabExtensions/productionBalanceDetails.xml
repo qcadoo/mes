@@ -32,7 +32,7 @@
 	<windowTab name="inputDataForCostsTab">
 		<component type="form" name="inputDataForCostsForm" reference="inputDataForCostsForm">
 			<component type="gridLayout" name="inputDataForCostsGridLayout" reference="inputDataForCostsGridLayout"
-				columns="3" rows="3">
+				columns="3" rows="4">
 				<layoutElement column="1" row="1" height="2">
 					<component type="borderLayout" name="parametersBorderLayout"
 						reference="parametersBorderLayout">
@@ -59,10 +59,44 @@
 						<option type="label" value="parameters" />
 					</component>
 				</layoutElement>
+				<layoutElement column="1" row="3" height="2">
+					<component type="borderLayout" name="assumptionsBorderLayout"
+						reference="assumptionsBorderLayout">
+						<component type="gridLayout" name="assumptionsGridLayout" reference="assumptionsGridLayout"
+							columns="4" rows="2">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="averageMachineHourlyCost"
+									field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost">
+									<option type="alignment" value="right" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="averageMachineHourlyCostProc"
+									defaultEnabled="false" hasLabel="false" reference="averageMachineHourlyCostProc">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" width="3">
+								<component type="input" name="averageLaborHourlyCost"
+									field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost">
+									<option type="alignment" value="right" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="2">
+								<component type="input" name="averageLaborHourlyCostProc"
+									defaultEnabled="false" hasLabel="false" reference="averageLaborHourlyCostProc">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+						
+						<option type="label" value="assumptions" />
+					</component>
+				</layoutElement>
 				<layoutElement column="2" row="1" height="3">
 					<component type="borderLayout" name="overheadsBorderLayout"
 						reference="overheadsBorderLayout">
-						<component type="gridLayout" name="overheads" reference="overheads"
+						<component type="gridLayout" name="overheadsGridLayout" reference="overheadsGridLayout"
 							columns="4" rows="3" hasBorders="false">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="productionCostMargin"
@@ -108,9 +142,21 @@
 			</component>
 		</component>
 	</windowTab>
+		<windowTab name="materialCostsTab">
+		<component type="form" name="materialCostsForm"
+			reference="materialCostsForm">
+			
+		</component>
+	</windowTab>
+	<windowTab name="timeCostsTab">
+		<component type="form" name="timeCostsForm"
+			reference="timeCostsForm">
+			
+		</component>
+	</windowTab>
 	<windowTab name="costsSummaryTab">
-		<component type="form" name="formCalculationResults"
-			reference="formCalculationResults">
+		<component type="form" name="costsSummaryForm"
+			reference="costsSummaryForm">
 			
 		</component>
 	</windowTab>

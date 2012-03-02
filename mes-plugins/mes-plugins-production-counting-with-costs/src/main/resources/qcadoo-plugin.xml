@@ -71,6 +71,21 @@
 				values="01nominal,02average,03lastPurchase,04costForOrder" required="true"
 				default="01nominal" />
 		</model:model-field>
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="averageMachineHourlyCost" default="0">
+				<validatesUnscaledValue max="7" />
+				<validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="averageLaborHourlyCost" default="0">
+				<validatesUnscaledValue max="7" />
+				<validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		
+		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="productionCostMargin" default="0">
 				<validatesUnscaledValue max="7" />
@@ -90,6 +105,8 @@
 			</model:decimal>
 		</model:model-field>
 
+		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
+		
 		<view:view-tab resource="view/tabExtensions/productionBalanceDetails.xml" />
 	</modules>
 
