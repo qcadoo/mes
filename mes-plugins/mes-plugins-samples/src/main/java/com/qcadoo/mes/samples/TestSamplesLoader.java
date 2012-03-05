@@ -921,7 +921,7 @@ public class TestSamplesLoader extends SamplesLoader {
         requirement.setField("onlyComponents", values.get("onlycomponents"));
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_GENERATED, values.get(L_GENERATED));
-        requirement.setField(L_FILE_NAME, values.get("filename"));
+        requirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
         requirement.setField("orders",
                 Lists.newArrayList(getOrderByNumber(values.get("order1")), getOrderByNumber(values.get("order2"))));
 
