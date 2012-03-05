@@ -24,6 +24,12 @@
 package com.qcadoo.mes.costCalculation.print;
 
 import static com.google.common.collect.Lists.newLinkedList;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NAME;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NUMBER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.ORDER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
