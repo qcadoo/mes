@@ -100,11 +100,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     public void setParameterDefaultValues() {
         Entity parameter = getParameter();
         if (parameter != null) {
-            parameter.setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-            parameter.setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-            parameter.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-            parameter.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-            parameter.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
+            for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+                if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
+                    continue;
+                }
+
+                parameter.setField(workPlanParameter, false);
+            }
 
             if (parameter.isValid()) {
                 parameter.getDataDefinition().save(parameter);
@@ -117,11 +119,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (operations != null) {
             for (Entity operation : operations) {
-                operation.setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-                operation.setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-                operation.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-                operation.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                operation.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
+                for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+                    if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
+                        continue;
+                    }
+
+                    operation.setField(workPlanParameter, false);
+                }
 
                 if (operation.isValid()) {
                     operation.getDataDefinition().save(operation);
@@ -135,11 +139,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (technologyOperationComponents != null) {
             for (Entity technologyOperationComponent : technologyOperationComponents) {
-                technologyOperationComponent.setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-                technologyOperationComponent.setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-                technologyOperationComponent.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-                technologyOperationComponent.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                technologyOperationComponent.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
+                for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+                    if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
+                        continue;
+                    }
+
+                    technologyOperationComponent.setField(workPlanParameter, false);
+                }
 
                 if (technologyOperationComponent.isValid()) {
                     technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
@@ -154,11 +160,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (orderOperationComponents != null) {
             for (Entity orderOperationComponent : orderOperationComponents) {
-                orderOperationComponent.setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-                orderOperationComponent.setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-                orderOperationComponent.setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-                orderOperationComponent.setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-                orderOperationComponent.setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
+                for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
+                    if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
+                        continue;
+                    }
+
+                    orderOperationComponent.setField(workPlanParameter, false);
+                }
 
                 if (orderOperationComponent.isValid()) {
                     orderOperationComponent.getDataDefinition().save(orderOperationComponent);
