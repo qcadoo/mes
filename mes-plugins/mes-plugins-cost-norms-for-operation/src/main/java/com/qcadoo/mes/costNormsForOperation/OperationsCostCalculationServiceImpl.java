@@ -28,7 +28,6 @@ import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperati
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.LABOR_HOURLY_COST;
 import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.MACHINE_HOURLY_COST;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.PIECEWORK;
 import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -107,8 +105,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         DataDefinition costCalculationDD = costCalculation.getDataDefinition();
 
-        OperationsCostCalculationConstants mode = getOperationModeFromField(costCalculation
-                .getField("calculateOperationCostsMode"));
+        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(costCalculation
+                .getStringField("calculateOperationCostsMode"));
         BigDecimal quantity = getBigDecimal(costCalculation.getField(QUANTITY_FIELD));
         Boolean includeTPZ = costCalculation.getBooleanField("includeTPZ");
         BigDecimal margin = getBigDecimal(costCalculation.getField("productionCostMargin"));
@@ -129,7 +127,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
 
-        if (mode == PIECEWORK) {
+        if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
 
             productQuantitiesService.getProductComponentQuantities(technology, quantity, productComponentQuantities);
             if (operationComponents.getRoot() == null) {
@@ -142,7 +140,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(),
                     productComponentQuantities, margin, quantity);
             costCalculation.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
-        } else {
+        } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
             Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(technology, quantity,
                     includeTPZ);
 
@@ -151,6 +149,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             costCalculation
                     .setField("totalMachineHourlyCosts", numberService.setScale(hourlyResultsMap.get(MACHINE_HOURLY_COST)));
             costCalculation.setField("totalLaborHourlyCosts", numberService.setScale(hourlyResultsMap.get(LABOR_HOURLY_COST)));
+        } else {
+            throw new IllegalStateException("Unsupported calculateOperationCostMode");
         }
 
         costCalculation.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, operationComponents);
@@ -368,12 +368,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
         // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
         return BigDecimal.valueOf(Double.valueOf(value.toString()));
-    }
-
-    private OperationsCostCalculationConstants getOperationModeFromField(final Object value) {
-        checkArgument(value != null, "field value is null");
-        String strValue = value.toString();
-        return OperationsCostCalculationConstants.valueOf(strValue.toUpperCase(Locale.ENGLISH));
     }
 
     private void debug(final String message) {

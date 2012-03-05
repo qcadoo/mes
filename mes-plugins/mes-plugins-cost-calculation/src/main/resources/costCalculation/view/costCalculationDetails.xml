@@ -138,8 +138,8 @@
 							reference="generated" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="dateOfCalculation" field="dateOfCalculation"
-							reference="dateOfCalculation" defaultEnabled="false" />
+						<component type="input" name="date" field="date"
+							reference="date" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="number" field="number"

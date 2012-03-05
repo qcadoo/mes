@@ -64,5 +64,10 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagemachinehour
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN averagelaborhourlycost numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagelaborhourlycost SET DEFAULT 0::numeric;
-
 -- end
+
+-- refactoring cost calculation
+alter table costcalculation_costcalculation rename column dateofcalculation to date;
+alter table costcalculation_costcalculation alter column calculateOperationCostsMode set default '01hourly';
+update costcalculation_costcalculation set calculateOperationCostsMode = '01hourly' where calculateOperationCostsMode = 'hourly';
+update costcalculation_costcalculation set calculateOperationCostsMode = '02piecework' where calculateOperationCostsMode = 'piecework';

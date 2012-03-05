@@ -42,8 +42,8 @@
 		<string name="fileName" />
 		
 		<boolean name="printOperationNorms" default="true"/>
-		<enum name="calculateOperationCostsMode" values="piecework,hourly"
-			required="true" default="hourly" />
+		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
+			required="true" default="01hourly" />
 
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="false" />

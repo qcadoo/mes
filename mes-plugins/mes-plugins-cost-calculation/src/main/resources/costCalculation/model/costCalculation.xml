@@ -103,10 +103,10 @@
 		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04costForOrder"
 			required="true" default="01nominal" />
 		
-		<enum name="calculateOperationCostsMode" values="piecework,hourly"
-			required="true" default="hourly" />
+		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
+			required="true" default="01hourly" />
 			
-		<datetime name="dateOfCalculation" />
+		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>
