@@ -80,7 +80,7 @@ public class CostCalculationWithProductionBalanceTest {
         verify(productionBalance).setField("additionalOverheadValue", BigDecimal.ZERO);
         verify(productionBalance).setField("totalOverhead", BigDecimal.ZERO);
         verify(productionBalance).setField("totalTechnicalProductionCosts", new BigDecimal(250));
-        verify(productionBalance).setField("totalCosts", new BigDecimal(250));
-        verify(productionBalance).setField("costPerUnit", new BigDecimal(25));
+        verify(productionBalance).setField("totalCostsForQuantity", new BigDecimal(250));
+        verify(productionBalance).setField("totalCostPerUnit", new BigDecimal(25));
     }
 }

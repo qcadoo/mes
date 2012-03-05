@@ -100,7 +100,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         BigDecimal totalTechnicalProductionCosts = productionCosts.add(materialCosts, numberService.getMathContext());
         BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext()).add(
                 additionalOverhead, numberService.getMathContext());
-        BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
+        BigDecimal totalCostsForQuantity = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
         entity.setField("productionCostMarginValue", numberService.setScale(productionCostMarginValue));
         entity.setField("materialCostMarginValue", numberService.setScale(materialCostMarginValue));
@@ -108,9 +108,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         entity.setField("totalOverhead", numberService.setScale(totalOverhead));
         entity.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
-        entity.setField("totalCosts", numberService.setScale(totalCosts));
-
-        entity.setField("costPerUnit", numberService.setScale(totalCosts.divide(quantity, numberService.getMathContext())));
+        entity.setField("totalCostsForQuantity", numberService.setScale(totalCostsForQuantity));
+        entity.setField("totalCostPerUnit",
+                numberService.setScale(totalCostsForQuantity.divide(quantity, numberService.getMathContext())));
 
         return entity.getDataDefinition().save(entity);
     }

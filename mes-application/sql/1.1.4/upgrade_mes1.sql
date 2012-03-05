@@ -30,7 +30,16 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime S
 
 
 -- Table: productioncounting_productionbalance
--- changed: 02.03.2012
+-- changed: 05.03.2012
+
+ALTER TABLE costcalculation_costcalculation RENAME COLUMN totalcost TO totalcostsforquantity;
+ALTER TABLE costcalculation_costcalculation RENAME COLUMN costperunit TO totalcostperunit;
+
+-- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 05.03.2012
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN printoperationnorms boolean;
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN printoperationnorms SET DEFAULT true;
@@ -64,6 +73,42 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagemachinehour
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN averagelaborhourlycost numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagelaborhourlycost SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotalcostsforquantity numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcostsforquantity SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotalcostperunit numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcostperunit SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedtotalcostsforquantity numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedtotalcostsforquantity SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedtotalcostperunit numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedtotalcostperunit SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN balanceforquantity numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN balanceforquantity SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN balanceperunit numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN balanceperunit SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmarginvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmarginvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmarginvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmarginvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverheadvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverheadvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalOverhead numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalOverhead SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostsforquantity numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostsforquantity SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostperunit numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit SET DEFAULT 0::numeric;
 -- end
 
 -- refactoring cost calculation

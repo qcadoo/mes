@@ -631,7 +631,7 @@ public class TestSamplesLoader extends SamplesLoader {
         costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prod_no")));
         costCalculation.setField("quantity", values.get("quantity"));
         costCalculation.setField("includeTPZ", values.get("include_tpz"));
-        costCalculation.setField("sourceOfMaterialcosts", values.get("sourceofmaterialcosts"));
+        costCalculation.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
         costCalculation.setField("calculateMaterialCostsMode", values.get("calculate_material_cost_mode"));
         costCalculation.setField("calculateOperationCostsMode", values.get("calculate_operation_cost_mode"));
         costCalculation.setField("additionalOverhead", values.get("additional_overhead"));
@@ -921,7 +921,7 @@ public class TestSamplesLoader extends SamplesLoader {
         requirement.setField("onlyComponents", values.get("onlycomponents"));
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_GENERATED, values.get(L_GENERATED));
-        requirement.setField(L_FILE_NAME, values.get("filename"));
+        requirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
         requirement.setField("orders",
                 Lists.newArrayList(getOrderByNumber(values.get("order1")), getOrderByNumber(values.get("order2"))));
 
@@ -1046,7 +1046,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
         productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
-        productionbalance.setField("sourceOfMaterialcosts", values.get("sourceofmaterialcosts"));
+        productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
         productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
