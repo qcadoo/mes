@@ -55,6 +55,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
@@ -135,10 +136,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("costCalculation.costCalculationDetails.report.paragraph2",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        if ("hourly".equals(costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
+        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(costCalculation
+                .getStringField("calculateOperationCostsMode"));
+
+        if (CalculateOperationCostMode.HOURLY.equals(mode)) {
             document.add(addTableAboutHourlyCost(costCalculation, locale));
-        } else {
+        } else if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
             document.add(addTableAboutPieceworkCost(costCalculation, locale));
+        } else {
+            throw new IllegalStateException("Unsupported CalculateOperationCostMode");
         }
 
         if ((costCalculation.getBooleanField("printCostNormsOfMaterials") == true)) {

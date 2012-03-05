@@ -23,18 +23,14 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.HOURLY;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
-import com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -55,38 +51,42 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
         entity.setField("generated", false);
-        entity.setField("dateOfCalculation", null);
+        entity.setField("date", null);
         return true;
     }
 
     @Override
-    public Entity calculateTotalCost(final Entity costCalculation) {
+    public Entity calculateTotalCost(final Entity entity) {
         BigDecimal productionCosts;
-        BigDecimal materialCostMargin = getBigDecimal(costCalculation.getField("materialCostMargin"));
-        BigDecimal productionCostMargin = getBigDecimal(costCalculation.getField("productionCostMargin"));
-        BigDecimal additionalOverhead = getBigDecimal(costCalculation.getField("additionalOverhead"));
-        BigDecimal quantity = getBigDecimal(costCalculation.getField("quantity"));
-        OperationsCostCalculationConstants operationMode = getOperationModeFromField(costCalculation
-                .getField("calculateOperationCostsMode"));
+        BigDecimal materialCostMargin = getBigDecimal(entity.getField("materialCostMargin"));
+        BigDecimal productionCostMargin = getBigDecimal(entity.getField("productionCostMargin"));
+        BigDecimal additionalOverhead = getBigDecimal(entity.getField("additionalOverhead"));
+        BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
+
+        CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
+                .getStringField("calculateOperationCostsMode"));
 
         // clear the previous results
-        for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
-            costCalculation.setField(fieldName, numberService.setScale(BigDecimal.ZERO));
-        }
+        // for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
+        // entity.setField(fieldName, numberService.setScale(BigDecimal.ZERO));
+        // }
 
-        costCalculation.setField("dateOfCalculation", new Date());
-        operationsCostCalculationService.calculateOperationsCost(costCalculation);
-        productsCostCalculationService.calculateProductsCost(costCalculation);
+        entity.setField("date", new Date());
 
-        if (operationMode == HOURLY) {
-            BigDecimal totalMachine = getBigDecimal(costCalculation.getField("totalMachineHourlyCosts"));
-            BigDecimal totalLabor = getBigDecimal(costCalculation.getField("totalLaborHourlyCosts"));
+        operationsCostCalculationService.calculateOperationsCost(entity);
+        productsCostCalculationService.calculateProductsCost(entity);
+
+        if (CalculateOperationCostMode.HOURLY.equals(operationMode)) {
+            BigDecimal totalMachine = getBigDecimal(entity.getField("totalMachineHourlyCosts"));
+            BigDecimal totalLabor = getBigDecimal(entity.getField("totalLaborHourlyCosts"));
             productionCosts = totalMachine.add(totalLabor, numberService.getMathContext());
+        } else if (CalculateOperationCostMode.PIECEWORK.equals(operationMode)) {
+            productionCosts = getBigDecimal(entity.getField("totalPieceworkCosts"));
         } else {
-            productionCosts = getBigDecimal(costCalculation.getField("totalPieceworkCosts"));
+            throw new IllegalStateException("Unsupported calculateOperationCostsMode");
         }
 
-        BigDecimal materialCosts = getBigDecimal(costCalculation.getField("totalMaterialCosts"));
+        BigDecimal materialCosts = getBigDecimal(entity.getField("totalMaterialCosts"));
 
         BigDecimal productionCostMarginValue = productionCosts.multiply(productionCostMargin, numberService.getMathContext())
                 .divide(BigDecimal.valueOf(100), numberService.getMathContext());
@@ -102,22 +102,17 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 additionalOverhead, numberService.getMathContext());
         BigDecimal totalCostsForQuantity = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
-        costCalculation.setField("productionCostMarginValue", numberService.setScale(productionCostMarginValue));
-        costCalculation.setField("materialCostMarginValue", numberService.setScale(materialCostMarginValue));
-        costCalculation.setField("additionalOverheadValue", numberService.setScale(additionalOverhead));
+        entity.setField("productionCostMarginValue", numberService.setScale(productionCostMarginValue));
+        entity.setField("materialCostMarginValue", numberService.setScale(materialCostMarginValue));
+        entity.setField("additionalOverheadValue", numberService.setScale(additionalOverhead));
 
-        costCalculation.setField("totalOverhead", numberService.setScale(totalOverhead));
-        costCalculation.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
-        costCalculation.setField("totalCostsForQuantity", numberService.setScale(totalCostsForQuantity));
-        costCalculation.setField("totalCostPerUnit",
+        entity.setField("totalOverhead", numberService.setScale(totalOverhead));
+        entity.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
+        entity.setField("totalCostsForQuantity", numberService.setScale(totalCostsForQuantity));
+        entity.setField("totalCostPerUnit",
                 numberService.setScale(totalCostsForQuantity.divide(quantity, numberService.getMathContext())));
 
-        return costCalculation.getDataDefinition().save(costCalculation);
-    }
-
-    private OperationsCostCalculationConstants getOperationModeFromField(final Object value) {
-        checkArgument(value != null, "field value is null");
-        return OperationsCostCalculationConstants.valueOf(value.toString().toUpperCase());
+        return entity.getDataDefinition().save(entity);
     }
 
     private BigDecimal getBigDecimal(final Object value) {

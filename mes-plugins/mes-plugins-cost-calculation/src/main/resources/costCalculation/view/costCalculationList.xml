@@ -37,7 +37,7 @@
 				expression="#product['name']" link="true" />
 			<option type="column" name="technology" fields="technology"
 				link="true" expression="#technology['name']"  />
-			<option type="column" name="dateOfCalculation" fields="dateOfCalculation" />
+			<option type="column" name="date" fields="date" />
 			<option type="column" name="quantity" fields="quantity"  />
 			<option type="column" name="totalCostsForQuantity" fields="totalCostsForQuantity" />
 			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit"  />

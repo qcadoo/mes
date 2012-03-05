@@ -198,7 +198,7 @@ public class CostCalculationViewService {
     }
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("dateOfCalculation", new Date());
+        entity.setField("date", new Date());
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
