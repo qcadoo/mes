@@ -26,6 +26,8 @@ public class ProductionRecordFields {
 
     public static final String PLANNED_TIME = "plannedTime";
 
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
     public static final String PLANNED_MACHINE_TIME = "plannedMachineTime";
 
     public static final String PLANNED_LABOR_TIME = "plannedLaborTime";

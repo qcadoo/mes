@@ -26,9 +26,11 @@ package com.qcadoo.mes.costCalculation.print;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.MATERIAL_COST_MARGIN;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NAME;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NUMBER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.ORDER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.QUANTITY;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
 
 import java.math.BigDecimal;
@@ -58,6 +60,7 @@ import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,6 +75,18 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
+
+    private static final String L_NOMINAL_COST = "nominalCost";
+
+    private static final String L_DURATION = "duration";
+
+    private static final String L_NODE_NUMBER = "nodeNumber";
+
+    private static final String L_PIECES = "pieces";
+
+    private static final String L_OPERATION_COST = "operationCost";
+
+    private static final String L_UNIT = "unit";
 
     private static final String L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER = "costCalculation.costCalculationDetails.report.columnHeader.number";
 
@@ -197,7 +212,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         .getBelongsToField(TECHNOLOGY).getStringField(NAME));
         pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
                 translationService.translate("costCalculation.costCalculation.quantity.label", locale) + ":",
-                numberService.format(costCalculation.getField("quantity")));
+                numberService.format(costCalculation.getField(QUANTITY)));
         Entity order = costCalculation.getBelongsToField(ORDER);
         pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
                 translationService.translate("costCalculation.costCalculation.order.label", locale) + ":", order == null ? ""
@@ -298,7 +313,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 (reportData == null ? "" : numberService.format(reportData)
                         + (reportData2 == null ? "" : " %\n (" + "= " + reportData2.toString() + " "
                                 + currencyService.getCurrencyAlphabeticCode() + ")")));
-        reportData = costCalculation.getField("materialCostMargin");
+        reportData = costCalculation.getField(MATERIAL_COST_MARGIN);
         reportData2 = costCalculation.getField("materialCostMarginValue");
         pdfHelper.addTableCellAsTwoColumnsTable(
                 rightPanelColumn,
@@ -356,7 +371,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         }
 
-        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
+        BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
 
         Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
 
@@ -365,13 +380,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             materialsTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(numberService.format(product.getValue()), FontUtils.getDejavuRegular9Dark()));
-            materialsTable.addCell(new Phrase(product.getKey().getStringField("unit"), FontUtils.getDejavuRegular9Dark()));
-            BigDecimal nominalCost = (BigDecimal) product.getKey().getField("nominalCost");
+            materialsTable.addCell(new Phrase(product.getKey().getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
+            BigDecimal nominalCost = (BigDecimal) product.getKey().getField(L_NOMINAL_COST);
             BigDecimal costForNumber = (BigDecimal) product.getKey().getField("costForNumber");
             BigDecimal totalCostPerUnit = nominalCost.divide(costForNumber, numberService.getMathContext());
             BigDecimal costs = product.getValue().multiply(totalCostPerUnit, numberService.getMathContext());
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
-            BigDecimal margin = (BigDecimal) costCalculation.getField("materialCostMargin");
+            BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
@@ -395,7 +410,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         String costMode = "";
         if ("01nominal".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";
-            costMode = "nominalCost";
+            costMode = L_NOMINAL_COST;
         } else if ("02average".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.averageCost";
             costMode = "averageCost";
@@ -424,7 +439,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         }
 
-        BigDecimal givenQty = (BigDecimal) costCalculation.getField("quantity");
+        BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
         Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
@@ -435,12 +450,12 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             PrintCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
                     .getDejavuRegular9Dark()));
-            PrintCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField("name"), FontUtils
+            PrintCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
                     .getDejavuRegular9Dark()));
 
             BigDecimal toDisplay = (BigDecimal) product.getKey().getField(costMode);
             BigDecimal quantity = (BigDecimal) product.getValue();
-            String unit = (String) product.getKey().getStringField("unit");
+            String unit = (String) product.getKey().getStringField(L_UNIT);
 
             PrintCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " / " + quantity + " " + unit, FontUtils
                     .getDejavuRegular9Dark()));
@@ -471,14 +486,14 @@ public class CostCalculationPdfService extends PdfDocumentService {
             panelTableHeader.addCell(new Phrase(translationService.translate(
                     L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale)
                     + ": "
-                    + calculationOperationComponent.getBelongsToField("operation").getStringField(NUMBER), FontUtils
-                    .getDejavuRegular9Dark()));
+                    + calculationOperationComponent.getBelongsToField(TechnologiesConstants.MODEL_OPERATION).getStringField(
+                            NUMBER), FontUtils.getDejavuRegular9Dark()));
 
-            panelTableHeader.addCell(new Phrase(translationService.translate(
-                    L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, locale)
-                    + ": "
-                    + calculationOperationComponent.getBelongsToField("operation").getStringField("name"), FontUtils
-                    .getDejavuRegular9Dark()));
+            panelTableHeader.addCell(new Phrase(
+                    translationService.translate(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, locale)
+                            + ": "
+                            + calculationOperationComponent.getBelongsToField(TechnologiesConstants.MODEL_OPERATION)
+                                    .getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
 
             pdfHelper
                     .addTableCellAsTwoColumnsTable(
@@ -557,11 +572,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
 
-            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation")
-                    .getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
+                    TechnologiesConstants.MODEL_OPERATION).getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
 
-            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation")
-                    .getStringField("name"), FontUtils.getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
+                    TechnologiesConstants.MODEL_OPERATION).getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
 
             printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getField("pieceworkCost").toString(),
                     FontUtils.getDejavuRegular9Dark()));
@@ -599,16 +614,16 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), FontUtils
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField(L_NODE_NUMBER).toString(), FontUtils
                         .getDejavuRegular9Dark()));
 
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        NUMBER), FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
+                        TechnologiesConstants.MODEL_OPERATION).getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
 
                 String duration = timeConverterService.convertTimeToString((Integer) calculationOperationComponent
-                        .getField("duration"));
+                        .getField(L_DURATION));
 
-                Integer durationMs = (Integer) calculationOperationComponent.getField("duration");
+                Integer durationMs = (Integer) calculationOperationComponent.getField(L_DURATION);
                 BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
                 BigDecimal durationHours = BigDecimal.valueOf(durationMs).divide(milisecondsInHour,
                         numberService.getMathContext());
@@ -628,8 +643,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 operationsTable.addCell(new Phrase(durationOfMachineToString, FontUtils.getDejavuRegular9Dark()));
 
                 operationsTable.addCell(new Phrase(durationOfLaborToString, FontUtils.getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent.getField("operationCost")),
-                        FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(
+                        numberService.format(calculationOperationComponent.getField(L_OPERATION_COST)), FontUtils
+                                .getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
                         .getField("operationMarginCost")), FontUtils.getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
@@ -657,14 +673,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         if (!calculationOperationComponents.isEmpty()) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getField("nodeNumber").toString(), FontUtils
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getField(L_NODE_NUMBER).toString(), FontUtils
                         .getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField("operation").getStringField(
-                        NUMBER), FontUtils.getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent.getField("pieces")),
+                operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
+                        TechnologiesConstants.MODEL_OPERATION).getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent.getField(L_PIECES)),
                         FontUtils.getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent.getField("operationCost")),
-                        FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(
+                        numberService.format(calculationOperationComponent.getField(L_OPERATION_COST)), FontUtils
+                                .getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
                         .getField("operationMarginCost")), FontUtils.getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
