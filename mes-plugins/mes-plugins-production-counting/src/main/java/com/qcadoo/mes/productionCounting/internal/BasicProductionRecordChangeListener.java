@@ -29,7 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.states.ChangeRecordStateMessage;
 import com.qcadoo.mes.productionCounting.internal.states.RecordStateListener;
@@ -45,7 +44,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
     private static final String ORDER_FIELD = "order";
 
-    private static final String FIELD_USED_QUANTITY = "usedQuantity";
+    private static final String L_USED_QUANTITY = "usedQuantity";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -72,12 +71,14 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
                 .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).add(SearchRestrictions.belongsTo(PRODUCT_L, product))
                 .list().getEntities();
 
-        Preconditions.checkArgument(basicProductionCountings.size() == 1,
-                "There should be exactly one production counting for same order and product");
+        BigDecimal producedQuantity = BigDecimal.ZERO;
 
-        final Entity productionCounting = basicProductionCountings.get(0);
+        for (Entity basicProductionCounting : basicProductionCountings) {
+            BigDecimal qty = (BigDecimal) basicProductionCounting.getField("producedQuantity");
+            producedQuantity = producedQuantity.add(qty, numberService.getMathContext());
+        }
 
-        order.setField("doneQuantity", productionCounting.getField("producedQuantity"));
+        order.setField("doneQuantity", producedQuantity);
 
         order.getDataDefinition().save(order);
 
@@ -156,7 +157,7 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
     private void updateBasicProductionCounting(final Entity productionRecord, final Operation operation) {
         final Entity order = productionRecord.getBelongsToField(ORDER_FIELD);
 
-        final List<Entity> productionCountings = dataDefinitionService
+        final List<Entity> basicProductionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
                 .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
@@ -168,15 +169,15 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             Entity basicProductionCounting;
 
             try {
-                basicProductionCounting = getBasicProductionCounting(productIn, productionCountings);
+                basicProductionCounting = getBasicProductionCounting(productIn, basicProductionCountings);
             } catch (IllegalStateException e) {
                 continue;
             }
 
-            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(FIELD_USED_QUANTITY);
-            final BigDecimal productQuantity = (BigDecimal) productIn.getField(FIELD_USED_QUANTITY);
+            final BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(L_USED_QUANTITY);
+            final BigDecimal productQuantity = (BigDecimal) productIn.getField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-            basicProductionCounting.setField(FIELD_USED_QUANTITY, result);
+            basicProductionCounting.setField(L_USED_QUANTITY, result);
             basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
         }
 
@@ -184,13 +185,13 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
             Entity productionCounting;
 
             try {
-                productionCounting = getBasicProductionCounting(productOut, productionCountings);
+                productionCounting = getBasicProductionCounting(productOut, basicProductionCountings);
             } catch (IllegalStateException e) {
                 continue;
             }
 
             final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
-            final BigDecimal productQuantity = (BigDecimal) productOut.getField(FIELD_USED_QUANTITY);
+            final BigDecimal productQuantity = (BigDecimal) productOut.getField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
             productionCounting.setField("producedQuantity", result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
