@@ -964,8 +964,6 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField(L_NUMBER, getProductionRecordByNumber(L_NUMBER));
         productionRecord.setField(L_NAME, values.get(L_NAME));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionRecord.setField("orderOperationComponent",
-                getOrderOperationComponentByNumber(values.get("orderoperationcomponent"), getOrderByNumber(values.get(L_ORDER))));
         productionRecord.setField("shift", getShiftByName(values.get("shift")));
         productionRecord.setField(L_STATE, values.get(L_STATE));
         productionRecord.setField("lastRecord", values.get("lastrecord"));
@@ -1047,6 +1045,9 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField("recordsNumber", values.get("recordsnumber"));
         productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
+        productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
+        productionbalance.setField("sourceOfMaterialcosts", values.get("sourceofmaterialcosts"));
+        productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
         validateEntity(productionbalance);
