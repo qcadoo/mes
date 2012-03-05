@@ -39,8 +39,8 @@
 				link="true" expression="#technology['name']"  />
 			<option type="column" name="dateOfCalculation" fields="dateOfCalculation" />
 			<option type="column" name="quantity" fields="quantity"  />
-			<option type="column" name="totalCosts" fields="totalCosts" />
-			<option type="column" name="costPerUnit" fields="costPerUnit"  />
+			<option type="column" name="totalCostsForQuantity" fields="totalCostsForQuantity" />
+			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit"  />
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />
 			<option type="correspondingComponent" value="form" />

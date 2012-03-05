@@ -100,7 +100,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         BigDecimal totalTechnicalProductionCosts = productionCosts.add(materialCosts, numberService.getMathContext());
         BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext()).add(
                 additionalOverhead, numberService.getMathContext());
-        BigDecimal totalCosts = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
+        BigDecimal totalCostsForQuantity = totalOverhead.add(totalTechnicalProductionCosts, numberService.getMathContext());
 
         costCalculation.setField("productionCostMarginValue", numberService.setScale(productionCostMarginValue));
         costCalculation.setField("materialCostMarginValue", numberService.setScale(materialCostMarginValue));
@@ -108,9 +108,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         costCalculation.setField("totalOverhead", numberService.setScale(totalOverhead));
         costCalculation.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
-        costCalculation.setField("totalCosts", numberService.setScale(totalCosts));
-        costCalculation.setField("costPerUnit",
-                numberService.setScale(totalCosts.divide(quantity, numberService.getMathContext())));
+        costCalculation.setField("totalCostsForQuantity", numberService.setScale(totalCostsForQuantity));
+        costCalculation.setField("totalCostPerUnit",
+                numberService.setScale(totalCostsForQuantity.divide(quantity, numberService.getMathContext())));
 
         return costCalculation.getDataDefinition().save(costCalculation);
     }
