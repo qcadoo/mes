@@ -625,18 +625,18 @@ public class TestSamplesLoader extends SamplesLoader {
 
         costCalculation.setField(L_NUMBER, values.get(L_NUMBER));
         costCalculation.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        costCalculation.setField(ORDERS_MODEL_ORDER, getOrderByNumber(values.get("order_no")));
-        costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("tech_no")));
-        costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("def_tech_no")));
-        costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prod_no")));
+        costCalculation.setField(ORDERS_MODEL_ORDER, getOrderByNumber(values.get("orderno")));
+        costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("techno")));
+        costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("deftechno")));
+        costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prodno")));
         costCalculation.setField("quantity", values.get("quantity"));
-        costCalculation.setField("includeTPZ", values.get("include_tpz"));
+        costCalculation.setField("includeTPZ", values.get("includetpz"));
         costCalculation.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
-        costCalculation.setField("calculateMaterialCostsMode", values.get("calculate_material_cost_mode"));
-        costCalculation.setField("calculateOperationCostsMode", values.get("calculate_operation_cost_mode"));
-        costCalculation.setField("additionalOverhead", values.get("additional_overhead"));
-        costCalculation.setField("productionCostMargin", values.get("production_cost_margin"));
-        costCalculation.setField("materialCostMargin", values.get("material_cost_margin"));
+        costCalculation.setField("calculateMaterialCostsMode", values.get("calculatematerialcostmode"));
+        costCalculation.setField("calculateOperationCostsMode", values.get("calculateoperationcostmode"));
+        costCalculation.setField("additionalOverhead", values.get("additionaloverhead"));
+        costCalculation.setField("productionCostMargin", values.get("productioncostmargin"));
+        costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
 
         costCalculation = costCalculation.getDataDefinition().save(costCalculation);
 
