@@ -60,8 +60,8 @@
 	<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
 			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
-			<beforeRender
+			<!-- <beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
-			method="setGridContent" />
+			method="setGridContent" /> -->
 	</hooks>
 </view>
