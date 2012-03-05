@@ -61,7 +61,7 @@ public class CostCalculationModelValidators {
     }
 
     public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        if ((costCalculation.getField("sourceOfMaterialcosts").equals("01currentGlobalDefinitionsInProduct"))
+        if ((costCalculation.getField("sourceOfMaterialCosts").equals("01currentGlobalDefinitionsInProduct"))
                 && (costCalculation.getField("calculateMaterialCostsMode").equals("04costForOrder"))) {
             costCalculation.addError(costCalculationDD.getField("calculateMaterialCostsMode"),
                     "costCalculation.messages.optionUnavailable");

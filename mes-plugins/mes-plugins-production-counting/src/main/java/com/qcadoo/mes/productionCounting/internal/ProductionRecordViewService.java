@@ -65,7 +65,7 @@ public class ProductionRecordViewService {
 
     private static final String COMPONENT_ALLOW_TO_CLOSE = "allowToClose";
 
-    private static final String FIELD_JUST_ONE = "justOne";
+    private static final String L_JUST_ONE = "justOne";
 
     private static final String FIELD_NUMBER = "number";
 
@@ -256,11 +256,12 @@ public class ProductionRecordViewService {
             return;
         }
         FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(LAST_RECORD);
-        if (order.getField(FIELD_JUST_ONE) != null && (Boolean) order.getField(FIELD_JUST_ONE)) {
+        if (order.getBooleanField(L_JUST_ONE)) {
             lastRecord.setFieldValue(true);
             lastRecord.setEnabled(false);
         } else {
             lastRecord.setFieldValue(false);
+            lastRecord.setEnabled(true);
         }
         lastRecord.requestComponentUpdateState();
     }
@@ -279,7 +280,7 @@ public class ProductionRecordViewService {
                 }
             }
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
                     FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 component.setEnabled(false);
@@ -310,7 +311,7 @@ public class ProductionRecordViewService {
         if ("02accepted".equals(orderState.getFieldValue()) || "03inProgress".equals(orderState.getFieldValue())
                 || "04completed".equals(orderState.getFieldValue()) || "06interrupted".equals(orderState.getFieldValue())) {
             for (String componentName : Arrays.asList(L_TYPE_OF_PRODUCTION_RECORDING, FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, FIELD_JUST_ONE,
+                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, L_JUST_ONE,
                     COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
@@ -318,7 +319,7 @@ public class ProductionRecordViewService {
         } else if (typeOfProductionRecording.getFieldValue().equals("")
                 || typeOfProductionRecording.getFieldValue().equals(OPTION_01BASIC)) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
-                    L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
+                    L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
                     FIELD_AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
@@ -339,7 +340,7 @@ public class ProductionRecordViewService {
         if (typeOfProductionRecording.getFieldValue().equals("02cumulated")
                 || typeOfProductionRecording.getFieldValue().equals("03forEach")) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
-                    L_REGISTER_PRODUCTION_TIME, FIELD_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER,
+                    L_REGISTER_PRODUCTION_TIME, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER,
                     L_REGISTER_PIECEWORK)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
