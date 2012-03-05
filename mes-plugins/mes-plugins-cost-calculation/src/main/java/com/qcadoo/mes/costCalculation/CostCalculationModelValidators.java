@@ -66,8 +66,9 @@ public class CostCalculationModelValidators {
             costCalculation.addError(costCalculationDD.getField("calculateMaterialCostsMode"),
                     "costCalculation.messages.optionUnavailable");
             return false;
-        } else
+        } else {
             return true;
+        }
     }
 
 }

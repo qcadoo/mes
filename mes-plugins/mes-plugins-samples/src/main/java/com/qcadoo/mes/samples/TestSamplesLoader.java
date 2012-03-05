@@ -1130,10 +1130,10 @@ public class TestSamplesLoader extends SamplesLoader {
         List<Entity> technologies = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, product)).add(SearchRestrictions.eq("master", true))
                 .setMaxResults(1).list().getEntities();
-        if (!technologies.isEmpty()) {
-            return technologies.get(0);
-        } else {
+        if (technologies.isEmpty()) {
             return null;
+        } else {
+            return technologies.get(0);
         }
     }
 

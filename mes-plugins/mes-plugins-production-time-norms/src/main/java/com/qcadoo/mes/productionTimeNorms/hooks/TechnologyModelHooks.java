@@ -72,7 +72,7 @@ public class TechnologyModelHooks {
             operationComponent.setField("countMachine", BigDecimal.ZERO);
         }
 
-        operationComponent = operationComponent.getDataDefinition().save(operationComponent);
+        operationComponent.getDataDefinition().save(operationComponent);
 
         if (!operationComponent.isValid()) {
             throw new IllegalStateException("Saved Technology operation component entity is invalid!");
