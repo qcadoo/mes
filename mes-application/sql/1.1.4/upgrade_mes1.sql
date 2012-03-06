@@ -32,7 +32,7 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime S
 -- Table: productioncounting_productionbalance
 -- changed: 05.03.2012
 
-ALTER TABLE costcalculation_costcalculation RENAME COLUMN totalcost TO totalcostsforquantity;
+ALTER TABLE costcalculation_costcalculation RENAME COLUMN totalcosts TO totalcostsforquantity;
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN costperunit TO totalcostperunit;
 
 -- end
@@ -116,3 +116,12 @@ alter table costcalculation_costcalculation rename column dateofcalculation to d
 alter table costcalculation_costcalculation alter column calculateOperationCostsMode set default '01hourly';
 update costcalculation_costcalculation set calculateOperationCostsMode = '01hourly' where calculateOperationCostsMode = 'hourly';
 update costcalculation_costcalculation set calculateOperationCostsMode = '02piecework' where calculateOperationCostsMode = 'piecework';
+
+alter table productioncounting_productionbalance add column technology_id bigint;
+alter table productioncounting_productionbalance add CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
+      REFERENCES technologies_technology (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+alter table costnormsforoperation_calculationoperationcomponent add column productionbalance_id bigint;
+alter table costnormsforoperation_calculationoperationcomponent add CONSTRAINT calculationoperationcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;

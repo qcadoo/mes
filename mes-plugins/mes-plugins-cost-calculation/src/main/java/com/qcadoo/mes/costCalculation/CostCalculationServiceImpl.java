@@ -66,6 +66,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
                 .getStringField("calculateOperationCostsMode"));
 
+        // TODO mici, has it any purpose ?
+
         // clear the previous results
         // for (String fieldName : Sets.newHashSet("totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts")) {
         // entity.setField(fieldName, numberService.setScale(BigDecimal.ZERO));
