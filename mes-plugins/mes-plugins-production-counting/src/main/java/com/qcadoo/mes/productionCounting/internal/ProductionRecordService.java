@@ -46,6 +46,8 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRec
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.PLANNED_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
+import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
 import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
@@ -138,6 +140,7 @@ public class ProductionRecordService {
                 .getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
 
         final List<Entity> productionCountings = productionRecordDD.find()
+                .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
                 .add(SearchRestrictions.belongsTo(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT, operation))
                 .list().getEntities();
