@@ -80,7 +80,7 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
         return Lists.newArrayList();
     }
 
-    private void createBasicProductionCounting(Entity order, Entity product, BigDecimal plannedQuantity) {
+    private void createBasicProductionCounting(final Entity order, final Entity product, final BigDecimal plannedQuantity) {
         Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
         productionCounting.setField("order", order);

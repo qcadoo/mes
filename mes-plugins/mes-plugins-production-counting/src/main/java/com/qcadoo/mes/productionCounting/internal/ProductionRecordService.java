@@ -408,7 +408,7 @@ public class ProductionRecordService {
         productionRecord.setField(PLANNED_LABOR_TIME, plannedTimeValues.get(PLANNED_LABOR_TIME).setScale(0, ROUND_UP).intValue());
     }
 
-    private void countTimeOperation(final Entity orderOperationComponent, Map<String, BigDecimal> plannedTimeValues,
+    private void countTimeOperation(final Entity orderOperationComponent, final Map<String, BigDecimal> plannedTimeValues,
             final Integer durationOfOperation) {
         BigDecimal durationOfOperationComponent = new BigDecimal(durationOfOperation);
         BigDecimal plannedTime = plannedTimeValues.get(PLANNED_TIME).add(durationOfOperationComponent);

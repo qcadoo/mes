@@ -49,7 +49,7 @@ public class TechnologyModelHooks {
         }
     }
 
-    private void setOperationComponentDefaults(Entity operationComponent) {
+    private void setOperationComponentDefaults(final Entity operationComponent) {
         if (operationComponent.getField("tpz") == null) {
             operationComponent.setField("tpz", 0);
         }
