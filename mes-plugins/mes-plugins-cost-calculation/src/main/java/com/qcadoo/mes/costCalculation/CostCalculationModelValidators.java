@@ -52,7 +52,9 @@ public class CostCalculationModelValidators {
                 }
                 return true;
             } catch (IllegalStateException e) {
-                LOG.debug("invalid technology tree passed to cost calculation");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Invalid technology tree passed to cost calculation");
+                }
             }
         }
 
