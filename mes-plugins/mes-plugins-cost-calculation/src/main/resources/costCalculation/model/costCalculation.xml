@@ -93,7 +93,7 @@
 			<validatesLength max="2024" />
 		</string>
 		<boolean name="includeTPZ" default="true" />
-		<boolean name="includeAdditionalTime" default="false"/>
+		<boolean name="includeAdditionalTime" default="true"/>
 		<boolean name="printCostNormsOfMaterials" default="true"/>
 		<boolean name="printOperationNorms" default="true"/>
 		
