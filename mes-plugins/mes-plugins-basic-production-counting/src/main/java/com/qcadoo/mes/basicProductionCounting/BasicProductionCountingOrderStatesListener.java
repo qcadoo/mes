@@ -40,6 +40,7 @@ import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -50,6 +51,9 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
@@ -66,22 +70,24 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
                     false);
 
             for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
-                Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-                productionCounting.setField("order", order);
-                productionCounting.setField("product", productReq.getKey());
-                productionCounting.setField("plannedQuantity", productReq.getValue());
-                productionCounting.getDataDefinition().save(productionCounting);
+                createBasicProductionCounting(order, productReq.getKey(), productReq.getValue());
             }
 
-            Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-            productionCounting.setField("order", order);
-            productionCounting.setField("product", order.getBelongsToField("product"));
-            productionCounting.setField("plannedQuantity", order.getField("plannedQuantity"));
-            productionCounting.getDataDefinition().save(productionCounting);
+            createBasicProductionCounting(order, order.getBelongsToField("product"),
+                    (BigDecimal) order.getField("plannedQuantity"));
         }
 
         return Lists.newArrayList();
+    }
+
+    private void createBasicProductionCounting(final Entity order, final Entity product, final BigDecimal plannedQuantity) {
+        Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
+        productionCounting.setField("order", order);
+        productionCounting.setField("product", product);
+        productionCounting.setField("plannedQuantity", plannedQuantity);
+        productionCounting.setField("producedQuantity", numberService.setScale(BigDecimal.ZERO));
+        productionCounting.setField("usedQuantity", numberService.setScale(BigDecimal.ZERO));
+        productionCounting.getDataDefinition().save(productionCounting);
     }
 }

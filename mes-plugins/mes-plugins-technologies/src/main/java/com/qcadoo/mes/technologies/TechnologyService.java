@@ -760,7 +760,8 @@ public class TechnologyService {
             }
         }
 
-        throw new IllegalStateException("operation doesn't have any products nor intermediates");
+        throw new IllegalStateException("Operation doesn't have any products nor intermediates, id = "
+                + operationComponent.getId());
     }
 
 }

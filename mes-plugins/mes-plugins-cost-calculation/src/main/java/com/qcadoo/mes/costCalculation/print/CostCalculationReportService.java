@@ -69,7 +69,7 @@ public class CostCalculationReportService {
     public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState date = viewDefinitionState.getComponentByReference("dateOfCalculation");
+            ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
                     CostCalculationConstants.MODEL_COST_CALCULATION).get((Long) state.getFieldValue());
@@ -110,7 +110,7 @@ public class CostCalculationReportService {
 
     private void generateCostCalDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
             DocumentException {
-        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "dateOfCalculation",
+        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "date",
                 "costCalculation.costCalculation.report.fileName");
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();

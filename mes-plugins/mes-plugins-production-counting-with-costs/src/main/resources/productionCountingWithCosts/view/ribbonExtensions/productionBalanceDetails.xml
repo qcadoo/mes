@@ -24,6 +24,13 @@
     ***************************************************************************
 
 -->
-<productionBalance>
-	<row GENERATED="false" ORDER="000005" PRODUCT="000017" NAME="Rozliczenie produkcji 5 paczek taboretów" DATE="" WORKER="" RECORDSNUMBER="1" DESCRIPTION="" FILENAME="" CALCULATEOPERATIONCOSTSMODE="01hourly" SOURCEOFMATERIALCOSTS="01currentGlobalDefinitionsInProduct" CALCULATEMATERIALCOSTSMODE="01nominal" />
-</productionBalance>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+    plugin="productionCounting"
+    view="productionBalanceDetails">
+    
+    <group name="exportWithCosts">
+		<bigButton name="pdfWithCosts" icon="pdfIcon24.png"
+			action="" state="disabled" />
+	</group>
+</ribbonExtension>

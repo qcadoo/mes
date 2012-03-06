@@ -52,7 +52,9 @@ public class CostCalculationModelValidators {
                 }
                 return true;
             } catch (IllegalStateException e) {
-                LOG.debug("invalid technology tree passed to cost calculation");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Invalid technology tree passed to cost calculation");
+                }
             }
         }
 
@@ -61,13 +63,14 @@ public class CostCalculationModelValidators {
     }
 
     public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        if ((costCalculation.getField("sourceOfMaterialcosts").equals("01currentGlobalDefinitionsInProduct"))
+        if ((costCalculation.getField("sourceOfMaterialCosts").equals("01currentGlobalDefinitionsInProduct"))
                 && (costCalculation.getField("calculateMaterialCostsMode").equals("04costForOrder"))) {
             costCalculation.addError(costCalculationDD.getField("calculateMaterialCostsMode"),
                     "costCalculation.messages.optionUnavailable");
             return false;
-        } else
+        } else {
             return true;
+        }
     }
 
 }

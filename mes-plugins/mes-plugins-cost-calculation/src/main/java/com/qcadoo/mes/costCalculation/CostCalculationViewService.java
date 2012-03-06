@@ -198,16 +198,16 @@ public class CostCalculationViewService {
     }
 
     public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("dateOfCalculation", new Date());
+        entity.setField("date", new Date());
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
         generateNumber(viewDefinitionState);
-        Set<String> fields = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency", "additionalOverheadValueCurrency",
-                "materialCostMarginValueCurrency", "productionCostMarginValueCurrency", "totalTechnicalProductionCostsCurrency",
-                "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency", "totalMachineHourlyCostsCurrency",
-                "totalMaterialCostsCurrency", "additionalOverheadCurrency");
+        Set<String> fields = Sets.newHashSet("totalCostsForQuantityCurrency", "totalOverheadCurrency",
+                "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
+                "totalTechnicalProductionCostsCurrency", "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency",
+                "totalMachineHourlyCostsCurrency", "totalMaterialCostsCurrency", "additionalOverheadCurrency");
 
         for (String componentReference : fields) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
@@ -235,9 +235,9 @@ public class CostCalculationViewService {
         Long productId = (Long) view.getComponentByReference(PRODUCT).getFieldValue();
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
 
-        FieldComponent totalCostsPerUnitUNIT = (FieldComponent) view.getComponentByReference("totalCostsPerUnitUNIT");
-        totalCostsPerUnitUNIT.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
-        totalCostsPerUnitUNIT.requestComponentUpdateState();
+        FieldComponent totalCostPerUnitUnit = (FieldComponent) view.getComponentByReference("totalCostPerUnitUnit");
+        totalCostPerUnitUnit.setFieldValue(currencyAlphabeticCode + " / " + product.getStringField("unit"));
+        totalCostPerUnitUnit.requestComponentUpdateState();
     }
 
     public void fillFieldWhenTechnologyChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -376,7 +376,7 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
                 "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-                "totalTechnicalProductionCosts", "totalCosts", "costPerUnit", "additionalOverheadValue");
+                "totalTechnicalProductionCosts", "totalCostsForQuantity", "totalCostPerUnit", "additionalOverheadValue");
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
@@ -387,18 +387,16 @@ public class CostCalculationViewService {
     public void ifCurrentGlobalIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        if ((viewDefinitionState.getComponentByReference("sourceOfMaterialcosts").getFieldValue()
+        if ((viewDefinitionState.getComponentByReference("sourceOfMaterialCosts").getFieldValue()
                 .equals("01currentGlobalDefinitionsInProduct"))
                 && (viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").getFieldValue()
                         .equals("04costForOrder"))) {
 
             viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").addMessage(
                     "costCalculation.messages.optionUnavailable", MessageType.FAILURE);
-
-        } else
-
+        } else {
             return;
-
+        }
     }
 
     public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,

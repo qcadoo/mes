@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +62,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class CostNormsForProductService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CostNormsForProductService.class);
 
     private static final String VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
@@ -286,12 +290,18 @@ public class CostNormsForProductService {
         Entity operationComponentRoot = technology.getTreeField(TechnologiesConstants.OPERATION_COMPONENTS).getRoot();
 
         if (operationComponentRoot != null) {
-            BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
+            try {
+                BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
-            Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                    giventQty, true);
+                Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                        giventQty, true);
 
-            return productQuantities;
+                return productQuantities;
+            } catch (IllegalStateException e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Invalid technology tree!");
+                }
+            }
         }
 
         return Maps.newHashMap();

@@ -625,18 +625,18 @@ public class TestSamplesLoader extends SamplesLoader {
 
         costCalculation.setField(L_NUMBER, values.get(L_NUMBER));
         costCalculation.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        costCalculation.setField(ORDERS_MODEL_ORDER, getOrderByNumber(values.get("order_no")));
-        costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("tech_no")));
-        costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("def_tech_no")));
-        costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prod_no")));
+        costCalculation.setField(ORDERS_MODEL_ORDER, getOrderByNumber(values.get("orderno")));
+        costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("techno")));
+        costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("deftechno")));
+        costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prodno")));
         costCalculation.setField("quantity", values.get("quantity"));
-        costCalculation.setField("includeTPZ", values.get("include_tpz"));
-        costCalculation.setField("sourceOfMaterialcosts", values.get("sourceofmaterialcosts"));
-        costCalculation.setField("calculateMaterialCostsMode", values.get("calculate_material_cost_mode"));
-        costCalculation.setField("calculateOperationCostsMode", values.get("calculate_operation_cost_mode"));
-        costCalculation.setField("additionalOverhead", values.get("additional_overhead"));
-        costCalculation.setField("productionCostMargin", values.get("production_cost_margin"));
-        costCalculation.setField("materialCostMargin", values.get("material_cost_margin"));
+        costCalculation.setField("includeTPZ", values.get("includetpz"));
+        costCalculation.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
+        costCalculation.setField("calculateMaterialCostsMode", values.get("calculatematerialcostmode"));
+        costCalculation.setField("calculateOperationCostsMode", values.get("calculateoperationcostmode"));
+        costCalculation.setField("additionalOverhead", values.get("additionaloverhead"));
+        costCalculation.setField("productionCostMargin", values.get("productioncostmargin"));
+        costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
 
         costCalculation = costCalculation.getDataDefinition().save(costCalculation);
 
@@ -921,7 +921,7 @@ public class TestSamplesLoader extends SamplesLoader {
         requirement.setField("onlyComponents", values.get("onlycomponents"));
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_GENERATED, values.get(L_GENERATED));
-        requirement.setField(L_FILE_NAME, values.get("filename"));
+        requirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
         requirement.setField("orders",
                 Lists.newArrayList(getOrderByNumber(values.get("order1")), getOrderByNumber(values.get("order2"))));
 
@@ -964,8 +964,6 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField(L_NUMBER, getProductionRecordByNumber(L_NUMBER));
         productionRecord.setField(L_NAME, values.get(L_NAME));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionRecord.setField("orderOperationComponent",
-                getOrderOperationComponentByNumber(values.get("orderoperationcomponent"), getOrderByNumber(values.get(L_ORDER))));
         productionRecord.setField("shift", getShiftByName(values.get("shift")));
         productionRecord.setField(L_STATE, values.get(L_STATE));
         productionRecord.setField("lastRecord", values.get("lastrecord"));
@@ -1047,6 +1045,9 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField("recordsNumber", values.get("recordsnumber"));
         productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
+        productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
+        productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
+        productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
         validateEntity(productionbalance);
@@ -1129,10 +1130,10 @@ public class TestSamplesLoader extends SamplesLoader {
         List<Entity> technologies = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, product)).add(SearchRestrictions.eq("master", true))
                 .setMaxResults(1).list().getEntities();
-        if (!technologies.isEmpty()) {
-            return technologies.get(0);
-        } else {
+        if (technologies.isEmpty()) {
             return null;
+        } else {
+            return technologies.get(0);
         }
     }
 

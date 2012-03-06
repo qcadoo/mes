@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="productionBalance" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="productionBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<boolean name="generated" />
@@ -40,6 +40,13 @@
 		<integer name="recordsNumber" />
 		<string name="description" />
 		<string name="fileName" />
+		
+		<boolean name="printOperationNorms" default="true"/>
+		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
+			required="true" default="01hourly" />
+
+		<boolean name="includeTPZ" default="true" />
+		<boolean name="includeAdditionalTime" default="false" />
 	</fields>
 	<hooks>
 		<onCopy

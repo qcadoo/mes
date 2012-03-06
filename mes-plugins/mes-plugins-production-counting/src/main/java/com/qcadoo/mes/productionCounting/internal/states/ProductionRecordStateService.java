@@ -106,22 +106,28 @@ public class ProductionRecordStateService {
         }
         final Entity productionRecord = form.getEntity();
         String states = productionRecord.getStringField(STATE_FIELD);
-        if (!states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
-            for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "staff", "shift",
-                    "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
-                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                field.setEnabled(false);
-                field.requestComponentUpdateState();
-            }
-            GridComponent recordOperationProductInComponent = (GridComponent) view
-                    .getComponentByReference("recordOperationProductInComponent");
-            recordOperationProductInComponent.setEditable(false);
-            GridComponent recordOperationProductOutComponent = (GridComponent) view
-                    .getComponentByReference("recordOperationProductOutComponent");
-            recordOperationProductOutComponent.setEditable(false);
-            GridComponent loggingsGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
-            loggingsGrid.setEditable(false);
+        if (states.equals(ProductionCountingStates.DRAFT.getStringValue())) {
+            enabledOrDisabledField(view, true);
+        } else {
+            enabledOrDisabledField(view, false);
         }
+    }
+
+    private void enabledOrDisabledField(final ViewDefinitionState view, final boolean isEnabled) {
+        for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "staff", "shift",
+                "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setEnabled(isEnabled);
+            field.requestComponentUpdateState();
+        }
+        GridComponent recordOperationProductInComponent = (GridComponent) view
+                .getComponentByReference("recordOperationProductInComponent");
+        recordOperationProductInComponent.setEditable(isEnabled);
+        GridComponent recordOperationProductOutComponent = (GridComponent) view
+                .getComponentByReference("recordOperationProductOutComponent");
+        recordOperationProductOutComponent.setEditable(isEnabled);
+        GridComponent loggingsGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
+        loggingsGrid.setEditable(isEnabled);
     }
 
     private String getTargetStateFromArgs(final String[] args) {

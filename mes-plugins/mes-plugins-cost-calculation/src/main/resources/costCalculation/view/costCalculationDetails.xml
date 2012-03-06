@@ -35,18 +35,18 @@
 					action="#{form}.fireEvent(generateCostCalculation);" state="disabled">
 					<script>
 						<![CDATA[
-						#{form}.addOnChangeListener({
-							onSetValue: function(value) {
-								if (! value || ! value.content) {
-									return;
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
 								}
-								if (! value.content.entityId) {
-									this.disable();
-								} else {
-									this.enable();
-								}
-							}
-						});	
+							});	
 						]]>
 					</script>
 				</bigButton>
@@ -63,72 +63,70 @@
 				defaultVisible="false" />
 			<component type="form" name="form" reference="form">
 				<script>
-				<![CDATA[
-				
-					jQuery(document).ready(function() {
-						var json = JSON.parse(context);
-						var orderId = json['window.mainTab.orderId'];
-						var technologyId = json['window.mainTab.technologyId'];
+					<![CDATA[
+						jQuery(document).ready(function() {
+							var json = JSON.parse(context);
+							var orderId = json['window.mainTab.orderId'];
+							var technologyId = json['window.mainTab.technologyId'];
+							
+							if (orderId != null) {
+								#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
+							} else if (technologyId != null) {
+								#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
+							}
+						});
 						
-						if (orderId != null) {
-							#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
-						} else if (technologyId != null) {
-							#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
-						}
-					});
-									
-					
-					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
-					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-					var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
-					var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
-					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-					
-					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-					
-					var entityExists = false;
-					
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
+						var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+						var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+						var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
+						var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+						
+						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+						
+						var entityExists = false;
+						
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (!value || !value.content) {
+									return;
+								}
+								if (value.content.entityId) {
+									entityExists = true;
+								} else {
+									entityExists = false;
+								}
+								updateRibbon();
 							}
-							if (value.content.entityId) {
-								entityExists = true;
-							} else {
-								entityExists = false;
+						});
+						#{form}.addOnChangeListener({
+							onSetValue: function(value) {
+								updateRibbon();
 							}
-							updateRibbon();
-						}
-					});
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							updateRibbon();
-						}
-					});
-					
-					function updateRibbon() {
-						if (entityExists) {
-							var isGeneratedCheckboxValue = #{generated}.getValue();
-							generatedRibbonItem.enable();
-							saveRibbonItem.disable();
-							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								pdfRibbonItem.enable();
-								generatedRibbonItem.disable();
-								saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-								saveBackRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-								saveNewRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+						});
+						
+						function updateRibbon() {
+							if (entityExists) {
+								var isGeneratedCheckboxValue = #{generated}.getValue();
+								generatedRibbonItem.enable();
+								saveRibbonItem.disable();
+								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+									pdfRibbonItem.enable();
+									generatedRibbonItem.disable();
+									saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+									saveBackRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+									saveNewRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+								} else {
+									pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
+									saveRibbonItem.enable();
+								}
 							} else {
-								pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
+								copyRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();
 							}
-						} else {
-							copyRibbonItem.disable("#{translate(recordNotCreated)}");
-							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
-							saveRibbonItem.enable();
 						}
-					}
-				]]>
+					]]>
 				</script>
 
 				<component type="gridLayout" name="gridLayout" columns="3"
@@ -138,8 +136,8 @@
 							reference="generated" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="dateOfCalculation" field="dateOfCalculation"
-							reference="dateOfCalculation" defaultEnabled="false" />
+						<component type="input" name="date" field="date"
+							reference="date" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="number" field="number"
@@ -193,7 +191,6 @@
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="number" />
 						</component>
-
 					</layoutElement>
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="technology" field="technology"
@@ -208,7 +205,6 @@
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 								method="fillFieldWhenTechnologyChanged" />
 						</component>
-
 					</layoutElement>
 					<layoutElement column="2" row="5">
 						<component type="input" name="quantity" field="quantity"
@@ -216,21 +212,18 @@
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					
 					<layoutElement column="2" row="6">
 						<component type="checkbox" name="printCostNormsOfMaterials" field="printCostNormsOfMaterials"
 							reference="printCostNormsOfMaterials" defaultEnabled="true" hasDescription="true" >
 							<option type="labelWidth" value="60"/>
 							</component>
 					</layoutElement>
-					
 					<layoutElement column="2" row="7">
 						<component type="checkbox" name="printOperationNorms" field="printOperationNorms"
 							reference="printOperationNorms" defaultEnabled="true" hasDescription="true">
 							<option type="labelWidth" value="60"/>
 							</component>
 					</layoutElement>
-					
 				</component>
 
 				<option type="header" value="true" />
@@ -245,7 +238,6 @@
 				<listener event="printCostCalculation"
 					class="com.qcadoo.mes.costCalculation.print.CostCalculationReportService"
 					method="printCostCalculationReport" />
-
 			</component>
 		</windowTab>
 		<windowTab name="inputDataTab">
@@ -258,23 +250,21 @@
 							<option type="label" value="parameters" />
 							<component type="gridLayout" name="parameters"
 								reference="parameters" columns="1" rows="5">
-								
-								
 								<layoutElement column="1" row="1">
-									<component type="select" name="sourceOfMaterialcosts"
-										reference="sourceOfMaterialcosts" field="#{form}.sourceOfMaterialcosts" >
+									<component type="select" name="sourceOfMaterialCosts"
+										reference="sourceOfMaterialCosts" field="#{form}.sourceOfMaterialCosts" >
 									<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
 										</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="calculateMaterialCostsMode"
-										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode" >
+										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode">
 										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
 										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="select" name="calculateOperationCostsMode"
-										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" >
+										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode">
 										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/>
 										</component>
 								</layoutElement>
@@ -286,7 +276,6 @@
 									<component type="checkbox" name="includeAdditionalTime"
 										reference="includeAdditionalTime" field="#{form}.includeAdditionalTime" />
 								</layoutElement>
-								
 							</component>
 						</component>
 					</layoutElement>
@@ -353,7 +342,7 @@
 									<component type="input" name="totalMaterialCosts"
 										field="#{form}.totalMaterialCosts" reference="totalMaterialCosts"
 										defaultEnabled="false">
-										  <option type="labelWidth" value="40"/>
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -384,7 +373,7 @@
 									<component type="input" name="totalLaborHourlyCosts"
 										field="#{form}.totalLaborHourlyCosts" reference="totalLaborHourlyCosts"
 										defaultEnabled="false">
-										  <option type="labelWidth" value="40"/>
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -400,7 +389,7 @@
 									<component type="input" name="totalPieceworkCosts"
 										field="#{form}.totalPieceworkCosts" reference="totalPieceworkCosts"
 										defaultEnabled="false" defaultVisible="false">
-										  <option type="labelWidth" value="40"/>
+										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
@@ -518,40 +507,40 @@
 							<component type="gridLayout" name="gridProductionCostMargin"
 								columns="3" rows="4" hasBorders="false">
 								<layoutElement column="1" row="1" width="2">
-									<component type="label" name="totalCostLabel"
+									<component type="label" name="totalCostsForQuantityLabel"
 										hasLabel="false">
 										<option type="labelStyle" value="text" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="2">
-									<component type="input" name="totalCosts" field="#{form}.totalCosts"
-										defaultEnabled="false" reference="totalCosts" hasLabel="false">
+									<component type="input" name="totalCostsForQuantity" field="#{form}.totalCostsForQuantity"
+										defaultEnabled="false" reference="totalCostsForQuantity" hasLabel="false">
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="2">
-									<component type="input" name="totalCostsCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency">
+									<component type="input" name="totalCostsForQuantityCurrency"
+										defaultEnabled="false" hasLabel="false" reference="totalCostsForQuantityCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
-									<component type="label" name="costPerUnitLabel"
+									<component type="label" name="totalCostPerUnitLabel"
 										hasLabel="false">
 										<option type="labelStyle" value="text" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="4" width="2">
-									<component type="input" name="costPerUnit" field="#{form}.costPerUnit"
-										defaultEnabled="false" reference="costPerUnit" hasLabel="false">
+									<component type="input" name="totalCostPerUnit" field="#{form}.totalCostPerUnit"
+										defaultEnabled="false" reference="totalCostPerUnit" hasLabel="false">
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="4">
-									<component type="input" name="totalCostsPerUnitUNIT"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsPerUnitUNIT">
+									<component type="input" name="totalCostPerUnitUnit"
+										defaultEnabled="false" hasLabel="false" reference="totalCostPerUnitUnit">
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
@@ -571,4 +560,3 @@
 			method="fillCurrencyFields" />
 	</hooks>
 </view>
-

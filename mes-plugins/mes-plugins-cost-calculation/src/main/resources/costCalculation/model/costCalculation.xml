@@ -81,11 +81,11 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalCosts">
+		<decimal name="totalCostsForQuantity">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="costPerUnit">
+		<decimal name="totalCostPerUnit">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
@@ -93,20 +93,20 @@
 			<validatesLength max="2024" />
 		</string>
 		<boolean name="includeTPZ" default="true" />
-		<boolean name="includeAdditionalTime" default="false"/>
+		<boolean name="includeAdditionalTime" default="true"/>
 		<boolean name="printCostNormsOfMaterials" default="true"/>
 		<boolean name="printOperationNorms" default="true"/>
 		
-		<enum name="sourceOfMaterialcosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
+		<enum name="sourceOfMaterialCosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
 			required="true" default="01currentGlobalDefinitionsInProduct"/>
 		
 		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04costForOrder"
 			required="true" default="01nominal" />
 		
-		<enum name="calculateOperationCostsMode" values="piecework,hourly"
-			required="true" default="hourly" />
+		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
+			required="true" default="01hourly" />
 			
-		<datetime name="dateOfCalculation" />
+		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
 	</fields>

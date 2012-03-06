@@ -89,7 +89,7 @@
 			method="checkTypeOfProductionRecording" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="checkIfPartialIsAllowed" />
+			method="willOrderAcceptOneMore" />
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="checkIfOrderIsStarted" />

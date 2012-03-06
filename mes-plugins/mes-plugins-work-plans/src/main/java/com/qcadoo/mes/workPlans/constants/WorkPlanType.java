@@ -48,6 +48,6 @@ public enum WorkPlanType {
             return BY_DIVISION;
         }
 
-        throw new IllegalStateException("Unsuported workPlan type: " + string);
+        throw new IllegalStateException("Unsupported workPlan type: " + string);
     }
 }

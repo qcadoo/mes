@@ -144,6 +144,33 @@
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="checkbox" name="printOperationNorms" reference="printOperationNorms" field="printOperationNorms" defaultEnabled="false">
+							<option type="textRepresentationOnDisabled" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="4" height="3">
+						<component type="borderLayout" name="parametersBorderLayout">
+							<component type="gridLayout" name="parametersGidLayout" columns="1" rows="3">
+								<layoutElement column="1" row="1">
+									<component type="select" name="calculateOperationsCostsMode"
+										reference="calculateOperationCostsMode" field="calculateOperationCostsMode" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="includeTPZ" reference="includeTPZ" field="includeTPZ" defaultEnabled="false">
+										<option type="textRepresentationOnDisabled" value="false" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime" field="includeAdditionalTime" defaultEnabled="false">
+										<option type="textRepresentationOnDisabled" value="false" />
+									</component>
+								</layoutElement>
+							</component>
+							
+							<option type="label" value="parameters" />
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="true"/>
 				<option type="expression" value="#name" />
@@ -154,7 +181,7 @@
 					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="generateProductionBalance" />
 			</component>
 		</windowTab>
-		<windowTab name="inputProducts">
+		<windowTab name="inputProductsTab">
 			<component type="grid" name="inputProducts" reference="inputProductsGrid" model="recordOperationProductInComponent" >
 				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
@@ -167,7 +194,7 @@
 				<option type="order" column="inputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
-		<windowTab name="outputProducts">
+		<windowTab name="outputProductsTab">
 			<component type="grid" name="outputProducts" reference="outputProductsGrid" model="recordOperationProductOutComponent" >
 				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
 				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
@@ -180,26 +207,44 @@
 				<option type="order" column="outputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
-		<windowTab name="productionTime">
-			<component type="gridLayout" name="productionTimeGridLayout" reference="productionTimeGridLayout" 
-					   columns="4" rows="2">
+		<windowTab name="timeTab">
+			<component type="gridLayout" name="timeGridLayout" reference="productionTimeGridLayout" 
+				columns="1" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="3" row="1">
-					<component type="input" name="machineTimeBalance" reference="machineTimeBalance" defaultEnabled="false"/>
+					<component type="borderLayout" name="machineTimeBorderLayout" reference="machineTimeBorderLayout">
+						<component type="gridLayout" name="machineTimeGridLayout" 
+							columns="3" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1">		
+								<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="input" name="machineTimeBalance" reference="machineTimeBalance" defaultEnabled="false"/>
+							</layoutElement>
+						</component>
+						
+						<option type="label" value="machineTime" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="laborPlannedTime" reference="laborPlannedTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="2" row="2">
-					<component type="input" name="laborRegisteredTime" reference="laborRegisteredTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="3" row="2">
-					<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
+					<component type="borderLayout" name="laborTimeBorderLayout" reference="laborTimeBorderLayout">
+						<component type="gridLayout" name="laborTimeGridLayout" reference="laborTimeGridLayout"
+							columns="3" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1">
+								<component type="input" name="laborPlannedTime" reference="laborPlannedTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="input" name="laborRegisteredTime" reference="laborRegisteredTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
+							</layoutElement>
+						</component>
+						
+						<option type="label" value="laborTime" />
+					</component>
 				</layoutElement>
 			</component>
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid" model="productionRecord" >

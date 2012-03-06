@@ -25,8 +25,6 @@ package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +42,6 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -62,8 +59,6 @@ public class BasicProductionCountingService {
     private static final String FORM_L = "form";
 
     private static final String COMPONENT = "01component";
-
-    private static final String INTERMEDIATE = "02intermediate";
 
     private static final String FINAL_PRODUCT = "03finalProduct";
 
@@ -234,25 +229,6 @@ public class BasicProductionCountingService {
         }
     }
 
-    public void setGridContent(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("order");
-
-        Long orderId = orderForm.getEntityId();
-        if (orderId != null) {
-            Entity savedOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    orderId);
-
-            SearchCriteriaBuilder criteriaBuilder = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find();
-            List<Entity> countings = criteriaBuilder.add(SearchRestrictions.belongsTo("order", savedOrder)).list().getEntities();
-
-            Collections.sort(countings, countingsComparator);
-            Collections.reverse(countings);
-            grid.setEntities(countings);
-        }
-    }
-
     public void shouldDisableUsedProducedField(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(FORM_L);
         FieldComponent producedField = (FieldComponent) view.getComponentByReference(PRODUCED_QUANTITY_L);
@@ -280,42 +256,6 @@ public class BasicProductionCountingService {
         }
 
     }
-
-    private Comparator<Entity> countingsComparator = new Comparator<Entity>() {
-
-        @Override
-        public int compare(final Entity counting1, final Entity counting2) {
-            final Entity product1 = counting1.getBelongsToField(MODEL_FIELD_PRODUCT);
-            final Entity product2 = counting2.getBelongsToField(MODEL_FIELD_PRODUCT);
-            final Entity technology = counting1.getBelongsToField(MODEL_FIELD_ORDER).getBelongsToField("technology");
-            final String product1Type = technologyService.getProductType(product1, technology);
-            final String product2Type = technologyService.getProductType(product2, technology);
-
-            if (product1Type.equals(product2Type)) {
-                return 0;
-            }
-            if (FINAL_PRODUCT.equals(product1Type)) {
-                return 1;
-            }
-            if (FINAL_PRODUCT.equals(product2Type)) {
-                return -1;
-            }
-            if (INTERMEDIATE.equals(product1Type)) {
-                return 1;
-            }
-            if (INTERMEDIATE.equals(product2Type)) {
-                return -1;
-            }
-            if (COMPONENT.equals(product1Type)) {
-                return 1;
-            }
-            if (COMPONENT.equals(product2Type)) {
-                return -1;
-            }
-
-            throw new IllegalStateException("Cant compare two product types");
-        }
-    };
 
     public void fillDoneQuantityField(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
         final FormComponent form = (FormComponent) viewState.getComponentByReference(FORM_L);

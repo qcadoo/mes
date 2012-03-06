@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionCounting;
+package com.qcadoo.mes.productionCounting.internal;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
