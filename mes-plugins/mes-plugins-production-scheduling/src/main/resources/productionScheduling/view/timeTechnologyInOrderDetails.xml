@@ -56,6 +56,7 @@
 				<layoutElement column="1" row="3">
 					<component type="time" name="realizationTime" reference="realizationTime"
 						field="realizationTime">
+						<option type="noHours" value="5"/>
 						<listener event="initialize"
 							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
 							method="clearFieldValue" />
