@@ -112,11 +112,9 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit S
 
 -- end
 
-
 -- refactoring cost calculation
 
-ALTER TABLE costcalculation_costcalculation ADD COLUMN technicalproductioncostperunit numeric(10,3);
-ALTER TABLE costcalculation_costcalculation ALTER COLUMN technicalproductioncostperunit SET DEFAULT 0::numeric;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
 
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN dateofcalculation TO date;
 

@@ -270,7 +270,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
     }
 
-    public void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity) {
+    private void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity) {
         checkArgument(sourceTree != null, "source is null");
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 MODEL_CALCULATION_OPERATION_COMPONENT);
