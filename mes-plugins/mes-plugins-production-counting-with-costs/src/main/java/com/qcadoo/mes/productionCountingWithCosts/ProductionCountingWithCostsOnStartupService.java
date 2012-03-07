@@ -21,18 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForOperation;
+package com.qcadoo.mes.productionCountingWithCosts;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.mes.productionCounting.internal.ProductionCountingGenerateProductionBalance;
+import com.qcadoo.plugin.api.Module;
 
-@Service
-public interface OperationsCostCalculationService {
+@Component
+public class ProductionCountingWithCostsOnStartupService extends Module {
 
-    void calculateOperationsCost(final Entity costCalculation);
+    @Autowired
+    private ProductionCountingGenerateProductionBalance productionCountingGenerateProductionBalance;
 
-    void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity);
+    @Autowired
+    private GenerateCosts generateCosts;
+
+    @Override
+    public void enable() {
+        productionCountingGenerateProductionBalance.addObserver(generateCosts);
+    }
+
+    @Override
+    public void enableOnStartup() {
+        productionCountingGenerateProductionBalance.addObserver(generateCosts);
+    }
+
+    @Override
+    public void disable() {
+        productionCountingGenerateProductionBalance.deleteObserver(generateCosts);
+    }
 
 }

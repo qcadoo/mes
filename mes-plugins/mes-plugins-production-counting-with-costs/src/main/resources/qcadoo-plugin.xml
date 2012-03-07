@@ -28,7 +28,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
@@ -41,7 +41,9 @@
 		http://schema.qcadoo.org/modules/report 
 		http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/modules/menu 
-		http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/modules/menu.xsd
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Production Counting With Costs</name>
@@ -55,6 +57,14 @@
 		<dependency>
 			<plugin>productionCounting</plugin>
 			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>costNormsForProduct</plugin>
+			<version>[0.4.1</version>
+		</dependency>
+		<dependency>
+			<plugin>costNormsForOperation</plugin>
+			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>
 
@@ -194,6 +204,9 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/productionBalanceDetails.xml" />
+		
+		<custom:custom
+			class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsOnStartupService" />
 	</modules>
 
 </plugin>

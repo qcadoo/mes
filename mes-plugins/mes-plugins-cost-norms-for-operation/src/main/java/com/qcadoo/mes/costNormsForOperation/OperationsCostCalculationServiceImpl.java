@@ -270,37 +270,37 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
     }
 
-    public void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity costCalculation) {
+    public void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity) {
         checkArgument(sourceTree != null, "source is null");
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 MODEL_CALCULATION_OPERATION_COMPONENT);
 
         // drop old operation components tree
-        EntityTree oldCalculationOperationComponents = costCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree oldCalculationOperationComponents = parentEntity.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
         if (oldCalculationOperationComponents != null && oldCalculationOperationComponents.getRoot() != null) {
             calculationOperationComponentDD.delete(oldCalculationOperationComponents.getRoot().getId());
         }
 
         Entity tree = createCalculationOperationComponent(sourceTree.getRoot(), null, calculationOperationComponentDD,
-                costCalculation);
+                parentEntity);
 
-        costCalculation.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, asList(tree));
+        parentEntity.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, asList(tree));
     }
 
     private Entity createCalculationOperationComponent(final EntityTreeNode sourceTreeNode, final Entity parent,
-            final DataDefinition calculationOperationComponentDD, final Entity costCalculation) {
+            final DataDefinition calculationOperationComponentDD, final Entity parentEntity) {
         Entity calculationOperationComponent = calculationOperationComponentDD.create();
 
         calculationOperationComponent.setField("parent", parent);
-        calculationOperationComponent.setField(L_COST_CALCULATION, costCalculation);
+        calculationOperationComponent.setField(parentEntity.getDataDefinition().getName(), parentEntity);
 
         if (OPERATION_L.equals(sourceTreeNode.getField(ENTITY_TYPE_FIELD))) {
             createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponentDD,
-                    calculationOperationComponent, costCalculation);
+                    calculationOperationComponent, parentEntity);
         } else {
             Entity referenceTechnology = sourceTreeNode.getBelongsToField("referenceTechnology");
             createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
-                    calculationOperationComponentDD, calculationOperationComponent, costCalculation);
+                    calculationOperationComponentDD, calculationOperationComponent, parentEntity);
         }
 
         return calculationOperationComponent;
