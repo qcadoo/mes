@@ -219,7 +219,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="plannedTotalCostsForQuantity" field="#{form}.technicalProductionCosts"
+								<component type="input" name="plannedTotalCostsForQuantity" field="#{form}.totalTechnicalProductionCosts"
 									defaultEnabled="false" reference="plannedTotalCostsForQuantity" hasLabel="false">
 									<option type="alignment" value="right" />
 									<option type="textRepresentationOnDisabled" value="true" />
@@ -227,7 +227,7 @@
 							</layoutElement>
 							<layoutElement column="3" row="2">
 								<component type="input" name="plannedTotalCostsForQuantityCurrency"
-									defaultEnabled="false" hasLabel="false" reference="totalTechnicalCostsForQuantityCurrency">
+									defaultEnabled="false" hasLabel="false" reference="plannedTotalCostsForQuantityCurrency">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -238,7 +238,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="plannedTotalCostPerUnit" field="#{form}.technicalProductionCostPerUnit"
+								<component type="input" name="plannedTotalCostPerUnit" field="#{form}.totalTechnicalProductionCostPerUnit"
 									defaultEnabled="false" reference="plannedTotalCostPerUnit" hasLabel="false">
 									<option type="alignment" value="right" />
 									<option type="textRepresentationOnDisabled" value="true" />
