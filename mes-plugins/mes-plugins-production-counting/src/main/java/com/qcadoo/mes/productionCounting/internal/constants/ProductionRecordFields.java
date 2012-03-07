@@ -10,6 +10,8 @@ public class ProductionRecordFields {
 
     public static final String SHIFT = "shift";
 
+    public static final String STATE = "state";
+
     public static final String RECORD_OPERATION_PRODUCT_IN_COMPONENTS = "recordOperationProductInComponents";
 
     public static final String RECORD_OPERATION_PRODUCT_OUT_COMPONENTS = "recordOperationProductOutComponents";

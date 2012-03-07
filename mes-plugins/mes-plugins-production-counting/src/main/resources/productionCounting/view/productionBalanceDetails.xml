@@ -209,24 +209,42 @@
 		</windowTab>
 		<windowTab name="timeTab">
 			<component type="gridLayout" name="timeGridLayout" reference="productionTimeGridLayout" 
-					   columns="4" rows="2">
+				columns="1" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="3" row="1">
-					<component type="input" name="machineTimeBalance" reference="machineTimeBalance" defaultEnabled="false"/>
+					<component type="borderLayout" name="machineTimeBorderLayout" reference="machineTimeBorderLayout">
+						<component type="gridLayout" name="machineTimeGridLayout" 
+							columns="3" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1">		
+								<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="input" name="machineTimeBalance" reference="machineTimeBalance" defaultEnabled="false"/>
+							</layoutElement>
+						</component>
+						
+						<option type="label" value="machineTime" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="input" name="laborPlannedTime" reference="laborPlannedTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="2" row="2">
-					<component type="input" name="laborRegisteredTime" reference="laborRegisteredTime" defaultEnabled="false"/>
-				</layoutElement>
-				<layoutElement column="3" row="2">
-					<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
+					<component type="borderLayout" name="laborTimeBorderLayout" reference="laborTimeBorderLayout">
+						<component type="gridLayout" name="laborTimeGridLayout" reference="laborTimeGridLayout"
+							columns="3" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1">
+								<component type="input" name="laborPlannedTime" reference="laborPlannedTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="input" name="laborRegisteredTime" reference="laborRegisteredTime" defaultEnabled="false"/>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
+							</layoutElement>
+						</component>
+						
+						<option type="label" value="laborTime" />
+					</component>
 				</layoutElement>
 			</component>
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid" model="productionRecord" >

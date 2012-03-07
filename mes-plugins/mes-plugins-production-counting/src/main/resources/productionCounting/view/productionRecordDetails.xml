@@ -240,7 +240,7 @@
 										var cancelState = #{window}.getRibbonItem("status.cancelRecord");
 										var actionDelete = #{window}.getRibbonItem("actions.delete");
 											
-										var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack", "actions.copy"];
+										var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack"];
 										acceptState.disable();
 										acceptState.forState="02accepted";
 										acceptState.confirmMessage = "#{translate(productionCounting.productionRecordDetails.window.ribbon.status.acceptRecord.confirm)}";

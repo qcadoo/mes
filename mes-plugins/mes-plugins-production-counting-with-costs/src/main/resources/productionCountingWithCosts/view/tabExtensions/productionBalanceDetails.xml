@@ -204,7 +204,7 @@
 							</layoutElement>
 						</component>
 						
-						<option type="label" value="registeredTechnicalProductionCost" />
+						<option type="label" value="registeredTechnicalProductionCosts" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" height="4">

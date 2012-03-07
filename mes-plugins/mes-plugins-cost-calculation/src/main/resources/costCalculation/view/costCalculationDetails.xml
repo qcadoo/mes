@@ -258,13 +258,13 @@
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="calculateMaterialCostsMode"
-										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode" >
+										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode">
 										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
 										</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="select" name="calculateOperationCostsMode"
-										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode" >
+										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode">
 										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/>
 										</component>
 								</layoutElement>
@@ -560,4 +560,3 @@
 			method="fillCurrencyFields" />
 	</hooks>
 </view>
-
