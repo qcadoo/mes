@@ -26,13 +26,9 @@ package com.qcadoo.mes.costNormsForOperation;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 
 @Service
 public interface OperationsCostCalculationService {
 
     void calculateOperationsCost(final Entity costCalculation);
-
-    void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity);
-
 }
