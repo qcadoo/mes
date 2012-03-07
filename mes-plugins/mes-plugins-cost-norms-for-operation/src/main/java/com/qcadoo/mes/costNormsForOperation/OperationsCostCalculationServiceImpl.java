@@ -76,7 +76,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private static final String TECHNOLOGY_OPERATION_COMPONENT_FIELD = "technologyOperationComponent";
 
-    private static final String CALCULATION_OPERATION_COMPONENTS_FIELD = "calculationOperationComponents";
+    private static final String L_CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
 
     private static final String L_COST_CALCULATION = "costCalculation";
 
@@ -116,7 +116,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         Entity yetAnotherCostCalculation = costCalculationDD.save(entity);
         Entity newCostCalculation = costCalculationDD.get(yetAnotherCostCalculation.getId());
-        EntityTree operationComponents = newCostCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree operationComponents = newCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         checkArgument(operationComponents != null, "given operation components is null");
 
@@ -151,7 +151,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             throw new IllegalStateException("Unsupported calculateOperationCostMode");
         }
 
-        entity.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, operationComponents);
+        entity.setField(L_CALCULATION_OPERATION_COMPONENTS, operationComponents);
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
@@ -276,7 +276,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 MODEL_CALCULATION_OPERATION_COMPONENT);
 
         // drop old operation components tree
-        EntityTree oldCalculationOperationComponents = parentEntity.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree oldCalculationOperationComponents = parentEntity.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
         if (oldCalculationOperationComponents != null && oldCalculationOperationComponents.getRoot() != null) {
             calculationOperationComponentDD.delete(oldCalculationOperationComponents.getRoot().getId());
         }
@@ -284,7 +284,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Entity tree = createCalculationOperationComponent(sourceTree.getRoot(), null, calculationOperationComponentDD,
                 parentEntity);
 
-        parentEntity.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, asList(tree));
+        parentEntity.setField(L_CALCULATION_OPERATION_COMPONENTS, asList(tree));
     }
 
     private Entity createCalculationOperationComponent(final EntityTreeNode sourceTreeNode, final Entity parent,
@@ -344,7 +344,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private void deleteOperationsTreeIfExists(final Entity costCalculation) {
         Entity yetAnotherCostCalculation = costCalculation.getDataDefinition().get(costCalculation.getId());
-        EntityTree existingOperationsTree = yetAnotherCostCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree existingOperationsTree = yetAnotherCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         if (existingOperationsTree == null || existingOperationsTree.getRoot() == null) {
             return;

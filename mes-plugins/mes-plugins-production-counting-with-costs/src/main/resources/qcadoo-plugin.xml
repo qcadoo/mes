@@ -191,8 +191,13 @@
 			</model:decimal>
 		</model:model-field>
 		
+		
+		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
+			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
+		</model:model-field>
+		
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:tree name="calculationOperationComponents" joinField="costCalculation"
+			<model:tree name="calculationOperationComponents" joinField="productionBalance"
 				model="calculationOperationComponent" plugin="costNormsForOperation"
 				cascade="delete" />
 		</model:model-field>
