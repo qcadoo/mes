@@ -95,7 +95,6 @@
 			</model:decimal>
 		</model:model-field>
 		
-		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="productionCostMargin" default="0">
 				<validatesUnscaledValue max="7" />
@@ -115,7 +114,6 @@
 			</model:decimal>
 		</model:model-field>
 		
-		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalCostsForQuantity" default="0">
 				<validatesUnscaledValue max="7" />
@@ -129,13 +127,13 @@
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="plannedTotalCostsForQuantity" default="0">
+			<model:decimal name="technicalProductionCosts" default="0">
 				<validatesUnscaledValue max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="plannedTotalCostPerUnit" default="0">
+			<model:decimal name="technicalProductionCostPerUnit" default="0">
 				<validatesUnscaledValue max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -190,7 +188,6 @@
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
-		
 		
 		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
 			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />

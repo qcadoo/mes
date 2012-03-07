@@ -62,6 +62,10 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
+		<decimal name="totalTechnicalProductionCostPerUnit">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
 		<decimal name="productionCostMargin" default="0">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
