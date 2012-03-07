@@ -1,8 +1,8 @@
 -- PBC1
-alter table orders_order add column registerpiecework boolean;
-alter table basic_parameter add column registerpiecework boolean;
+ALTER TABLE orders_order add column registerpiecework boolean;
+ALTER TABLE basic_parameter add column registerpiecework boolean;
 update basic_parameter set registerpiecework=true;
-alter table productioncounting_productionrecord add column executedOperationCycles integer;
+ALTER TABLE productioncounting_productionrecord add column executedOperationCycles integer;
 
 -- Table: orders_order
 -- changed: 28.02.2012
@@ -30,7 +30,7 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime S
 
 
 -- Table: productioncounting_productionbalance
--- changed: 05.03.2012
+-- changed: 07.03.2012
 
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN totalcosts TO totalcostsforquantity;
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN costperunit TO totalcostperunit;
@@ -80,11 +80,11 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcos
 ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotalcostperunit numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcostperunit SET DEFAULT 0::numeric;
 
-ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedtotalcostsforquantity numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedtotalcostsforquantity SET DEFAULT 0::numeric;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN technicalproductioncosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN technicalproductioncosts SET DEFAULT 0::numeric;
 
-ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedtotalcostperunit numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN plannedtotalcostperunit SET DEFAULT 0::numeric;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN technicalproductioncostperunit numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN technicalproductioncostperunit SET DEFAULT 0::numeric;
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN balanceforquantity numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN balanceforquantity SET DEFAULT 0::numeric;
@@ -109,21 +109,33 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostsforquant
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostperunit numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit SET DEFAULT 0::numeric;
+
 -- end
 
 -- refactoring cost calculation
-alter table costcalculation_costcalculation rename column dateofcalculation to date;
-alter table costcalculation_costcalculation alter column calculateOperationCostsMode set default '01hourly';
-update costcalculation_costcalculation set calculateOperationCostsMode = '01hourly' where calculateOperationCostsMode = 'hourly';
-update costcalculation_costcalculation set calculateOperationCostsMode = '02piecework' where calculateOperationCostsMode = 'piecework';
 
-alter table productioncounting_productionbalance add column technology_id bigint;
-alter table productioncounting_productionbalance add CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
-      REFERENCES technologies_technology (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;
-alter table costnormsforoperation_calculationoperationcomponent add column productionbalance_id bigint;
-alter table costnormsforoperation_calculationoperationcomponent add CONSTRAINT calculationoperationcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
-      REFERENCES productioncounting_productionbalance (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
 
-alter table productioncounting_productionbalance add column quantity numeric(10, 3);
+ALTER TABLE costcalculation_costcalculation RENAME COLUMN dateofcalculation TO date;
+
+ALTER TABLE costcalculation_costcalculation ALTER COLUMN calculateOperationCostsMode SET DEFAULT '01hourly';
+UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '01hourly' WHERE calculateOperationCostsMode = 'hourly';
+UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '02piecework' WHERE calculateOperationCostsMode = 'piecework';
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint;
+ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE;
+      
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN productionbalance_id bigint;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD CONSTRAINT calculationoperationcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
+      
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN productionbalance_id bigint;      
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD CONSTRAINT recordoperationproductincomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
+      
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN productionbalance_id bigint;
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD CONSTRAINT recordoperationproductoutcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
+      
+-- end
