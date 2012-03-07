@@ -125,3 +125,5 @@ alter table costnormsforoperation_calculationoperationcomponent add column produ
 alter table costnormsforoperation_calculationoperationcomponent add CONSTRAINT calculationoperationcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
       REFERENCES productioncounting_productionbalance (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+alter table productioncounting_productionbalance add column quantity numeric(10, 3);

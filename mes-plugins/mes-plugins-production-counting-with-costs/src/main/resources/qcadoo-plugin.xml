@@ -59,11 +59,7 @@
 			<version>[0.4.0</version>
 		</dependency>
 		<dependency>
-			<plugin>costNormsForProduct</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-		<dependency>
-			<plugin>costNormsForOperation</plugin>
+			<plugin>costCalculation</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>
@@ -114,7 +110,6 @@
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
-		
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalCostsForQuantity" default="0">
@@ -191,6 +186,9 @@
 			</model:decimal>
 		</model:model-field>
 		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="quantity" />
+		</model:model-field>
 		
 		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
 			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
