@@ -27,7 +27,6 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.MATERIAL_COST_MARGIN;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NAME;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NUMBER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.ORDER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.QUANTITY;
@@ -75,6 +74,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
+
+    private static final String NAME = "name";
 
     private static final String L_NOMINAL_COST = "nominalCost";
 

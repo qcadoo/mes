@@ -112,7 +112,7 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
-		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyTreeIsntEmpty" />
+		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyHasCorrectState" />
 		<onCopy
 			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
 			method="clearGeneratedOnCopy" />

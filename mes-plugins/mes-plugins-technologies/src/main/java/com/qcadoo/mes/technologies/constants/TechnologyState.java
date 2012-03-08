@@ -31,8 +31,10 @@ public enum TechnologyState {
         public TechnologyState changeState(final String targetState) {
             if (targetState != null && "02accepted".equalsIgnoreCase(targetState.trim())) {
                 return ACCEPTED;
-            } else {
+            } else if (targetState != null && "03declined".equalsIgnoreCase(targetState.trim())) {
                 return DECLINED;
+            } else {
+                return CHECKED;
             }
         }
     },
@@ -58,6 +60,16 @@ public enum TechnologyState {
         @Override
         public TechnologyState changeState(final String targetState) {
             return this;
+        }
+    },
+    CHECKED("05checked") {
+
+        @Override
+        public TechnologyState changeState(final String targetState) {
+            if (targetState.trim().isEmpty() || "02accepted".equalsIgnoreCase(targetState.trim())) {
+                return ACCEPTED;
+            }
+            return DRAFT;
         }
     };
 

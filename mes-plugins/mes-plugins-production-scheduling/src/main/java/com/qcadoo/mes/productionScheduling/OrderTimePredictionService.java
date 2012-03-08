@@ -33,6 +33,8 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -149,6 +151,11 @@ public class OrderTimePredictionService {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
+        if (technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())
+                || technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.OUTDATED.getStringValue())) {
+            technologyLookup.addMessage("productionScheduling.technology.incorrectState", MessageType.FAILURE);
+            return;
+        }
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 technology.getTreeField("operationComponents").getRoot(), quantity);
 

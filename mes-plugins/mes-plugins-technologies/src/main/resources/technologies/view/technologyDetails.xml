@@ -35,6 +35,7 @@
 			<group name="status">
 				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(acceptTechnology);" />
 				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{state}.changeTechnologyState(cancelTechnology);" />
+				<smallButton name="checkTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(checkTechnology);" />
 			</group>
 			<group name="reports">
 				<smallButton name="pdf" icon="pdfIcon16.png" action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);" state="enabled" />
@@ -48,7 +49,7 @@
 					<![CDATA[
 						#{form}.addOnChangeListener({
 							onSetValue: function() {
-								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology"]; 
+								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology", "status.checkTechnology"]; 
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								for (var elementKey in itemNames) {
@@ -145,6 +146,7 @@
 								var isAccepted = state == "02accepted";
 								var isDeclined = state == "03declined";
 								var isOutdated = state == "04outdated";
+								var isChecked = state == "05checked";
 								
 								#{window}.setEnabled(isDraft, true);
 								#{master}.setEnabled(isDraft || isAccepted, true);
@@ -174,10 +176,16 @@
 							function updateRibbon(state) {
 								var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 								var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
+								var checkState = #{window}.getRibbonItem("status.checkTechnology");
 									
 								acceptState.disable();
 								acceptState.forState="02accepted";
 								acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
+								
+								checkState.disable();
+								checkState.forState="05checked";
+								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
+								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
 
 								cancelState.disable();
 								cancelState.forState="03declined";
@@ -187,7 +195,9 @@
 								if (state == "01draft") {
 									acceptState.enable();
 									cancelState.enable();
+									checkState.enable();
 								} else if (state == "02accepted") {
+									checkState.disable();
 									cancelState.enable();
 									cancelState.forState="04outdated";
 									cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
@@ -195,7 +205,14 @@
 								} else if (state == "03declined") {
 								} else if (state == "04outdated") {
 									cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-								} else {
+								} else if( state == "05checked"){
+									cancelState.enable();
+									checkState.enable();
+									checkState.forState="01draft"
+									checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
+									checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
+									acceptState.enable();
+								}else{
 									cancelState.enable();
 								}
 							}
