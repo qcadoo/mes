@@ -52,7 +52,7 @@
 				</bigButton>
 			</group>
 			<group name="export">
-				<bigButton name="pdf" icon="pdfIcon16.png"
+				<bigButton name="pdf" icon="pdfIcon24.png"
 					action="#{form}.fireEvent(printCostCalculation,pdf);" state="disabled" />
 			</group>
 		</ribbon>
@@ -249,34 +249,40 @@
 							reference="borderLayoutParameters">
 							<option type="label" value="parameters" />
 							<component type="gridLayout" name="parameters"
-								reference="parameters" columns="1" rows="5">
-								<layoutElement column="1" row="1">
-									<component type="select" name="sourceOfMaterialCosts"
-										reference="sourceOfMaterialCosts" field="#{form}.sourceOfMaterialCosts" >
-									<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
-										</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="select" name="calculateMaterialCostsMode"
-										reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode">
-										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="ifCurrentGlobalIsSelected"/>
-										</component>
-								</layoutElement>
-								<layoutElement column="1" row="3">
-									<component type="select" name="calculateOperationCostsMode"
-										reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode">
-										<listener event="onSelectedEntityChange" class ="com.qcadoo.mes.costCalculation.CostCalculationViewService" method="disableCheckboxIfPieceworkSelected"/>
-										</component>
-								</layoutElement>
-								<layoutElement column="1" row="4">
-									<component type="checkbox" name="includeTPZ"
-										reference="includeTPZ" field="#{form}.includeTPZ" />
-								</layoutElement>
-								<layoutElement column="1" row="5">
-									<component type="checkbox" name="includeAdditionalTime"
-										reference="includeAdditionalTime" field="#{form}.includeAdditionalTime" />
-								</layoutElement>
-							</component>
+							reference="parameters" columns="1" rows="5">
+							<layoutElement column="1" row="1">
+								<component type="select" name="sourceOfMaterialCosts"
+									reference="sourceOfMaterialCosts" field="#{form}.sourceOfMaterialCosts">
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+										method="ifCurrentGlobalIsSelected" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="select" name="calculateMaterialCostsMode"
+									reference="calculateMaterialCostsMode" field="#{form}.calculateMaterialCostsMode">
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+										method="ifCurrentGlobalIsSelected" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3">
+								<component type="select" name="calculateOperationCostsMode"
+									reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode">
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+										method="disableCheckboxIfPieceworkSelected" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="4">
+								<component type="checkbox" name="includeTPZ" reference="includeTPZ"
+									field="#{form}.includeTPZ" />
+							</layoutElement>
+							<layoutElement column="1" row="5">
+								<component type="checkbox" name="includeAdditionalTime"
+									reference="includeAdditionalTime" field="#{form}.includeAdditionalTime" />
+							</layoutElement>
+						</component>
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" height="3">
