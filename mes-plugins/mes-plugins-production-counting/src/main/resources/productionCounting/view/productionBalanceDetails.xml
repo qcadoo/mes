@@ -23,8 +23,10 @@
     ***************************************************************************
 
 -->
-<view name="productionBalanceDetails" modelName="productionBalance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+<view name="productionBalanceDetails" modelName="productionBalance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
@@ -38,7 +40,8 @@
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
-			<component type="form" name="productionBalanceDetails" reference="form">
+			<component type="form" name="productionBalanceDetails"
+				reference="form">
 				<script>
 					<![CDATA[
 						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
@@ -96,176 +99,240 @@
 						}
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="3" rows="9">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="9">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="generated" reference="generated" field="generated" defaultEnabled="false">
+						<component type="checkbox" name="generated" field="generated"
+							reference="generated" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="date" reference="date" field="date" defaultEnabled="false"/>
+						<component type="input" name="date" field="date"
+							reference="date" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="worker" reference="worker" field="worker" defaultEnabled="false">
+						<component type="input" name="worker" field="worker"
+							reference="worker" defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="lookup" name="order" field="order" reference="order">
+						<component type="lookup" name="order" field="order"
+							reference="order">
 							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="state" fields="state" />
+							<option type="column" name="typeOfProductionRecording"
+								fields="typeOfProductionRecording" />
+
 							<option type="required" value="true" />
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 								method="fillFieldsWhenOrderChanged" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
+						<component type="lookup" name="product" field="product"
+							reference="product" defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true" />
+							
 							<option type="required" value="true" />
+							
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
+							
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="6" height="2">
-						<component type="textarea" name="name" reference="name" field="name" />
+						<component type="textarea" name="name" field="name"
+							reference="name" />
 					</layoutElement>
 					<layoutElement column="1" row="8" height="2">
-						<component type="textarea" name="description" reference="description" field="description" />
-					</layoutElement>	
+						<component type="textarea" name="description" field="description"
+							reference="description" />
+					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="recordsNumber" reference="recordsNumber" field="#{form}.recordsNumber" defaultEnabled="false">
+						<component type="input" name="recordsNumber" field="recordsNumber"
+							reference="recordsNumber" defaultEnabled="false">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3">
-						<component type="checkbox" name="printOperationNorms" reference="printOperationNorms" field="printOperationNorms" defaultEnabled="false">
+						<component type="checkbox" name="printOperationNorms"
+							field="printOperationNorms" reference="printOperationNorms"
+							defaultEnabled="false">
 							<option type="textRepresentationOnDisabled" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4" height="3">
 						<component type="borderLayout" name="parametersBorderLayout">
-							<component type="gridLayout" name="parametersGidLayout" columns="1" rows="3">
+							<component type="gridLayout" name="parametersGidLayout"
+								columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="select" name="calculateOperationsCostsMode"
-										reference="calculateOperationCostsMode" field="calculateOperationCostsMode" />
+										field="calculateOperationCostsMode" reference="calculateOperationCostsMode" >
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+											method="disableCheckboxes" />
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
-									<component type="checkbox" name="includeTPZ" reference="includeTPZ" field="includeTPZ" defaultEnabled="false">
-										<option type="textRepresentationOnDisabled" value="false" />
-									</component>
+									<component type="checkbox" name="includeTPZ" field="includeTPZ"
+										reference="includeTPZ" />
 								</layoutElement>
 								<layoutElement column="1" row="3">
-									<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime" field="includeAdditionalTime" defaultEnabled="false">
-										<option type="textRepresentationOnDisabled" value="false" />
-									</component>
+									<component type="checkbox" name="includeAdditionalTime"
+										field="includeAdditionalTime" reference="includeAdditionalTime" />
 								</layoutElement>
 							</component>
-							
+
 							<option type="label" value="parameters" />
 						</component>
 					</layoutElement>
 				</component>
-				<option type="header" value="true"/>
-				<option type="expression" value="#name" />
 				
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+
 				<listener event="printProductionBalance"
-					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="printProductionBalance" />
+					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+					method="printProductionBalance" />
 				<listener event="generateProductionBalance"
-					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="generateProductionBalance" />
+					class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+					method="generateProductionBalance" />
 			</component>
 		</windowTab>
 		<windowTab name="inputProductsTab">
-			<component type="grid" name="inputProducts" reference="inputProductsGrid" model="recordOperationProductInComponent" >
-				<option type="column" name="inputProductNumber" fields="product" expression="#product['number']" />
-				<option type="column" name="inputProductName" fields="product" expression="#product['name']" />
-				<option type="column" name="inputProductType" fields="product" 
-						expression="'@basic.product.globalTypeOfMaterial.value.' + #product['globalTypeOfMaterial']" />
-				<option type="column" name="inputProductPlannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
-				<option type="column" name="inputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />
-				<option type="column" name="inputProductUnit" fields="product" expression="#product['unit']" />
+			<component type="grid" name="inputProducts"
+				source="#{form}.balanceOperationProductInComponents" reference="inputProductsGrid">
+				<option type="column" name="inputProductNumber" fields="product"
+					expression="#product['number']" />
+				<option type="column" name="inputProductName" fields="product"
+					expression="#product['name']" />
+				<option type="column" name="inputProductType" fields="product"
+					expression="'@basic.product.globalTypeOfMaterial.value.' + #product['globalTypeOfMaterial']" />
+				<option type="column" name="inputProductPlannedQuantity"
+					fields="plannedQuantity" />
+				<option type="column" name="inputProductUsedQuantity" fields="usedQuantity"
+					expression="#usedQuantity==null?'N/A':#usedQuantity" />
+				<option type="column" name="inputProductBalance" fields="balance"
+					expression="#balance==null?'N/A':#balance" />
+				<option type="column" name="inputProductUnit" fields="product"
+					expression="#product['unit']" />
+					
 				<option type="order" column="inputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
 		<windowTab name="outputProductsTab">
-			<component type="grid" name="outputProducts" reference="outputProductsGrid" model="recordOperationProductOutComponent" >
-				<option type="column" name="outputProductNumber" fields="product" expression="#product['number']" />
-				<option type="column" name="outputProductName" fields="product" expression="#product['name']" />
+			<component type="grid" name="outputProducts"
+				source="#{form}.balanceOperationProductOutComponents" reference="outputProductsGrid">
+				<option type="column" name="outputProductNumber" fields="product"
+					expression="#product['number']" />
+				<option type="column" name="outputProductName" fields="product"
+					expression="#product['name']" />
 				<option type="column" name="outputProductType" fields="product"
-						expression="'@basic.product.globalTypeOfMaterial.value.' + #product['globalTypeOfMaterial']" />
-				<option type="column" name="outputProductPlannedQuantity" fields="plannedQuantity" />
-				<option type="column" name="outputProductProducedQuantity" fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
-				<option type="column" name="outputProductBalance" fields="balance" expression="#balance==null?'N/A':#balance" />
-				<option type="column" name="outputProductUnit" fields="product" expression="#product['unit']" />
+					expression="'@basic.product.globalTypeOfMaterial.value.' + #product['globalTypeOfMaterial']" />
+				<option type="column" name="outputProductPlannedQuantity"
+					fields="plannedQuantity" />
+				<option type="column" name="outputProductProducedQuantity"
+					fields="usedQuantity" expression="#usedQuantity==null?'N/A':#usedQuantity" />
+				<option type="column" name="outputProductBalance" fields="balance"
+					expression="#balance==null?'N/A':#balance" />
+				<option type="column" name="outputProductUnit" fields="product"
+					expression="#product['unit']" />
+					
 				<option type="order" column="outputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
 		<windowTab name="timeTab">
-			<component type="gridLayout" name="timeGridLayout" reference="productionTimeGridLayout" 
-				columns="1" rows="2">
+			<component type="gridLayout" name="timeGridLayout"
+				reference="productionTimeGridLayout" columns="1" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="machineTimeBorderLayout" reference="machineTimeBorderLayout">
-						<component type="gridLayout" name="machineTimeGridLayout" 
+					<component type="borderLayout" name="machineTimeBorderLayout"
+						reference="machineTimeBorderLayout">
+						<component type="gridLayout" name="machineTimeGridLayout"
 							columns="3" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1">		
-								<component type="input" name="machinePlannedTime" reference="machinePlannedTime" defaultEnabled="false" />
+							<layoutElement column="1" row="1">
+								<component type="input" name="machinePlannedTime"
+									field="#{form}.machinePlannedTime" reference="machinePlannedTime"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="input" name="machineRegisteredTime" reference="machineRegisteredTime" defaultEnabled="false"/>
+								<component type="input" name="machineRegisteredTime"
+									field="#{form}.machineRegisteredTime" reference="machineRegisteredTime"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="3" row="1">
-								<component type="input" name="machineTimeBalance" reference="machineTimeBalance" defaultEnabled="false"/>
+								<component type="input" name="machineTimeBalance"
+									field="#{form}.machineTimeBalance" reference="machineTimeBalance"
+									defaultEnabled="false" />
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="machineTime" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="borderLayout" name="laborTimeBorderLayout" reference="laborTimeBorderLayout">
-						<component type="gridLayout" name="laborTimeGridLayout" reference="laborTimeGridLayout"
-							columns="3" rows="1" hasBorders="false">
+					<component type="borderLayout" name="laborTimeBorderLayout"
+						reference="laborTimeBorderLayout">
+						<component type="gridLayout" name="laborTimeGridLayout"
+							reference="laborTimeGridLayout" columns="3" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
-								<component type="input" name="laborPlannedTime" reference="laborPlannedTime" defaultEnabled="false"/>
+								<component type="input" name="laborPlannedTime"
+									field="#{form}.laborPlannedTime" reference="laborPlannedTime"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="input" name="laborRegisteredTime" reference="laborRegisteredTime" defaultEnabled="false"/>
+								<component type="input" name="laborRegisteredTime"
+									field="#{form}.laborRegisteredTime" reference="laborRegisteredTime"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="3" row="1">
-								<component type="input" name="laborTimeBalance" reference="laborTimeBalance" defaultEnabled="false"/>
+								<component type="input" name="laborTimeBalance"
+									field="#{form}.laborTimeBalance" reference="laborTimeBalance"
+									defaultEnabled="false" />
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="laborTime" />
 					</component>
 				</layoutElement>
 			</component>
-			<component type="grid" name="operationsTime" reference="operationsTimeGrid" model="productionRecord" >
-				<option type="column" name="opLevel" fields="orderOperationComponent" 
-						expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber']" />
-				<option type="column" name="opName" fields="orderOperationComponent" 
-						expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']['name']" />
-				<option type="column" name="machinePlannedTime" fields="plannedMachineTime" expression="#plannedMachineTime" />
+			<component type="grid" name="operationsTime" reference="operationsTimeGrid"
+				source="#{form}.operationTimeComponents">
+				<option type="column" name="opLevel" fields="orderOperationComponent"
+					expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber']" />
+				<option type="column" name="opName" fields="orderOperationComponent"
+					expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']['name']" />
+				<option type="column" name="machinePlannedTime" fields="plannedMachineTime"
+					expression="#plannedMachineTime" />
 				<option type="column" name="machineRegisteredTime" fields="machineTime" />
 				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" />
-				<option type="column" name="laborPlannedTime" fields="plannedLaborTime" expression="#plannedLaborTime" />
+				<option type="column" name="laborPlannedTime" fields="plannedLaborTime"
+					expression="#plannedLaborTime" />
 				<option type="column" name="laborRegisteredTime" fields="laborTime" />
 				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" />
+				
 				<option type="order" column="opNumber" direction="asc" />
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-			method="fillGrids" />
-		<beforeRender class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"  
-			method="disableFieldsWhenGenerated"/>
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			method="showGrids" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			method="disableFieldsWhenGenerated" />
 	</hooks>
 </view>

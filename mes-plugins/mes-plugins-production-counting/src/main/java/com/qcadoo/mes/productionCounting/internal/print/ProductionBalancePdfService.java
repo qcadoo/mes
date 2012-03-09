@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.internal.print;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsModeInBalance.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;

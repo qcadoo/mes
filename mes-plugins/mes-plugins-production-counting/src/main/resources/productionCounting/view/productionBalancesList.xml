@@ -23,8 +23,10 @@
     ***************************************************************************
 
 -->
-<view name="productionBalancesList" modelName="productionBalance" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view name="productionBalancesList" modelName="productionBalance"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
@@ -34,22 +36,32 @@
 					message="qcadooView.message.noRecordSelected" />
 			</group>
 		</ribbon>
-		<component type="grid" name="productionBalancesList" reference="grid">
+		<component type="grid" name="productionBalancesList"
+			reference="grid">
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="order" fields="order" link="true" width="250" expression="#order['name']" />
-			<option type="column" name="product" fields="product" link="true" width="250" expression="#product['name']"/>
-			<option type="column" name="generated" fields="generated" width="150" />
+			<option type="column" name="order" fields="order" link="true"
+				width="250" expression="#order['name']" />
+			<option type="column" name="product" fields="product" link="true"
+				width="250" expression="#product['name']" />
+			<option type="column" name="generated" fields="generated"
+				width="150" />
 			<option type="column" name="date" fields="date" width="175" />
 			<option type="column" name="worker" fields="worker" width="150" />
+			
 			<option type="order" column="order" direction="asc" />
+			
 			<option type="correspondingView" value="productionCounting/productionBalanceDetails" />
 			<option type="correspondingComponent" value="form" />
+			
 			<option type="searchable" value="name,order,product,generated,date,worker" />
 			<option type="orderable" value="name,order,product,generated,date,worker" />
+			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+			
 			<listener event="printProductionBalance"
-				class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService" method="printProductionBalance" />
+				class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+				method="printProductionBalance" />
 			<script>
 				<![CDATA[
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");

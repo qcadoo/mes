@@ -110,11 +110,17 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostsforquant
 ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostperunit numeric(10,3);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit SET DEFAULT 0::numeric;
 
+ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint;
+ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE;
+      
 -- end
 
--- refactoring cost calculation
 
-ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
+-- Table: costcalculation_costcalculation
+-- changed: 08.03.2012
 
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN dateofcalculation TO date;
 
@@ -122,20 +128,86 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN calculateOperationCosts
 UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '01hourly' WHERE calculateOperationCostsMode = 'hourly';
 UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '02piecework' WHERE calculateOperationCostsMode = 'piecework';
 
-ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint;
-ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
-      REFERENCES technologies_technology (id) DEFERRABLE;
-      
+-- end
+
+
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 08.03.2012
+
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN productionbalance_id bigint;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD CONSTRAINT calculationoperationcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
       REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
       
-ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN productionbalance_id bigint;      
-ALTER TABLE productioncounting_recordoperationproductincomponent ADD CONSTRAINT recordoperationproductincomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
-      REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
+-- end
       
-ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN productionbalance_id bigint;
-ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD CONSTRAINT recordoperationproductoutcomponent_productionbalance_fkey FOREIGN KEY (productionbalance_id)
-      REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
       
+-- Table: productioncounting_balanceoperationproductincomponent
+-- changed: 09.03.2012
+
+CREATE TABLE productioncounting_balanceoperationproductincomponent
+(
+  id bigint NOT NULL,
+  productionrecord_id bigint,
+  productionbalance_id bigint,
+  product_id bigint,
+  usedquantity numeric(8,3),
+  plannedquantity numeric(8,3),
+  balance numeric(10,3),
+  CONSTRAINT productioncounting_balanceoperationproductincomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_p_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT productioncounting_balanceoperationproductincomponent_pb_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE,
+  CONSTRAINT productioncounting_balanceoperationproductincomponent_pr_fkey FOREIGN KEY (productionrecord_id)
+      REFERENCES productioncounting_productionrecord (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: productioncounting_balanceoperationproductoutcomponent
+-- changed: 09.03.2012
+
+CREATE TABLE productioncounting_balanceoperationproductoutcomponent
+(
+  id bigint NOT NULL,
+  productionrecord_id bigint,
+  productionbalance_id bigint,
+  product_id bigint,
+  usedquantity numeric(8,3),
+  plannedquantity numeric(8,3),
+  balance numeric(10,3),
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_p_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pb_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE,
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pr_fkey FOREIGN KEY (productionrecord_id)
+      REFERENCES productioncounting_productionrecord (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: productioncounting_operationtimecomponent
+-- changed: 09.03.2012
+
+CREATE TABLE productioncounting_operationtimecomponent
+(
+  id bigint NOT NULL,
+  productionbalance_id bigint,
+  orderoperationcomponent_id bigint,
+  plannedmachinetime integer,
+  machinetime integer,
+  machinetimebalance integer,
+  plannedlabortime integer,
+  labortime integer,
+  labortimebalance integer,
+  CONSTRAINT productioncounting_operationtimecomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_operationtimecomponent_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
+      REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE,
+  CONSTRAINT productioncounting_operationtimecomponent_pb_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE
+);
+
 -- end

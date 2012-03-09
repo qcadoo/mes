@@ -40,6 +40,10 @@ public interface ProductionCountingConstants {
 
     String MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";
 
+    String MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT = "balanceOperationProductInComponent";
+
+    String MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT = "balanceOperationProductOutComponent";
+
     // VIEW
     String VIEW_PRODUCTION_RECORDS_LIST = "productionRecordsList";
 
