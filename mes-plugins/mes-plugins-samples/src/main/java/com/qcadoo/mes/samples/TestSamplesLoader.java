@@ -497,7 +497,16 @@ public class TestSamplesLoader extends SamplesLoader {
             endDate = startDate + MILLIS_IN_DAY + 3 * millsInHour + 40 * millsInMinute;
         } else if ("000003".equals(values.get(L_ORDER_NR))) {
             startDate += 2 * MILLIS_IN_DAY;
-            endDate = startDate + 6 * millsInHour + 50 * millsInMinute;
+            endDate = startDate + 6 * millsInHour + 35 * millsInMinute;
+        } else if ("000004".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 8 * millsInHour + 55 * millsInMinute;
+        } else if ("000005".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 10 * millsInHour + 65 * millsInMinute;
+        } else if ("000006".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 10 * millsInHour + 75 * millsInMinute;
         }
 
         if (!values.get("scheduled_end_date").isEmpty()) {
