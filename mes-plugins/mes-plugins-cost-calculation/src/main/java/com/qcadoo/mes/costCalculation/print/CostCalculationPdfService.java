@@ -170,18 +170,19 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     locale), FontUtils.getDejavuBold11Dark()));
             PdfPTable optionTable = addOptionTablePrintCostNormsOfMaterials(costCalculation, locale);
             document.add(optionTable);
+
         }
 
         if ((costCalculation.getBooleanField("printOperationNorms") == true)) {
 
-            if ("piecework".equals(costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
+            if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
 
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
                         "costCalculation.costCalculationDetails.report.paragraph4", locale), FontUtils.getDejavuBold11Dark()));
                 PdfPTable optionTable2 = addOptionTablePrintOperationNormsPiecework(costCalculation, locale);
                 document.add(optionTable2);
-            } else if ("hourly".equals(costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
+            } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
 
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
