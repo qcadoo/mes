@@ -90,8 +90,6 @@ public class ProductionBalanceViewService {
 
         if (form == null || form.getEntityId() == null) {
             setGridsVisibility(viewDefinitionState, true);
-        } else {
-            setGridsVisibility(viewDefinitionState, true);
         }
     }
 

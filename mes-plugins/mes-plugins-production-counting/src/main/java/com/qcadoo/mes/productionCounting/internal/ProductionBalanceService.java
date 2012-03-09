@@ -331,11 +331,9 @@ public class ProductionBalanceService {
     private void fillTimeValues(final Entity productionBalance, final Entity order) {
         BigDecimal machinePlannedTime = BigDecimal.ZERO;
         BigDecimal machineRegisteredTime = BigDecimal.ZERO;
-        BigDecimal machineTimeBalance = BigDecimal.ZERO;
 
         BigDecimal laborRegisteredTime = BigDecimal.ZERO;
         BigDecimal laborPlannedTime = BigDecimal.ZERO;
-        BigDecimal laborTimeBalance = BigDecimal.ZERO;
 
         List<Entity> productionRecordsList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
@@ -354,8 +352,8 @@ public class ProductionBalanceService {
                     numberService.getMathContext());
         }
 
-        machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
-        laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
+        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
+        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
 
         productionBalance.setField("machinePlannedTime", machinePlannedTime);
         productionBalance.setField("machineRegisteredTime", machineRegisteredTime);
@@ -374,11 +372,7 @@ public class ProductionBalanceService {
     }
 
     private boolean checkIfTypeOfProductionRecordingIsNone(final Entity order) {
-        if (ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
-            return true;
-        } else {
-            return false;
-        }
+        return ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING));
     }
 
     private void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,

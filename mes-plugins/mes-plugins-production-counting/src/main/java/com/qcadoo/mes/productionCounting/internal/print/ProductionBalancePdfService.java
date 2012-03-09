@@ -127,8 +127,6 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        Entity technology = productionBalance.getBelongsToField(ORDER).getBelongsToField("technology");
-
         if (productionBalance.getBelongsToField(ORDER).getBooleanField("registerQuantityInProduct")) {
             addInputProductsBalance(document, productionBalance, locale);
         }
