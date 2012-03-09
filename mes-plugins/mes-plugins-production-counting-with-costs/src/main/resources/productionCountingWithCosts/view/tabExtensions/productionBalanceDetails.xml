@@ -219,7 +219,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="plannedTotalCostsForQuantity" field="#{form}.plannedTotalCostsForQuantity"
+								<component type="input" name="plannedTotalCostsForQuantity" field="#{form}.totalTechnicalProductionCosts"
 									defaultEnabled="false" reference="plannedTotalCostsForQuantity" hasLabel="false">
 									<option type="alignment" value="right" />
 									<option type="textRepresentationOnDisabled" value="true" />
@@ -238,7 +238,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="plannedTotalCostPerUnit" field="#{form}.plannedTotalCostPerUnit"
+								<component type="input" name="plannedTotalCostPerUnit" field="#{form}.totalTechnicalProductionCostPerUnit"
 									defaultEnabled="false" reference="plannedTotalCostPerUnit" hasLabel="false">
 									<option type="alignment" value="right" />
 									<option type="textRepresentationOnDisabled" value="true" />

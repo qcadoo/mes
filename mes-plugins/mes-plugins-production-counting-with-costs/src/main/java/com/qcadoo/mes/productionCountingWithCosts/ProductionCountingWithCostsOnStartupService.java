@@ -21,32 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.states;
+package com.qcadoo.mes.productionCountingWithCosts;
 
-import com.qcadoo.mes.technologies.constants.TechnologyState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public final class TechnologyStateUtils {
+import com.qcadoo.mes.productionCounting.internal.ProductionCountingGenerateProductionBalance;
+import com.qcadoo.plugin.api.Module;
 
-    private TechnologyStateUtils() {
+@Component
+public class ProductionCountingWithCostsOnStartupService extends Module {
+
+    @Autowired
+    private ProductionCountingGenerateProductionBalance productionCountingGenerateProductionBalance;
+
+    @Autowired
+    private GenerateCosts generateCosts;
+
+    @Override
+    public void enable() {
+        productionCountingGenerateProductionBalance.addObserver(generateCosts);
     }
 
-    public static TechnologyState getStateFromField(final String fieldValue) {
-        if ("01draft".equals(fieldValue)) {
-            return TechnologyState.DRAFT;
-        }
-        if ("02accepted".equals(fieldValue)) {
-            return TechnologyState.ACCEPTED;
-        }
-        if ("03declined".equals(fieldValue)) {
-            return TechnologyState.DECLINED;
-        }
-        if ("04outdated".equals(fieldValue)) {
-            return TechnologyState.OUTDATED;
-        }
-        if ("05checked".equals(fieldValue)) {
-            return TechnologyState.CHECKED;
-        }
-
-        throw new IllegalArgumentException("Unsupported or unspecified technology state " + fieldValue);
+    @Override
+    public void enableOnStartup() {
+        productionCountingGenerateProductionBalance.addObserver(generateCosts);
     }
+
+    @Override
+    public void disable() {
+        productionCountingGenerateProductionBalance.deleteObserver(generateCosts);
+    }
+
 }

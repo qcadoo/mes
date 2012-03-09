@@ -28,7 +28,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
@@ -41,7 +41,9 @@
 		http://schema.qcadoo.org/modules/report 
 		http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/modules/menu 
-		http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/modules/menu.xsd
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Orders</name>
@@ -90,6 +92,8 @@
 
 		<report:report-template name="order"
 			resource="report/order.jrxml" />
+			
+		<custom:custom class="com.qcadoo.mes.orders.TechnologyOnStartupModule" />
 	</modules>
 
 </plugin>

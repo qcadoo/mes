@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.technologies.states;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+
 import java.util.List;
 import java.util.Set;
 
@@ -57,7 +59,8 @@ public class TechnologyStateService {
     @Autowired
     private TechnologyStateBeforeChangeNotifierService beforeChangeNotifier;
 
-    private static final String STATE_FIELD = "state";
+    @Autowired
+    private TechnologyStateAfterChangeNotifierService afterChangeNotifierService;
 
     public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
@@ -90,9 +93,9 @@ public class TechnologyStateService {
 
         final boolean sourceComponentIsForm = component instanceof FormComponent;
         final DataDefinition technologyDataDefinition = technology.getDataDefinition();
-        final ComponentState stateFieldComponent = view.getComponentByReference(STATE_FIELD);
+        final ComponentState stateFieldComponent = view.getComponentByReference(STATE);
 
-        TechnologyState oldState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE_FIELD));
+        TechnologyState oldState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE));
         TechnologyState newState = oldState.changeState(targetState);
 
         if (newState.equals(oldState) || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
@@ -100,7 +103,7 @@ public class TechnologyStateService {
         }
 
         if (!sourceComponentIsForm) {
-            technology.setField(STATE_FIELD, newState.getStringValue());
+            technology.setField(STATE, newState.getStringValue());
             Entity savedTechnology = technologyDataDefinition.save(technology);
 
             List<ErrorMessage> errorMessages = Lists.newArrayList();
@@ -120,8 +123,11 @@ public class TechnologyStateService {
         stateFieldComponent.setFieldValue(newState.getStringValue());
         component.performEvent(view, "save", new String[0]);
         Entity savedTechnology = technologyDataDefinition.get(technology.getId());
-        stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE_FIELD));
+        stateFieldComponent.setFieldValue(savedTechnology.getStringField(STATE));
         technologyLoggingService.logStateChange(technology, oldState, newState);
+
+        afterChangeNotifierService.fireListeners(component, savedTechnology,
+                TechnologyStateUtils.getStateFromField(technology.getStringField(STATE)));
     }
 
     private DataDefinition getTechnologyDataDefinition() {

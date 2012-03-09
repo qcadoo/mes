@@ -28,7 +28,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
@@ -41,7 +41,9 @@
 		http://schema.qcadoo.org/modules/report 
 		http://schema.qcadoo.org/modules/report.xsd 
 		http://schema.qcadoo.org/modules/menu 
-		http://schema.qcadoo.org/modules/menu.xsd">
+		http://schema.qcadoo.org/modules/menu.xsd
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Production Counting With Costs</name>
@@ -55,6 +57,10 @@
 		<dependency>
 			<plugin>productionCounting</plugin>
 			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>costCalculation</plugin>
+			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>
 
@@ -85,7 +91,6 @@
 			</model:decimal>
 		</model:model-field>
 		
-		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="productionCostMargin" default="0">
 				<validatesUnscaledValue max="7" />
@@ -105,7 +110,6 @@
 			</model:decimal>
 		</model:model-field>
 		
-		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalCostsForQuantity" default="0">
 				<validatesUnscaledValue max="7" />
@@ -119,13 +123,13 @@
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="plannedTotalCostsForQuantity" default="0">
+			<model:decimal name="totalTechnicalProductionCosts" default="0">
 				<validatesUnscaledValue max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:decimal name="plannedTotalCostPerUnit" default="0">
+			<model:decimal name="totalTechnicalProductionCostPerUnit" default="0">
 				<validatesUnscaledValue max="7" />
 				<validatesScale max="3" />
 			</model:decimal>
@@ -181,9 +185,30 @@
 			</model:decimal>
 		</model:model-field>
 		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="quantity" />
+		</model:model-field>
+		
+		<model:model-field plugin="costNormsForOperation" model="calculationOperationComponent">
+			<model:belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
+		</model:model-field>
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:tree name="calculationOperationComponents" joinField="productionBalance"
+				model="calculationOperationComponent" plugin="costNormsForOperation"
+				cascade="delete" />
+		</model:model-field>
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:belongsTo name="technology" model="technology" plugin="technologies" />
+		</model:model-field>
+		
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/productionBalanceDetails.xml" />
+		
+		<custom:custom
+			class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsOnStartupService" />
 	</modules>
 
 </plugin>

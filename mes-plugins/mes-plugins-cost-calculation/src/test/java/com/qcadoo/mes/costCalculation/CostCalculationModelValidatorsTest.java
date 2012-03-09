@@ -23,23 +23,17 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 
 public class CostCalculationModelValidatorsTest {
 
@@ -51,38 +45,62 @@ public class CostCalculationModelValidatorsTest {
     @Mock
     private Entity costCalculation, technology;
 
-    @Mock
-    private TechnologyService technologyService;
-
-    private static EntityTree mockEntityTreeIterator(List<Entity> list) {
-        EntityTree tree = mock(EntityTree.class);
-        when(tree.isEmpty()).thenReturn(false);
-        when(tree.iterator()).thenReturn(list.iterator());
-        return tree;
-    }
-
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         costCalculationModelValidators = new CostCalculationModelValidators();
 
-        ReflectionTestUtils.setField(costCalculationModelValidators, "technologyService", technologyService);
     }
 
     @Test
-    public void shouldNotAcceptNoTechnologyTree() {
+    public void shouldTechnologyHasIncorrectState() {
         // given
         when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
-        Entity opComp = mock(Entity.class);
-        EntityTree tree = mockEntityTreeIterator(asList(opComp));
-        when(technology.getTreeField("operationComponents")).thenReturn(tree);
-        when(technologyService.getProductCountForOperationComponent(opComp)).thenThrow(new IllegalStateException());
+        when(technology.getStringField("state")).thenReturn("01draft");
 
         // when
-        boolean result = costCalculationModelValidators.checkIfTheTechnologyTreeIsntEmpty(dataDefinition, costCalculation);
+        boolean result = costCalculationModelValidators.checkIfTheTechnologyHasCorrectState(dataDefinition, costCalculation);
 
         // then
         assertFalse(result);
     }
+
+    @Test
+    public void shouldTechnologyHasCorrectState() {
+        // given
+        when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
+        when(technology.getStringField("state")).thenReturn("05checked");
+
+        // when
+        boolean result = costCalculationModelValidators.checkIfTheTechnologyHasCorrectState(dataDefinition, costCalculation);
+
+        // then
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenCurrencyGlobalIsSelected() throws Exception {
+        // given
+        when(costCalculation.getField("sourceOfMaterialCosts")).thenReturn("01currentGlobalDefinitionsInProduct");
+        when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn("04costForOrder");
+
+        // when
+        boolean result = costCalculationModelValidators.checkIfCurrentGlobalIsSelected(dataDefinition, costCalculation);
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenCalculateMaterialCostsModeIsNominal() throws Exception {
+        // given
+        when(costCalculation.getField("sourceOfMaterialCosts")).thenReturn("01currentGlobalDefinitionsInProduct");
+        when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn("01nominal");
+
+        // when
+        boolean result = costCalculationModelValidators.checkIfCurrentGlobalIsSelected(dataDefinition, costCalculation);
+        // then
+        assertTrue(result);
+    }
+
 }

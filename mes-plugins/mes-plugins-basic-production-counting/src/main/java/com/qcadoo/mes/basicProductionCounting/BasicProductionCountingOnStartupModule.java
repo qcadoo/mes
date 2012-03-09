@@ -30,7 +30,7 @@ import com.qcadoo.mes.orders.states.OrderStatesChangingService;
 import com.qcadoo.plugin.api.Module;
 
 @Component
-public class BasicProductionCountingOnStartupService extends Module {
+public class BasicProductionCountingOnStartupModule extends Module {
 
     @Autowired
     private OrderStatesChangingService orderChangingService;

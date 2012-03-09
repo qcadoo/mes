@@ -76,9 +76,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private static final String TECHNOLOGY_OPERATION_COMPONENT_FIELD = "technologyOperationComponent";
 
-    private static final String CALCULATION_OPERATION_COMPONENTS_FIELD = "calculationOperationComponents";
+    private static final String L_CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
 
-    private static final String COST_CALCULATION_FIELD = "costCalculation";
+    private static final String L_COST_CALCULATION = "costCalculation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -99,28 +99,29 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private static final Set<String> PATH_COST_KEYS = Sets.newHashSet(LABOR_HOURLY_COST, MACHINE_HOURLY_COST);
 
     @Override
-    public void calculateOperationsCost(final Entity costCalculation) {
-        checkArgument(costCalculation != null, "costCalculation entity is null");
-        checkArgument(COST_CALCULATION_FIELD.equals(costCalculation.getDataDefinition().getName()), "unsupported entity type");
+    public void calculateOperationsCost(final Entity entity) {
+        checkArgument(entity != null, "costCalculation entity is null");
+        String modelName = entity.getDataDefinition().getName();
+        checkArgument(L_COST_CALCULATION.equals(modelName) || "productionBalance".equals(modelName), "unsupported entity type");
 
-        DataDefinition costCalculationDD = costCalculation.getDataDefinition();
+        DataDefinition costCalculationDD = entity.getDataDefinition();
 
-        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(costCalculation
+        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(entity
                 .getStringField("calculateOperationCostsMode"));
-        BigDecimal quantity = getBigDecimal(costCalculation.getField(QUANTITY_FIELD));
-        Boolean includeTPZ = costCalculation.getBooleanField("includeTPZ");
-        BigDecimal margin = getBigDecimal(costCalculation.getField("productionCostMargin"));
+        BigDecimal quantity = getBigDecimal(entity.getField(QUANTITY_FIELD));
+        Boolean includeTPZ = entity.getBooleanField("includeTPZ");
+        BigDecimal margin = getBigDecimal(entity.getField("productionCostMargin"));
 
-        copyTechnologyTree(costCalculation);
+        copyTechnologyTree(entity);
 
-        Entity yetAnotherCostCalculation = costCalculationDD.save(costCalculation);
+        Entity yetAnotherCostCalculation = costCalculationDD.save(entity);
         Entity newCostCalculation = costCalculationDD.get(yetAnotherCostCalculation.getId());
-        EntityTree operationComponents = newCostCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree operationComponents = newCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         checkArgument(operationComponents != null, "given operation components is null");
 
-        Entity technology = costCalculation.getBelongsToField(TECHNOLOGY_FIELD);
-        Entity order = costCalculation.getBelongsToField("order");
+        Entity technology = entity.getBelongsToField(TECHNOLOGY_FIELD);
+        Entity order = entity.getBelongsToField("order");
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField(TECHNOLOGY_FIELD);
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -131,29 +132,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
             productQuantitiesService.getProductComponentQuantities(technology, quantity, productComponentQuantities);
             if (operationComponents.getRoot() == null) {
-                costCalculation.addError(costCalculation.getDataDefinition().getField("order"),
-                        "costCalculation.lackOfTreeComponents");
-                costCalculation.addError(costCalculation.getDataDefinition().getField(TECHNOLOGY_FIELD),
-                        "costCalculation.lackOfTreeComponents");
+                entity.addError(entity.getDataDefinition().getField("order"), "costCalculation.lackOfTreeComponents");
+                entity.addError(entity.getDataDefinition().getField(TECHNOLOGY_FIELD), "costCalculation.lackOfTreeComponents");
                 return;
             }
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(),
                     productComponentQuantities, margin, quantity);
-            costCalculation.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
+            entity.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
         } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
             Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(technology, quantity,
                     includeTPZ);
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
                     quantity, realizationTimes);
-            costCalculation
-                    .setField("totalMachineHourlyCosts", numberService.setScale(hourlyResultsMap.get(MACHINE_HOURLY_COST)));
-            costCalculation.setField("totalLaborHourlyCosts", numberService.setScale(hourlyResultsMap.get(LABOR_HOURLY_COST)));
+            entity.setField("totalMachineHourlyCosts", numberService.setScale(hourlyResultsMap.get(MACHINE_HOURLY_COST)));
+            entity.setField("totalLaborHourlyCosts", numberService.setScale(hourlyResultsMap.get(LABOR_HOURLY_COST)));
         } else {
             throw new IllegalStateException("Unsupported calculateOperationCostMode");
         }
 
-        costCalculation.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, operationComponents);
+        entity.setField(L_CALCULATION_OPERATION_COMPONENTS, operationComponents);
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
@@ -272,37 +270,37 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
     }
 
-    public void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity costCalculation) {
+    private void createTechnologyInstanceForCalculation(final EntityTree sourceTree, final Entity parentEntity) {
         checkArgument(sourceTree != null, "source is null");
         DataDefinition calculationOperationComponentDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 MODEL_CALCULATION_OPERATION_COMPONENT);
 
         // drop old operation components tree
-        EntityTree oldCalculationOperationComponents = costCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree oldCalculationOperationComponents = parentEntity.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
         if (oldCalculationOperationComponents != null && oldCalculationOperationComponents.getRoot() != null) {
             calculationOperationComponentDD.delete(oldCalculationOperationComponents.getRoot().getId());
         }
 
         Entity tree = createCalculationOperationComponent(sourceTree.getRoot(), null, calculationOperationComponentDD,
-                costCalculation);
+                parentEntity);
 
-        costCalculation.setField(CALCULATION_OPERATION_COMPONENTS_FIELD, asList(tree));
+        parentEntity.setField(L_CALCULATION_OPERATION_COMPONENTS, asList(tree));
     }
 
     private Entity createCalculationOperationComponent(final EntityTreeNode sourceTreeNode, final Entity parent,
-            final DataDefinition calculationOperationComponentDD, final Entity costCalculation) {
+            final DataDefinition calculationOperationComponentDD, final Entity parentEntity) {
         Entity calculationOperationComponent = calculationOperationComponentDD.create();
 
         calculationOperationComponent.setField("parent", parent);
-        calculationOperationComponent.setField(COST_CALCULATION_FIELD, costCalculation);
+        calculationOperationComponent.setField(parentEntity.getDataDefinition().getName(), parentEntity);
 
         if (OPERATION_L.equals(sourceTreeNode.getField(ENTITY_TYPE_FIELD))) {
             createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponentDD,
-                    calculationOperationComponent, costCalculation);
+                    calculationOperationComponent, parentEntity);
         } else {
             Entity referenceTechnology = sourceTreeNode.getBelongsToField("referenceTechnology");
             createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
-                    calculationOperationComponentDD, calculationOperationComponent, costCalculation);
+                    calculationOperationComponentDD, calculationOperationComponent, parentEntity);
         }
 
         return calculationOperationComponent;
@@ -346,7 +344,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private void deleteOperationsTreeIfExists(final Entity costCalculation) {
         Entity yetAnotherCostCalculation = costCalculation.getDataDefinition().get(costCalculation.getId());
-        EntityTree existingOperationsTree = yetAnotherCostCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS_FIELD);
+        EntityTree existingOperationsTree = yetAnotherCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         if (existingOperationsTree == null || existingOperationsTree.getRoot() == null) {
             return;

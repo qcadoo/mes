@@ -77,6 +77,9 @@ public class ProductionBalanceService {
     private ProductionBalancePdfService productionBalancePdfService;
 
     @Autowired
+    private ProductionCountingGenerateProductionBalance generateProductionBalance;
+
+    @Autowired
     private FileService fileService;
 
     @Autowired
@@ -152,6 +155,8 @@ public class ProductionBalanceService {
 
             productionBalance = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
+
+            generateProductionBalance.generateProductionBalance(productionBalance);
 
             try {
                 generateProductionBalanceDocuments(state, productionBalance);
