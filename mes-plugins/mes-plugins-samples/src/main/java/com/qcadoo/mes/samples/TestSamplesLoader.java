@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.samples;
 
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
@@ -518,7 +520,137 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField(L_PLANNED_QUANTITY, values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
-        order.setField(L_ORDER_STATE, values.get("status"));
+        order.setField(L_ORDER_STATE, values.get("state"));
+
+        if (!"01pending".equals(values.get(L_ORDER_STATE))) {
+
+            List<Entity> productionCountings = Lists.newArrayList();
+            DataDefinition productionCountingDD = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+                    BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING);
+            Entity productionCounting = productionCountingDD.create();
+
+            if ("000001".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12),
+                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10),
+                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000002".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000003".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000004".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12), new BigDecimal("60"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10), new BigDecimal("15"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000005".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19), new BigDecimal("40"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18), new BigDecimal("10"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24), new BigDecimal("10"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23), new BigDecimal("40"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22), new BigDecimal("40"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17), new BigDecimal("10"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000006".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28), new BigDecimal("20"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27), new BigDecimal("5"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26), new BigDecimal("20"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32), new BigDecimal("5"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31), new BigDecimal("20"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30), new BigDecimal("20"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29), new BigDecimal("80"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33), new BigDecimal("80"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21), new BigDecimal("80"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25), new BigDecimal("5"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+            }
+
+            validateEntity(productionCounting);
+            order.setField("basicProductionCountings", productionCountings);
+        }
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
@@ -830,6 +962,19 @@ public class TestSamplesLoader extends SamplesLoader {
         productInComponent.setField("balance", balance);
 
         return productInComponent;
+    }
+
+    private Entity addBasicProductionCountingRecords(final Entity product, final BigDecimal plannedQuantity,
+            final BigDecimal producedQuantity, final BigDecimal usedQuantity) {
+        Entity productionCounting = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+                BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING).create();
+        productionCounting.setField(L_PRODUCT, product);
+        productionCounting.setField(L_PLANNED_QUANTITY, plannedQuantity);
+        productionCounting.setField("producedQuantity", producedQuantity);
+        productionCounting.setField("usedQuantity", usedQuantity);
+
+        return productionCounting;
+
     }
 
     private Entity addRecordOperationProductOutComponent(final Entity product, final BigDecimal usedQuantity,

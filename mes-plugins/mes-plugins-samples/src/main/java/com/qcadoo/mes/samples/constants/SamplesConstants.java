@@ -43,6 +43,10 @@ public interface SamplesConstants {
 
     String BASIC_MODEL_PRODUCT = "product";
 
+    String BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
+
+    String BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
+
     String QUALITYCONTROL_MODEL_QUALITYCONTROL = "qualityControl";
 
     String QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
