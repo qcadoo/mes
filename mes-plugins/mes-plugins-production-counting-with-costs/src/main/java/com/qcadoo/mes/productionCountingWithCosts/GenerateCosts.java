@@ -21,7 +21,7 @@ public class GenerateCosts implements Observer {
     private CostCalculationService costCalculationService;
 
     @Override
-    public void update(Observable arg0, Object arg1) {
+    public void update(final Observable arg0, final Object arg1) {
         Entity balance = (Entity) arg1;
 
         Entity order = balance.getBelongsToField("order");

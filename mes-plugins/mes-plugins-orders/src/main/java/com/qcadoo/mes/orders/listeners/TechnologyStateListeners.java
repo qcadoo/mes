@@ -31,7 +31,7 @@ public class TechnologyStateListeners implements AfterStateChangeListener {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void wasChanged(ComponentState state, Entity technology, TechnologyState oldState) {
+    public void wasChanged(final ComponentState state, final Entity technology, final TechnologyState oldState) {
         Entity existsTechnology = technology.getDataDefinition().get(technology.getId());
         TechnologyState existsState = TechnologyStateUtils.getStateFromField(existsTechnology.getStringField(STATE));
         if (oldState.equals(CHECKED) && existsState.equals(DRAFT)) {
@@ -42,7 +42,7 @@ public class TechnologyStateListeners implements AfterStateChangeListener {
         }
     }
 
-    private void changedStateFromCheckedToDraft(ComponentState state, final Entity technology) {
+    private void changedStateFromCheckedToDraft(final ComponentState state, final Entity technology) {
         MessageHolder message = deleteCheckedTechnologyFromOrder(technology);
         if (message != null) {
             state.addMessage(message.getMessageKey(), message.getMessageType(), false);

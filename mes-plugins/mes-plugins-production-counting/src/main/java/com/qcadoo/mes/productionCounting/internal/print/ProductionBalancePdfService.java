@@ -130,10 +130,10 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         Entity technology = productionBalance.getBelongsToField(ORDER).getBelongsToField("technology");
 
         if (productionBalance.getBelongsToField(ORDER).getBooleanField("registerQuantityInProduct")) {
-            addInputProductsBalance(document, productionBalance, technology, locale);
+            addInputProductsBalance(document, productionBalance, locale);
         }
         if (productionBalance.getBelongsToField(ORDER).getBooleanField("registerQuantityOutProduct")) {
-            addOutputProductsBalance(document, productionBalance, technology, locale);
+            addOutputProductsBalance(document, productionBalance, locale);
         }
 
         if (productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE).equals(HOURLY.getStringValue())) {
@@ -276,8 +276,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         return rightPanel;
     }
 
-    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
-            final Locale locale) throws DocumentException {
+    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
 
         List<String> inputProductsTableHeader = new ArrayList<String>();
         inputProductsTableHeader.add(translationService.translate(
@@ -336,8 +336,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
     }
 
-    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
-            final Locale locale) throws DocumentException {
+    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
 
         List<String> outputProductsTableHeader = new ArrayList<String>();
         outputProductsTableHeader.add(translationService.translate(
