@@ -9,7 +9,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionCountingGenerateProductionBalance extends Observable {
 
-    public void generateProductionBalance(final Entity entity) {
+    public void notifyObservers(final Entity entity) {
         setChanged();
         notifyObservers(entity);
     }

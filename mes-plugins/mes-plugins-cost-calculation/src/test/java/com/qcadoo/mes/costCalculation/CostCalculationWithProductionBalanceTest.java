@@ -61,8 +61,6 @@ public class CostCalculationWithProductionBalanceTest {
                 Object[] args = invocation.getArguments();
                 BigDecimal number = (BigDecimal) args[0];
                 return number.setScale(3, RoundingMode.HALF_EVEN);
-                // return number.setScale(3);
-                // return number;
             }
         });
 
