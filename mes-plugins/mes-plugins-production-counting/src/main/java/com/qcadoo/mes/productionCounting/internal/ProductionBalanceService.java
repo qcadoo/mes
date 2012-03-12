@@ -156,10 +156,11 @@ public class ProductionBalanceService {
             productionBalance = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get((Long) state.getFieldValue());
 
-            generateProductionBalance.generateProductionBalance(productionBalance);
-
             try {
                 generateProductionBalanceDocuments(state, productionBalance);
+
+                generateProductionBalance.generateProductionBalance(productionBalance);
+
                 state.performEvent(viewDefinitionState, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -179,7 +180,7 @@ public class ProductionBalanceService {
     public void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
-                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE });
+                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, args[1] });
     }
 
     private void generateProductionBalanceDocuments(final ComponentState state, final Entity productionBalance)

@@ -34,7 +34,7 @@
 			</group>
 			<group name="export">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printProductionBalance,pdf);" state="disabled" />
+					action="#{form}.fireEvent(printProductionBalance,pdf,0);" state="disabled" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
