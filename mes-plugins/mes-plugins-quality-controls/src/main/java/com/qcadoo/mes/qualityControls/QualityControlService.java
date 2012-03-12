@@ -787,10 +787,12 @@ public final class QualityControlService {
             BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
             BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
 
-            if (doneQuantity != null) {
+            if (doneQuantity == null) {
+                if (plannedQuantity != null) {
+                    forBatch.setField(CONTROLLED_QUANTITY_LITERAL, plannedQuantity);
+                }
+            } else {
                 forBatch.setField(CONTROLLED_QUANTITY_LITERAL, doneQuantity);
-            } else if (plannedQuantity != null) {
-                forBatch.setField(CONTROLLED_QUANTITY_LITERAL, plannedQuantity);
             }
         } else {
             forBatch.setField(CONTROLLED_QUANTITY_LITERAL, BigDecimal.ZERO);

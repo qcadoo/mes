@@ -1,6 +1,6 @@
 /**
  * ***************************************************************************
- * Copyright (c) 2010 Qcadoo Limited
+. * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.1.3
  *
@@ -227,12 +227,14 @@ public class QualityControlsReportService {
                     quantitiesList.add(2, BigDecimal.ZERO);
                     quantitiesList.add(3, BigDecimal.ONE);
                 }
-                if (entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY) != null) {
-                    quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY));
-                } else if (entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY) != null) {
-                    quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY));
+                if (entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY) == null) {
+                    if (entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY) == null) {
+                        quantitiesList.add(4, BigDecimal.ZERO);
+                    } else {
+                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY));
+                    }
                 } else {
-                    quantitiesList.add(4, BigDecimal.ZERO);
+                    quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY));
                 }
             }
             quantities.put(product, quantitiesList);
