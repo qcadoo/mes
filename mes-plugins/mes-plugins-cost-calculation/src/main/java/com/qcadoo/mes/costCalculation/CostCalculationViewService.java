@@ -52,8 +52,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -387,20 +390,22 @@ public class CostCalculationViewService {
     public void ifCurrentGlobalIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        if ((viewDefinitionState.getComponentByReference("sourceOfMaterialCosts").getFieldValue()
-                .equals("01currentGlobalDefinitionsInProduct"))
-                && (viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").getFieldValue()
-                        .equals("04costForOrder"))) {
+        FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference("sourceOfMaterialCosts");
+        FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference("calculateMaterialCostsMode");
 
-            viewDefinitionState.getComponentByReference("calculateMaterialCostsMode").addMessage(
-                    "costCalculation.messages.optionUnavailable", MessageType.FAILURE);
-        } else {
-            return;
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                sourceOfMaterialCosts.getFieldValue())
+                && CalculateMaterialCostsMode.COST_FOR_ORDER.equals(calculateMaterialCostsMode.getFieldValue())) {
+            sourceOfMaterialCosts.addMessage("costCalculation.messages.optionUnavailable", MessageType.FAILURE);
         }
     }
 
     public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
+        FieldComponent calculateOperationCostsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference("calculateOperationCostsMode");
 
         FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
         FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
@@ -420,26 +425,27 @@ public class CostCalculationViewService {
         FieldComponent totalPieceworkCostsCurrency = (FieldComponent) viewDefinitionState
                 .getComponentByReference("totalPieceworkCostsCurrency");
 
-        if (viewDefinitionState.getComponentByReference("calculateOperationCostsMode").getFieldValue().equals("piecework")) {
-
+        if (CalculateOperationCostMode.PIECEWORK.getStringValue().equals(calculateOperationCostsMode.getFieldValue())) {
             includeTPZ.setFieldValue(false);
             includeTPZ.setEnabled(false);
             includeTPZ.requestComponentUpdateState();
             includeAdditionalTime.setFieldValue(false);
             includeAdditionalTime.setEnabled(false);
             includeAdditionalTime.requestComponentUpdateState();
+
             machineHourlyCosts.setVisible(false);
             machineHourlyCostsCurrency.setVisible(false);
             totalLabourHourlyCosts.setVisible(false);
             totalLaborHourlyCostsCurrency.setVisible(false);
             totalPieceworkCosts.setVisible(true);
             totalPieceworkCostsCurrency.setVisible(true);
-
         } else {
-            includeTPZ.setEnabled(true);
             includeTPZ.setFieldValue(true);
-
+            includeTPZ.setEnabled(true);
+            includeTPZ.requestComponentUpdateState();
+            includeAdditionalTime.setFieldValue(true);
             includeAdditionalTime.setEnabled(true);
+            includeAdditionalTime.requestComponentUpdateState();
 
             machineHourlyCosts.setVisible(true);
             machineHourlyCostsCurrency.setVisible(true);
@@ -447,9 +453,7 @@ public class CostCalculationViewService {
             totalLaborHourlyCostsCurrency.setVisible(true);
             totalPieceworkCosts.setVisible(false);
             totalPieceworkCostsCurrency.setVisible(false);
-
         }
-
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

@@ -23,96 +23,7 @@
  */
 package com.qcadoo.mes.samples;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCH;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCHES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_CLOSED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMMENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COST_CALCULATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_FROM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DIVISION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EAN;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_FILE_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABLES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENERATED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_REQUIREMENTS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION_COMPONENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_GROUPS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_NR;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_STATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PLANNED_QUANTITY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_BALANCE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_COUNTING;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_RECORD;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT_NR;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_10;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_11;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_12;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_13;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_14;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_15;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_16;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_17;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_18;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_19;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_20;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_21;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_22;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_23;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_24;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_25;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_26;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_27;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_28;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_29;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_30;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_31;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_32;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PROD_NR_33;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITYCONTROLTYPE_3;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS_FOR_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE2;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_150;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_2400;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_600;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STAFF;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_AREAS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_CORRECTION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SUPPLIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SURNAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TIME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TPZ;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRACKING_RECORDS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFORMATIONS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORK_PLANS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -495,7 +406,16 @@ public class TestSamplesLoader extends SamplesLoader {
             endDate = startDate + MILLIS_IN_DAY + 3 * millsInHour + 40 * millsInMinute;
         } else if ("000003".equals(values.get(L_ORDER_NR))) {
             startDate += 2 * MILLIS_IN_DAY;
-            endDate = startDate + 6 * millsInHour + 50 * millsInMinute;
+            endDate = startDate + 6 * millsInHour + 35 * millsInMinute;
+        } else if ("000004".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 8 * millsInHour + 55 * millsInMinute;
+        } else if ("000005".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 10 * millsInHour + 65 * millsInMinute;
+        } else if ("000006".equals(values.get(L_ORDER_NR))) {
+            startDate += 2 * MILLIS_IN_DAY;
+            endDate = startDate + 10 * millsInHour + 75 * millsInMinute;
         }
 
         if (!values.get("scheduled_end_date").isEmpty()) {
@@ -518,7 +438,137 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField(L_PLANNED_QUANTITY, values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
-        order.setField(L_ORDER_STATE, values.get("status"));
+        order.setField(L_ORDER_STATE, values.get("state"));
+
+        if (!"01pending".equals(values.get(L_ORDER_STATE))) {
+
+            List<Entity> productionCountings = Lists.newArrayList();
+            DataDefinition productionCountingDD = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+                    BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING);
+            Entity productionCounting = productionCountingDD.create();
+
+            if ("000001".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("55"),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12),
+                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10),
+                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000002".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30),
+                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25),
+                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000003".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22),
+                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17),
+                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000004".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12), new BigDecimal(L_60),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10), new BigDecimal(L_15),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000005".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19), new BigDecimal(L_40),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18), new BigDecimal(L_10),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24), new BigDecimal(L_10),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23), new BigDecimal(L_40),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22), new BigDecimal(L_40),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17), new BigDecimal(L_10),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+
+            } else if ("000006".equals(values.get(L_ORDER_NR))) {
+
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28), new BigDecimal(L_20),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27), new BigDecimal(L_5),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26), new BigDecimal(L_20),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32), new BigDecimal(L_5),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31), new BigDecimal(L_20),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30), new BigDecimal(L_20),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29), new BigDecimal(L_80),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33), new BigDecimal(L_80),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21), new BigDecimal(L_80),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25), new BigDecimal(L_5),
+                        BigDecimal.ZERO, BigDecimal.ZERO));
+            }
+
+            validateEntity(productionCounting);
+            order.setField("basicProductionCountings", productionCountings);
+        }
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
@@ -766,7 +816,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void addTechnologyOperationComponentsForTableAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_14));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_13));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_12));
@@ -781,7 +831,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void addTechnologyOperationComponentsForStoolAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_27));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_26));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_25));
@@ -803,7 +853,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void addTechnologyOperationComponentsForTabouretAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber("5"));
+        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_18));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_19));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_17));
@@ -830,6 +880,19 @@ public class TestSamplesLoader extends SamplesLoader {
         productInComponent.setField("balance", balance);
 
         return productInComponent;
+    }
+
+    private Entity addBasicProductionCountingRecords(final Entity product, final BigDecimal plannedQuantity,
+            final BigDecimal producedQuantity, final BigDecimal usedQuantity) {
+        Entity productionCounting = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+                BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING).create();
+        productionCounting.setField(L_PRODUCT, product);
+        productionCounting.setField(L_PLANNED_QUANTITY, plannedQuantity);
+        productionCounting.setField("producedQuantity", producedQuantity);
+        productionCounting.setField("usedQuantity", usedQuantity);
+
+        return productionCounting;
+
     }
 
     private Entity addRecordOperationProductOutComponent(final Entity product, final BigDecimal usedQuantity,
@@ -1222,14 +1285,14 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void buildTrackingRecord(final Entity trackingRecord) {
-        Entity genProdIn = addGenealogyProductInComponent(trackingRecord, "000011", "5");
+        Entity genProdIn = addGenealogyProductInComponent(trackingRecord, "000011", L_5);
         addUsedBatch(genProdIn, "321DEW");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000012", "5");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000012", L_5);
         addUsedBatch(genProdIn, "706FCV");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000014", "5");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000014", L_5);
         addUsedBatch(genProdIn, "980DEN");
         addUsedBatch(genProdIn, "767BMM");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000013", "5");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000013", L_5);
         addUsedBatch(genProdIn, "876DEW");
         addUsedBatch(genProdIn, "444VWM");
         genProdIn = addGenealogyProductInComponent(trackingRecord, "000015", "1");

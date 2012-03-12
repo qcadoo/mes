@@ -24,6 +24,10 @@
 package com.qcadoo.mes.orders.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -35,6 +39,9 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
@@ -74,8 +81,21 @@ public class OrderStateValidationService {
 
     public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
         checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList("dateTo", "dateFrom", "technology");
-        return checkValidation(references, entity);
+        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        List<ChangeOrderStateMessage> message = checkValidation(references, entity);
+
+        Entity technology = entity.getBelongsToField(TECHNOLOGY);
+        if (technology == null) {
+            return message;
+        }
+        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology
+                .getStringField(TechnologyFields.STATE));
+
+        if (TechnologyState.ACCEPTED != technologyState) {
+            message.add(ChangeOrderStateMessage.errorForComponent("orders.validate.technology.error.wrongState.accepted",
+                    TECHNOLOGY));
+        }
+        return message;
     }
 
     public List<ChangeOrderStateMessage> validationInProgress(final Entity entity) {
@@ -85,7 +105,7 @@ public class OrderStateValidationService {
 
     public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
         checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList("dateTo", "dateFrom", "technology", "doneQuantity");
+        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
         return checkValidation(references, entity);
     }
 

@@ -43,6 +43,10 @@ public interface SamplesConstants {
 
     String BASIC_MODEL_PRODUCT = "product";
 
+    String BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
+
+    String BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
+
     String QUALITYCONTROL_MODEL_QUALITYCONTROL = "qualityControl";
 
     String QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
@@ -248,5 +252,19 @@ public interface SamplesConstants {
     String L_QUANTITY_600 = "600";
 
     String L_QUANTITY_2400 = "2400";
+
+    String L_5 = "5";
+
+    String L_10 = "10";
+
+    String L_15 = "15";
+
+    String L_20 = "20";
+
+    String L_40 = "40";
+
+    String L_60 = "60";
+
+    String L_80 = "80";
 
 }

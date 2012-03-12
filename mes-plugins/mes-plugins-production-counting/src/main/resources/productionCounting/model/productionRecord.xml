@@ -47,13 +47,15 @@
 
 		<boolean name="lastRecord" />
 
+		<integer name="plannedMachineTime" />
 		<integer name="machineTime" />
 		<integer name="machineTimeBalance" />
+		
+		<integer name="plannedLaborTime" />
 		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
+		
 		<integer name="plannedTime" />
-		<integer name="plannedMachineTime" />
-		<integer name="plannedLaborTime" />
 		
 		<integer name="executedOperationCycles" />
 

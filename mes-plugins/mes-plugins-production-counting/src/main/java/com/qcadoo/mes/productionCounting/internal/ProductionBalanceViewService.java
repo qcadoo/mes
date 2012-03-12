@@ -23,111 +23,74 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
-import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
-import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionBalanceViewService {
 
-    private static final String COMPONENT_INPUT_PRODUCTS_GRID = "inputProductsGrid";
+    private static final String L_OUTPUT_PRODUCTS_GRID = "outputProductsGrid";
 
-    private static final String COMPONENT_REGISTER_PRODUCTION_TIME = "registerProductionTime";
+    private static final String L_INPUT_PRODUCTS_GRID = "inputProductsGrid";
 
-    private static final String COMPONENT_STATE = "state";
+    private static final String L_PRODUCTION_TIME_GRID_LAYOUT = "productionTimeGridLayout";
 
-    private static final String COMPONENT_PRODUCTION_TIME_GRID_LAYOUT = "productionTimeGridLayout";
+    private static final String L_OPERATIONS_TIME_GRID = "operationsTimeGrid";
 
-    private static final String COMPONENT_OPERATIONS_TIME_GRID = "operationsTimeGrid";
+    private static final String L_ORDER = "order";
 
-    private static final String FIELD_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
-    private static final String FIELD_ORDER = "order";
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductionBalanceReportDataService productionBalanceReportDataService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
-
-    @Autowired
-    private NumberService numberService;
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_ORDER);
         if (orderLookup.getFieldValue() == null) {
-            setGridsVisibility(viewDefinitionState, false);
             clearFieldValues(viewDefinitionState);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
-            setGridsVisibility(viewDefinitionState, false);
             clearFieldValues(viewDefinitionState);
             return;
         }
-        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
-            setGridsVisibility(viewDefinitionState, false);
+        if (order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING) == null
+                || order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
             clearFieldValues(viewDefinitionState);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(
+            ((FieldComponent) viewDefinitionState.getComponentByReference(L_ORDER)).addMessage(
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
                     ComponentState.MessageType.FAILURE);
             return;
         }
 
         setFieldValues(viewDefinitionState, order);
-        setGridsContent(viewDefinitionState, order);
     }
 
-    public void fillGrids(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
-        if (orderLookup.getFieldValue() == null) {
-            setGridsVisibility(viewDefinitionState, false);
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) orderLookup.getFieldValue());
-        if (order == null) {
-            setGridsVisibility(viewDefinitionState, false);
-            return;
-        }
-        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
-            setGridsVisibility(viewDefinitionState, false);
-            clearFieldValues(viewDefinitionState);
-            return;
-        }
+    public void showGrids(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        setGridsContent(viewDefinitionState, order);
+        if (form == null || form.getEntityId() == null) {
+            setGridsVisibility(viewDefinitionState, true);
+        }
     }
 
     private void setFieldValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
@@ -143,25 +106,6 @@ public class ProductionBalanceViewService {
         recordsNumberField.setFieldValue(recordsNumberValue);
     }
 
-    private void setGridsContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        if ((Boolean) order.getField("registerQuantityInProduct")) {
-            setInputProductsGridContent(viewDefinitionState, order);
-        } else {
-            viewDefinitionState.getComponentByReference(COMPONENT_INPUT_PRODUCTS_GRID).setVisible(false);
-        }
-        if ((Boolean) order.getField("registerQuantityOutProduct")) {
-            setOutputProductsGridContent(viewDefinitionState, order);
-        } else {
-            viewDefinitionState.getComponentByReference("outputProductsGrid").setVisible(false);
-        }
-        if ((Boolean) order.getField(COMPONENT_REGISTER_PRODUCTION_TIME)) {
-            setProductionTimeTabContent(viewDefinitionState, order);
-        } else {
-            viewDefinitionState.getComponentByReference(COMPONENT_OPERATIONS_TIME_GRID).setVisible(false);
-            viewDefinitionState.getComponentByReference(COMPONENT_PRODUCTION_TIME_GRID_LAYOUT).setVisible(false);
-        }
-    }
-
     private void clearFieldValues(final ViewDefinitionState viewDefinitionState) {
         FieldComponent product = (FieldComponent) viewDefinitionState.getComponentByReference("product");
         product.setFieldValue(null);
@@ -170,126 +114,10 @@ public class ProductionBalanceViewService {
     }
 
     private void setGridsVisibility(final ViewDefinitionState viewDefinitionState, final Boolean isVisible) {
-        viewDefinitionState.getComponentByReference(COMPONENT_INPUT_PRODUCTS_GRID).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference("outputProductsGrid").setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(COMPONENT_OPERATIONS_TIME_GRID).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(COMPONENT_PRODUCTION_TIME_GRID_LAYOUT).setVisible(isVisible);
-    }
-
-    private void setInputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent inputProducts = (GridComponent) viewDefinitionState.getComponentByReference(COMPONENT_INPUT_PRODUCTS_GRID);
-        List<Entity> inputProductsList = new ArrayList<Entity>();
-        List<Entity> productionRecordList = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
-        for (Entity productionRecord : productionRecordList) {
-            inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
-        }
-        if (!inputProductsList.isEmpty()) {
-            Collections.sort(inputProductsList, new EntityProductInOutComparator());
-            inputProducts.setEntities(productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList));
-            inputProducts.setEntities(inputProductsList);
-            inputProducts.setVisible(true);
-        }
-    }
-
-    private void setOutputProductsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent outputProducts = (GridComponent) viewDefinitionState.getComponentByReference("outputProductsGrid");
-        List<Entity> outputProductsList = new ArrayList<Entity>();
-        List<Entity> productionRecordList = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
-        for (Entity productionRecord : productionRecordList) {
-            outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
-        }
-        if (!outputProductsList.isEmpty()) {
-            Collections.sort(outputProductsList, new EntityProductInOutComparator());
-            outputProducts.setEntities(productionBalanceReportDataService
-                    .groupProductInOutComponentsByProduct(outputProductsList));
-            outputProducts.setVisible(true);
-        }
-    }
-
-    private void setProductionTimeTabContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("03forEach")) {
-            viewDefinitionState.getComponentByReference(COMPONENT_OPERATIONS_TIME_GRID).setVisible(true);
-            viewDefinitionState.getComponentByReference(COMPONENT_PRODUCTION_TIME_GRID_LAYOUT).setVisible(false);
-            setProductionTimeGridContent(viewDefinitionState, order);
-        } else if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("02cumulated")) {
-            viewDefinitionState.getComponentByReference(COMPONENT_OPERATIONS_TIME_GRID).setVisible(false);
-            viewDefinitionState.getComponentByReference(COMPONENT_PRODUCTION_TIME_GRID_LAYOUT).setVisible(true);
-            setTimeValues(viewDefinitionState, order);
-        }
-    }
-
-    private void setTimeValues(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        BigDecimal machinePlannedTime = BigDecimal.ZERO;
-        BigDecimal laborPlannedTime = BigDecimal.ZERO;
-
-        BigDecimal machineRegisteredTime = BigDecimal.ZERO;
-        BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        List<Entity> productionRecordsList = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
-        for (Entity productionRecord : productionRecordsList) {
-            machinePlannedTime = machinePlannedTime.add(
-                    new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
-            laborPlannedTime = laborPlannedTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
-                    numberService.getMathContext());
-            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
-                    numberService.getMathContext());
-            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
-                    numberService.getMathContext());
-        }
-
-        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
-        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
-
-        FieldComponent machinePlannedTimeField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("machinePlannedTime");
-        machinePlannedTimeField.setFieldValue(timeConverterService.convertTimeToString(machinePlannedTime.intValue()));
-        machinePlannedTimeField.requestComponentUpdateState();
-
-        FieldComponent machineRegisteredTimeField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("machineRegisteredTime");
-        machineRegisteredTimeField.setFieldValue(timeConverterService.convertTimeToString(machineRegisteredTime.intValue()));
-        machineRegisteredTimeField.requestComponentUpdateState();
-
-        FieldComponent machineTimeBalanceField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("machineTimeBalance");
-        machineTimeBalanceField.setFieldValue(timeConverterService.convertTimeToString(machineTimeBalance.intValue()));
-        machineTimeBalanceField.requestComponentUpdateState();
-
-        FieldComponent laborPlannedTimeField = (FieldComponent) viewDefinitionState.getComponentByReference("laborPlannedTime");
-        laborPlannedTimeField.setFieldValue(timeConverterService.convertTimeToString(laborPlannedTime.intValue()));
-        laborPlannedTimeField.requestComponentUpdateState();
-
-        FieldComponent laborRegisteredTimeField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("laborRegisteredTime");
-        laborRegisteredTimeField.setFieldValue(timeConverterService.convertTimeToString(laborRegisteredTime.intValue()));
-        laborRegisteredTimeField.requestComponentUpdateState();
-
-        FieldComponent laborTimeBalanceField = (FieldComponent) viewDefinitionState.getComponentByReference("laborTimeBalance");
-        laborTimeBalanceField.setFieldValue(timeConverterService.convertTimeToString(laborTimeBalance.intValue()));
-        laborTimeBalanceField.requestComponentUpdateState();
-    }
-
-    private void setProductionTimeGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent productionsTime = (GridComponent) viewDefinitionState
-                .getComponentByReference(COMPONENT_OPERATIONS_TIME_GRID);
-        List<Entity> productionRecordsList = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(COMPONENT_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
-        if (!productionRecordsList.isEmpty()) {
-            Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
-            productionsTime.setEntities(productionBalanceReportDataService
-                    .groupProductionRecordsByOperation(productionRecordsList));
-            productionsTime.setVisible(true);
-        }
+        viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_PRODUCTION_TIME_GRID_LAYOUT).setVisible(isVisible);
     }
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
@@ -298,9 +126,35 @@ public class ProductionBalanceViewService {
         if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
-        for (String reference : Arrays.asList(FIELD_ORDER, "name", "description")) {
+        for (String reference : Arrays.asList("order", "name", "description")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.setEnabled(enabled);
+        }
+    }
+
+    public void disableCheckboxes(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponent calculateOperationCostsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference("calculateOperationCostsMode");
+        FieldComponent includeTPZ = (FieldComponent) viewDefinitionState.getComponentByReference("includeTPZ");
+        FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
+                .getComponentByReference("includeAdditionalTime");
+
+        if (CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostsMode.getFieldValue())) {
+            includeTPZ.setFieldValue(false);
+            includeTPZ.setEnabled(false);
+            includeTPZ.requestComponentUpdateState();
+
+            includeAdditionalTime.setFieldValue(false);
+            includeAdditionalTime.setEnabled(false);
+            includeAdditionalTime.requestComponentUpdateState();
+        } else {
+            includeTPZ.setEnabled(true);
+            includeTPZ.setFieldValue(true);
+            includeTPZ.requestComponentUpdateState();
+
+            includeAdditionalTime.setEnabled(true);
+            includeTPZ.setFieldValue(true);
+            includeAdditionalTime.requestComponentUpdateState();
         }
     }
 }

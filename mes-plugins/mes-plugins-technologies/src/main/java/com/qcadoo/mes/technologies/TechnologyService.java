@@ -25,6 +25,9 @@ package com.qcadoo.mes.technologies;
 
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -82,11 +85,7 @@ public class TechnologyService {
 
     private static final String NAME_FIELD = "name";
 
-    private static final String STATE_FIELD = "state";
-
     private static final String PARENT_FIELD = "parent";
-
-    private static final String ACCEPTED = "02accepted";
 
     private static final String NUMBER = "number";
 
@@ -117,8 +116,6 @@ public class TechnologyService {
     private static final String CONST_OPERATION_COMP_PRODUCT_OUT = "operationProductOutComponents";
 
     private static final String CONST_REFERENCE_MODE = "referenceMode";
-
-    private static final String CONST_STATE = STATE_FIELD;
 
     private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
 
@@ -416,7 +413,8 @@ public class TechnologyService {
     }
 
     public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
+                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -433,7 +431,8 @@ public class TechnologyService {
     }
 
     public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
+                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -451,7 +450,8 @@ public class TechnologyService {
     }
 
     public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.equals(technology.getStringField(CONST_STATE))) {
+        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
+                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -461,7 +461,7 @@ public class TechnologyService {
                 continue;
             }
             final Entity referenceTechnology = operation.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD);
-            if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(CONST_STATE))) {
+            if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(STATE))) {
                 technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
                         "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
                 return false;
@@ -471,7 +471,8 @@ public class TechnologyService {
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.equals(technology.getStringField(STATE_FIELD))) {
+        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
+                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -563,7 +564,7 @@ public class TechnologyService {
     }
 
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
-        view.getComponentByReference(STATE_FIELD).performEvent(view, "toggleEnabled");
+        view.getComponentByReference(STATE).performEvent(view, "toggleEnabled");
     }
 
     public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
@@ -608,9 +609,9 @@ public class TechnologyService {
         if (technology == null || existingTechnology == null) {
             return false;
         }
-        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField(CONST_STATE));
-        TechnologyState existingTechnologyState = TechnologyStateUtils.getStateFromField(existingTechnology
-                .getStringField(CONST_STATE));
+        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE));
+        TechnologyState existingTechnologyState = TechnologyStateUtils
+                .getStateFromField(existingTechnology.getStringField(STATE));
 
         return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }
@@ -677,7 +678,7 @@ public class TechnologyService {
     }
 
     public void switchStateToDraftOnCopy(final DataDefinition technologyDataDefinition, final Entity technology) {
-        technology.setField(CONST_STATE, TechnologyState.DRAFT.getStringValue());
+        technology.setField(STATE, TechnologyState.DRAFT.getStringValue());
     }
 
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {

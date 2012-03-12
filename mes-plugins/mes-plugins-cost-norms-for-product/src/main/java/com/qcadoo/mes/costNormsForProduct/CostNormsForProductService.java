@@ -79,6 +79,8 @@ public class CostNormsForProductService {
 
     private static final String COST_FOR_NUMBER_UNIT_L = "costForNumberUnit";
 
+    private static final String L_EMPTY = "";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -103,7 +105,9 @@ public class CostNormsForProductService {
         checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
-
+        FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
+        unitField.setFieldValue(L_EMPTY);
+        unitField.setEnabled(false);
         if (form == null || form.getEntityId() == null) {
             return;
         }
@@ -116,8 +120,6 @@ public class CostNormsForProductService {
         }
 
         String unit = product.getStringField("unit");
-
-        FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
 
         fillField(unitField, unit);
     }
@@ -134,30 +136,32 @@ public class CostNormsForProductService {
         checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
-
+        clearAndDisabledFields(viewDefinitionState, fieldNames);
         if (form == null || form.getEntityId() == null) {
             return;
         }
-
         String currency = currencyService.getCurrencyAlphabeticCode();
-
         if (currency == null) {
             return;
         }
-
         for (String fieldName : fieldNames) {
             FieldComponent currencyField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
-
             fillField(currencyField, currency);
+        }
+    }
+
+    private void clearAndDisabledFields(final ViewDefinitionState view, final Set<String> fieldNames) {
+        for (String fieldName : fieldNames) {
+            FieldComponent currencyField = (FieldComponent) view.getComponentByReference(fieldName);
+            currencyField.setFieldValue(L_EMPTY);
+            currencyField.setEnabled(false);
         }
     }
 
     public void fillField(final FieldComponent fieldComponent, final String fieldValue) {
         checkArgument(fieldComponent != null, "fieldComponent is null");
-
         fieldComponent.setFieldValue(fieldValue);
         fieldComponent.requestComponentUpdateState();
-        fieldComponent.setEnabled(false);
     }
 
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {

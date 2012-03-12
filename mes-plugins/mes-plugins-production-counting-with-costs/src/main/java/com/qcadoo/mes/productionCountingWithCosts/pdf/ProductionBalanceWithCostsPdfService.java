@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsModeInBalance.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_TPZ;
@@ -52,6 +51,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceReportDataService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
@@ -186,8 +186,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 translationService.translate("productionCounting.productionBalance.description.label", locale) + ":",
                 productionBalance.getStringField(DESCRIPTION), null, FontUtils.getDejavuBold9Dark(),
                 FontUtils.getDejavuBold9Dark(), null);
-        if (productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE).equals(
-                HOURLY.getStringValue())) {
+        if (CalculateOperationCostMode.parseString(
+                productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).equals(
+                CalculateOperationCostMode.HOURLY)) {
             addTableCellAsTable(leftPanel, translationService.translate(
                     "productionCounting.productionBalance.report.panel.typeOfProductionCounting", locale), null, null,
                     FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);

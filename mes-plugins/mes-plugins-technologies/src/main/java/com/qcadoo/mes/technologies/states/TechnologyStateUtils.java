@@ -43,6 +43,9 @@ public final class TechnologyStateUtils {
         if ("04outdated".equals(fieldValue)) {
             return TechnologyState.OUTDATED;
         }
+        if ("05checked".equals(fieldValue)) {
+            return TechnologyState.CHECKED;
+        }
 
         throw new IllegalArgumentException("Unsupported or unspecified technology state " + fieldValue);
     }

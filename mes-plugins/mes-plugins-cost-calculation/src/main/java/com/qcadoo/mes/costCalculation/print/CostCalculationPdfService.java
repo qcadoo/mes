@@ -27,7 +27,6 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.MATERIAL_COST_MARGIN;
-import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NAME;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NUMBER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.ORDER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.QUANTITY;
@@ -75,6 +74,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
+
+    private static final String NAME = "name";
 
     private static final String L_NOMINAL_COST = "nominalCost";
 
@@ -151,36 +152,37 @@ public class CostCalculationPdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate("costCalculation.costCalculationDetails.report.paragraph2",
                 locale), FontUtils.getDejavuBold11Dark()));
 
-        CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(costCalculation
+        CalculateOperationCostMode calculateOperationCostMode = CalculateOperationCostMode.parseString(costCalculation
                 .getStringField("calculateOperationCostsMode"));
 
-        if (CalculateOperationCostMode.HOURLY.equals(mode)) {
+        if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
             document.add(addTableAboutHourlyCost(costCalculation, locale));
-        } else if (CalculateOperationCostMode.PIECEWORK.equals(mode)) {
+        } else if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
             document.add(addTableAboutPieceworkCost(costCalculation, locale));
         } else {
             throw new IllegalStateException("Unsupported CalculateOperationCostMode");
         }
 
-        if ((costCalculation.getBooleanField("printCostNormsOfMaterials") == true)) {
+        if (costCalculation.getBooleanField("printCostNormsOfMaterials")) {
 
             document.add(Chunk.NEWLINE);
             document.add(new Paragraph(translationService.translate("costCalculation.costCalculationDetails.report.paragraph3",
                     locale), FontUtils.getDejavuBold11Dark()));
             PdfPTable optionTable = addOptionTablePrintCostNormsOfMaterials(costCalculation, locale);
             document.add(optionTable);
+
         }
 
-        if ((costCalculation.getBooleanField("printOperationNorms") == true)) {
+        if (costCalculation.getBooleanField("printOperationNorms")) {
 
-            if ("piecework".equals(costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
+            if (CalculateOperationCostMode.PIECEWORK.equals(calculateOperationCostMode)) {
 
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
                         "costCalculation.costCalculationDetails.report.paragraph4", locale), FontUtils.getDejavuBold11Dark()));
                 PdfPTable optionTable2 = addOptionTablePrintOperationNormsPiecework(costCalculation, locale);
                 document.add(optionTable2);
-            } else if ("hourly".equals(costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
+            } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
 
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
@@ -222,7 +224,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
 
-        if (!costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE).equals("piecework")) {
+        if (!CalculateOperationCostMode.PIECEWORK.getStringValue().equals(
+                costCalculation.getField(CALCULATE_OPERATION_COSTS_MODE))) {
 
             pdfHelper.addTableCellAsTwoColumnsTable(
                     leftPanelColumn,

@@ -46,7 +46,23 @@
 			required="true" default="01hourly" />
 
 		<boolean name="includeTPZ" default="true" />
-		<boolean name="includeAdditionalTime" default="false" />
+		<boolean name="includeAdditionalTime" default="true" />
+		
+		<integer name="machinePlannedTime" />
+		<integer name="machineRegisteredTime" />
+		<integer name="machineTimeBalance" />
+		
+		<integer name="laborPlannedTime" />
+		<integer name="laborRegisteredTime" />
+		<integer name="laborTimeBalance" />
+	
+		<hasMany name="balanceOperationProductInComponents" joinField="productionBalance"
+			model="balanceOperationProductInComponent" cascade="delete" />
+		<hasMany name="balanceOperationProductOutComponents" joinField="productionBalance"
+			model="balanceOperationProductOutComponent" cascade="delete" />
+			
+		<hasMany name="operationTimeComponents" joinField="productionBalance"
+			model="operationTimeComponent" cascade="delete" />
 	</fields>
 	<hooks>
 		<onCopy

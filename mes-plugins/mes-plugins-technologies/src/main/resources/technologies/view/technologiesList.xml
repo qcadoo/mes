@@ -34,6 +34,7 @@
 			<group name="status">
 				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{grid}.changeTechnologyState(acceptTechnology);" />
 				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{grid}.changeTechnologyState(cancelTechnology);" />
+				<smallButton name="checkTechnology" icon="startIcon16.png" state="disabled" action="#{grid}.changeTechnologyState(checkTechnology);" />
 			</group>
 		</ribbon>
 
@@ -68,6 +69,7 @@
 						}
 						getRibbonItem("status.acceptTechnology").disable();
 						getRibbonItem("status.cancelTechnology").disable();
+						getRibbonItem("status.checkTechnology").disable();
 					}
 					
 					function updateRibbon(selectedEntitiesArray) {
@@ -101,6 +103,7 @@
 
 						var acceptState = getRibbonItem("status.acceptTechnology");
 						var cancelState = getRibbonItem("status.cancelTechnology");
+						var checkState = getRibbonItem("status.checkTechnology");
 
 						acceptState.disable();										
 						acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
@@ -111,17 +114,24 @@
 							acceptState.disable(differentStatesMessage);
 							cancelState.disable(differentStatesMessage);
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
+							checkState.disabled(differentStatesMessage);
+							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
 							return;
 						}
 						
 						acceptState.forState="02accepted";
 						cancelState.forState="03declined";
+						checkState.forState="05checked";
 						cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.declined)}";
 						cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.declineTechnology)}");
+						
+						checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
+						checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
 					
 						if (state == "01draft") {
 							acceptState.enable();
 							cancelState.enable();
+							checkState.enable();
 						} else if (state == "02accepted") {
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 							acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
@@ -129,10 +139,18 @@
 							cancelState.forState="04outdated";
 							cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
+							checkState.disabled();
 						} else if (state == "03declined") {
 						} else if (state == "04outdated") {
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-						} else {
+						} else if (state == "05checked") {
+							cancelState.enable();
+							checkState.enable();
+							checkState.forState="01draft"
+							checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
+							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
+							acceptState.enable();
+						}else{
 							cancelState.enable();
 						}
 					}

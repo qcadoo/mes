@@ -1,19 +1,19 @@
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public enum CalculateOperationCostsModeInBalance {
+public enum CalculateOperationCostsMode {
     HOURLY("01hourly"), PIECEWORK("02piecework");
 
-    private String stringValue;
+    private String calculateOperationCostsMode;
 
-    private CalculateOperationCostsModeInBalance(final String stringValue) {
-        this.stringValue = stringValue;
+    private CalculateOperationCostsMode(final String calculateOperationCostsMode) {
+        this.calculateOperationCostsMode = calculateOperationCostsMode;
     }
 
     public String getStringValue() {
-        return stringValue;
+        return calculateOperationCostsMode;
     }
 
-    public static CalculateOperationCostsModeInBalance parseString(final String string) {
+    public static CalculateOperationCostsMode parseString(final String string) {
         if ("01hourly".equals(string)) {
             return HOURLY;
         } else if ("02piecework".equals(string)) {

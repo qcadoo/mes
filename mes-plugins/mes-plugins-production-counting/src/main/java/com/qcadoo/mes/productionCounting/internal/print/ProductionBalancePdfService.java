@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.internal.print;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsModeInBalance.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
@@ -127,13 +127,11 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
 
-        Entity technology = productionBalance.getBelongsToField(ORDER).getBelongsToField("technology");
-
         if (productionBalance.getBelongsToField(ORDER).getBooleanField("registerQuantityInProduct")) {
-            addInputProductsBalance(document, productionBalance, technology, locale);
+            addInputProductsBalance(document, productionBalance, locale);
         }
         if (productionBalance.getBelongsToField(ORDER).getBooleanField("registerQuantityOutProduct")) {
-            addOutputProductsBalance(document, productionBalance, technology, locale);
+            addOutputProductsBalance(document, productionBalance, locale);
         }
 
         if (productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE).equals(HOURLY.getStringValue())) {
@@ -276,8 +274,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         return rightPanel;
     }
 
-    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
-            final Locale locale) throws DocumentException {
+    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
 
         List<String> inputProductsTableHeader = new ArrayList<String>();
         inputProductsTableHeader.add(translationService.translate(
@@ -336,8 +334,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
     }
 
-    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Entity technology,
-            final Locale locale) throws DocumentException {
+    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+            throws DocumentException {
 
         List<String> outputProductsTableHeader = new ArrayList<String>();
         outputProductsTableHeader.add(translationService.translate(

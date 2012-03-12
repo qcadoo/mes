@@ -28,7 +28,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_DIVISION;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_SHIFT;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_STAFF;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
@@ -213,7 +213,7 @@ public class ProductionRecordService {
         }
 
         if (registerInput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
+            copyOperationProductComponents(operationComponents, productionRecord, MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
         }
         if (registerOutput) {
             copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
@@ -231,7 +231,7 @@ public class ProductionRecordService {
         String productModel = "operationProductOutComponent";
         String recordProductFieldName = RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
 
-        if (MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
+        if (MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
             productModel = "operationProductInComponent";
             recordProductFieldName = RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
         }

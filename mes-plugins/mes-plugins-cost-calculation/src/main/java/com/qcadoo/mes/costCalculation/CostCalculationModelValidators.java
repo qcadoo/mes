@@ -23,49 +23,36 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.SOURCE_OF_MATERIAL_COSTS;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.DECLINED;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.DRAFT;
+
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 
 @Service
 public class CostCalculationModelValidators {
 
-    @Autowired
-    private TechnologyService technologyService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(CostCalculationModelValidators.class);
-
-    public boolean checkIfTheTechnologyTreeIsntEmpty(final DataDefinition dataDefinition, final Entity costCalculation) {
-        Entity technology = costCalculation.getBelongsToField("technology");
-        EntityTree tree = technology.getTreeField("operationComponents");
-
-        if (tree != null && !tree.isEmpty()) {
-            try {
-                for (Entity operationComponent : tree) {
-                    technologyService.getProductCountForOperationComponent(operationComponent);
-                }
-                return true;
-            } catch (IllegalStateException e) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Invalid technology tree passed to cost calculation");
-                }
-            }
+    public boolean checkIfTheTechnologyHasCorrectState(final DataDefinition dataDefinition, final Entity costCalculation) {
+        Entity technology = costCalculation.getBelongsToField(TECHNOLOGY);
+        if (technology.getStringField(STATE).equals(DRAFT.getStringValue())
+                || technology.getStringField(STATE).equals(DECLINED.getStringValue())) {
+            costCalculation.addError(dataDefinition.getField(TECHNOLOGY), "costNormsForOperation.messages.fail.incorrectState");
+            return false;
         }
-
-        costCalculation.addError(dataDefinition.getField("technology"), "costNormsForOperation.messages.fail.emptyTree");
-        return false;
+        return true;
     }
 
     public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        if ((costCalculation.getField("sourceOfMaterialCosts").equals("01currentGlobalDefinitionsInProduct"))
-                && (costCalculation.getField("calculateMaterialCostsMode").equals("04costForOrder"))) {
-            costCalculation.addError(costCalculationDD.getField("calculateMaterialCostsMode"),
+        if ((costCalculation.getField(SOURCE_OF_MATERIAL_COSTS).equals("01currentGlobalDefinitionsInProduct"))
+                && (costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE).equals(COST_FOR_ORDER.getStringValue()))) {
+            costCalculation.addError(costCalculationDD.getField(CALCULATE_MATERIAL_COSTS_MODE),
                     "costCalculation.messages.optionUnavailable");
             return false;
         } else {
