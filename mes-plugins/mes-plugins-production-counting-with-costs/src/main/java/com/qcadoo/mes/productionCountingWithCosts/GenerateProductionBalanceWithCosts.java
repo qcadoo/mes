@@ -68,7 +68,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
     }
 
-    private void doTheCostsPart(final Entity balance) {
+    void doTheCostsPart(final Entity balance) {
         Entity order = balance.getBelongsToField("order");
         Entity technology = order.getBelongsToField("technology");
 

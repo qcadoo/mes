@@ -75,7 +75,7 @@ public class GenerateProductionBalanceWithCostsTest {
         given(balance.getField("totalTechnicalProductionCosts")).willReturn(new BigDecimal(100));
 
         // when
-        generateProductionBalanceWithCosts.update(observable, balance);
+        generateProductionBalanceWithCosts.doTheCostsPart(balance);
 
         // then
         verify(balance).setField("technology", technology);
