@@ -87,8 +87,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            List<Entity> operations = dataDefinitionService.get(PRODUCTION_SCHEDULING_MODEL, ORDER_OPERATION_COMPONENT_FIELD).find()
-                    .add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
+            List<Entity> operations = dataDefinitionService.get(PRODUCTION_SCHEDULING_MODEL, ORDER_OPERATION_COMPONENT_FIELD)
+                    .find().add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
 
             if (operations.isEmpty()) {
                 LOG.warn("Cannot find operations for " + order);
@@ -98,16 +98,18 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             Date orderStartDate = null;
             Date orderEndDate = null;
 
-            if (order.getField(EFFECTIVE_DATE_FROM_FIELD) != null) {
+            if (order.getField(EFFECTIVE_DATE_FROM_FIELD) == null) {
+                if (order.getField(DATE_FROM_FIELD) == null) {
+                    LOG.warn("Cannot find orderStartDate for " + order);
+                    return Collections.emptyMap();
+                } else {
+                    orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
+                    orderEndDate = (Date) order.getField(DATE_TO_FIELD);
+                }
+            } else {
                 orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
                 orderEndDate = new Date(((Date) order.getField(EFFECTIVE_DATE_FROM_FIELD)).getTime()
                         + (((Date) order.getField(DATE_TO_FIELD)).getTime() - ((Date) order.getField(DATE_FROM_FIELD)).getTime()));
-            } else if (order.getField(DATE_FROM_FIELD) != null) {
-                orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
-                orderEndDate = (Date) order.getField(DATE_TO_FIELD);
-            } else {
-                LOG.warn("Cannot find orderStartDate for " + order);
-                return Collections.emptyMap();
             }
 
             scale.setDateFrom(orderStartDate);
@@ -153,8 +155,9 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     }
 
     private String getDescriptionForOperarion(final Entity operation) {
-        return operation.getStringField(NODE_NUMBER_FIELD) + " " + operation.getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD)
-                + " " + operation.getBelongsToField(OPERATION_FIELD).getStringField(NAME_FIELD);
+        return operation.getStringField(NODE_NUMBER_FIELD) + " "
+                + operation.getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD) + " "
+                + operation.getBelongsToField(OPERATION_FIELD).getStringField(NAME_FIELD);
     }
 
 }

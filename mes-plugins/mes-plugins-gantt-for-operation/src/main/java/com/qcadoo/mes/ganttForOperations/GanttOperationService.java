@@ -103,12 +103,14 @@ public class GanttOperationService {
 
         Date orderStartDate = null;
 
-        if (order.getField(EFFECTIVE_DATE_FROM_FIELD) != null) {
-            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
-        } else if (order.getField(DATE_FROM_FIELD) != null) {
-            orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
+        if (order.getField(EFFECTIVE_DATE_FROM_FIELD) == null) {
+            if (order.getField(DATE_FROM_FIELD) == null) {
+                return;
+            } else {
+                orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
+            }
         } else {
-            return;
+            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
         }
 
         for (Entity operation : operations) {
