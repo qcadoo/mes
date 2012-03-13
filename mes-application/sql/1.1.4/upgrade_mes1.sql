@@ -38,6 +38,8 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN calculateOperationCosts
 UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '01hourly' WHERE calculateOperationCostsMode = 'hourly';
 UPDATE costcalculation_costcalculation SET calculateOperationCostsMode = '02piecework' WHERE calculateOperationCostsMode = 'piecework';
 
+ALTER TABLE costcalculation_costcalculation RENAME COLUMN costperunit TO totalcostperunit;
+
 -- end
 
 
