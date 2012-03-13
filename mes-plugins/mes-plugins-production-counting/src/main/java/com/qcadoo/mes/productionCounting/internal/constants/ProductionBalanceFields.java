@@ -32,15 +32,15 @@ public class ProductionBalanceFields {
 
     public static final String BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS = "balanceOperationProductOutComponents";
 
-    public static final String MACHINE_PLANNED_TIME = "machinePlannedTime";
+    public static final String PLANNED_MACHINE_TIME = "plannedMachineTime";
 
-    public static final String MACHINE_REGISTERED_TIME = "machineRegisteredTime";
+    public static final String MACHINE_TIME = "machineTime";
 
     public static final String MACHINE_TIME_BALANCE = "machineTimeBalance";
 
-    public static final String LABOR_PLANNED_TIME = "laborPlannedTime";
+    public static final String PLANNED_LABOR_TIME = "plannedLaborTime";
 
-    public static final String LABOR_REGISTERED_TIME = "laborRegisteredTime";
+    public static final String LABOR_TIME = "laborTime";
 
     public static final String LABOR_TIME_BALANCE = "laborTimeBalance";
 

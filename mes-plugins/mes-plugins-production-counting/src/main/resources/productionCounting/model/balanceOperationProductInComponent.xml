@@ -31,12 +31,13 @@
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="productionBalance" model="productionBalance" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="usedQuantity">
+		
+		<decimal name="plannedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="plannedQuantity">
+		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />

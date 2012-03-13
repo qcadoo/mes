@@ -207,10 +207,10 @@ public class CostCalculationViewService {
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
         generateNumber(viewDefinitionState);
-        Set<String> fields = Sets.newHashSet("totalCostsForQuantityCurrency", "totalOverheadCurrency",
-                "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
-                "totalTechnicalProductionCostsCurrency", "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency",
-                "totalMachineHourlyCostsCurrency", "totalMaterialCostsCurrency", "additionalOverheadCurrency");
+        Set<String> fields = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency", "additionalOverheadValueCurrency",
+                "materialCostMarginValueCurrency", "productionCostMarginValueCurrency", "totalTechnicalProductionCostsCurrency",
+                "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency", "totalMachineHourlyCostsCurrency",
+                "totalMaterialCostsCurrency", "additionalOverheadCurrency");
 
         for (String componentReference : fields) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
@@ -379,7 +379,7 @@ public class CostCalculationViewService {
     private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
         final Set<String> outputDecimalFields = Sets.newHashSet("productionCostMarginValue", "materialCostMarginValue",
                 "totalOverhead", "totalMaterialCosts", "totalMachineHourlyCosts", "totalLaborHourlyCosts", "totalPieceworkCosts",
-                "totalTechnicalProductionCosts", "totalCostsForQuantity", "totalCostPerUnit", "additionalOverheadValue");
+                "totalTechnicalProductionCosts", "totalCosts", "totalCostPerUnit", "additionalOverheadValue");
 
         for (String referenceName : outputDecimalFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);

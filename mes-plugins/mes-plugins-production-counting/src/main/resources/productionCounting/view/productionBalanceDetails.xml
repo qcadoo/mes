@@ -256,20 +256,20 @@
 		</windowTab>
 		<windowTab name="timeTab">
 			<component type="gridLayout" name="timeGridLayout"
-				reference="productionTimeGridLayout" columns="1" rows="2">
+				reference="timeGridLayout" columns="1" rows="2">
 				<layoutElement column="1" row="1">
 					<component type="borderLayout" name="machineTimeBorderLayout"
 						reference="machineTimeBorderLayout">
 						<component type="gridLayout" name="machineTimeGridLayout"
 							columns="3" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
-								<component type="input" name="machinePlannedTime"
-									field="#{form}.machinePlannedTime" reference="machinePlannedTime"
+								<component type="input" name="plannedMachineTime"
+									field="#{form}.plannedMachineTime" reference="plannedMachineTime"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="input" name="machineRegisteredTime"
-									field="#{form}.machineRegisteredTime" reference="machineRegisteredTime"
+								<component type="input" name="machineTime"
+									field="#{form}.machineTime" reference="machineTime"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="3" row="1">
@@ -288,13 +288,13 @@
 						<component type="gridLayout" name="laborTimeGridLayout"
 							reference="laborTimeGridLayout" columns="3" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
-								<component type="input" name="laborPlannedTime"
-									field="#{form}.laborPlannedTime" reference="laborPlannedTime"
+								<component type="input" name="plannedLaborTime"
+									field="#{form}.plannedLaborTime" reference="plannedLaborTime"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="2" row="1">
-								<component type="input" name="laborRegisteredTime"
-									field="#{form}.laborRegisteredTime" reference="laborRegisteredTime"
+								<component type="input" name="laborTime"
+									field="#{form}.laborTime" reference="laborTime"
 									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="3" row="1">
@@ -310,20 +310,22 @@
 			</component>
 			<component type="grid" name="operationsTime" reference="operationsTimeGrid"
 				source="#{form}.operationTimeComponents">
-				<option type="column" name="opLevel" fields="orderOperationComponent"
-					expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber']" />
-				<option type="column" name="opName" fields="orderOperationComponent"
-					expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['operation']['name']" />
-				<option type="column" name="machinePlannedTime" fields="plannedMachineTime"
+				<option type="column" name="operationLevel" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('nodeNumber')" />
+				<option type="column" name="operationNumber" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('number')" />	
+				<option type="column" name="operationName" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('name')" />
+				<option type="column" name="plannedMachineTime" fields="plannedMachineTime"
 					expression="#plannedMachineTime" />
-				<option type="column" name="machineRegisteredTime" fields="machineTime" />
+				<option type="column" name="machineTime" fields="machineTime" />
 				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" />
-				<option type="column" name="laborPlannedTime" fields="plannedLaborTime"
+				<option type="column" name="plannedLaborTime" fields="plannedLaborTime"
 					expression="#plannedLaborTime" />
-				<option type="column" name="laborRegisteredTime" fields="laborTime" />
+				<option type="column" name="laborTime" fields="laborTime" />
 				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" />
 				
-				<option type="order" column="opNumber" direction="asc" />
+				<option type="order" column="operationNumber" direction="asc" />
 			</component>
 		</windowTab>
 	</component>

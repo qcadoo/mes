@@ -513,21 +513,21 @@
 							<component type="gridLayout" name="gridProductionCostMargin"
 								columns="3" rows="4" hasBorders="false">
 								<layoutElement column="1" row="1" width="2">
-									<component type="label" name="totalCostsForQuantityLabel"
+									<component type="label" name="totalCostsLabel"
 										hasLabel="false">
 										<option type="labelStyle" value="text" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="2">
-									<component type="input" name="totalCostsForQuantity" field="#{form}.totalCostsForQuantity"
-										defaultEnabled="false" reference="totalCostsForQuantity" hasLabel="false">
+									<component type="input" name="totalCosts" field="#{form}.totalCosts"
+										defaultEnabled="false" reference="totalCosts" hasLabel="false">
 										<option type="alignment" value="right" />
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="2">
-									<component type="input" name="totalCostsForQuantityCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalCostsForQuantityCurrency">
+									<component type="input" name="totalCostsCurrency"
+										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency">
 										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>

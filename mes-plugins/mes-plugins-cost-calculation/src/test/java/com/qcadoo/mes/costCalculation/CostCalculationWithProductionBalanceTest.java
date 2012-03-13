@@ -91,7 +91,7 @@ public class CostCalculationWithProductionBalanceTest {
         verify(productionBalance).setField("totalOverhead", new BigDecimal(3.5).setScale(3, RoundingMode.HALF_EVEN));
         verify(productionBalance).setField("totalTechnicalProductionCosts",
                 new BigDecimal(250).setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("totalCostsForQuantity", new BigDecimal(253.5).setScale(3, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("totalCosts", new BigDecimal(253.5).setScale(3, RoundingMode.HALF_EVEN));
         verify(productionBalance).setField("totalCostPerUnit", new BigDecimal(25.35).setScale(3, RoundingMode.HALF_EVEN));
     }
 }

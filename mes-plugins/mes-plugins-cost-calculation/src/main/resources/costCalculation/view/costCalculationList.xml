@@ -40,7 +40,7 @@
 				link="true" expression="#technology['name']"  />
 			<option type="column" name="date" fields="date" />
 			<option type="column" name="quantity" fields="quantity"  />
-			<option type="column" name="totalCostsForQuantity" fields="totalCostsForQuantity" />
+			<option type="column" name="totalCosts" fields="totalCosts" />
 			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit"  />
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />

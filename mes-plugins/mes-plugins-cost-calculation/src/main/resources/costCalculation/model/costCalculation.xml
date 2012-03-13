@@ -81,7 +81,7 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="totalCostsForQuantity">
+		<decimal name="totalCosts">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
