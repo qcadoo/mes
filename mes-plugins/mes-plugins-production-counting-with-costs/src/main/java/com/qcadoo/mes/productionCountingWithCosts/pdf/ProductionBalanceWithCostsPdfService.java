@@ -102,7 +102,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         }
 
         PdfPTable bottomTable = pdfHelper.createPanelTable(2);
-        bottomTable.addCell(createTechnicalProductionCostsPanel(productionBalance, locale));
+        bottomTable.addCell(createCostsPanel(productionBalance, locale));
         bottomTable.addCell(createOverheadsAndSummaryPanel(productionBalance, locale));
         bottomTable.setSpacingBefore(20);
         document.add(bottomTable);
@@ -181,25 +181,54 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         return parametersForCostsPanel;
     }
 
-    private PdfPTable createTechnicalProductionCostsPanel(final Entity productionBalance, final Locale locale) {
+    private PdfPTable createCostsPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable content = pdfHelper.createPanelTable(1);
 
+        addRegisteredTechnicalCosts(content, productionBalance, locale);
+        addPlannedTechnicalCosts(content, productionBalance, locale);
+
+        return content;
+    }
+
+    private void addNumericWithLabel(final PdfPTable table, final String labelLocale, final Object value, final Locale locale) {
+        BigDecimal valueBD = (BigDecimal) value;
+        addTableCellAsTable(table, translationService.translate(labelLocale, locale), numberService.format(valueBD), null,
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
+    }
+
+    private void addRegisteredTechnicalCosts(PdfPTable content, Entity productionBalance, Locale locale) {
         content.addCell(new Phrase(
                 translationService
                         .translate(
                                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.registeredTechnicalProductionCosts",
                                 locale)
                         + ":", FontUtils.getDejavuBold10Dark()));
+        addNumericWithLabel(
+                content,
+                "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.registeredTotalCostsForQuantityLabel.label",
+                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_COSTS_FOR_QUANTITY), locale);
+        addNumericWithLabel(
+                content,
+                "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.registeredTotalCostPerUnitLabel.label",
+                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_COST_PER_UNIT), locale);
+    }
 
-        BigDecimal registeredTotalCosts = (BigDecimal) productionBalance
-                .getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_COSTS_FOR_QUANTITY);
+    private void addPlannedTechnicalCosts(PdfPTable content, Entity productionBalance, Locale locale) {
+        content.addCell(new Phrase(
+                translationService
+                        .translate(
+                                "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.plannedTechnicalProductionCosts",
+                                locale)
+                        + ":", FontUtils.getDejavuBold10Dark()));
+        addNumericWithLabel(
+                content,
+                "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.plannedTotalCostsForQuantityLabel.label",
+                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_COSTS_FOR_QUANTITY), locale);
+        addNumericWithLabel(
+                content,
+                "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.plannedTotalCostPerUnitLabel.label",
+                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_COSTS_FOR_QUANTITY), locale);
 
-        addTableCellAsTable(content, translationService.translate(
-                "productionCounting.productionBalance.registeredTotalCostsForQuantity.label", locale),
-                numberService.format(registeredTotalCosts), null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(),
-                null);
-
-        return content;
     }
 
     private PdfPTable createOverheadsAndSummaryPanel(Entity productionBalance, Locale locale) {
