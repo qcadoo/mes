@@ -115,7 +115,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Override
     public Object setDateToField(final Date date) {
-        return new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, Locale.getDefault()).format(date);
+        return new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(date);
     }
 
     @Override

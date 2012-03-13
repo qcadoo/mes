@@ -83,7 +83,7 @@ public class CostCalculationReportService {
             }
 
             if ("0".equals(generated.getFieldValue())) {
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, viewDefinitionState.getLocale())
                         .format(new Date()));
                 generated.setFieldValue("1");
             }

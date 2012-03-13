@@ -107,7 +107,7 @@ public class ProductionCountingService {
                 name.setEnabled(false);
                 order.setEnabled(false);
                 description.setEnabled(false);
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
+                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
                         .format(new Date()));
                 requestComponentUpdateState(viewDefinitionState);
             }

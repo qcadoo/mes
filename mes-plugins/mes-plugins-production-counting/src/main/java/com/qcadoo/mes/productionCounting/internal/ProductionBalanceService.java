@@ -175,7 +175,7 @@ public class ProductionBalanceService {
 
     private void fillReportValues(final Entity productionBalance) {
         productionBalance.setField(ProductionBalanceFields.GENERATED, true);
-        productionBalance.setField(ProductionBalanceFields.DATE, new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT,
+        productionBalance.setField(ProductionBalanceFields.DATE, new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
                 LocaleContextHolder.getLocale()).format(new Date()));
         productionBalance.setField(ProductionBalanceFields.WORKER, securityService.getCurrentUserName());
     }

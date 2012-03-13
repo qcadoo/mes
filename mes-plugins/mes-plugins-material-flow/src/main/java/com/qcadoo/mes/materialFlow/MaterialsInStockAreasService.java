@@ -251,7 +251,7 @@ public class MaterialsInStockAreasService {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
+                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale())
                         .format(new Date()));
             }
 
