@@ -155,12 +155,9 @@ public class ProductionBalanceService {
 
             productionBalance = getProductionBalance((Long) state.getFieldValue());
 
-            if (productionBalance != null) {
-                generateProductionBalance.generateProductionBalance(productionBalance);
-            }
-
             try {
                 generateProductionBalanceDocuments(productionBalance, state.getLocale());
+
                 state.performEvent(viewDefinitionState, "reset", new String[0]);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -173,7 +170,7 @@ public class ProductionBalanceService {
     public void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
-                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE });
+                ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, args[1] });
     }
 
     private void fillReportValues(final Entity productionBalance) {
@@ -382,5 +379,7 @@ public class ProductionBalanceService {
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, locale);
+
+        generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
     }
 }

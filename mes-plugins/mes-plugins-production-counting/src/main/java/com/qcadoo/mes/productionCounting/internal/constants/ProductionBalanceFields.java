@@ -45,5 +45,4 @@ public class ProductionBalanceFields {
     public static final String LABOR_TIME_BALANCE = "laborTimeBalance";
 
     public static final String OPERATION_TIME_COMPONENTS = "operationTimeComponents";
-
 }

@@ -185,10 +185,10 @@ public class MaterialFlowService {
 
             BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
 
-            if (shouldBe != null && shouldBe != BigDecimal.ZERO) {
-                should.setFieldValue(shouldBe);
-            } else {
+            if (shouldBe == null || shouldBe == BigDecimal.ZERO) {
                 should.setFieldValue(BigDecimal.ZERO);
+            } else {
+                should.setFieldValue(shouldBe);
             }
         }
 

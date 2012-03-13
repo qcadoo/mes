@@ -36,4 +36,5 @@ public class OrderFields {
 
     public final static String LOGGINGS = "loggings";
 
+    public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 }

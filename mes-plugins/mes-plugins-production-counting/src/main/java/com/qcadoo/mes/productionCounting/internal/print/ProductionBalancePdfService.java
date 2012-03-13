@@ -162,7 +162,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         table.addCell(cellTable);
     }
 
-    private PdfPTable createLeftPanel(final Entity productionBalance, final Locale locale) {
+    public PdfPTable createLeftPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable leftPanel = pdfHelper.createPanelTable(1);
 
         addTableCellAsTable(leftPanel,
@@ -211,7 +211,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         return leftPanel;
     }
 
-    private PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
+    public PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable rightPanel = pdfHelper.createPanelTable(1);
 
         rightPanel.addCell(new Phrase(translationService.translate(

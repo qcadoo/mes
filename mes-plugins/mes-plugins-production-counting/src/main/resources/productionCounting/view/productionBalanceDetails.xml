@@ -36,7 +36,7 @@
 			</group>
 			<group name="export">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{form}.fireEvent(printProductionBalance,pdf);" state="disabled" />
+					action="#{form}.fireEvent(printProductionBalance,pdf,0);" state="disabled" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -74,9 +74,9 @@
 									save.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveBack.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveNew.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
-									copyRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+									copyRibbonItem.enable();
 									generatedRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
-									deletedRibbonItem.enable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+									deletedRibbonItem.enable();
 								} else {
 									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									save.enable();

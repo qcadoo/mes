@@ -31,6 +31,6 @@
     
     <group name="exportWithCosts">
 		<bigButton name="pdfWithCosts" icon="pdfIcon24.png"
-			action="" state="disabled" />
+			action="#{form}.fireEvent(printProductionBalance,pdf,1);" state="enabled" />
 	</group>
 </ribbonExtension>
