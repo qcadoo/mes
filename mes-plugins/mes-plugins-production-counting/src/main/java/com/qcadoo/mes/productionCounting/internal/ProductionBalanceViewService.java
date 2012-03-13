@@ -24,10 +24,13 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
@@ -55,7 +58,35 @@ public class ProductionBalanceViewService {
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
+        final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
+        generateNumber(viewDefinitionState);
+        Set<String> fields = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency", "additionalOverheadValueCurrency",
+                "materialCostMarginValueCurrency", "productionCostMarginValueCurrency", "totalTechnicalProductionCostsCurrency",
+                "totalPieceworkCostsCurrency", "totalLaborHourlyCostsCurrency", "totalMachineHourlyCostsCurrency",
+                "totalMaterialCostsCurrency", "additionalOverheadCurrency");
+
+        for (String componentReference : fields) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
+            field.setFieldValue(currencyAlphabeticCode);
+            field.requestComponentUpdateState();
+        }
+
+        FieldComponent productionCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("productionCostMarginProc");
+        productionCostMarginProc.setFieldValue("%");
+        productionCostMarginProc.requestComponentUpdateState();
+        FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
+                .getComponentByReference("materialCostMarginProc");
+        materialCostMarginProc.setFieldValue("%");
+        materialCostMarginProc.requestComponentUpdateState();
+        fillCostPerUnitUnitField(viewDefinitionState, null, null);
+    }
 
     public void fillFieldsWhenOrderChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
