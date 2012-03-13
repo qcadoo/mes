@@ -29,99 +29,9 @@ ALTER TABLE costcalculation_costcalculation ALTER COLUMN includeadditionaltime S
 -- end
 
 
--- Table: productioncounting_productionbalance
--- changed: 07.03.2012
-
-ALTER TABLE costcalculation_costcalculation RENAME COLUMN totalcosts TO totalcostsforquantity;
-ALTER TABLE costcalculation_costcalculation RENAME COLUMN costperunit TO totalcostperunit;
-
--- end
-
-
--- Table: productioncounting_productionbalance
--- changed: 05.03.2012
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN printoperationnorms boolean;
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN printoperationnorms SET DEFAULT true;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN calculateoperationcostsmode character varying(255);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculateoperationcostsmode SET DEFAULT 'hourly'::character varying;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN includetpz boolean;
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN includetpz SET DEFAULT true;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN includeadditionaltime boolean;
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN includeadditionaltime SET DEFAULT false;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN sourceofmaterialcosts character varying(255);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN sourceofmaterialcosts SET DEFAULT '01currentGlobalDefinitionsInProduct'::character varying;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN calculatematerialcostsmode character varying(255);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculatematerialcostsmode SET DEFAULT '01nominal'::character varying;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmargin numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmargin SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmargin numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmargin SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverhead numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverhead SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN averagemachinehourlycost numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagemachinehourlycost SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN averagelaborhourlycost numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN averagelaborhourlycost SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotalcostsforquantity numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcostsforquantity SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotalcostperunit numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN registeredtotalcostperunit SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN technicalproductioncosts numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN technicalproductioncosts SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN technicalproductioncostperunit numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN technicalproductioncostperunit SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN balanceforquantity numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN balanceforquantity SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN balanceperunit numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN balanceperunit SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmarginvalue numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmarginvalue SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmarginvalue numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmarginvalue SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverheadvalue numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverheadvalue SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN totalOverhead numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalOverhead SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostsforquantity numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostsforquantity SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostperunit numeric(10,3);
-ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit SET DEFAULT 0::numeric;
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
-
-ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint;
-ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
-      REFERENCES technologies_technology (id) DEFERRABLE;
-      
--- end
-
-
 -- Table: costcalculation_costcalculation
 -- changed: 08.03.2012
-
+      
 ALTER TABLE costcalculation_costcalculation RENAME COLUMN dateofcalculation TO date;
 
 ALTER TABLE costcalculation_costcalculation ALTER COLUMN calculateOperationCostsMode SET DEFAULT '01hourly';
@@ -139,10 +49,95 @@ ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD CONSTRAINT c
       REFERENCES productioncounting_productionbalance (id) DEFERRABLE;
       
 -- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 12.03.2012
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN printoperationnorms boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN printoperationnorms SET DEFAULT true;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN calculateoperationcostsmode character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculateoperationcostsmode SET DEFAULT 'hourly'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN includetpz boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN includetpz SET DEFAULT true;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN includeadditionaltime boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN includeadditionaltime SET DEFAULT false;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedmachinetime integer;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN machinetime integer;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN machinetimebalance integer;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedlabortime integer;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN labortime integer;
+ALTER TABLE productioncounting_productionbalance ADD COLUMN labortimebalance integer;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN sourceofmaterialcosts character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN sourceofmaterialcosts SET DEFAULT '01currentGlobalDefinitionsInProduct'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN calculatematerialcostsmode character varying(255);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN calculatematerialcostsmode SET DEFAULT '01nominal'::character varying;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN averagemachinehourlycost numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN averagelaborhourlycost numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmargin numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmargin SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmargin numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmargin SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverhead numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverhead SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedcomponentscosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN componentscosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN componentscostsbalance numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedmachinecosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN machinecosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN machinecostsbalance numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedlaborcosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN laborcosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN laborcostsbalance numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotaltechnicalproductioncosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN registeredtotaltechnicalproductioncostperunit numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totaltechnicalproductioncosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totaltechnicalproductioncostperunit numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN balancetechnicalproductioncosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN balancetechnicalproductioncostperunit numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productioncostmarginvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN productioncostmarginvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN materialcostmarginvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN materialcostmarginvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN additionaloverheadvalue numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN additionaloverheadvalue SET DEFAULT 0::numeric;
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalOverhead numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcosts numeric(10,3);
+ALTER TABLE productioncounting_productionbalance ADD COLUMN totalcostperunit numeric(10,3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN quantity numeric(10, 3);
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint;
+ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE;
       
+-- end
+
       
 -- Table: productioncounting_balanceoperationproductincomponent
--- changed: 09.03.2012
+-- changed: 12.03.2012
 
 CREATE TABLE productioncounting_balanceoperationproductincomponent
 (
@@ -153,7 +148,7 @@ CREATE TABLE productioncounting_balanceoperationproductincomponent
   usedquantity numeric(8,3),
   plannedquantity numeric(8,3),
   balance numeric(10,3),
-  CONSTRAINT productioncounting_balanceoperationproductincomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_balanceoperationproductincomponent_pkey PRIMARY KEY (id),
   CONSTRAINT productioncounting_balanceoperationproductoutcomponent_p_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT productioncounting_balanceoperationproductincomponent_pb_fkey FOREIGN KEY (productionbalance_id)
@@ -166,7 +161,7 @@ CREATE TABLE productioncounting_balanceoperationproductincomponent
 
 
 -- Table: productioncounting_balanceoperationproductoutcomponent
--- changed: 09.03.2012
+-- changed: 12.03.2012
 
 CREATE TABLE productioncounting_balanceoperationproductoutcomponent
 (
@@ -177,7 +172,7 @@ CREATE TABLE productioncounting_balanceoperationproductoutcomponent
   usedquantity numeric(8,3),
   plannedquantity numeric(8,3),
   balance numeric(10,3),
-  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pkey PRIMARY KEY (id),
   CONSTRAINT productioncounting_balanceoperationproductoutcomponent_p_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT productioncounting_balanceoperationproductoutcomponent_pb_fkey FOREIGN KEY (productionbalance_id)
@@ -190,7 +185,7 @@ CREATE TABLE productioncounting_balanceoperationproductoutcomponent
 
 
 -- Table: productioncounting_operationtimecomponent
--- changed: 09.03.2012
+-- changed: 12.03.2012
 
 CREATE TABLE productioncounting_operationtimecomponent
 (
@@ -203,10 +198,55 @@ CREATE TABLE productioncounting_operationtimecomponent
   plannedlabortime integer,
   labortime integer,
   labortimebalance integer,
-  CONSTRAINT productioncounting_operationtimecomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productioncounting_operationtimecomponent_pkey PRIMARY KEY (id),
   CONSTRAINT productioncounting_operationtimecomponent_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE,
   CONSTRAINT productioncounting_operationtimecomponent_pb_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: productioncountingwithcosts_orderoperationproductincomponent
+-- changed: 12.03.2012
+
+CREATE TABLE productioncountingwithcosts_orderoperationproductincomponent
+(
+  id bigint NOT NULL,
+  productionbalance_id bigint,
+  product_id bigint,
+  plannedcost numeric(10,3),
+  registeredcost numeric(10,3),
+  balance numeric(10,3),
+  CONSTRAINT productioncountingwithcosts_orderoperationpic_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncountingwithcosts_orderoperationpic_p_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT productioncountingwithcosts_orderoperationpic_pb_fkey FOREIGN KEY (productionbalance_id)
+      REFERENCES productioncounting_productionbalance (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: productioncountingwithcosts_orderoperationproductincomponent
+-- changed: 12.03.2012
+
+CREATE TABLE productioncountingwithcosts_operationcostcomponent
+(
+  id bigint NOT NULL,
+  productionbalance_id bigint,
+  orderoperationcomponent_id bigint,
+  plannedmachinecosts numeric(10,3),
+  machinecosts numeric(10,3),
+  machinecostsbalance numeric(10,3),
+  plannedlaborcosts numeric(10,3),
+  laborcosts numeric(10,3),
+  laborcostsbalance numeric(10,3),
+  CONSTRAINT productioncountingwithcosts_operationcostcomponent_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncountingwithcosts_operationcostcomponent_orc_fkey FOREIGN KEY (orderoperationcomponent_id)
+      REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE,
+  CONSTRAINT productioncountingwithcosts_operationcostcomponent_pb_fkey FOREIGN KEY (productionbalance_id)
       REFERENCES productioncounting_productionbalance (id) DEFERRABLE
 );
 

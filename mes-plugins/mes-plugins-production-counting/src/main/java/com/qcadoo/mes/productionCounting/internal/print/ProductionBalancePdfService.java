@@ -407,9 +407,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         List<String> operationsTimeTableHeader = new ArrayList<String>();
         operationsTimeTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.opLevel", locale));
+                "productionCounting.productionBalance.report.columnHeader.operationLevel", locale));
         operationsTimeTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.opNumber", locale));
+                "productionCounting.productionBalance.report.columnHeader.operationNumber", locale));
         operationsTimeTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.plannedDuration", locale));
         operationsTimeTableHeader.add(translationService.translate(
@@ -467,9 +467,9 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
         List<String> operationsTimeTableHeader = new ArrayList<String>();
         operationsTimeTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.opLevel", locale));
+                "productionCounting.productionBalance.report.columnHeader.operationLevel", locale));
         operationsTimeTableHeader.add(translationService.translate(
-                "productionCounting.productionBalance.report.columnHeader.opNumber", locale));
+                "productionCounting.productionBalance.report.columnHeader.operationNumber", locale));
         operationsTimeTableHeader.add(translationService.translate(
                 "productionCounting.productionBalance.report.columnHeader.plannedDuration", locale));
         operationsTimeTableHeader.add(translationService.translate(
@@ -522,44 +522,43 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(new Paragraph(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.productionTime", locale), FontUtils.getDejavuBold11Dark()));
 
-        BigDecimal machinePlannedTime = BigDecimal.ZERO;
-        BigDecimal laborPlannedTime = BigDecimal.ZERO;
-        BigDecimal machineRegisteredTime = BigDecimal.ZERO;
-        BigDecimal laborRegisteredTime = BigDecimal.ZERO;
+        BigDecimal plannedMachineTime = BigDecimal.ZERO;
+        BigDecimal plannedLaborTime = BigDecimal.ZERO;
+        BigDecimal machineTime = BigDecimal.ZERO;
+        BigDecimal laborTime = BigDecimal.ZERO;
         List<Entity> productionRecordsList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo("order", productionBalance.getBelongsToField("order"))).list().getEntities();
 
         for (Entity productionRecord : productionRecordsList) {
-            machinePlannedTime = machinePlannedTime.add(
+            plannedMachineTime = plannedMachineTime.add(
                     new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
-            laborPlannedTime = laborPlannedTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
+            plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
                     numberService.getMathContext());
-            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
+            machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
                     numberService.getMathContext());
-            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
+            laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
                     numberService.getMathContext());
         }
 
-        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
-        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
+        BigDecimal machineTimeBalance = machineTime.subtract(plannedMachineTime, numberService.getMathContext());
+        BigDecimal laborTimeBalance = laborTime.subtract(plannedLaborTime, numberService.getMathContext());
 
         PdfPTable timePanel = pdfHelper.createPanelTable(3);
 
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.machinePlannedTime",
+                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.plannedMachineTime",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(machinePlannedTime.intValue()), null,
+                        + ":", timeConverterService.convertTimeToString(plannedMachineTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.machineRegisteredTime",
-                        locale)
-                        + ":", timeConverterService.convertTimeToString(machineRegisteredTime.intValue()), null,
+                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.machineTime", locale)
+                        + ":", timeConverterService.convertTimeToString(machineTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
@@ -571,16 +570,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.laborPlannedTime",
+                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.plannedLaborTime",
                         locale)
-                        + ":", timeConverterService.convertTimeToString(laborPlannedTime.intValue()), null,
+                        + ":", timeConverterService.convertTimeToString(plannedLaborTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.laborRegisteredTime",
-                        locale)
-                        + ":", timeConverterService.convertTimeToString(laborRegisteredTime.intValue()), null,
+                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.laborTime", locale)
+                        + ":", timeConverterService.convertTimeToString(laborTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,

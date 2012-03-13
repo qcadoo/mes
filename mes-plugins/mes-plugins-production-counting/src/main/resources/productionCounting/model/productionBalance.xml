@@ -48,12 +48,12 @@
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="true" />
 		
-		<integer name="machinePlannedTime" />
-		<integer name="machineRegisteredTime" />
+		<integer name="plannedMachineTime" />
+		<integer name="machineTime" />
 		<integer name="machineTimeBalance" />
 		
-		<integer name="laborPlannedTime" />
-		<integer name="laborRegisteredTime" />
+		<integer name="plannedLaborTime" />
+		<integer name="laborTime" />
 		<integer name="laborTimeBalance" />
 	
 		<hasMany name="balanceOperationProductInComponents" joinField="productionBalance"

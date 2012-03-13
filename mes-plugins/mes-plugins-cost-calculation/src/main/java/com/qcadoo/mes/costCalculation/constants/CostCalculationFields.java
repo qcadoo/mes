@@ -42,7 +42,7 @@ public class CostCalculationFields {
 
     public static final String TOTAL_OVERHEAD = "totalOverhead";
 
-    public static final String TOTAL_COSTS_FOR_QUANTITY = "totalCostsForQuantity";
+    public static final String TOTAL_COSTS = "totalCosts";
 
     public static final String TOTAL_COST_PER_UNIT = "totalCostPerUnit";
 

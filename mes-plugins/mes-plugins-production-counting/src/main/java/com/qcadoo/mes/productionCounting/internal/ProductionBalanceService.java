@@ -329,11 +329,11 @@ public class ProductionBalanceService {
     }
 
     private void fillTimeValues(final Entity productionBalance, final Entity order) {
-        BigDecimal machinePlannedTime = BigDecimal.ZERO;
-        BigDecimal machineRegisteredTime = BigDecimal.ZERO;
+        BigDecimal plannedMachineTime = BigDecimal.ZERO;
+        BigDecimal machineTime = BigDecimal.ZERO;
 
-        BigDecimal laborRegisteredTime = BigDecimal.ZERO;
-        BigDecimal laborPlannedTime = BigDecimal.ZERO;
+        BigDecimal laborTime = BigDecimal.ZERO;
+        BigDecimal plannedLaborTime = BigDecimal.ZERO;
 
         List<Entity> productionRecordsList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
@@ -341,26 +341,26 @@ public class ProductionBalanceService {
                 .add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order)).list().getEntities();
 
         for (Entity productionRecord : productionRecordsList) {
-            machinePlannedTime = machinePlannedTime.add(
+            plannedMachineTime = plannedMachineTime.add(
                     new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
-            laborPlannedTime = laborPlannedTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
+            plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
                     numberService.getMathContext());
 
-            machineRegisteredTime = machineRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
+            machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
                     numberService.getMathContext());
-            laborRegisteredTime = laborRegisteredTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
+            laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
                     numberService.getMathContext());
         }
 
-        BigDecimal machineTimeBalance = machineRegisteredTime.subtract(machinePlannedTime, numberService.getMathContext());
-        BigDecimal laborTimeBalance = laborRegisteredTime.subtract(laborPlannedTime, numberService.getMathContext());
+        BigDecimal machineTimeBalance = machineTime.subtract(plannedMachineTime, numberService.getMathContext());
+        BigDecimal laborTimeBalance = laborTime.subtract(plannedLaborTime, numberService.getMathContext());
 
-        productionBalance.setField("machinePlannedTime", machinePlannedTime);
-        productionBalance.setField("machineRegisteredTime", machineRegisteredTime);
+        productionBalance.setField("plannedMachineTime", plannedMachineTime);
+        productionBalance.setField("machineTime", machineTime);
         productionBalance.setField("machineTimeBalance", machineTimeBalance);
 
-        productionBalance.setField("laborPlannedTime", laborPlannedTime);
-        productionBalance.setField("laborRegisteredTime", laborRegisteredTime);
+        productionBalance.setField("plannedLaborTime", plannedLaborTime);
+        productionBalance.setField("laborTime", laborTime);
         productionBalance.setField("laborTimeBalance", laborTimeBalance);
 
         productionBalance.getDataDefinition().save(productionBalance);
