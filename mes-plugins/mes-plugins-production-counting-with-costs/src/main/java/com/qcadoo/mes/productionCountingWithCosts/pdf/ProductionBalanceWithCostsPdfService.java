@@ -132,15 +132,17 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         final boolean isTypeOfProductionRecordingForEach = TypeOfProductionRecording.parseString(typeOfProductionRecording)
                 .equals(TypeOfProductionRecording.FOR_EACH);
 
-        if (isTypeHourly && isTypeOfProductionRecordingForEach) {
-            productionBalancePdfService.addTimeBalanceAsPanel(document, productionBalance, locale);
-            addProductionCosts(document, productionBalance, locale);
+        if (isTypeHourly) {
+            if (isTypeOfProductionRecordingCumulated) {
+                productionBalancePdfService.addTimeBalanceAsPanel(document, productionBalance, locale);
+                addProductionCosts(document, productionBalance, locale);
+            } else if (isTypeOfProductionRecordingForEach) {
+                productionBalancePdfService.addMachineTimeBalance(document, productionBalance, locale);
+                addCostsBalance("machine", document, productionBalance, locale);
 
-            productionBalancePdfService.addMachineTimeBalance(document, productionBalance, locale);
-            addCostsBalance("machine", document, productionBalance, locale);
-
-            productionBalancePdfService.addLaborTimeBalance(document, productionBalance, locale);
-            addCostsBalance("labor", document, productionBalance, locale);
+                productionBalancePdfService.addLaborTimeBalance(document, productionBalance, locale);
+                addCostsBalance("labor", document, productionBalance, locale);
+            }
         }
     }
 
@@ -169,6 +171,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         addCurrencyNumericWithLabel(costsPanel, "productionCounting.productionBalance.report.panel.productionCosts.laborBalance",
                 productionBalance.getField(ProductionBalanceFieldsPCWC.LABOR_COSTS_BALANCE), locale);
 
+        costsPanel.setSpacingBefore(10);
         document.add(costsPanel);
     }
 
@@ -199,7 +202,10 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
         List<Entity> products = productionBalance.getHasManyField("orderOperationProductInComponents");
 
-        if (!products.isEmpty()) {
+        // if (!products.isEmpty()) {
+        {
+            document.add(Chunk.NEWLINE);
+
             document.add(new Paragraph(translationService.translate(
                     "productionCounting.productionBalance.report.table.materialCost", locale), FontUtils.getDejavuBold11Dark()));
 
@@ -265,26 +271,22 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                         .translate(
                                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.operationName",
                                 locale));
-        machineCostTableHeader
-                .add(translationService
-                        .translate(
-                                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.plannedMachineCosts",
-                                locale));
-        machineCostTableHeader
-                .add(translationService
-                        .translate(
-                                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.machineCosts",
-                                locale));
-        machineCostTableHeader
-                .add(translationService
-                        .translate(
-                                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.machineCostsBalance",
-                                locale));
+        machineCostTableHeader.add(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.planned"
+                        + upperCaseFirstLetter(type) + "Costs", locale));
+        machineCostTableHeader.add(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
+                        + "Costs", locale));
+        machineCostTableHeader.add(translationService.translate(
+                "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
+                        + "CostsBalance", locale));
 
         List<Entity> operationComponents = productionBalance.getHasManyField("operationCostComponents");
 
         // if (!operationComponents.isEmpty()) {
         {
+            document.add(Chunk.NEWLINE);
+
             document.add(new Paragraph(translationService.translate(
                     "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm." + type + "Costs", locale),
                     FontUtils.getDejavuBold11Dark()));
@@ -366,7 +368,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 "productionCounting.productionBalance.sourceOfMaterialCosts.value." + sourceOfMaterialCostsField, locale);
         addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.sourceOfMaterialCosts.label", locale),
-                sourceOfMaterialCosts, null, FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+                sourceOfMaterialCosts, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), null);
 
         String calculateMaterialCostsModeField = productionBalance.getStringField("calculateMaterialCostsMode");
         String calculateMaterialCostsMode = translationService.translate(
@@ -374,7 +376,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 locale);
         addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.calculateMaterialCostsMode.label", locale),
-                calculateMaterialCostsMode, null, FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+                calculateMaterialCostsMode, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), null);
 
         parametersForCostsPanel.addCell(content);
 

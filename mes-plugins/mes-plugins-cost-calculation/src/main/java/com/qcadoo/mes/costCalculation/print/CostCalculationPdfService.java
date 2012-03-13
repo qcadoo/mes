@@ -559,15 +559,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
-        int[] columnWidth = { 20, 20, 20 };
-
         List<Entity> calculationOperationComponents = newLinkedList(costCalculation
                 .getTreeField(CALCULATION_OPERATION_COMPONENTS));
 
         Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
 
         PdfPTable printCostNormsOfMaterialTable2 = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
-                false, columnWidth);
+                false);
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
 
