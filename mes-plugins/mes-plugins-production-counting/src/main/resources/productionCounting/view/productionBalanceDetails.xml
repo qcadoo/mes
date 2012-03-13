@@ -332,15 +332,9 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-			method="fillCurrencyFields" />
-			
-		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 			method="showGrids" />
-			
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 			method="disableFieldsWhenGenerated" />
-			
 	</hooks>
 </view>
