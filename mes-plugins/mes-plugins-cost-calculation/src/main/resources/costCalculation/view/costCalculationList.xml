@@ -33,7 +33,7 @@
 		</ribbon>
 		<component type="grid" name="costCalculationList" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="order" fields="order" link="true" expression="#order==null?'N/A':#order['name']"/>
+			<option type="column" name="order" fields="order" link="true" expression="#order==null?'N/A':#order['name']" />
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" link="true" />
 			<option type="column" name="technology" fields="technology"
@@ -41,7 +41,7 @@
 			<option type="column" name="date" fields="date" />
 			<option type="column" name="quantity" fields="quantity"  />
 			<option type="column" name="totalCosts" fields="totalCosts" />
-			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit"  />
+			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit" />
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />
 			<option type="correspondingComponent" value="form" />

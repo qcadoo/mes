@@ -154,7 +154,7 @@
 	<windowTab name="materialCostsTab">
 		<component type="form" name="materialCostsForm" reference="materialCostsForm">
 			<component type="gridLayout" name="materialCostsGridLayout"
-				reference="materialCostsGridLayout" columns="1" rows="2">
+				reference="materialCostsGridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="borderLayout" name="componentsCostSummaryBorderLayout"
 						reference="componentsCostSummaryBorderLayout">
@@ -381,7 +381,6 @@
 						<option type="label" value="plannedTechnicalProductionCosts" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="9" height="4">
 					<component type="borderLayout"
 						name="technicalProductionCostsBalanceBorderLayout" reference="technicalProductionCostsBalanceBorderLayout">

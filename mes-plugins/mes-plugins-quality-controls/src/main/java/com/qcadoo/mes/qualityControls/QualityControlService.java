@@ -274,7 +274,7 @@ public final class QualityControlService {
                     FieldComponent date = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_LITERAL);
 
                     staff.setFieldValue(securityService.getCurrentUserName());
-                    date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_FORMAT, LocaleContextHolder.getLocale())
+                    date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_FORMAT, LocaleContextHolder.getLocale())
                             .format(new Date()));
 
                     closed.setFieldValue(true);

@@ -101,7 +101,7 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, viewDefinitionState.getLocale())
                         .format(new Date()));
             }
 
@@ -150,7 +150,7 @@ public class WorkPlanViewHooks {
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
                 generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT, viewDefinitionState.getLocale())
+                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, viewDefinitionState.getLocale())
                         .format(new Date()));
             }
 

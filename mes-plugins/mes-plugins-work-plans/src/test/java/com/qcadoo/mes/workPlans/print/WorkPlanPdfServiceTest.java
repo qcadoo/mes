@@ -293,7 +293,7 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldAddOrdersToTheTableCorrectly() throws DocumentException {
         // given
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
 
         PdfPTable table = mock(PdfPTable.class);
         PdfPCell defaultCell = mock(PdfPCell.class);
@@ -340,7 +340,7 @@ public class WorkPlanPdfServiceTest {
     @Test
     public void shouldNotTryToAddProductToTheOrdersTableIfThereIsNone() throws DocumentException {
         // given
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
 
         DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
 

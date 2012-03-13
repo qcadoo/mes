@@ -83,7 +83,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private static Locale currentLocale = LocaleContextHolder.getLocale();
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.DATE_FORMAT, currentLocale);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DateUtils.L_DATE_FORMAT, currentLocale);
 
     private final int[] defaultWorkPlanColumnWidth = new int[] { 15, 25, 30, 15, 15 };
 
