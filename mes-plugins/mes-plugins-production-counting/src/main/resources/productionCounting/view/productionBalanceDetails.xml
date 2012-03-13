@@ -74,9 +74,9 @@
 									save.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveBack.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveNew.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
-									copyRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+									copyRibbonItem.enable();
 									generatedRibbonItem.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
-									deletedRibbonItem.enable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
+									deletedRibbonItem.enable();
 								} else {
 									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									save.enable();

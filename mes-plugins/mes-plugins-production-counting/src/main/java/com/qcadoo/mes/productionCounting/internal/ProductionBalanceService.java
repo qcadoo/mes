@@ -380,6 +380,6 @@ public class ProductionBalanceService {
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
         productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, locale);
 
-        generateProductionBalance.notifyObservers(productionBalance);
+        generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
     }
 }
