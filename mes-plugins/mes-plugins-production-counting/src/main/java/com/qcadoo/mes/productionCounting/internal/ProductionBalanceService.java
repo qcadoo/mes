@@ -151,7 +151,7 @@ public class ProductionBalanceService {
             if (!productionBalance.getBooleanField(ProductionBalanceFields.GENERATED)) {
                 fillReportValues(productionBalance);
 
-                fillGrids(productionBalance);
+                fillFieldsAndGrids(productionBalance);
             }
 
             productionBalance = getProductionBalance((Long) state.getFieldValue());
@@ -181,7 +181,7 @@ public class ProductionBalanceService {
         productionBalance.setField(ProductionBalanceFields.WORKER, securityService.getCurrentUserName());
     }
 
-    private void fillGrids(final Entity productionBalance) {
+    private void fillFieldsAndGrids(final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(OrdersConstants.MODEL_ORDER);
 
         if ((order == null) || checkIfTypeOfProductionRecordingIsBasic(order)) {
@@ -198,6 +198,7 @@ public class ProductionBalanceService {
 
         if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
             if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
             } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                     order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
@@ -326,6 +327,10 @@ public class ProductionBalanceService {
     }
 
     private void fillTimeValues(final Entity productionBalance, final Entity order) {
+        if ((productionBalance == null) || (order == null)) {
+            return;
+        }
+
         BigDecimal plannedMachineTime = BigDecimal.ZERO;
         BigDecimal machineTime = BigDecimal.ZERO;
 
