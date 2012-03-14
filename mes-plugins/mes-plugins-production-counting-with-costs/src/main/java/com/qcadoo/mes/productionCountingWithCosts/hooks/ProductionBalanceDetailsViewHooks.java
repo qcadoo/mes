@@ -221,16 +221,9 @@ public class ProductionBalanceDetailsViewHooks {
                 .getComponentByReference(ProductionBalanceFields.GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            for (String fieldName : Arrays.asList(PRINT_COST_NORMS_OF_MATERIALS, SOURCE_OF_MATERIAL_COSTS,
-                    CALCULATE_MATERIAL_COSTS_MODE, AVERAGE_MACHINE_HOURLY_COST, AVERAGE_LABOR_HOURLY_COST,
-                    PRODUCTION_COST_MARGIN, MATERIAL_COST_MARGIN, ADDITIONAL_OVERHEAD)) {
-                FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
-                fieldComponent.setEnabled(false);
-                fieldComponent.requestComponentUpdateState();
-            }
-
-            viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setEnabled(false);
-            viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setEnabled(false);
+            setComponentsState(viewDefinitionState, false);
+        } else {
+            setComponentsState(viewDefinitionState, true);
         }
     }
 
@@ -246,6 +239,19 @@ public class ProductionBalanceDetailsViewHooks {
                 && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
             sourceOfMaterialCosts.addMessage("productionCountingWithCosts.messages.optionUnavailable", MessageType.FAILURE);
         }
+    }
+
+    private void setComponentsState(final ViewDefinitionState viewDefinitionState, final boolean isEnabled) {
+        for (String fieldName : Arrays.asList(PRINT_COST_NORMS_OF_MATERIALS, SOURCE_OF_MATERIAL_COSTS,
+                CALCULATE_MATERIAL_COSTS_MODE, AVERAGE_MACHINE_HOURLY_COST, AVERAGE_LABOR_HOURLY_COST, PRODUCTION_COST_MARGIN,
+                MATERIAL_COST_MARGIN, ADDITIONAL_OVERHEAD)) {
+            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
+            fieldComponent.setEnabled(isEnabled);
+            fieldComponent.requestComponentUpdateState();
+        }
+
+        viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setEnabled(isEnabled);
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setEnabled(isEnabled);
     }
 
     private void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final boolean isVisible) {

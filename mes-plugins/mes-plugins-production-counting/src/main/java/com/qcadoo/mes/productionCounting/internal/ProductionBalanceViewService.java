@@ -162,15 +162,9 @@ public class ProductionBalanceViewService {
                 .getComponentByReference(ProductionBalanceFields.GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            for (String fieldName : Arrays.asList(ORDER, NAME, DESCRIPTION, PRINT_OPERATION_NORMS, CALCULATE_OPERATION_COST_MODE,
-                    INCLUDE_TPZ, INCLUDE_ADDITIONAL_TIME)) {
-                FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
-                fieldComponent.setEnabled(false);
-                fieldComponent.requestComponentUpdateState();
-            }
-
-            viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setEnabled(false);
-            viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setEnabled(false);
+            setComponentsState(viewDefinitionState, false);
+        } else {
+            setComponentsState(viewDefinitionState, true);
         }
     }
 
@@ -228,6 +222,18 @@ public class ProductionBalanceViewService {
 
         productField.setFieldValue(null);
         recordsNumberField.setFieldValue(null);
+    }
+
+    private void setComponentsState(final ViewDefinitionState viewDefinitionState, final boolean isEnabled) {
+        for (String fieldName : Arrays.asList(ORDER, NAME, DESCRIPTION, PRINT_OPERATION_NORMS, CALCULATE_OPERATION_COST_MODE,
+                INCLUDE_TPZ, INCLUDE_ADDITIONAL_TIME)) {
+            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
+            fieldComponent.setEnabled(isEnabled);
+            fieldComponent.requestComponentUpdateState();
+        }
+
+        viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setEnabled(isEnabled);
+        viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setEnabled(isEnabled);
     }
 
     private void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final boolean isVisible) {
