@@ -165,21 +165,42 @@
 					<component type="borderLayout" name="componentsCostSummaryBorderLayout"
 						reference="componentsCostSummaryBorderLayout">
 						<component type="gridLayout" name="componentsCostSummaryGridLayout"
-							columns="3" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1">
+							columns="12" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedComponentsCosts"
 									field="#{form}.plannedComponentsCosts" reference="plannedComponentsCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="2" row="1">
+							<layoutElement column="4" row="1">
+								<component type="input" name="plannedComponentsCostsCurrency"
+									reference="plannedComponentsCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="componentsCosts"
 									field="#{form}.componentsCosts" reference="componentsCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="8" row="1">
+								<component type="input" name="componentsCostsCurrency"
+									reference="componentsCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="componentsCostsBalance"
 									field="#{form}.componentsCostsBalance" reference="componentsCostsBalance"
 									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="12" row="1">
+								<component type="input" name="componentsCostsBalanceCurrency"
+									reference="componentsCostsBalanceCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
 							</layoutElement>
 						</component>
 
@@ -208,22 +229,43 @@
 				<layoutElement column="1" row="1">
 					<component type="borderLayout" name="machineCostsBorderLayout"
 						reference="machineCostsBorderLayout">
-						<component type="gridLayout" name="machineCostsGridLayout"
-							columns="3" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1">
+						<component type="gridLayout" name="machineCostsGridLayout" 
+							columns="12" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedMachineCosts"
 									field="#{form}.plannedMachineCosts" reference="plannedMachineCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="2" row="1">
+							<layoutElement column="4" row="1">
+								<component type="input" name="plannedMachineCostsCurrency"
+									reference="plannedMachineCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="machineCosts"
 									field="#{form}.machineCosts" reference="machineCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="8" row="1">
+								<component type="input" name="machineCostsCurrency"
+									reference="machineCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="machineCostsBalance"
 									field="#{form}.machineCostsBalance" reference="machineCostsBalance"
 									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="12" row="1">
+								<component type="input" name="machineCostsBalanceCurrency"
+									reference="machineCostsBalanceCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
 							</layoutElement>
 						</component>
 
@@ -234,21 +276,42 @@
 					<component type="borderLayout" name="laborCostsBorderLayout"
 						reference="laborCostsBorderLayout">
 						<component type="gridLayout" name="laborCostsGridLayout"
-							reference="laborCostsGridLayout" columns="3" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1">
+							columns="12" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedLaborCosts"
 									field="#{form}.plannedLaborCosts" reference="plannedLaborCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="2" row="1">
+							<layoutElement column="4" row="1">
+								<component type="input" name="plannedLaborCostsCurrency"
+									reference="plannedLaborCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="laborCosts"
 									field="#{form}.laborCosts" reference="laborCosts"
 									defaultEnabled="false" />
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="8" row="1">
+								<component type="input" name="laborCostsCurrency"
+									reference="laborCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="laborCostsBalance"
 									field="#{form}.laborCostsBalance" reference="laborCostsBalance"
 									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="12" row="1">
+								<component type="input" name="laborCostsBalanceCurrency"
+									reference="laborCostsBalanceCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
 							</layoutElement>
 						</component>
 

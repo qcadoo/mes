@@ -303,7 +303,7 @@
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
-			method="changeOtherFieldsAndGridsVisibility" />
+			method="changeFieldsAndGridsVisibility" />
 		
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
@@ -318,7 +318,7 @@
 		<view:view-hook plugin="productionCounting" view="productionBalanceDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
-			method="disableOtherFieldsAndGridsWhenGenerated" />
+			method="disableFieldsAndGridsWhenGenerated" />
 		
 		<view:view-listener plugin="productionCounting" view="productionBalanceDetails"
 			component="calculateOperationCostsMode" event="onSelectedEntityChange"

@@ -82,24 +82,17 @@ public class ProductionBalanceDetailsViewHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void changeOtherFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
+    public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-
-        if (form == null || form.getEntityId() == null) {
-            viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(false);
-
-            viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(false);
-
-            viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(false);
-
-            viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
-        }
 
         FieldComponent generated = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.GENERATED);
+
+        if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
+            setComponentsVisibility(viewDefinitionState, false);
+
+            return;
+        }
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
@@ -109,6 +102,8 @@ public class ProductionBalanceDetailsViewHooks {
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
+            setComponentsVisibility(viewDefinitionState, false);
+
             return;
         }
 
@@ -176,10 +171,13 @@ public class ProductionBalanceDetailsViewHooks {
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
         Set<String> currencyFieldNames = Sets.newHashSet("averageMachineHourlyCostCurrency", "averageLaborHourlyCostCurrency",
-                "additionalOverheadCurrency", "registeredTotalTechnicalProductionCostsCurrency",
-                "totalTechnicalProductionCostsCurrency", "balanceTechnicalProductionCostsCurrency",
-                "productionCostMarginValueCurrency", "materialCostMarginValueCurrency", "additionalOverheadValueCurrency",
-                "totalOverheadCurrency", "totalCostsCurrency");
+                "additionalOverheadCurrency", "plannedComponentsCostsCurrency", "componentsCostsCurrency",
+                "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency", "machineCostsCurrency",
+                "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency", "laborCostsBalanceCurrency",
+                "registeredTotalTechnicalProductionCostsCurrency", "totalTechnicalProductionCostsCurrency",
+                "balanceTechnicalProductionCostsCurrency", "productionCostMarginValueCurrency",
+                "materialCostMarginValueCurrency", "additionalOverheadValueCurrency", "totalOverheadCurrency",
+                "totalCostsCurrency");
 
         for (String currencyFieldName : currencyFieldNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(currencyFieldName);
@@ -218,7 +216,7 @@ public class ProductionBalanceDetailsViewHooks {
 
     }
 
-    public void disableOtherFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
+    public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
         FieldComponent generated = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.GENERATED);
 
@@ -248,6 +246,19 @@ public class ProductionBalanceDetailsViewHooks {
                 && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
             sourceOfMaterialCosts.addMessage("productionCountingWithCosts.messages.optionUnavailable", MessageType.FAILURE);
         }
+    }
+
+    private void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final boolean isVisible) {
+        viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(isVisible);
     }
 
     private Entity getOrderFromDB(Long orderId) {

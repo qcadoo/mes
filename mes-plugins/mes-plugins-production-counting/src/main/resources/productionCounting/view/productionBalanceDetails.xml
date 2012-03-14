@@ -286,7 +286,7 @@
 					<component type="borderLayout" name="laborTimeBorderLayout"
 						reference="laborTimeBorderLayout">
 						<component type="gridLayout" name="laborTimeGridLayout"
-							reference="laborTimeGridLayout" columns="3" rows="1" hasBorders="false">
+							columns="3" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
 								<component type="input" name="plannedLaborTime"
 									field="#{form}.plannedLaborTime" reference="plannedLaborTime"

@@ -443,24 +443,24 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
-        PdfPTable PrintCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
+        PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
 
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            PrintCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
                     .getDejavuRegular9Dark()));
-            PrintCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
                     .getDejavuRegular9Dark()));
 
             BigDecimal toDisplay = (BigDecimal) product.getKey().getField(costMode);
             BigDecimal quantity = (BigDecimal) product.getValue();
             String unit = (String) product.getKey().getStringField(L_UNIT);
 
-            PrintCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " / " + quantity + " " + unit, FontUtils
+            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " / " + quantity + " " + unit, FontUtils
                     .getDejavuRegular9Dark()));
 
         }
-        return PrintCostNormsOfMaterialTable;
+        return printCostNormsOfMaterialTable;
     }
 
     private void addTableCellAsTwoColumnsTable(final PdfPTable table, final String label, final Object value) {
