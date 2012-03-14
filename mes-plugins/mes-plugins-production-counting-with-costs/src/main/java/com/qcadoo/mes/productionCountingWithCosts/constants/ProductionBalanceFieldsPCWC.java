@@ -43,4 +43,6 @@ public class ProductionBalanceFieldsPCWC {
     public static final String COMPONENTS_COSTS = "componentsCosts";
 
     public static final String COMPONENTS_COSTS_BALANCE = "componentsCostsBalance";
+
+    public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
 }
