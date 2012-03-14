@@ -2,6 +2,8 @@ package com.qcadoo.mes.productionCountingWithCosts.constants;
 
 public class ProductionBalanceFieldsPCWC {
 
+    public static final String PRINT_COST_NORMS_OF_MATERIALS = "printCostNormsOfMaterials";
+
     public static final String REGISTERED_TOTAL_TECHNICALPRODUCTION_COSTS = "registeredTotalTechnicalProductionCosts";
 
     public static final String REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT = "registeredTotalTechnicalProductionCostPerUnit";
@@ -43,4 +45,18 @@ public class ProductionBalanceFieldsPCWC {
     public static final String COMPONENTS_COSTS = "componentsCosts";
 
     public static final String COMPONENTS_COSTS_BALANCE = "componentsCostsBalance";
+
+    public static final String SOURCE_OF_MATERIAL_COSTS = "sourceOfMaterialCosts";
+
+    public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
+
+    public static final String AVERAGE_MACHINE_HOURLY_COST = "averageMachineHourlyCost";
+
+    public static final String AVERAGE_LABOR_HOURLY_COST = "averageLaborHourlyCost";
+
+    public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";
+
+    public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
+
+    public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
 }

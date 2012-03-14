@@ -25,8 +25,6 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -118,7 +117,7 @@ public class ProductionRecordViewService {
         setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
         view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
-                PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording));
+                TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 order.getBooleanField(FIELD_REGISTER_QUANTITY_OUT_PRODUCT));
         view.getComponentByReference("recordOperationProductInComponent").setVisible(
@@ -171,7 +170,7 @@ public class ProductionRecordViewService {
     private void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order,
             final ViewDefinitionState view) {
         view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
-                PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
+                TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingType));
         ((FieldComponent) view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT)).requestComponentUpdateState();
 
         boolean registerProductionTime = order.getBooleanField(L_REGISTER_PRODUCTION_TIME);
@@ -180,7 +179,7 @@ public class ProductionRecordViewService {
 
         boolean registerPiecework = order.getBooleanField("registerPiecework");
         view.getComponentByReference("borderLayoutPiecework").setVisible(
-                registerPiecework && PARAM_RECORDING_TYPE_FOREACH.equals(recordingType));
+                registerPiecework && TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingType));
     }
 
     public void closeOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -285,13 +284,13 @@ public class ProductionRecordViewService {
                 FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
                 component.setEnabled(false);
             }
-            typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+            typeOfProductionRecording.setFieldValue(TypeOfProductionRecording.BASIC.getStringValue());
             typeOfProductionRecording.setEnabled(false);
         } else {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                     form.getEntityId());
             if (order == null || "".equals(order.getField(L_TYPE_OF_PRODUCTION_RECORDING))) {
-                typeOfProductionRecording.setFieldValue(PARAM_RECORDING_TYPE_NONE);
+                typeOfProductionRecording.setFieldValue(TypeOfProductionRecording.BASIC.getStringValue());
             }
             for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
                     FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK)) {

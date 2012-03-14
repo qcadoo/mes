@@ -33,8 +33,14 @@
 		<component type="form" name="inputDataForCostsForm"
 			reference="inputDataForCostsForm">
 			<component type="gridLayout" name="inputDataForCostsGridLayout"
-				reference="inputDataForCostsGridLayout" columns="3" rows="4">
-				<layoutElement column="1" row="1" height="2">
+				reference="inputDataForCostsGridLayout" columns="3" rows="5">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="printCostNormsOfMaterials"
+						field="printCostNormsOfMaterials" reference="printCostNormsOfMaterials">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" height="2">
 					<component type="borderLayout" name="parametersBorderLayout"
 						reference="parametersBorderLayout">
 						<component type="gridLayout" name="parametersGridLayout"
@@ -44,8 +50,8 @@
 									field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts">
 									
 									<listener event="onSelectedEntityChange"
-										class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsViewService"
-										method="checkIfOptionIsAvailable" />
+										class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+										method="checkIfOptionsAreAvailable" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
@@ -53,8 +59,8 @@
 									field="#{form}.calculateMaterialCostsMode" reference="calculateMaterialCostsMode">
 									
 									<listener event="onSelectedEntityChange"
-										class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsViewService"
-										method="checkIfOptionIsAvailable" />
+										class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+										method="checkIfOptionsAreAvailable" />
 								</component>
 							</layoutElement>
 						</component>
@@ -62,7 +68,7 @@
 						<option type="label" value="parameters" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3" height="2">
+				<layoutElement column="1" row="4" height="2">
 					<component type="borderLayout" name="assumptionsBorderLayout"
 						reference="assumptionsBorderLayout">
 						<component type="gridLayout" name="assumptionsGridLayout"
@@ -75,8 +81,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="averageMachineHourlyCostProc"
-									reference="averageMachineHourlyCostProc" defaultEnabled="false"
+								<component type="input" name="averageMachineHourlyCostCurrency"
+									reference="averageMachineHourlyCostCurrency" defaultEnabled="false"
 									hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
@@ -88,8 +94,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="2">
-								<component type="input" name="averageLaborHourlyCostProc"
-									reference="averageLaborHourlyCostProc" defaultEnabled="false"
+								<component type="input" name="averageLaborHourlyCostCurrency"
+									reference="averageLaborHourlyCostCurrency" defaultEnabled="false"
 									hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
@@ -181,8 +187,8 @@
 					</component>
 				</layoutElement>
 			</component>
-			<component type="grid" name="orderOperationProductInComponents" reference="orderOperationProductInComponents"
-				source="#{form}.orderOperationProductInComponents">
+			<component type="grid" name="orderOperationProductInComponents" source="#{form}.orderOperationProductInComponents"
+				 reference="orderOperationProductInComponents">
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" />
 				<option type="column" name="productName" fields="product"
@@ -250,8 +256,8 @@
 					</component>
 				</layoutElement>
 			</component>
-			<component type="grid" name="operationsCost" reference="operationsCostGrid"
-				source="#{form}.operationCostComponents">
+			<component type="grid" name="operationsCost" source="#{form}.operationCostComponents"
+				reference="operationsCostGrid">
 				<option type="column" name="operationLevel" fields="orderOperationComponent"
 					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('nodeNumber')" />
 				<option type="column" name="operationNumber" fields="orderOperationComponent"

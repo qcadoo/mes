@@ -67,12 +67,4 @@ public interface ProductionCountingConstants {
     String PARAM_REGISTER_IN_PRODUCTS = "registerQuantityInProduct";
 
     String PARAM_REGISTER_TIME = "registerProductionTime";
-
-    String PARAM_RECORDING_TYPE_NONE = "01none";
-
-    String PARAM_RECORDING_TYPE_CUMULATED = "02cumulated";
-
-    String PARAM_RECORDING_TYPE_FOREACH = "03forEach";
-
-    String PARAM_RECORDING_TYPE_BASIC = "01basic";
 }

@@ -25,8 +25,6 @@ package com.qcadoo.mes.productionCounting.internal.orderStates;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
 
 import java.util.List;
 
@@ -37,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -55,9 +54,9 @@ public class ProductionCountingOrderStatesListener extends OrderStateListener {
         Entity order = newEntity.getDataDefinition().get(newEntity.getId());
         ChangeOrderStateMessage message = null;
         String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
-        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
             message = checkFinalProductionCountingForOrderCumulated(order);
-        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+        } else if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             message = checkFinalProductionCountingForOrderForEach(order);
         }
         if (message != null) {

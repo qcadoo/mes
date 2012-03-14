@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -58,7 +57,7 @@ public class RecordStateListener {
         searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
         searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
-        if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
                     productionRecord.getBelongsToField("orderOperationComponent")));
         }

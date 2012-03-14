@@ -47,6 +47,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
@@ -111,7 +112,7 @@ public class ProductionBalanceService {
     public boolean validateOrder(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField(MODEL_ORDER);
 
-        if ((order == null) || checkIfTypeOfProductionRecordingIsNone(order)) {
+        if ((order == null) || checkIfTypeOfProductionRecordingIsBasic(order)) {
             entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
@@ -183,7 +184,7 @@ public class ProductionBalanceService {
     private void fillGrids(final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(OrdersConstants.MODEL_ORDER);
 
-        if ((order == null) || checkIfTypeOfProductionRecordingIsNone(order)) {
+        if ((order == null) || checkIfTypeOfProductionRecordingIsBasic(order)) {
             return;
         }
 
@@ -196,11 +197,10 @@ public class ProductionBalanceService {
         }
 
         if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
-            if (order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING).equals(
-                    ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH)) {
+            if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 fillOperationTimeComponents(productionBalance, order);
-            } else if (order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING).equals(
-                    ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED)) {
+            } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                    order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
         }
@@ -368,8 +368,8 @@ public class ProductionBalanceService {
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get(id);
     }
 
-    private boolean checkIfTypeOfProductionRecordingIsNone(final Entity order) {
-        return ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING));
+    public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
+        return TypeOfProductionRecording.BASIC.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING));
     }
 
     private void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,

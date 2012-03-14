@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.SOURCE_OF_MATERIAL_COSTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
@@ -33,6 +32,8 @@ import static com.qcadoo.mes.technologies.constants.TechnologyState.DRAFT;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -50,14 +51,16 @@ public class CostCalculationModelValidators {
     }
 
     public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        if ((costCalculation.getField(SOURCE_OF_MATERIAL_COSTS).equals("01currentGlobalDefinitionsInProduct"))
-                && (costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE).equals(COST_FOR_ORDER.getStringValue()))) {
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                costCalculation.getField(SOURCE_OF_MATERIAL_COSTS))
+                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(
+                        costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
             costCalculation.addError(costCalculationDD.getField(CALCULATE_MATERIAL_COSTS_MODE),
                     "costCalculation.messages.optionUnavailable");
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
 }

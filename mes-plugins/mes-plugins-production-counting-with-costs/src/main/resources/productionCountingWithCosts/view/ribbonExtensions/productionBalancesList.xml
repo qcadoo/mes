@@ -27,43 +27,30 @@
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
     xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
     plugin="productionCounting"
-    view="productionBalanceDetails">
+    view="productionBalancesList">
     
     <group name="exportWithCosts">
 		<bigButton name="pdfWithCosts" icon="pdfIcon24.png"
-			action="#{form}.fireEvent(printProductionBalance,pdf,1);" state="disabled">
+			action="#{grid}.fireEvent(printProductionBalance,pdf,1);" state="disabled"
+			message="qcadooView.message.noRecordSelected">
 			<script>
 				<![CDATA[
 					var pdfWithCostsRibbonItem = #{window}.getRibbonItem("exportWithCosts.pdfWithCosts");
-					var entityExists = false;
-					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
-							}
-							if (value.content.entityId) {
-								entityExists = true;
-							} else {
-								entityExists = false;
-							}
-							updateRibbon();
-						}
-					});
 					
-					function updateRibbon() {
-						if (entityExists) {
-							var isGeneratedCheckboxValue = #{generated}.getValue();
-							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								pdfWithCostsRibbonItem.enable();
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								pdfWithCostsRibbonItem.disable();
+							} else if (selectedEntitiesArray.length > 1) {
+								pdfWithCostsRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
+							} else if (selectedEntitiesArray[0].fields.generated == '0') {
+								pdfWithCostsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
 							} else {
-								pdfWithCostsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfWithCostsRibbonItem.enable();
 							}
-						} else {
-							pdfWithCostsRibbonItem.disable("#{translate(recordNotCreated)}");
 						}
 					}
+					#{grid}.addOnChangeListener(listener);
 				]]>
 			</script>
 		</bigButton>

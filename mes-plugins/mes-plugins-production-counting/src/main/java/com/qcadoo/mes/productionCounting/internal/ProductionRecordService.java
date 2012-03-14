@@ -30,10 +30,6 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_SHIFT;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_STAFF;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_BASIC;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_CUMULATED;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_FOREACH;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_RECORDING_TYPE_NONE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LABOR_TIME;
@@ -64,6 +60,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
@@ -121,12 +118,13 @@ public class ProductionRecordService {
     public boolean isValidTypeOfProductionRecording(final Entity productionRecord, final String typeOfProductionRecording,
             final DataDefinition productionRecordDD) {
         boolean validTypeOfRecording = true;
-        if (typeOfProductionRecording == null || PARAM_RECORDING_TYPE_NONE.equals(typeOfProductionRecording)) {
+        if (typeOfProductionRecording == null
+                || TypeOfProductionRecording.BASIC.getStringValue().equals(typeOfProductionRecording)) {
             productionRecord.addError(productionRecordDD.getField(OrdersConstants.MODEL_ORDER),
                     "productionCounting.validate.global.error.productionRecord.orderError");
             validTypeOfRecording = false;
         }
-        if (PARAM_RECORDING_TYPE_BASIC.equals(typeOfProductionRecording)) {
+        if (TypeOfProductionRecording.BASIC.getStringValue().equals(typeOfProductionRecording)) {
             productionRecord.addError(productionRecordDD.getField(OrdersConstants.MODEL_ORDER),
                     "productionRecord.productionRecord.report.error.orderWithBasicProductionCounting");
             validTypeOfRecording = false;
@@ -205,9 +203,9 @@ public class ProductionRecordService {
             }
         }
 
-        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
             operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
-        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+        } else if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             operationComponents = newArrayList(productionRecord
                     .getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT));
         }
@@ -284,7 +282,7 @@ public class ProductionRecordService {
                 L_TYPE_OF_PRODUCTION_RCORDING);
         Object orderOperation = productionRecord.getField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
 
-        if (PARAM_RECORDING_TYPE_FOREACH.equals(recordingMode) && orderOperation == null) {
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingMode) && orderOperation == null) {
             productionRecord.addError(productionRecordDD.getField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT),
                     "productionCounting.record.messages.error.operationIsNotSet");
             return false;
@@ -303,9 +301,9 @@ public class ProductionRecordService {
         }
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RCORDING);
         EntityTreeNode operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS).getRoot();
-        if (PARAM_RECORDING_TYPE_CUMULATED.equals(typeOfProductionRecording)) {
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
             countPlannedTime(productionRecord, operationComponents, null);
-        } else if (PARAM_RECORDING_TYPE_FOREACH.equals(typeOfProductionRecording)) {
+        } else if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             countPlannedTime(productionRecord, operationComponents,
                     productionRecord.getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT));
         }

@@ -136,7 +136,7 @@
 
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-								method="fillFieldsWhenOrderChanged" />
+								method="fillProductAndRecordsNumber" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
@@ -332,9 +332,12 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-			method="showGrids" />
+			method="changeFieldsAndGridsVisibility" />
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-			method="disableFieldsWhenGenerated" />
+			method="disableCheckboxes" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+			method="disableFieldsAndGridsWhenGenerated" />
 	</hooks>
 </view>

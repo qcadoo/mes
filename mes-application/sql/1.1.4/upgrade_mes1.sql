@@ -76,6 +76,9 @@ ALTER TABLE productioncounting_productionbalance ADD COLUMN plannedlabortime int
 ALTER TABLE productioncounting_productionbalance ADD COLUMN labortime integer;
 ALTER TABLE productioncounting_productionbalance ADD COLUMN labortimebalance integer;
 
+ALTER TABLE productioncounting_productionbalance ADD COLUMN printcostnormsofmaterials boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN printcostnormsofmaterials SET DEFAULT true;
+
 ALTER TABLE productioncounting_productionbalance ADD COLUMN sourceofmaterialcosts character varying(255);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN sourceofmaterialcosts SET DEFAULT '01currentGlobalDefinitionsInProduct'::character varying;
 

@@ -32,7 +32,7 @@
 			<template name="standardGridTemplate" />
 			<group name="export">
 				<bigButton name="pdf" icon="pdfIcon24.png"
-					action="#{grid}.fireEvent(printProductionBalance,pdf);" state="disabled"
+					action="#{grid}.fireEvent(printProductionBalance,pdf,0);" state="disabled"
 					message="qcadooView.message.noRecordSelected" />
 			</group>
 		</ribbon>
