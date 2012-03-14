@@ -256,3 +256,6 @@ CREATE TABLE productioncountingwithcosts_operationcostcomponent
 );
 
 -- end
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN generatedwithcosts boolean;
+UPDATE productioncounting_productionbalance SET generatedwithcosts=false;

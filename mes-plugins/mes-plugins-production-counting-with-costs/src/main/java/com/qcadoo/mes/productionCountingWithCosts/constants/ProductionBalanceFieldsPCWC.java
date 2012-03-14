@@ -59,4 +59,6 @@ public class ProductionBalanceFieldsPCWC {
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
 
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
+
+    public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
 }

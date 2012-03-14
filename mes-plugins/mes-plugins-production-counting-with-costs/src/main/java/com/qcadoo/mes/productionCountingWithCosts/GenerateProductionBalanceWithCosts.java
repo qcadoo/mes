@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
+import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,8 +39,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private Locale locale = LocaleContextHolder.getLocale();
-
     @Override
     public void update(Observable arg0, Object arg1) {
         Entity balance = (Entity) arg1;
@@ -48,7 +47,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         generateBalanceWithCostsReport(balance);
     }
 
-    private void generateBalanceWithCostsReport(Entity balance) {
+    private void generateBalanceWithCostsReport(final Entity balance) {
+        Locale locale = LocaleContextHolder.getLocale();
+
         String localePrefix = "productionCounting.productionBalanceWithCosts.report.fileName";
 
         Entity productionBalanceWithFileName = fileService.updateReportFileName(balance, "date", localePrefix);
@@ -61,11 +62,15 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         try {
             productionBalanceWithCostsPdfService.generateDocument(productionBalanceWithFileName, company, locale,
                     localePrefixToMatch);
+
+            balance.setField(ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS, Boolean.TRUE);
         } catch (IOException e) {
             throw new RuntimeException("Problem with saving productionBalanceWithCosts report");
         } catch (DocumentException e) {
             throw new RuntimeException("Problem with generating productionBalanceWithCosts report");
         }
+
+        balance.getDataDefinition().save(balance);
     }
 
     void doTheCostsPart(final Entity balance) {

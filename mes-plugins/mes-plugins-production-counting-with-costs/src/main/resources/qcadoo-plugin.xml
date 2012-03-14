@@ -279,6 +279,10 @@
 			<model:belongsTo name="technology" model="technology" plugin="technologies" />
 		</model:model-field>
 		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:boolean name="generatedWithCosts" />
+		</model:model-field>
+		
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
