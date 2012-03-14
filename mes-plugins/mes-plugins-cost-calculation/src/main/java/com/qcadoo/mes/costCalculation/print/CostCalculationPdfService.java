@@ -185,8 +185,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
                         "costCalculation.costCalculationDetails.report.paragraph4", locale), FontUtils.getDejavuBold11Dark()));
-                PdfPTable optionTable2 = addOptionTablePrintOperationNormsPiecework(entity, locale);
-                document.add(optionTable2);
+                document.add(addOptionTablePrintOperationNormsPiecework(entity, locale));
             } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
@@ -485,7 +484,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (Entity calculationOperationComponent : calculationOperationComponents) {
             PdfPTable panelTableHeader = pdfHelper.createPanelTable(2);
             PdfPTable panelTableContent = pdfHelper.createPanelTable(2);
-            panelTableContent.setSpacingAfter(20);
+            panelTableContent.setSpacingBefore(10);
             panelTableContent.getDefaultCell().setBackgroundColor(null);
             panelTableContent.setTableEvent(null);
             panelTableHeader.addCell(new Phrase(translationService.translate(
@@ -547,7 +546,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
             document.add(panelTableHeader);
             document.add(panelTableContent);
         }
-
     }
 
     public PdfPTable addOptionTablePrintOperationNormsPiecework(final Entity costCalculation, final Locale locale) {
@@ -569,6 +567,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         PdfPTable printCostNormsOfMaterialTable2 = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
+        printCostNormsOfMaterialTable2.setSpacingBefore(10);
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
 
