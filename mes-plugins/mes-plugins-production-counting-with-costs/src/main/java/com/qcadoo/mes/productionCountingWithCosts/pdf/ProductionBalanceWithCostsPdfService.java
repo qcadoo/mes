@@ -85,7 +85,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
     @Autowired
     private CostCalculationPdfService costCalculationPdfService;
 
-    private String NULL_OBJECT = "-";
+    private static final String NULL_OBJECT = "-";
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionBalance, final Locale locale)
@@ -204,10 +204,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                                 "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.balance",
                                 locale));
 
-        List<Entity> products = productionBalance.getHasManyField("orderOperationProductInComponents");
+        List<Entity> products = (List<Entity>) productionBalance.getField("orderOperationProductInComponents");
 
-        // if (!products.isEmpty()) {
-        {
+        if (!products.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(
@@ -285,10 +284,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + "CostsBalance", locale));
 
-        List<Entity> operationComponents = productionBalance.getHasManyField("operationCostComponents");
+        List<Entity> operationComponents = (List<Entity>) productionBalance.getField("operationCostComponents");
 
-        // if (!operationComponents.isEmpty()) {
-        {
+        if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(

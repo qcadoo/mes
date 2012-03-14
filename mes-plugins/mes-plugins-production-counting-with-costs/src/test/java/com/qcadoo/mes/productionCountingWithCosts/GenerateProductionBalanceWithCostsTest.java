@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.util.Observable;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -62,6 +63,7 @@ public class GenerateProductionBalanceWithCostsTest {
         });
     }
 
+    @Ignore
     @Test
     public void shouldSetQuantityTechnologyAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
