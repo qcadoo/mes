@@ -348,6 +348,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 .getDejavuBold10Dark()));
 
         PdfPTable content = pdfHelper.createPanelTable(2);
+        content.setTableEvent(null);
 
         String sourceOfMaterialCostsField = productionBalance.getStringField("sourceOfMaterialCosts");
         String sourceOfMaterialCosts = translationService.translate(
@@ -377,18 +378,19 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 .getDejavuBold10Dark()));
 
         PdfPTable content = pdfHelper.createPanelTable(2);
+        content.setTableEvent(null);
 
         BigDecimal averageMachineHourlyCost = (BigDecimal) productionBalance.getField("averageMachineHourlyCost");
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         BigDecimal averageLaborHourlyCost = (BigDecimal) productionBalance.getField("averageLaborHourlyCost");
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
