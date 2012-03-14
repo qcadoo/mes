@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionCountingWithCosts.pdf;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,10 +42,10 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
@@ -82,6 +81,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private CostCalculationPdfService costCalculationPdfService;
 
     private String NULL_OBJECT = "N/A";
 
@@ -144,6 +146,8 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 addCostsBalance("labor", document, productionBalance, locale);
             }
         }
+
+        costCalculationPdfService.printMaterialAndOperationNorms(document, productionBalance, locale);
     }
 
     private void addProductionCosts(final Document document, final Entity productionBalance, final Locale locale)
@@ -336,24 +340,6 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         }
     }
 
-    private void addTableCellAsTable(final PdfPTable table, final String label, final Object fieldValue, final String nullValue,
-            final Font headerFont, final Font valueFont, final DecimalFormat df) {
-        PdfPTable cellTable = new PdfPTable(2);
-        cellTable.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-        cellTable.addCell(new Phrase(label, headerFont));
-        Object value = fieldValue;
-        if (value == null) {
-            cellTable.addCell(new Phrase(nullValue, valueFont));
-        } else {
-            if (value instanceof BigDecimal && df != null) {
-                cellTable.addCell(new Phrase(df.format(value), valueFont));
-            } else {
-                cellTable.addCell(new Phrase(value.toString(), valueFont));
-            }
-        }
-        table.addCell(cellTable);
-    }
-
     public PdfPTable createParametersForCostsPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable parametersForCostsPanel = pdfHelper.createPanelTable(1);
 
@@ -366,17 +352,17 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         String sourceOfMaterialCostsField = productionBalance.getStringField("sourceOfMaterialCosts");
         String sourceOfMaterialCosts = translationService.translate(
                 "productionCounting.productionBalance.sourceOfMaterialCosts.value." + sourceOfMaterialCostsField, locale);
-        addTableCellAsTable(content,
+        pdfHelper.addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.sourceOfMaterialCosts.label", locale),
-                sourceOfMaterialCosts, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+                sourceOfMaterialCosts, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         String calculateMaterialCostsModeField = productionBalance.getStringField("calculateMaterialCostsMode");
         String calculateMaterialCostsMode = translationService.translate(
                 "productionCounting.productionBalance.calculateMaterialCostsMode.value." + calculateMaterialCostsModeField,
                 locale);
-        addTableCellAsTable(content,
+        pdfHelper.addTableCellAsTable(content,
                 translationService.translate("productionCounting.productionBalance.calculateMaterialCostsMode.label", locale),
-                calculateMaterialCostsMode, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+                calculateMaterialCostsMode, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
@@ -395,14 +381,14 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         BigDecimal averageMachineHourlyCost = (BigDecimal) productionBalance.getField("averageMachineHourlyCost");
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
-        addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost), null,
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+        pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
+                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         BigDecimal averageLaborHourlyCost = (BigDecimal) productionBalance.getField("averageLaborHourlyCost");
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
-        addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost), null,
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
+        pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),
+                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
@@ -428,7 +414,8 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
             toDisplay = numberService.format(valueBD) + " " + currency;
         }
 
-        addTableCellAsTable(table, translationService.translate(labelLocale, locale), toDisplay, "-", labelFont, valueFont, null);
+        pdfHelper.addTableCellAsTable(table, translationService.translate(labelLocale, locale), toDisplay, labelFont, valueFont,
+                2);
     }
 
     private void addCurrencyNumericWithLabel(final PdfPTable table, final String labelLocale, final Object value,

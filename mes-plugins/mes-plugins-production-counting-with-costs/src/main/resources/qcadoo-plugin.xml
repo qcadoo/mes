@@ -275,6 +275,10 @@
 			<model:belongsTo name="technology" model="technology" plugin="technologies" />
 		</model:model-field>
 		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:boolean name="generatedWithCosts" />
+		</model:model-field>
+		
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/productionBalanceDetails.xml" />
