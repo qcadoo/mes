@@ -75,6 +75,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
 
+    private static final String L_COST_FOR_NUMBER = "costForNumber";
+
     private static final String NAME = "name";
 
     private static final String L_NOMINAL_COST = "nominalCost";
@@ -385,7 +387,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTable.addCell(new Phrase(numberService.format(product.getValue()), FontUtils.getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
             BigDecimal nominalCost = (BigDecimal) product.getKey().getField(L_NOMINAL_COST);
-            BigDecimal costForNumber = (BigDecimal) product.getKey().getField("costForNumber");
+            BigDecimal costForNumber = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
             BigDecimal totalCostPerUnit = nominalCost.divide(costForNumber, numberService.getMathContext());
             BigDecimal costs = product.getValue().multiply(totalCostPerUnit, numberService.getMathContext());
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
@@ -453,7 +455,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     .getDejavuRegular9Dark()));
 
             BigDecimal toDisplay = (BigDecimal) product.getKey().getField(costMode);
-            BigDecimal quantity = (BigDecimal) product.getValue();
+            BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
             String unit = (String) product.getKey().getStringField(L_UNIT);
 
             printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " / " + quantity + " " + unit, FontUtils
