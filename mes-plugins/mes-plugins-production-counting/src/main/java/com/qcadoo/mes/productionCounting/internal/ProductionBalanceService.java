@@ -134,6 +134,11 @@ public class ProductionBalanceService {
         return true;
     }
 
+    private Entity getProductionBalance(final Long id) {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get(id);
+    }
+
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -160,6 +165,10 @@ public class ProductionBalanceService {
                 generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
                 state.performEvent(viewDefinitionState, "reset", new String[0]);
+
+                state.addMessage(
+                        "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
+                        MessageType.SUCCESS);
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             } catch (DocumentException e) {
@@ -366,11 +375,6 @@ public class ProductionBalanceService {
         productionBalance.setField("laborTimeBalance", laborTimeBalance);
 
         productionBalance.getDataDefinition().save(productionBalance);
-    }
-
-    private Entity getProductionBalance(final Long id) {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get(id);
     }
 
     public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
