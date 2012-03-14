@@ -484,7 +484,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         for (Entity calculationOperationComponent : calculationOperationComponents) {
             PdfPTable panelTableHeader = pdfHelper.createPanelTable(2);
             PdfPTable panelTableContent = pdfHelper.createPanelTable(2);
-            panelTableContent.setSpacingBefore(10);
+            panelTableHeader.setSpacingBefore(10);
             panelTableContent.getDefaultCell().setBackgroundColor(null);
             panelTableContent.setTableEvent(null);
             panelTableHeader.addCell(new Phrase(translationService.translate(

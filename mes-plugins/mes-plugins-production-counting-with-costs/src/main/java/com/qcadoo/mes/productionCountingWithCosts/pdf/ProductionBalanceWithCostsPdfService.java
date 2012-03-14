@@ -85,7 +85,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
     @Autowired
     private CostCalculationPdfService costCalculationPdfService;
 
-    private String NULL_OBJECT = "N/A";
+    private String NULL_OBJECT = "-";
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionBalance, final Locale locale)
@@ -409,7 +409,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
     private void addCurrencyNumericWithLabel(final PdfPTable table, final String labelLocale, final Object value,
             final Locale locale, final Font labelFont, final Font valueFont) {
-        String toDisplay = "-";
+        String toDisplay = NULL_OBJECT;
         BigDecimal valueBD = (BigDecimal) value;
         if (valueBD != null) {
             String currency = currencyService.getCurrencyAlphabeticCode();
