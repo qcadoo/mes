@@ -274,7 +274,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         return rightPanel;
     }
 
-    private void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+    public void addInputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
         List<String> inputProductsTableHeader = new ArrayList<String>();
@@ -334,7 +334,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
     }
 
-    private void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
+    public void addOutputProductsBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
         List<String> outputProductsTableHeader = new ArrayList<String>();
@@ -398,7 +398,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         }
     }
 
-    private void addMachineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+    public void addMachineTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(
@@ -458,7 +458,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(machineTimeTable);
     }
 
-    private void addLaborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
+    public void addLaborTimeBalance(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(
@@ -516,7 +516,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         document.add(laborTimeTable);
     }
 
-    private void addTimeBalanceAsPanel(final Document document, final Entity productionBalance, final Locale locale)
+    public void addTimeBalanceAsPanel(final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate(
