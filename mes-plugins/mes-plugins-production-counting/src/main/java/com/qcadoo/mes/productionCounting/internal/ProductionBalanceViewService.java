@@ -76,19 +76,12 @@ public class ProductionBalanceViewService {
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        if (form == null || form.getEntityId() == null) {
-            viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(false);
-
-            viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(false);
-
-            viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(false);
-            viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
-        }
-
         FieldComponent generated = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.GENERATED);
+
+        if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
+            setComponentsVisibility(viewDefinitionState, false);
+        }
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
@@ -98,6 +91,8 @@ public class ProductionBalanceViewService {
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
+            setComponentsVisibility(viewDefinitionState, false);
+
             return;
         }
 
@@ -233,6 +228,17 @@ public class ProductionBalanceViewService {
 
         productField.setFieldValue(null);
         recordsNumberField.setFieldValue(null);
+    }
+
+    private void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final boolean isVisible) {
+        viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
     }
 
     private Entity getOrderFromDB(Long orderId) {
