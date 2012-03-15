@@ -26,17 +26,15 @@ package com.qcadoo.mes.costNormsForProduct;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.model.api.Entity;
 
 public interface ProductsCostCalculationService {
 
-    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final ProductsCostCalculationConstants mode);
+    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity, final String mode);
 
     public void calculateTotalProductsCost(final Entity costCalculation);
 
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final ProductsCostCalculationConstants mode);
+            final String mode);
 
 }

@@ -160,7 +160,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
     @Test
     public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
-        productCostCalc.calculateProductsCost(costCalculation);
+        productCostCalc.calculateTotalProductsCost(costCalculation);
 
         // then
         Mockito.verify(numberService).setScale(expectedResult);
@@ -171,7 +171,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
         // when
-        productCostCalc.calculateProductsCost(null);
+        productCostCalc.calculateTotalProductsCost(null);
     }
 
     @Ignore
@@ -181,6 +181,6 @@ public class ParameterizedProductsCostCalculationServiceTest {
         when(costCalculation.getField("quantity")).thenReturn(null);
 
         // when
-        productCostCalc.calculateProductsCost(costCalculation);
+        productCostCalc.calculateTotalProductsCost(costCalculation);
     }
 }

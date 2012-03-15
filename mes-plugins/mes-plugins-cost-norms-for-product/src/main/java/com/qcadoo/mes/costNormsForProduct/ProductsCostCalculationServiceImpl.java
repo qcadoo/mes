@@ -24,10 +24,6 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.COSTFORORDER;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -37,7 +33,6 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -65,7 +60,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         checkArgument(entity != null);
         BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
 
-        ProductsCostCalculationConstants mode = getProductModeFromField(entity.getField("calculateMaterialCostsMode"));
+        String mode = entity.getStringField("calculateMaterialCostsMode");
 
         checkArgument(quantity != null && quantity != BigDecimal.ZERO, "quantity is  null");
         checkArgument(mode != null, "mode is null!");
@@ -77,7 +72,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     @Override
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final ProductsCostCalculationConstants mode) {
+            final String mode) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 quantity, true);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
@@ -90,30 +85,12 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     }
 
     @Override
-    public BigDecimal calculateProductCostForGivenQuantity(Entity product, BigDecimal quantity,
-            final ProductsCostCalculationConstants mode) {
-        BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
+    public BigDecimal calculateProductCostForGivenQuantity(Entity product, BigDecimal quantity, final String mode) {
+        BigDecimal cost = getBigDecimal(product.getField(mode));
         BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
         BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
         return costPerUnit.multiply(quantity, numberService.getMathContext());
-    }
-
-    private ProductsCostCalculationConstants getProductModeFromField(final Object value) {
-        String strValue = value.toString();
-        if ("01nominal".equals(strValue)) {
-            return NOMINAL;
-        }
-        if ("02average".equals(strValue)) {
-            return AVERAGE;
-        }
-        if ("03lastPurchase".equals(strValue)) {
-            return LASTPURCHASE;
-        }
-        if ("04costForOrder".equals(strValue)) {
-            return COSTFORORDER;
-        }
-        return ProductsCostCalculationConstants.valueOf(strValue);
     }
 
     private BigDecimal getBigDecimal(final Object value) {
