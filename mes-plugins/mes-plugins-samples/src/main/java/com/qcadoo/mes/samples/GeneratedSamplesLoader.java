@@ -213,24 +213,22 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         }
     }
 
-    private void generateAndAddOperationProductOutComponent(final Entity operationComponent, final BigDecimal quantity,
-            final Entity product) {
+    private void generateAndAddOperationProductOutComponent(Entity operationComponent, final BigDecimal quantity, Entity product) {
 
         Preconditions.checkArgument(operationComponent != null, "operation component is null");
 
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductOutComponent")
                 .create();
 
-        productComponent.setField("operationComponent", operationComponent);
         productComponent.setField(BASIC_MODEL_PRODUCT, product);
+        productComponent.setField("operationComponent", operationComponent);
         productComponent.setField("quantity", quantity);
-
         productComponent = productComponent.getDataDefinition().save(productComponent);
-
         operationComponent.setField("operationProductOutComponents", productComponent);
 
         validateEntity(operationComponent);
         validateEntity(productComponent);
+
     }
 
     private void generateAndAddOperation() {
@@ -338,34 +336,47 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operationComponent = operationComponent.getDataDefinition().save(operationComponent);
         validateEntity(operationComponent);
 
+        List<Entity> listOut = new LinkedList<Entity>();
+        Entity productOut = null;
         for (int i = 0; i < productOutComponentQuantity; i++) {
-            generateAndAddOperationProductOutComponent(operationComponent, new BigDecimal(RANDOM.nextInt(50) + 5),
-                    getRandomProduct());
+            productOut = getRandomProduct();
+
+            while (listOut.contains(productOut)) {
+                productOut = getRandomProduct();
+            }
+            listOut.add(productOut);
+            generateAndAddOperationProductOutComponent(operationComponent, new BigDecimal(RANDOM.nextInt(50) + 5), productOut);
         }
+        List<Entity> listIn = new LinkedList<Entity>();
+        Entity productIn = null;
         for (int i = 0; i < productInComponentQuantity; i++) {
-            generateAndAddOperationProductInComponent(operationComponent, new BigDecimal(RANDOM.nextInt(50) + 5),
-                    getRandomProduct());
+            productIn = getRandomProduct();
+
+            while (listIn.contains(productIn)) {
+                productIn = getRandomProduct();
+            }
+            listIn.add(productIn);
+            generateAndAddOperationProductInComponent(operationComponent, new BigDecimal(RANDOM.nextInt(50) + 5), productIn);
+
         }
 
         return operationComponent;
     }
 
-    private void generateAndAddOperationProductInComponent(final Entity operationComponent, final BigDecimal quantity,
-            final Entity product) {
+    private void generateAndAddOperationProductInComponent(Entity operationComponent, final BigDecimal quantity, Entity product) {
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .create();
 
-        productComponent.setField("operationComponent", operationComponent);
         productComponent.setField(BASIC_MODEL_PRODUCT, product);
+        productComponent.setField("operationComponent", operationComponent);
         productComponent.setField("quantity", quantity);
         productComponent.setField("batchRequired", true);
         productComponent.setField("productBatchRequired", true);
-
         productComponent = productComponent.getDataDefinition().save(productComponent);
-
         operationComponent.setField("operationProductInComponents", productComponent);
 
         validateEntity(productComponent);
+
     }
 
     private void generateAndAddTechnologyOperationComponent(final Entity technology) {
