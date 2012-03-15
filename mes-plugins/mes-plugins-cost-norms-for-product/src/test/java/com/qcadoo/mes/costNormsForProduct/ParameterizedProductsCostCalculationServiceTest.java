@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -155,6 +156,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     }
 
+    @Ignore
     @Test
     public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
         // when
@@ -165,12 +167,14 @@ public class ParameterizedProductsCostCalculationServiceTest {
         Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), Matchers.any(BigDecimal.class));
     }
 
+    @Ignore
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
         // when
         productCostCalc.calculateProductsCost(null);
     }
 
+    @Ignore
     @Test(expected = IllegalArgumentException.class)
     public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
         // given

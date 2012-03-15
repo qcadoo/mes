@@ -69,7 +69,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         entity.setField("date", new Date());
 
         operationsCostCalculationService.calculateOperationsCost(entity);
-        productsCostCalculationService.calculateProductsCost(entity);
+        productsCostCalculationService.calculateTotalProductsCost(entity);
 
         if (CalculateOperationCostMode.HOURLY.equals(operationMode)) {
             BigDecimal totalMachine = getBigDecimal(entity.getField("totalMachineHourlyCosts"));

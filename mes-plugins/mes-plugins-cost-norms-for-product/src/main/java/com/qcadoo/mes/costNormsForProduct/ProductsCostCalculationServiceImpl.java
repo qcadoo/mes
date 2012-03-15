@@ -30,6 +30,7 @@ import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculati
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -51,33 +52,51 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private NumberService numberService;
 
     @Override
-    public void calculateProductsCost(final Entity costCalculation) {
-        checkArgument(costCalculation != null);
-        BigDecimal quantity = getBigDecimal(costCalculation.getField("quantity"));
+    public void calculateTotalProductsCost(Entity entity) {
+        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity);
         BigDecimal result = BigDecimal.ZERO;
-        ProductsCostCalculationConstants mode = getProductModeFromField(costCalculation.getField("calculateMaterialCostsMode"));
+        for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
+            result = result.add(productWithCost.getValue(), numberService.getMathContext());
+        }
+        entity.setField("totalMaterialCosts", numberService.setScale(result));
+    }
+
+    public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity) {
+        checkArgument(entity != null);
+        BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
+
+        ProductsCostCalculationConstants mode = getProductModeFromField(entity.getField("calculateMaterialCostsMode"));
 
         checkArgument(quantity != null && quantity != BigDecimal.ZERO, "quantity is  null");
         checkArgument(mode != null, "mode is null!");
 
-        Entity technology = costCalculation.getBelongsToField("technology");
+        Entity technology = entity.getBelongsToField("technology");
 
+        return getProductWithCostForPlannedQuantities(technology, quantity, mode);
+    }
+
+    @Override
+    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final ProductsCostCalculationConstants mode) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 quantity, true);
-
+        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
         for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantity.getKey();
-
-            BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
-            BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
-            BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
-
-            BigDecimal thisProductsCost = costPerUnit.multiply(productQuantity.getValue(), numberService.getMathContext());
-
-            result = result.add(thisProductsCost, numberService.getMathContext());
+            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(), mode);
+            results.put(product, thisProductsCost);
         }
+        return results;
+    }
 
-        costCalculation.setField("totalMaterialCosts", numberService.setScale(result));
+    @Override
+    public BigDecimal calculateProductCostForGivenQuantity(Entity product, BigDecimal quantity,
+            final ProductsCostCalculationConstants mode) {
+        BigDecimal cost = getBigDecimal(product.getField(mode.getStrValue()));
+        BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
+        BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
+
+        return costPerUnit.multiply(quantity, numberService.getMathContext());
     }
 
     private ProductsCostCalculationConstants getProductModeFromField(final Object value) {
@@ -103,4 +122,5 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         }
         return new BigDecimal(value.toString());
     }
+
 }
