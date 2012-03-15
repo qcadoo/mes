@@ -85,7 +85,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
     @Autowired
     private CostCalculationPdfService costCalculationPdfService;
 
-    private String NULL_OBJECT = "N/A";
+    private static final String NULL_OBJECT = "-";
 
     @Override
     protected void buildPdfContent(final Document document, final Entity productionBalance, final Locale locale)
@@ -204,10 +204,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                                 "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.balance",
                                 locale));
 
-        List<Entity> products = productionBalance.getHasManyField("orderOperationProductInComponents");
+        List<Entity> products = (List<Entity>) productionBalance.getField("orderOperationProductInComponents");
 
-        // if (!products.isEmpty()) {
-        {
+        if (!products.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(
@@ -285,10 +284,9 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + "CostsBalance", locale));
 
-        List<Entity> operationComponents = productionBalance.getHasManyField("operationCostComponents");
+        List<Entity> operationComponents = (List<Entity>) productionBalance.getField("operationCostComponents");
 
-        // if (!operationComponents.isEmpty()) {
-        {
+        if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(
@@ -348,6 +346,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 .getDejavuBold10Dark()));
 
         PdfPTable content = pdfHelper.createPanelTable(2);
+        content.setTableEvent(null);
 
         String sourceOfMaterialCostsField = productionBalance.getStringField("sourceOfMaterialCosts");
         String sourceOfMaterialCosts = translationService.translate(
@@ -377,18 +376,19 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 .getDejavuBold10Dark()));
 
         PdfPTable content = pdfHelper.createPanelTable(2);
+        content.setTableEvent(null);
 
         BigDecimal averageMachineHourlyCost = (BigDecimal) productionBalance.getField("averageMachineHourlyCost");
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         BigDecimal averageLaborHourlyCost = (BigDecimal) productionBalance.getField("averageLaborHourlyCost");
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),
-                FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular9Dark(), 2);
 
         parametersForCostsPanel.addCell(content);
 
@@ -407,7 +407,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
     private void addCurrencyNumericWithLabel(final PdfPTable table, final String labelLocale, final Object value,
             final Locale locale, final Font labelFont, final Font valueFont) {
-        String toDisplay = "-";
+        String toDisplay = NULL_OBJECT;
         BigDecimal valueBD = (BigDecimal) value;
         if (valueBD != null) {
             String currency = currencyService.getCurrencyAlphabeticCode();

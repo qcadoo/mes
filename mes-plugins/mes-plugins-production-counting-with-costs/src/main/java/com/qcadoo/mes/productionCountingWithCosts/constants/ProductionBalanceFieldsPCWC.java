@@ -61,4 +61,8 @@ public class ProductionBalanceFieldsPCWC {
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
 
     public static final String GENERATED_WITH_COSTS = "generatedWithCosts";
+
+    public static final String ORDER_OPERATION_PRODUCT_IN_COMPONENTS = "orderOperationProductInComponents";
+
+    public static final String OPERATION_COST_COMPONENTS = "operationCostComponents";
 }

@@ -166,7 +166,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         PdfPTable leftPanel = pdfHelper.createPanelTable(1);
 
         addTableCellAsTable(leftPanel,
-                translationService.translate("productionCounting.productionBalance.report.panel.name", locale) + ":",
+                translationService.translate("productionCounting.productionBalance.report.panel.name", locale),
                 productionBalance.getStringField(NAME), null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(),
                 null);
         addTableCellAsTable(leftPanel,
@@ -194,7 +194,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     leftPanel,
                     TABS_LITERAL
                             + translationService
-                                    .translate("productionCounting.productionBalance.report.panel.includeTPZ", locale) + ":",
+                                    .translate("productionCounting.productionBalance.report.panel.includeTPZ", locale),
                     productionBalance.getBooleanField(INCLUDE_TPZ) ? translationService.translate(QCADOO_VIEW_TRUE_LITERAL,
                             locale) : translationService.translate(QCADOO_VIEW_FALSE_LITERAL, locale), null,
                     FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
@@ -203,7 +203,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                     leftPanel,
                     TABS_LITERAL
                             + translationService.translate(
-                                    "productionCounting.productionBalance.report.panel.includeAdditionalTime", locale) + ":",
+                                    "productionCounting.productionBalance.report.panel.includeAdditionalTime", locale),
                     productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME) ? translationService.translate(
                             QCADOO_VIEW_TRUE_LITERAL, locale) : translationService.translate(QCADOO_VIEW_FALSE_LITERAL, locale),
                     null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
@@ -214,14 +214,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
     public PdfPTable createRightPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable rightPanel = pdfHelper.createPanelTable(1);
 
-        rightPanel.addCell(new Phrase(translationService.translate(
-                "productionCounting.productionBalance.report.panel.countingParameters", locale) + ":", FontUtils
-                .getDejavuBold10Dark()));
+        rightPanel
+                .addCell(new Phrase(translationService.translate(
+                        "productionCounting.productionBalance.report.panel.countingParameters", locale), FontUtils
+                        .getDejavuBold10Dark()));
         addTableCellAsTable(
                 rightPanel,
                 TABS_LITERAL
                         + translationService.translate(
-                                "productionCounting.productionBalance.report.panel.typeOfProductionRecording", locale) + ":",
+                                "productionCounting.productionBalance.report.panel.typeOfProductionRecording", locale),
                 translationService.translate("productionCounting.productionBalance.typeOfProductionRecording."
                         + productionBalance.getBelongsToField(ORDER).getField("typeOfProductionRecording"), locale), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
