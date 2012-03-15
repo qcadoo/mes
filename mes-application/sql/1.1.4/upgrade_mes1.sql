@@ -264,6 +264,16 @@ UPDATE productioncounting_productionbalance SET generatedwithcosts=false;
 
 -- DROP TABLE workplans_workplanordercolumn;
 
+CREATE TABLE workplans_columnfororders
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  "name" character varying(1024),
+  description character varying(255),
+  columnfiller character varying(2048),
+  CONSTRAINT workplans_columnfororders_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE workplans_workplanordercolumn
 (
   id bigint NOT NULL,
@@ -288,14 +298,4 @@ CREATE TABLE workplans_parameterordercolumn
       REFERENCES basic_parameter (id) DEFERRABLE,
   CONSTRAINT workplans_parameterordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
       REFERENCES workplans_columnfororders (id) DEFERRABLE
-);
-
-CREATE TABLE workplans_columnfororders
-(
-  id bigint NOT NULL,
-  identifier character varying(255),
-  "name" character varying(1024),
-  description character varying(255),
-  columnfiller character varying(2048),
-  CONSTRAINT workplans_columnfororders_pkey PRIMARY KEY (id)
 );

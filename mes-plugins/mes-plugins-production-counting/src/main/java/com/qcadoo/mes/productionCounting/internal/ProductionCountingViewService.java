@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -75,7 +76,8 @@ public class ProductionCountingViewService {
             return;
         }
         if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
+                || TypeOfProductionRecording.BASIC.getStringValue().equals(
+                        order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING))) {
             viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
             viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(
@@ -101,7 +103,8 @@ public class ProductionCountingViewService {
             return;
         }
         if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING).equals("01none")) {
+                || TypeOfProductionRecording.BASIC.getStringValue().equals(
+                        order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING))) {
             viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
             return;
         }

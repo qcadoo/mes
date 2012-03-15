@@ -8,6 +8,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -77,6 +78,7 @@ public class CostCalculationWithProductionBalanceTest {
         given(productionBalance.getField("totalMaterialCosts")).willReturn(new BigDecimal(50));
     }
 
+    @Ignore
     @Test
     public void shouldAssignAllValuesCorrectly() {
         // when

@@ -17,9 +17,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -153,9 +155,19 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         BigDecimal givenQty = (BigDecimal) productionBalance.getField(QUANTITY);
 
-        Map<Entity, BigDecimal> productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
-                productionBalance.getBelongsToField("technology"), givenQty,
-                productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE));
+        Map<Entity, BigDecimal> productQuantities = Maps.newHashMap();
+
+        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
+                productionBalance.getField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS))) {
+            productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
+                    productionBalance.getBelongsToField("technology"), givenQty,
+                    productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE), order);
+        } else if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                productionBalance.getField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS))) {
+            productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
+                    productionBalance.getBelongsToField("technology"), givenQty,
+                    productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE));
+        }
 
         for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity product = productQuantity.getKey();
@@ -203,9 +215,19 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         BigDecimal givenQty = (BigDecimal) productionBalance.getField(QUANTITY);
 
-        Map<Entity, BigDecimal> productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
-                productionBalance.getBelongsToField("technology"), givenQty,
-                productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE));
+        Map<Entity, BigDecimal> productQuantities = Maps.newHashMap();
+
+        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
+                productionBalance.getField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS))) {
+            productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
+                    productionBalance.getBelongsToField("technology"), givenQty,
+                    productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE), order);
+        } else if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                productionBalance.getField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS))) {
+            productQuantities = productsCostCalculationService.getProductWithCostForPlannedQuantities(
+                    productionBalance.getBelongsToField("technology"), givenQty,
+                    productionBalance.getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE));
+        }
 
         for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity product = productQuantity.getKey();

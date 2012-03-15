@@ -31,11 +31,13 @@ import com.qcadoo.model.api.Entity;
 
 public interface ProductsCostCalculationService {
 
-    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity, final String mode);
+    BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity, final String mode);
 
-    public void calculateTotalProductsCost(final Entity costCalculation, final SourceOfProductCosts sourceOfProductCosts);
+    void calculateTotalProductsCost(final Entity costCalculation, final SourceOfProductCosts sourceOfProductCosts);
 
-    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String mode);
 
+    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final String mode, final Entity order);
 }

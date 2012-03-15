@@ -87,7 +87,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         throw new IllegalStateException("sourceOfProductCosts is neither FROM_ORDER nor GLOBAL");
     }
 
-    private Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String mode, final Entity order) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 quantity, true);
