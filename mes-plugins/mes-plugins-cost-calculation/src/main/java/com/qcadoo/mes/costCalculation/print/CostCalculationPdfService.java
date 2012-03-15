@@ -31,6 +31,8 @@ import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.NUM
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.ORDER;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.QUANTITY;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TOTAL_COSTS;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TOTAL_COST_PER_UNIT;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -56,7 +58,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
+import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -123,6 +127,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private ProductsCostCalculationService productsCostCalculationService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -336,7 +343,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                         + ":",
                 (reportData == null ? "" : numberService.format(reportData)) + " " + currencyService.getCurrencyAlphabeticCode());
 
-        reportData = costCalculation.getField("totalCosts");
+        reportData = costCalculation.getField(TOTAL_COSTS);
         rightPanelColumn.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.totalCost", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
@@ -346,7 +353,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 (reportData == null ? "" : numberService.format(reportData)) + " " + currencyService.getCurrencyAlphabeticCode(),
                 FontUtils.getDejavuBold10Dark(), FontUtils.getDejavuRegular10Dark(), 2);
 
-        reportData = costCalculation.getField("totalCostPerUnit");
+        reportData = costCalculation.getField(TOTAL_COST_PER_UNIT);
         pdfHelper.addTableCellAsTable(rightPanelColumn,
                 L_TAB_IN_TEXT + translationService.translate("costCalculation.costCalculation.totalCostPerUnit.label", locale)
                         + ":",
@@ -364,32 +371,35 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.costs",
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
-
             materialsTableHeader.add(translationService.translate(translate, locale));
         }
         PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
+
         Entity technology;
         if (costCalculation.getBelongsToField(ORDER) == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
         } else {
             technology = costCalculation.getBelongsToField(ORDER).getBelongsToField(TECHNOLOGY);
-
         }
 
+        String mode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
+        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                givenQty, true);
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
+        neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+        for (Entry<Entity, BigDecimal> productWithNeededQuantity : neededProductQuantities.entrySet()) {
+            Entity productEntity = productWithNeededQuantity.getKey();
+            BigDecimal productQuantity = productWithNeededQuantity.getValue();
 
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            materialsTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
-            materialsTable.addCell(new Phrase(numberService.format(product.getValue()), FontUtils.getDejavuRegular9Dark()));
-            materialsTable.addCell(new Phrase(product.getKey().getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
-            BigDecimal nominalCost = (BigDecimal) product.getKey().getField(L_NOMINAL_COST);
-            BigDecimal costForNumber = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
-            BigDecimal totalCostPerUnit = nominalCost.divide(costForNumber, numberService.getMathContext());
-            BigDecimal costs = product.getValue().multiply(totalCostPerUnit, numberService.getMathContext());
+            materialsTable.addCell(new Phrase(productEntity.getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(productEntity.getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
+
+            BigDecimal costs = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
+                    productQuantity, mode);
+
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
@@ -690,4 +700,5 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
         return operationsTable;
     }
+
 }
