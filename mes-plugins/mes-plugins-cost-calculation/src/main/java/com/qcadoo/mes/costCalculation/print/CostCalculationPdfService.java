@@ -97,6 +97,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private static final String L_TAB_IN_TEXT = "\t \t \t";
 
+    private final int[] defaultMaterialTableColumnWidth = new int[] { 15, 15, 10, 20, 20, 20 };
+
+    private final int[] defaultOperationTableColumnWidth = new int[] { 10, 10, 10, 10, 15, 15, 15, 15 };
+
     @Autowired
     SecurityService securityService;
 
@@ -367,7 +371,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
             materialsTableHeader.add(translationService.translate(translate, locale));
         }
-        PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
+        PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false,
+                defaultMaterialTableColumnWidth);
         Entity technology;
         if (costCalculation.getBelongsToField(ORDER) == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
@@ -383,6 +388,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
+
             materialsTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(numberService.format(product.getValue()), FontUtils.getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(product.getKey().getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
@@ -390,7 +396,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal costForNumber = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
             BigDecimal totalCostPerUnit = nominalCost.divide(costForNumber, numberService.getMathContext());
             BigDecimal costs = product.getValue().multiply(totalCostPerUnit, numberService.getMathContext());
-            materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(numberService.format(costs) + " " + currencyService.getCurrencyAlphabeticCode(),
+                    FontUtils.getDejavuRegular9Dark()));
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
@@ -398,9 +405,12 @@ public class CostCalculationPdfService extends PdfDocumentService {
             } else {
                 MathContext mc = numberService.getMathContext();
                 BigDecimal toAdd = costs.multiply(margin.divide(new BigDecimal(100), mc), mc);
-                materialsTable.addCell(new Phrase(numberService.format(toAdd), FontUtils.getDejavuRegular9Dark()));
+                materialsTable.addCell(new Phrase(
+                        numberService.format(toAdd) + " " + currencyService.getCurrencyAlphabeticCode(), FontUtils
+                                .getDejavuRegular9Dark()));
                 BigDecimal totalCosts = costs.add(toAdd, mc);
-                materialsTable.addCell(new Phrase(numberService.format(totalCosts), FontUtils.getDejavuRegular9Dark()));
+                materialsTable.addCell(new Phrase(numberService.format(totalCosts) + " "
+                        + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
             }
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
@@ -458,8 +468,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
             String unit = (String) product.getKey().getStringField(L_UNIT);
 
-            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " / " + quantity + " " + unit, FontUtils
-                    .getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + currencyService.getCurrencyAlphabeticCode()
+                    + " / " + quantity + " " + unit, FontUtils.getDejavuRegular9Dark()));
 
         }
         return printCostNormsOfMaterialTable;
@@ -609,7 +619,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
 
-        PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
+        PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false,
+                defaultOperationTableColumnWidth);
 
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             for (Entity calculationOperationComponent : calculationOperationComponents) {
@@ -639,16 +650,19 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
                 operationsTable.addCell(new Phrase(duration, FontUtils.getDejavuRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                operationsTable.addCell(new Phrase(durationOfMachineToString, FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(durationOfMachineToString + " " + currencyService.getCurrencyAlphabeticCode(),
+                        FontUtils.getDejavuRegular9Dark()));
 
-                operationsTable.addCell(new Phrase(durationOfLaborToString, FontUtils.getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(
-                        numberService.format(calculationOperationComponent.getField(L_OPERATION_COST)), FontUtils
-                                .getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(durationOfLaborToString + " " + currencyService.getCurrencyAlphabeticCode(),
+                        FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent.getField(L_OPERATION_COST))
+                        + " " + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
-                        .getField("operationMarginCost")), FontUtils.getDejavuRegular9Dark()));
+                        .getField("operationMarginCost")) + " " + currencyService.getCurrencyAlphabeticCode(), FontUtils
+                        .getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
-                        .getField("totalOperationCost")), FontUtils.getDejavuRegular9Dark()));
+                        .getField("totalOperationCost")) + " " + currencyService.getCurrencyAlphabeticCode(), FontUtils
+                        .getDejavuRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             }
         }
