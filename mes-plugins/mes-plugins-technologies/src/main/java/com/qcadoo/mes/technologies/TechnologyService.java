@@ -414,7 +414,7 @@ public class TechnologyService {
 
     public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
         if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
+                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -432,7 +432,7 @@ public class TechnologyService {
 
     public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
         if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
+                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -451,7 +451,7 @@ public class TechnologyService {
 
     public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
         if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
+                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
@@ -472,7 +472,7 @@ public class TechnologyService {
 
     public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
         if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                || !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
+                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
