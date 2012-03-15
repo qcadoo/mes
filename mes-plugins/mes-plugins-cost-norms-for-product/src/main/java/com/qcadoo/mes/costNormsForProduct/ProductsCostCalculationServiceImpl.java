@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -86,7 +87,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     @Override
     public BigDecimal calculateProductCostForGivenQuantity(Entity product, BigDecimal quantity, final String mode) {
-        BigDecimal cost = getBigDecimal(product.getField(mode));
+        BigDecimal cost = getBigDecimal(product.getField(ProductsCostCalculationConstants.parseString(mode).getStrValue()));
         BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
         BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 

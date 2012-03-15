@@ -24,8 +24,8 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LASTPURCHASE;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LAST_PURCHASE;
 import static java.math.BigDecimal.valueOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -145,7 +145,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
         when(inputProduct.getBelongsToField("product")).thenReturn(product);
 
         when(product.getField(AVERAGE.getStrValue())).thenReturn(averageCost);
-        when(product.getField(LASTPURCHASE.getStrValue())).thenReturn(lastPurchaseCost);
+        when(product.getField(LAST_PURCHASE.getStrValue())).thenReturn(lastPurchaseCost);
         when(product.getField(NOMINAL.getStrValue())).thenReturn(nominalCost);
         when(product.getField("costForNumber")).thenReturn(costForNumber);
 
