@@ -259,3 +259,43 @@ CREATE TABLE productioncountingwithcosts_operationcostcomponent
 
 ALTER TABLE productioncounting_productionbalance ADD COLUMN generatedwithcosts boolean;
 UPDATE productioncounting_productionbalance SET generatedwithcosts=false;
+
+-- Table: workplans_workplanordercolumn
+
+-- DROP TABLE workplans_workplanordercolumn;
+
+CREATE TABLE workplans_workplanordercolumn
+(
+  id bigint NOT NULL,
+  workplan_id bigint,
+  columnfororders_id bigint,
+  succession integer,
+  CONSTRAINT workplans_workplanordercolumn_pkey PRIMARY KEY (id),
+  CONSTRAINT workplans_workplanordercolumn_workplan_fkey FOREIGN KEY (workplan_id)
+      REFERENCES workplans_workplan (id) DEFERRABLE,
+  CONSTRAINT workplans_workplanordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
+      REFERENCES workplans_columnfororders (id) DEFERRABLE
+);
+
+CREATE TABLE workplans_parameterordercolumn
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnfororders_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameterordercolumn_pkey PRIMARY KEY (id),
+  CONSTRAINT workplans_parameterordercolumn_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) DEFERRABLE,
+  CONSTRAINT workplans_parameterordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
+      REFERENCES workplans_columnfororders (id) DEFERRABLE
+);
+
+CREATE TABLE workplans_columnfororders
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  "name" character varying(1024),
+  description character varying(255),
+  columnfiller character varying(2048),
+  CONSTRAINT workplans_columnfororders_pkey PRIMARY KEY (id)
+);

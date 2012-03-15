@@ -67,6 +67,10 @@
 
 		<model:model model="workPlan" resource="model/workPlan.xml" />
 
+		<model:model model="columnForOrders" resource="model/columnForOrders.xml" />
+		<model:model model="parameterOrderColumn" resource="model/parameterOrderColumn.xml" />
+		<model:model model="workPlanOrderColumn" resource="model/workPlanOrderColumn.xml" />
+
 		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
 		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
 		<model:model model="parameterInputColumn" resource="model/parameterInputColumn.xml" />

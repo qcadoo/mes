@@ -291,6 +291,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         inputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
         List<Entity> inputProductsList = new ArrayList<Entity>();
+        // productionBalance.getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS);
+
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo(ORDER, productionBalance.getBelongsToField(ORDER)))
@@ -351,6 +353,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
         List<Entity> outputProductsList = new ArrayList<Entity>();
+        // productionBalance.getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS);
+
         List<Entity> productionRecords = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.belongsTo(ORDER, productionBalance.getBelongsToField(ORDER)))

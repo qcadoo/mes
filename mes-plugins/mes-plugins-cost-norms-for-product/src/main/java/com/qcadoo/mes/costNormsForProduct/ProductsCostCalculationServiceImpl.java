@@ -33,10 +33,14 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.mes.costNormsForProduct.constants.SourceOfProductCosts;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -45,11 +49,14 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private NumberService numberService;
 
     @Override
-    public void calculateTotalProductsCost(Entity entity) {
-        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity);
+    public void calculateTotalProductsCost(final Entity entity, final SourceOfProductCosts sourceOfProductCosts) {
+        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity, sourceOfProductCosts);
         BigDecimal result = BigDecimal.ZERO;
         for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
             result = result.add(productWithCost.getValue(), numberService.getMathContext());
@@ -57,7 +64,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         entity.setField("totalMaterialCosts", numberService.setScale(result));
     }
 
-    public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity) {
+    public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,
+            final SourceOfProductCosts sourceOfProductCosts) {
         checkArgument(entity != null);
         BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
 
@@ -68,7 +76,38 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
         Entity technology = entity.getBelongsToField("technology");
 
-        return getProductWithCostForPlannedQuantities(technology, quantity, mode);
+        Entity order = entity.getBelongsToField("order");
+
+        if (sourceOfProductCosts.equals(SourceOfProductCosts.FROM_ORDER)) {
+            return getProductWithCostForPlannedQuantities(technology, quantity, mode, order);
+        } else if (sourceOfProductCosts.equals(SourceOfProductCosts.GLOBAL)) {
+            return getProductWithCostForPlannedQuantities(technology, quantity, mode);
+        }
+
+        throw new IllegalStateException("sourceOfProductCosts is neither FROM_ORDER nor GLOBAL");
+    }
+
+    private Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final String mode, final Entity order) {
+        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                quantity, true);
+        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
+
+        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantity.getKey();
+            product = product.getDataDefinition().get(product.getId());
+
+            Entity orderOperationProductInComponent = dataDefinitionService
+                    .get(CostNormsForProductConstants.PLUGIN_IDENTIFIER,
+                            CostNormsForProductConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).find()
+                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
+                    .uniqueResult();
+
+            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderOperationProductInComponent,
+                    productQuantity.getValue(), mode);
+            results.put(product, thisProductsCost);
+        }
+        return results;
     }
 
     @Override
