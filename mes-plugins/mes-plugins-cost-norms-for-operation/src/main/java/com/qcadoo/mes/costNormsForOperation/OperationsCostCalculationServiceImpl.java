@@ -156,6 +156,17 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
             final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes) {
+        return estimateCostCalculationForHourly(operationComponent, margin, plannedQuantity, realizationTimes, true);
+    }
+
+    public Map<String, BigDecimal> estimateCostCalculationForHourlyWitoutSaving(final EntityTreeNode operationComponent,
+            final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes) {
+        return estimateCostCalculationForHourly(operationComponent, margin, plannedQuantity, realizationTimes, false);
+    }
+
+    private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
+            final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes,
+            final boolean saveValues) {
         checkArgument(operationComponent != null, "given operationComponent is null");
 
         BigDecimal hourlyMachineCost = getBigDecimal(operationComponent.getField(MACHINE_HOURLY_COST));
@@ -168,7 +179,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
             Map<String, BigDecimal> unitResultsMap = estimateCostCalculationForHourly(child, margin, plannedQuantity,
-                    realizationTimes);
+                    realizationTimes, saveValues);
             for (String key : PATH_COST_KEYS) {
                 BigDecimal unitOperationCost = resultsMap.get(key).add(unitResultsMap.get(key), numberService.getMathContext());
                 resultsMap.put(key, unitOperationCost);
@@ -201,13 +212,15 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationMarginCost = operationCost.multiply(
                 margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext());
 
-        operationComponent.setField("operationCost", numberService.setScale(operationCost));
-        operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
-        operationComponent.setField("totalOperationCost",
-                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
-        operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
+        if (saveValues) {
+            operationComponent.setField("operationCost", numberService.setScale(operationCost));
+            operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
+            operationComponent.setField("totalOperationCost",
+                    numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
+            operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
 
-        checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
+            checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
+        }
 
         resultsMap.put(MACHINE_HOURLY_COST,
                 resultsMap.get(MACHINE_HOURLY_COST).add(operationMachineCost, numberService.getMathContext()));
@@ -219,6 +232,17 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
             final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity) {
+        return estimateCostCalculationForPieceWork(operationComponent, productComponentQuantities, margin, plannedQuantity, true);
+    }
+
+    public BigDecimal estimateCostCalculationForPieceWorkWithoutSaving(final EntityTreeNode operationComponent,
+            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity) {
+        return estimateCostCalculationForPieceWork(operationComponent, productComponentQuantities, margin, plannedQuantity, false);
+    }
+
+    private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
+            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity,
+            final boolean saveValues) {
 
         BigDecimal pathCost = BigDecimal.ZERO;
 
@@ -244,13 +268,15 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationMarginCost = operationCost.multiply(margin.divide(BigDecimal.valueOf(100),
                 numberService.getMathContext()));
 
-        operationComponent.setField("pieces", numberService.setScale(operationRuns));
-        operationComponent.setField("operationCost", numberService.setScale(operationCost));
-        operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
-        operationComponent.setField("totalOperationCost",
-                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
+        if (saveValues) {
+            operationComponent.setField("pieces", numberService.setScale(operationRuns));
+            operationComponent.setField("operationCost", numberService.setScale(operationCost));
+            operationComponent.setField("operationMarginCost", numberService.setScale(operationMarginCost));
+            operationComponent.setField("totalOperationCost",
+                    numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
 
-        checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
+            checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
+        }
 
         return operationCost.add(pathCost, numberService.getMathContext());
     }
