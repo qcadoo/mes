@@ -247,7 +247,7 @@ public class ProductionBalanceViewService {
         viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
     }
 
-    private Entity getOrderFromDB(Long orderId) {
+    private Entity getOrderFromDB(final Long orderId) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 }

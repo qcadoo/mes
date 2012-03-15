@@ -109,8 +109,7 @@ public class ProductionBalanceDetailsViewHooks {
 
         Entity order = getOrderFromDB(orderId);
 
-        if ((generated != null) && "1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null)
-                && (order != null)) {
+        if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
 
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
@@ -267,7 +266,7 @@ public class ProductionBalanceDetailsViewHooks {
         viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(isVisible);
     }
 
-    private Entity getOrderFromDB(Long orderId) {
+    private Entity getOrderFromDB(final Long orderId) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 }

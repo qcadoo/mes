@@ -43,8 +43,6 @@ import com.qcadoo.report.api.SortUtil;
 @Service
 public class GenerateProductionBalanceWithCosts implements Observer {
 
-    private static final String L_DURATION = "duration";
-
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_STATE = "state";
