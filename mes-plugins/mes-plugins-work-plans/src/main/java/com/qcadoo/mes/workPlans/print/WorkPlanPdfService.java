@@ -119,6 +119,13 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
         addMainHeader(document, workPlan, locale);
 
+        addOrdersTable(document, workPlan, locale, decimalFormat);
+
+        addOperations(document, workPlan, decimalFormat, locale);
+    }
+
+    private void addOrdersTable(final Document document, final Entity workPlan, final Locale locale,
+            final DecimalFormat decimalFormat) throws DocumentException {
         PdfPTable orderTable = pdfHelper.createTableWithHeader(5, prepareOrdersTableHeader(document, workPlan, locale), false,
                 defaultWorkPlanColumnWidth);
 
@@ -126,8 +133,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         addOrderSeries(orderTable, orders, decimalFormat);
         document.add(orderTable);
         document.add(Chunk.NEWLINE);
-
-        addOperations(document, workPlan, decimalFormat, locale);
     }
 
     @SuppressWarnings("unchecked")
