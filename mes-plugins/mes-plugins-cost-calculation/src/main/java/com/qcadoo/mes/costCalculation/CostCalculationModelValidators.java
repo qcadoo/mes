@@ -63,4 +63,16 @@ public class CostCalculationModelValidators {
         return true;
     }
 
+    public boolean ifSourceOfMaterialIsFromOrderThenOrderIsNeeded(final DataDefinition costCalculationDD,
+            final Entity costCalculation) {
+        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
+                costCalculation.getField(SOURCE_OF_MATERIAL_COSTS))
+                && costCalculation.getBelongsToField("order") == null) {
+            costCalculation.addError(costCalculationDD.getField(SOURCE_OF_MATERIAL_COSTS),
+                    "costCalculation.messages.sourceOfMaterialFromOrderRequiresAnOrder");
+            return false;
+        }
+
+        return true;
+    }
 }

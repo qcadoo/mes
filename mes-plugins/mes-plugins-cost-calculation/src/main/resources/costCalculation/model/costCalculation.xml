@@ -111,6 +111,7 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
+		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="ifSourceOfMaterialIsFromOrderThenOrderIsNeeded" />
 		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
 		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyHasCorrectState" />
 		<onCopy

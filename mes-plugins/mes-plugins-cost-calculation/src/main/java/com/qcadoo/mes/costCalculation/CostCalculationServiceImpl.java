@@ -29,9 +29,11 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
+import com.qcadoo.mes.costNormsForProduct.constants.SourceOfProductCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -69,7 +71,18 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         entity.setField("date", new Date());
 
         operationsCostCalculationService.calculateOperationsCost(entity);
-        productsCostCalculationService.calculateTotalProductsCost(entity);
+
+        String sourceOfMaterialCosts = entity.getStringField("sourceOfMaterialCosts");
+
+        switch (SourceOfMaterialCosts.parseString(sourceOfMaterialCosts)) {
+            case FROM_ORDERS_MATERIAL_COSTS:
+                productsCostCalculationService.calculateTotalProductsCost(entity, SourceOfProductCosts.FROM_ORDER);
+                break;
+            case CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT:
+                productsCostCalculationService.calculateTotalProductsCost(entity, SourceOfProductCosts.GLOBAL);
+                break;
+            default:
+        }
 
         if (CalculateOperationCostMode.HOURLY.equals(operationMode)) {
             BigDecimal totalMachine = getBigDecimal(entity.getField("totalMachineHourlyCosts"));

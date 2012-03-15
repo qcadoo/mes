@@ -24,8 +24,8 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LAST_PURCHASE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
 import static java.math.BigDecimal.valueOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,13 +40,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -156,31 +152,18 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     }
 
-    @Ignore
-    @Test
-    public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception {
-        // when
-        productCostCalc.calculateTotalProductsCost(costCalculation);
-
-        // then
-        Mockito.verify(numberService).setScale(expectedResult);
-        Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), Matchers.any(BigDecimal.class));
-    }
-
-    @Ignore
-    @Test(expected = IllegalArgumentException.class)
-    public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
-        // when
-        productCostCalc.calculateTotalProductsCost(null);
-    }
-
-    @Ignore
-    @Test(expected = IllegalArgumentException.class)
-    public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception {
-        // given
-        when(costCalculation.getField("quantity")).thenReturn(null);
-
-        // when
-        productCostCalc.calculateTotalProductsCost(costCalculation);
-    }
+    /*
+     * @Ignore
+     * @Test public void shouldReturnCorrectCostValuesUsingTechnology() throws Exception { // when
+     * productCostCalc.calculateTotalProductsCost(costCalculation); // then
+     * Mockito.verify(numberService).setScale(expectedResult);
+     * Mockito.verify(costCalculation).setField(Mockito.eq("totalMaterialCosts"), Matchers.any(BigDecimal.class)); }
+     * @Ignore
+     * @Test(expected = IllegalArgumentException.class) public void testShouldReturnExceptionWhenEntityIsNull() throws Exception {
+     * // when productCostCalc.calculateTotalProductsCost(null); }
+     * @Ignore
+     * @Test(expected = IllegalArgumentException.class) public void testShouldReturnExceptionWhenQuantityIsNull() throws Exception
+     * { // given when(costCalculation.getField("quantity")).thenReturn(null); // when
+     * productCostCalc.calculateTotalProductsCost(costCalculation); }
+     */
 }
