@@ -46,6 +46,7 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -115,7 +116,8 @@ public class ProductionBalanceDetailsViewHooks {
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
             viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
 
-            if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())) {
+            if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(true);
 
                 if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(

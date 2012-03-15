@@ -78,6 +78,18 @@ public class ProductionBalanceService {
 
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
+    private static final String LABOR_TIME_BALANCE_FIELD = "laborTimeBalance";
+
+    private static final String MACHINE_TIME_BALANCE_FIELD = "machineTimeBalance";
+
+    private static final String LABOR_TIME_FIELD = "laborTime";
+
+    private static final String MACHINE_TIME_FIELD = "machineTime";
+
+    private static final String PLANNED_LABOR_TIME_FIELD = "plannedLaborTime";
+
+    private static final String PLANNED_MACHINE_TIME_FIELD = "plannedMachineTime";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -322,6 +334,8 @@ public class ProductionBalanceService {
             return;
         }
 
+        List<Entity> operationTimeComponents = Lists.newArrayList();
+
         List<Entity> productionRecordsList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq(L_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
@@ -330,9 +344,36 @@ public class ProductionBalanceService {
         if (!productionRecordsList.isEmpty()) {
             Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
 
-            productionBalance.setField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS,
-                    productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecordsList));
+            List<Entity> groupedProductionRecords = productionBalanceReportDataService
+                    .groupProductionRecordsByOperation(productionRecordsList);
+            if (!groupedProductionRecords.isEmpty()) {
+                for (Entity groupedProductionRecord : groupedProductionRecords) {
+                    Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            "operationTimeComponent").create();
+
+                    operationTimeComponent.setField("orderOperationComponent",
+                            groupedProductionRecord.getBelongsToField("orderOperationComponent"));
+
+                    operationTimeComponent.setField(PLANNED_MACHINE_TIME_FIELD,
+                            groupedProductionRecord.getField(PLANNED_MACHINE_TIME_FIELD));
+                    operationTimeComponent.setField(MACHINE_TIME_FIELD, groupedProductionRecord.getField(MACHINE_TIME_FIELD));
+                    operationTimeComponent.setField(MACHINE_TIME_BALANCE_FIELD,
+                            groupedProductionRecord.getField(MACHINE_TIME_BALANCE_FIELD));
+
+                    operationTimeComponent.setField(PLANNED_LABOR_TIME_FIELD,
+                            groupedProductionRecord.getField(PLANNED_LABOR_TIME_FIELD));
+                    operationTimeComponent.setField(LABOR_TIME_FIELD, groupedProductionRecord.getField(LABOR_TIME_FIELD));
+                    operationTimeComponent.setField(LABOR_TIME_BALANCE_FIELD,
+                            groupedProductionRecord.getField(LABOR_TIME_BALANCE_FIELD));
+
+                    operationTimeComponents.add(operationTimeComponent);
+                }
+            }
+
         }
+        productionBalance.setField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS, operationTimeComponents);
+
+        productionBalance.getDataDefinition().save(productionBalance);
     }
 
     private void fillTimeValues(final Entity productionBalance, final Entity order) {
@@ -351,16 +392,19 @@ public class ProductionBalanceService {
                 .add(SearchRestrictions.eq(L_STATE, ProductionCountingStates.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order)).list().getEntities();
 
-        for (Entity productionRecord : productionRecordsList) {
-            plannedMachineTime = plannedMachineTime.add(
-                    new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")), numberService.getMathContext());
-            plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
-                    numberService.getMathContext());
+        if (!productionRecordsList.isEmpty()) {
+            for (Entity productionRecord : productionRecordsList) {
+                plannedMachineTime = plannedMachineTime
+                        .add(new BigDecimal((Integer) productionRecord.getField("plannedMachineTime")),
+                                numberService.getMathContext());
+                plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField("plannedLaborTime")),
+                        numberService.getMathContext());
 
-            machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
-                    numberService.getMathContext());
-            laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
-                    numberService.getMathContext());
+                machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField("machineTime")),
+                        numberService.getMathContext());
+                laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField("laborTime")),
+                        numberService.getMathContext());
+            }
         }
 
         BigDecimal machineTimeBalance = machineTime.subtract(plannedMachineTime, numberService.getMathContext());

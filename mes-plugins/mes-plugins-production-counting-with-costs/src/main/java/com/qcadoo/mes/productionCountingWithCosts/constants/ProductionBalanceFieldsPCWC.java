@@ -26,7 +26,7 @@ public class ProductionBalanceFieldsPCWC {
 
     public static final String TOTAL_COSTS = "totalCosts";
 
-    public static final String TOTAL_COSTS_PER_UNIT = "totalCostsPerUnit";
+    public static final String TOTAL_COST_PER_UNIT = "totalCostPerUnit";
 
     public static final String PLANNED_MACHINE_COSTS = "plannedMachineCosts";
 

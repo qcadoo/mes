@@ -508,7 +508,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.costsSummaryForm.totalCostPerUnitLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_COSTS_PER_UNIT), locale);
+                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT), locale);
 
         return content;
     }
