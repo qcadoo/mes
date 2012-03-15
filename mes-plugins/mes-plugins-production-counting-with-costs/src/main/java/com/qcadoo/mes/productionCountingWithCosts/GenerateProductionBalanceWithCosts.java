@@ -540,4 +540,5 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         productionBalance.getDataDefinition().save(productionBalance);
     }
+
 }

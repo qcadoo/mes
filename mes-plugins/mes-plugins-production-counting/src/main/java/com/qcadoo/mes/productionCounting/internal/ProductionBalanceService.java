@@ -44,6 +44,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
@@ -127,6 +128,20 @@ public class ProductionBalanceService {
         if ((order == null) || checkIfTypeOfProductionRecordingIsBasic(order)) {
             entity.addError(dataDefinition.getField(MODEL_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
+
+            return false;
+        }
+
+        if (!order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)
+                && CalculateOperationCostsMode.HOURLY.getStringValue().equals(entity.getField("calculateOperationCostsMode"))) {
+            entity.addError(dataDefinition.getField(MODEL_ORDER),
+                    "productionCounting.productionBalance.report.error.orderWithoutRegisterProductionTime");
+
+            return false;
+        } else if (!order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PIECEWORK)
+                && CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(entity.getField("calculateOperationCostsMode"))) {
+            entity.addError(dataDefinition.getField(MODEL_ORDER),
+                    "productionCounting.productionBalance.report.error.orderWithoutRegisterPiecework");
 
             return false;
         }
@@ -217,7 +232,7 @@ public class ProductionBalanceService {
             fillBalanceOperationProductOutComponents(productionBalance, order);
         }
 
-        if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
+        if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)) {
             if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);

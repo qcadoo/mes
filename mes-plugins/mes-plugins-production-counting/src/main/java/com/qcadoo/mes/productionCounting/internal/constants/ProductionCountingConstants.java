@@ -66,5 +66,7 @@ public interface ProductionCountingConstants {
 
     String PARAM_REGISTER_IN_PRODUCTS = "registerQuantityInProduct";
 
-    String PARAM_REGISTER_TIME = "registerProductionTime";
+    String PARAM_REGISTER_PRODUCTION_TIME = "registerProductionTime";
+
+    String PARAM_REGISTER_PIECEWORK = "registerPiecework";
 }

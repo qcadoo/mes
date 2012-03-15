@@ -117,7 +117,7 @@ public class ProductionBalanceDetailsViewHooks {
             viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
 
             if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
+                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(true);
 
                 if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(

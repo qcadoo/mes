@@ -185,11 +185,14 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
                 translationService.translate("productionCounting.productionBalance.description.label", locale) + ":",
                 productionBalance.getStringField(DESCRIPTION), null, FontUtils.getDejavuBold9Dark(),
                 FontUtils.getDejavuBold9Dark(), null);
+        addTableCellAsTable(leftPanel, translationService.translate(
+                "productionCounting.productionBalance.report.panel.typeOfProductionCounting", locale),
+                translationService.translate("productionCounting.productionBalance.calculateOperationCostsMode.value."
+                        + productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE), locale), null,
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         if (productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE).equals(
                 HOURLY.getStringValue())) {
-            addTableCellAsTable(leftPanel, translationService.translate(
-                    "productionCounting.productionBalance.report.panel.typeOfProductionCounting", locale), null, null,
-                    FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
+
             addTableCellAsTable(
                     leftPanel,
                     TABS_LITERAL

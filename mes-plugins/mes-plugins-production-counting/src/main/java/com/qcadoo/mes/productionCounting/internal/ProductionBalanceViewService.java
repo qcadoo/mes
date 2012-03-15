@@ -109,7 +109,7 @@ public class ProductionBalanceViewService {
             }
 
             if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_TIME)) {
+                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(true);
 
                 if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
