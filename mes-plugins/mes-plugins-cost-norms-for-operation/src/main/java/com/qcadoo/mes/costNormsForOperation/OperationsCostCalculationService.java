@@ -23,12 +23,22 @@
  */
 package com.qcadoo.mes.costNormsForOperation;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTreeNode;
 
 @Service
 public interface OperationsCostCalculationService {
 
     void calculateOperationsCost(final Entity costCalculation);
+
+    Map<String, BigDecimal> calculateOperationCostWithoutSaving(final EntityTreeNode operationComponent, final BigDecimal margin,
+            final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes);
+
+    BigDecimal estimateCostCalculationForPieceWorkWithoutSaving(final EntityTreeNode operationComponent,
+            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);
 }
