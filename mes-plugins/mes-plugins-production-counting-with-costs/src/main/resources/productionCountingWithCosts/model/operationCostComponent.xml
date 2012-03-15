@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
-			plugin="technologies" />
+			plugin="productionScheduling" />
 
 		<decimal name="plannedMachineCosts">
 			<validatesUnscaledValue max="7" />
