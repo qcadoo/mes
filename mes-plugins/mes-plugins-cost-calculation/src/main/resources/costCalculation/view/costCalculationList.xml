@@ -42,11 +42,11 @@
 			<option type="column" name="quantity" fields="quantity"  />
 			<option type="column" name="totalCosts" fields="totalCosts" />
 			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit" />
-			<option type="order" column="name" direction="asc" />
+			<option type="order" column="order" direction="asc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+			<option type="searchable" value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
+			<option type="orderable" value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
