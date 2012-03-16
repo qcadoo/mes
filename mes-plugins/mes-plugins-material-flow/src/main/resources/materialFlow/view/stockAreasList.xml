@@ -37,8 +37,8 @@
 				<option type="column" name="number" fields="number" link="true" width="150" />
 				<option type="column" name="name" fields="name" link="true"/>
 				<option type="order" column="number" direction="asc" />
- 				<option type="searchable" value="number" /> 
- 				<option type="orderable" value="number" /> 
+ 				<option type="searchable" value="number,name" /> 
+ 				<option type="orderable" value="number,name" /> 
 				<option type="correspondingView" value="materialFlow/stockAreasDetail" /> 
  				<option type="correspondingComponent" value="form" /> 
  				<option type="multiselect" value="true" /> 

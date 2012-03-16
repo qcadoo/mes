@@ -44,6 +44,8 @@
 				<option type="column" name="staff" fields="staff"
 				expression="#staff==null?'N/A':#staff['name']" />
 				<option type="order" column="number" direction="asc" />
+				<option type="searchable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
+				<option type="orderable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
 				<option type="correspondingView" value="materialFlow/stockCorrectionDetail" /> 
  				<option type="correspondingComponent" value="form" /> 
 			</component>

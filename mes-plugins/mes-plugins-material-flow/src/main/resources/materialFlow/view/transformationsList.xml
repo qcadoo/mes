@@ -41,8 +41,8 @@
  				<option type="column" name="stockAreasTo" fields="stockAreasTo" expression="#stockAreasTo==null?'N/A':#stockAreasTo['name']" /> 
  				<option type="column" name="staff" fields="staff" expression="#staff==null?'N/A':#staff['name']" />"
  				<option type="order" column="number" direction="asc" />
- 				<option type="searchable" value="number" /> 
- 				<option type="orderable" value="number" /> 
+ 				<option type="searchable" value="number,name,time,stockAreasFrom,stockAreasTo,staff" /> 
+ 				<option type="orderable" value="number,name,time,stockAreasFrom,stockAreasTo,staff" /> 
  				<option type="correspondingView" value="materialFlow/transformationsDetail" /> 
  				<option type="correspondingComponent" value="form" /> 
  				<option type="fullscreen" value="true" /> 
