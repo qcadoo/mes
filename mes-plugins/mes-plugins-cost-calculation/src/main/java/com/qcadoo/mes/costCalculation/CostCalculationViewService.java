@@ -285,7 +285,7 @@ public class CostCalculationViewService {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
                 "number", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode", "productionCostMargin",
                 "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc", "additionalOverhead",
-                "additionalOverheadCurrency"));
+                "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -295,8 +295,10 @@ public class CostCalculationViewService {
         Boolean isGenerated = "1".equals(viewDefinitionState.getComponentByReference(GENERATED).getFieldValue());
 
         if (isGenerated) {
+
             for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
                 entry.getValue().setEnabled(false);
+
             }
         } else {
             for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
