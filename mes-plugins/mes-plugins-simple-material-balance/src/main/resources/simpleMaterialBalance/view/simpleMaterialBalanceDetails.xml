@@ -121,6 +121,8 @@
 						<option type="column" name="name" fields="order"
 							expression="#order['name']" />
 						<option type="order" column="number" direction="desc" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
 						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceOrdersComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
@@ -140,6 +142,8 @@
 						<option type="column" name="name" fields="stockAreas"
 							expression="#stockAreas['name']" width="50" />
 						<option type="order" column="number" direction="desc" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
 						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceStockAreasComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
