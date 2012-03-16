@@ -30,6 +30,8 @@
 	<component type="window" name="window">
 		<ribbon>
 			<group template="navigation" />
+			
+			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
 		</ribbon>
 		<component type="form" name="order" reference="order"/>
 		<component type="form" name="basicProductionCounting" reference="form">
