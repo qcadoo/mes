@@ -69,10 +69,10 @@
 			<option type="column" name="ean" fields="ean" />
 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
 			<option type="order" column="name" direction="asc" />
+			<option type="searchable" value="number,name,globalTypeOfMaterial,ean" />
+			<option type="orderable" value="number,name,globalTypeOfMaterial,ean" />
 			<option type="correspondingView" value="basic/productDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number,typeOfMaterial,ean" />
-			<option type="orderable" value="name,number,typeOfMaterial,ean" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
