@@ -65,4 +65,8 @@ public class ProductionBalanceFieldsPCWC {
     public static final String ORDER_OPERATION_PRODUCT_IN_COMPONENTS = "orderOperationProductInComponents";
 
     public static final String OPERATION_COST_COMPONENTS = "operationCostComponents";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String QUANTITY = "quantity";
 }

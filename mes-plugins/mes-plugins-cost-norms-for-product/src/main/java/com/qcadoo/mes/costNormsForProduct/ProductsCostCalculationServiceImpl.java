@@ -125,7 +125,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     }
 
     @Override
-    public BigDecimal calculateProductCostForGivenQuantity(Entity product, BigDecimal quantity, final String mode) {
+    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity, final String mode) {
         BigDecimal cost = getBigDecimal(product.getField(ProductsCostCalculationConstants.parseString(mode).getStrValue()));
         BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
         BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());

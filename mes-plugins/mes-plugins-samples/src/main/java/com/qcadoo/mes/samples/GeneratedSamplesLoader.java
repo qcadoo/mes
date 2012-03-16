@@ -213,7 +213,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         }
     }
 
-    private void generateAndAddOperationProductOutComponent(Entity operationComponent, final BigDecimal quantity, Entity product) {
+    private void generateAndAddOperationProductOutComponent(final Entity operationComponent, final BigDecimal quantity,
+            final Entity product) {
 
         Preconditions.checkArgument(operationComponent != null, "operation component is null");
 
@@ -363,7 +364,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         return operationComponent;
     }
 
-    private void generateAndAddOperationProductInComponent(Entity operationComponent, final BigDecimal quantity, Entity product) {
+    private void generateAndAddOperationProductInComponent(final Entity operationComponent, final BigDecimal quantity,
+            final Entity product) {
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .create();
 
