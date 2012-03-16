@@ -138,6 +138,9 @@ ALTER TABLE productioncounting_productionbalance ADD COLUMN technology_id bigint
 ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_technology_fkey FOREIGN KEY (technology_id)
       REFERENCES technologies_technology (id) DEFERRABLE;
       
+ALTER TABLE productioncounting_productionbalance ADD COLUMN generatedwithcosts boolean;
+UPDATE productioncounting_productionbalance SET generatedwithcosts=false;
+
 -- end
 
       
@@ -257,12 +260,9 @@ CREATE TABLE productioncountingwithcosts_operationcostcomponent
 
 -- end
 
-ALTER TABLE productioncounting_productionbalance ADD COLUMN generatedwithcosts boolean;
-UPDATE productioncounting_productionbalance SET generatedwithcosts=false;
 
--- Table: workplans_workplanordercolumn
-
--- DROP TABLE workplans_workplanordercolumn;
+-- Table: workplans_columnfororders
+-- changed: 15.03.2012
 
 CREATE TABLE workplans_columnfororders
 (
@@ -273,6 +273,31 @@ CREATE TABLE workplans_columnfororders
   columnfiller character varying(2048),
   CONSTRAINT workplans_columnfororders_pkey PRIMARY KEY (id)
 );
+
+-- end
+
+
+-- Table: workplans_parameterordercolumn
+-- changed: 15.03.2012
+
+CREATE TABLE workplans_parameterordercolumn
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnfororders_id bigint,
+  succession integer,
+  CONSTRAINT workplans_parameterordercolumn_pkey PRIMARY KEY (id),
+  CONSTRAINT workplans_parameterordercolumn_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) DEFERRABLE,
+  CONSTRAINT workplans_parameterordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
+      REFERENCES workplans_columnfororders (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: workplans_workplanordercolumn
+-- changed: 15.03.2012
 
 CREATE TABLE workplans_workplanordercolumn
 (
@@ -287,15 +312,4 @@ CREATE TABLE workplans_workplanordercolumn
       REFERENCES workplans_columnfororders (id) DEFERRABLE
 );
 
-CREATE TABLE workplans_parameterordercolumn
-(
-  id bigint NOT NULL,
-  parameter_id bigint,
-  columnfororders_id bigint,
-  succession integer,
-  CONSTRAINT workplans_parameterordercolumn_pkey PRIMARY KEY (id),
-  CONSTRAINT workplans_parameterordercolumn_parameter_fkey FOREIGN KEY (parameter_id)
-      REFERENCES basic_parameter (id) DEFERRABLE,
-  CONSTRAINT workplans_parameterordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
-      REFERENCES workplans_columnfororders (id) DEFERRABLE
-);
+-- end
