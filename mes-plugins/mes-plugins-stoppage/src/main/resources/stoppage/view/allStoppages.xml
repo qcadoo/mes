@@ -42,12 +42,12 @@
 				<option type="correspondingView" value="stoppage/allStoppagesForm" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="false" />
-				
-				<option type="searchable" value="reason, duration" />
-				<option type="orderable" value="reason, duration" />
+					
+				<option type="order" column="duration" direction="desc" />
+				<option type="searchable" value="order,reason,duration" />
+				<option type="orderable" value="order,reason,duration" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
-				<option type="order" column="duration" direction="desc" />
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
