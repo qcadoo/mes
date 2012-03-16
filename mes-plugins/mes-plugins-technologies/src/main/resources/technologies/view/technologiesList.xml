@@ -188,8 +188,8 @@
 			<option type="order" column="number" direction="desc" />
 			<option type="correspondingView" value="technologies/technologyDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number,product" />
-			<option type="orderable" value="name,number,product" />
+			<option type="searchable" value="name,number,product,state" />
+			<option type="orderable" value="name,number,product,state" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
