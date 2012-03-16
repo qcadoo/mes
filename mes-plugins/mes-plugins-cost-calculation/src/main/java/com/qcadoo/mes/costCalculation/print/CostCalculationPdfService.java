@@ -103,7 +103,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private final int[] defaultMaterialTableColumnWidth = new int[] { 15, 15, 10, 20, 20, 20 };
 
-    private final int[] defaultOperationTableColumnWidth = new int[] { 10, 10, 10, 10, 15, 15, 15, 15 };
+    private final int[] defaultOperationTableColumnWidth = new int[] { 10, 10, 10, 14, 14, 14, 14, 14 };
 
     @Autowired
     SecurityService securityService;
@@ -507,6 +507,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             panelTableHeader.setSpacingBefore(10);
             panelTableContent.getDefaultCell().setBackgroundColor(null);
             panelTableContent.setTableEvent(null);
+
             panelTableHeader.addCell(new Phrase(translationService.translate(
                     L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER, locale)
                     + ": "
@@ -523,7 +524,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.productionSetUpTime.label", locale) + ":",
-                    calculationOperationComponent.getField("tpz"));
+                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent.getField("tpz"))
+                            + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
@@ -535,7 +537,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.productionTimeForOneCycle.label", locale)
-                            + ":", calculationOperationComponent.getField("tj"));
+                            + ":",
+                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent.getField("tj")) + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
@@ -547,13 +550,15 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.additionalTime.label", locale) + ":",
-                    calculationOperationComponent.getField("timeNextOperation"));
+                    timeConverterService.convertTimeToString((Integer) calculationOperationComponent
+                            .getField("timeNextOperation")) + " (g:m:s)");
 
             addTableCellAsTwoColumnsTable(
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.machineHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("machineHourlyCost"));
+                    calculationOperationComponent.getField("machineHourlyCost") + " "
+                            + currencyService.getCurrencyAlphabeticCode());
 
             addTableCellAsTwoColumnsTable(panelTableContent, null, null);
 
@@ -561,7 +566,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     panelTableContent,
                     translationService.translate(
                             "costCalculation.costCalculationDetails.report.columnHeader.laborHourlyCost.label", locale) + ":",
-                    calculationOperationComponent.getField("laborHourlyCost"));
+                    calculationOperationComponent.getField("laborHourlyCost") + " " + currencyService.getCurrencyAlphabeticCode());
 
             document.add(panelTableHeader);
             document.add(panelTableContent);
