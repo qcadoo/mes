@@ -83,12 +83,21 @@ public class WorkPlanViewHooks {
         view.redirectTo("/page/workPlans/workPlanDetails.html", false, true, navigationParameters);
     }
 
-    public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
+    public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState view) {
+        FieldComponent generated = (FieldComponent) view.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
-            form.setFormEnabled(false);
+            view.getComponentByReference("name").setEnabled(false);
+            view.getComponentByReference("type").setEnabled(false);
+            view.getComponentByReference("workPlanComponents").setEnabled(false);
+            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(false);
+            view.getComponentByReference("columnsForOrders").setEnabled(false);
+        } else {
+            view.getComponentByReference("name").setEnabled(true);
+            view.getComponentByReference("type").setEnabled(true);
+            view.getComponentByReference("workPlanComponents").setEnabled(true);
+            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(true);
+            view.getComponentByReference("columnsForOrders").setEnabled(true);
         }
     }
 
