@@ -122,11 +122,8 @@
 		</component>
 	</windowTab>
 	<windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
-		<component type="gridLayout" name="workPlansOrdersGridLayout" columns="2" rows="2">
-			<layoutElement column="1" row="1" width="2">
-				
-			</layoutElement>
-			<layoutElement column="1" row="2">
+		<component type="gridLayout" name="workPlansOrdersGridLayout" columns="2" rows="1">
+			<layoutElement column="1" row="1">
 				<component type="grid" name="columnsForOrders" source="#{form}.parameterOrderColumns" reference="columnsForOrders" >
 					<option type="column" name="name" fields="columnForOrders" expression="'@' + #columnForOrders.get('name')" />
 					

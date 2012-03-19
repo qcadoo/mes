@@ -25,6 +25,10 @@ package com.qcadoo.mes.workPlans;
 
 public interface WorkPlansColumnLoaderService {
 
+    void fillColumnsForOrders(final String plugin);
+
+    void clearColumnsForOrders(final String plugin);
+
     void fillColumnsForProducts(final String plugin);
 
     void clearColumnsForProducts(final String plugin);
