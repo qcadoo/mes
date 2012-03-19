@@ -37,8 +37,8 @@
 		<priority name="succession" />
 	</fields>
 	<hooks>
-		<!-- <validatesWith
-			class="com.qcadoo.mes.workPlans.hooks.ParameterColumnModelValidators"
-			method="checkIfColumnForInputProductsIsNotAlreadyUsed" /> -->
+		<validatesWith
+			class="com.qcadoo.mes.workPlans.hooks.WorkPlanColumnModelValidators"
+			method="checkIfColumnForOrdersIsNotAlreadyUsed" />
 	</hooks>
 </model>

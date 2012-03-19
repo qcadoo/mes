@@ -66,7 +66,11 @@
 		<localization:translation path="locales" />
 
 		<model:model model="workPlan" resource="model/workPlan.xml" />
-		
+
+		<model:model model="columnForOrders" resource="model/columnForOrders.xml" />
+		<model:model model="parameterOrderColumn" resource="model/parameterOrderColumn.xml" />
+		<model:model model="workPlanOrderColumn" resource="model/workPlanOrderColumn.xml" />
+
 		<model:model model="columnForInputProducts" resource="model/columnForInputProducts.xml" />
 		<model:model model="columnForOutputProducts" resource="model/columnForOutputProducts.xml" />
 		<model:model model="parameterInputColumn" resource="model/parameterInputColumn.xml" />
@@ -79,7 +83,13 @@
 			resource="model/technologyOperationOutputColumn.xml" />
 		<model:model model="orderOperationInputColumn" resource="model/orderOperationInputColumn.xml" />
 		<model:model model="orderOperationOutputColumn" resource="model/orderOperationOutputColumn.xml" />
-
+	
+		<model:model-field plugin="workPlans" model="workPlan">
+			<model:hasMany name="workPlanOrderColumns" plugin="workPlans"
+				model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+		
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="workPlans" joinField="orders"
 				model="workPlan" plugin="workPlans" />
@@ -104,6 +114,11 @@
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
 
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterOrderColumns" plugin="workPlans"
+				model="parameterOrderColumn" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
 			<model:hasMany name="parameterInputColumns" plugin="workPlans"
 				model="parameterInputColumn" joinField="parameter" cascade="delete"
@@ -274,7 +289,10 @@
 
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
-
+		
+		<view:view resource="view/parameterOrderColumnDetails.xml" />
+		<view:view resource="view/workPlanOrderColumnDetails.xml" />
+		
 		<view:view resource="view/parameterInputColumnDetails.xml" />
 		<view:view resource="view/parameterOutputColumnDetails.xml" />
 		<view:view resource="view/operationInputColumnDetails.xml" />
@@ -294,7 +312,8 @@
 			/> -->
 
 		<view:view-listener plugin="orders" view="ordersList"
-			component="grid" event="addSelectedOrdersToWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			component="grid" event="addSelectedOrdersToWorkPlan" 
+			class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="addSelectedOrdersToWorkPlan" />
 
 		<view:view-hook plugin="technologies" view="operationDetails"
@@ -307,7 +326,7 @@
 			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
 
-		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlanOnStartupService" />
+		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlansOnStartupService" />
 	</modules>
 
 </plugin>

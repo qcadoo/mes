@@ -30,7 +30,7 @@ public interface ValidatorService {
 
     boolean checkIfAttachmentExtensionIsValid(final DataDefinition modelDD, final Entity model, final String attachmentName);
 
-    boolean checkIfColumnForProductsIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
-            final String columnForProductsName, final String componentName);
+    boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
+            final String columnName, final String componentName);
 
 }

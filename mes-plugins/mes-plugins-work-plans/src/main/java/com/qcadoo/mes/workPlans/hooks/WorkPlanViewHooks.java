@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.workPlans.hooks;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,6 +37,7 @@ import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.util.RibbonReportService;
+import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ReportService;
@@ -52,7 +53,7 @@ import com.qcadoo.view.api.components.GridComponent;
 public class WorkPlanViewHooks {
 
     @Autowired
-    private WorkPlanService workPlanService;
+    private WorkPlansService workPlanService;
 
     @Autowired
     private RibbonReportService ribbonReportService;

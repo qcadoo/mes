@@ -121,5 +121,31 @@
 			</layoutElement>
 		</component>
 	</windowTab>
+	<windowTab name="workPlansOrdersTab" reference="workPlansOrdersTab">
+		<component type="gridLayout" name="workPlansOrdersGridLayout" columns="2" rows="2">
+			<layoutElement column="1" row="1" width="2">
+				
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="grid" name="columnsForOrders" source="#{form}.parameterOrderColumns" reference="columnsForOrders" >
+					<option type="column" name="name" fields="columnForOrders" expression="'@' + #columnForOrders.get('name')" />
+					
+					<option type="searchable" value="name" />
+					<option type="orderable" value="name" />
+					
+					<option type="order" column="succession" direction="desc" />
+					
+					<option type="correspondingView" value="workPlans/parameterOrderColumnDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="true" />
+					
+					<option type="creatable" value="true" />
+					<option type="deletable" value="true" />
+					<option type="fullscreen" value="true" />
+					<option type="multiselect" value="true" />
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
 	
 </windowTabExtension>

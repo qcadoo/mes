@@ -34,9 +34,13 @@ public interface WorkPlansConstants {
     // MODEL
     String MODEL_WORK_PLAN = "workPlan";
 
+    String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
+
     String MODEL_COLUMN_FOR_INPUT_PRODUCTS = "columnForInputProducts";
 
     String MODEL_COLUMN_FOR_OUTPUT_PRODUCTS = "columnForOutputProducts";
+
+    String MODEL_PARAMETER_ORDER_COLUMN = "parameterOrderColumn";
 
     String MODEL_PARAMETER_INPUT_COLUMN = "parameterInputColumn";
 
@@ -53,6 +57,8 @@ public interface WorkPlansConstants {
     String MODEL_ORDER_OPERATION_INPUT_COLUMN = "orderOperationInputColumn";
 
     String MODEL_ORDER_OPERATION_OUTPUT_COLUMN = "orderOperationOutputColumn";
+
+    String MODEL_WORK_PLAN_ORDER_COLUMN = "workPlanOrderColumn";
 
     // VIEW
     String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";

@@ -44,7 +44,7 @@
 			plugin="orders" copyable="true" />
 	</fields>
 	<hooks>
-		<onCopy class="com.qcadoo.mes.workPlans.WorkPlanModelHooks"
+		<onCopy class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
 			method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />

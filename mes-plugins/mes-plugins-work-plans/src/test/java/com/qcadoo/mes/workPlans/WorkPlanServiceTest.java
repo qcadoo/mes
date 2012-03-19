@@ -55,7 +55,7 @@ import com.qcadoo.model.api.search.SearchResult;
 
 public class WorkPlanServiceTest {
 
-    private WorkPlanService workPlanService;
+    private WorkPlansService workPlanService;
 
     private DataDefinitionService dataDefinitionService;
 
@@ -67,7 +67,7 @@ public class WorkPlanServiceTest {
 
     @Before
     public final void init() {
-        workPlanService = new WorkPlanServiceImpl();
+        workPlanService = new WorkPlansServiceImpl();
 
         dataDefinitionService = mock(DataDefinitionService.class);
         TranslationService translationService = mock(TranslationService.class);

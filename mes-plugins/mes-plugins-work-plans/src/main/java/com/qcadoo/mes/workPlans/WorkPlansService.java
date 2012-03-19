@@ -23,20 +23,21 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
-import com.qcadoo.model.api.DataDefinition;
+import com.lowagie.text.DocumentException;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 
-@Service
-public class WorkPlanModelHooks {
+public interface WorkPlansService {
 
-    public final boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("fileName", null);
-        entity.setField("generated", false);
-        entity.setField("date", null);
-        entity.setField("worker", null);
+    void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException, DocumentException;
 
-        return true;
-    }
+    Entity generateWorkPlanEntity(final List<Entity> orders);
+
+    List<Entity> getSelectedOrders(final Set<Long> selectedOrderIds);
+
+    Entity getWorkPlan(final Long workPlanId);
 }

@@ -119,7 +119,7 @@
 				]]>
 			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="6">
+				rows="10">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
 						field="generated" defaultEnabled="false">
@@ -146,7 +146,7 @@
 					<component type="select" name="type" reference="type"
 						field="type" />
 				</layoutElement>
-				<layoutElement column="2" row="1" height="6" width="2">
+				<layoutElement column="2" row="1" height="5" width="2">
 					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
@@ -176,17 +176,38 @@
 						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
+				<layoutElement column="2" row="6" height="5" width="2">
+					<component type="grid" name="columnsForOrders" source="#{form}.workPlanOrderColumns" reference="columnsForOrders" >
+						<option type="column" name="name" fields="columnForOrders" expression="'@' + #columnForOrders.get('name')" />
+						
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						
+						<option type="order" column="succession" direction="desc" />
+						
+						<option type="correspondingView" value="workPlans/workPlanOrderColumnDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			
+			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 				method="printWorkPlan" />
-			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 				method="generateTestWorkPlan" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="disableFormForGeneratedWorkPlan" />
 	</hooks>
 </view>

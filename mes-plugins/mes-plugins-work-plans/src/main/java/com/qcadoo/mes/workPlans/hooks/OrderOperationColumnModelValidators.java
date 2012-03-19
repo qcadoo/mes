@@ -38,14 +38,14 @@ public class OrderOperationColumnModelValidators {
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
             final Entity inputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
+        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "orderOperationColumn",
                 "columnForInputProducts", "orderOperatonInputColumns");
     }
 
     public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
             final Entity outputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
+        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "orderOperationColumn",
                 "columnForOutputProducts", "orderOperationOutputColumns");
     }
 

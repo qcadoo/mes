@@ -35,18 +35,24 @@ public class ParameterColumnModelValidators {
     @Autowired
     private ValidatorService validatorService;
 
+    public final boolean checkIfColumnForOrdersIsNotAlreadyUsed(final DataDefinition orderColumnDD, final Entity orderColumn) {
+
+        return validatorService.checkIfColumnIsNotUsed(orderColumnDD, orderColumn, "parameter", "columnForOrders",
+                "parameterOrderColumns");
+    }
+
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
             final Entity inputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "parameter",
-                "columnForInputProducts", "parameterInputColumns");
+        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "parameter", "columnForInputProducts",
+                "parameterInputColumns");
     }
 
     public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
             final Entity outputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "parameter",
-                "columnForOutputProducts", "parameterOutputColumns");
+        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "parameter", "columnForOutputProducts",
+                "parameterOutputColumns");
     }
 
 }

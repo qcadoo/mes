@@ -21,34 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.workPlans.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader;
-import com.qcadoo.plugin.api.Module;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
-@Component
-public class WorkPlanOnStartupService extends Module {
+@Service
+public class WorkPlanColumnModelValidators {
 
     @Autowired
-    private WorkPlansColumnLoader workPlansColumnLoader;
+    private ValidatorService validatorService;
 
-    @Override
-    @Transactional
-    public void multiTenantEnable() {
-        workPlansColumnLoader.setDefaulValues();
+    public final boolean checkIfColumnForOrdersIsNotAlreadyUsed(final DataDefinition orderColumnDD, final Entity orderColumn) {
 
-        workPlansColumnLoader.addWorkPlansColumnsForProducts();
+        return validatorService.checkIfColumnIsNotUsed(orderColumnDD, orderColumn, "workPlan", "columnForOrders",
+                "workPlanOrderColumns");
     }
 
-    @Override
-    @Transactional
-    public void multiTenantDisable() {
-        workPlansColumnLoader.setDefaulValues();
-
-        workPlansColumnLoader.deleteWorkPlansColumnsForProducts();
-    }
 }

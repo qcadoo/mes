@@ -30,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 

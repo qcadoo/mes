@@ -59,13 +59,13 @@ public class ValidatorServiceImpl implements ValidatorService {
         return true;
     }
 
-    public boolean checkIfColumnForProductsIsNotUsed(final DataDefinition componentDD, final Entity component,
-            final String modelName, final String columnForProductsName, final String componentName) {
+    public boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
+            final String columnName, final String componentName) {
 
         if (component.getId() == null) {
-            Entity columnForProducts = component.getBelongsToField(columnForProductsName);
+            Entity column = component.getBelongsToField(columnName);
 
-            if (columnForProducts == null) {
+            if (column == null) {
                 return true;
             } else {
                 Entity model = component.getBelongsToField(modelName);
@@ -79,11 +79,11 @@ public class ValidatorServiceImpl implements ValidatorService {
                         return true;
                     } else {
                         for (Entity modelComponent : modelComponents) {
-                            Entity column = modelComponent.getBelongsToField(columnForProductsName);
+                            Entity columnUsed = modelComponent.getBelongsToField(columnName);
 
-                            if (column.getId().equals(columnForProducts.getId())) {
-                                component.addError(componentDD.getField(columnForProductsName),
-                                        "workPlans.columnForProducts.message.columnForProductsIsAlreadyUsed");
+                            if (columnUsed.getId().equals(column.getId())) {
+                                component.addError(componentDD.getField(columnName),
+                                        "workPlans.column.message.columnIsAlreadyUsed");
 
                                 return false;
                             }

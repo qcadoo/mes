@@ -52,7 +52,7 @@
 						#{form}.addOnChangeListener(listener);
 					]]>	 
 				</script>
-				<component type="gridLayout" name="technologyOperationInputComponentGridLayout" columns="4" rows="1" hasBorders="false">
+				<component type="gridLayout" name="technologyOperationInputColumnGridLayout" columns="4" rows="1" hasBorders="false">
 
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="columnForInputProducts" field="columnForInputProducts" reference="columnForInputProductsLookup">

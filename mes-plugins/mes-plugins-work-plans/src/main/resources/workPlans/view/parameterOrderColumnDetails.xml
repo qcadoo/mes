@@ -25,8 +25,8 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderOperationInputColumnDetails" 
-	modelName="orderOperationInputColumn">
+	name="parameterOrderColumnDetails" 
+	modelName="parameterOrderColumn">
 	
 	<component name="window" type="window" reference="window">
 		<ribbon>
@@ -42,9 +42,9 @@
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								if (isSaved) { 
-									#{columnForInputProductsLookup}.setEnabled(false, true);
+									#{columnForOrdersLookup}.setEnabled(false, true);
 								} else {
-									#{columnForInputProductsLookup}.setEnabled(true, true);
+									#{columnForOrdersLookup}.setEnabled(true, true);
 								}
 							}
 						};
@@ -52,10 +52,10 @@
 						#{form}.addOnChangeListener(listener);
 					]]>	 
 				</script>
-				<component type="gridLayout" name="orderOperationInputColumnGridLayout" columns="4" rows="1" hasBorders="false">
+				<component type="gridLayout" name="parameterOrderColumnGridLayout" columns="4" rows="1" hasBorders="false">
 
 					<layoutElement column="1" row="1" width="3">
-						<component type="lookup" name="columnForInputProducts" field="columnForInputProducts" reference="columnForInputProductsLookup">
+						<component type="lookup" name="columnForOrders" field="columnForOrders" reference="columnForOrdersLookup">
 							<option type="column" name="name" fields="name" expression="'@' + #name" link="true" />
 							<option type="column" name="description" fields="description" expression="'@' + #description" />
 

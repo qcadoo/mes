@@ -38,14 +38,14 @@ public class TechnologyOperationColumnModelValidators {
     public final boolean checkIfColumnForInputProductsIsNotAlreadyUsed(final DataDefinition inputColumnDD,
             final Entity inputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(inputColumnDD, inputColumn, "technologyOperationColumn",
+        return validatorService.checkIfColumnIsNotUsed(inputColumnDD, inputColumn, "technologyOperationColumn",
                 "columnForInputProducts", "technologyOperationInputColumns");
     }
 
     public final boolean checkIfColumnForOutputProductsIsNotAlreadyUsed(final DataDefinition outputColumnDD,
             final Entity outputColumn) {
 
-        return validatorService.checkIfColumnForProductsIsNotUsed(outputColumnDD, outputColumn, "technologyOperationColumn",
+        return validatorService.checkIfColumnIsNotUsed(outputColumnDD, outputColumn, "technologyOperationColumn",
                 "columnForOutputProducts", "technologyOperationOutputColumns");
     }
 

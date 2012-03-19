@@ -56,7 +56,7 @@
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			
-			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 				method="printWorkPlan" />
 			<script>
 				<![CDATA[
@@ -82,7 +82,7 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.workPlans.WorkPlanViewHooks"
+		<beforeRender class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="setGridGenerateButtonState" />
 	</hooks>
 </view>

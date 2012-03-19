@@ -23,21 +23,32 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.lowagie.text.DocumentException;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnLoader;
+import com.qcadoo.plugin.api.Module;
 
-public interface WorkPlanService {
+@Component
+public class WorkPlansOnStartupService extends Module {
 
-    void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException, DocumentException;
+    @Autowired
+    private WorkPlansColumnLoader workPlansColumnLoader;
 
-    Entity generateWorkPlanEntity(final List<Entity> orders);
+    @Override
+    @Transactional
+    public void multiTenantEnable() {
+        workPlansColumnLoader.setDefaulValues();
 
-    List<Entity> getSelectedOrders(final Set<Long> selectedOrderIds);
+        workPlansColumnLoader.addWorkPlansColumnsForProducts();
+    }
 
-    Entity getWorkPlan(final Long workPlanId);
+    @Override
+    @Transactional
+    public void multiTenantDisable() {
+        workPlansColumnLoader.setDefaulValues();
+
+        workPlansColumnLoader.deleteWorkPlansColumnsForProducts();
+    }
 }

@@ -53,7 +53,7 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 
 @Service
-public class WorkPlanServiceImpl implements WorkPlanService {
+public class WorkPlansServiceImpl implements WorkPlansService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
