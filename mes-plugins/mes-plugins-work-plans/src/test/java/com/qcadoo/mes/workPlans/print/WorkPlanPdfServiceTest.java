@@ -58,7 +58,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -85,9 +84,6 @@ public class WorkPlanPdfServiceTest {
 
     @Mock
     private SecurityService securityService;
-
-    @Mock
-    private DataDefinitionService dataDefinitionService;
 
     @Mock
     private PdfHelper pdfHelper;
@@ -135,7 +131,6 @@ public class WorkPlanPdfServiceTest {
 
         ReflectionTestUtils.setField(workPlanPdfService, "translationService", translationService);
         ReflectionTestUtils.setField(workPlanPdfService, "securityService", securityService);
-        ReflectionTestUtils.setField(workPlanPdfService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(workPlanPdfService, "pdfHelper", pdfHelper);
 
         locale = Locale.getDefault();
