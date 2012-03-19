@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.hooks;
 
+import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
+import static com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
@@ -41,13 +50,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
-import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
+import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -78,6 +82,9 @@ public class ProductionBalanceDetailsViewHooks {
     private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
 
     @Autowired
+    private ProductionBalanceService productionBalanceService;
+
+    @Autowired
     private CurrencyService currencyService;
 
     @Autowired
@@ -86,8 +93,7 @@ public class ProductionBalanceDetailsViewHooks {
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
             setComponentsVisibility(viewDefinitionState, false);
@@ -96,9 +102,9 @@ public class ProductionBalanceDetailsViewHooks {
         }
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+                .getComponentByReference(CALCULATE_OPERATION_COST_MODE);
 
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
@@ -108,7 +114,7 @@ public class ProductionBalanceDetailsViewHooks {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = productionBalanceService.getOrderFromDB(orderId);
 
         if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
@@ -116,17 +122,15 @@ public class ProductionBalanceDetailsViewHooks {
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
             viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
 
-            if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)) {
+            if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                    && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(true);
 
-                if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
-                        order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(true);
-                } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
-                        order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
@@ -144,7 +148,7 @@ public class ProductionBalanceDetailsViewHooks {
         ComponentState assumptionsBorderLayout = viewDefinitionState.getComponentByReference(L_ASSUMPTIONS_BORDER_LAYOUT);
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+                .getComponentByReference(CALCULATE_OPERATION_COST_MODE);
 
         FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
 
@@ -156,12 +160,10 @@ public class ProductionBalanceDetailsViewHooks {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = productionBalanceService.getOrderFromDB(orderId);
 
-        if ((order != null)
-                && CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                && TypeOfProductionRecording.CUMULATED.getStringValue().equals(
-                        order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order != null) && HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                && CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
             assumptionsBorderLayout.setVisible(true);
         } else {
             assumptionsBorderLayout.setVisible(false);
@@ -205,7 +207,7 @@ public class ProductionBalanceDetailsViewHooks {
             return;
         }
 
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        Entity product = getProductFromDB(productId);
 
         String unit = product.getStringField("unit");
 
@@ -218,8 +220,7 @@ public class ProductionBalanceDetailsViewHooks {
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
             setComponentsState(viewDefinitionState, false);
@@ -235,9 +236,8 @@ public class ProductionBalanceDetailsViewHooks {
         FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(CALCULATE_MATERIAL_COSTS_MODE);
 
-        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
-                sourceOfMaterialCosts.getFieldValue())
-                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
+        if (CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(sourceOfMaterialCosts.getFieldValue())
+                && COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
             sourceOfMaterialCosts.addMessage("productionCountingWithCosts.messages.optionUnavailable", MessageType.FAILURE);
         }
     }
@@ -268,7 +268,8 @@ public class ProductionBalanceDetailsViewHooks {
         viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(isVisible);
     }
 
-    private Entity getOrderFromDB(final Long orderId) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+    private Entity getProductFromDB(final Long productId) {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
+
 }

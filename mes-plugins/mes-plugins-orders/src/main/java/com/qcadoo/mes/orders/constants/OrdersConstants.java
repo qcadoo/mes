@@ -49,7 +49,7 @@ public interface OrdersConstants {
 
     String FIELD_GRID = "grid";
 
-    String FIELD_PLANNED_QUANTITY = "plannedQuantity";
+    String PLANNED_QUANTITY = "plannedQuantity";
 
     String FIELD_BATCH_REQUIRED = "batchRequired";
 }

@@ -28,6 +28,10 @@ public class ProductionRecordFields {
 
     public static final String PLANNED_TIME = "plannedTime";
 
+    public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String BALANCE = "balance";
+
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String PLANNED_MACHINE_TIME = "plannedMachineTime";
@@ -35,6 +39,8 @@ public class ProductionRecordFields {
     public static final String PLANNED_LABOR_TIME = "plannedLaborTime";
 
     public static final String EXECUTED_OPERATION_CYCLES = "executedOperationCycles";
+
+    public static final String PRODUCT = "product";
 
     public static final String STAFF = "staff";
 

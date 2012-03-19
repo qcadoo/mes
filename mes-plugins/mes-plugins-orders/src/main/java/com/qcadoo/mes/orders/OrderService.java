@@ -38,7 +38,7 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUC
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_PLANNED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 
 import java.util.Calendar;
@@ -213,7 +213,7 @@ public class OrderService {
         FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent technology = (FieldComponent) state.getComponentByReference(TECHNOLOGY);
         FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
-        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(FIELD_PLANNED_QUANTITY);
+        FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(PLANNED_QUANTITY);
 
         defaultTechnology.setEnabled(false);
 
@@ -258,9 +258,9 @@ public class OrderService {
         if (product == null) {
             return true;
         }
-        Object o = entity.getField(FIELD_PLANNED_QUANTITY);
+        Object o = entity.getField(PLANNED_QUANTITY);
         if (o == null) {
-            entity.addError(dataDefinition.getField(FIELD_PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
+            entity.addError(dataDefinition.getField(PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
             return false;
         } else {
             return true;
@@ -484,7 +484,7 @@ public class OrderService {
             state.getComponentByReference(DATE_FROM).setEnabled(false);
             state.getComponentByReference(DATE_TO).setEnabled(false);
             state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
-            state.getComponentByReference(FIELD_PLANNED_QUANTITY).setEnabled(false);
+            state.getComponentByReference(PLANNED_QUANTITY).setEnabled(false);
         }
     }
 

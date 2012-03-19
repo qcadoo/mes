@@ -23,25 +23,31 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_TPZ;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.NAME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRINT_OPERATION_NORMS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -76,17 +82,16 @@ public class ProductionBalanceViewService {
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
             setComponentsVisibility(viewDefinitionState, false);
         }
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+                .getComponentByReference(CALCULATE_OPERATION_COST_MODE);
 
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
 
         Long orderId = (Long) orderLookup.getFieldValue();
 
@@ -96,29 +101,26 @@ public class ProductionBalanceViewService {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = productionBalanceService.getOrderFromDB(orderId);
 
-        if ((generated != null) && "1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null)
-                && (order != null)) {
-            if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS)) {
+        if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
+            if (order.getBooleanField(PARAM_REGISTER_IN_PRODUCTS)) {
                 viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(true);
             }
 
-            if (order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS)) {
+            if (order.getBooleanField(PARAM_REGISTER_OUT_PRODUCTS)) {
                 viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(true);
             }
 
-            if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME)) {
+            if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                    && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(true);
 
-                if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
-                        order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(true);
-                } else if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
-                        order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
@@ -140,7 +142,7 @@ public class ProductionBalanceViewService {
         FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
                 .getComponentByReference(INCLUDE_ADDITIONAL_TIME);
 
-        if (CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostsMode.getFieldValue())) {
+        if (PIECEWORK.getStringValue().equals(calculateOperationCostsMode.getFieldValue())) {
             includeTPZ.setFieldValue(false);
             includeTPZ.setEnabled(false);
             includeTPZ.requestComponentUpdateState();
@@ -158,8 +160,7 @@ public class ProductionBalanceViewService {
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent generated = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.GENERATED);
+        FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
             setComponentsState(viewDefinitionState, false);
@@ -170,9 +171,9 @@ public class ProductionBalanceViewService {
 
     public void fillProductAndRecordsNumber(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(ORDER);
 
-        Long orderId = (Long) viewDefinitionState.getComponentByReference(ProductionBalanceFields.ORDER).getFieldValue();
+        Long orderId = (Long) viewDefinitionState.getComponentByReference(ORDER).getFieldValue();
 
         if (orderId == null) {
             clearProductAndRecordsNumber(viewDefinitionState);
@@ -180,7 +181,7 @@ public class ProductionBalanceViewService {
             return;
         }
 
-        Entity order = getOrderFromDB(orderId);
+        Entity order = productionBalanceService.getOrderFromDB(orderId);
 
         if (order == null) {
             clearProductAndRecordsNumber(viewDefinitionState);
@@ -200,25 +201,21 @@ public class ProductionBalanceViewService {
     }
 
     private void fillProductAndRecordsNumber(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.PRODUCT);
-        FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.RECORDS_NUMBER);
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCT);
+        FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference(RECORDS_NUMBER);
 
-        Entity product = order.getBelongsToField("product");
+        Entity product = order.getBelongsToField(MODEL_PRODUCT);
         Integer recordsNumber = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER, order)).list().getEntities().size();
+                .add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities().size();
 
         productField.setFieldValue(product.getId());
         recordsNumberField.setFieldValue(recordsNumber);
     }
 
     private void clearProductAndRecordsNumber(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.PRODUCT);
-        FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.RECORDS_NUMBER);
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCT);
+        FieldComponent recordsNumberField = (FieldComponent) viewDefinitionState.getComponentByReference(RECORDS_NUMBER);
 
         productField.setFieldValue(null);
         recordsNumberField.setFieldValue(null);
@@ -245,9 +242,5 @@ public class ProductionBalanceViewService {
         viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(isVisible);
         viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(isVisible);
         viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
-    }
-
-    private Entity getOrderFromDB(final Long orderId) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 }
