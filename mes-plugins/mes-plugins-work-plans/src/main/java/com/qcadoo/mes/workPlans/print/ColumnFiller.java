@@ -30,5 +30,19 @@ import com.qcadoo.model.api.Entity;
 
 public interface ColumnFiller {
 
-    Map<Entity, Map<String, String>> getValues(List<Entity> orders);
+    /**
+     * 
+     * @param orders
+     *            List of orders
+     * @return The Keys of the map are order entities, values are Maps columnIdentifier -> columnValue
+     */
+    Map<Entity, Map<String, String>> getOrderValues(final List<Entity> orders);
+
+    /**
+     * 
+     * @param orders
+     *            List of orders
+     * @return The Keys of the map are productComponents, values are Maps columnIdentifier -> columnValue
+     */
+    Map<Entity, Map<String, String>> getValues(final List<Entity> orders);
 }

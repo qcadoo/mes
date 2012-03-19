@@ -25,6 +25,8 @@ package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,11 +36,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 
 @Component
 public class WorkPlansColumnFiller implements ColumnFiller {
@@ -46,21 +50,97 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     // TODO mici, those constants will end up as duplication somewhere,
     // in the columnLoader probably, they should be either here or there.
 
-    private static final String REFERENCE_TECHNOLOGY_L = "referenceTechnology";
+    private static final String L_REFERENCE_TECHNOLOGY = "referenceTechnology";
 
     private static final String PRODUCT_COLUMN = "productName";
 
     private static final String QUANTITY_COLUMN = "plannedQuantity";
 
+    private static final String ORDER_NAME_COLUMN = "orderName";
+
+    private static final String ORDER_NUMBER_COLUMN = "orderNumber";
+
+    private static final String PRODUCT_NAME_COLUMN = "productName";
+
+    private static final String PLANNED_QUANTITY_COLUMN = "plannedQuantity";
+
+    private static final String PLANNED_END_DATE_COLUMN = "plannedEndDate";
+
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
-    /**
-     * 
-     * @param orders
-     *            List of orders
-     * @return The Keys of the map are productComponents, values are Maps columnIdentifier -> columnValue
-     */
+    @Autowired
+    private NumberService numberService;
+
+    @Override
+    public Map<Entity, Map<String, String>> getOrderValues(List<Entity> orders) {
+        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+
+        for (Entity order : orders) {
+            fillOrderNames(order, values);
+            fillOrderNumbers(order, values);
+            fillOrderPlannedEndDate(order, values);
+            fillOrderPlannedQuantity(order, values);
+            fillOrderProductNumbers(order, values);
+        }
+
+        return values;
+    }
+
+    private void fillOrderNames(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        if (valuesMap.get(order) == null) {
+            valuesMap.put(order, new HashMap<String, String>());
+        }
+        valuesMap.get(order).put(ORDER_NAME_COLUMN, order.getStringField("name"));
+    }
+
+    private void fillOrderNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        if (valuesMap.get(order) == null) {
+            valuesMap.put(order, new HashMap<String, String>());
+        }
+        valuesMap.get(order).put(ORDER_NUMBER_COLUMN, order.getStringField("number"));
+    }
+
+    private void fillOrderPlannedQuantity(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        if (valuesMap.get(order) == null) {
+            valuesMap.put(order, new HashMap<String, String>());
+        }
+        String qty = "-";
+        if (order.getField("plannedQuantity") != null) {
+            qty = numberService.format(order.getField("plannedQuantity")) + " "
+                    + order.getBelongsToField("product").getStringField("unit");
+        }
+
+        valuesMap.get(order).put(PLANNED_QUANTITY_COLUMN, qty);
+    }
+
+    private void fillOrderPlannedEndDate(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        if (valuesMap.get(order) == null) {
+            valuesMap.put(order, new HashMap<String, String>());
+        }
+
+        String formattedDateTo = "-";
+
+        if (order.getField("dateTo") != null) {
+            synchronized (this) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat(DateUtils.L_DATE_FORMAT, LocaleContextHolder.getLocale());
+                formattedDateTo = dateFormat.format((Date) order.getField("dateTo"));
+            }
+        }
+
+        valuesMap.get(order).put(PLANNED_END_DATE_COLUMN, formattedDateTo);
+    }
+
+    private void fillOrderProductNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        if (valuesMap.get(order) == null) {
+            valuesMap.put(order, new HashMap<String, String>());
+        }
+        Entity product = order.getBelongsToField("product");
+        String name = product.getStringField("name") + " (" + product.getStringField("number") + ")";
+        valuesMap.get(order).put(PRODUCT_NAME_COLUMN, name);
+    }
+
+    @Override
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
@@ -80,8 +160,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
 
         for (Entity operationComponent : operationComponents) {
-            if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
-                Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
+            if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY);
                 fillProductNames(refTech, valuesMap);
                 continue;
             }
@@ -114,8 +194,8 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField("operationComponents");
 
         for (Entity operationComponent : operationComponents) {
-            if (REFERENCE_TECHNOLOGY_L.equals(operationComponent.getStringField("entityType"))) {
-                Entity refTech = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_L);
+            if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField("entityType"))) {
+                Entity refTech = operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY);
                 fillPlannedQuantities(refTech, productQuantities, valuesMap);
                 continue;
             }
