@@ -44,6 +44,7 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -293,21 +294,15 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         inputProductsTableHeader.add(translationService.translate(PCPBRCHB_LITERAL, locale));
         inputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
-        List<Entity> inputProductsList = new ArrayList<Entity>();
-        // productionBalance.getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS);
-
-        List<Entity> productionRecords = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo(ORDER, productionBalance.getBelongsToField(ORDER)))
-                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list()
-                .getEntities();
-        for (Entity productionRecord : productionRecords) {
-            inputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductInComponents"));
-        }
+        List<Entity> inputProductsList = productionBalance
+                .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS);
 
         if (!inputProductsList.isEmpty()) {
             document.add(new Paragraph(translationService.translate("productionCounting.productionBalance.report.paragraph",
                     locale), FontUtils.getDejavuBold11Dark()));
+
+            // TODO mici, same thing again.
+            inputProductsList = Lists.newLinkedList(inputProductsList);
 
             Collections.sort(inputProductsList, new EntityProductInOutComparator());
 
@@ -355,24 +350,16 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
         outputProductsTableHeader.add(translationService.translate(PCPBRCHB_LITERAL, locale));
         outputProductsTableHeader.add(translationService.translate("basic.product.unit.label", locale));
 
-        List<Entity> outputProductsList = new ArrayList<Entity>();
-        // productionBalance.getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        List<Entity> productionRecords = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo(ORDER, productionBalance.getBelongsToField(ORDER)))
-                .add(SearchRestrictions.eq(STATE_LITERAL, ProductionCountingStates.ACCEPTED.getStringValue())).list()
-                .getEntities();
-        for (Entity productionRecord : productionRecords) {
-            if (productionRecord.getStringField(STATE_LITERAL).equals(ProductionCountingStates.ACCEPTED.getStringValue())) {
-                outputProductsList.addAll(productionRecord.getHasManyField("recordOperationProductOutComponents"));
-            }
-        }
+        List<Entity> outputProductsList = productionBalance
+                .getHasManyField(ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS);
 
         if (!outputProductsList.isEmpty()) {
             document.add(Chunk.NEWLINE);
             document.add(new Paragraph(translationService.translate("productionCounting.productionBalance.report.paragraph2",
                     locale), FontUtils.getDejavuBold11Dark()));
+
+            // TODO mici, same thing again.
+            outputProductsList = Lists.newLinkedList(outputProductsList);
 
             Collections.sort(outputProductsList, new EntityProductInOutComparator());
 

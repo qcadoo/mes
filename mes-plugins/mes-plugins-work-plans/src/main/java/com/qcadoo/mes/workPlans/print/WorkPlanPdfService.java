@@ -106,23 +106,25 @@ public class WorkPlanPdfService extends PdfDocumentService {
             final DecimalFormat decimalFormat) throws DocumentException {
         List<Entity> columns = fetchOrderColumnDefinitions(workPlan);
 
-        PdfPTable orderTable = pdfHelper.createTableWithHeader(columns.size(),
-                prepareOrdersTableHeader(document, columns, locale), false);
+        if (!columns.isEmpty()) {
+            PdfPTable orderTable = pdfHelper.createTableWithHeader(columns.size(),
+                    prepareOrdersTableHeader(document, columns, locale), false);
 
-        List<Entity> orders = workPlan.getManyToManyField("orders");
+            List<Entity> orders = workPlan.getManyToManyField("orders");
 
-        Map<Entity, Map<String, String>> columnValues = columnFetcher.getOrderColumnValues(orders);
+            Map<Entity, Map<String, String>> columnValues = columnFetcher.getOrderColumnValues(orders);
 
-        for (Entity order : orders) {
-            for (Entity column : columns) {
-                String columnIdentifier = column.getStringField("identifier");
-                String value = columnValues.get(order).get(columnIdentifier);
-                orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+            for (Entity order : orders) {
+                for (Entity column : columns) {
+                    String columnIdentifier = column.getStringField("identifier");
+                    String value = columnValues.get(order).get(columnIdentifier);
+                    orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                }
             }
-        }
 
-        document.add(orderTable);
-        document.add(Chunk.NEWLINE);
+            document.add(orderTable);
+            document.add(Chunk.NEWLINE);
+        }
     }
 
     void addOperations(final Document document, final Entity workPlan, final DecimalFormat df, final Locale locale)
