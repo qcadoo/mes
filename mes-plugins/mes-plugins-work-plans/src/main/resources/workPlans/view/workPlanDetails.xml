@@ -176,7 +176,13 @@
 						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="6" height="5" width="2">
+				<layoutElement column="2" row="6" width="2">
+					<component type="checkbox" name="dontPrintOrdersInWorkPlans" field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+						<option type="labelWidth" value="50" />
+						<option type="align" value="left" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="7" height="4" width="2">
 					<component type="grid" name="columnsForOrders" source="#{form}.workPlanOrderColumns" reference="columnsForOrders" >
 						<option type="column" name="name" fields="columnForOrders" expression="'@' + #columnForOrders.get('name')" />
 						

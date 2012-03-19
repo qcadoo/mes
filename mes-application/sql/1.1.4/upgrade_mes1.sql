@@ -261,6 +261,9 @@ CREATE TABLE productioncountingwithcosts_operationcostcomponent
 -- end
 
 
+
+
+
 -- Table: workplans_columnfororders
 -- changed: 15.03.2012
 
@@ -311,5 +314,21 @@ CREATE TABLE workplans_workplanordercolumn
   CONSTRAINT workplans_workplanordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
       REFERENCES workplans_columnfororders (id) DEFERRABLE
 );
+
+-- end
+
+
+-- Table: basic_parameter
+-- changed: 19.03.2012
+
+ALTER TABLE basic_parameter ADD COLUMN dontPrintOrdersInWorkPlans boolean;
+
+-- end
+
+
+-- Table: workplans_workplan
+-- changed: 19.03.2012
+
+ALTER TABLE workplans_workplan ADD COLUMN dontPrintOrdersInWorkPlans boolean;
 
 -- end

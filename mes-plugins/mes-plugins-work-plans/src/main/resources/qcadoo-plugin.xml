@@ -83,7 +83,11 @@
 			resource="model/technologyOperationOutputColumn.xml" />
 		<model:model model="orderOperationInputColumn" resource="model/orderOperationInputColumn.xml" />
 		<model:model model="orderOperationOutputColumn" resource="model/orderOperationOutputColumn.xml" />
-	
+		
+		<model:model-field plugin="workPlans" model="workPlan">
+			<model:boolean name="dontPrintOrdersInWorkPlans" />
+		</model:model-field>
+		
 		<model:model-field plugin="workPlans" model="workPlan">
 			<model:hasMany name="workPlanOrderColumns" plugin="workPlans"
 				model="workPlanOrderColumn" joinField="workPlan" cascade="delete"
@@ -94,7 +98,11 @@
 			<model:manyToMany name="workPlans" joinField="orders"
 				model="workPlan" plugin="workPlans" />
 		</model:model-field>
-
+		
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="dontPrintOrdersInWorkPlans" />
+		</model:model-field>
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
@@ -113,7 +121,7 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
-
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:hasMany name="parameterOrderColumns" plugin="workPlans"
 				model="parameterOrderColumn" joinField="parameter" cascade="delete"

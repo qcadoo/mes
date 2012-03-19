@@ -454,9 +454,9 @@ public class ProductionBalanceService {
 
             generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
         } catch (IOException e) {
-            throw new RuntimeException("Problem with saving productionBalance report");
+            throw new IllegalStateException("Problem with saving productionBalance report");
         } catch (DocumentException e) {
-            throw new RuntimeException("Problem with generating productionBalance report");
+            throw new IllegalStateException("Problem with generating productionBalance report");
         }
     }
 

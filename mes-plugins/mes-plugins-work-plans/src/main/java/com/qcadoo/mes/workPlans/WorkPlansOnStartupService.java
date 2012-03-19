@@ -40,7 +40,7 @@ public class WorkPlansOnStartupService extends Module {
     @Transactional
     public void multiTenantEnable() {
         workPlansColumnLoader.setDefaulValues();
-
+        workPlansColumnLoader.addWorkPlansColumnsForOrders();
         workPlansColumnLoader.addWorkPlansColumnsForProducts();
     }
 
@@ -48,7 +48,7 @@ public class WorkPlansOnStartupService extends Module {
     @Transactional
     public void multiTenantDisable() {
         workPlansColumnLoader.setDefaulValues();
-
+        workPlansColumnLoader.deleteWorkPlansColumnsForOrders();
         workPlansColumnLoader.deleteWorkPlansColumnsForProducts();
     }
 }

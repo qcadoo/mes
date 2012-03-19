@@ -119,7 +119,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     private ProductionBalanceReportDataService productionBalanceReportDataService;
 
     @Override
-    public void update(Observable arg0, Object arg1) {
+    public void update(final Observable arg0, final Object arg1) {
         Entity balance = (Entity) arg1;
 
         doTheCostsPart(balance);
@@ -145,9 +145,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
             productionBalance.getDataDefinition().save(productionBalance);
         } catch (IOException e) {
-            throw new RuntimeException("Problem with saving productionBalanceWithCosts report");
+            throw new IllegalStateException("Problem with saving productionBalanceWithCosts report");
         } catch (DocumentException e) {
-            throw new RuntimeException("Problem with generating productionBalanceWithCosts report");
+            throw new IllegalStateException("Problem with generating productionBalanceWithCosts report");
         }
     }
 
