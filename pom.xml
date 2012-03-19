@@ -42,6 +42,7 @@
 		<slf4j.version>1.6.1</slf4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
+		<aspectj.version>1.6.12</aspectj.version>
 	</properties>
 
 	<dependencies>
@@ -175,6 +176,37 @@
 						<exclude>mes-tomcat/**</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<aspectLibraries>
+           				<aspectLibrary>
+               				<groupId>org.springframework</groupId>
+              				<artifactId>spring-aspects</artifactId>
+            			</aspectLibrary>
+					</aspectLibraries>
+			    	<showWeaveInfo>true</showWeaveInfo>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<resources>

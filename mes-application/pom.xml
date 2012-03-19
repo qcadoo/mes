@@ -480,6 +480,7 @@
 						<version>${qcadoo.maven.plugin.version}</version>
 						<configuration>
 							<jdbcDriver>${basedir}/driver/postgresql-8.4-701.jdbc4.jar</jdbcDriver>
+							<aspectJWeaver>${basedir}/driver/aspectjweaver-1.6.12.jar</aspectJWeaver>
 							<configuration>${basedir}/conf/${profile.name}/</configuration>
 							<rootFilesDirectory>${basedir}/root/</rootFilesDirectory>
 						</configuration>

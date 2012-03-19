@@ -29,11 +29,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -47,7 +47,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.aspectj.AnnotationTransactionAspect;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -306,11 +309,14 @@ public class AutoGenealogyServiceTest {
                 dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
                         .save(any(Entity.class)).getGlobalErrors().isEmpty()).willReturn(true);
 
-        mockStatic(TransactionAspectSupport.class);
+        TransactionStatus txStatus = mock(TransactionStatus.class);
+        given(txStatus.isRollbackOnly()).willReturn(false);
 
-        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+        PlatformTransactionManager txManager = mock(PlatformTransactionManager.class);
+        given(txManager.getTransaction((TransactionDefinition) Mockito.anyObject())).willReturn(txStatus);
 
-        given(TransactionAspectSupport.currentTransactionStatus()).willReturn(transactionStatus);
+        AnnotationTransactionAspect txAspect = AnnotationTransactionAspect.aspectOf();
+        txAspect.setTransactionManager(txManager);
 
         // when
         autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
