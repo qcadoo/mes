@@ -50,6 +50,30 @@ public class WorkPlansColumnLoader {
         workPlansColumnLoaderService.setOrderOperationComponentDefaultValues();
     }
 
+    public void addWorkPlansColumnsForOrders() {
+        if (!workPlansColumnLoaderService.databaseHasToBePrepared()) {
+            return;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Columns for orders table will be populated ...");
+        }
+
+        workPlansColumnLoaderService.fillColumnsForOrders(WorkPlansConstants.PLUGIN_IDENTIFIER);
+    }
+
+    public void deleteWorkPlansColumnsForOrders() {
+        if (workPlansColumnLoaderService.databaseHasToBePrepared()) {
+            return;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Columns for orders table will be unpopulated ...");
+        }
+
+        workPlansColumnLoaderService.clearColumnsForOrders(WorkPlansConstants.PLUGIN_IDENTIFIER);
+    }
+
     public void addWorkPlansColumnsForProducts() {
         if (!workPlansColumnLoaderService.databaseHasToBePrepared()) {
             return;

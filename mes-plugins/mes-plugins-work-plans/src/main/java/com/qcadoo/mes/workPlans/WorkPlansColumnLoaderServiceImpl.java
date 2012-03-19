@@ -57,6 +57,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     private static final String TRUE = "true";
 
+    private static final String COLUMN_FOR_ORDERS = "columnForOrders";
+
     private static final String COLUMN_FOR_PRODUCTS = "columnForProducts";
 
     private static final String IDENTIFIER_FIELD = "identifier";
@@ -175,6 +177,14 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     }
 
+    public void fillColumnsForOrders(final String plugin) {
+        readDataFromXML(plugin, COLUMN_FOR_ORDERS, COLUMN_ATTRIBUTES, OperationType.ADD);
+    }
+
+    public void clearColumnsForOrders(final String plugin) {
+        readDataFromXML(plugin, COLUMN_FOR_ORDERS, COLUMN_ATTRIBUTES, OperationType.DELETE);
+    }
+
     public void fillColumnsForProducts(final String plugin) {
         readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, OperationType.ADD);
     }
@@ -221,7 +231,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             }
         }
 
-        if (COLUMN_FOR_PRODUCTS.equals(type)) {
+        if (COLUMN_FOR_ORDERS.equals(type)) {
+            if (OperationType.ADD.equals(operation)) {
+                addColumnForOrders(values);
+            } else if (OperationType.DELETE.equals(operation)) {
+                deleteColumnForOrders(values);
+            }
+        } else if (COLUMN_FOR_PRODUCTS.equals(type)) {
             if (OperationType.ADD.equals(operation)) {
                 if (ColumnType.BOTH.getStringValue().equals(values.get(TYPE_FIELD))) {
                     addColumnForInputProducts(values);
@@ -245,6 +261,44 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
                 }
             }
+        }
+    }
+
+    private void addColumnForOrders(final Map<String, String> values) {
+        Entity columnForOrders = getColumnForOrdersDD().create();
+
+        columnForOrders.setField(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD));
+        columnForOrders.setField(NAME_FIELD, values.get(NAME_FIELD));
+        columnForOrders.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
+        columnForOrders.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(NAME_FIELD) + "}");
+        }
+
+        if (columnForOrders.isValid()) {
+            columnForOrders = columnForOrders.getDataDefinition().save(columnForOrders);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Column for input products saved {column=" + columnForOrders.toString() + "}");
+            }
+
+            if (TRUE.equals(values.get(ACTIVE_FIELD))) {
+                addParameterOrderColumn(columnForOrders);
+                addWorkPlanOrderColumn(columnForOrders);
+            }
+        } else {
+            throw new IllegalStateException("Saved entity - columnForOrders - have validation errors - "
+                    + values.get(NAME_FIELD.toUpperCase(Locale.ENGLISH)));
+        }
+    }
+
+    private void deleteColumnForOrders(final Map<String, String> values) {
+        Entity columnForOrders = getColumnForOrdersDD().find()
+                .add(SearchRestrictions.eq(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD))).uniqueResult();
+
+        if (columnForOrders != null) {
+            getColumnForOrdersDD().delete(columnForOrders.getId());
         }
     }
 
@@ -328,24 +382,72 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     }
 
+    private void addParameterOrderColumn(final Entity columnForOrders) {
+        Entity parameter = getParameter();
+
+        if (parameter != null) {
+            Entity parameterOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    WorkPlansConstants.MODEL_PARAMETER_ORDER_COLUMN).create();
+
+            parameterOrderColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
+            parameterOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
+
+            if (parameterOrderColumn.isValid()) {
+                parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Column added to parameter order columns {column=" + parameterOrderColumn.toString() + "}");
+                }
+            } else {
+                throw new IllegalStateException("Saved entity - parameterOrderColumn - have validation errors - "
+                        + columnForOrders.toString());
+            }
+        }
+    }
+
+    private void addWorkPlanOrderColumn(final Entity columnForOrders) {
+        List<Entity> workPlans = getWorkPlans();
+
+        if (workPlans != null) {
+            for (Entity workPlan : workPlans) {
+                Entity workPlanOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_WORK_PLAN_ORDER_COLUMN).create();
+
+                workPlanOrderColumn.setField(WorkPlansConstants.MODEL_WORK_PLAN, workPlan);
+                workPlanOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
+
+                if (workPlanOrderColumn.isValid()) {
+                    workPlanOrderColumn = workPlanOrderColumn.getDataDefinition().save(workPlanOrderColumn);
+
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Column added to work plan order columns {column=" + workPlanOrderColumn.toString() + "}");
+                    }
+                } else {
+                    throw new IllegalStateException("Saved entity - workPlanOrderColumn - have validation errors - "
+                            + columnForOrders.toString());
+                }
+            }
+        }
+    }
+
     private void addParameterInputColumn(final Entity columnForInputProducts) {
         Entity parameter = getParameter();
 
         if (parameter != null) {
-            Entity parameterInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+            Entity parameterInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                     WorkPlansConstants.MODEL_PARAMETER_INPUT_COLUMN).create();
 
-            parameterInputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
-            parameterInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+            parameterInputColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
+            parameterInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-            if (parameterInputComponent.isValid()) {
-                parameterInputComponent = parameterInputComponent.getDataDefinition().save(parameterInputComponent);
+            if (parameterInputColumn.isValid()) {
+                parameterInputColumn = parameterInputColumn.getDataDefinition().save(parameterInputColumn);
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to parameter input components {column=" + parameterInputComponent.toString() + "}");
+                    LOG.debug("Column added to parameter input columns {column=" + parameterInputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - parameterInputComponent - have validation errors - "
+                throw new IllegalStateException("Saved entity - parameterInputColumn - have validation errors - "
                         + columnForInputProducts.toString());
             }
         }
@@ -355,20 +457,20 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         Entity parameter = getParameter();
 
         if (parameter != null) {
-            Entity parameterOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+            Entity parameterOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                     WorkPlansConstants.MODEL_PARAMETER_OUTPUT_COLUMN).create();
 
-            parameterOutputComponent.setField(BasicConstants.MODEL_PARAMETER, parameter);
-            parameterOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
+            parameterOutputColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
+            parameterOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-            if (parameterOutputComponent.isValid()) {
-                parameterOutputComponent = parameterOutputComponent.getDataDefinition().save(parameterOutputComponent);
+            if (parameterOutputColumn.isValid()) {
+                parameterOutputColumn = parameterOutputColumn.getDataDefinition().save(parameterOutputColumn);
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to parameter output components {column=" + parameterOutputComponent.toString() + "}");
+                    LOG.debug("Column added to parameter output columns {column=" + parameterOutputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - parameterOutputComponent - have validation errors - "
+                throw new IllegalStateException("Saved entity - parameterOutputColumn - have validation errors - "
                         + columnForOutputProducts.toString());
             }
         }
@@ -379,21 +481,20 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (operations != null) {
             for (Entity operation : operations) {
-                Entity operationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity operationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_OPERATION_INPUT_COLUMN).create();
 
-                operationInputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-                operationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+                operationInputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
+                operationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-                if (operationInputComponent.isValid()) {
-                    operationInputComponent = operationInputComponent.getDataDefinition().save(operationInputComponent);
+                if (operationInputColumn.isValid()) {
+                    operationInputColumn = operationInputColumn.getDataDefinition().save(operationInputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to operation input components {column=" + operationInputComponent.toString()
-                                + "}");
+                        LOG.debug("Column added to operation input columns {column=" + operationInputColumn.toString() + "}");
                     }
                 } else {
-                    throw new IllegalStateException("Saved entity - operationInputComponent - have validation errors - "
+                    throw new IllegalStateException("Saved entity - operationInputColumn - have validation errors - "
                             + columnForInputProducts.toString());
                 }
             }
@@ -405,21 +506,20 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (operations != null) {
             for (Entity operation : operations) {
-                Entity operationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity operationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_OPERATION_OUTPUT_COLUMN).create();
 
-                operationOutputComponent.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-                operationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
+                operationOutputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
+                operationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-                if (operationOutputComponent.isValid()) {
-                    operationOutputComponent = operationOutputComponent.getDataDefinition().save(operationOutputComponent);
+                if (operationOutputColumn.isValid()) {
+                    operationOutputColumn = operationOutputColumn.getDataDefinition().save(operationOutputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to operation output components {column=" + operationOutputComponent.toString()
-                                + "}");
+                        LOG.debug("Column added to operation output columns {column=" + operationOutputColumn.toString() + "}");
                     }
                 } else {
-                    throw new IllegalStateException("Saved entity - operationOutputComponent - have validation errors - "
+                    throw new IllegalStateException("Saved entity - operationOutputColumn - have validation errors - "
                             + columnForOutputProducts.toString());
                 }
             }
@@ -431,26 +531,25 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (technologyOperationComponents != null) {
             for (Entity technologyOperationComponent : technologyOperationComponents) {
-                Entity technologyOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity technologyOperationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN).create();
 
-                technologyOperationInputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
+                technologyOperationInputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent);
-                technologyOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS,
+                technologyOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS,
                         columnForInputProducts);
 
-                if (technologyOperationInputComponent.isValid()) {
-                    technologyOperationInputComponent = technologyOperationInputComponent.getDataDefinition().save(
-                            technologyOperationInputComponent);
+                if (technologyOperationInputColumn.isValid()) {
+                    technologyOperationInputColumn = technologyOperationInputColumn.getDataDefinition().save(
+                            technologyOperationInputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to technology operation input components {column="
-                                + technologyOperationInputComponent.toString() + "}");
+                        LOG.debug("Column added to technology operation input columns {column="
+                                + technologyOperationInputColumn.toString() + "}");
                     }
                 } else {
-                    throw new IllegalStateException(
-                            "Saved entity - technologyOperationInputComponent - have validation errors - "
-                                    + columnForInputProducts.toString());
+                    throw new IllegalStateException("Saved entity - technologyOperationInputColumn - have validation errors - "
+                            + columnForInputProducts.toString());
                 }
             }
         }
@@ -461,26 +560,25 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (technologyOperationComponents != null) {
             for (Entity technologyOperationComponent : technologyOperationComponents) {
-                Entity technologyOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity technologyOperationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN).create();
 
-                technologyOperationOutputComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
+                technologyOperationOutputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent);
-                technologyOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
+                technologyOperationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
                         columnForOutputProducts);
 
-                if (technologyOperationOutputComponent.isValid()) {
-                    technologyOperationOutputComponent = technologyOperationOutputComponent.getDataDefinition().save(
-                            technologyOperationOutputComponent);
+                if (technologyOperationOutputColumn.isValid()) {
+                    technologyOperationOutputColumn = technologyOperationOutputColumn.getDataDefinition().save(
+                            technologyOperationOutputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to technology operation output components {column="
-                                + technologyOperationOutputComponent.toString() + "}");
+                        LOG.debug("Column added to technology operation output columns {column="
+                                + technologyOperationOutputColumn.toString() + "}");
                     }
                 } else {
-                    throw new IllegalStateException(
-                            "Saved entity - technologyOperationOutputComponent - have validation errors - "
-                                    + columnForOutputProducts.toString());
+                    throw new IllegalStateException("Saved entity - technologyOperationOutputColumn - have validation errors - "
+                            + columnForOutputProducts.toString());
                 }
             }
         }
@@ -491,23 +589,22 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (orderOperationComponents != null) {
             for (Entity orderOperationComponent : orderOperationComponents) {
-                Entity orderOperationInputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity orderOperationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COLUMN).create();
 
-                orderOperationInputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
+                orderOperationInputColumn.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
                         orderOperationComponent);
-                orderOperationInputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
+                orderOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-                if (orderOperationInputComponent.isValid()) {
-                    orderOperationInputComponent = orderOperationInputComponent.getDataDefinition().save(
-                            orderOperationInputComponent);
+                if (orderOperationInputColumn.isValid()) {
+                    orderOperationInputColumn = orderOperationInputColumn.getDataDefinition().save(orderOperationInputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to order operation input components {column="
-                                + orderOperationInputComponent.toString() + "}");
+                        LOG.debug("Column added to order operation input columns {column=" + orderOperationInputColumn.toString()
+                                + "}");
                     }
                 } else {
-                    throw new IllegalStateException("Saved entity - orderOperationInputComponent - have validation errors - "
+                    throw new IllegalStateException("Saved entity - orderOperationInputColumn - have validation errors - "
                             + columnForInputProducts.toString());
                 }
             }
@@ -519,24 +616,22 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (orderOperationComponents != null) {
             for (Entity orderOperationComponent : orderOperationComponents) {
-                Entity orderOperationOutputComponent = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                Entity orderOperationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COLUMN).create();
 
-                orderOperationOutputComponent.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
+                orderOperationOutputColumn.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
                         orderOperationComponent);
-                orderOperationOutputComponent.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS,
-                        columnForOutputProducts);
+                orderOperationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-                if (orderOperationOutputComponent.isValid()) {
-                    orderOperationOutputComponent = orderOperationOutputComponent.getDataDefinition().save(
-                            orderOperationOutputComponent);
+                if (orderOperationOutputColumn.isValid()) {
+                    orderOperationOutputColumn = orderOperationOutputColumn.getDataDefinition().save(orderOperationOutputColumn);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Column added to order operation output components {column="
-                                + orderOperationOutputComponent.toString() + "}");
+                        LOG.debug("Column added to order operation output columns {column="
+                                + orderOperationOutputColumn.toString() + "}");
                     }
                 } else {
-                    throw new IllegalStateException("Saved entity - orderOperationOutputComponent - have validation errors - "
+                    throw new IllegalStateException("Saved entity - orderOperationOutputColumn - have validation errors - "
                             + columnForOutputProducts.toString());
                 }
             }
@@ -551,6 +646,17 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             return null;
         } else {
             return parameter;
+        }
+    }
+
+    private List<Entity> getWorkPlans() {
+        List<Entity> workPlans = dataDefinitionService
+                .get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN).find().list().getEntities();
+
+        if (workPlans == null) {
+            return null;
+        } else {
+            return workPlans;
         }
     }
 
@@ -587,6 +693,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         } else {
             return orderOperationComponents;
         }
+    }
+
+    private DataDefinition getColumnForOrdersDD() {
+        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS);
     }
 
     private DataDefinition getColumnForInputProductsDD() {
