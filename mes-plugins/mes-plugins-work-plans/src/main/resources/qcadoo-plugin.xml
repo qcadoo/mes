@@ -269,7 +269,12 @@
 				class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators"
 				method="checkIfAttachmentExtensionIsValid" />
 		</model:model-hook>
-
+	
+		<model:model-hook plugin="workPlans" model="workPlan">
+			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
+				method="copyColumnForOrders" />
+		</model:model-hook>
+		
 		<model:model-hook plugin="technologies" model="operation">
 			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.OperationModelHooks"
 				method="copyColumnForProducts" />
@@ -318,7 +323,11 @@
 		<!-- TODO LUPO maybe used in future -->
 		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" 
 			/> -->
-
+		
+		<view:view-hook plugin="workPlans" view="workPlanDetails"
+			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
+			method="setWorkPlanDefaultValues" />
+			
 		<view:view-listener plugin="orders" view="ordersList"
 			component="grid" event="addSelectedOrdersToWorkPlan" 
 			class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
