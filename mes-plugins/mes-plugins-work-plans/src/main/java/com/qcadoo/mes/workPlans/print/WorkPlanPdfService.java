@@ -96,7 +96,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
         decimalFormat.setMinimumFractionDigits(3);
 
         addMainHeader(document, workPlan, locale);
-        addOrdersTable(document, workPlan, locale, decimalFormat);
+        if (!workPlan.getBooleanField("dontPrintOrdersInWorkPlans")) {
+            addOrdersTable(document, workPlan, locale, decimalFormat);
+        }
         addOperations(document, workPlan, decimalFormat, locale);
     }
 
