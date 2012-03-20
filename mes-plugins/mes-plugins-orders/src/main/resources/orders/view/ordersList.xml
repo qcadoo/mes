@@ -213,7 +213,7 @@
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="30" />
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="productNumber" fields="product" expression="#product==null?'N/A':#product['number']" width="60" />
+			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="60" />
 			<option type="column" name="state" fields="state" width="35" />
 			<option type="column" name="dateFrom" fields="dateFrom" width="60" />
 			<option type="column" name="dateTo" fields="dateTo" width="60" />

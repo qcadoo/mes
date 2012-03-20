@@ -37,6 +37,7 @@
 
 		<belongsTo name="product" plugin="basic" model="product"
 			lazy="false" required="true" />
+			
 		<boolean name="master" default="true" />
 		<string name="description">
 			<validatesLength max="2048" />
