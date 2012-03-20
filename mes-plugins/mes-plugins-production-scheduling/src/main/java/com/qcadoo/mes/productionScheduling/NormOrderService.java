@@ -76,15 +76,16 @@ public class NormOrderService {
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
-        if (!checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity) || !shouldPropagateFromLowerInstance(entity)) {
+        if (entity.getBelongsToField(TECHNOLOGY_FIELD) == null || !checkIfChosenTechnologyTreeIsNotEmpty(dataDefinition, entity)
+                || !shouldPropagateFromLowerInstance(entity)) {
             return;
         }
         DataDefinition orderOperationComponentDD = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
                 ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
 
-        EntityTree orderOperationComponents = entity.getTreeField(ORDER_OPERATION_COMPONENTS);
-
         Entity technology = entity.getBelongsToField(TECHNOLOGY_FIELD);
+
+        EntityTree orderOperationComponents = entity.getTreeField(ORDER_OPERATION_COMPONENTS);
 
         if (technology == null) {
             if (orderOperationComponents != null && orderOperationComponents.size() > 0) {
