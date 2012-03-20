@@ -79,22 +79,6 @@
 						}
 					});
 					
-					function enableGeneration(enable) {
-						if (enable) {
-							generate.enable();
-							saveBack.enable();
-							saveNew.enable();
-							printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							saveRibbonItem.enable();
-						} else {
-							generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-							saveBack.disable();
-							saveNew.disable();
-							printWorkPlan.enable();
-							saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
-						}
-					}
-					
 					function updateRibbon() {
 						if (entityExists) {
 							copyRibbonItem.enable();
@@ -116,6 +100,31 @@
 							generate.disable("#{translate(recordNotCreated)}");
 						}
 					}
+					
+					function enableGeneration(enable) {
+						if (enable) {
+							generate.enable();
+							saveBack.enable();
+							saveNew.enable();
+							printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+							saveRibbonItem.enable();
+						} else {
+							if (containsAtLeastOneOrder) {
+								generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+								saveBack.disable();
+								saveNew.disable();
+								printWorkPlan.enable();
+								saveRibbonItem.disable();
+							} else {	
+								generate.disable("#{translate(orders.ribbon.message.noOrders)}");
+								saveBack.disable();
+								saveNew.disable();
+								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								saveRibbonItem.enable();
+							}
+						}
+					}
+					
 				]]>
 			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"

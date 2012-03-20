@@ -36,9 +36,11 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
@@ -64,6 +66,9 @@ public class WorkPlanViewHooks {
     @Autowired
     private ReportService reportService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public final void addSelectedOrdersToWorkPlan(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
         GridComponent grid = (GridComponent) component;
@@ -78,12 +83,21 @@ public class WorkPlanViewHooks {
         view.redirectTo("/page/workPlans/workPlanDetails.html", false, true, navigationParameters);
     }
 
-    public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
-        FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
+    public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState view) {
+        FieldComponent generated = (FieldComponent) view.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
-            form.setFormEnabled(false);
+            view.getComponentByReference("name").setEnabled(false);
+            view.getComponentByReference("type").setEnabled(false);
+            view.getComponentByReference("workPlanComponents").setEnabled(false);
+            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(false);
+            view.getComponentByReference("columnsForOrders").setEnabled(false);
+        } else {
+            view.getComponentByReference("name").setEnabled(true);
+            view.getComponentByReference("type").setEnabled(true);
+            view.getComponentByReference("workPlanComponents").setEnabled(true);
+            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(true);
+            view.getComponentByReference("columnsForOrders").setEnabled(true);
         }
     }
 
@@ -178,6 +192,38 @@ public class WorkPlanViewHooks {
     public final void printWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
                 WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN });
+    }
+
+    public final void setWorkPlanDefaultValues(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        setWorkPlanDefaultValues(view);
+    }
+
+    public final void setWorkPlanDefaultValues(final ViewDefinitionState view) {
+        FormComponent form = getForm(view);
+
+        if (form.getEntityId() == null) {
+            FieldComponent field = getFieldComponent(view, "dontPrintOrdersInWorkPlans");
+            field.setFieldValue(getParameterField("dontPrintOrdersInWorkPlans"));
+        }
+    }
+
+    private FormComponent getForm(final ViewDefinitionState view) {
+        return (FormComponent) view.getComponentByReference("form");
+    }
+
+    private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
+        return (FieldComponent) view.getComponentByReference(name);
+    }
+
+    private Object getParameterField(final String fieldName) {
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
+
+        if ((parameter == null) || (parameter.getField(fieldName) == null)) {
+            return null;
+        } else {
+            return parameter.getField(fieldName);
+        }
     }
 
 }
