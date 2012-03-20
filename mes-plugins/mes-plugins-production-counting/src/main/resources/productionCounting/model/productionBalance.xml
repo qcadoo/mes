@@ -65,6 +65,9 @@
 			model="operationTimeComponent" cascade="delete" />
 	</fields>
 	<hooks>
+		<onSave
+			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
+			method="updateRecordsNumber" />
 		<onCopy
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="clearGeneratedOnCopy" />

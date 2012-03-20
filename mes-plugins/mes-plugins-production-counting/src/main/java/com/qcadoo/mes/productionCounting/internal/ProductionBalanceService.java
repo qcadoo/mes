@@ -41,6 +41,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PLANNED_LABOR_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PLANNED_MACHINE_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.WORKER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
@@ -143,6 +144,18 @@ public class ProductionBalanceService {
 
     @Autowired
     private NumberService numberService;
+
+    public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
+
+        if ((order != null) && !checkIfTypeOfProductionRecordingIsBasic(order)) {
+            Integer recordsNumber = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                    .find().add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities().size();
+
+            productionBalance.setField(RECORDS_NUMBER, recordsNumber);
+        }
+    }
 
     public void clearGeneratedOnCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         productionBalance.setField(FILE_NAME, null);
