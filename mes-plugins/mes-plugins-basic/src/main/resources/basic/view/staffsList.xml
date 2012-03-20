@@ -39,9 +39,9 @@
 			<option type="column" name="surname" fields="surname" link="true" />
 			<option type="column" name="post" fields="post" link="true" />
 			<option type="column" name="shift" fields="shift"
-				expression="(#shift == null) ? '' : #shift.get('name')" link="true" />
+				expression="#shift['name']" link="true" />
 			<option type="column" name="division" fields="division"
-				expression="(#division == null) ? '' : #division.get('number') + ' - ' + #division.get('name')"
+				expression="#division['number'] + ' - ' + #division['name']"
 				link="true" />
 			<option type="order" column="number" direction="desc" />
 			<option type="searchable" value="name,number,surname,post,shift,division" />
