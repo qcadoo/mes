@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.internal.print;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
@@ -309,7 +310,7 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
             PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
 
             for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
-                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField("number"), FontUtils
+                inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils
                         .getDejavuRegular9Dark()));
@@ -367,8 +368,8 @@ public final class ProductionBalancePdfService extends PdfDocumentService {
 
             for (Entity outputProduct : productionBalanceReportDataService
                     .groupProductInOutComponentsByProduct(outputProductsList)) {
-                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField("number"),
-                        FontUtils.getDejavuRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
+                        .getDejavuRegular9Dark()));
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils
                         .getDejavuRegular9Dark()));
 

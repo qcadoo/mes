@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.DATE;
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS;
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.GENERATED;
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.NAME;
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.TYPE;
+import static com.qcadoo.mes.workPlans.constants.WorkPlanFields.WORKER;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -84,19 +91,19 @@ public class WorkPlanViewHooks {
     }
 
     public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState view) {
-        FieldComponent generated = (FieldComponent) view.getComponentByReference("generated");
+        FieldComponent generated = (FieldComponent) view.getComponentByReference(GENERATED);
 
         if ("1".equals(generated.getFieldValue())) {
-            view.getComponentByReference("name").setEnabled(false);
-            view.getComponentByReference("type").setEnabled(false);
+            view.getComponentByReference(NAME).setEnabled(false);
+            view.getComponentByReference(TYPE).setEnabled(false);
             view.getComponentByReference("workPlanComponents").setEnabled(false);
-            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(false);
+            view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(false);
             view.getComponentByReference("columnsForOrders").setEnabled(false);
         } else {
-            view.getComponentByReference("name").setEnabled(true);
-            view.getComponentByReference("type").setEnabled(true);
+            view.getComponentByReference(NAME).setEnabled(true);
+            view.getComponentByReference(TYPE).setEnabled(true);
             view.getComponentByReference("workPlanComponents").setEnabled(true);
-            view.getComponentByReference("dontPrintOrdersInWorkPlans").setEnabled(true);
+            view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(true);
             view.getComponentByReference("columnsForOrders").setEnabled(true);
         }
     }
@@ -109,9 +116,9 @@ public class WorkPlanViewHooks {
     public final void generateTestWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState date = viewDefinitionState.getComponentByReference("date");
-            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED);
+            ComponentState date = viewDefinitionState.getComponentByReference(DATE);
+            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER);
 
             if ("0".equals(generated.getFieldValue())) {
                 worker.setFieldValue(securityService.getCurrentUserName());
@@ -145,9 +152,9 @@ public class WorkPlanViewHooks {
     public final void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference("generated");
-            ComponentState date = viewDefinitionState.getComponentByReference("date");
-            ComponentState worker = viewDefinitionState.getComponentByReference("worker");
+            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED);
+            ComponentState date = viewDefinitionState.getComponentByReference(DATE);
+            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER);
 
             Entity workPlan = workPlanService.getWorkPlan((Long) state.getFieldValue());
 
@@ -202,8 +209,8 @@ public class WorkPlanViewHooks {
         FormComponent form = getForm(view);
 
         if (form.getEntityId() == null) {
-            FieldComponent field = getFieldComponent(view, "dontPrintOrdersInWorkPlans");
-            field.setFieldValue(getParameterField("dontPrintOrdersInWorkPlans"));
+            FieldComponent field = getFieldComponent(view, DONT_PRINT_ORDERS_IN_WORK_PLANS);
+            field.setFieldValue(getParameterField(DONT_PRINT_ORDERS_IN_WORK_PLANS));
         }
     }
 
