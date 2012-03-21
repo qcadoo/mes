@@ -31,29 +31,27 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.internal.DefaultEntity;
 
 public class ParameterServiceTest {
 
     @Test
-    public void shouldReturnExistingGenealogyAttributeId() throws Exception {
+    public void shouldReturnExistingParameterEntityId() throws Exception {
         // given
-        List<Entity> entities = new ArrayList<Entity>();
-        entities.add(new DefaultEntity(null, 13L));
-        entities.add(new DefaultEntity(null, 14L));
+        Entity parameter = Mockito.mock(Entity.class);
+        given(parameter.getId()).willReturn(13L);
 
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         given(
                 dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(entities);
+                        .setMaxResults(1).uniqueResult()).willReturn(parameter);
 
         ParameterService parameterService = new ParameterService();
         setField(parameterService, "dataDefinitionService", dataDefinitionService);
@@ -66,21 +64,76 @@ public class ParameterServiceTest {
     }
 
     @Test
+    public void shouldReturnExistingParameterEntity() throws Exception {
+        // given
+        Entity parameter = Mockito.mock(Entity.class);
+        given(parameter.getId()).willReturn(13L);
+
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
+        given(
+                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                        .setMaxResults(1).uniqueResult()).willReturn(parameter);
+
+        ParameterService parameterService = new ParameterService();
+        setField(parameterService, "dataDefinitionService", dataDefinitionService);
+
+        // when
+        Entity existingParameter = parameterService.getParameter();
+
+        // then
+        assertEquals(parameter, existingParameter);
+    }
+
+    @Test
+    public void shouldReturnNewParameterEntity() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
+        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+
+        Entity newParameter = mock(Entity.class);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).willReturn(
+                dataDefinition);
+        given(dataDefinition.find().setMaxResults(1).uniqueResult()).willReturn(null);
+        given(dataDefinition.create()).willReturn(newParameter);
+
+        Entity savedEntity = mock(Entity.class);
+        given(savedEntity.getId()).willReturn(15L);
+
+        given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
+        given(dataDefinition.save(newParameter)).willReturn(savedEntity);
+
+        ParameterService parameterService = new ParameterService();
+        setField(parameterService, "dataDefinitionService", dataDefinitionService);
+
+        // when
+        Entity returnedParameter = parameterService.getParameter();
+
+        // then
+        verify(dataDefinition).save(newParameter);
+        verify(newParameter).setField("checkDoneOrderForQuality", false);
+        verify(newParameter).setField("batchForDoneOrder", "01none");
+        assertEquals(Long.valueOf(15L), returnedParameter.getId());
+    }
+
+    @Test
     public void shouldReturnNewGenealogyAttributeId() throws Exception {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
 
-        Entity newEntity = mock(Entity.class);
+        Entity newParameter = mock(Entity.class);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).willReturn(
                 dataDefinition);
-        given(dataDefinition.create()).willReturn(newEntity);
+        given(dataDefinition.find().setMaxResults(1).uniqueResult()).willReturn(null);
+        given(dataDefinition.create()).willReturn(newParameter);
 
-        Entity savedEntity = new DefaultEntity(dataDefinition, 15L);
+        Entity savedEntity = mock(Entity.class);
+        given(savedEntity.getId()).willReturn(15L);
 
         given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
-        given(dataDefinition.save(newEntity)).willReturn(savedEntity);
+        given(dataDefinition.save(newParameter)).willReturn(savedEntity);
 
         ParameterService parameterService = new ParameterService();
         setField(parameterService, "dataDefinitionService", dataDefinitionService);
@@ -89,9 +142,9 @@ public class ParameterServiceTest {
         Long id = parameterService.getParameterId();
 
         // then
-        verify(dataDefinition).save(newEntity);
-        verify(newEntity).setField("checkDoneOrderForQuality", false);
-        verify(newEntity).setField("batchForDoneOrder", "01none");
+        verify(dataDefinition).save(newParameter);
+        verify(newParameter).setField("checkDoneOrderForQuality", false);
+        verify(newParameter).setField("batchForDoneOrder", "01none");
         assertEquals(Long.valueOf(15L), id);
     }
 

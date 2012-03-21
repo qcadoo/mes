@@ -31,7 +31,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class ParameterService {
@@ -39,22 +38,40 @@ public class ParameterService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    /**
+     * Returns basic parameter entity for current user
+     * 
+     * @return parameter entity
+     */
     @Transactional
-    public Long getParameterId() {
-
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_PARAMETER);
-        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
-
-        if (searchResult.getEntities().isEmpty()) {
-            Entity newParameter = dataDefinition.create();
-            newParameter.setField("checkDoneOrderForQuality", false);
-            newParameter.setField("batchForDoneOrder", "01none");
-            Entity savedParameter = dataDefinition.save(newParameter);
-            return savedParameter.getId();
-        } else {
-            return searchResult.getEntities().get(0).getId();
+    public Entity getParameter() {
+        DataDefinition dataDefinition = getParameterDataDef();
+        Entity parameter = dataDefinition.find().setMaxResults(1).uniqueResult();
+        if (parameter == null) {
+            parameter = createParameter(dataDefinition);
         }
+        return parameter;
+    }
+
+    /**
+     * Returns basic parameter entity id for current user
+     * 
+     * @return parameter entity id
+     */
+    public Long getParameterId() {
+        return getParameter().getId();
+    }
+
+    private Entity createParameter(final DataDefinition dataDefinition) {
+        Entity newParameter = dataDefinition.create();
+        newParameter.setField("checkDoneOrderForQuality", false);
+        newParameter.setField("batchForDoneOrder", "01none");
+        Entity savedParameter = dataDefinition.save(newParameter);
+        return savedParameter;
+    }
+
+    private DataDefinition getParameterDataDef() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
     }
 
 }
