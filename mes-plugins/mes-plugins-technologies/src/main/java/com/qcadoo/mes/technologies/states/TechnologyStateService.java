@@ -98,6 +98,10 @@ public class TechnologyStateService {
         TechnologyState oldState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE));
         TechnologyState newState = oldState.changeState(targetState);
 
+        if (newState.equals(TechnologyState.DECLINED) || newState.equals(TechnologyState.OUTDATED)) {
+            technology.setField("master", "0");
+        }
+
         if (newState.equals(oldState) || !beforeChangeNotifier.fireListeners(component, technology, newState)) {
             return;
         }
@@ -117,7 +121,9 @@ public class TechnologyStateService {
         }
 
         if (newState.equals(TechnologyState.DECLINED) || newState.equals(TechnologyState.OUTDATED)) {
+
             view.getComponentByReference("master").setFieldValue("0");
+
         }
 
         stateFieldComponent.setFieldValue(newState.getStringValue());

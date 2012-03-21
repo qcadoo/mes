@@ -38,8 +38,8 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUC
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -204,7 +204,10 @@ public class OrderService {
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                         state.getLocale());
+
+                // if (defaultTechnologyEntity.getBooleanField("master")) {
                 defaultTechnology.setFieldValue(defaultTechnologyValue);
+                // }
             }
         }
     }
