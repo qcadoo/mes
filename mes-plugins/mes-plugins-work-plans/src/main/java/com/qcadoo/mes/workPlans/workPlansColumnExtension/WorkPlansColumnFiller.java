@@ -75,7 +75,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
     private static final String ORDER_NUMBER_COLUMN = "orderNumber";
 
-    private static final String PRODUCT_NAME_COLUMN = "productName";
+    private static final String ORDER_PRODUCT_NAME_COLUMN = "productName";
 
     private static final String PLANNED_QUANTITY_COLUMN = "plannedQuantity";
 
@@ -102,24 +102,25 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         return values;
     }
 
-    private void fillOrderNames(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+    private void initMap(final Map<Entity, Map<String, String>> valuesMap, final Entity order) {
         if (valuesMap.get(order) == null) {
             valuesMap.put(order, new HashMap<String, String>());
         }
+    }
+
+    private void fillOrderNames(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
+        initMap(valuesMap, order);
         valuesMap.get(order).put(ORDER_NAME_COLUMN, order.getStringField(NAME));
     }
 
     private void fillOrderNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
-        if (valuesMap.get(order) == null) {
-            valuesMap.put(order, new HashMap<String, String>());
-        }
+        initMap(valuesMap, order);
         valuesMap.get(order).put(ORDER_NUMBER_COLUMN, order.getStringField(NUMBER));
     }
 
     private void fillOrderPlannedQuantity(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
-        if (valuesMap.get(order) == null) {
-            valuesMap.put(order, new HashMap<String, String>());
-        }
+        initMap(valuesMap, order);
+
         String qty = "-";
         if (order.getField(PLANNED_QUANTITY_COLUMN) != null) {
             qty = numberService.format(order.getField(PLANNED_QUANTITY_COLUMN)) + " "
@@ -130,9 +131,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     }
 
     private void fillOrderPlannedEndDate(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
-        if (valuesMap.get(order) == null) {
-            valuesMap.put(order, new HashMap<String, String>());
-        }
+        initMap(valuesMap, order);
 
         String formattedDateTo = "-";
 
@@ -147,12 +146,11 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     }
 
     private void fillOrderProductNumbers(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
-        if (valuesMap.get(order) == null) {
-            valuesMap.put(order, new HashMap<String, String>());
-        }
+        initMap(valuesMap, order);
+
         Entity product = order.getBelongsToField(PRODUCT);
         String name = product.getStringField(NAME) + " (" + product.getStringField(NUMBER) + ")";
-        valuesMap.get(order).put(PRODUCT_NAME_COLUMN, name);
+        valuesMap.get(order).put(ORDER_PRODUCT_NAME_COLUMN, name);
     }
 
     @Override
@@ -185,16 +183,14 @@ public class WorkPlansColumnFiller implements ColumnFiller {
             EntityList outputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
 
             for (Entity productComponent : outputProducts) {
-                if (valuesMap.get(productComponent) == null) {
-                    valuesMap.put(productComponent, new HashMap<String, String>());
-                }
+                initMap(valuesMap, productComponent);
+
                 valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
             }
 
             for (Entity productComponent : inputProducts) {
-                if (valuesMap.get(productComponent) == null) {
-                    valuesMap.put(productComponent, new HashMap<String, String>());
-                }
+                initMap(valuesMap, productComponent);
+
                 valuesMap.get(productComponent).put(PRODUCT_COLUMN, getProductName(productComponent));
             }
         }
@@ -219,18 +215,16 @@ public class WorkPlansColumnFiller implements ColumnFiller {
             EntityList outputProducts = operationComponent.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
 
             for (Entity productComponent : outputProducts) {
-                if (valuesMap.get(productComponent) == null) {
-                    valuesMap.put(productComponent, new HashMap<String, String>());
-                }
+                initMap(valuesMap, productComponent);
+
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
                 String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
 
             for (Entity productComponent : inputProducts) {
-                if (valuesMap.get(productComponent) == null) {
-                    valuesMap.put(productComponent, new HashMap<String, String>());
-                }
+                initMap(valuesMap, productComponent);
+
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
                 String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
