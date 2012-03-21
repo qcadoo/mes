@@ -147,10 +147,12 @@ public class OrderRealizationTimeServiceImplTest {
     public void shouldReturnCorrectOperationTimeWithShifts() {
         // given
         boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
         BigDecimal plannedQuantity = new BigDecimal(1);
 
         // when
-        int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz);
+        int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz,
+                includeAdditionalTime);
 
         // then
         assertEquals(6, time);
@@ -160,6 +162,7 @@ public class OrderRealizationTimeServiceImplTest {
     public void shouldReturnTimesForAllOperationsInAnOrder() {
         // given
         boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
         BigDecimal plannedQuantity = new BigDecimal(1);
         DataDefinition dd = mock(DataDefinition.class);
         when(dd.getName()).thenReturn("order");
@@ -175,7 +178,7 @@ public class OrderRealizationTimeServiceImplTest {
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(order,
-                plannedQuantity, includeTpz);
+                plannedQuantity, includeTpz, includeAdditionalTime);
 
         // then
         assertEquals(new Integer(3), operationDurations.get(techOpComp1));
@@ -187,6 +190,7 @@ public class OrderRealizationTimeServiceImplTest {
         // given
         Entity technology = mock(Entity.class);
         boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
         BigDecimal plannedQuantity = new BigDecimal(1);
         DataDefinition dd = mock(DataDefinition.class);
         when(dd.getName()).thenReturn("technology");
@@ -196,7 +200,7 @@ public class OrderRealizationTimeServiceImplTest {
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(technology,
-                plannedQuantity, includeTpz);
+                plannedQuantity, includeTpz, includeAdditionalTime);
 
         // then
         assertEquals(new Integer(3), operationDurations.get(opComp1));
