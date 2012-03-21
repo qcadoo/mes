@@ -285,7 +285,8 @@ public class CostCalculationViewService {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
                 "number", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode", "productionCostMargin",
                 "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc", "additionalOverhead",
-                "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms"));
+                "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms", "includeTPZ",
+                "includeAdditionalTime", "sourceOfMaterialCosts"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
