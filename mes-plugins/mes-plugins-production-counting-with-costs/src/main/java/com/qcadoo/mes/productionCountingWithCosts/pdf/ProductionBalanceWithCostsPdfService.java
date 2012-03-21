@@ -424,7 +424,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 FontUtils.getDejavuRegular9Dark());
     }
 
-    private void addRegisteredTechnicalCosts(PdfPTable content, Entity productionBalance, Locale locale) {
+    private void addRegisteredTechnicalCosts(final PdfPTable content, final Entity productionBalance, final Locale locale) {
         content.addCell(new Phrase(
                 translationService
                         .translate(
@@ -442,7 +442,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                 locale);
     }
 
-    private void addPlannedTechnicalCosts(PdfPTable content, Entity productionBalance, Locale locale) {
+    private void addPlannedTechnicalCosts(final PdfPTable content, final Entity productionBalance, final Locale locale) {
         content.addCell(new Phrase(
                 translationService
                         .translate(
@@ -460,7 +460,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
     }
 
-    private void addTechnicalCostsBalance(PdfPTable content, Entity productionBalance, Locale locale) {
+    private void addTechnicalCostsBalance(final PdfPTable content, final Entity productionBalance, final Locale locale) {
         content.addCell(new Phrase(
                 translationService
                         .translate(
@@ -478,7 +478,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
 
     }
 
-    private PdfPTable createOverheadsAndSummaryPanel(Entity productionBalance, Locale locale) {
+    private PdfPTable createOverheadsAndSummaryPanel(final Entity productionBalance, final Locale locale) {
         PdfPTable content = pdfHelper.createPanelTable(1);
 
         content.addCell(new Phrase(

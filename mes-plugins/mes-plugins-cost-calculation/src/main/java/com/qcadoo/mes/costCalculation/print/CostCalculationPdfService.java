@@ -24,6 +24,7 @@
 package com.qcadoo.mes.costCalculation.print;
 
 import static com.google.common.collect.Lists.newLinkedList;
+import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.MATERIAL_COST_MARGIN;
@@ -255,7 +256,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
                             : translationService.translate("qcadooView.false", locale));
         }
 
-        Object reportData = costCalculation.getField("calculateMaterialCostsMode");
+        Object reportData = costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE);
         pdfHelper.addTableCellAsTwoColumnsTable(
                 leftPanelColumn,
                 L_TAB_IN_TEXT
@@ -421,16 +422,16 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         String localeType = null;
         String costMode = "";
-        if ("01nominal".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
+        if ("01nominal".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";
             costMode = L_NOMINAL_COST;
-        } else if ("02average".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
+        } else if ("02average".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.averageCost";
             costMode = "averageCost";
-        } else if ("03lastPurchase".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
+        } else if ("03lastPurchase".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.lastPurchaseCost";
             costMode = "lastPurchaseCost";
-        } else if ("04costForOrder".equals(costCalculation.getField("calculateMaterialCostsMode"))) {
+        } else if ("04costForOrder".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
             localeType = "costCalculation.costCalculationDetails.report.columnHeader.costForOrder";
             costMode = "costForOrder";
         }
