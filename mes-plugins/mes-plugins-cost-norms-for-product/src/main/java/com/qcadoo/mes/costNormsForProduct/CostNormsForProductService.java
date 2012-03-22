@@ -24,6 +24,8 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.costNormsForProduct.constants.OrderOperationProductInComponentFields.PRODUCT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -65,19 +67,19 @@ public class CostNormsForProductService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CostNormsForProductService.class);
 
-    private static final String VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
+    private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
-    private static final String FORM_L = "form";
+    private static final String L_FORM = "form";
 
-    private static final String AVERAGE_COST_L = "averageCost";
+    private static final String L_AVERAGE_COST = "averageCost";
 
-    private static final String LAST_PURCHASE_COST_L = "lastPurchaseCost";
+    private static final String L_LAST_PURCHASE_COST = "lastPurchaseCost";
 
-    private static final String NOMINAL_COST_L = "nominalCost";
+    private static final String L_NOMINAL_COST = "nominalCost";
 
-    private static final String COST_FOR_NUMBER_L = "costForNumber";
+    private static final String L_COST_FOR_NUMBER = "costForNumber";
 
-    private static final String COST_FOR_NUMBER_UNIT_L = "costForNumberUnit";
+    private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
     private static final String L_EMPTY = "";
 
@@ -94,17 +96,17 @@ public class CostNormsForProductService {
     private ProductQuantitiesService productQuantitiesService;
 
     public void fillUnitFieldInProduct(final ViewDefinitionState viewDefinitionState) {
-        fillUnitField(viewDefinitionState, COST_FOR_NUMBER_UNIT_L);
+        fillUnitField(viewDefinitionState, L_COST_FOR_NUMBER_UNIT, true);
     }
 
     public void fillUnitFieldInOrder(final ViewDefinitionState viewDefinitionState) {
-        fillUnitField(viewDefinitionState, COST_FOR_NUMBER_UNIT_L);
+        fillUnitField(viewDefinitionState, L_COST_FOR_NUMBER_UNIT, false);
     }
 
-    private void fillUnitField(final ViewDefinitionState viewDefinitionState, final String fieldName) {
-        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
+    private void fillUnitField(final ViewDefinitionState viewDefinitionState, final String fieldName, final boolean inProduct) {
+        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
         unitField.setFieldValue(L_EMPTY);
         unitField.setEnabled(false);
@@ -112,14 +114,27 @@ public class CostNormsForProductService {
             return;
         }
 
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                form.getEntityId());
+        Long productId = null;
+
+        if (inProduct) {
+            productId = (Long) form.getFieldValue();
+        } else {
+            FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCT);
+
+            if (productField == null) {
+                return;
+            }
+
+            productId = (Long) productField.getFieldValue();
+        }
+
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
         if (product == null) {
             return;
         }
 
-        String unit = product.getStringField("unit");
+        String unit = product.getStringField(UNIT);
 
         fillField(unitField, unit);
     }
@@ -133,9 +148,9 @@ public class CostNormsForProductService {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {
-        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
+        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_L);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         clearAndDisabledFields(viewDefinitionState, fieldNames);
         if (form == null || form.getEntityId() == null) {
             return;
@@ -165,7 +180,7 @@ public class CostNormsForProductService {
     }
 
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {
-        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
+        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
@@ -201,7 +216,7 @@ public class CostNormsForProductService {
 
     public void copyCostsFromProducts(final ViewDefinitionState viewDefinitionState, final ComponentState component,
             final String[] args) {
-        checkArgument(viewDefinitionState != null, VIEW_DEFINITION_STATE_IS_NULL);
+        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
@@ -225,10 +240,10 @@ public class CostNormsForProductService {
             for (Entity orderOperationProductIncomponent : orderOperationProductIncomponents) {
                 Entity product = orderOperationProductIncomponent.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-                orderOperationProductIncomponent.setField(COST_FOR_NUMBER_L, product.getField(COST_FOR_NUMBER_L));
-                orderOperationProductIncomponent.setField(NOMINAL_COST_L, product.getField(NOMINAL_COST_L));
-                orderOperationProductIncomponent.setField(LAST_PURCHASE_COST_L, product.getField(LAST_PURCHASE_COST_L));
-                orderOperationProductIncomponent.setField(AVERAGE_COST_L, product.getField(AVERAGE_COST_L));
+                orderOperationProductIncomponent.setField(L_COST_FOR_NUMBER, product.getField(L_COST_FOR_NUMBER));
+                orderOperationProductIncomponent.setField(L_NOMINAL_COST, product.getField(L_NOMINAL_COST));
+                orderOperationProductIncomponent.setField(L_LAST_PURCHASE_COST, product.getField(L_LAST_PURCHASE_COST));
+                orderOperationProductIncomponent.setField(L_AVERAGE_COST, product.getField(L_AVERAGE_COST));
 
                 orderOperationProductIncomponent = orderOperationProductIncomponent.getDataDefinition().save(
                         orderOperationProductIncomponent);
@@ -260,10 +275,10 @@ public class CostNormsForProductService {
 
                     orderOperationProductInComponent.setField(OrdersConstants.MODEL_ORDER, order);
                     orderOperationProductInComponent.setField(BasicConstants.MODEL_PRODUCT, product);
-                    orderOperationProductInComponent.setField(COST_FOR_NUMBER_L, product.getField(COST_FOR_NUMBER_L));
-                    orderOperationProductInComponent.setField(NOMINAL_COST_L, product.getField(NOMINAL_COST_L));
-                    orderOperationProductInComponent.setField(LAST_PURCHASE_COST_L, product.getField(LAST_PURCHASE_COST_L));
-                    orderOperationProductInComponent.setField(AVERAGE_COST_L, product.getField(AVERAGE_COST_L));
+                    orderOperationProductInComponent.setField(L_COST_FOR_NUMBER, product.getField(L_COST_FOR_NUMBER));
+                    orderOperationProductInComponent.setField(L_NOMINAL_COST, product.getField(L_NOMINAL_COST));
+                    orderOperationProductInComponent.setField(L_LAST_PURCHASE_COST, product.getField(L_LAST_PURCHASE_COST));
+                    orderOperationProductInComponent.setField(L_AVERAGE_COST, product.getField(L_AVERAGE_COST));
 
                     orderOperationProductInComponent = orderOperationProductInComponent.getDataDefinition().save(
                             orderOperationProductInComponent);
@@ -338,7 +353,7 @@ public class CostNormsForProductService {
 
     public void checkTechnologyProductsInNorms(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String[] args) {
-        ComponentState form = viewDefinitionState.getComponentByReference(FORM_L);
+        ComponentState form = viewDefinitionState.getComponentByReference(L_FORM);
 
         if (form.getFieldValue() == null) {
             return;
@@ -359,8 +374,8 @@ public class CostNormsForProductService {
         }
         for (Entity product : products) {
             if (technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)
-                    && (product.getField(COST_FOR_NUMBER_L) == null || product.getField(NOMINAL_COST_L) == null
-                            || product.getField(LAST_PURCHASE_COST_L) == null || product.getField(AVERAGE_COST_L) == null)) {
+                    && (product.getField(L_COST_FOR_NUMBER) == null || product.getField(L_NOMINAL_COST) == null
+                            || product.getField(L_LAST_PURCHASE_COST) == null || product.getField(L_AVERAGE_COST) == null)) {
                 form.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO, false);
                 break;
             }
@@ -368,8 +383,8 @@ public class CostNormsForProductService {
     }
 
     public void enabledFieldForExternalID(final ViewDefinitionState view) {
-        FieldComponent nominalCost = (FieldComponent) view.getComponentByReference(NOMINAL_COST_L);
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM_L);
+        FieldComponent nominalCost = (FieldComponent) view.getComponentByReference(L_NOMINAL_COST);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
