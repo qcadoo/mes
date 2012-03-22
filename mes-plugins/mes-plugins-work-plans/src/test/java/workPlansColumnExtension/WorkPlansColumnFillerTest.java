@@ -132,6 +132,6 @@ public class WorkPlansColumnFillerTest {
         // then
         assertEquals(1, columnValues.size());
         assertEquals("product (123)", columnValues.get(productComponent).get("productName"));
-        assertEquals("11 abc", columnValues.get(productComponent).get("plannedQuantity"));
+        assertEquals("11.000 abc", columnValues.get(productComponent).get("plannedQuantity"));
     }
 }
