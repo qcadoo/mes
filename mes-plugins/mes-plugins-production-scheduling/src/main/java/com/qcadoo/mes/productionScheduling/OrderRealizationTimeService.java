@@ -64,10 +64,12 @@ public interface OrderRealizationTimeService {
      *            How many products we want this operation to produce
      * @param includeTpz
      *            Flag indicating if we want to include Tpz
+     * @param includeAdditionalTime
+     *            Flag indicating if we want to include Additional Time
      * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
      */
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final Boolean includeTpz);
+            final boolean includeTpz, final boolean includeAdditionalTime);
 
     /**
      * 
@@ -77,10 +79,13 @@ public interface OrderRealizationTimeService {
      *            How many products we want this order/technology to produce
      * @param includeTpz
      *            Flag indicating if we want to include Tpz
+     * @param includeAdditionalTime
+     *            Flag indicating if we want to include Additional Time
      * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations,
      *         without offset added)
      */
-    Map<Entity, Integer> estimateRealizationTimes(Entity entity, BigDecimal plannedQuantity, boolean includeTpz);
+    Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
+            final boolean includeTpz, final boolean includeAdditionalTime);
 
     Object setDateToField(final Date date);
 

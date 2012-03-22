@@ -121,23 +121,23 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
-        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true);
+        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true, true);
     }
 
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final Boolean includeTpz) {
+            final boolean includeTpz, final boolean includeAdditionalTime) {
         Entity technology = operationComponent.getBelongsToField("technology");
 
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
-        return evaluateOperationTime(operationComponent, includeTpz, operationRunsField);
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
     }
 
     @Override
     public Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz) {
+            final boolean includeTpz, final boolean includeAdditionalTime) {
         Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
 
         String entityType = entity.getDataDefinition().getName();
@@ -159,7 +159,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
         for (Entity operationComponent : operationComponents) {
-            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, operationRunsField);
+            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
 
             if ("order".equals(entityType)) {
                 operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
@@ -171,21 +171,21 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return operationDurations;
     }
 
-    private int evaluateOperationTime(final Entity operationComponent, final Boolean includeTpz,
-            final Map<Entity, BigDecimal> operationRuns) {
+    private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
+            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
         String entityType = operationComponent.getStringField("entityType");
 
         if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(entityType)) {
             EntityTreeNode actualOperationComponent = operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents").getRoot();
 
-            return evaluateOperationTime(actualOperationComponent, includeTpz, operationRuns);
+            return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns);
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
-            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, operationRuns);
+            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns);
             int pathTime = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
-                int tmpPathTime = evaluateOperationTime(child, includeTpz, operationRuns);
+                int tmpPathTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns);
                 if (tmpPathTime > pathTime) {
                     pathTime = tmpPathTime;
                 }
@@ -203,8 +203,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
     }
 
-    private int evaluateSingleOperationTime(final Entity operationComponent, final Boolean includeTpz,
-            final Map<Entity, BigDecimal> operationRuns) {
+    private int evaluateSingleOperationTime(final Entity operationComponent, final boolean includeTpz,
+            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
         Entity technologyOperationComponent = operationComponent;
 
         if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
@@ -237,7 +237,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             operationTime += getIntegerValue(operationComponent.getField("tpz"));
         }
 
-        return operationTime + getIntegerValue(operationComponent.getField("timeNextOperation"));
+        if (includeAdditionalTime) {
+            operationTime += getIntegerValue(operationComponent.getField("timeNextOperation"));
+        }
+
+        return operationTime;
     }
 
     private Integer getIntegerValue(final Object value) {

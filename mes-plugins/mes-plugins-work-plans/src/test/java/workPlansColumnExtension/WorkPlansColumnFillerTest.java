@@ -1,11 +1,16 @@
 package workPlansColumnExtension;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +23,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
 
 public class WorkPlansColumnFillerTest {
@@ -27,10 +35,25 @@ public class WorkPlansColumnFillerTest {
     private WorkPlansColumnFiller workPlansColumnFiller;
 
     @Mock
-    private Entity order, order2, product;
+    private ProductQuantitiesService productQuantitiesService;
+
+    @Mock
+    private Entity order, order2, product, productComponent, technology, operComp;
 
     @Mock
     private NumberService numberService;
+
+    private EntityTree mockEntityTree(List<Entity> list) {
+        EntityTree entityTree = mock(EntityTree.class);
+        when(entityTree.iterator()).thenReturn(list.iterator());
+        return entityTree;
+    }
+
+    private EntityList mockEntityList(List<Entity> list) {
+        EntityList entityList = mock(EntityList.class);
+        when(entityList.iterator()).thenReturn(list.iterator());
+        return entityList;
+    }
 
     @Before
     public void init() {
@@ -49,6 +72,7 @@ public class WorkPlansColumnFillerTest {
         });
 
         ReflectionTestUtils.setField(workPlansColumnFiller, "numberService", numberService);
+        ReflectionTestUtils.setField(workPlansColumnFiller, "productQuantitiesService", productQuantitiesService);
 
         given(order.getStringField("name")).willReturn("order");
         given(order.getStringField("number")).willReturn("1234");
@@ -64,7 +88,7 @@ public class WorkPlansColumnFillerTest {
     }
 
     @Test
-    public void shouldReturnCorrectColumnValuesForOrders() {
+    public void shouldReturnCorrectColumnValuesForOrdersTable() {
         // given
         List<Entity> orders = Arrays.asList(order, order2);
 
@@ -79,5 +103,35 @@ public class WorkPlansColumnFillerTest {
         assertEquals("1234", orderValues.get(order).get("orderNumber"));
         assertEquals("product (123)", orderValues.get(order).get("productName"));
         assertEquals("11.000 abc", orderValues.get(order).get("plannedQuantity"));
+    }
+
+    @Test
+    public void shouldReturnCorrectColumnValuesForProducts() {
+        // given
+        List<Entity> orders = asList(order);
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        EntityTree operComps = mockEntityTree(asList(operComp));
+        EntityTree operComps2 = mockEntityTree(asList(operComp));
+        given(technology.getTreeField("operationComponents")).willReturn(operComps, operComps2);
+
+        given(operComp.getStringField("entityType")).willReturn("operation");
+        EntityList prodInComps = mockEntityList(asList(productComponent));
+        EntityList prodInComps2 = mockEntityList(asList(productComponent));
+        given(productComponent.getBelongsToField("product")).willReturn(product);
+        given(operComp.getHasManyField("operationProductInComponents")).willReturn(prodInComps, prodInComps2);
+        EntityList prodOutComps = mockEntityList(new ArrayList<Entity>());
+        given(operComp.getHasManyField("operationProductOutComponents")).willReturn(prodOutComps);
+
+        HashMap<Entity, BigDecimal> quantities = new HashMap<Entity, BigDecimal>();
+        quantities.put(productComponent, new BigDecimal(11));
+        given(productQuantitiesService.getProductComponentQuantities(orders)).willReturn(quantities);
+
+        // when
+        Map<Entity, Map<String, String>> columnValues = workPlansColumnFiller.getValues(orders);
+
+        // then
+        assertEquals(1, columnValues.size());
+        assertEquals("product (123)", columnValues.get(productComponent).get("productName"));
+        assertEquals("11 abc", columnValues.get(productComponent).get("plannedQuantity"));
     }
 }

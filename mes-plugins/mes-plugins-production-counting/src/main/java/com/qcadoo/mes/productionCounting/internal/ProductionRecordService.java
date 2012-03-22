@@ -392,7 +392,7 @@ public class ProductionRecordService {
         Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
         BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY);
         Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateRealizationTimes(order, plannedQuantity,
-                true);
+                true, true);
         if (orderOperComp == null) {
             EntityTree orderOperationComponentsTree = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
             for (Entity orderOperationComponent : orderOperationComponentsTree) {

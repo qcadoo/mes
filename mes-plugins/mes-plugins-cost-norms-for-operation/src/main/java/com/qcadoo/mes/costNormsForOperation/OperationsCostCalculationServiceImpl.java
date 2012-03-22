@@ -100,7 +100,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     @Override
     public void calculateOperationsCost(final Entity entity) {
-        checkArgument(entity != null, "costCalculation entity is null");
+        checkArgument(entity != null, "entity is null");
         String modelName = entity.getDataDefinition().getName();
         checkArgument(L_COST_CALCULATION.equals(modelName) || "productionBalance".equals(modelName), "unsupported entity type");
 
@@ -110,6 +110,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 .getStringField("calculateOperationCostsMode"));
         BigDecimal quantity = getBigDecimal(entity.getField(QUANTITY_FIELD));
         Boolean includeTPZ = entity.getBooleanField("includeTPZ");
+        Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
         BigDecimal margin = getBigDecimal(entity.getField("productionCostMargin"));
 
         copyTechnologyTree(entity);
@@ -141,7 +142,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             entity.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
         } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
             Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(technology, quantity,
-                    includeTPZ);
+                    includeTPZ, includeAdditionalTime);
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
                     quantity, realizationTimes);
