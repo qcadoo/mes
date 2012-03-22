@@ -123,10 +123,11 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         Entity balance = (Entity) arg1;
 
         doTheCostsPart(balance);
+        fillFieldsAndGrids(balance);
         generateBalanceWithCostsReport(balance);
     }
 
-    private void generateBalanceWithCostsReport(final Entity productionBalance) {
+    void generateBalanceWithCostsReport(final Entity productionBalance) {
         Locale locale = LocaleContextHolder.getLocale();
 
         String localePrefix = "productionCounting.productionBalanceWithCosts.report.fileName";
@@ -166,8 +167,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.setField(TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT, numberService.setScale(perUnit));
 
         productionBalance.getDataDefinition().save(productionBalance);
-
-        fillFieldsAndGrids(productionBalance);
     }
 
     private void fillFieldsAndGrids(final Entity productionBalance) {
