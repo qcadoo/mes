@@ -74,6 +74,9 @@
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="validateOrder" />
+		<validatesWith
+			class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
+			method="checkIfAverageCostsIsDefined"/>
 	</hooks>
 	<identifier expression="#name" />
 </model>
