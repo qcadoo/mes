@@ -72,7 +72,7 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
-public final class ProductionBalancePdfService extends PdfDocumentService {
+public class ProductionBalancePdfService extends PdfDocumentService {
 
     private static final String PCPBRCHB_LITERAL = "productionCounting.productionBalance.report.columnHeader.balance";
 

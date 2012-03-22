@@ -62,7 +62,7 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
-public final class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
+public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
     @Autowired
     private SecurityService securityService;
