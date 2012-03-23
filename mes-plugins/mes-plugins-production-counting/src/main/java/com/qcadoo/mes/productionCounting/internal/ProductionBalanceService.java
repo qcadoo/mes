@@ -203,37 +203,42 @@ public class ProductionBalanceService {
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponent) {
-            Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+        state.performEvent(viewDefinitionState, "save", new String[0]);
 
-            if (productionBalance == null) {
-                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
-                return;
-            } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
-                state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
-                return;
-            }
+        if (!state.isHasError()) {
+            if (state instanceof FormComponent) {
+                Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-            if (!productionBalance.getBooleanField(GENERATED)) {
-                fillReportValues(productionBalance);
+                if (productionBalance == null) {
+                    state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
+                    return;
+                } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
+                    state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated",
+                            MessageType.FAILURE);
+                    return;
+                }
 
-                fillFieldsAndGrids(productionBalance);
-            }
+                if (!productionBalance.getBooleanField(GENERATED)) {
+                    fillReportValues(productionBalance);
 
-            productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+                    fillFieldsAndGrids(productionBalance);
+                }
 
-            try {
-                generateProductionBalanceDocuments(productionBalance, state.getLocale());
+                productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-                state.performEvent(viewDefinitionState, "reset", new String[0]);
+                try {
+                    generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
-                state.addMessage(
-                        "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
-                        MessageType.SUCCESS);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
-                throw new IllegalStateException(e.getMessage(), e);
+                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+
+                    state.addMessage(
+                            "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
+                            MessageType.SUCCESS);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
             }
         }
     }
@@ -382,7 +387,7 @@ public class ProductionBalanceService {
             if (!groupedProductionRecords.isEmpty()) {
                 for (Entity groupedProductionRecord : groupedProductionRecords) {
                     Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENTS).create();
+                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
 
                     operationTimeComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
                             groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
