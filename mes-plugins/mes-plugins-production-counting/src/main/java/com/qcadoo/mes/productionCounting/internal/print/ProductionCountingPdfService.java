@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.internal.print;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -242,7 +244,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         "productionCounting.productionCounting.report.panel.recordType.final", locale) : translationService
                         .translate("productionCounting.productionCounting.report.panel.recordType.partial", locale), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
-        if (productionRecord.getBelongsToField(FIELD_ORDER).getStringField("typeOfProductionRecording").equals("02cumulated")) {
+        if (productionRecord.getBelongsToField(FIELD_ORDER).getStringField(TYPE_OF_PRODUCTION_RECORDING).equals("02cumulated")) {
             addTableCellAsTable(panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
                     NOT_AVAILABLE, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);

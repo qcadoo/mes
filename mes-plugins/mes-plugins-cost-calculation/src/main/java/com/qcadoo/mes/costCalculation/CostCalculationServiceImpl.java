@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.costCalculation;
 
+import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode.HOURLY;
+import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode.PIECEWORK;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
-import com.qcadoo.mes.costNormsForProduct.constants.SourceOfProductCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -74,21 +75,13 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         String sourceOfMaterialCosts = entity.getStringField("sourceOfMaterialCosts");
 
-        switch (SourceOfMaterialCosts.parseString(sourceOfMaterialCosts)) {
-            case FROM_ORDERS_MATERIAL_COSTS:
-                productsCostCalculationService.calculateTotalProductsCost(entity, SourceOfProductCosts.FROM_ORDER);
-                break;
-            case CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT:
-                productsCostCalculationService.calculateTotalProductsCost(entity, SourceOfProductCosts.GLOBAL);
-                break;
-            default:
-        }
+        productsCostCalculationService.calculateTotalProductsCost(entity, sourceOfMaterialCosts);
 
-        if (CalculateOperationCostMode.HOURLY.equals(operationMode)) {
+        if (HOURLY.equals(operationMode)) {
             BigDecimal totalMachine = getBigDecimal(entity.getField("totalMachineHourlyCosts"));
             BigDecimal totalLabor = getBigDecimal(entity.getField("totalLaborHourlyCosts"));
             productionCosts = totalMachine.add(totalLabor, numberService.getMathContext());
-        } else if (CalculateOperationCostMode.PIECEWORK.equals(operationMode)) {
+        } else if (PIECEWORK.equals(operationMode)) {
             productionCosts = getBigDecimal(entity.getField("totalPieceworkCosts"));
         } else {
             throw new IllegalStateException("Unsupported calculateOperationCostsMode");

@@ -34,8 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
-import com.qcadoo.mes.costNormsForProduct.constants.SourceOfProductCosts;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -55,8 +54,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private NumberService numberService;
 
     @Override
-    public void calculateTotalProductsCost(final Entity entity, final SourceOfProductCosts sourceOfProductCosts) {
-        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity, sourceOfProductCosts);
+    public void calculateTotalProductsCost(final Entity entity, final String sourceOfMaterialCosts) {
+        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity, sourceOfMaterialCosts);
         BigDecimal result = BigDecimal.ZERO;
         for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
             result = result.add(productWithCost.getValue(), numberService.getMathContext());
@@ -65,30 +64,54 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     }
 
     public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,
-            final SourceOfProductCosts sourceOfProductCosts) {
+            final String sourceOfMaterialCosts) {
         checkArgument(entity != null);
         BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
 
-        String mode = entity.getStringField("calculateMaterialCostsMode");
+        String calculateMaterialCostsMode = entity.getStringField("calculateMaterialCostsMode");
 
         checkArgument(quantity != null && quantity != BigDecimal.ZERO, "quantity is  null");
-        checkArgument(mode != null, "mode is null!");
+        checkArgument(calculateMaterialCostsMode != null, "calculateMaterialCostsMode is null!");
 
         Entity technology = entity.getBelongsToField("technology");
 
         Entity order = entity.getBelongsToField("order");
 
-        if (sourceOfProductCosts.equals(SourceOfProductCosts.FROM_ORDER)) {
-            return getProductWithCostForPlannedQuantities(technology, quantity, mode, order);
-        } else if (sourceOfProductCosts.equals(SourceOfProductCosts.GLOBAL)) {
-            return getProductWithCostForPlannedQuantities(technology, quantity, mode);
+        if ("02fromOrdersMaterialCosts".equals(sourceOfMaterialCosts)) {
+            return getProductWithCostForPlannedQuantities(technology, quantity, calculateMaterialCostsMode, order);
+        } else if ("01currentGlobalDefinitionsInProduct".equals(sourceOfMaterialCosts)) {
+            return getProductWithCostForPlannedQuantities(technology, quantity, calculateMaterialCostsMode);
         }
 
         throw new IllegalStateException("sourceOfProductCosts is neither FROM_ORDER nor GLOBAL");
     }
 
+    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
+            final String calculateMaterialCostsMode) {
+        BigDecimal cost = getBigDecimal(product
+                .getField(ProductsCostFields.parseString(calculateMaterialCostsMode).getStrValue()));
+        BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
+        BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
+
+        return costPerUnit.multiply(quantity, numberService.getMathContext());
+    }
+
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String mode, final Entity order) {
+            final String calculateMaterialCostsMode) {
+        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                quantity, true);
+        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
+        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantity.getKey();
+            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
+                    calculateMaterialCostsMode);
+            results.put(product, thisProductsCost);
+        }
+        return results;
+    }
+
+    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final String calculateMaterialCostsMode, final Entity order) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 quantity, true);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
@@ -104,33 +127,10 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                     .uniqueResult();
 
             BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderOperationProductInComponent,
-                    productQuantity.getValue(), mode);
+                    productQuantity.getValue(), calculateMaterialCostsMode);
             results.put(product, thisProductsCost);
         }
         return results;
-    }
-
-    @Override
-    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String mode) {
-        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                quantity, true);
-        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
-        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantity.getKey();
-            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(), mode);
-            results.put(product, thisProductsCost);
-        }
-        return results;
-    }
-
-    @Override
-    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity, final String mode) {
-        BigDecimal cost = getBigDecimal(product.getField(ProductsCostCalculationConstants.parseString(mode).getStrValue()));
-        BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
-        BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
-
-        return costPerUnit.multiply(quantity, numberService.getMathContext());
     }
 
     private BigDecimal getBigDecimal(final Object value) {

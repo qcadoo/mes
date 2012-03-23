@@ -23,12 +23,14 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -50,14 +52,14 @@ public class RecordStateListener {
     public List<ChangeRecordStateMessage> checkIfExistsFinalRecord(final Entity productionRecord) {
         List<ChangeRecordStateMessage> errorList = new ArrayList<ChangeRecordStateMessage>();
         final Entity order = productionRecord.getBelongsToField(ORDER);
-        final String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
+        final String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
 
         final SearchCriteriaBuilder searchBuilder = productionRecord.getDataDefinition().find();
         searchBuilder.add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()));
         searchBuilder.add(SearchRestrictions.belongsTo(ORDER, order));
         searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
-        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+        if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
                     productionRecord.getBelongsToField("orderOperationComponent")));
         }

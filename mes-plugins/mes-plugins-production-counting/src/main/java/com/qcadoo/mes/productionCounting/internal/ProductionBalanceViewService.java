@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
@@ -71,8 +72,6 @@ public class ProductionBalanceViewService {
 
     private static final String L_OPERATIONS_TIME_GRID = "operationsTimeGrid";
 
-    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -116,11 +115,11 @@ public class ProductionBalanceViewService {
                     && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(true);
 
-                if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(true);
-                } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);

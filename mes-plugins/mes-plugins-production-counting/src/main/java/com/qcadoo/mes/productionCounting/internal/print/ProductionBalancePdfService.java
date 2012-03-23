@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.internal.print;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
@@ -33,6 +34,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -136,8 +138,9 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             addOutputProductsBalance(document, productionBalance, locale);
         }
 
-        if (productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE).equals(HOURLY.getStringValue())) {
-            if (productionBalance.getBelongsToField(ORDER).getStringField("typeOfProductionRecording").equals("03forEach")) {
+        if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))) {
+            if (FOR_EACH.getStringValue().equals(
+                    productionBalance.getBelongsToField(ORDER).getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 addMachineTimeBalance(document, productionBalance, locale);
                 addLaborTimeBalance(document, productionBalance, locale);
             } else {
@@ -229,7 +232,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                         + translationService.translate(
                                 "productionCounting.productionBalance.report.panel.typeOfProductionRecording", locale),
                 translationService.translate("productionCounting.productionBalance.typeOfProductionRecording."
-                        + productionBalance.getBelongsToField(ORDER).getField("typeOfProductionRecording"), locale), null,
+                        + productionBalance.getBelongsToField(ORDER).getField(TYPE_OF_PRODUCTION_RECORDING), locale), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         rightPanel.addCell(new Phrase(TABS_LITERAL
                 + translationService.translate("productionCounting.productionBalance.report.panel.registerQuantityOutProduct",

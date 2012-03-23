@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,7 +20,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
@@ -94,8 +94,8 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.HOURLY.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.CUMULATED.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))
+                .willReturn(TypeOfProductionRecording.CUMULATED.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);
@@ -111,8 +111,8 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.PIECEWORK.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.CUMULATED.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))
+                .willReturn(TypeOfProductionRecording.CUMULATED.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);
@@ -128,8 +128,7 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.HOURLY.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING)).willReturn(TypeOfProductionRecording.FOR_EACH.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);
@@ -145,8 +144,7 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.HOURLY.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING)).willReturn(TypeOfProductionRecording.FOR_EACH.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);
@@ -162,8 +160,7 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.HOURLY.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.FOR_EACH.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING)).willReturn(TypeOfProductionRecording.FOR_EACH.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);
@@ -178,8 +175,8 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(balance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)).willReturn(
                 CalculateOperationCostMode.PIECEWORK.getStringValue());
 
-        given(order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
-                TypeOfProductionRecording.CUMULATED.getStringValue());
+        given(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))
+                .willReturn(TypeOfProductionRecording.CUMULATED.getStringValue());
 
         // when
         productionBalanceWithCostsPdfService.buildPdfContent(document, balance, locale);

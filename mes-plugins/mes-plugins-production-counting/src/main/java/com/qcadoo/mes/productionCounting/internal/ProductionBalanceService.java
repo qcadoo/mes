@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
@@ -106,8 +107,6 @@ public class ProductionBalanceService {
     private static final String L_USED_QUANTITY = "usedQuantity";
 
     private static final String L_BALANCE = "balance";
-
-    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_PLANNED_MACHINE_TIME = "plannedMachineTime";
 
@@ -272,10 +271,10 @@ public class ProductionBalanceService {
         }
 
         if (order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
-            if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+            if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
-            } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+            } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
         }
@@ -455,7 +454,7 @@ public class ProductionBalanceService {
     }
 
     public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
-        return BASIC.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING));
+        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
     private void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,

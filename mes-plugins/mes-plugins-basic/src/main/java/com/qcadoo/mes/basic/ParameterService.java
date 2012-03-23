@@ -57,4 +57,19 @@ public class ParameterService {
         }
     }
 
+    public Entity getParameter() {
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PARAMETER);
+        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
+
+        if (searchResult.getEntities().isEmpty()) {
+            Entity newParameter = dataDefinition.create();
+            newParameter.setField("checkDoneOrderForQuality", false);
+            newParameter.setField("batchForDoneOrder", "01none");
+            Entity savedParameter = dataDefinition.save(newParameter);
+            return savedParameter;
+        } else {
+            return searchResult.getEntities().get(0);
+        }
+    }
 }

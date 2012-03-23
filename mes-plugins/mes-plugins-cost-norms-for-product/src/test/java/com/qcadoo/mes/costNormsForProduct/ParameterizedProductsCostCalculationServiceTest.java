@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.costNormsForProduct;
 
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.AVERAGE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.LAST_PURCHASE;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants.NOMINAL;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields.AVERAGE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields.LAST_PURCHASE;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields.NOMINAL;
 import static java.math.BigDecimal.valueOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostCalculationConstants;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -62,7 +62,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
 
     private Entity costCalculation;
 
-    private final ProductsCostCalculationConstants calculationMode;
+    private final ProductsCostFields calculationMode;
 
     private final BigDecimal averageCost, lastPurchaseCost, nominalCost, inputQuantity, orderQuantity, expectedResult;
 
@@ -87,7 +87,7 @@ public class ParameterizedProductsCostCalculationServiceTest {
                 { AVERAGE, valueOf(10), valueOf(5), valueOf(15), valueOf(2), valueOf(3), valueOf(4), valueOf(60) } });
     }
 
-    public ParameterizedProductsCostCalculationServiceTest(ProductsCostCalculationConstants mode, BigDecimal average,
+    public ParameterizedProductsCostCalculationServiceTest(ProductsCostFields mode, BigDecimal average,
             BigDecimal lastPurchase, BigDecimal nominal, BigDecimal costForNumber, BigDecimal inputQuantity,
             BigDecimal orderQuantity, BigDecimal expectedResult) {
         this.averageCost = average;

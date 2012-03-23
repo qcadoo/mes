@@ -1,6 +1,10 @@
 package com.qcadoo.mes.productionCountingWithCosts.validators;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
+import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS;
 
@@ -8,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -51,27 +54,26 @@ public class ProductionBalanceModelValidators {
         return true;
     }
 
-    public boolean checkIfAverageCostsIsDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        Entity order = productionBalance.getBelongsToField(OrdersConstants.MODEL_ORDER);
-        if ((checkIfTypeOfProductionRecordingIsCumulated(order)) && productionBalance.getBooleanField("generated") == false) {
-
-            Object averageMachineHourlyCost = productionBalance.getField("averageMachineHourlyCost");
-            Object averageLaborHourlyCost = productionBalance.getField("averageLaborHourlyCost");
+    public boolean checkIfAverageCostsAreDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        Entity order = productionBalance.getBelongsToField(ORDER);
+        if (checkIfTypeOfProductionRecordingIsCumulated(order)) {
+            Object averageMachineHourlyCost = productionBalance.getField(AVERAGE_MACHINE_HOURLY_COST);
+            Object averageLaborHourlyCost = productionBalance.getField(AVERAGE_LABOR_HOURLY_COST);
 
             if ((averageLaborHourlyCost == null) && (averageMachineHourlyCost == null)) {
-                productionBalance.addError(productionBalanceDD.getField("averageLaborHourlyCost"),
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_MACHINE_HOURLY_COST),
                         "productionCountingWithCosts.productionBalance.messages.averageLaborHourlyCostIsRequired");
-                productionBalance.addError(productionBalanceDD.getField("averageMachineHourlyCost"),
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_LABOR_HOURLY_COST),
                         "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
                 return false;
 
             } else if ((averageMachineHourlyCost == null)) {
-                productionBalance.addError(productionBalanceDD.getField("averageMachineHourlyCost"),
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_MACHINE_HOURLY_COST),
                         "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
                 return false;
 
             } else if ((averageLaborHourlyCost == null)) {
-                productionBalance.addError(productionBalanceDD.getField("averageLaborHourlyCost"),
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_LABOR_HOURLY_COST),
                         "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
                 return false;
             }
@@ -81,7 +83,7 @@ public class ProductionBalanceModelValidators {
     }
 
     public boolean checkIfTypeOfProductionRecordingIsCumulated(final Entity order) {
-        return CUMULATED.getStringValue().equals(order.getStringField("typeOfProductionRecording"));
+        return CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
 }

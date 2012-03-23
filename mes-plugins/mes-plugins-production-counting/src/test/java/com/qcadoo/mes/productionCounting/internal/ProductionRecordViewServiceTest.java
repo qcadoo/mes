@@ -10,6 +10,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -95,7 +97,8 @@ public class ProductionRecordViewServiceTest {
     @Test
     public void shouldEnableTimePanelIfProductionRecordingTypeIsntSetToSimpleAndRegisterTimeIsSetToTrue() {
         // given
-        given(order.getStringField("typeOfProductionRecording")).willReturn("03forEach");
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
+                TypeOfProductionRecording.FOR_EACH.getStringValue());
         given(order.getBooleanField("registerProductionTime")).willReturn(false);
         given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
 
@@ -109,7 +112,8 @@ public class ProductionRecordViewServiceTest {
     @Test
     public void shouldEnablePieceworkPanelIfProductionRecordingTypeIsForOperationAndRegisterPiecworkIsSetToTrue() {
         // given
-        given(order.getStringField("typeOfProductionRecording")).willReturn("03forEach");
+        given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
+                TypeOfProductionRecording.FOR_EACH.getStringValue());
         given(order.getBooleanField("registerPiecework")).willReturn(true);
         given(view.getComponentByReference("borderLayoutPiecework")).willReturn(borderLayoutPiecework);
 

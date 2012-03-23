@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 
 import java.math.BigDecimal;
@@ -47,7 +48,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
@@ -108,7 +108,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         document.add(parametersForCostsPanel);
 
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        String typeOfProductionRecording = order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         String calculationMode = productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         final boolean isTypeHourly = CalculateOperationCostMode.parseString(calculationMode).equals(

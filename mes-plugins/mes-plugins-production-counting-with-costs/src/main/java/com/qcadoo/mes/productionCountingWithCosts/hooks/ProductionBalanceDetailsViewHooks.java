@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCountingWithCosts.hooks;
 import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
 import static com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
@@ -77,8 +78,6 @@ public class ProductionBalanceDetailsViewHooks {
 
     private static final String L_OPERATIONS_COST_GRID = "operationsCostGrid";
 
-    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
-
     private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
 
     @Autowired
@@ -126,11 +125,11 @@ public class ProductionBalanceDetailsViewHooks {
                     && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(true);
 
-                if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(true);
-                } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
@@ -163,7 +162,7 @@ public class ProductionBalanceDetailsViewHooks {
         Entity order = productionBalanceService.getOrderFromDB(orderId);
 
         if ((order != null) && HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                && CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                && CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
             assumptionsBorderLayout.setVisible(true);
         } else {
             assumptionsBorderLayout.setVisible(false);
