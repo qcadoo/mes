@@ -17,7 +17,7 @@ public class TechnologyBeforeStateChangeListener implements BeforeStateChangeLis
     private TechnologyService technologyService;
 
     @Override
-    public boolean canChange(ComponentState gridOrForm, Entity technology, TechnologyState newState) {
+    public boolean canChange(final ComponentState gridOrForm, final Entity technology, final TechnologyState newState) {
         if ((TechnologyState.OUTDATED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))
                 || (TechnologyState.DECLINED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))) {
             gridOrForm.addMessage("technologies.technology.state.error.orderInProgress", MessageType.FAILURE);

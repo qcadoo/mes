@@ -64,6 +64,8 @@ import com.qcadoo.security.api.SecurityService;
 @Service
 public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
+    private static final String L_COSTS = "Costs";
+
     @Autowired
     private SecurityService securityService;
 
@@ -204,6 +206,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                                 "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.balance",
                                 locale));
 
+        @SuppressWarnings("unchecked")
         List<Entity> products = (List<Entity>) productionBalance.getField("orderOperationProductInComponents");
 
         if (!products.isEmpty()) {
@@ -276,21 +279,23 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                                 locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.planned"
-                        + upperCaseFirstLetter(type) + "Costs", locale));
+                        + upperCaseFirstLetter(type) + L_COSTS, locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
-                        + "Costs", locale));
+                        + L_COSTS, locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + "CostsBalance", locale));
 
-        List<Entity> operationComponents = (List<Entity>) productionBalance.getField("operationCostComponents");
+        @SuppressWarnings("unchecked")
+        List<Entity> operationComponents = (List<Entity>) productionBalance
+                .getField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS);
 
         if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(
-                    "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm." + type + "Costs", locale),
+                    "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm." + type + L_COSTS, locale),
                     FontUtils.getDejavuBold11Dark()));
 
             // FIXME mici, had to generate a new linked list in order to sort it.
@@ -308,10 +313,10 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                         .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular9Dark()));
 
                 String plannedCost = numberService.format(operationComponent.getField("planned" + upperCaseFirstLetter(type)
-                        + "Costs"));
+                        + L_COSTS));
                 costsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
                         .getDejavuRegular9Dark()));
-                String registeredCost = numberService.format(operationComponent.getField(type + "Costs"));
+                String registeredCost = numberService.format(operationComponent.getField(type + L_COSTS));
                 costsTable.addCell(new Phrase((registeredCost == null) ? NULL_OBJECT : (registeredCost + currency), FontUtils
                         .getDejavuRegular9Dark()));
                 String balance = numberService.format(operationComponent.getField(type + "CostsBalance"));
@@ -324,10 +329,10 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             costsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
 
             String plannedCosts = numberService.format((BigDecimal) productionBalance.getField("planned"
-                    + upperCaseFirstLetter(type) + "Costs"));
+                    + upperCaseFirstLetter(type) + L_COSTS));
             costsTable.addCell(new Phrase((plannedCosts == null) ? NULL_OBJECT : (plannedCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
-            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + "Costs"));
+            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + L_COSTS));
             costsTable.addCell(new Phrase((registeredCosts == null) ? NULL_OBJECT : (registeredCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
             String costsBalance = numberService.format((BigDecimal) productionBalance.getField(type + "CostsBalance"));
