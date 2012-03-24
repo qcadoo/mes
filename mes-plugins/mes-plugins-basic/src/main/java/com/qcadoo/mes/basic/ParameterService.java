@@ -39,6 +39,15 @@ public class ParameterService {
     private DataDefinitionService dataDefinitionService;
 
     /**
+     * Returns basic parameter entity id for current user
+     * 
+     * @return parameter entity id
+     */
+    public Long getParameterId() {
+        return getParameter().getId();
+    }
+
+    /**
      * Returns basic parameter entity for current user
      * 
      * @return parameter entity
@@ -53,15 +62,6 @@ public class ParameterService {
         return parameter;
     }
 
-    /**
-     * Returns basic parameter entity id for current user
-     * 
-     * @return parameter entity id
-     */
-    public Long getParameterId() {
-        return getParameter().getId();
-    }
-
     private Entity createParameter(final DataDefinition dataDefinition) {
         Entity newParameter = dataDefinition.create();
         newParameter.setField("checkDoneOrderForQuality", false);
@@ -74,19 +74,4 @@ public class ParameterService {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
     }
 
-    public Entity getParameter() {
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_PARAMETER);
-        SearchResult searchResult = dataDefinition.find().setMaxResults(1).list();
-
-        if (searchResult.getEntities().isEmpty()) {
-            Entity newParameter = dataDefinition.create();
-            newParameter.setField("checkDoneOrderForQuality", false);
-            newParameter.setField("batchForDoneOrder", "01none");
-            Entity savedParameter = dataDefinition.save(newParameter);
-            return savedParameter;
-        } else {
-            return searchResult.getEntities().get(0);
-        }
-    }
 }
