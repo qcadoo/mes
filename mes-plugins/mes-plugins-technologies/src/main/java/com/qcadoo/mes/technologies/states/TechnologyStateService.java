@@ -39,10 +39,8 @@ import com.qcadoo.mes.technologies.logging.TechnologyLoggingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -63,29 +61,6 @@ public class TechnologyStateService {
 
     @Autowired
     private TechnologyStateAfterChangeNotifierService afterChangeNotifierService;
-
-    @Autowired
-    private PluginAccessor pluginAccessor;
-
-    public boolean isTechnologyUsedInActiveOrder(final Entity technology) {
-        if (!ordersPluginIsEnabled()) {
-            return false;
-        }
-        SearchCriteriaBuilder searchCriteria = getOrderDataDefinition().find();
-        searchCriteria.add(SearchRestrictions.belongsTo("technology", technology));
-        searchCriteria.add(SearchRestrictions.in("state",
-                Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
-        searchCriteria.setMaxResults(1);
-        return searchCriteria.uniqueResult() != null;
-    }
-
-    private boolean ordersPluginIsEnabled() {
-        return pluginAccessor.getPlugin("orders") != null;
-    }
-
-    private DataDefinition getOrderDataDefinition() {
-        return dataDefinitionService.get("orders", "order");
-    }
 
     public final void changeTechnologyState(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         final String targetState = getTargetStateFromArgs(args);
@@ -130,7 +105,6 @@ public class TechnologyStateService {
 
             if (newState.equals(TechnologyState.DECLINED) || newState.equals(TechnologyState.OUTDATED)) {
                 technology.setField("master", false);
-
             }
 
             technology.setField(STATE, newState.getStringValue());

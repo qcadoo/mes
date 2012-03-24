@@ -27,6 +27,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -500,5 +501,27 @@ public class WorkPlanPdfServiceTest {
 
         // then
         assertFalse(isOutputProductTableEnabled);
+    }
+
+    @Test
+    public void shouldPrepareOrdersTableHeaderCorrectly() throws Exception {
+        // given
+        Locale locale = Locale.getDefault();
+        Document document = mock(Document.class);
+        Entity column = mock(Entity.class);
+        Entity column2 = mock(Entity.class);
+        given(column.getStringField("name")).willReturn("column");
+        given(column2.getStringField("name")).willReturn("column2");
+        given(translationService.translate("column", locale)).willReturn("column");
+        given(translationService.translate("column2", locale)).willReturn("column2");
+        List<Entity> columns = asList(column, column2);
+
+        // when
+        List<String> ordersHeader = workPlanPdfService.prepareOrdersTableHeader(document, columns, locale);
+
+        // then
+        verify(document).add(Mockito.any(Paragraph.class));
+        assertEquals("column", ordersHeader.get(0));
+        assertEquals("column2", ordersHeader.get(1));
     }
 }

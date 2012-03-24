@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -58,6 +59,7 @@ import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
+import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -133,6 +135,29 @@ public class TechnologyService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private PluginAccessor pluginAccessor;
+
+    public boolean isTechnologyUsedInActiveOrder(final Entity technology) {
+        if (!ordersPluginIsEnabled()) {
+            return false;
+        }
+        SearchCriteriaBuilder searchCriteria = getOrderDataDefinition().find();
+        searchCriteria.add(SearchRestrictions.belongsTo("technology", technology));
+        searchCriteria.add(SearchRestrictions.in("state",
+                Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
+        searchCriteria.setMaxResults(1);
+        return searchCriteria.uniqueResult() != null;
+    }
+
+    private boolean ordersPluginIsEnabled() {
+        return pluginAccessor.getPlugin("orders") != null;
+    }
+
+    private DataDefinition getOrderDataDefinition() {
+        return dataDefinitionService.get("orders", "order");
+    }
 
     private enum ProductDirection {
         IN, OUT;

@@ -29,24 +29,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.MessageHolder;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeNotifierService.StateChangeListener;
-import com.qcadoo.mes.technologies.states.TechnologyStateService;
 import com.qcadoo.model.api.Entity;
 
 @Component
 public class TechnologyStateChangeListener implements StateChangeListener {
 
     @Autowired
-    private TechnologyStateService technologyStateService;
+    private TechnologyService technologyService;
 
     @Override
     public List<MessageHolder> onStateChange(final Entity technology, final TechnologyState newState) {
         List<MessageHolder> resultMessages = Lists.newArrayList();
 
-        if ((TechnologyState.OUTDATED.equals(newState) && technologyStateService.isTechnologyUsedInActiveOrder(technology))
-                || (TechnologyState.DECLINED.equals(newState) && technologyStateService.isTechnologyUsedInActiveOrder(technology))) {
+        if ((TechnologyState.OUTDATED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))
+                || (TechnologyState.DECLINED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))) {
             resultMessages.add(MessageHolder.error("technologies.technology.state.error.orderInProgress"));
         }
 

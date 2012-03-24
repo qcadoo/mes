@@ -382,7 +382,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             technology = costCalculation.getBelongsToField(ORDER).getBelongsToField(TECHNOLOGY);
         }
 
-        String mode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
+        String calculateMaterialCostsMode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 givenQty, true);
@@ -398,7 +398,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTable.addCell(new Phrase(productEntity.getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
 
             BigDecimal costs = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
-                    productQuantity, mode);
+                    productQuantity, calculateMaterialCostsMode);
 
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);

@@ -26,18 +26,18 @@ package com.qcadoo.mes.technologies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.technologies.listeners.TechnologyStateChangeListener;
-import com.qcadoo.mes.technologies.states.TechnologyStateChangeNotifierService;
+import com.qcadoo.mes.technologies.states.TechnologyStateBeforeChangeNotifierService;
+import com.qcadoo.mes.technologies.states.TechnologyStateBeforeChangeNotifierService.BeforeStateChangeListener;
 import com.qcadoo.plugin.api.Module;
 
 @Component
 public class TechnologyStartupModule extends Module {
 
     @Autowired
-    private TechnologyStateChangeNotifierService technologyStateChangeNotifierService;
+    private TechnologyStateBeforeChangeNotifierService technologyStateBeforeChangeNotifierService;
 
     @Autowired
-    private TechnologyStateChangeListener technologyStateChangeListener;
+    private BeforeStateChangeListener technologyBeforeStateChangeListener;
 
     @Override
     public void enable() {
@@ -50,11 +50,11 @@ public class TechnologyStartupModule extends Module {
     }
 
     private void registerListeners() {
-        technologyStateChangeNotifierService.registerListener(technologyStateChangeListener);
+        technologyStateBeforeChangeNotifierService.registerListener(technologyBeforeStateChangeListener);
     }
 
     @Override
     public void disable() {
-        technologyStateChangeNotifierService.unregisterListener(technologyStateChangeListener);
+        technologyStateBeforeChangeNotifierService.unregisterListener(technologyBeforeStateChangeListener);
     }
 }

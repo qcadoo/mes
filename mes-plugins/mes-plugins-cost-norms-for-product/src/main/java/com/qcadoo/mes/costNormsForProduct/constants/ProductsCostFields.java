@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.costNormsForProduct.constants;
 
-public enum ProductsCostCalculationConstants {
+public enum ProductsCostFields {
     AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder");
 
     private final String strValue;
 
-    private ProductsCostCalculationConstants(final String strValue) {
+    private ProductsCostFields(final String strValue) {
         this.strValue = strValue;
     }
 
@@ -36,7 +36,7 @@ public enum ProductsCostCalculationConstants {
         return strValue;
     }
 
-    public static ProductsCostCalculationConstants parseString(final String strValue) {
+    public static ProductsCostFields parseString(final String strValue) {
         if ("01nominal".equals(strValue)) {
             return NOMINAL;
         } else if ("02average".equals(strValue)) {

@@ -33,12 +33,10 @@ import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,9 +196,6 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
     private void fillPlannedQuantities(final Entity technology, final Map<Entity, BigDecimal> productQuantities,
             final Map<Entity, Map<String, String>> valuesMap) {
-        Locale locale = LocaleContextHolder.getLocale();
-        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-
         // TODO mici, change those to orderOperationComponents?
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
 
@@ -218,7 +213,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
 
@@ -226,7 +221,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
                 initMap(valuesMap, productComponent);
 
                 String unit = productComponent.getBelongsToField(MODEL_PRODUCT).getStringField(UNIT);
-                String quantityString = decimalFormat.format(productQuantities.get(productComponent)) + " " + unit;
+                String quantityString = numberService.format(productQuantities.get(productComponent)) + " " + unit;
                 valuesMap.get(productComponent).put(QUANTITY_COLUMN, quantityString);
             }
         }

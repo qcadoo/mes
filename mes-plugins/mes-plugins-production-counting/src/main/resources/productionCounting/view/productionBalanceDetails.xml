@@ -350,5 +350,6 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 			method="disableFieldsAndGridsWhenGenerated" />
+	
 	</hooks>
 </view>

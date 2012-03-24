@@ -294,7 +294,13 @@
 				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
 				method="checkIfOptionsAreAvailable" />
 		</model:model-hook>
-		
+			
+		<model:model-hook model="productionBalance" plugin="productionCounting">
+			<model:validatesWith
+				class="com.qcadoo.mes.productionCountingWithCosts.validators.ProductionBalanceModelValidators"
+				method="checkIfAverageCostsAreDefined" />
+		</model:model-hook>
+			
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalancesList.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/productionBalanceDetails.xml" />
 		

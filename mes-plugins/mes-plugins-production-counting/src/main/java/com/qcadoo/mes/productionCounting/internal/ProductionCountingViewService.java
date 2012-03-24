@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -46,13 +48,11 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ProductionCountingViewService {
 
-    private static final String FIELD_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+    private static final String L_PRODUCTION_RECORDS = "productionRecords";
 
-    private static final String FIELD_PRODUCTION_RECORDS = "productionRecords";
+    private static final String L_PRODUCT = "product";
 
-    private static final String FIELD_PRODUCT = "product";
-
-    private static final String FIELD_ORDER = "order";
+    private static final String L_ORDER = "order";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -62,25 +62,24 @@ public class ProductionCountingViewService {
         if (!(state instanceof FieldComponent)) {
             return;
         }
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_ORDER);
         if (orderLookup.getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+            viewDefinitionState.getComponentByReference(L_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+            viewDefinitionState.getComponentByReference(L_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
-        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || TypeOfProductionRecording.BASIC.getStringValue().equals(
-                        order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING))) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCT).setFieldValue(null);
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER)).addMessage(
+        if (order.getStringField(TYPE_OF_PRODUCTION_RECORDING) == null
+                || BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
+            viewDefinitionState.getComponentByReference(L_PRODUCT).setFieldValue(null);
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(L_ORDER)).addMessage(
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType",
                     ComponentState.MessageType.FAILURE);
             return;
@@ -91,21 +90,20 @@ public class ProductionCountingViewService {
     }
 
     public void fillProductionRecordsGrid(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_ORDER);
+        FieldComponent orderLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_ORDER);
         if (orderLookup.getFieldValue() == null) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 (Long) orderLookup.getFieldValue());
         if (order == null) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
-        if (order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING) == null
-                || TypeOfProductionRecording.BASIC.getStringValue().equals(
-                        order.getStringField(FIELD_TYPE_OF_PRODUCTION_RECORDING))) {
-            viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS).setVisible(false);
+        if (order.getStringField(TYPE_OF_PRODUCTION_RECORDING) == null
+                || BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
+            viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS).setVisible(false);
             return;
         }
 
@@ -113,16 +111,16 @@ public class ProductionCountingViewService {
     }
 
     private void setProductFieldValue(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(FIELD_PRODUCT);
-        productField.setFieldValue(order.getBelongsToField(FIELD_PRODUCT).getId());
+        FieldComponent productField = (FieldComponent) viewDefinitionState.getComponentByReference(L_PRODUCT);
+        productField.setFieldValue(order.getBelongsToField(L_PRODUCT).getId());
     }
 
     private void setProductionRecordsGridContent(final ViewDefinitionState viewDefinitionState, final Entity order) {
-        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_PRODUCTION_RECORDS);
+        GridComponent productionRecords = (GridComponent) viewDefinitionState.getComponentByReference(L_PRODUCTION_RECORDS);
         List<Entity> productionRecordsList = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(L_ORDER, order)).list().getEntities();
         Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         productionRecords.setEntities(productionRecordsList);
         productionRecords.setVisible(true);
@@ -134,7 +132,7 @@ public class ProductionCountingViewService {
         if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
         }
-        for (String reference : Arrays.asList(FIELD_ORDER, "name", "description")) {
+        for (String reference : Arrays.asList(L_ORDER, "name", "description")) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(reference);
             component.setEnabled(enabled);
         }

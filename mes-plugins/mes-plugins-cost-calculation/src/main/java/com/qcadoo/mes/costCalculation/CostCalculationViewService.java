@@ -62,7 +62,6 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -91,9 +90,6 @@ public class CostCalculationViewService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private NumberService numberService;
 
     private static final String EMPTY = "";
 

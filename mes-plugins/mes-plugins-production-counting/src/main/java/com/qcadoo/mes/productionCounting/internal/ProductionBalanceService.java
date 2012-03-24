@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
@@ -106,8 +107,6 @@ public class ProductionBalanceService {
     private static final String L_USED_QUANTITY = "usedQuantity";
 
     private static final String L_BALANCE = "balance";
-
-    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_PLANNED_MACHINE_TIME = "plannedMachineTime";
 
@@ -203,37 +202,42 @@ public class ProductionBalanceService {
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponent) {
-            Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+        state.performEvent(viewDefinitionState, "save", new String[0]);
 
-            if (productionBalance == null) {
-                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
-                return;
-            } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
-                state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
-                return;
-            }
+        if (!state.isHasError()) {
+            if (state instanceof FormComponent) {
+                Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-            if (!productionBalance.getBooleanField(GENERATED)) {
-                fillReportValues(productionBalance);
+                if (productionBalance == null) {
+                    state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
+                    return;
+                } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
+                    state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated",
+                            MessageType.FAILURE);
+                    return;
+                }
 
-                fillFieldsAndGrids(productionBalance);
-            }
+                if (!productionBalance.getBooleanField(GENERATED)) {
+                    fillReportValues(productionBalance);
 
-            productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+                    fillFieldsAndGrids(productionBalance);
+                }
 
-            try {
-                generateProductionBalanceDocuments(productionBalance, state.getLocale());
+                productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-                state.performEvent(viewDefinitionState, "reset", new String[0]);
+                try {
+                    generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
-                state.addMessage(
-                        "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
-                        MessageType.SUCCESS);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
-                throw new IllegalStateException(e.getMessage(), e);
+                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+
+                    state.addMessage(
+                            "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
+                            MessageType.SUCCESS);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                } catch (DocumentException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
             }
         }
     }
@@ -267,10 +271,10 @@ public class ProductionBalanceService {
         }
 
         if (order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
-            if (FOR_EACH.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+            if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
-            } else if (CUMULATED.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+            } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
         }
@@ -382,7 +386,7 @@ public class ProductionBalanceService {
             if (!groupedProductionRecords.isEmpty()) {
                 for (Entity groupedProductionRecord : groupedProductionRecords) {
                     Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENTS).create();
+                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
 
                     operationTimeComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
                             groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
@@ -450,7 +454,7 @@ public class ProductionBalanceService {
     }
 
     public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
-        return BASIC.getStringValue().equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING));
+        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
     private void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,

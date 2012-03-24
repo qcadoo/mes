@@ -35,6 +35,4 @@ public class OrderFields {
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String LOGGINGS = "loggings";
-
-    public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 }

@@ -39,7 +39,7 @@ public class TechnologyStateBeforeChangeNotifierService {
 
     public final boolean fireListeners(final ComponentState component, final Entity technology, final TechnologyState newState) {
         for (BeforeStateChangeListener listener : listeners) {
-            if (listener.canChange(component, technology, newState)) {
+            if (!listener.canChange(component, technology, newState)) {
                 return false;
             }
         }

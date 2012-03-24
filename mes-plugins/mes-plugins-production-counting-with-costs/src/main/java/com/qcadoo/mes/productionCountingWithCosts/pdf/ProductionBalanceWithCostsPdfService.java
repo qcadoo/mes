@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.pdf;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 
 import java.math.BigDecimal;
@@ -47,7 +48,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
@@ -62,7 +62,9 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
-public final class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
+public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
+
+    private static final String L_COSTS = "Costs";
 
     @Autowired
     private SecurityService securityService;
@@ -106,7 +108,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
         document.add(parametersForCostsPanel);
 
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        String typeOfProductionRecording = order.getStringField(OrderFields.TYPE_OF_PRODUCTION_RECORDING);
+        String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         String calculationMode = productionBalance.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
 
         final boolean isTypeHourly = CalculateOperationCostMode.parseString(calculationMode).equals(
@@ -204,6 +206,7 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                                 "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.balance",
                                 locale));
 
+        @SuppressWarnings("unchecked")
         List<Entity> products = (List<Entity>) productionBalance.getField("orderOperationProductInComponents");
 
         if (!products.isEmpty()) {
@@ -276,21 +279,23 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                                 locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.planned"
-                        + upperCaseFirstLetter(type) + "Costs", locale));
+                        + upperCaseFirstLetter(type) + L_COSTS, locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
-                        + "Costs", locale));
+                        + L_COSTS, locale));
         machineCostTableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + "CostsBalance", locale));
 
-        List<Entity> operationComponents = (List<Entity>) productionBalance.getField("operationCostComponents");
+        @SuppressWarnings("unchecked")
+        List<Entity> operationComponents = (List<Entity>) productionBalance
+                .getField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS);
 
         if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
 
             document.add(new Paragraph(translationService.translate(
-                    "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm." + type + "Costs", locale),
+                    "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm." + type + L_COSTS, locale),
                     FontUtils.getDejavuBold11Dark()));
 
             // FIXME mici, had to generate a new linked list in order to sort it.
@@ -308,10 +313,10 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
                         .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular9Dark()));
 
                 String plannedCost = numberService.format(operationComponent.getField("planned" + upperCaseFirstLetter(type)
-                        + "Costs"));
+                        + L_COSTS));
                 costsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
                         .getDejavuRegular9Dark()));
-                String registeredCost = numberService.format(operationComponent.getField(type + "Costs"));
+                String registeredCost = numberService.format(operationComponent.getField(type + L_COSTS));
                 costsTable.addCell(new Phrase((registeredCost == null) ? NULL_OBJECT : (registeredCost + currency), FontUtils
                         .getDejavuRegular9Dark()));
                 String balance = numberService.format(operationComponent.getField(type + "CostsBalance"));
@@ -324,10 +329,10 @@ public final class ProductionBalanceWithCostsPdfService extends PdfDocumentServi
             costsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
 
             String plannedCosts = numberService.format((BigDecimal) productionBalance.getField("planned"
-                    + upperCaseFirstLetter(type) + "Costs"));
+                    + upperCaseFirstLetter(type) + L_COSTS));
             costsTable.addCell(new Phrase((plannedCosts == null) ? NULL_OBJECT : (plannedCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
-            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + "Costs"));
+            String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + L_COSTS));
             costsTable.addCell(new Phrase((registeredCosts == null) ? NULL_OBJECT : (registeredCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
             String costsBalance = numberService.format((BigDecimal) productionBalance.getField(type + "CostsBalance"));

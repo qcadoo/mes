@@ -332,3 +332,11 @@ ALTER TABLE basic_parameter ADD COLUMN dontPrintOrdersInWorkPlans boolean;
 ALTER TABLE workplans_workplan ADD COLUMN dontPrintOrdersInWorkPlans boolean;
 
 -- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 23.03.2012
+
+UPDATE productioncounting_productionbalance SET calculateoperationcostsmode='01hourly';
+
+-- end

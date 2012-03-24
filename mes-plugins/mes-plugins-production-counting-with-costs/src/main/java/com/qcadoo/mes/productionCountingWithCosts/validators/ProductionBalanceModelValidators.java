@@ -1,5 +1,10 @@
 package com.qcadoo.mes.productionCountingWithCosts.validators;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
+import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS;
 
@@ -47,6 +52,38 @@ public class ProductionBalanceModelValidators {
         }
 
         return true;
+    }
+
+    public boolean checkIfAverageCostsAreDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        Entity order = productionBalance.getBelongsToField(ORDER);
+        if (checkIfTypeOfProductionRecordingIsCumulated(order)) {
+            Object averageMachineHourlyCost = productionBalance.getField(AVERAGE_MACHINE_HOURLY_COST);
+            Object averageLaborHourlyCost = productionBalance.getField(AVERAGE_LABOR_HOURLY_COST);
+
+            if ((averageLaborHourlyCost == null) && (averageMachineHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_MACHINE_HOURLY_COST),
+                        "productionCountingWithCosts.productionBalance.messages.averageLaborHourlyCostIsRequired");
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_LABOR_HOURLY_COST),
+                        "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+
+            } else if ((averageMachineHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_MACHINE_HOURLY_COST),
+                        "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+
+            } else if ((averageLaborHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(AVERAGE_LABOR_HOURLY_COST),
+                        "productionCountingWithCosts.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    public boolean checkIfTypeOfProductionRecordingIsCumulated(final Entity order) {
+        return CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
 }

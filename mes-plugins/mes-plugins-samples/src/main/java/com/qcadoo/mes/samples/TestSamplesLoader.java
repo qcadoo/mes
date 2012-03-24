@@ -1109,8 +1109,14 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
         productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
-        productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
-        productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
+
+        if (isEnabled("productionCountingWithCosts")) {
+            productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
+            productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
+
+            productionbalance.setField("averageMachineHourlyCost", values.get("averagemachinehourlycost"));
+            productionbalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
+        }
 
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
         validateEntity(productionbalance);
