@@ -204,40 +204,37 @@ public class ProductionBalanceService {
             final String[] args) {
         state.performEvent(viewDefinitionState, "save", new String[0]);
 
-        if (!state.isHasError()) {
-            if (state instanceof FormComponent) {
-                Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+        if (!state.isHasError() && (state instanceof FormComponent)) {
+            Entity productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-                if (productionBalance == null) {
-                    state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
-                    return;
-                } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
-                    state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated",
-                            MessageType.FAILURE);
-                    return;
-                }
+            if (productionBalance == null) {
+                state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
+                return;
+            } else if (StringUtils.hasText(productionBalance.getStringField(FILE_NAME))) {
+                state.addMessage("productionCounting.productionBalance.report.error.documentsWasGenerated", MessageType.FAILURE);
+                return;
+            }
 
-                if (!productionBalance.getBooleanField(GENERATED)) {
-                    fillReportValues(productionBalance);
+            if (!productionBalance.getBooleanField(GENERATED)) {
+                fillReportValues(productionBalance);
 
-                    fillFieldsAndGrids(productionBalance);
-                }
+                fillFieldsAndGrids(productionBalance);
+            }
 
-                productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
+            productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
-                try {
-                    generateProductionBalanceDocuments(productionBalance, state.getLocale());
+            try {
+                generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
-                    state.performEvent(viewDefinitionState, "reset", new String[0]);
+                state.performEvent(viewDefinitionState, "reset", new String[0]);
 
-                    state.addMessage(
-                            "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
-                            MessageType.SUCCESS);
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                } catch (DocumentException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
+                state.addMessage(
+                        "productionCounting.productionBalanceDetails.window.mainTab.productionBalanceDetails.generatedMessage",
+                        MessageType.SUCCESS);
+            } catch (IOException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            } catch (DocumentException e) {
+                throw new IllegalStateException(e.getMessage(), e);
             }
         }
     }
