@@ -174,7 +174,8 @@ public class ProductionRecordViewService {
         ((FieldComponent) view.getComponentByReference(COMPONENT_ORDER_OPERATION_COMPONENT)).requestComponentUpdateState();
 
         boolean registerProductionTime = order.getBooleanField(L_REGISTER_PRODUCTION_TIME);
-        view.getComponentByReference("borderLayoutTime").setVisible(registerProductionTime && !BASIC.equals(recordingType));
+        view.getComponentByReference("borderLayoutTime").setVisible(
+                registerProductionTime && !BASIC.getStringValue().equals(recordingType));
 
         boolean registerPiecework = order.getBooleanField("registerPiecework");
         view.getComponentByReference("borderLayoutPiecework").setVisible(

@@ -560,7 +560,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 .add(SearchRestrictions.belongsTo(MODEL_PRODUCT, product)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getCalculationOperationComponent(final Entity productionBalance, Entity operatonTimeComponent) {
+    private Entity getCalculationOperationComponent(final Entity productionBalance, final Entity operatonTimeComponent) {
         return dataDefinitionService
                 .get(CostNormsForOperationConstants.PLUGIN_IDENTIFIER,
                         CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT)
