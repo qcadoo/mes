@@ -396,7 +396,7 @@ public class CostCalculationViewService {
 
         if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
                 sourceOfMaterialCosts.getFieldValue())
-                && CalculateMaterialCostsMode.COST_FOR_ORDER.equals(calculateMaterialCostsMode.getFieldValue())) {
+                && (CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue()))) {
             sourceOfMaterialCosts.addMessage("costCalculation.messages.optionUnavailable", MessageType.FAILURE);
         }
     }
