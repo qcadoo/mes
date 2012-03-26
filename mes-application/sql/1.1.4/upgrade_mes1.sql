@@ -340,3 +340,19 @@ ALTER TABLE workplans_workplan ADD COLUMN dontPrintOrdersInWorkPlans boolean;
 UPDATE productioncounting_productionbalance SET calculateoperationcostsmode='01hourly';
 
 -- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 26.03.2012
+
+UPDATE productioncounting_productionbalance SET sourceofmaterialcosts='01currentGlobalDefinitionsInProduct';
+
+-- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 26.03.2012
+
+UPDATE costcalculation_costcalculation SET sourceofmaterialcosts='01currentGlobalDefinitionsInProduct';
+
+-- end
