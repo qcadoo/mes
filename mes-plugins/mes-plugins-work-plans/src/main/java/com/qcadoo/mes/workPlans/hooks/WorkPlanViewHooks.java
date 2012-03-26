@@ -91,20 +91,30 @@ public class WorkPlanViewHooks {
     }
 
     public final void disableFormForGeneratedWorkPlan(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
         FieldComponent generated = (FieldComponent) view.getComponentByReference(GENERATED);
 
-        if ("1".equals(generated.getFieldValue())) {
-            view.getComponentByReference(NAME).setEnabled(false);
-            view.getComponentByReference(TYPE).setEnabled(false);
+        if (form == null) {
+            return;
+        }
+
+        if (form.getEntityId() == null) {
             view.getComponentByReference("workPlanComponents").setEnabled(false);
-            view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(false);
             view.getComponentByReference("columnsForOrders").setEnabled(false);
         } else {
-            view.getComponentByReference(NAME).setEnabled(true);
-            view.getComponentByReference(TYPE).setEnabled(true);
-            view.getComponentByReference("workPlanComponents").setEnabled(true);
-            view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(true);
-            view.getComponentByReference("columnsForOrders").setEnabled(true);
+            if ("1".equals(generated.getFieldValue())) {
+                view.getComponentByReference(NAME).setEnabled(false);
+                view.getComponentByReference(TYPE).setEnabled(false);
+                view.getComponentByReference("workPlanComponents").setEnabled(false);
+                view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(false);
+                view.getComponentByReference("columnsForOrders").setEnabled(false);
+            } else {
+                view.getComponentByReference(NAME).setEnabled(true);
+                view.getComponentByReference(TYPE).setEnabled(true);
+                view.getComponentByReference("workPlanComponents").setEnabled(true);
+                view.getComponentByReference(DONT_PRINT_ORDERS_IN_WORK_PLANS).setEnabled(true);
+                view.getComponentByReference("columnsForOrders").setEnabled(true);
+            }
         }
     }
 
