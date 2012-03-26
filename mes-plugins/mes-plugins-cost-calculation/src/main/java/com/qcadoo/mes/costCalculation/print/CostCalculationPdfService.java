@@ -60,6 +60,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
@@ -69,6 +70,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
@@ -458,6 +460,19 @@ public class CostCalculationPdfService extends PdfDocumentService {
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
 
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.equals(SourceOfMaterialCosts.parseString(costCalculation
+                .getStringField("sourceOfMaterialCosts")))) {
+            addCostNormFromGlobalDefinitionsInProduct(products, printCostNormsOfMaterialTable, costMode);
+        } else {
+            addCostNormFromOrdersMaterialCosts(products, printCostNormsOfMaterialTable, costCalculation.getBelongsToField(ORDER),
+                    costMode);
+        }
+
+        return printCostNormsOfMaterialTable;
+    }
+
+    private void addCostNormFromGlobalDefinitionsInProduct(final Map<Entity, BigDecimal> products,
+            PdfPTable printCostNormsOfMaterialTable, final String costMode) {
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
                     .getDejavuRegular9Dark()));
@@ -472,7 +487,32 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     .getDejavuRegular9Dark()));
 
         }
-        return printCostNormsOfMaterialTable;
+    }
+
+    private void addCostNormFromOrdersMaterialCosts(final Map<Entity, BigDecimal> products,
+            PdfPTable printCostNormsOfMaterialTable, final Entity order, final String costMode) {
+        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
+                    .getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
+                    .getDejavuRegular9Dark()));
+
+            Entity productWithCostNormsFromOrder = dataDefinitionService
+                    .get("costNormsForProduct", "orderOperationProductInComponent").find()
+                    .add(SearchRestrictions.belongsTo("order", order))
+                    .add(SearchRestrictions.belongsTo("product", product.getKey())).uniqueResult();
+            if (productWithCostNormsFromOrder == null) {
+                throw new IllegalStateException("Product with number " + product.getKey().getStringField(NUMBER)
+                        + " doesn't exists for order with id" + order.getId());
+            }
+            BigDecimal toDisplay = (BigDecimal) productWithCostNormsFromOrder.getField(costMode);
+            BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
+            String unit = (String) product.getKey().getStringField(L_UNIT);
+
+            printCostNormsOfMaterialTable.addCell(new Phrase(toDisplay + " " + " / " + quantity + " " + unit, FontUtils
+                    .getDejavuRegular9Dark()));
+
+        }
     }
 
     private void addTableCellAsTwoColumnsTable(final PdfPTable table, final String label, final Object value) {
