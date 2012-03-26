@@ -350,7 +350,7 @@ UPDATE productioncounting_productionbalance SET sourceofmaterialcosts='01current
 -- end
 
 
--- Table: productioncounting_productionbalance
+-- Table: costcalculation_costcalculation
 -- changed: 26.03.2012
 
 UPDATE costcalculation_costcalculation SET sourceofmaterialcosts='01currentGlobalDefinitionsInProduct';
