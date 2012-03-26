@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -131,6 +132,22 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             results.put(product, thisProductsCost);
         }
         return results;
+    }
+
+    public Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts) {
+        if ("01currentGlobalDefinitionsInProduct".equals(sourceOfMaterialCosts)) {
+            return product;
+        } else {
+            Entity productWithCostNormsFromOrder = dataDefinitionService
+                    .get("costNormsForProduct", "orderOperationProductInComponent").find()
+                    .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
+                    .uniqueResult();
+            if (productWithCostNormsFromOrder == null) {
+                throw new IllegalStateException("Product with number " + product.getStringField(ProductFields.NUMBER)
+                        + " doesn't exists for order with id" + order.getId());
+            }
+            return productWithCostNormsFromOrder;
+        }
     }
 
     private BigDecimal getBigDecimal(final Object value) {

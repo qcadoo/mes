@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +60,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.costNormsForProduct.ProductsCostCalculationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
@@ -376,29 +376,32 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
         PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
         Entity technology;
-        if (costCalculation.getBelongsToField(ORDER) == null) {
+        Entity order = costCalculation.getBelongsToField(ORDER);
+        if (order == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
         } else {
             technology = costCalculation.getBelongsToField(ORDER).getBelongsToField(TECHNOLOGY);
         }
 
-        String calculateMaterialCostsMode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
+        Map<String, String> costModeName = getCostMode(costCalculation);
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 givenQty, true);
-
         neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
         for (Entry<Entity, BigDecimal> productWithNeededQuantity : neededProductQuantities.entrySet()) {
-            Entity productEntity = productWithNeededQuantity.getKey();
+            Entity productEntity = productsCostCalculationService.getAppropriateCostNormForProduct(
+                    productWithNeededQuantity.getKey(), order, costCalculation.getStringField("sourceOfMaterialCosts"));
             BigDecimal productQuantity = productWithNeededQuantity.getValue();
 
-            materialsTable.addCell(new Phrase(productEntity.getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(NUMBER), FontUtils
+                    .getDejavuRegular9Dark()));
             materialsTable.addCell(new Phrase(numberService.format(productQuantity), FontUtils.getDejavuRegular9Dark()));
-            materialsTable.addCell(new Phrase(productEntity.getStringField(L_UNIT), FontUtils.getDejavuRegular9Dark()));
+            materialsTable.addCell(new Phrase(productWithNeededQuantity.getKey().getStringField(L_UNIT), FontUtils
+                    .getDejavuRegular9Dark()));
 
             BigDecimal costs = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
-                    productQuantity, calculateMaterialCostsMode);
+                    productQuantity, costCalculation.getStringField(CALCULATE_MATERIAL_COSTS_MODE));
 
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
@@ -420,30 +423,17 @@ public class CostCalculationPdfService extends PdfDocumentService {
     public PdfPTable addOptionTablePrintCostNormsOfMaterials(final Entity costCalculation, final Locale locale) {
         List<String> optionTableHeader = new ArrayList<String>();
 
-        String localeType = null;
-        String costMode = "";
-        if ("01nominal".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
-            localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";
-            costMode = L_NOMINAL_COST;
-        } else if ("02average".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
-            localeType = "costCalculation.costCalculationDetails.report.columnHeader.averageCost";
-            costMode = "averageCost";
-        } else if ("03lastPurchase".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
-            localeType = "costCalculation.costCalculationDetails.report.columnHeader.lastPurchaseCost";
-            costMode = "lastPurchaseCost";
-        } else if ("04costForOrder".equals(costCalculation.getField(CALCULATE_MATERIAL_COSTS_MODE))) {
-            localeType = "costCalculation.costCalculationDetails.report.columnHeader.costForOrder";
-            costMode = "costForOrder";
-        }
+        Map<String, String> costModeName = getCostMode(costCalculation);
 
         for (String translate : Arrays.asList(L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
-                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, localeType
+                L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NAME, costModeName.get("localeType")
 
         )) {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
         Entity technology;
+        Entity order = costCalculation.getBelongsToField(ORDER);
         if (costCalculation.getBelongsToField(ORDER) == null) {
             technology = costCalculation.getBelongsToField(TECHNOLOGY);
         } else {
@@ -457,14 +447,14 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
-
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NUMBER), FontUtils
                     .getDejavuRegular9Dark()));
             printCostNormsOfMaterialTable.addCell(new Phrase(product.getKey().getStringField(NAME), FontUtils
                     .getDejavuRegular9Dark()));
-
-            BigDecimal toDisplay = (BigDecimal) product.getKey().getField(costMode);
+            Entity entityProduct = productsCostCalculationService.getAppropriateCostNormForProduct(product.getKey(), order,
+                    costCalculation.getStringField("sourceOfMaterialCosts"));
+            BigDecimal toDisplay = (BigDecimal) entityProduct.getField(costModeName.get("costMode"));
             BigDecimal quantity = (BigDecimal) product.getKey().getField(L_COST_FOR_NUMBER);
             String unit = (String) product.getKey().getStringField(L_UNIT);
 
@@ -472,7 +462,31 @@ public class CostCalculationPdfService extends PdfDocumentService {
                     .getDejavuRegular9Dark()));
 
         }
+
         return printCostNormsOfMaterialTable;
+    }
+
+    private Map<String, String> getCostMode(final Entity costCalculation) {
+        Map<String, String> costModeName = new HashMap<String, String>();
+        String localeType = "";
+        String costMode = "";
+        String costCalculationMode = costCalculation.getStringField(CALCULATE_MATERIAL_COSTS_MODE);
+        if ("01nominal".equals(costCalculationMode)) {
+            localeType = "costCalculation.costCalculationDetails.report.columnHeader.nominalCost";
+            costMode = L_NOMINAL_COST;
+        } else if ("02average".equals(costCalculationMode)) {
+            localeType = "costCalculation.costCalculationDetails.report.columnHeader.averageCost";
+            costMode = "averageCost";
+        } else if ("03lastPurchase".equals(costCalculationMode)) {
+            localeType = "costCalculation.costCalculationDetails.report.columnHeader.lastPurchaseCost";
+            costMode = "lastPurchaseCost";
+        } else if ("04costForOrder".equals(costCalculationMode)) {
+            localeType = "costCalculation.costCalculationDetails.report.columnHeader.costForOrder";
+            costMode = "costForOrder";
+        }
+        costModeName.put("localeType", localeType);
+        costModeName.put("costMode", costMode);
+        return costModeName;
     }
 
     private void addTableCellAsTwoColumnsTable(final PdfPTable table, final String label, final Object value) {
