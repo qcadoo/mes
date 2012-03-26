@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -125,12 +124,11 @@ public class OperationsCostCalculationServiceTest {
 
     }
 
-    @Ignore
     @Test
     public void shouldCalculateOperationCostForPieceworkCorrectlyFromTechnology() throws Exception {
         // given
 
-        when(costCalculation.getField("calculateOperationCostsMode")).thenReturn("piecework");
+        when(costCalculation.getStringField("calculateOperationCostsMode")).thenReturn("02piecework");
 
         when(costCalculation.getId()).thenReturn(costCalculationId);
         when(dataDefinition.get(costCalculationId)).thenReturn(costCalculationFromDD);
@@ -166,11 +164,13 @@ public class OperationsCostCalculationServiceTest {
 
         when(operationComponentDD.save(calculationOpComp)).thenReturn(calculationOpComp);
         when(calculationOpComp.isValid()).thenReturn(true);
+        BigDecimal quantity = new BigDecimal(15);
+        when(numberService.setScale(quantity)).thenReturn(quantity);
         // when
         operationCostCalculationService.calculateOperationsCost(costCalculation);
 
         // then
-        verify(costCalculation).setField("totalPieceworkCosts", new BigDecimal(15));
+        verify(costCalculation).setField("totalPieceworkCosts", quantity);
     }
 
     @Test(expected = IllegalArgumentException.class)
