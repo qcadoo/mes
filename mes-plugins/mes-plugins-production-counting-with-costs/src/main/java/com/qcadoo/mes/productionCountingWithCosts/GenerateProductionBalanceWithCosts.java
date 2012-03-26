@@ -212,7 +212,10 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     BigDecimal productRegisteredCost = BigDecimal.ZERO;
 
                     if (registeredQuantity != null) {
-                        productRegisteredCost = getRegisteredProductWithCost(productionBalance, product, registeredQuantity);
+                        productRegisteredCost = getRegisteredProductWithCost(
+                                productionBalance,
+                                productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
+                                        productionBalance.getStringField("sourceOfMaterialCosts")), registeredQuantity);
                     }
 
                     plannedComponentsCosts = plannedComponentsCosts.add(productCost, numberService.getMathContext());
@@ -260,7 +263,10 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     BigDecimal productRegisteredCost = BigDecimal.ZERO;
 
                     if (registeredQuantity != null) {
-                        productRegisteredCost = getRegisteredProductWithCost(productionBalance, product, registeredQuantity);
+                        productRegisteredCost = getRegisteredProductWithCost(
+                                productionBalance,
+                                productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
+                                        productionBalance.getStringField("sourceOfMaterialCosts")), registeredQuantity);
                     }
 
                     BigDecimal balance = productRegisteredCost.subtract(productCost, numberService.getMathContext());
