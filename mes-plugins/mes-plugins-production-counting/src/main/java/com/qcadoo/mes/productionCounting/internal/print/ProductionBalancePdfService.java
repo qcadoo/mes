@@ -80,7 +80,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     private static final String ORDER_OPERATION_COMPONENT_LITERAL = "orderOperationComponent";
 
-    private static final String N_A_LITERAL = "N/A";
+    private static final String N_A_LITERAL = "";
 
     private static final String USED_QUANTITY_LITERAL = "usedQuantity";
 

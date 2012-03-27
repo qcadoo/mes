@@ -199,7 +199,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
-                        "costCalculation.costCalculationDetails.report.paragraph4", locale), FontUtils.getDejavuBold11Dark()));
+                        "costCalculation.costCalculationDetails.report.paragraph5", locale), FontUtils.getDejavuBold11Dark()));
                 addOptionTablePrintOperationNormsHourly(document, entity, locale);
             }
         }
