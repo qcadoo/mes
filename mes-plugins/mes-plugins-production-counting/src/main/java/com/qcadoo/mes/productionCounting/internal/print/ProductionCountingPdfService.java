@@ -68,7 +68,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     private static final String FIELD_USED_QUANTITY = "usedQuantity";
 
-    private static final String NOT_AVAILABLE = "N/A";
+    private static final String NOT_AVAILABLE = "";
 
     private static final String QCADOO_VIEW_FALSE = "qcadooView.false";
 

@@ -63,14 +63,14 @@
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
-				width="300" expression="#order != null ? #order['name'] : 'N/A'" />
+				width="300" expression="#order != null ? #order['name'] : ''" />
 			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
 				link="true" width="300"
-				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name'] : 'N/A'" />
+				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="lastRecord" fields="lastRecord"
 				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
-				width="300" expression="#shift!=null ? #shift['name'] : 'N/A'" />
+				width="300" expression="#shift!=null ? #shift['name'] : ''" />
 			<option type="column" name="dateAndTime" fields="loggings" expression="#loggings[0].getField('dateAndTime').toLocaleString()"
 				link="true" width="300" />
 			<option type="column" name="worker" fields="loggings" expression="#loggings[0].getField('worker')" link="true"
