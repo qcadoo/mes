@@ -199,7 +199,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
                 document.add(Chunk.NEWLINE);
                 document.add(new Paragraph(translationService.translate(
-                        "costCalculation.costCalculationDetails.report.paragraph4", locale), FontUtils.getDejavuBold11Dark()));
+                        "costCalculation.costCalculationDetails.report.paragraph5", locale), FontUtils.getDejavuBold11Dark()));
                 addOptionTablePrintOperationNormsHourly(document, entity, locale);
             }
         }
@@ -407,7 +407,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-                materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             } else {
                 MathContext mc = numberService.getMathContext();
                 BigDecimal toAdd = costs.multiply(margin.divide(new BigDecimal(100), mc), mc);
