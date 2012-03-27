@@ -407,7 +407,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
                 materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-                materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             } else {
                 MathContext mc = numberService.getMathContext();
                 BigDecimal toAdd = costs.multiply(margin.divide(new BigDecimal(100), mc), mc);
