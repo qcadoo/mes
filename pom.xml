@@ -38,7 +38,7 @@
 		<qcadoo.plugin.version>1.1.5</qcadoo.plugin.version>
 		<qcadoo.saas.version>1.1.5-SNAPSHOT</qcadoo.saas.version>
 		<qcadoo.maven.plugin.version>1.1.5-SNAPSHOT</qcadoo.maven.plugin.version>
-		<mes.commercial.plugins.version>1.1.4-SNAPSHOT</mes.commercial.plugins.version>
+		<mes.commercial.plugins.version>1.1.5-SNAPSHOT</mes.commercial.plugins.version>
 		<slf4j.version>1.6.1</slf4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<profile.name>default</profile.name>
