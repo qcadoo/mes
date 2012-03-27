@@ -504,8 +504,8 @@ public class OrderServiceTest {
         orderService.disableFieldOrder(viewDefinitionState);
 
         // then
-        verify(order).setFormEnabled(true);
-        verify(technology).setEnabled(true);
+        verify(order).setFormEnabled(false);
+        verify(technology).setEnabled(false);
     }
 
     @Test

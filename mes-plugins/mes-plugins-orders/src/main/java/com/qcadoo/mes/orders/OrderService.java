@@ -243,7 +243,7 @@ public class OrderService {
                 return;
             }
             String state = entity.getStringField(STATE);
-            if (("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state)) && order.isValid()) {
+            if (!"01pending".equals(state) && order.isValid()) {
                 disabled = true;
             }
         }
