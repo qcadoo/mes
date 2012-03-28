@@ -68,7 +68,9 @@ public class CostCalculationReportService {
 
     public void generateCostCalculationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        if (state instanceof FormComponent) {
+        state.performEvent(viewDefinitionState, "save", new String[0]);
+
+        if (!state.isHasError() && (state instanceof FormComponent)) {
             ComponentState date = viewDefinitionState.getComponentByReference("date");
             ComponentState generated = viewDefinitionState.getComponentByReference("generated");
             Entity costCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,

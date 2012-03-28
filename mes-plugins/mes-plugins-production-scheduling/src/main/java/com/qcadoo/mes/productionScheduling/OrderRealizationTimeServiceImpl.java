@@ -42,7 +42,6 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -159,16 +158,30 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
         for (Entity operationComponent : operationComponents) {
-            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
-
             if ("order".equals(entityType)) {
                 operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
             }
 
-            operationDurations.put(operationComponent, duration);
+            evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
+                    includeAdditionalTime, operationRunsField);
         }
 
         return operationDurations;
+    }
+
+    private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
+            Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
+            Map<Entity, BigDecimal> operationRuns) {
+        if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(operationComponent.getStringField("entityType"))) {
+            for (Entity operComp : operationComponent.getBelongsToField("referenceTechnology")
+                    .getTreeField("operationComponents")) {
+                evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operComp, includeTpz,
+                        includeAdditionalTime, operationRuns);
+            }
+        } else {
+            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
+            operationDurations.put(operationComponent, duration);
+        }
     }
 
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
@@ -203,24 +216,18 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
     }
 
-    private int evaluateSingleOperationTime(final Entity operationComponent, final boolean includeTpz,
+    private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
-        Entity technologyOperationComponent = operationComponent;
-
-        if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
-            long techOperationId = operationComponent.getBelongsToField("technologyOperationComponent").getId();
-            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperationId);
-        }
-
         int operationTime = 0;
+
+        operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
 
-        BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(technologyOperationComponent);
+        BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(operationComponent);
 
         BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
-                operationRuns.get(technologyOperationComponent), numberService.getMathContext());
+                operationRuns.get(operationComponent), numberService.getMathContext());
 
         if ("01all".equals(operationComponent.getField("countRealized"))
                 || operationComponent.getBelongsToField("parent") == null) {
