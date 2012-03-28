@@ -42,7 +42,6 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
@@ -68,9 +67,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberService numberService;

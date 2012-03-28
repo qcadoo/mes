@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionScheduling;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,6 +132,12 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp1.getDataDefinition()).thenReturn(dd);
         when(opComp2.getDataDefinition()).thenReturn(dd);
 
+        given(opComp1.getId()).willReturn(1l);
+        given(opComp2.getId()).willReturn(2l);
+
+        given(dd.get(1l)).willReturn(opComp1);
+        given(dd.get(2l)).willReturn(opComp2);
+
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "operationRunsField", operationRuns);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "productQuantitiesService", productQuantitiesService);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "technologyService", technologyService);
@@ -170,19 +177,16 @@ public class OrderRealizationTimeServiceImplTest {
         EntityTree orderOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
         when(order.getTreeField("orderOperationComponents")).thenReturn(orderOperationComponents);
 
-        Entity techOpComp1 = mock(Entity.class);
-        Entity techOpComp2 = mock(Entity.class);
-
-        when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(techOpComp1);
-        when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(techOpComp2);
+        when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
+        when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(order,
                 plannedQuantity, includeTpz, includeAdditionalTime);
 
         // then
-        assertEquals(new Integer(3), operationDurations.get(techOpComp1));
-        assertEquals(new Integer(3), operationDurations.get(techOpComp2));
+        assertEquals(new Integer(3), operationDurations.get(opComp1));
+        assertEquals(new Integer(3), operationDurations.get(opComp2));
     }
 
     @Test
