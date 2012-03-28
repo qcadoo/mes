@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.3
+ * Version: 1.1.4
  *
  * This file is part of Qcadoo.
  *
@@ -504,8 +504,8 @@ public class OrderServiceTest {
         orderService.disableFieldOrder(viewDefinitionState);
 
         // then
-        verify(order).setFormEnabled(true);
-        verify(technology).setEnabled(true);
+        verify(order).setFormEnabled(false);
+        verify(technology).setEnabled(false);
     }
 
     @Test

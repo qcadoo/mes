@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.3
+    Version: 1.1.4
 
     This file is part of Qcadoo.
 
@@ -33,7 +33,7 @@
 		</ribbon>
 		<component type="grid" name="costCalculationList" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="order" fields="order" link="true" expression="#order==null?'N/A':#order['name']" />
+			<option type="column" name="order" fields="order" link="true" expression="#order==null?'':#order['name']" />
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" link="true" />
 			<option type="column" name="technology" fields="technology"

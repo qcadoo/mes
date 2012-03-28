@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.3
+ * Version: 1.1.4
  *
  * This file is part of Qcadoo.
  *
@@ -315,8 +315,8 @@ public class ProductionRecordViewService {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
             }
-        } else if (typeOfProductionRecording.getFieldValue().equals("")
-                || typeOfProductionRecording.getFieldValue().equals(BASIC)) {
+        } else if ("".equals(typeOfProductionRecording.getFieldValue())
+                || BASIC.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
                     L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
                     FIELD_AUTO_CLOSE_ORDER)) {
@@ -328,16 +328,11 @@ public class ProductionRecordViewService {
 
     public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
+        changeProducedQuantityFieldState(viewDefinitionState);
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
-        FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("doneQuantity");
-        if ("".equals(typeOfProductionRecording.getFieldValue())) {
-            doneQuantity.setEnabled(true);
-        } else {
-            doneQuantity.setEnabled(false);
-        }
-        if (typeOfProductionRecording.getFieldValue().equals(CUMULATED)
-                || typeOfProductionRecording.getFieldValue().equals(FOR_EACH)) {
+        if (CUMULATED.getStringValue().equals(typeOfProductionRecording.getFieldValue())
+                || FOR_EACH.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
             for (String componentName : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
                     L_REGISTER_PRODUCTION_TIME, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER,
                     L_REGISTER_PIECEWORK)) {

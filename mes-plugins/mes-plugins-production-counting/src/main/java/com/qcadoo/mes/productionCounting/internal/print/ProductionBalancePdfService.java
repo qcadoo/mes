@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.3
+ * Version: 1.1.4
  *
  * This file is part of Qcadoo.
  *
@@ -80,7 +80,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     private static final String ORDER_OPERATION_COMPONENT_LITERAL = "orderOperationComponent";
 
-    private static final String N_A_LITERAL = "N/A";
+    private static final String N_A_LITERAL = "";
 
     private static final String USED_QUANTITY_LITERAL = "usedQuantity";
 
@@ -91,6 +91,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     private static final String QCADOO_VIEW_FALSE_LITERAL = "qcadooView.false";
 
     private static final String TABS_LITERAL = "\t \t \t";
+
+    private int[] columnWidth = { 20, 25, 15, 15, 15, 10 };
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -309,9 +311,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             inputProductsList = Lists.newLinkedList(inputProductsList);
 
             Collections.sort(inputProductsList, new EntityProductInOutComparator());
-
             PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
-
+            inputProductsTable.setWidths(columnWidth);
             for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
@@ -368,7 +369,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
             Collections.sort(outputProductsList, new EntityProductInOutComparator());
 
             PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false);
-
+            outputProductsTable.setWidths(columnWidth);
             for (Entity outputProduct : productionBalanceReportDataService
                     .groupProductInOutComponentsByProduct(outputProductsList)) {
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils

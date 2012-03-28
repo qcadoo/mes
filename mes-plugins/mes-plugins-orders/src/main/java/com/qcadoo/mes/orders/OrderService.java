@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.3
+ * Version: 1.1.4
  *
  * This file is part of Qcadoo.
  *
@@ -243,7 +243,7 @@ public class OrderService {
                 return;
             }
             String state = entity.getStringField(STATE);
-            if (("04completed".equals(state) || "05declined".equals(state) || "07abandoned".equals(state)) && order.isValid()) {
+            if (!"01pending".equals(state) && order.isValid()) {
                 disabled = true;
             }
         }
