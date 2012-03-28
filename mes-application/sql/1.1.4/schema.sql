@@ -25,139 +25,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: advancedgenealogy_batch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_batch (
-    id bigint NOT NULL,
-    number character varying(255),
-    product_id bigint,
-    supplier_id bigint,
-    state character varying(255) DEFAULT '01tracked'::character varying,
-    externalnumber character varying(255)
-);
-
-
-ALTER TABLE public.advancedgenealogy_batch OWNER TO postgres;
-
---
--- Name: advancedgenealogy_batchlogging; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_batchlogging (
-    id bigint NOT NULL,
-    batch_id bigint,
-    dateandtime timestamp without time zone,
-    previousstate character varying(255),
-    currentstate character varying(255),
-    worker character varying(255)
-);
-
-
-ALTER TABLE public.advancedgenealogy_batchlogging OWNER TO postgres;
-
---
--- Name: advancedgenealogy_genealogyreport; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_genealogyreport (
-    id bigint NOT NULL,
-    date timestamp without time zone,
-    name character varying(1024),
-    type character varying(255) DEFAULT '02producedFrom'::character varying,
-    batch_id bigint,
-    worker character varying(255),
-    filename character varying(255),
-    generated boolean DEFAULT false,
-    includedraft boolean,
-    directrelatedonly boolean,
-    active boolean DEFAULT true
-);
-
-
-ALTER TABLE public.advancedgenealogy_genealogyreport OWNER TO postgres;
-
---
--- Name: advancedgenealogy_trackingrecord; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_trackingrecord (
-    id bigint NOT NULL,
-    entitytype character varying(255),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    quantity numeric(10,3),
-    producedbatch_id bigint,
-    number character varying(255),
-    externalnumber character varying(255),
-    order_id bigint,
-    active boolean DEFAULT true
-);
-
-
-ALTER TABLE public.advancedgenealogy_trackingrecord OWNER TO postgres;
-
---
--- Name: advancedgenealogy_trackingrecordlogging; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_trackingrecordlogging (
-    id bigint NOT NULL,
-    trackingrecord_id bigint,
-    dateandtime timestamp without time zone,
-    previousstate character varying(255),
-    currentstate character varying(255),
-    worker character varying(255)
-);
-
-
-ALTER TABLE public.advancedgenealogy_trackingrecordlogging OWNER TO postgres;
-
---
--- Name: advancedgenealogy_usedbatchsimple; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogy_usedbatchsimple (
-    id bigint NOT NULL,
-    batch_id bigint,
-    trackingrecord_id bigint,
-    worker character varying(255),
-    dateandtime timestamp without time zone,
-    quantity numeric(10,3)
-);
-
-
-ALTER TABLE public.advancedgenealogy_usedbatchsimple OWNER TO postgres;
-
---
--- Name: advancedgenealogyfororders_genealogyproductinbatch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogyfororders_genealogyproductinbatch (
-    id bigint NOT NULL,
-    worker character varying(255),
-    dateandtime timestamp without time zone,
-    batch_id bigint,
-    genealogyproductincomponent_id bigint
-);
-
-
-ALTER TABLE public.advancedgenealogyfororders_genealogyproductinbatch OWNER TO postgres;
-
---
--- Name: advancedgenealogyfororders_genealogyproductincomponent; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE advancedgenealogyfororders_genealogyproductincomponent (
-    id bigint NOT NULL,
-    trackingrecord_id bigint,
-    orderoperationcomponent_id bigint,
-    productincomponent_id bigint
-);
-
-
-ALTER TABLE public.advancedgenealogyfororders_genealogyproductincomponent OWNER TO postgres;
-
---
 -- Name: basic_company; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -220,26 +87,23 @@ ALTER TABLE public.basic_division OWNER TO postgres;
 CREATE TABLE basic_parameter (
     id bigint NOT NULL,
     currency_id bigint,
-    batchfordoneorder character varying(255) DEFAULT '01none'::character varying,
-    batchnumberuniqueness character varying(255) DEFAULT '01globally'::character varying,
-    dontprintordersinworkplans boolean,
-    autogeneratequalitycontrol boolean,
-    registerquantityoutproduct boolean,
-    batchnumberrequiredproducts boolean,
-    trackingrecordforordertreatment character varying(255) DEFAULT '01duringProduction'::character varying,
-    imageurlinworkplan character varying(255),
+    dontprintinputproductsinworkplans boolean,
+    allowtoclose boolean,
     registerproductiontime boolean,
+    hidedetailsinworkplans boolean,
     hidetechnologyandorderinworkplans boolean,
+    imageurlinworkplan character varying(255),
+    dontprintordersinworkplans boolean,
+    justone boolean,
+    hidedescriptioninworkplans boolean,
+    batchfordoneorder character varying(255) DEFAULT '01none'::character varying,
+    registerquantityoutproduct boolean,
+    registerquantityinproduct boolean,
+    autogeneratequalitycontrol boolean,
+    dontprintoutputproductsinworkplans boolean,
     checkdoneorderforquality boolean,
     autocloseorder boolean,
-    registerpiecework boolean,
-    allowtoclose boolean,
-    hidedetailsinworkplans boolean,
-    dontprintinputproductsinworkplans boolean,
-    registerquantityinproduct boolean,
-    hidedescriptioninworkplans boolean,
-    justone boolean,
-    dontprintoutputproductsinworkplans boolean
+    registerpiecework boolean
 );
 
 
@@ -259,12 +123,12 @@ CREATE TABLE basic_product (
     unit character varying(255),
     externalnumber character varying(255),
     description character varying(2048),
+    lastusedbatch character varying(255),
     lastpurchasecost numeric(10,3) DEFAULT 0::numeric,
+    genealogybatchreq boolean,
     batch character varying(255),
     averagecost numeric(10,3) DEFAULT 0::numeric,
     costfornumber numeric(10,3) DEFAULT 1::numeric,
-    genealogybatchreq boolean,
-    lastusedbatch character varying(255),
     nominalcost numeric(10,3) DEFAULT 0::numeric,
     active boolean DEFAULT true,
     createdate timestamp without time zone,
@@ -496,57 +360,6 @@ CREATE TABLE costnormsforproduct_orderoperationproductincomponent (
 
 
 ALTER TABLE public.costnormsforproduct_orderoperationproductincomponent OWNER TO postgres;
-
---
--- Name: efcsimple_enovaimportedorder; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE efcsimple_enovaimportedorder (
-    id bigint NOT NULL,
-    number character varying(255),
-    clientname character varying(255),
-    clientaddress character varying(255),
-    state character varying(255),
-    drawdate date,
-    realizationdate date,
-    converted boolean DEFAULT false
-);
-
-
-ALTER TABLE public.efcsimple_enovaimportedorder OWNER TO postgres;
-
---
--- Name: efcsimple_enovaimportedorderproduct; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE efcsimple_enovaimportedorderproduct (
-    id bigint NOT NULL,
-    order_id bigint,
-    product_id bigint,
-    ordernumber integer,
-    quantity numeric(10,3)
-);
-
-
-ALTER TABLE public.efcsimple_enovaimportedorderproduct OWNER TO postgres;
-
---
--- Name: efcsimple_enovaimportedproduct; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE efcsimple_enovaimportedproduct (
-    id bigint NOT NULL,
-    type character varying(255),
-    identificationcode character varying(255),
-    ean character varying(255),
-    name character varying(255),
-    description character varying(255),
-    unit character varying(255),
-    converted boolean DEFAULT false
-);
-
-
-ALTER TABLE public.efcsimple_enovaimportedproduct OWNER TO postgres;
 
 --
 -- Name: genealogies_currentattribute; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -866,25 +679,19 @@ CREATE TABLE orders_order (
     effectivedateto timestamp without time zone,
     externalnumber character varying(255),
     externalsynchronized boolean DEFAULT true,
-    calculate boolean,
-    registerquantityoutproduct boolean,
-    allowtoclose boolean,
-    justone boolean,
-    trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying,
-    registerproductiontime boolean,
-    updatecomponentsavailability boolean DEFAULT false,
-    alert character varying(255),
-    ignorerequiredcomponents boolean DEFAULT false,
-    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
-    failuresyncmessage character varying(255),
-    ordergroupname character varying(255),
-    targetstate character varying(255),
-    registerpiecework boolean,
     ordergroup_id bigint,
-    registerquantityinproduct boolean,
     autocloseorder boolean,
+    registerpiecework boolean,
+    ordergroupname character varying(255),
+    registerquantityoutproduct boolean,
     realizationtime integer,
-    automaticallymoveoverusage boolean DEFAULT false,
+    calculate boolean,
+    allowtoclose boolean,
+    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
+    alert character varying(255),
+    registerproductiontime boolean,
+    registerquantityinproduct boolean,
+    justone boolean,
     active boolean DEFAULT true
 );
 
@@ -969,38 +776,38 @@ CREATE TABLE productioncounting_productionbalance (
     plannedlabortime integer,
     labortime integer,
     labortimebalance integer,
-    averagelaborhourlycost numeric(10,3),
-    additionaloverheadvalue numeric(10,3) DEFAULT 0::numeric,
-    laborcostsbalance numeric(10,3),
-    laborcosts numeric(10,3),
-    calculatematerialcostsmode character varying(255) DEFAULT '01nominal'::character varying,
-    totaltechnicalproductioncostperunit numeric(10,3),
-    printcostnormsofmaterials boolean DEFAULT true,
-    materialcostmargin numeric(10,3) DEFAULT 0::numeric,
-    sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
-    quantity numeric(10,3),
-    additionaloverhead numeric(10,3) DEFAULT 0::numeric,
-    technology_id bigint,
-    machinecostsbalance numeric(10,3),
-    totalcosts numeric(10,3),
-    balancetechnicalproductioncostperunit numeric(10,3),
-    productioncostmargin numeric(10,3) DEFAULT 0::numeric,
-    plannedcomponentscosts numeric(10,3),
-    totalcostperunit numeric(10,3),
-    registeredtotaltechnicalproductioncostperunit numeric(10,3),
-    productioncostmarginvalue numeric(10,3) DEFAULT 0::numeric,
-    totaltechnicalproductioncosts numeric(10,3),
-    plannedlaborcosts numeric(10,3),
-    balancetechnicalproductioncosts numeric(10,3),
-    materialcostmarginvalue numeric(10,3) DEFAULT 0::numeric,
-    plannedmachinecosts numeric(10,3),
-    registeredtotaltechnicalproductioncosts numeric(10,3),
     machinecosts numeric(10,3),
     totaloverhead numeric(10,3),
+    productioncostmargin numeric(10,3) DEFAULT 0::numeric,
+    machinecostsbalance numeric(10,3),
+    plannedmachinecosts numeric(10,3),
+    technology_id bigint,
+    materialcostmarginvalue numeric(10,3) DEFAULT 0::numeric,
+    plannedcomponentscosts numeric(10,3),
+    quantity numeric(10,3),
+    totaltechnicalproductioncosts numeric(10,3),
+    balancetechnicalproductioncostperunit numeric(10,3),
+    balancetechnicalproductioncosts numeric(10,3),
+    totalcostperunit numeric(10,3),
+    totalcosts numeric(10,3),
+    productioncostmarginvalue numeric(10,3) DEFAULT 0::numeric,
     componentscostsbalance numeric(10,3),
-    generatedwithcosts boolean,
+    plannedlaborcosts numeric(10,3),
+    sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
+    laborcosts numeric(10,3),
+    averagemachinehourlycost numeric(10,3),
+    printcostnormsofmaterials boolean DEFAULT true,
     componentscosts numeric(10,3),
-    averagemachinehourlycost numeric(10,3)
+    calculatematerialcostsmode character varying(255) DEFAULT '01nominal'::character varying,
+    registeredtotaltechnicalproductioncosts numeric(10,3),
+    registeredtotaltechnicalproductioncostperunit numeric(10,3),
+    additionaloverheadvalue numeric(10,3) DEFAULT 0::numeric,
+    materialcostmargin numeric(10,3) DEFAULT 0::numeric,
+    averagelaborhourlycost numeric(10,3),
+    additionaloverhead numeric(10,3) DEFAULT 0::numeric,
+    generatedwithcosts boolean,
+    totaltechnicalproductioncostperunit numeric(10,3),
+    laborcostsbalance numeric(10,3)
 );
 
 
@@ -1164,16 +971,16 @@ CREATE TABLE productionscheduling_orderoperationcomponent (
     effectivedatefrom timestamp without time zone,
     effectivedateto timestamp without time zone,
     nodenumber character varying(255),
-    imageurlinworkplan character varying(255),
-    numberofoperations integer DEFAULT 1,
-    hidedescriptioninworkplans boolean,
-    dontprintoutputproductsinworkplans boolean,
-    hidedetailsinworkplans boolean,
-    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
     dontprintinputproductsinworkplans boolean,
+    hidedetailsinworkplans boolean,
     laborhourlycost numeric(10,3) DEFAULT 0::numeric,
+    imageurlinworkplan character varying(255),
+    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
     pieceworkcost numeric(10,3) DEFAULT 0::numeric,
-    hidetechnologyandorderinworkplans boolean
+    hidetechnologyandorderinworkplans boolean,
+    hidedescriptioninworkplans boolean,
+    numberofoperations integer DEFAULT 1,
+    dontprintoutputproductsinworkplans boolean
 );
 
 
@@ -1331,56 +1138,6 @@ CREATE TABLE qualitycontrols_qualitycontrol (
 ALTER TABLE public.qualitycontrols_qualitycontrol OWNER TO postgres;
 
 --
--- Name: sfcsimple_subiektimportedorder; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE sfcsimple_subiektimportedorder (
-    id bigint NOT NULL,
-    number character varying(255),
-    clientname character varying(255),
-    clientaddress character varying(255),
-    drawdate date,
-    realizationdate date,
-    converted boolean DEFAULT false
-);
-
-
-ALTER TABLE public.sfcsimple_subiektimportedorder OWNER TO postgres;
-
---
--- Name: sfcsimple_subiektimportedorderproduct; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE sfcsimple_subiektimportedorderproduct (
-    id bigint NOT NULL,
-    order_id bigint,
-    product_id bigint,
-    ordernumber integer,
-    quantity numeric(10,3)
-);
-
-
-ALTER TABLE public.sfcsimple_subiektimportedorderproduct OWNER TO postgres;
-
---
--- Name: sfcsimple_subiektimportedproduct; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE sfcsimple_subiektimportedproduct (
-    id bigint NOT NULL,
-    type character varying(255),
-    identificationcode character varying(255),
-    ean character varying(255),
-    name character varying(255),
-    description character varying(255),
-    unit character varying(255),
-    converted boolean DEFAULT false
-);
-
-
-ALTER TABLE public.sfcsimple_subiektimportedproduct OWNER TO postgres;
-
---
 -- Name: simplematerialbalance_simplematerialbalance; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1467,24 +1224,24 @@ CREATE TABLE technologies_operation (
     comment character varying(2048),
     workstationtype_id bigint,
     attachment character varying(255),
-    hidedetailsinworkplans boolean,
-    imageurlinworkplan character varying(255),
-    tj integer DEFAULT 0,
-    timenextoperation integer DEFAULT 0,
-    numberofoperations integer DEFAULT 1,
     hidedescriptioninworkplans boolean,
-    tpz integer DEFAULT 0,
-    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
+    countmachineoperation numeric(6,3) DEFAULT 0::numeric,
+    hidedetailsinworkplans boolean,
     countrealizedoperation character varying(255) DEFAULT '01all'::character varying,
-    laborhourlycost numeric(10,3) DEFAULT 0::numeric,
-    dontprintoutputproductsinworkplans boolean,
-    machineutilization numeric(6,3) DEFAULT 1.0,
+    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
+    tpz integer DEFAULT 0,
+    laborutilization numeric(6,3) DEFAULT 1.0,
     hidetechnologyandorderinworkplans boolean,
+    timenextoperation integer DEFAULT 0,
+    machineutilization numeric(6,3) DEFAULT 1.0,
+    numberofoperations integer DEFAULT 1,
     dontprintinputproductsinworkplans boolean,
     productioninonecycle numeric(10,3) DEFAULT 1::numeric,
-    laborutilization numeric(6,3) DEFAULT 1.0,
-    countmachineoperation numeric(6,3) DEFAULT 0::numeric,
+    tj integer DEFAULT 0,
+    laborhourlycost numeric(10,3) DEFAULT 0::numeric,
+    imageurlinworkplan character varying(255),
     pieceworkcost numeric(10,3) DEFAULT 0::numeric,
+    dontprintoutputproductsinworkplans boolean,
     active boolean DEFAULT true
 );
 
@@ -1500,7 +1257,6 @@ CREATE TABLE technologies_operationproductincomponent (
     operationcomponent_id bigint,
     product_id bigint,
     quantity numeric(8,3),
-    productbatchrequired boolean,
     batchrequired boolean
 );
 
@@ -1533,15 +1289,14 @@ CREATE TABLE technologies_technology (
     master boolean DEFAULT true,
     description character varying(2048),
     state character varying(255) DEFAULT '01draft'::character varying,
-    minimalquantity numeric(8,3),
-    qualitycontroltype character varying(255),
-    technologybatchrequired boolean,
-    batchrequired boolean,
     unitsamplingnr numeric(10,3),
-    otherfeaturerequired boolean,
     postfeaturerequired boolean,
-    qualitycontrolinstruction character varying(255),
+    otherfeaturerequired boolean,
     shiftfeaturerequired boolean,
+    minimalquantity numeric(8,3),
+    qualitycontrolinstruction character varying(255),
+    qualitycontroltype character varying(255),
+    batchrequired boolean,
     active boolean DEFAULT true
 );
 
@@ -1562,64 +1317,29 @@ CREATE TABLE technologies_technologyoperationcomponent (
     referencetechnology_id bigint,
     priority integer,
     attachment character varying(255),
-    countmachine numeric(10,3) DEFAULT 0::numeric,
-    countrealized character varying(255) DEFAULT '01all'::character varying,
-    timenextoperation integer DEFAULT 0,
-    qualitycontrolrequired boolean,
-    laborhourlycost numeric(10,3) DEFAULT 0::numeric,
-    tj integer DEFAULT 0,
-    machineutilization numeric(6,3) DEFAULT 1.0,
-    imageurlinworkplan character varying(255),
-    dontprintinputproductsinworkplans boolean,
-    tpz integer DEFAULT 0,
-    numberofoperations integer DEFAULT 1,
-    hidedetailsinworkplans boolean,
-    dontprintoutputproductsinworkplans boolean,
-    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
-    hidetechnologyandorderinworkplans boolean,
-    pieceworkcost numeric(10,3) DEFAULT 0::numeric,
     laborutilization numeric(6,3) DEFAULT 1.0,
+    machineutilization numeric(6,3) DEFAULT 1.0,
+    pieceworkcost numeric(10,3) DEFAULT 0::numeric,
+    dontprintoutputproductsinworkplans boolean,
+    hidetechnologyandorderinworkplans boolean,
+    timenextoperation integer DEFAULT 0,
+    tpz integer DEFAULT 0,
+    tj integer DEFAULT 0,
     hidedescriptioninworkplans boolean,
-    productioninonecycle numeric(10,3) DEFAULT 1::numeric
+    dontprintinputproductsinworkplans boolean,
+    machinehourlycost numeric(10,3) DEFAULT 0::numeric,
+    countmachine numeric(10,3) DEFAULT 0::numeric,
+    laborhourlycost numeric(10,3) DEFAULT 0::numeric,
+    productioninonecycle numeric(10,3) DEFAULT 1::numeric,
+    countrealized character varying(255) DEFAULT '01all'::character varying,
+    imageurlinworkplan character varying(255),
+    hidedetailsinworkplans boolean,
+    numberofoperations integer DEFAULT 1,
+    qualitycontrolrequired boolean
 );
 
 
 ALTER TABLE public.technologies_technologyoperationcomponent OWNER TO postgres;
-
---
--- Name: urccore_lastsynchronizationdate; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE urccore_lastsynchronizationdate (
-    id bigint NOT NULL,
-    lastsynchronizationdate timestamp without time zone
-);
-
-
-ALTER TABLE public.urccore_lastsynchronizationdate OWNER TO postgres;
-
---
--- Name: urcmaterialavailability_requiredcomponent; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE urcmaterialavailability_requiredcomponent (
-    id bigint NOT NULL,
-    order_id bigint,
-    technology_id bigint,
-    product_id bigint,
-    availablequantity numeric(10,3),
-    reservedquantity numeric(10,3),
-    requiredquantity numeric(10,3),
-    unit character varying(255),
-    availability character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
-ALTER TABLE public.urcmaterialavailability_requiredcomponent OWNER TO postgres;
 
 --
 -- Name: workplans_columnforinputproducts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -1826,70 +1546,6 @@ CREATE TABLE workplans_workplanordercolumn (
 ALTER TABLE public.workplans_workplanordercolumn OWNER TO postgres;
 
 --
--- Name: advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_batch
-    ADD CONSTRAINT advancedgenealogy_batch_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogy_batchlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_batchlogging
-    ADD CONSTRAINT advancedgenealogy_batchlogging_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogy_genealogyreport_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_genealogyreport
-    ADD CONSTRAINT advancedgenealogy_genealogyreport_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_trackingrecord
-    ADD CONSTRAINT advancedgenealogy_trackingrecord_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogy_trackingrecordlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_trackingrecordlogging
-    ADD CONSTRAINT advancedgenealogy_trackingrecordlogging_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT advancedgenealogy_usedbatchsimple_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT advancedgenealogyfororders_genealogyproductinbatch_pkey PRIMARY KEY (id);
-
-
---
--- Name: advancedgenealogyfororders_genealogyproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT advancedgenealogyfororders_genealogyproductincomponent_pkey PRIMARY KEY (id);
-
-
---
 -- Name: basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -2007,30 +1663,6 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 ALTER TABLE ONLY costnormsforproduct_orderoperationproductincomponent
     ADD CONSTRAINT costnormsforproduct_orderoperationproductincomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: efcsimple_enovaimportedorder_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorder
-    ADD CONSTRAINT efcsimple_enovaimportedorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: efcsimple_enovaimportedorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT efcsimple_enovaimportedorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: efcsimple_enovaimportedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedproduct
-    ADD CONSTRAINT efcsimple_enovaimportedproduct_pkey PRIMARY KEY (id);
 
 
 --
@@ -2354,30 +1986,6 @@ ALTER TABLE ONLY qualitycontrols_qualitycontrol
 
 
 --
--- Name: sfcsimple_subiektimportedorder_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorder
-    ADD CONSTRAINT sfcsimple_subiektimportedorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: sfcsimple_subiektimportedorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT sfcsimple_subiektimportedorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: sfcsimple_subiektimportedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedproduct
-    ADD CONSTRAINT sfcsimple_subiektimportedproduct_pkey PRIMARY KEY (id);
-
-
---
 -- Name: simplematerialbalance_simplematerialbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -2455,22 +2063,6 @@ ALTER TABLE ONLY technologies_technology
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
     ADD CONSTRAINT technologies_technologyoperationcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: urccore_lastsynchronizationdate_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY urccore_lastsynchronizationdate
-    ADD CONSTRAINT urccore_lastsynchronizationdate_pkey PRIMARY KEY (id);
-
-
---
--- Name: urcmaterialavailability_requiredcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT urcmaterialavailability_requiredcomponent_pkey PRIMARY KEY (id);
 
 
 --
@@ -2642,30 +2234,6 @@ ALTER TABLE ONLY genealogiesforcomponents_productinbatch
 
 
 --
--- Name: fk2a00da47ad773168; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT fk2a00da47ad773168 FOREIGN KEY (product_id) REFERENCES basic_product(id);
-
-
---
--- Name: fk2a00da47b64bada8; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT fk2a00da47b64bada8 FOREIGN KEY (order_id) REFERENCES orders_order(id);
-
-
---
--- Name: fk2a00da47e3afcbac; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT fk2a00da47e3afcbac FOREIGN KEY (technology_id) REFERENCES technologies_technology(id);
-
-
---
 -- Name: fk2c25dcf1ad773168; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2706,59 +2274,11 @@ ALTER TABLE ONLY workplans_parameterinputcolumn
 
 
 --
--- Name: fk2e5de56518a6dda6; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_batchlogging
-    ADD CONSTRAINT fk2e5de56518a6dda6 FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
-
-
---
--- Name: fk2e782e4bdbb660a3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT fk2e782e4bdbb660a3 FOREIGN KEY (product_id) REFERENCES efcsimple_enovaimportedproduct(id);
-
-
---
--- Name: fk2e782e4bf3530e83; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT fk2e782e4bf3530e83 FOREIGN KEY (order_id) REFERENCES efcsimple_enovaimportedorder(id);
-
-
---
 -- Name: fk31da647fb64bada8; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY stoppage_stoppage
     ADD CONSTRAINT fk31da647fb64bada8 FOREIGN KEY (order_id) REFERENCES orders_order(id);
-
-
---
--- Name: fk3a1db45a74d7ec2e; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT fk3a1db45a74d7ec2e FOREIGN KEY (trackingrecord_id) REFERENCES advancedgenealogy_trackingrecord(id);
-
-
---
--- Name: fk3a1db45a7f0f0b28; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT fk3a1db45a7f0f0b28 FOREIGN KEY (orderoperationcomponent_id) REFERENCES productionscheduling_orderoperationcomponent(id);
-
-
---
--- Name: fk3a1db45a80ff2f6f; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT fk3a1db45a80ff2f6f FOREIGN KEY (productincomponent_id) REFERENCES technologies_operationproductincomponent(id);
 
 
 --
@@ -2831,54 +2351,6 @@ ALTER TABLE ONLY genealogies_currentattribute
 
 ALTER TABLE ONLY technologies_technology
     ADD CONSTRAINT fk510629c1ad773168 FOREIGN KEY (product_id) REFERENCES basic_product(id);
-
-
---
--- Name: fk513f38884adce92a; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_trackingrecord
-    ADD CONSTRAINT fk513f38884adce92a FOREIGN KEY (producedbatch_id) REFERENCES advancedgenealogy_batch(id);
-
-
---
--- Name: fk513f3888b64bada8; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_trackingrecord
-    ADD CONSTRAINT fk513f3888b64bada8 FOREIGN KEY (order_id) REFERENCES orders_order(id);
-
-
---
--- Name: fk54a2fc9a72e76af9; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_batch
-    ADD CONSTRAINT fk54a2fc9a72e76af9 FOREIGN KEY (supplier_id) REFERENCES basic_company(id);
-
-
---
--- Name: fk54a2fc9aad773168; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_batch
-    ADD CONSTRAINT fk54a2fc9aad773168 FOREIGN KEY (product_id) REFERENCES basic_product(id);
-
-
---
--- Name: fk5725a51718a6dda6; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT fk5725a51718a6dda6 FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
-
-
---
--- Name: fk5725a51748ab8a48; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT fk5725a51748ab8a48 FOREIGN KEY (genealogyproductincomponent_id) REFERENCES advancedgenealogyfororders_genealogyproductincomponent(id);
 
 
 --
@@ -3026,22 +2498,6 @@ ALTER TABLE ONLY genealogies_genealogy
 
 
 --
--- Name: fk69c7afcdc3238c8b; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT fk69c7afcdc3238c8b FOREIGN KEY (product_id) REFERENCES sfcsimple_subiektimportedproduct(id);
-
-
---
--- Name: fk69c7afcdc46a146b; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT fk69c7afcdc46a146b FOREIGN KEY (order_id) REFERENCES sfcsimple_subiektimportedorder(id);
-
-
---
 -- Name: fk6bb812367f0f0b28; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3151,22 +2607,6 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
     ADD CONSTRAINT fk79b7ec6cad773168 FOREIGN KEY (product_id) REFERENCES basic_product(id);
-
-
---
--- Name: fk82f101b774d7ec2e; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_trackingrecordlogging
-    ADD CONSTRAINT fk82f101b774d7ec2e FOREIGN KEY (trackingrecord_id) REFERENCES advancedgenealogy_trackingrecord(id);
-
-
---
--- Name: fk8940299518a6dda6; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_genealogyreport
-    ADD CONSTRAINT fk8940299518a6dda6 FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
 
 
 --
@@ -3303,22 +2743,6 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
     ADD CONSTRAINT fk9ee8f891b64bada8 FOREIGN KEY (order_id) REFERENCES orders_order(id);
-
-
---
--- Name: fka0ae02ef18a6dda6; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT fka0ae02ef18a6dda6 FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
-
-
---
--- Name: fka0ae02ef74d7ec2e; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT fka0ae02ef74d7ec2e FOREIGN KEY (trackingrecord_id) REFERENCES advancedgenealogy_trackingrecord(id);
 
 
 --
