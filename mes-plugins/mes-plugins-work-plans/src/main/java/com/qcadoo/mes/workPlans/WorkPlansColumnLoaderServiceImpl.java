@@ -69,6 +69,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     private static final String COLUMNFILLER_FIELD = "columnFiller";
 
+    private static final String ALIGNMENT_FIELD = "alignment";
+
     private static final String TYPE_FIELD = "type";
 
     private static final String ACTIVE_FIELD = "active";
@@ -271,6 +273,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         columnForOrders.setField(NAME_FIELD, values.get(NAME_FIELD));
         columnForOrders.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
         columnForOrders.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForOrders.setField(ALIGNMENT_FIELD, values.get(ALIGNMENT_FIELD));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(NAME_FIELD) + "}");
@@ -309,6 +312,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         columnForInputProduct.setField(NAME_FIELD, values.get(NAME_FIELD));
         columnForInputProduct.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
         columnForInputProduct.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForInputProduct.setField(ALIGNMENT_FIELD, values.get(ALIGNMENT_FIELD));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(NAME_FIELD) + "}");
@@ -349,6 +353,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         columnForOutputProduct.setField(NAME_FIELD, values.get(NAME_FIELD));
         columnForOutputProduct.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
         columnForOutputProduct.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForOutputProduct.setField(ALIGNMENT_FIELD, values.get(ALIGNMENT_FIELD));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(NAME_FIELD) + "}");
