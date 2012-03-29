@@ -338,6 +338,21 @@
 				
 				<option type="order" column="operationNumber" direction="asc" />
 			</component>
+			<component type="grid" name="operationsPiecework" reference="operationsPieceworkGrid"
+				source="#{form}.operationPieceworkComponents">
+				<option type="column" name="operationLevel" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('nodeNumber')" />
+				<option type="column" name="operationNumber" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('number')" />	
+				<option type="column" name="operationName" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('name')" />
+				<option type="column" name="plannedCycles" fields="plannedCycles"
+					expression="#plannedCycles" />
+				<option type="column" name="cycles" fields="cycles" />
+				<option type="column" name="cyclesBalance" fields="cyclesBalance" />
+				
+				<option type="order" column="operationNumber" direction="asc" />
+			</component>
 		</windowTab>
 	</component>
 	<hooks>

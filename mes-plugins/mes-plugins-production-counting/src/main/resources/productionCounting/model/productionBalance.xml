@@ -63,6 +63,9 @@
 			
 		<hasMany name="operationTimeComponents" joinField="productionBalance"
 			model="operationTimeComponent" cascade="delete" />
+			
+		<hasMany name="operationPieceworkComponents" joinField="productionBalance"
+			model="operationPieceworkComponent" cascade="delete" />
 	</fields>
 	<hooks>
 		<onSave

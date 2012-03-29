@@ -340,6 +340,71 @@
 				
 				<option type="order" column="operationNumber" direction="asc" />
 			</component>
+			
+			<component type="gridLayout" name="pieceworkCostsGridLayout"
+				reference="pieceworkCostsGridLayout" columns="1" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="borderLayout" name="pieceworkCostsBorderLayout"
+						reference="pieceworkCostsBorderLayout">
+						<component type="gridLayout" name="pieceworkCostsGridLayout" 
+							columns="12" rows="1" hasBorders="false">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="plannedCyclesCosts"
+									field="#{form}.plannedCyclesCosts" reference="plannedCyclesCosts"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="plannedCyclesCostsCurrency"
+									reference="plannedCyclesCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="5" row="1" width="3">
+								<component type="input" name="cyclesCosts"
+									field="#{form}.cyclesCosts" reference="cyclesCosts"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="8" row="1">
+								<component type="input" name="cyclesCostsCurrency"
+									reference="cyclesCostsCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="9" row="1" width="3">
+								<component type="input" name="cyclesCostsBalance"
+									field="#{form}.cyclesCostsBalance" reference="cyclesCostsBalance"
+									defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="12" row="1">
+								<component type="input" name="cyclesCostsBalanceCurrency"
+									reference="cyclesCostsBalanceCurrency" defaultEnabled="false"
+									hasLabel="false">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+
+						<option type="label" value="pieceworkCosts" />
+					</component>
+				</layoutElement>
+			</component>
+			<component type="grid" name="operationsPieceworkCost" source="#{form}.operationPieceworkCostComponents"
+				reference="operationsPieceworkCostGrid">
+				<option type="column" name="operationLevel" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('nodeNumber')" />
+				<option type="column" name="operationNumber" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('number')" />	
+				<option type="column" name="operationName" fields="orderOperationComponent"
+					expression="(#orderOperationComponent==null) ? 'N/A' : #orderOperationComponent.get('operation').get('name')" />
+				<option type="column" name="plannedCyclesCosts" fields="plannedCyclesCosts"
+					expression="#plannedCyclesCosts" />
+				<option type="column" name="cyclesCosts" fields="cyclesCosts" />
+				<option type="column" name="cyclesCostsBalance" fields="cyclesCostsBalance" />
+				
+				<option type="order" column="operationNumber" direction="asc" />
+			</component>
 		</component>
 	</windowTab>
 	<windowTab name="costsSummaryTab">
