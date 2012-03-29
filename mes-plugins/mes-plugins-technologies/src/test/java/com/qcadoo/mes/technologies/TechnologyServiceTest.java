@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -86,8 +87,10 @@ public class TechnologyServiceTest {
 
         EntityList opComp2prodOuts = mockEntityIterator(asList(prodOutComp1, prodOutComp2));
         when(opComp2.getHasManyField("operationProductOutComponents")).thenReturn(opComp2prodOuts);
+
     }
 
+    @Ignore
     @Test
     public void shouldReturnOutputProductCountForOperationComponent() {
         // when
