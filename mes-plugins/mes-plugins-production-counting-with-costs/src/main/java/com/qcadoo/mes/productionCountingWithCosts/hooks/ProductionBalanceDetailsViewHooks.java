@@ -26,10 +26,12 @@ package com.qcadoo.mes.productionCountingWithCosts.hooks;
 import static com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode.COST_FOR_ORDER;
 import static com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
@@ -64,7 +66,7 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ProductionBalanceDetailsViewHooks {
 
-    private static final String L_TIME_COSTS_GRID_LAYOUT = "timeCostsGridLayout";
+    private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
 
     private static final String L_MATERIAL_COSTS_GRID_LAYOUT = "materialCostsGridLayout";
 
@@ -72,13 +74,19 @@ public class ProductionBalanceDetailsViewHooks {
 
     private static final String L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS = "orderOperationProductInComponents";
 
+    private static final String L_TIME_COSTS_GRID_LAYOUT = "timeCostsGridLayout";
+
     private static final String L_MACHINE_COSTS_BORDER_LAYOUT = "machineCostsBorderLayout";
 
     private static final String L_LABOR_COSTS_BORDER_LAYOUT = "laborCostsBorderLayout";
 
     private static final String L_OPERATIONS_COST_GRID = "operationsCostGrid";
 
-    private static final String L_ASSUMPTIONS_BORDER_LAYOUT = "assumptionsBorderLayout";
+    private static final String L_PIECEWORK_COSTS_GRID_LAYOUT = "pieceworkCostsGridLayout";
+
+    private static final String L_PIECEWORK_COSTS_BORDER_LAYOUT = "pieceworkCostsBorderLayout";
+
+    private static final String L_OPERATIONS_PIECEWORK_COST_GRID = "operationsPieceworkCostGrid";
 
     @Autowired
     private ProductionBalanceService productionBalanceService;
@@ -134,6 +142,23 @@ public class ProductionBalanceDetailsViewHooks {
                     viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
                 }
+
+                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT).setVisible(false);
+
+                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(false);
+            } else if (PIECEWORK.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                    && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+                viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(false);
+
+                viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(false);
+
+                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT).setVisible(true);
+
+                viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(true);
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(true);
             }
         }
     }
@@ -176,6 +201,7 @@ public class ProductionBalanceDetailsViewHooks {
                 "additionalOverheadCurrency", "plannedComponentsCostsCurrency", "componentsCostsCurrency",
                 "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency", "machineCostsCurrency",
                 "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency", "laborCostsBalanceCurrency",
+                "plannedCyclesCostsCurrency", "cyclesCostsCurrency", "cyclesCostsBalanceCurrency",
                 "registeredTotalTechnicalProductionCostsCurrency", "totalTechnicalProductionCostsCurrency",
                 "balanceTechnicalProductionCostsCurrency", "productionCostMarginValueCurrency",
                 "materialCostMarginValueCurrency", "additionalOverheadValueCurrency", "totalOverheadCurrency",
@@ -264,7 +290,14 @@ public class ProductionBalanceDetailsViewHooks {
 
         viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(isVisible);
         viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(isVisible);
+
         viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_GRID_LAYOUT).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_PIECEWORK_COSTS_BORDER_LAYOUT).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(isVisible);
     }
 
     private Entity getProductFromDB(final Long productId) {

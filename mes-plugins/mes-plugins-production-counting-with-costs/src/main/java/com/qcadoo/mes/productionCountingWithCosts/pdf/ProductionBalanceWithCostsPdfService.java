@@ -113,6 +113,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
         final boolean isTypeHourly = CalculateOperationCostMode.parseString(calculationMode).equals(
                 CalculateOperationCostMode.HOURLY);
+        final boolean isTypePiecework = CalculateOperationCostMode.parseString(calculationMode).equals(
+                CalculateOperationCostMode.PIECEWORK);
         final boolean isTypeOfProductionRecordingCumulated = TypeOfProductionRecording.parseString(typeOfProductionRecording)
                 .equals(TypeOfProductionRecording.CUMULATED);
 
@@ -147,6 +149,9 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 productionBalancePdfService.addLaborTimeBalance(document, productionBalance, locale);
                 addCostsBalance("labor", document, productionBalance, locale);
             }
+        } else if (isTypePiecework) {
+            productionBalancePdfService.addPieceworkBalance(document, productionBalance, locale);
+            addCostsBalance("cyclesCosts", document, productionBalance, locale);
         }
 
         costCalculationPdfService.printMaterialAndOperationNorms(document, productionBalance, locale);
@@ -266,30 +271,33 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
     private void addCostsBalance(final String type, final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
-        List<String> machineCostTableHeader = new ArrayList<String>();
-        machineCostTableHeader
+        List<String> tableHeader = new ArrayList<String>();
+        tableHeader
                 .add(translationService
                         .translate(
                                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.operationLevel",
                                 locale));
-        machineCostTableHeader
+        tableHeader
                 .add(translationService
                         .translate(
                                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.operationName",
                                 locale));
-        machineCostTableHeader.add(translationService.translate(
+        tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.planned"
                         + upperCaseFirstLetter(type) + L_COSTS, locale));
-        machineCostTableHeader.add(translationService.translate(
+        tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + L_COSTS, locale));
-        machineCostTableHeader.add(translationService.translate(
+        tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + "CostsBalance", locale));
 
+        boolean isPiecework = "cycles".equals(type);
+
         @SuppressWarnings("unchecked")
         List<Entity> operationComponents = (List<Entity>) productionBalance
-                .getField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS);
+                .getField(isPiecework ? "operationPieceworkCostComponents"
+                        : ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS);
 
         if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
@@ -302,7 +310,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             operationComponents = Lists.newLinkedList(operationComponents);
             Collections.sort(operationComponents, new EntityProductionRecordOperationComparator());
 
-            PdfPTable costsTable = pdfHelper.createTableWithHeader(5, machineCostTableHeader, false);
+            PdfPTable costsTable = pdfHelper.createTableWithHeader(5, tableHeader, false);
 
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 

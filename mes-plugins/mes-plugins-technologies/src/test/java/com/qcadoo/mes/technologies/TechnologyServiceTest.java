@@ -25,6 +25,7 @@ package com.qcadoo.mes.technologies;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,20 +33,22 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 
 public class TechnologyServiceTest {
 
     TechnologyService technologyService;
 
     @Mock
-    Entity opComp1, opComp2;
+    EntityTreeNode opComp1, opComp2;
 
     @Mock
     Entity product1, product2;
@@ -55,6 +58,12 @@ public class TechnologyServiceTest {
 
     @Mock
     Entity prodInComp1;
+
+    @Mock
+    DataDefinition dataDefinition;
+
+    @Mock
+    Entity technology;
 
     private static EntityList mockEntityIterator(List<Entity> entities) {
         EntityList entityList = mock(EntityList.class);
@@ -73,7 +82,7 @@ public class TechnologyServiceTest {
 
         when(opComp1.getBelongsToField("parent")).thenReturn(null);
         when(opComp2.getBelongsToField("parent")).thenReturn(opComp1);
-        EntityList opComp1Children = mockEntityIterator(asList(opComp2));
+        EntityList opComp1Children = mockEntityIterator(asList((Entity) opComp2));
         when(opComp1.getHasManyField("children")).thenReturn(opComp1Children);
 
         when(prodOutComp1.getBelongsToField("product")).thenReturn(product1);
@@ -81,6 +90,7 @@ public class TechnologyServiceTest {
         when(prodInComp1.getBelongsToField("product")).thenReturn(product1);
 
         when(prodOutComp1.getField("quantity")).thenReturn(new BigDecimal(10));
+        when(prodOutComp2.getField("quantity")).thenReturn(new BigDecimal(10));
 
         EntityList opComp1prodIns = mockEntityIterator(asList(prodInComp1));
         when(opComp1.getHasManyField("operationProductInComponents")).thenReturn(opComp1prodIns);
@@ -88,9 +98,15 @@ public class TechnologyServiceTest {
         EntityList opComp2prodOuts = mockEntityIterator(asList(prodOutComp1, prodOutComp2));
         when(opComp2.getHasManyField("operationProductOutComponents")).thenReturn(opComp2prodOuts);
 
+        when(dataDefinition.getName()).thenReturn("technologyOperationComponent");
+
+        when(opComp2.getDataDefinition()).thenReturn(dataDefinition);
+        when(opComp1.getDataDefinition()).thenReturn(dataDefinition);
+
+        when(opComp1.getBelongsToField("technology")).thenReturn(technology);
+        when(opComp2.getBelongsToField("technology")).thenReturn(technology);
     }
 
-    @Ignore
     @Test
     public void shouldReturnOutputProductCountForOperationComponent() {
         // when
@@ -100,4 +116,64 @@ public class TechnologyServiceTest {
         assertEquals(new BigDecimal(10), count);
     }
 
+    @Test
+    public void shouldThrowAnExceptionIfThereAreNoProductsOrIntermediates() {
+        // given
+        EntityList opComp2prodOuts = mockEntityIterator(asList(prodOutComp2));
+        when(opComp2.getHasManyField("operationProductOutComponents")).thenReturn(opComp2prodOuts);
+
+        // when
+        try {
+            technologyService.getProductCountForOperationComponent(opComp2);
+            fail();
+        } catch (IllegalStateException e) {
+        }
+    }
+
+    @Test
+    public void shouldReturnOutputProductCountForOperationComponentAlsoForOrderOperationComponent() {
+        // given
+        when(dataDefinition.getName()).thenReturn("orderOperationComponent");
+        when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
+        when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
+
+        // when
+        BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);
+
+        // then
+        assertEquals(new BigDecimal(10), count);
+    }
+
+    @Test
+    public void shouldReturnOutputProductCountForOperationComponentAlsoForReferenceTechnology() {
+        // given
+        when(opComp2.getStringField("entityType")).thenReturn("referenceTechnology");
+        Entity refTech = mock(Entity.class);
+        when(opComp2.getBelongsToField("referenceTechnology")).thenReturn(refTech);
+
+        EntityTree tree = mock(EntityTree.class);
+        when(refTech.getTreeField("operationComponents")).thenReturn(tree);
+        when(tree.getRoot()).thenReturn(opComp2);
+
+        // when
+        BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);
+
+        // then
+        assertEquals(new BigDecimal(10), count);
+    }
+
+    @Test
+    public void shouldReturnOutputProductCountForOperationComponentAlsoIfParentOperationIsNull() {
+        // given
+        when(opComp2.getBelongsToField("parent")).thenReturn(null);
+        when(prodOutComp2.getBelongsToField("product")).thenReturn(product2);
+        when(prodOutComp1.getBelongsToField("product")).thenReturn(product1);
+        when(technology.getBelongsToField("product")).thenReturn(product2);
+
+        // when
+        BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);
+
+        // then
+        assertEquals(new BigDecimal(10), count);
+    }
 }
