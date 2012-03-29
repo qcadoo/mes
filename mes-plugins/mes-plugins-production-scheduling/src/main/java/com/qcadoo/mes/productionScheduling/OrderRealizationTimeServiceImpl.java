@@ -42,6 +42,8 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
@@ -73,6 +75,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private TimeConverterService timeConverterService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -215,15 +220,23 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
         int operationTime = 0;
-
+        BigDecimal roundUp = BigDecimal.ZERO;
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
 
         BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(operationComponent);
 
-        BigDecimal roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
-                operationRuns.get(operationComponent), numberService.getMathContext());
+        if (operationComponent.getDataDefinition().getName().equals("orderOperationComponent")) {
+            Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
+                    operationComponent.getBelongsToField("technologyOperationComponent").getId());
+            roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
+                    operationRuns.get(technologyOperationComponent), numberService.getMathContext());
+        } else {
+            roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
+                    operationRuns.get(operationComponent), numberService.getMathContext());
+        }
 
         if ("01all".equals(operationComponent.getField("countRealized"))
                 || operationComponent.getBelongsToField("parent") == null) {
