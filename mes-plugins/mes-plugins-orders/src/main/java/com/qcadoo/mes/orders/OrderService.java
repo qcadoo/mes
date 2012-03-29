@@ -200,14 +200,10 @@ public class OrderService {
 
         if (product.getFieldValue() != null) {
             Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
-
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                         state.getLocale());
-
-                // if (defaultTechnologyEntity.getBooleanField("master")) {
                 defaultTechnology.setFieldValue(defaultTechnologyValue);
-                // }
             }
         }
     }
@@ -221,7 +217,6 @@ public class OrderService {
         defaultTechnology.setEnabled(false);
 
         if (product.getFieldValue() == null || !hasAnyTechnologies((Long) product.getFieldValue())) {
-            // technology.setEnabled(false);
             technology.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
