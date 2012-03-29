@@ -30,4 +30,6 @@ public interface ProductionCountingWithCostsConstants {
     String MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT = "orderOperationProductInComponent";
 
     String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
+
+    String MODEL_OPERATION_PIECEWORK_COST_COMPONENT = "operationPieceworkCostComponent";
 }
