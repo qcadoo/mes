@@ -766,6 +766,10 @@ public class TechnologyService {
                     .getRoot();
         }
 
+        if (operationComponent.getDataDefinition().getName().equals("orderOperationComponent")) {
+            operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
+        }
+
         Entity parentOpComp = operationComponent.getBelongsToField("parent");
 
         List<Entity> prodOutComps = operationComponent.getHasManyField("operationProductOutComponents");
