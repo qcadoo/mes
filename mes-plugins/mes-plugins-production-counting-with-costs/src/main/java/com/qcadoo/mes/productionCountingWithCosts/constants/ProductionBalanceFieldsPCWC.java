@@ -92,4 +92,10 @@ public class ProductionBalanceFieldsPCWC {
     public static final String TECHNOLOGY = "technology";
 
     public static final String QUANTITY = "quantity";
+
+    public static final String PLANNED_CYCLES_COSTS = "plannedCyclesCosts";
+
+    public static final String CYCLES_COSTS = "cyclesCosts";
+
+    public static final String CYCLES_COSTS_BALANCE = "cyclesCostsBalance";
 }

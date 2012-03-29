@@ -38,6 +38,8 @@ public interface ProductionCountingConstants {
 
     String MODEL_OPERATION_TIME_COMPONENT = "operationTimeComponent";
 
+    String MODEL_OPERATION_PIECEWORK_COMPONENT = "operationPieceworkComponent";
+
     String MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT = "recordOperationProductInComponent";
 
     String MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";

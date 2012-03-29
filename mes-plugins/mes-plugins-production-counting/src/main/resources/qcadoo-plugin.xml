@@ -85,6 +85,8 @@
 			resource="model/balanceOperationProductOutComponent.xml" />
 		<model:model model="operationTimeComponent"
 			resource="model/operationTimeComponent.xml" />
+		<model:model model="operationPieceworkComponent"
+			resource="model/operationPieceworkComponent.xml" />
 			
 		<menu:menu-item name="productionCounting" category="orders"
 			view="productionRecordsList" />

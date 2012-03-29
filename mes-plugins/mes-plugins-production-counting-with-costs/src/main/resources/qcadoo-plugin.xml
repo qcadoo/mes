@@ -69,6 +69,7 @@
 	
 		<model:model model="orderOperationProductInComponent" resource="model/orderOperationProductInComponent.xml" />
 		<model:model model="operationCostComponent" resource="model/operationCostComponent.xml" />
+		<model:model model="operationPieceworkCostComponent" resource="model/operationPieceworkCostComponent.xml" />
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:boolean name="printCostNormsOfMaterials" default="true"/>
@@ -187,6 +188,32 @@
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="plannedCyclesCosts">
+				<validatesUnscaledValue max="7" />
+				<validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="cyclesCosts">
+				<validatesUnscaledValue max="7" />
+				<validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:decimal name="cyclesCostsBalance">
+				<validatesUnscaledValue max="7" />
+				<validatesScale max="3" />
+			</model:decimal>
+		</model:model-field>
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:hasMany name="operationPieceworkCostComponents" joinField="productionBalance"
+				model="operationPieceworkCostComponent" plugin="productionCountingWithCosts" 
+				cascade="delete" />
+		</model:model-field>
+		
+		
+		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:decimal name="registeredTotalTechnicalProductionCosts">
 				<validatesUnscaledValue max="7" />
 				<validatesScale max="3" />
@@ -282,6 +309,10 @@
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:boolean name="generatedWithCosts" />
 		</model:model-field>
+		
+		
+		
+		
 		
 		<model:model-hook model="productionBalance" plugin="productionCounting">
 			<model:validatesWith
