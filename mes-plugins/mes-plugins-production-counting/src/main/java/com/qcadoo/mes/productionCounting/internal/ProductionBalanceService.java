@@ -38,6 +38,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.LABOR_TIME_BALANCE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.MACHINE_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.MACHINE_TIME_BALANCE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_TIME_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PLANNED_LABOR_TIME;
@@ -267,13 +268,17 @@ public class ProductionBalanceService {
             fillBalanceOperationProductOutComponents(productionBalance, order);
         }
 
-        if (order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
+        if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
             if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
             } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
+        } else if (PIECEWORK.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+            fillOperationPieceworkComponents(productionBalance, order);
         }
     }
 
@@ -365,6 +370,48 @@ public class ProductionBalanceService {
         }
     }
 
+    private void fillTimeValues(final Entity productionBalance, final Entity order) {
+        if ((productionBalance == null) || (order == null)) {
+            return;
+        }
+
+        BigDecimal plannedMachineTime = BigDecimal.ZERO;
+        BigDecimal machineTime = BigDecimal.ZERO;
+
+        BigDecimal laborTime = BigDecimal.ZERO;
+        BigDecimal plannedLaborTime = BigDecimal.ZERO;
+
+        List<Entity> productionRecordsList = getProductionRecordsFromDB(order);
+
+        if (!productionRecordsList.isEmpty()) {
+            for (Entity productionRecord : productionRecordsList) {
+                plannedMachineTime = plannedMachineTime
+                        .add(new BigDecimal((Integer) productionRecord.getField(PLANNED_MACHINE_TIME)),
+                                numberService.getMathContext());
+                plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField(PLANNED_LABOR_TIME)),
+                        numberService.getMathContext());
+
+                machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField(MACHINE_TIME)),
+                        numberService.getMathContext());
+                laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField(LABOR_TIME)),
+                        numberService.getMathContext());
+            }
+        }
+
+        BigDecimal machineTimeBalance = machineTime.subtract(plannedMachineTime, numberService.getMathContext());
+        BigDecimal laborTimeBalance = laborTime.subtract(plannedLaborTime, numberService.getMathContext());
+
+        productionBalance.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
+        productionBalance.setField(MACHINE_TIME, machineTime);
+        productionBalance.setField(MACHINE_TIME_BALANCE, machineTimeBalance);
+
+        productionBalance.setField(PLANNED_LABOR_TIME, plannedLaborTime);
+        productionBalance.setField(LABOR_TIME, laborTime);
+        productionBalance.setField(LABOR_TIME_BALANCE, laborTimeBalance);
+
+        productionBalance.getDataDefinition().save(productionBalance);
+    }
+
     private void fillOperationTimeComponents(final Entity productionBalance, final Entity order) {
         if ((productionBalance == null) || (order == null)) {
             return;
@@ -408,50 +455,41 @@ public class ProductionBalanceService {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
-    private void fillTimeValues(final Entity productionBalance, final Entity order) {
+    private void fillOperationPieceworkComponents(final Entity productionBalance, final Entity order) {
         if ((productionBalance == null) || (order == null)) {
             return;
         }
 
-        BigDecimal plannedMachineTime = BigDecimal.ZERO;
-        BigDecimal machineTime = BigDecimal.ZERO;
-
-        BigDecimal laborTime = BigDecimal.ZERO;
-        BigDecimal plannedLaborTime = BigDecimal.ZERO;
+        List<Entity> operationPieceworkComponents = Lists.newArrayList();
 
         List<Entity> productionRecordsList = getProductionRecordsFromDB(order);
 
         if (!productionRecordsList.isEmpty()) {
-            for (Entity productionRecord : productionRecordsList) {
-                plannedMachineTime = plannedMachineTime
-                        .add(new BigDecimal((Integer) productionRecord.getField(PLANNED_MACHINE_TIME)),
-                                numberService.getMathContext());
-                plannedLaborTime = plannedLaborTime.add(new BigDecimal((Integer) productionRecord.getField(PLANNED_LABOR_TIME)),
-                        numberService.getMathContext());
+            Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
 
-                machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField(MACHINE_TIME)),
-                        numberService.getMathContext());
-                laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField(LABOR_TIME)),
-                        numberService.getMathContext());
+            List<Entity> groupedProductionRecords = productionBalanceReportDataService
+                    .groupProductionRecordsByOperation(productionRecordsList);
+
+            if (!groupedProductionRecords.isEmpty()) {
+                for (Entity groupedProductionRecord : groupedProductionRecords) {
+                    Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
+
+                    operationPieceworkComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
+                            groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+
+                    operationPieceworkComponent.setField("plannedCycles", "");
+                    operationPieceworkComponent.setField("cycles", "");
+                    operationPieceworkComponent.setField("cyclesBalance", "");
+
+                    operationPieceworkComponents.add(operationPieceworkComponent);
+                }
             }
+
         }
-
-        BigDecimal machineTimeBalance = machineTime.subtract(plannedMachineTime, numberService.getMathContext());
-        BigDecimal laborTimeBalance = laborTime.subtract(plannedLaborTime, numberService.getMathContext());
-
-        productionBalance.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
-        productionBalance.setField(MACHINE_TIME, machineTime);
-        productionBalance.setField(MACHINE_TIME_BALANCE, machineTimeBalance);
-
-        productionBalance.setField(PLANNED_LABOR_TIME, plannedLaborTime);
-        productionBalance.setField(LABOR_TIME, laborTime);
-        productionBalance.setField(LABOR_TIME_BALANCE, laborTimeBalance);
+        productionBalance.setField(OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
 
         productionBalance.getDataDefinition().save(productionBalance);
-    }
-
-    public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
-        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
     private void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
@@ -472,6 +510,10 @@ public class ProductionBalanceService {
         } catch (DocumentException e) {
             throw new IllegalStateException("Problem with generating productionBalance report");
         }
+    }
+
+    public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
+        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
     public List<Entity> getProductionRecordsFromDB(final Entity order) {
