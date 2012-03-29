@@ -577,6 +577,7 @@ public class TestSamplesLoader extends SamplesLoader {
             order.setField("registerQuantityInProduct", values.get("register_quantity_in_product"));
             order.setField("registerQuantityOutProduct", values.get("register_quantity_out_product"));
             order.setField("registerProductionTime", values.get("register_production_time"));
+            order.setField("registerPiecework", values.get("register_piecework"));
             order.setField("justOne", values.get("just_one"));
             order.setField("allowToClose", values.get("allow_to_close"));
             order.setField("autoCloseOrder", values.get("auto_close_order"));
