@@ -271,7 +271,7 @@
 									reference="calculateOperationCostsMode" field="#{form}.calculateOperationCostsMode">
 									<listener event="onSelectedEntityChange"
 										class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-										method="disableCheckboxIfPieceworkSelected" />
+										method="disableCheckboxIfPieceworkIsSelected" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="4">
@@ -564,5 +564,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
+		<beforeRender
+		class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+		method="disableCheckboxIfPieceworkIsSelected"/>
 	</hooks>
 </view>

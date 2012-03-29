@@ -401,8 +401,14 @@ public class CostCalculationViewService {
         }
     }
 
-    public void disableCheckboxIfPieceworkSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
+
+        disableCheckboxIfPieceworkIsSelected(viewDefinitionState);
+    }
+
+    public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState) {
+
         FieldComponent calculateOperationCostsMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference("calculateOperationCostsMode");
 
@@ -439,19 +445,13 @@ public class CostCalculationViewService {
             totalPieceworkCosts.setVisible(true);
             totalPieceworkCostsCurrency.setVisible(true);
         } else {
-            includeTPZ.setFieldValue(true);
-            includeTPZ.setEnabled(true);
-            includeTPZ.requestComponentUpdateState();
-            includeAdditionalTime.setFieldValue(true);
-            includeAdditionalTime.setEnabled(true);
-            includeAdditionalTime.requestComponentUpdateState();
-
             machineHourlyCosts.setVisible(true);
             machineHourlyCostsCurrency.setVisible(true);
             totalLabourHourlyCosts.setVisible(true);
             totalLaborHourlyCostsCurrency.setVisible(true);
             totalPieceworkCosts.setVisible(false);
             totalPieceworkCostsCurrency.setVisible(false);
+
         }
     }
 
