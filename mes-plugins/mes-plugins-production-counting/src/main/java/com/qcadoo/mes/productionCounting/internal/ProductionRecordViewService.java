@@ -269,38 +269,25 @@ public class ProductionRecordViewService {
         FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_COMPONENT_FORM);
-        if (form.getEntityId() == null) {
-            for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK)) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                if (component.getFieldValue() == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
-            for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE,
-                    FIELD_AUTO_CLOSE_ORDER)) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                component.setEnabled(false);
-            }
-            typeOfProductionRecording.setFieldValue(BASIC.getStringValue());
-            typeOfProductionRecording.setEnabled(false);
-        } else {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    form.getEntityId());
-            if (order == null || "".equals(order.getField(TYPE_OF_PRODUCTION_RECORDING))) {
-                typeOfProductionRecording.setFieldValue(BASIC.getStringValue());
-            }
-            for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT,
-                    FIELD_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK)) {
-                FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
-                if (order == null || order.getField(componentReference) == null) {
-                    component.setFieldValue(true);
-                    component.requestComponentUpdateState();
-                }
-            }
+        if (form.getEntityId() != null) {
+            return;
         }
+        for (String componentReference : Arrays.asList(FIELD_REGISTER_QUANTITY_IN_PRODUCT, FIELD_REGISTER_QUANTITY_OUT_PRODUCT,
+                L_REGISTER_PRODUCTION_TIME, L_JUST_ONE, COMPONENT_ALLOW_TO_CLOSE, FIELD_AUTO_CLOSE_ORDER, L_REGISTER_PIECEWORK)) {
+            FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
+            if (component.getFieldValue() == null) {
+                component.setFieldValue(getDefaultValueForProductionRecordFromParameter(componentReference));
+                component.requestComponentUpdateState();
+            }
+            component.setEnabled(false);
+        }
+        typeOfProductionRecording.setFieldValue(BASIC.getStringValue());
+    }
+
+    private boolean getDefaultValueForProductionRecordFromParameter(final String reference) {
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
+        return parameter.getBooleanField(reference);
     }
 
     public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
