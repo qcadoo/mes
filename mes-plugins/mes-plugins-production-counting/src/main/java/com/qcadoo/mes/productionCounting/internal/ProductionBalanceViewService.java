@@ -39,6 +39,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
@@ -60,17 +61,19 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ProductionBalanceViewService {
 
-    private static final String L_TIME_GRID_LAYOUT = "timeGridLayout";
-
     private static final String L_INPUT_PRODUCTS_GRID = "inputProductsGrid";
 
     private static final String L_OUTPUT_PRODUCTS_GRID = "outputProductsGrid";
+
+    private static final String L_TIME_GRID_LAYOUT = "timeGridLayout";
 
     private static final String L_LABOR_TIME_BORDER_LAYOUT = "laborTimeBorderLayout";
 
     private static final String L_MACHINE_TIME_BORDER_LAYOUT = "machineTimeBorderLayout";
 
     private static final String L_OPERATIONS_TIME_GRID = "operationsTimeGrid";
+
+    private static final String L_OPERATIONS_PIECEWORK_GRID = "operationsPieceworkGrid";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -124,8 +127,18 @@ public class ProductionBalanceViewService {
                     viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(true);
                     viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
                 }
-            }
 
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(false);
+            } else if (PIECEWORK.getStringValue().equals(calculateOperationCostMode.getFieldValue())
+                    && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+                viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(false);
+
+                viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(false);
+
+                viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(true);
+            }
         }
     }
 
@@ -240,6 +253,9 @@ public class ProductionBalanceViewService {
 
         viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(isVisible);
         viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(isVisible);
+
         viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
+
+        viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(isVisible);
     }
 }
