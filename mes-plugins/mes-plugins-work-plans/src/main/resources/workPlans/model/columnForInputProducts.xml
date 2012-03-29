@@ -38,6 +38,9 @@
 		<string name="columnFiller" required="true">
 			<validatesLength max="2048" />
 		</string>
+		
+		<enum name="alignment" values="01left,02right"
+			default="01left" required="true" />
 
 		<hasMany name="parameterInputColumns" plugin="workPlans"
 			model="parameterInputColumn" joinField="columnForInputProducts"

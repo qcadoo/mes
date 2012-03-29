@@ -46,6 +46,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
@@ -82,6 +83,9 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private CostCalculationPdfService costCalculationPdfService;
 
     private static final String NULL_OBJECT = "-";
 
@@ -149,6 +153,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             productionBalancePdfService.addPieceworkBalance(document, productionBalance, locale);
             addCostsBalance("cyclesCosts", document, productionBalance, locale);
         }
+
+        costCalculationPdfService.printMaterialAndOperationNorms(document, productionBalance, locale);
     }
 
     private void addProductionCosts(final Document document, final Entity productionBalance, final Locale locale)
