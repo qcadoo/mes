@@ -264,10 +264,6 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         }
     }
 
-    private String upperCaseFirstLetter(final String givenString) {
-        return givenString.substring(0, 1).toUpperCase() + givenString.substring(1);
-    }
-
     private void addCostsBalance(final String type, final Document document, final Entity productionBalance, final Locale locale)
             throws DocumentException {
 
@@ -284,7 +280,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                                 locale));
         tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column.planned"
-                        + upperCaseFirstLetter(type) + L_COSTS, locale));
+                        + upperCaseFirstLetter(type, locale) + L_COSTS, locale));
         tableHeader.add(translationService.translate(
                 "productionCounting.productionBalanceDetails.window.timeCostsTab.timeCostsForm.operationsCost.column." + type
                         + L_COSTS, locale));
@@ -320,8 +316,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 costsTable.addCell(new Phrase(operationComponent.getBelongsToField("orderOperationComponent")
                         .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular9Dark()));
 
-                String plannedCost = numberService.format(operationComponent.getField("planned" + upperCaseFirstLetter(type)
-                        + L_COSTS));
+                String plannedCost = numberService.format(operationComponent.getField("planned"
+                        + upperCaseFirstLetter(type, locale) + L_COSTS));
                 costsTable.addCell(new Phrase((plannedCost == null) ? NULL_OBJECT : (plannedCost + currency), FontUtils
                         .getDejavuRegular9Dark()));
                 String registeredCost = numberService.format(operationComponent.getField(type + L_COSTS));
@@ -337,7 +333,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             costsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
 
             String plannedCosts = numberService.format((BigDecimal) productionBalance.getField("planned"
-                    + upperCaseFirstLetter(type) + L_COSTS));
+                    + upperCaseFirstLetter(type, locale) + L_COSTS));
             costsTable.addCell(new Phrase((plannedCosts == null) ? NULL_OBJECT : (plannedCosts + currency), FontUtils
                     .getDejavuRegular9Dark()));
             String registeredCosts = numberService.format((BigDecimal) productionBalance.getField(type + L_COSTS));
@@ -531,4 +527,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         return translationService.translate("productionCounting.productionBalance.report.title", locale);
     }
 
+    private String upperCaseFirstLetter(final String givenString, final Locale locale) {
+        return givenString.substring(0, 1).toUpperCase(locale) + givenString.substring(1);
+    }
 }

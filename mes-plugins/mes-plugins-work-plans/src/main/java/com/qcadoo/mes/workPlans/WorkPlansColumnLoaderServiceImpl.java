@@ -30,18 +30,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
@@ -92,12 +89,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private static enum OperationType {
         ADD, DELETE;
     };
-
-    private static final String[] COLUMN_FOR_ORDERS_ATTRIBUTES = new String[] { L_IDENTIFIER, L_NAME, L_DESCRIPTION,
-            L_COLUMNFILLER, L_ALIGNMENT, L_ACTIVE };
-
-    private static final String[] COLUMN_FOR_PRODUCTS_ATTRIBUTES = new String[] { L_IDENTIFIER, L_NAME, L_DESCRIPTION,
-            L_COLUMNFILLER, L_ALIGNMENT, L_TYPE, L_ACTIVE };
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoaderServiceImpl.class);
 
@@ -183,59 +174,50 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     public void fillColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, COLUMN_FOR_ORDERS_ATTRIBUTES, OperationType.ADD);
+        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.ADD);
     }
 
     public void clearColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, COLUMN_FOR_ORDERS_ATTRIBUTES, OperationType.DELETE);
+        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.DELETE);
     }
 
     public void fillColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, COLUMN_FOR_PRODUCTS_ATTRIBUTES, OperationType.ADD);
+        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.ADD);
     }
 
     public void clearColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, COLUMN_FOR_PRODUCTS_ATTRIBUTES, OperationType.DELETE);
+        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.DELETE);
     }
 
-    private void readDataFromXML(final String plugin, final String type, final String[] attributes, final OperationType operation) {
+    private void readDataFromXML(final String plugin, final String type, final OperationType operation) {
         LOG.info("Loading test data from " + type + ".xml ...");
 
         try {
-            DocumentBuilderFactory docBuildFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuild = docBuildFactory.newDocumentBuilder();
+            SAXBuilder builder = new SAXBuilder();
+            Document document = builder.build(getXmlFile(plugin, type));
+            Element rootNode = document.getRootElement();
+            @SuppressWarnings("unchecked")
+            List<Element> list = rootNode.getChildren("row");
 
-            InputStream file = WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type
-                    + ".xml");
+            for (int i = 0; i < list.size(); i++) {
+                Element node = list.get(i);
+                @SuppressWarnings("unchecked")
+                List<Attribute> listOfAtribute = node.getAttributes();
+                Map<String, String> values = new HashMap<String, String>();
 
-            Document doc = docBuild.parse(file);
-            doc.getDocumentElement().normalize();
-
-            NodeList nodeList = doc.getElementsByTagName("row");
-            for (int node = 0; node < nodeList.getLength(); node++) {
-                readData(type, attributes, nodeList, node, operation);
+                for (int j = 0; j < listOfAtribute.size(); j++) {
+                    values.put(listOfAtribute.get(j).getName().toLowerCase(Locale.ENGLISH), listOfAtribute.get(j).getValue());
+                }
+                readData(type, operation, values);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (SAXException e) {
+        } catch (JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
     }
 
-    private void readData(final String type, final String[] attributes, final NodeList nodeLst, final int row,
-            final OperationType operation) {
-        Map<String, String> values = new HashMap<String, String>();
-        Node fstNode = nodeLst.item(row);
-
-        for (String attribute : attributes) {
-            if (fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)) != null) {
-                String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-                values.put(attribute, value);
-            }
-        }
-
+    private void readData(final String type, final OperationType operation, final Map<String, String> values) {
         if (L_COLUMN_FOR_ORDERS.equals(type)) {
             if (OperationType.ADD.equals(operation)) {
                 addColumnForOrders(values);
@@ -272,11 +254,11 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForOrders(final Map<String, String> values) {
         Entity columnForOrders = getColumnForOrdersDD().create();
 
-        columnForOrders.setField(L_IDENTIFIER, values.get(L_IDENTIFIER));
-        columnForOrders.setField(L_NAME, values.get(L_NAME));
-        columnForOrders.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        columnForOrders.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER));
-        columnForOrders.setField(L_ALIGNMENT, values.get(L_ALIGNMENT));
+        columnForOrders.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(L_NAME) + "}");
@@ -311,11 +293,11 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForInputProducts(final Map<String, String> values) {
         Entity columnForInputProduct = getColumnForInputProductsDD().create();
 
-        columnForInputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER));
-        columnForInputProduct.setField(L_NAME, values.get(L_NAME));
-        columnForInputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        columnForInputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER));
-        columnForInputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT));
+        columnForInputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(L_NAME) + "}");
@@ -352,11 +334,11 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForOutputProducts(final Map<String, String> values) {
         Entity columnForOutputProduct = getColumnForOutputProductsDD().create();
 
-        columnForOutputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER));
-        columnForOutputProduct.setField(L_NAME, values.get(L_NAME));
-        columnForOutputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
-        columnForOutputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER));
-        columnForOutputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT));
+        columnForOutputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(L_NAME) + "}");
@@ -729,4 +711,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         return getColumnForOutputProductsDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
+    private InputStream getXmlFile(final String plugin, final String type) throws IOException {
+        return WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type + ".xml");
+    }
 }

@@ -165,8 +165,9 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return estimateCostCalculationForHourly(operationComponent, margin, plannedQuantity, realizationTimes, false);
     }
 
-    private Map<String, BigDecimal> estimateCostCalculationForHourly(EntityTreeNode operationComponent, final BigDecimal margin,
-            final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes, final boolean saveValues) {
+    private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent,
+            final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, Integer> realizationTimes,
+            final boolean saveValues) {
         checkArgument(operationComponent != null, "given operationComponent is null");
 
         BigDecimal hourlyMachineCost = getBigDecimal(operationComponent.getField(MACHINE_HOURLY_COST));
