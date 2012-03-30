@@ -48,3 +48,52 @@ CREATE TABLE productioncountingwithcosts_operationpieceworkcostcomponent
 );
 
 -- end
+
+
+-- Table: workplans_columnforinputproducts
+-- changed: 30.03.2012
+
+ALTER TABLE workplans_columnforinputproducts ALTER COLUMN name TYPE character varying(1024);
+ALTER TABLE workplans_columnforinputproducts ALTER COLUMN description TYPE character varying(1024);
+ALTER TABLE workplans_columnforinputproducts ALTER COLUMN columnfiller TYPE character varying(255);
+
+ALTER TABLE workplans_columnforinputproducts ADD COLUMN alignment character varying(255);
+ALTER TABLE workplans_columnforinputproducts ALTER COLUMN alignment SET DEFAULT '01left'::character varying;
+
+UPDATE workplans_columnforinputproducts SET alignment = '01left' WHERE identifier = 'productName'; 
+UPDATE workplans_columnforinputproducts SET alignment = '02right' WHERE identifier = 'plannedQuantity'; 
+UPDATE workplans_columnforinputproducts SET alignment = '02right' WHERE identifier = 'batchNumbers'; 
+
+-- end
+
+
+-- Table: workplans_columnforoutputproducts
+-- changed: 30.03.2012
+
+ALTER TABLE workplans_columnforoutputproducts ALTER COLUMN name TYPE character varying(1024);
+ALTER TABLE workplans_columnforoutputproducts ALTER COLUMN description TYPE character varying(1024);
+ALTER TABLE workplans_columnforoutputproducts ALTER COLUMN columnfiller TYPE character varying(255);
+
+ALTER TABLE workplans_columnforoutputproducts ADD COLUMN alignment character varying(255);
+ALTER TABLE workplans_columnforoutputproducts ALTER COLUMN alignment SET DEFAULT '01left'::character varying;
+
+UPDATE workplans_columnforoutputproducts SET alignment = '01left' WHERE identifier = 'productName'; 
+UPDATE workplans_columnforoutputproducts SET alignment = '02right' WHERE identifier = 'plannedQuantity'; 
+
+-- end
+
+
+-- Table: workplans_columnfororders
+-- changed: 30.03.2012
+
+ALTER TABLE workplans_columnfororders ALTER COLUMN name TYPE character varying(1024);
+ALTER TABLE workplans_columnfororders ALTER COLUMN description TYPE character varying(1024);
+ALTER TABLE workplans_columnfororders ALTER COLUMN columnfiller TYPE character varying(255);
+
+ALTER TABLE workplans_columnfororders ADD COLUMN alignment character varying(255);
+ALTER TABLE workplans_columnfororders ALTER COLUMN alignment SET DEFAULT '01left'::character varying;
+
+UPDATE workplans_columnfororders SET alignment = '01left'; 
+UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='plannedQuantity'; 
+
+-- end
