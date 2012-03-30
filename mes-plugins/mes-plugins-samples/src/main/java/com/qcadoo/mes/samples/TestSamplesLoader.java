@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jdom.Element;
@@ -53,7 +54,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoader.class);
 
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
     private static final long MILLIS_IN_DAY = 86400000;
 
@@ -328,7 +329,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test substitute {name=" + substitute.getField(L_NAME) + ", " + L_NUMBER + "="
-                    + substitute.getField(L_NUMBER) + ", priority=" + substitute.getField("priority") + ", product="
+                    + substitute.getField(L_NUMBER) + ", priority=" + substitute.getField("priority") + ", subsitute product="
                     + ((Entity) substitute.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + "}");
         }
 
@@ -348,7 +349,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test substitute component {substitute="
-                    + ((Entity) substituteComponent.getField(BASIC_MODEL_SUBSTITUTE)).getField(L_NUMBER) + ", product="
+                    + ((Entity) substituteComponent.getField(BASIC_MODEL_SUBSTITUTE)).getField(L_NUMBER) + ", subsitute product="
                     + ((Entity) substituteComponent.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + ", quantity="
                     + substituteComponent.getField(L_QUANTITY) + "}");
         }
@@ -460,51 +461,51 @@ public class TestSamplesLoader extends SamplesLoader {
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("55"),
                         BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12),
-                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10),
-                        new BigDecimal("220"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
 
             } else if ("000002".equals(values.get(L_ORDER_NR))) {
 
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28),
-                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27),
-                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26),
-                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32),
-                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31),
-                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30),
-                        new BigDecimal("400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29),
-                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33),
-                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal("1600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25),
-                        new BigDecimal("100"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
 
             } else if ("000003".equals(values.get(L_ORDER_NR))) {
 
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
-                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19),
-                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18),
-                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24),
-                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23),
-                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22),
-                        new BigDecimal("600"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal("2400"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17),
-                        new BigDecimal("150"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
 
             } else if ("000004".equals(values.get(L_ORDER_NR))) {
 
@@ -526,7 +527,7 @@ public class TestSamplesLoader extends SamplesLoader {
             } else if ("000005".equals(values.get(L_ORDER_NR))) {
 
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
-                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19), new BigDecimal(L_40),
                         BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18), new BigDecimal(L_10),
@@ -538,7 +539,7 @@ public class TestSamplesLoader extends SamplesLoader {
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22), new BigDecimal(L_40),
                         BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal("160"), BigDecimal.ZERO, BigDecimal.ZERO));
+                        new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
                 productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17), new BigDecimal(L_10),
                         BigDecimal.ZERO, BigDecimal.ZERO));
 
@@ -602,7 +603,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + L_NUMBER
                     + "="
                     + order.getField(L_NUMBER)
-                    + ", product="
+                    + ", order product="
                     + (order.getField(BASIC_MODEL_PRODUCT) == null ? null : ((Entity) order.getField(BASIC_MODEL_PRODUCT))
                             .getField(L_NUMBER))
                     + ", technology="
@@ -794,7 +795,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(L_NAME) + ", "
-                        + L_NUMBER + "=" + technology.getField(L_NUMBER) + ", product="
+                        + L_NUMBER + "=" + technology.getField(L_NUMBER) + ", technology product="
                         + ((Entity) technology.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + ", description="
                         + technology.getField(L_DESCRIPTION) + ", master=" + technology.getField("master") + "}");
             }
@@ -1302,9 +1303,9 @@ public class TestSamplesLoader extends SamplesLoader {
         genProdIn = addGenealogyProductInComponent(trackingRecord, "000013", L_5);
         addUsedBatch(genProdIn, "876DEW");
         addUsedBatch(genProdIn, "444VWM");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000015", "1");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000015", L_1);
         addUsedBatch(genProdIn, "349SWA");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000016", "2");
+        genProdIn = addGenealogyProductInComponent(trackingRecord, "000016", L_2);
         addUsedBatch(genProdIn, "150DEB");
     }
 

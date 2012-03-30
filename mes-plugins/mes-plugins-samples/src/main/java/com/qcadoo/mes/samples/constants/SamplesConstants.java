@@ -253,6 +253,10 @@ public interface SamplesConstants {
 
     String L_QUANTITY_2400 = "2400";
 
+    String L_1 = "1";
+
+    String L_2 = "2";
+
     String L_5 = "5";
 
     String L_10 = "10";
@@ -266,5 +270,21 @@ public interface SamplesConstants {
     String L_60 = "60";
 
     String L_80 = "80";
+
+    String L_160 = "160";
+
+    String L_150 = "150";
+
+    String L_220 = "220";
+
+    String L_100 = "100";
+
+    String L_400 = "400";
+
+    String L_600 = "600";
+
+    String L_1600 = "1600";
+
+    String L_2400 = "2400";
 
 }

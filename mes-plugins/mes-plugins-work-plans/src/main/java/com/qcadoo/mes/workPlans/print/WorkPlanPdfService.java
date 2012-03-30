@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -371,7 +372,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private static final class OperationProductComponentComparator implements Comparator<Entity> {
+    private static final class OperationProductComponentComparator implements Comparator<Entity>, Serializable {
+
+        private static final long serialVersionUID = 2985797934972953807L;
 
         @Override
         public int compare(final Entity o0, final Entity o1) {
@@ -382,7 +385,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     }
 
-    private static final class ColumnSuccessionComparator implements Comparator<Entity> {
+    private static final class ColumnSuccessionComparator implements Comparator<Entity>, Serializable {
+
+        private static final long serialVersionUID = 949475392760877515L;
 
         @Override
         public int compare(final Entity o1, final Entity o2) {

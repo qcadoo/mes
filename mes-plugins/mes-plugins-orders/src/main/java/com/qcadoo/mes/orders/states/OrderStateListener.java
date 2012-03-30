@@ -28,7 +28,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.Entity;
 
-public abstract class OrderStateListener {
+public class OrderStateListener {
 
     public List<ChangeOrderStateMessage> onPending(final Entity newEntity) {
         return Lists.newArrayList();

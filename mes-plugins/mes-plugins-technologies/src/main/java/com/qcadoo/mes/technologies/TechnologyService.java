@@ -524,7 +524,7 @@ public class TechnologyService {
     private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(PARENT_FIELD);
-            if (parent == null || "referenceTechnology".equals(parent.getStringField(CONST_ENTITY_TYPE))) {
+            if (parent == null || REFERENCE_TECHNOLOGY_FIELD.equals(parent.getStringField(CONST_ENTITY_TYPE))) {
                 continue;
             }
             final EntityList prodsOut = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
@@ -537,7 +537,7 @@ public class TechnologyService {
                     return false;
                 }
             } else {
-                final Entity prodIn = technologyOperation.getBelongsToField("referenceTechnology");
+                final Entity prodIn = technologyOperation.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD);
 
                 if (prodIn == null || prodsOut == null) {
                     return false;
@@ -761,9 +761,9 @@ public class TechnologyService {
      *         product/intermediate.
      */
     public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
-        if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
-            operationComponent = operationComponent.getBelongsToField("referenceTechnology").getTreeField("operationComponents")
-                    .getRoot();
+        if (REFERENCE_TECHNOLOGY_FIELD.equals(operationComponent.getStringField("entityType"))) {
+            operationComponent = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD)
+                    .getTreeField("operationComponents").getRoot();
         }
 
         if (operationComponent.getDataDefinition().getName().equals("orderOperationComponent")) {
