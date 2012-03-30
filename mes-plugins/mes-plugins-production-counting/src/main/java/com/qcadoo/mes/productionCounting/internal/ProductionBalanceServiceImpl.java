@@ -268,13 +268,17 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             fillBalanceOperationProductOutComponents(productionBalance, order);
         }
 
-        if (order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
+        if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
             if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
             } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
+        } else if (PIECEWORK.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+            fillOperationPieceworkComponents(productionBalance, order);
         }
     }
 

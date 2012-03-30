@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.validators;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
@@ -35,9 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -82,8 +81,7 @@ public class ProductionBalanceModelValidators {
 
     public boolean checkIfAverageCostsAreDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ORDER);
-        if (CalculateOperationCostsMode.HOURLY.equals(CalculateOperationCostMode.parseString(productionBalance
-                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE)))
+        if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
                 && checkIfTypeOfProductionRecordingIsCumulated(order)) {
             Object averageMachineHourlyCost = productionBalance.getField(AVERAGE_MACHINE_HOURLY_COST);
             Object averageLaborHourlyCost = productionBalance.getField(AVERAGE_LABOR_HOURLY_COST);
