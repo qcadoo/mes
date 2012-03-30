@@ -35,7 +35,7 @@
 			<validatesLength max="1024" />
 		</string>
 		<string name="description">
-			<validatesLength max="2048" />
+			<validatesLength max="1024" />
 		</string>
 		<string name="columnFiller" required="true">
 			<validatesLength max="255" />
