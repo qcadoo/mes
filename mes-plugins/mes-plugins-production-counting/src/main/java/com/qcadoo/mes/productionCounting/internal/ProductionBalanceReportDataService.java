@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.EXECUTED_OPERATION_CYCLES;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +134,7 @@ public class ProductionBalanceReportDataService {
         Integer registeredMachineTime = 0;
         Integer plannedLaborTime = (Integer) productionRecords.get(0).getField(PLANNED_LABOR_TIME_FIELD);
         Integer registeredLaborTime = 0;
+        BigDecimal executedOperationCycles = BigDecimal.ZERO;
 
         for (Entity record : productionRecords) {
             if (record
@@ -147,6 +150,10 @@ public class ProductionBalanceReportDataService {
                                     NODE_NUMBER_FIELD))) {
                 registeredMachineTime += (Integer) record.getField(MACHINE_TIME_FIELD);
                 registeredLaborTime += (Integer) record.getField(LABOR_TIME_FIELD);
+                if (record.getField(EXECUTED_OPERATION_CYCLES) != null) {
+                    executedOperationCycles = executedOperationCycles.add(
+                            (BigDecimal) record.getField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
+                }
             } else {
                 prevRecord.setField(PLANNED_MACHINE_TIME_FIELD, plannedMachineTime);
                 prevRecord.setField(MACHINE_TIME_FIELD, registeredMachineTime);
@@ -160,6 +167,11 @@ public class ProductionBalanceReportDataService {
                 registeredMachineTime = (Integer) record.getField(MACHINE_TIME_FIELD);
                 plannedLaborTime = (Integer) record.getField(PLANNED_LABOR_TIME_FIELD);
                 registeredLaborTime = (Integer) record.getField(LABOR_TIME_FIELD);
+                if (record.getField(EXECUTED_OPERATION_CYCLES) == null) {
+                    executedOperationCycles = BigDecimal.ZERO;
+                } else {
+                    executedOperationCycles = (BigDecimal) record.getField(EXECUTED_OPERATION_CYCLES);
+                }
             }
         }
         prevRecord.setField(PLANNED_MACHINE_TIME_FIELD, plannedMachineTime);
@@ -168,6 +180,7 @@ public class ProductionBalanceReportDataService {
         prevRecord.setField(PLANNED_LABOR_TIME_FIELD, plannedLaborTime);
         prevRecord.setField(LABOR_TIME_FIELD, registeredLaborTime);
         prevRecord.setField(LABOR_TIME_BALANCE_FIELD, registeredLaborTime - plannedLaborTime);
+        prevRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
         groupedProducts.add(prevRecord);
 
         return groupedProducts;
