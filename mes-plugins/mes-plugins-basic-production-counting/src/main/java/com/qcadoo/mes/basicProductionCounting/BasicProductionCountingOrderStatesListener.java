@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -57,9 +58,14 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
 
     @Override
     public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
+        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
         Preconditions.checkArgument(newEntity != null, "Order is null");
         final Entity order = newEntity.getDataDefinition().get(newEntity.getId());
-
+        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            errors.add(ChangeOrderStateMessage.error("orders.order.technology.isEmpty"));
+            return errors;
+        }
         final List<Entity> prodCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
@@ -77,7 +83,7 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
                     (BigDecimal) order.getField("plannedQuantity"));
         }
 
-        return Lists.newArrayList();
+        return errors;
     }
 
     private void createBasicProductionCounting(final Entity order, final Entity product, final BigDecimal plannedQuantity) {
