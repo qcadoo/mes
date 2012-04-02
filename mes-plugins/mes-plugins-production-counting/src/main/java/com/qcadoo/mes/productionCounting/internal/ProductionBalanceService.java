@@ -303,6 +303,7 @@ public class ProductionBalanceService {
                             recordOperationProductInComponent.getField(USED_QUANTITY));
                     balanceOperationProductInComponent.setField(L_PLANNED_QUANTITY,
                             recordOperationProductInComponent.getField(PLANNED_QUANTITY));
+
                     balanceOperationProductInComponent.setField(L_BALANCE, recordOperationProductInComponent.getField(BALANCE));
 
                     balanceOperationProductInComponents.add(balanceOperationProductInComponent);
@@ -396,6 +397,7 @@ public class ProductionBalanceService {
 
                     operationTimeComponent.setField(L_PLANNED_LABOR_TIME, groupedProductionRecord.getField(PLANNED_LABOR_TIME));
                     operationTimeComponent.setField(L_LABOR_TIME, groupedProductionRecord.getField(LABOR_TIME));
+
                     operationTimeComponent.setField(L_LABOR_TIME_BALANCE, groupedProductionRecord.getField(LABOR_TIME_BALANCE));
 
                     operationTimeComponents.add(operationTimeComponent);
