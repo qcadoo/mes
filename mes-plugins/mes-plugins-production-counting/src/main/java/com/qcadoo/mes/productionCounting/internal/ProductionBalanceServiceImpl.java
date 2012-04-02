@@ -23,19 +23,85 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
+import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.BALANCE_OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DATE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.FILE_NAME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.LABOR_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.LABOR_TIME_BALANCE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.MACHINE_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.MACHINE_TIME_BALANCE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_PIECEWORK_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.OPERATION_TIME_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PLANNED_LABOR_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PLANNED_MACHINE_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.WORKER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.BALANCE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.PLANNED_QUANTITY;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.USED_QUANTITY;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
+import static com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT;
+
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ReportService;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class ProductionBalanceService {
+public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     private static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
@@ -202,13 +268,17 @@ public class ProductionBalanceService {
             fillBalanceOperationProductOutComponents(productionBalance, order);
         }
 
-        if (order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
+        if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
             if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
                 fillOperationTimeComponents(productionBalance, order);
             } else if (CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillTimeValues(productionBalance, order);
             }
+        } else if (PIECEWORK.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
+                && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+            fillOperationPieceworkComponents(productionBalance, order);
         }
     }
 
@@ -238,7 +308,6 @@ public class ProductionBalanceService {
                             recordOperationProductInComponent.getField(USED_QUANTITY));
                     balanceOperationProductInComponent.setField(L_PLANNED_QUANTITY,
                             recordOperationProductInComponent.getField(PLANNED_QUANTITY));
-
                     balanceOperationProductInComponent.setField(L_BALANCE, recordOperationProductInComponent.getField(BALANCE));
 
                     balanceOperationProductInComponents.add(balanceOperationProductInComponent);
@@ -301,50 +370,6 @@ public class ProductionBalanceService {
         }
     }
 
-    private void fillOperationTimeComponents(final Entity productionBalance, final Entity order) {
-        if ((productionBalance == null) || (order == null)) {
-            return;
-        }
-
-        List<Entity> operationTimeComponents = Lists.newArrayList();
-
-        List<Entity> productionRecordsList = getProductionRecordsFromDB(order);
-
-        if (!productionRecordsList.isEmpty()) {
-            Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
-
-            List<Entity> groupedProductionRecords = productionBalanceReportDataService
-                    .groupProductionRecordsByOperation(productionRecordsList);
-
-            if (!groupedProductionRecords.isEmpty()) {
-                for (Entity groupedProductionRecord : groupedProductionRecords) {
-                    Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
-
-                    operationTimeComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
-                            groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
-
-                    operationTimeComponent.setField(L_PLANNED_MACHINE_TIME,
-                            groupedProductionRecord.getField(PLANNED_MACHINE_TIME));
-                    operationTimeComponent.setField(L_MACHINE_TIME, groupedProductionRecord.getField(MACHINE_TIME));
-                    operationTimeComponent.setField(L_MACHINE_TIME_BALANCE,
-                            groupedProductionRecord.getField(MACHINE_TIME_BALANCE));
-
-                    operationTimeComponent.setField(L_PLANNED_LABOR_TIME, groupedProductionRecord.getField(PLANNED_LABOR_TIME));
-                    operationTimeComponent.setField(L_LABOR_TIME, groupedProductionRecord.getField(LABOR_TIME));
-
-                    operationTimeComponent.setField(L_LABOR_TIME_BALANCE, groupedProductionRecord.getField(LABOR_TIME_BALANCE));
-
-                    operationTimeComponents.add(operationTimeComponent);
-                }
-            }
-
-        }
-        productionBalance.setField(OPERATION_TIME_COMPONENTS, operationTimeComponents);
-
-        productionBalance.getDataDefinition().save(productionBalance);
-    }
-
     private void fillTimeValues(final Entity productionBalance, final Entity order) {
         if ((productionBalance == null) || (order == null)) {
             return;
@@ -384,29 +409,131 @@ public class ProductionBalanceService {
         productionBalance.setField(LABOR_TIME, laborTime);
         productionBalance.setField(LABOR_TIME_BALANCE, laborTimeBalance);
 
+        productionBalance.getDataDefinition().save(productionBalance);
+    }
 
-public interface ProductionBalanceService {
+    private void fillOperationTimeComponents(final Entity productionBalance, final Entity order) {
+        if ((productionBalance == null) || (order == null)) {
+            return;
+        }
 
-    void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance);
+        List<Entity> operationTimeComponents = Lists.newArrayList();
 
-    void clearGeneratedOnCopy(final DataDefinition productionBalanceDD, final Entity productionBalance);
+        List<Entity> productionRecordsList = getProductionRecordsFromDB(order);
 
-    boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance);
+        if (!productionRecordsList.isEmpty()) {
+            Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
 
-    void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
+            List<Entity> groupedProductionRecords = productionBalanceReportDataService
+                    .groupProductionRecordsByOperation(productionRecordsList);
 
-    void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
+            if (!groupedProductionRecords.isEmpty()) {
+                for (Entity groupedProductionRecord : groupedProductionRecords) {
+                    Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
 
-    void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
-            DocumentException;
+                    operationTimeComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
+                            groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
 
-    boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order);
+                    operationTimeComponent.setField(L_PLANNED_MACHINE_TIME,
+                            groupedProductionRecord.getField(PLANNED_MACHINE_TIME));
+                    operationTimeComponent.setField(L_MACHINE_TIME, groupedProductionRecord.getField(MACHINE_TIME));
+                    operationTimeComponent.setField(L_MACHINE_TIME_BALANCE,
+                            groupedProductionRecord.getField(MACHINE_TIME_BALANCE));
 
-    List<Entity> getProductionRecordsFromDB(final Entity order);
+                    operationTimeComponent.setField(L_PLANNED_LABOR_TIME, groupedProductionRecord.getField(PLANNED_LABOR_TIME));
+                    operationTimeComponent.setField(L_LABOR_TIME, groupedProductionRecord.getField(LABOR_TIME));
+                    operationTimeComponent.setField(L_LABOR_TIME_BALANCE, groupedProductionRecord.getField(LABOR_TIME_BALANCE));
 
-    Entity getProductionBalanceFromDB(final Long productionBalanceId);
+                    operationTimeComponents.add(operationTimeComponent);
+                }
+            }
 
-    Entity getOrderFromDB(final Long orderId);
+        }
+        productionBalance.setField(OPERATION_TIME_COMPONENTS, operationTimeComponents);
 
-    Entity getCompanyFromDB();
+        productionBalance.getDataDefinition().save(productionBalance);
+    }
+
+    private void fillOperationPieceworkComponents(final Entity productionBalance, final Entity order) {
+        if ((productionBalance == null) || (order == null)) {
+            return;
+        }
+
+        List<Entity> operationPieceworkComponents = Lists.newArrayList();
+
+        List<Entity> productionRecordsList = getProductionRecordsFromDB(order);
+
+        if (!productionRecordsList.isEmpty()) {
+            Collections.sort(productionRecordsList, new EntityProductionRecordOperationComparator());
+
+            List<Entity> groupedProductionRecords = productionBalanceReportDataService
+                    .groupProductionRecordsByOperation(productionRecordsList);
+
+            if (!groupedProductionRecords.isEmpty()) {
+                for (Entity groupedProductionRecord : groupedProductionRecords) {
+                    Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
+
+                    operationPieceworkComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
+                            groupedProductionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+
+                    operationPieceworkComponent.setField("plannedCycles", "");
+                    operationPieceworkComponent.setField("cycles", "");
+                    operationPieceworkComponent.setField("cyclesBalance", "");
+
+                    operationPieceworkComponents.add(operationPieceworkComponent);
+                }
+            }
+
+        }
+        productionBalance.setField(OPERATION_PIECEWORK_COMPONENTS, operationPieceworkComponents);
+
+        productionBalance.getDataDefinition().save(productionBalance);
+    }
+
+    public void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
+            DocumentException {
+
+        String localePrefix = "productionCounting.productionBalance.report.fileName";
+
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, DATE, localePrefix);
+
+        Entity company = getCompanyFromDB();
+
+        try {
+            productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, locale);
+
+            generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
+        } catch (IOException e) {
+            throw new IllegalStateException("Problem with saving productionBalance report");
+        } catch (DocumentException e) {
+            throw new IllegalStateException("Problem with generating productionBalance report");
+        }
+    }
+
+    public boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order) {
+        return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
+    }
+
+    public List<Entity> getProductionRecordsFromDB(final Entity order) {
+        return dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
+                .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue())).add(SearchRestrictions.belongsTo(ORDER, order))
+                .list().getEntities();
+    }
+
+    public Entity getProductionBalanceFromDB(final Long productionBalanceId) {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get(productionBalanceId);
+    }
+
+    public Entity getOrderFromDB(final Long orderId) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+    }
+
+    public Entity getCompanyFromDB() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
+                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+    }
 }

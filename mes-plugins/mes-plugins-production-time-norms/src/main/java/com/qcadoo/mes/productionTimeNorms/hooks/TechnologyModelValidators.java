@@ -61,7 +61,7 @@ public class TechnologyModelValidators {
         return true;
     }
 
-    private class MultiFieldErrorHandler {
+    private static class MultiFieldErrorHandler {
 
         private boolean hasError = false;
 

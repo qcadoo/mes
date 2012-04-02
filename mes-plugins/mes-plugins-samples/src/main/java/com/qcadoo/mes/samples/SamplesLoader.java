@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -102,7 +103,8 @@ public abstract class SamplesLoader {
                 Map<String, String> values = new HashMap<String, String>();
 
                 for (int j = 0; j < listOfAtribute.size(); j++) {
-                    values.put(listOfAtribute.get(j).getName().toLowerCase(), listOfAtribute.get(j).getValue());
+                    values.put(listOfAtribute.get(j).getName().toLowerCase(LocaleUtils.toLocale(locale)), listOfAtribute.get(j)
+                            .getValue());
                 }
                 readData(values, object, node);
             }

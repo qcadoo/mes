@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,10 +45,13 @@ import com.google.common.collect.Lists;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.workPlans.constants.WorkPlanColumnAlignment;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -118,6 +122,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 for (Entity column : columns) {
                     String columnIdentifier = column.getStringField("identifier");
                     String value = columnValues.get(order).get(columnIdentifier);
+
+                    alignColumn(orderTable.getDefaultCell(),
+                            WorkPlanColumnAlignment.parseString(column.getStringField("alignment")));
+
                     orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
                 }
             }
@@ -364,7 +372,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private static final class OperationProductComponentComparator implements Comparator<Entity> {
+    private static final class OperationProductComponentComparator implements Comparator<Entity>, Serializable {
+
+        private static final long serialVersionUID = 2985797934972953807L;
 
         @Override
         public int compare(final Entity o0, final Entity o1) {
@@ -375,7 +385,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     }
 
-    private static final class ColumnSuccessionComparator implements Comparator<Entity> {
+    private static final class ColumnSuccessionComparator implements Comparator<Entity>, Serializable {
+
+        private static final long serialVersionUID = 949475392760877515L;
 
         @Override
         public int compare(final Entity o1, final Entity o2) {
@@ -410,6 +422,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
             for (Entity column : columns) {
                 String columnIdentifier = column.getStringField("identifier");
                 String value = columnValues.get(productComponent).get(columnIdentifier);
+
+                alignColumn(table.getDefaultCell(), WorkPlanColumnAlignment.parseString(column.getStringField("alignment")));
+
                 table.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
             }
         }
@@ -418,6 +433,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
         table.setSpacingBefore(9);
 
         document.add(table);
+    }
+
+    private void alignColumn(final PdfPCell cell, final WorkPlanColumnAlignment columnAlignment) {
+        if (WorkPlanColumnAlignment.LEFT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        } else if (WorkPlanColumnAlignment.RIGHT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        }
     }
 
     void addInProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,

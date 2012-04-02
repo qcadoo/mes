@@ -21,41 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.workPlans.constants;
 
-import java.util.List;
+public enum WorkPlanColumnAlignment {
+    LEFT("01left"), RIGHT("02right");
 
-import com.google.common.collect.Lists;
-import com.qcadoo.model.api.Entity;
+    private String stringValue;
 
-public class OrderStateListener {
-
-    public List<ChangeOrderStateMessage> onPending(final Entity newEntity) {
-        return Lists.newArrayList();
+    private WorkPlanColumnAlignment(final String stringValue) {
+        this.stringValue = stringValue;
     }
 
-    public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
-        return Lists.newArrayList();
+    public String getStringValue() {
+        return stringValue;
     }
 
-    public List<ChangeOrderStateMessage> onInProgress(final Entity newEntity) {
-        return Lists.newArrayList();
-    }
+    public static WorkPlanColumnAlignment parseString(final String string) {
+        if ("01left".equals(string)) {
+            return LEFT;
+        } else if ("02right".equals(string)) {
+            return RIGHT;
+        }
 
-    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-        return Lists.newArrayList();
+        throw new IllegalStateException("Unsupported column alignment: " + string);
     }
-
-    public List<ChangeOrderStateMessage> onDeclined(final Entity newEntity) {
-        return Lists.newArrayList();
-    }
-
-    public List<ChangeOrderStateMessage> onInterrupted(final Entity newEntity) {
-        return Lists.newArrayList();
-    }
-
-    public List<ChangeOrderStateMessage> onAbandoned(final Entity newEntity) {
-        return Lists.newArrayList();
-    }
-
 }

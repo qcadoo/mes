@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -117,7 +118,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
             generateAndAddStaff();
         }
         for (int i = 0; i < 10; i++) {
-            generateAndAddShift();
+            generateAndAddShift(locale);
         }
         if (isEnabled(TECHNOLOGY_PLUGIN_NAME)) {
             for (int i = 0; i < iterations; i++) {
@@ -500,7 +501,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         validateEntity(machine);
     }
 
-    private String generateWorkingHours() {
+    private String generateWorkingHours(final String locale) {
         Calendar calendar = Calendar.getInstance();
 
         calendar.set(Calendar.HOUR_OF_DAY, 8);
@@ -518,19 +519,19 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         Date workBeginDate = new Date(workBeginHours);
         Date workEndDate = new Date(workEndHours);
         StringBuilder workingHours = new StringBuilder();
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm", LocaleUtils.toLocale(locale));
         workingHours.append(hourFormat.format(workBeginDate)).append("-").append(hourFormat.format(workEndDate));
         return workingHours.toString();
     }
 
-    private void generateAndAddShift() {
+    private void generateAndAddShift(final String locale) {
         Entity shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "shift").create();
 
         shift.setField(L_NAME, getNameFromNumberAndPrefix("Shift-", generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5)));
 
         for (int i = 0; i < SHIFT_HOURS.length; i++) {
             shift.setField(WORK_SHIFT[i], RANDOM.nextBoolean());
-            shift.setField(SHIFT_HOURS[i], generateWorkingHours());
+            shift.setField(SHIFT_HOURS[i], generateWorkingHours(locale));
         }
 
         shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "shift").save(shift);

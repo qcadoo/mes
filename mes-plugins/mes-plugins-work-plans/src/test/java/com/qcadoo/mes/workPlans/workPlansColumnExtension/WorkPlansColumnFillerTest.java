@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package workPlansColumnExtension;
+package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -47,7 +47,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;

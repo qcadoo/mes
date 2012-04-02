@@ -171,8 +171,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
-            Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
-            Map<Entity, BigDecimal> operationRuns) {
+            final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Entity, BigDecimal> operationRuns) {
         if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(operationComponent.getStringField("entityType"))) {
             for (Entity operComp : operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents")) {
@@ -220,7 +220,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
         int operationTime = 0;
-        BigDecimal roundUp = BigDecimal.ZERO;
+        BigDecimal roundUp;
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");

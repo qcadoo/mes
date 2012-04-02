@@ -66,8 +66,8 @@ public class ParameterService {
         Entity newParameter = dataDefinition.create();
         newParameter.setField("checkDoneOrderForQuality", false);
         newParameter.setField("batchForDoneOrder", "01none");
-        Entity savedParameter = dataDefinition.save(newParameter);
-        return savedParameter;
+        newParameter = dataDefinition.save(newParameter);
+        return newParameter;
     }
 
     private DataDefinition getParameterDataDef() {

@@ -132,11 +132,11 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp1.getDataDefinition()).thenReturn(dd);
         when(opComp2.getDataDefinition()).thenReturn(dd);
 
-        given(opComp1.getId()).willReturn(1l);
-        given(opComp2.getId()).willReturn(2l);
+        given(opComp1.getId()).willReturn(1L);
+        given(opComp2.getId()).willReturn(2L);
 
-        given(dd.get(1l)).willReturn(opComp1);
-        given(dd.get(2l)).willReturn(opComp2);
+        given(dd.get(1L)).willReturn(opComp1);
+        given(dd.get(2L)).willReturn(opComp2);
 
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "operationRunsField", operationRuns);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "productQuantitiesService", productQuantitiesService);

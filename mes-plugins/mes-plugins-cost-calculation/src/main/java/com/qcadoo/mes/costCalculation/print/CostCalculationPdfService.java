@@ -383,7 +383,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
             technology = costCalculation.getBelongsToField(ORDER).getBelongsToField(TECHNOLOGY);
         }
 
-        Map<String, String> costModeName = getCostMode(costCalculation);
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 givenQty, true);

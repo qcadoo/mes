@@ -30,18 +30,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
@@ -55,25 +52,27 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderService {
 
-    private static final String TRUE = "true";
+    private static final String L_TRUE = "true";
 
-    private static final String COLUMN_FOR_ORDERS = "columnForOrders";
+    private static final String L_COLUMN_FOR_ORDERS = "columnForOrders";
 
-    private static final String COLUMN_FOR_PRODUCTS = "columnForProducts";
+    private static final String L_COLUMN_FOR_PRODUCTS = "columnForProducts";
 
-    private static final String IDENTIFIER_FIELD = "identifier";
+    private static final String L_IDENTIFIER = "identifier";
 
-    private static final String NAME_FIELD = "name";
+    private static final String L_NAME = "name";
 
-    private static final String DESCRIPTION_FIELD = "description";
+    private static final String L_DESCRIPTION = "description";
 
-    private static final String COLUMNFILLER_FIELD = "columnFiller";
+    private static final String L_COLUMNFILLER = "columnFiller";
 
-    private static final String TYPE_FIELD = "type";
+    private static final String L_TYPE = "type";
 
-    private static final String ACTIVE_FIELD = "active";
+    private static final String L_ALIGNMENT = "alignment";
 
-    private static enum ColumnType {
+    private static final String L_ACTIVE = "active";
+
+    private enum ColumnType {
         INPUT("input"), OUTPUT("output"), BOTH("both");
 
         private String stringValue;
@@ -90,9 +89,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private static enum OperationType {
         ADD, DELETE;
     };
-
-    private static final String[] COLUMN_ATTRIBUTES = new String[] { IDENTIFIER_FIELD, NAME_FIELD, DESCRIPTION_FIELD,
-            COLUMNFILLER_FIELD, TYPE_FIELD, ACTIVE_FIELD };
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoaderServiceImpl.class);
 
@@ -178,87 +174,78 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     public void fillColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_ORDERS, COLUMN_ATTRIBUTES, OperationType.ADD);
+        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.ADD);
     }
 
     public void clearColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_ORDERS, COLUMN_ATTRIBUTES, OperationType.DELETE);
+        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.DELETE);
     }
 
     public void fillColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, OperationType.ADD);
+        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.ADD);
     }
 
     public void clearColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, COLUMN_FOR_PRODUCTS, COLUMN_ATTRIBUTES, OperationType.DELETE);
+        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.DELETE);
     }
 
-    private void readDataFromXML(final String plugin, final String type, final String[] attributes, final OperationType operation) {
+    private void readDataFromXML(final String plugin, final String type, final OperationType operation) {
         LOG.info("Loading test data from " + type + ".xml ...");
 
         try {
-            DocumentBuilderFactory docBuildFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuild = docBuildFactory.newDocumentBuilder();
+            SAXBuilder builder = new SAXBuilder();
+            Document document = builder.build(getXmlFile(plugin, type));
+            Element rootNode = document.getRootElement();
+            @SuppressWarnings("unchecked")
+            List<Element> list = rootNode.getChildren("row");
 
-            InputStream file = WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type
-                    + ".xml");
+            for (int i = 0; i < list.size(); i++) {
+                Element node = list.get(i);
+                @SuppressWarnings("unchecked")
+                List<Attribute> listOfAtribute = node.getAttributes();
+                Map<String, String> values = new HashMap<String, String>();
 
-            Document doc = docBuild.parse(file);
-            doc.getDocumentElement().normalize();
-
-            NodeList nodeList = doc.getElementsByTagName("row");
-            for (int node = 0; node < nodeList.getLength(); node++) {
-                readData(type, attributes, nodeList, node, operation);
+                for (int j = 0; j < listOfAtribute.size(); j++) {
+                    values.put(listOfAtribute.get(j).getName().toLowerCase(Locale.ENGLISH), listOfAtribute.get(j).getValue());
+                }
+                readData(type, operation, values);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (SAXException e) {
+        } catch (JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
     }
 
-    private void readData(final String type, final String[] attributes, final NodeList nodeLst, final int row,
-            final OperationType operation) {
-        Map<String, String> values = new HashMap<String, String>();
-        Node fstNode = nodeLst.item(row);
-
-        for (String attribute : attributes) {
-            if (fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)) != null) {
-                String value = fstNode.getAttributes().getNamedItem(attribute.toUpperCase(Locale.ENGLISH)).getNodeValue();
-                values.put(attribute, value);
-            }
-        }
-
-        if (COLUMN_FOR_ORDERS.equals(type)) {
+    private void readData(final String type, final OperationType operation, final Map<String, String> values) {
+        if (L_COLUMN_FOR_ORDERS.equals(type)) {
             if (OperationType.ADD.equals(operation)) {
                 addColumnForOrders(values);
             } else if (OperationType.DELETE.equals(operation)) {
                 deleteColumnForOrders(values);
             }
-        } else if (COLUMN_FOR_PRODUCTS.equals(type)) {
+        } else if (L_COLUMN_FOR_PRODUCTS.equals(type)) {
             if (OperationType.ADD.equals(operation)) {
-                if (ColumnType.BOTH.getStringValue().equals(values.get(TYPE_FIELD))) {
+                if (ColumnType.BOTH.getStringValue().equals(values.get(L_TYPE))) {
                     addColumnForInputProducts(values);
                     addColumnForOutputProducts(values);
-                } else if (ColumnType.INPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.INPUT.getStringValue().equals(values.get(L_TYPE))) {
                     addColumnForInputProducts(values);
-                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(L_TYPE))) {
                     addColumnForOutputProducts(values);
                 } else {
-                    throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
+                    throw new IllegalStateException("Incorrect type - " + values.get(L_TYPE));
                 }
             } else if (OperationType.DELETE.equals(operation)) {
-                if (ColumnType.BOTH.getStringValue().equals(values.get(TYPE_FIELD))) {
+                if (ColumnType.BOTH.getStringValue().equals(values.get(L_TYPE))) {
                     deleteColumnForInputProducts(values);
                     deleteColumnForOutputProducts(values);
-                } else if (ColumnType.INPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.INPUT.getStringValue().equals(values.get(L_TYPE))) {
                     deleteColumnForInputProducts(values);
-                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(TYPE_FIELD))) {
+                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(L_TYPE))) {
                     deleteColumnForOutputProducts(values);
                 } else {
-                    throw new IllegalStateException("Incorrect type - " + values.get(TYPE_FIELD));
+                    throw new IllegalStateException("Incorrect type - " + values.get(L_TYPE));
                 }
             }
         }
@@ -267,13 +254,14 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForOrders(final Map<String, String> values) {
         Entity columnForOrders = getColumnForOrdersDD().create();
 
-        columnForOrders.setField(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD));
-        columnForOrders.setField(NAME_FIELD, values.get(NAME_FIELD));
-        columnForOrders.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
-        columnForOrders.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForOrders.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForOrders.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(NAME_FIELD) + "}");
+            LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(L_NAME) + "}");
         }
 
         if (columnForOrders.isValid()) {
@@ -283,19 +271,19 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column for input products saved {column=" + columnForOrders.toString() + "}");
             }
 
-            if (TRUE.equals(values.get(ACTIVE_FIELD))) {
+            if (L_TRUE.equals(values.get(L_ACTIVE))) {
                 addParameterOrderColumn(columnForOrders);
                 addWorkPlanOrderColumn(columnForOrders);
             }
         } else {
             throw new IllegalStateException("Saved entity - columnForOrders - have validation errors - "
-                    + values.get(NAME_FIELD.toUpperCase(Locale.ENGLISH)));
+                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
 
     private void deleteColumnForOrders(final Map<String, String> values) {
-        Entity columnForOrders = getColumnForOrdersDD().find()
-                .add(SearchRestrictions.eq(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD))).uniqueResult();
+        Entity columnForOrders = getColumnForOrdersDD().find().add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER)))
+                .uniqueResult();
 
         if (columnForOrders != null) {
             getColumnForOrdersDD().delete(columnForOrders.getId());
@@ -305,13 +293,14 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForInputProducts(final Map<String, String> values) {
         Entity columnForInputProduct = getColumnForInputProductsDD().create();
 
-        columnForInputProduct.setField(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD));
-        columnForInputProduct.setField(NAME_FIELD, values.get(NAME_FIELD));
-        columnForInputProduct.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
-        columnForInputProduct.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForInputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForInputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(NAME_FIELD) + "}");
+            LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(L_NAME) + "}");
         }
 
         if (columnForInputProduct.isValid()) {
@@ -321,7 +310,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column for input products saved {column=" + columnForInputProduct.toString() + "}");
             }
 
-            if (TRUE.equals(values.get(ACTIVE_FIELD))) {
+            if (L_TRUE.equals(values.get(L_ACTIVE))) {
                 addParameterInputColumn(columnForInputProduct);
                 addOperationInputColumn(columnForInputProduct);
                 addTechnologyOperationInputColumn(columnForInputProduct);
@@ -329,13 +318,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             }
         } else {
             throw new IllegalStateException("Saved entity - columnForInputProducts - have validation errors - "
-                    + values.get(NAME_FIELD.toUpperCase(Locale.ENGLISH)));
+                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
 
     private void deleteColumnForInputProducts(final Map<String, String> values) {
         Entity columnForInputProduct = getColumnForInputProductsDD().find()
-                .add(SearchRestrictions.eq(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD))).uniqueResult();
+                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).uniqueResult();
 
         if (columnForInputProduct != null) {
             getColumnForInputProductsDD().delete(columnForInputProduct.getId());
@@ -345,13 +334,14 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private void addColumnForOutputProducts(final Map<String, String> values) {
         Entity columnForOutputProduct = getColumnForOutputProductsDD().create();
 
-        columnForOutputProduct.setField(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD));
-        columnForOutputProduct.setField(NAME_FIELD, values.get(NAME_FIELD));
-        columnForOutputProduct.setField(DESCRIPTION_FIELD, values.get(DESCRIPTION_FIELD));
-        columnForOutputProduct.setField(COLUMNFILLER_FIELD, values.get(COLUMNFILLER_FIELD));
+        columnForOutputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
+        columnForOutputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(NAME_FIELD) + "}");
+            LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(L_NAME) + "}");
         }
 
         if (columnForOutputProduct.isValid()) {
@@ -361,7 +351,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column for output products saved {column=" + columnForOutputProduct.toString() + "}");
             }
 
-            if (TRUE.equals(values.get(ACTIVE_FIELD))) {
+            if (L_TRUE.equals(values.get(L_ACTIVE))) {
                 addParameterOutputColumn(columnForOutputProduct);
                 addOperationOutputColumn(columnForOutputProduct);
                 addTechnologyOperationOutputColumn(columnForOutputProduct);
@@ -369,13 +359,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             }
         } else {
             throw new IllegalStateException("Saved entity - columnForOutputProducts - have validation errors - "
-                    + values.get(NAME_FIELD.toUpperCase(Locale.ENGLISH)));
+                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
 
     private void deleteColumnForOutputProducts(final Map<String, String> values) {
         Entity columnForOutputProduct = getColumnForOutputProductsDD().find()
-                .add(SearchRestrictions.eq(IDENTIFIER_FIELD, values.get(IDENTIFIER_FIELD))).uniqueResult();
+                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).uniqueResult();
 
         if (columnForOutputProduct != null) {
             getColumnForOutputProductsDD().delete(columnForOutputProduct.getId());
@@ -721,4 +711,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         return getColumnForOutputProductsDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
+    private InputStream getXmlFile(final String plugin, final String type) throws IOException {
+        return WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type + ".xml");
+    }
 }

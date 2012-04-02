@@ -25,9 +25,9 @@
 
 -->
 <column>
-	<row IDENTIFIER="orderNumber" NAME="workPlans.columnForOrders.name.value.orderNumber" DESCRIPTION="workPlans.columnForOrders.description.value.orderNumber" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ACTIVE="true" />
-	<row IDENTIFIER="orderName" NAME="workPlans.columnForOrders.name.value.orderName" DESCRIPTION="workPlans.columnForOrders.description.value.orderName" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ACTIVE="true" />
-	<row IDENTIFIER="productName" NAME="workPlans.columnForOrders.name.value.productName" DESCRIPTION="workPlans.columnForOrders.description.value.productName" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ACTIVE="true" />
-	<row IDENTIFIER="plannedQuantity" NAME="workPlans.columnForOrders.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForOrders.description.value.plannedQuantity" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ACTIVE="true" />
-	<row IDENTIFIER="plannedEndDate" NAME="workPlans.columnForOrders.name.value.plannedEndDate" DESCRIPTION="workPlans.columnForOrders.description.value.plannedEndDate" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ACTIVE="true" />
+	<row IDENTIFIER="orderNumber" NAME="workPlans.columnForOrders.name.value.orderNumber" DESCRIPTION="workPlans.columnForOrders.description.value.orderNumber" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" ACTIVE="true" />
+	<row IDENTIFIER="orderName" NAME="workPlans.columnForOrders.name.value.orderName" DESCRIPTION="workPlans.columnForOrders.description.value.orderName" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" ACTIVE="true" />
+	<row IDENTIFIER="productName" NAME="workPlans.columnForOrders.name.value.productName" DESCRIPTION="workPlans.columnForOrders.description.value.productName" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" ACTIVE="true" />
+	<row IDENTIFIER="plannedQuantity" NAME="workPlans.columnForOrders.name.value.plannedQuantity" DESCRIPTION="workPlans.columnForOrders.description.value.plannedQuantity" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="02right" ACTIVE="true" />
+	<row IDENTIFIER="plannedEndDate" NAME="workPlans.columnForOrders.name.value.plannedEndDate" DESCRIPTION="workPlans.columnForOrders.description.value.plannedEndDate" COLUMNFILLER="com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller" ALIGNMENT="01left" ACTIVE="true" />
 </column>

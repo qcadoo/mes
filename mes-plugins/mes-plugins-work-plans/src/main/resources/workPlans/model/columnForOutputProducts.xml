@@ -35,11 +35,14 @@
 			<validatesLength max="1024" />
 		</string>
 		<string name="description">
-			<validatesLength max="2048" />
+			<validatesLength max="1024" />
 		</string>
 		<string name="columnFiller" required="true">
 			<validatesLength max="255" />
 		</string>
+
+		<enum name="alignment" values="01left,02right"
+			default="01left" required="true" />
 
 		<hasMany name="parameterOutputColumns" plugin="workPlans"
 			model="parameterOutputColumn" joinField="columnForOutputProducts"
