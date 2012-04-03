@@ -369,7 +369,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedCyclesCosts"
 									field="#{form}.plannedCyclesCosts" reference="plannedCyclesCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+										<option type="alignment" value="right" />
+										</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="plannedCyclesCostsCurrency"
@@ -381,7 +383,9 @@
 							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="cyclesCosts"
 									field="#{form}.cyclesCosts" reference="cyclesCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="8" row="1">
 								<component type="input" name="cyclesCostsCurrency"
@@ -393,7 +397,9 @@
 							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="cyclesCostsBalance"
 									field="#{form}.cyclesCostsBalance" reference="cyclesCostsBalance"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="12" row="1">
 								<component type="input" name="cyclesCostsBalanceCurrency"
