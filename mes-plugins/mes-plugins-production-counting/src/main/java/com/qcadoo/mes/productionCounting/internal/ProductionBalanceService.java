@@ -52,9 +52,9 @@ public interface ProductionBalanceService {
 
     List<Entity> getProductionRecordsFromDB(final Entity order);
 
-    Entity getProductionBalanceFromDB(final Long productionBalanceId);
-
     Entity getOrderFromDB(final Long orderId);
+
+    Entity getProductionBalanceFromDB(final Long productionBalanceId);
 
     Entity getCompanyFromDB();
 }
