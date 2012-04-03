@@ -97,3 +97,9 @@ UPDATE workplans_columnfororders SET alignment = '01left';
 UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='plannedQuantity'; 
 
 -- end
+
+-- Table: costnormsformaterials_calculationoperationcomponent
+-- changed: 3.04.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
+
+--end

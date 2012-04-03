@@ -26,64 +26,56 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="costNormsForProductsInOrderList" modelPlugin="orders" modelName="order">
+	name="costNormsForMaterialsInTechnologyList" modelPlugin="technologies" modelName="operationProductInComponent">
 
 	<component type="window" name="window" reference="window">
 		
 		<ribbon>
 			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
-			
-			<group name="costs">
-				<bigButton name="copyCostsFromProducts" icon="copyIcon24.png"  state="enabled" action="#{form}.fireEvent(copyCostsFromProducts);" />
-			</group>
 		</ribbon>
 		
 		<windowTab name="mainTab" reference="inProductsCostTab">
-			<component type="form" name="order" reference="order" />
+			<component type="form" name="technologies" reference="technology" />
 			
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="1">
+				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="2">
 					<layoutElement column="1" row="1">
-						<component type="grid" name="inProductsGrid" source="#{order}.orderOperationProductInComponents" reference="grid">
+						<component type="label" name="description">
+							<option type="labelStyle" value="text" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="grid" name="inProductsGrid" reference="grid">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']"
-								 width="100" link="true" />
+								 width="100" />
 							<option type="column" name="name" fields="product"
 								expression="#product['name']"
-								width="200" link="true" />
-							<option type="column" name="nominalCost" fields="nominalCost"
-								expression="#nominalCost != null ? 
-								#nominalCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
-								link="true" /> 
-							<option type="column" name="lastPurchaseCost" fields="lastPurchaseCost"
-								expression="#lastPurchaseCost != null ? 
-								#lastPurchaseCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
-								link="true" />
-							<option type="column" name="averageCost" fields="averageCost" 
-								expression="#averageCost != null ? 
-								#averageCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
-								link="true" /> 
-							<option type="column" name="costForOrder" fields="costForOrder" 
-								expression="#costForOrder != null ? 
-								#costForOrder + ' / ' + #costForNumber + #product.get('unit') : ''" 
-								link="true" />
+								width="200" />
+							<option type="column" name="nominalCost" fields="product"
+								expression="#product.get('nominalCost') != null ? 
+								#product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+							<option type="column" name="lastPurchaseCost" fields="product"
+								expression="#product.get('lastPurchaseCost') != null ? 
+								#product.get('lastPurchaseCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" />
+							<option type="column" name="averageCost" fields="product" 
+								expression="#product.get('averageCost') != null ? 
+								#product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
 								
 							<option type="order" column="name" direction="asc" />
-							
-							<option type="correspondingView" value="costNormsForProduct/costNormsForProductsInOrderDetails" />
-							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
-							
 						</component>
 					</layoutElement>
 				</component>
-				
-				<listener event="copyCostsFromProducts"
-					class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
-					method="copyCostsFromProducts" />
 			</component>
 		</windowTab>
 		
 		<option type="header" value="false" />
 	</component>
+	
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
+			method="fillInProductsGridInTechnology" />
+	</hooks>
+	
 </view>

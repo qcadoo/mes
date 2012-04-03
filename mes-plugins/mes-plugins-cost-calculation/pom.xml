@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-cost-norms-for-product</artifactId>
+			<artifactId>mes-plugins-cost-norms-for-materials</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -25,7 +25,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-material-requirements</artifactId>
+			<artifactId>mes-plugins-production-scheduling</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

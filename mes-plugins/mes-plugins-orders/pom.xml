@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
+			<artifactId>mes-plugins-production-lines</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
