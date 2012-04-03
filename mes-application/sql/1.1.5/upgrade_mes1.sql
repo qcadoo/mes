@@ -98,10 +98,15 @@ UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='pla
 
 -- end
 
-
 -- Table: productioncounting_productionrecord
 -- changed: 02.04.2012
 
 ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcycles TYPE numeric(10,3);
 
 -- end
+
+-- Table: costnormsformaterials_calculationoperationcomponent
+-- changed: 3.04.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
+
+--end

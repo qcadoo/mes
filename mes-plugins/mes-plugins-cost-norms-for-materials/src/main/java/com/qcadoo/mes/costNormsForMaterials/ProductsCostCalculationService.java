@@ -21,22 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForProduct.constants;
+package com.qcadoo.mes.costNormsForMaterials;
 
-public class OrderOperationProductInComponentFields {
+import java.math.BigDecimal;
+import java.util.Map;
 
-    public static final String ORDER = "order";
+import com.qcadoo.model.api.Entity;
 
-    public static final String PRODUCT = "product";
+public interface ProductsCostCalculationService {
 
-    public static final String COST_FOR_NUMBER = "costForNumber";
+    void calculateTotalProductsCost(final Entity costCalculation, final String sourceOfMaterialCosts);
 
-    public static final String NOMINAL_COST = "nominalCost";
+    BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
+            final String calculateMaterialCostsMode);
 
-    public static final String LAST_PURCHASE_COST = "lastPurchaseCost";
+    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final String calculateMaterialCostsMode);
 
-    public static final String AVERAGE_COST = "averageCost";
+    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+            final String calculateMaterialCostsMode, final Entity order);
 
-    public static final String COST_FOR_ORDER = "costForOrder";
-
+    Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts);
 }

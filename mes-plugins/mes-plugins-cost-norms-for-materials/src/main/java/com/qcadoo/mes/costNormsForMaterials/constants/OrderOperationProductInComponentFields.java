@@ -21,33 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForProduct.constants;
+package com.qcadoo.mes.costNormsForMaterials.constants;
 
-public enum ProductsCostFields {
-    AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder");
+public class OrderOperationProductInComponentFields {
 
-    private final String strValue;
+    public static final String ORDER = "order";
 
-    private ProductsCostFields(final String strValue) {
-        this.strValue = strValue;
-    }
+    public static final String PRODUCT = "product";
 
-    public String getStrValue() {
-        return strValue;
-    }
+    public static final String COST_FOR_NUMBER = "costForNumber";
 
-    public static ProductsCostFields parseString(final String strValue) {
-        if ("01nominal".equals(strValue)) {
-            return NOMINAL;
-        } else if ("02average".equals(strValue)) {
-            return AVERAGE;
-        } else if ("03lastPurchase".equals(strValue)) {
-            return LAST_PURCHASE;
-        } else if ("04costForOrder".equals(strValue)) {
-            return COST_FOR_ORDER;
-        }
+    public static final String NOMINAL_COST = "nominalCost";
 
-        throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + strValue);
-    }
+    public static final String LAST_PURCHASE_COST = "lastPurchaseCost";
+
+    public static final String AVERAGE_COST = "averageCost";
+
+    public static final String COST_FOR_ORDER = "costForOrder";
 
 }
