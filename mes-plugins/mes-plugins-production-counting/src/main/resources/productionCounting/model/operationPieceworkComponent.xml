@@ -32,9 +32,18 @@
 		<belongsTo name="orderOperationComponent" model="orderOperationComponent"
 			plugin="productionScheduling" />
 		
-		<integer name="plannedCycles" />
-		<integer name="cycles" />
-		<integer name="cyclesBalance" />
+		<decimal name="plannedCycles">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="cycles">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="cyclesBalance">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
 	</fields>
 	<hooks />
 </model>

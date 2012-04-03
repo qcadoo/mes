@@ -379,7 +379,7 @@
 					<option type="label" value="piecework" />
 					<component type="gridLayout" name="pieceworkGridLayout" columns="1" rows="1">
 						<layoutElement column="1" row="1">
-							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" />
+							<component type="input" name="executedOperationCycles" reference="executedOperationCycles" field="#{form}.executedOperationCycles" />
 						</layoutElement>
 					</component>
 				</component>

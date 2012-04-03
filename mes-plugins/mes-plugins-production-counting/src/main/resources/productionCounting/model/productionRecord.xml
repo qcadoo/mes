@@ -57,7 +57,10 @@
 		
 		<integer name="plannedTime" />
 		
-		<integer name="executedOperationCycles" />
+		<decimal name="executedOperationCycles">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
 
 		<belongsTo name="staff" model="staff" plugin="basic" />
 		<belongsTo name="workstationType" model="workstationType"
