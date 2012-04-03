@@ -52,8 +52,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -62,6 +64,7 @@ import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
@@ -523,5 +526,76 @@ public class WorkPlanPdfServiceTest {
         verify(document).add(Mockito.any(Paragraph.class));
         assertEquals("column", ordersHeader.get(0));
         assertEquals("column2", ordersHeader.get(1));
+    }
+
+    @Test
+    public void shouldPrepareProductSeriesTableCorrectly() {
+        // given
+        Entity prodComp1 = mock(Entity.class);
+        Entity prodComp2 = mock(Entity.class);
+        Entity prod1 = mock(Entity.class);
+        Entity prod2 = mock(Entity.class);
+        when(prod1.getStringField("number")).thenReturn("1");
+        when(prod2.getStringField("number")).thenReturn("2");
+        when(prodComp1.getBelongsToField("product")).thenReturn(prod1);
+        when(prodComp2.getBelongsToField("product")).thenReturn(prod2);
+
+        List<Entity> components = asList(prodComp1, prodComp2);
+        Document document = mock(Document.class);
+        Map<Entity, Map<String, String>> columnValues = new HashMap<Entity, Map<String, String>>();
+        Entity operationComponent = mock(Entity.class);
+        Entity column1 = mock(Entity.class);
+        Entity column2 = mock(Entity.class);
+        Entity column1Def = mock(Entity.class);
+        Entity column2Def = mock(Entity.class);
+        when(column1.getBelongsToField("columnForInputProducts")).thenReturn(column1Def);
+        when(column2.getBelongsToField("columnForInputProducts")).thenReturn(column2Def);
+
+        when(column1Def.getStringField("identifier")).thenReturn("column1");
+        when(column2Def.getStringField("identifier")).thenReturn("column2");
+
+        when(column1Def.getStringField("name")).thenReturn("column1");
+        when(column2Def.getStringField("name")).thenReturn("column2");
+
+        when(column1.getField("succession")).thenReturn(Integer.valueOf(1));
+        when(column2.getField("succession")).thenReturn(Integer.valueOf(2));
+
+        when(column1Def.getStringField("alignment")).thenReturn("01left");
+        when(column2Def.getStringField("alignment")).thenReturn("02right");
+
+        columnValues.put(prodComp1, new HashMap<String, String>());
+        columnValues.put(prodComp2, new HashMap<String, String>());
+
+        columnValues.get(prodComp1).put("column1", "value1");
+        columnValues.get(prodComp1).put("column1", "value2");
+
+        columnValues.get(prodComp2).put("column1", "value1");
+        columnValues.get(prodComp2).put("column1", "value2");
+
+        EntityList columns = mockEntityListIterator(asList(column1, column2));
+        when(operationComponent.getHasManyField("technologyOperationInputColumns")).thenReturn(columns);
+        ProductDirection direction = ProductDirection.IN;
+
+        PdfPTable table = mock(PdfPTable.class);
+        PdfPCell cell = mock(PdfPCell.class);
+        when(table.getDefaultCell()).thenReturn(cell);
+
+        when(pdfHelper.createTableWithHeader(Mockito.eq(2), Mockito.anyList(), Mockito.eq(false))).thenReturn(table);
+        when(translationService.translate("workPlans.workPlan.report.productsInTable", locale)).thenReturn("title");
+
+        // when
+        try {
+            workPlanPdfService.addProductsSeries(components, document, columnValues, operationComponent, df, direction, locale);
+        } catch (DocumentException e) {
+        }
+
+        // then
+        try {
+            verify(document).add(table);
+            verify(cell, times(2)).setHorizontalAlignment(Element.ALIGN_LEFT);
+            verify(cell, times(2)).setHorizontalAlignment(Element.ALIGN_RIGHT);
+            verify(table, times(4)).addCell(new Phrase(Mockito.anyString(), FontUtils.getDejavuRegular9Dark()));
+        } catch (DocumentException e) {
+        }
     }
 }

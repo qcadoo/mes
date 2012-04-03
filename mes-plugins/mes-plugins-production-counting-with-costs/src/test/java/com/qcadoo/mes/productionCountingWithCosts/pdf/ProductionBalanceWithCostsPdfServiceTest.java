@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -110,6 +109,8 @@ public class ProductionBalanceWithCostsPdfServiceTest {
 
         List<Entity> operationComponents = new LinkedList<Entity>();
         given(balance.getField("operationCostComponents")).willReturn(operationComponents);
+        given(balance.getField("operationPieceworkCostComponents")).willReturn(operationComponents);
+
     }
 
     @Test
@@ -129,7 +130,6 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         verify(document).add(threeColumnTable);
     }
 
-    @Ignore
     @Test
     public void shouldNotAddTimeBalanceAndProductionCostsIfTypeIsNotHourly() throws Exception {
         // given
@@ -194,7 +194,6 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         verify(costCalculationPdfService).printMaterialAndOperationNorms(document, balance, locale);
     }
 
-    @Ignore
     @Test
     public void shouldCallProductAndOperationNormsPrintingMethodNoMatterWhatIncludingPieceworkAndCumulatedType() throws Exception {
         // given
