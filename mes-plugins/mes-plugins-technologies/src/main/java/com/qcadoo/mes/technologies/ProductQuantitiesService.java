@@ -103,7 +103,7 @@ public interface ProductQuantitiesService {
      * @param onlyComponents
      *            A flag that indicates if we want only components or intermediates too
      * @param operationRuns
-     *            Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
+     *            Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
      *            run.
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)

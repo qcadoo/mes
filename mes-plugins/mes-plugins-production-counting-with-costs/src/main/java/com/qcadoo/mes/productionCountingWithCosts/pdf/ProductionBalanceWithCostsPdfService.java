@@ -151,7 +151,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             }
         } else if (isTypePiecework) {
             productionBalancePdfService.addPieceworkBalance(document, productionBalance, locale);
-            addCostsBalance("cyclesCosts", document, productionBalance, locale);
+            addCostsBalance("cycles", document, productionBalance, locale);
         }
 
         costCalculationPdfService.printMaterialAndOperationNorms(document, productionBalance, locale);

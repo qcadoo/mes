@@ -41,8 +41,10 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
 
 import java.util.Arrays;
 
@@ -219,7 +221,8 @@ public class ProductionBalanceViewService {
         Entity product = order.getBelongsToField(MODEL_PRODUCT);
         Integer recordsNumber = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities().size();
+                .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue())).add(SearchRestrictions.belongsTo(ORDER, order))
+                .list().getEntities().size();
 
         productField.setFieldValue(product.getId());
         recordsNumberField.setFieldValue(recordsNumber);

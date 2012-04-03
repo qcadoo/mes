@@ -544,35 +544,35 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
         PdfPTable pieceworkTable = pdfHelper.createTableWithHeader(5, operationsTimeTableHeader, false);
 
-        Integer plannedTimeSum = 0;
-        Integer registeredTimeSum = 0;
-        Integer timeBalanceSum = 0;
+        BigDecimal plannedTimeSum = BigDecimal.ZERO;
+        BigDecimal registeredTimeSum = BigDecimal.ZERO;
+        BigDecimal timeBalanceSum = BigDecimal.ZERO;
 
         for (Entity pieceworkComponent : pieceworkComponents) {
             pieceworkTable.addCell(new Phrase(pieceworkComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
                     .getStringField("nodeNumber"), FontUtils.getDejavuRegular9Dark()));
             pieceworkTable.addCell(new Phrase(pieceworkComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
                     .getBelongsToField("operation").getStringField("number"), FontUtils.getDejavuRegular9Dark()));
-            pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) pieceworkComponent
-                    .getField("plannedCycles")), FontUtils.getDejavuRegular9Dark()));
-            pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) pieceworkComponent
-                    .getField("cycles")), FontUtils.getDejavuRegular9Dark()));
-            pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) pieceworkComponent
-                    .getField("cyclesBalance")), FontUtils.getDejavuRegular9Dark()));
-            plannedTimeSum += (Integer) pieceworkComponent.getField("plannedCycles");
-            registeredTimeSum += (Integer) pieceworkComponent.getField("cycles");
-            timeBalanceSum += (Integer) pieceworkComponent.getField("cyclesBalance");
+            pieceworkTable.addCell(new Phrase(numberService.format(pieceworkComponent.getField("plannedCycles")), FontUtils
+                    .getDejavuRegular9Dark()));
+            pieceworkTable.addCell(new Phrase(numberService.format(pieceworkComponent.getField("cycles")), FontUtils
+                    .getDejavuRegular9Dark()));
+            pieceworkTable.addCell(new Phrase(numberService.format(pieceworkComponent.getField("cyclesBalance")), FontUtils
+                    .getDejavuRegular9Dark()));
+            plannedTimeSum = plannedTimeSum.add((BigDecimal) pieceworkComponent.getField("plannedCycles"),
+                    numberService.getMathContext());
+            registeredTimeSum = registeredTimeSum.add((BigDecimal) pieceworkComponent.getField("cycles"),
+                    numberService.getMathContext());
+            timeBalanceSum = timeBalanceSum.add((BigDecimal) pieceworkComponent.getField("cyclesBalance"),
+                    numberService.getMathContext());
         }
 
         pieceworkTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                 locale), FontUtils.getDejavuRegular9Dark()));
         pieceworkTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString(plannedTimeSum), FontUtils
-                .getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString(registeredTimeSum), FontUtils
-                .getDejavuRegular9Dark()));
-        pieceworkTable.addCell(new Phrase(timeConverterService.convertTimeToString(timeBalanceSum), FontUtils
-                .getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(plannedTimeSum), FontUtils.getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(registeredTimeSum), FontUtils.getDejavuRegular9Dark()));
+        pieceworkTable.addCell(new Phrase(numberService.format(timeBalanceSum), FontUtils.getDejavuRegular9Dark()));
 
         document.add(pieceworkTable);
     }

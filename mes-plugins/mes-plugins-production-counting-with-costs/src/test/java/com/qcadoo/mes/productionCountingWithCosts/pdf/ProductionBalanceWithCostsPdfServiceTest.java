@@ -109,6 +109,8 @@ public class ProductionBalanceWithCostsPdfServiceTest {
 
         List<Entity> operationComponents = new LinkedList<Entity>();
         given(balance.getField("operationCostComponents")).willReturn(operationComponents);
+        given(balance.getField("operationPieceworkCostComponents")).willReturn(operationComponents);
+
     }
 
     @Test

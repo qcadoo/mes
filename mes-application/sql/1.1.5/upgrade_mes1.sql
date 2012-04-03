@@ -16,9 +16,9 @@ CREATE TABLE productioncounting_operationpieceworkcomponent
   id bigint NOT NULL,
   productionbalance_id bigint,
   orderoperationcomponent_id bigint,
-  plannedcycles integer,
-  cycles integer,
-  cyclesbalance integer,
+  plannedcycles numeric(10,3),
+  cycles numeric(10,3),
+  cyclesbalance numeric(10,3),
   CONSTRAINT productioncounting_operationpieceworkc_pkey PRIMARY KEY (id ),
   CONSTRAINT productioncounting_operationpieceworkc_ooc_fkey FOREIGN KEY (orderoperationcomponent_id)
       REFERENCES productionscheduling_orderoperationcomponent (id) DEFERRABLE,
@@ -95,6 +95,13 @@ ALTER TABLE workplans_columnfororders ALTER COLUMN alignment SET DEFAULT '01left
 
 UPDATE workplans_columnfororders SET alignment = '01left'; 
 UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='plannedQuantity'; 
+
+-- end
+
+-- Table: productioncounting_productionrecord
+-- changed: 02.04.2012
+
+ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcycles TYPE numeric(10,3);
 
 -- end
 

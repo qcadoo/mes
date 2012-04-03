@@ -171,7 +171,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedComponentsCosts"
 									field="#{form}.plannedComponentsCosts" reference="plannedComponentsCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="plannedComponentsCostsCurrency"
@@ -183,7 +185,9 @@
 							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="componentsCosts"
 									field="#{form}.componentsCosts" reference="componentsCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="8" row="1">
 								<component type="input" name="componentsCostsCurrency"
@@ -195,7 +199,9 @@
 							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="componentsCostsBalance"
 									field="#{form}.componentsCostsBalance" reference="componentsCostsBalance"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="12" row="1">
 								<component type="input" name="componentsCostsBalanceCurrency"
@@ -236,7 +242,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedMachineCosts"
 									field="#{form}.plannedMachineCosts" reference="plannedMachineCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="plannedMachineCostsCurrency"
@@ -248,7 +256,9 @@
 							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="machineCosts"
 									field="#{form}.machineCosts" reference="machineCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="8" row="1">
 								<component type="input" name="machineCostsCurrency"
@@ -260,7 +270,9 @@
 							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="machineCostsBalance"
 									field="#{form}.machineCostsBalance" reference="machineCostsBalance"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="12" row="1">
 								<component type="input" name="machineCostsBalanceCurrency"
@@ -282,7 +294,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedLaborCosts"
 									field="#{form}.plannedLaborCosts" reference="plannedLaborCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="plannedLaborCostsCurrency"
@@ -294,7 +308,9 @@
 							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="laborCosts"
 									field="#{form}.laborCosts" reference="laborCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="8" row="1">
 								<component type="input" name="laborCostsCurrency"
@@ -306,7 +322,9 @@
 							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="laborCostsBalance"
 									field="#{form}.laborCostsBalance" reference="laborCostsBalance"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="12" row="1">
 								<component type="input" name="laborCostsBalanceCurrency"
@@ -351,7 +369,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="plannedCyclesCosts"
 									field="#{form}.plannedCyclesCosts" reference="plannedCyclesCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+										<option type="alignment" value="right" />
+										</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="plannedCyclesCostsCurrency"
@@ -363,7 +383,9 @@
 							<layoutElement column="5" row="1" width="3">
 								<component type="input" name="cyclesCosts"
 									field="#{form}.cyclesCosts" reference="cyclesCosts"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="8" row="1">
 								<component type="input" name="cyclesCostsCurrency"
@@ -375,7 +397,9 @@
 							<layoutElement column="9" row="1" width="3">
 								<component type="input" name="cyclesCostsBalance"
 									field="#{form}.cyclesCostsBalance" reference="cyclesCostsBalance"
-									defaultEnabled="false" />
+									defaultEnabled="false" >
+									<option type="alignment" value="right" />
+									</component>
 							</layoutElement>
 							<layoutElement column="12" row="1">
 								<component type="input" name="cyclesCostsBalanceCurrency"
