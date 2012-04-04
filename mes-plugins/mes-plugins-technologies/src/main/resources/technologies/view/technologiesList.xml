@@ -185,9 +185,10 @@
 			<option type="column" name="product" fields="product"
 				expression="#product['name']" />
 			<option type="column" name="state" fields="state" />
+			<option type="column" name="technologyGroup" fields="technologyGroup" expression="#technologyGroup['number']" />
 			<option type="order" column="number" direction="desc" />
-			<option type="searchable" value="name,number,product,state" />
-			<option type="orderable" value="name,number,product,state" />
+			<option type="searchable" value="name,number,product,state,technologyGroup" />
+			<option type="orderable" value="name,number,product,state,technologyGroup" />
 			<option type="correspondingView" value="technologies/technologyDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />
