@@ -76,3 +76,13 @@ REATE TABLE jointable_productionline_technologygroup
   CONSTRAINT jointable_pl_techgroup_technologygroup_fkey FOREIGN KEY (technologygroup_id)
       REFERENCES technologies_technologygroup (id) DEFERRABLE;
 )
+
+-- Table: basic_product
+-- changed: 04.04.2012
+
+ALTER TABLE basic_product ADD COLUMN technologygroup_id bigint;
+ALTER TABLE basic_product
+  ADD CONSTRAINT basic_product_technologygroup_fkey FOREIGN KEY (technologygroup_id)
+      REFERENCES technologies_technologygroup (id) DEFERRABLE;
+      
+-- end
