@@ -52,8 +52,8 @@ CREATE TABLE productionlines_productionline
   active boolean DEFAULT true,
   CONSTRAINT productionlines_productionline_pkey PRIMARY KEY (id),
   CONSTRAINT productionlines_division_fkey FOREIGN KEY (division_id)
-      REFERENCES basic_division (id) DEFERRABLE;
-)
+      REFERENCES basic_division (id) DEFERRABLE
+);
 
 CREATE TABLE jointable_productionline_technology
 (
@@ -61,21 +61,21 @@ CREATE TABLE jointable_productionline_technology
   productionline_id bigint NOT NULL,
   CONSTRAINT jointable_productionline_technology_pkey PRIMARY KEY (productionline_id, technology_id),
   CONSTRAINT jointable_pl_tech_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline (id) DEFERRABLE;
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
   CONSTRAINT jointable_pl_tech_technology_fkey FOREIGN KEY (technology_id)
-      REFERENCES technologies_technology (id) DEFERRABLE;
-)
+      REFERENCES technologies_technology (id) DEFERRABLE
+);
 
-REATE TABLE jointable_productionline_technologygroup
+CREATE TABLE jointable_productionline_technologygroup
 (
   technologygroup_id bigint NOT NULL,
   productionline_id bigint NOT NULL,
   CONSTRAINT jointable_productionline_technologygroup_pkey PRIMARY KEY (productionline_id, technologygroup_id),
   CONSTRAINT jointable_pl_techgroup_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline (id) DEFERRABLE;
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
   CONSTRAINT jointable_pl_techgroup_technologygroup_fkey FOREIGN KEY (technologygroup_id)
-      REFERENCES technologies_technologygroup (id) DEFERRABLE;
-)
+      REFERENCES technologies_technologygroup (id) DEFERRABLE
+);
 
 -- Table: basic_product
 -- changed: 04.04.2012
