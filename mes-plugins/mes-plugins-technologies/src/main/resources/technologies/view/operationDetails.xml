@@ -37,9 +37,7 @@
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="7">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
-						<option type="alignment" value="right" />
-					</component>
+					<component type="input" name="number" field="number" />
 				</layoutElement>
 				<layoutElement column="1" row="2" height="2">
 					<component type="textarea" name="name" field="name" />

@@ -24,16 +24,27 @@
     ***************************************************************************
 
 -->
-<dictionaries>
-	<row NAME="categories" ITEM="kategoria 1" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 2" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 3" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 4" DESCRIPTION="" />
-	<row NAME="posts" ITEM="stanowisko 1" DESCRIPTION="" />
-	<row NAME="posts" ITEM="stanowisko 2" DESCRIPTION="" />
-	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
-	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
-	<row NAME="units" ITEM="m2" DESCRIPTION="Metr kwadratowy" />
-	<row NAME="productionLinePlaces" ITEM="Miejsce 1" DESCRIPTION="" />
-	<row NAME="productionLinePlaces" ITEM="Miejsce 2" DESCRIPTION="" />
-</dictionaries>
+<model name="productionLine" activable="true" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="2048" />
+		</string>
+		<belongsTo name="division" plugin="basic" model="division" />
+		<dictionary name="place" dictionary="productionLinePlaces" required="false" />
+		<string name="description">
+			<validatesLength max="2048" />
+		</string>
+		<boolean name="supportsAllTechnologies" default="true" />
+		<file name="documentation" />
+		<manyToMany name="groups" joinField="productionLines" model="technologyGroup"
+			plugin="technologies" copyable="true" />
+	</fields>
+	<hooks>
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />
+</model>

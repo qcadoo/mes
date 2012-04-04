@@ -34,4 +34,6 @@
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
 	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
+	<row NAME="productionLinePlaces" ITEM="Place 1" DESCRIPTION="" />
+	<row NAME="productionLinePlaces" ITEM="Place 2" DESCRIPTION="" />
 </dictionaries>
