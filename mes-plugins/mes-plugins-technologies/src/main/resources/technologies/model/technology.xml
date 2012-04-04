@@ -48,6 +48,7 @@
 			default="01draft" required="true" />
 		<hasMany name="loggings" joinField="technology" model="logging"
 			cascade="delete" />
+		
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"

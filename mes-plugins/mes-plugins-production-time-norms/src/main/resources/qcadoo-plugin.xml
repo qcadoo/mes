@@ -145,7 +145,15 @@
 			<model:integer name="timeNextOperation" required="true"
 				default="0" />
 		</model:model-field>
-
+		
+		<model:model-field plugin="technologies" model="operation">
+		<model:dictionary name="unit" dictionary="units" required="true"/>
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="operation">
+		<model:dictionary name="quantityUnit" dictionary="units" required="true"/>
+		</model:model-field>
+		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:onSave
 				class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyModelHooks"

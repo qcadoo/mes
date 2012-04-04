@@ -105,3 +105,20 @@ UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='pla
 ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcycles TYPE numeric(10,3);
 
 -- end
+
+-- Table: technologies_operation
+-- changed: 03.04.2012
+
+ALTER TABLE technologies_operation ADD COLUMN areproductquantitiesdivisible boolean DEFAULT true;
+ALTER TABLE technologies_operation ADD COLUMN istjdivisible boolean DEFAULT true;
+
+-- end
+
+-- Table: technologies_technologyoperationcomponent
+-- changed: 03.04.2012
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN areproductquantitiesdivisible boolean DEFAULT true;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN istjdivisible boolean DEFAULT true;
+
+-- end
+ 
