@@ -71,7 +71,6 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
         String calculateMaterialCostsMode = entity.getStringField("calculateMaterialCostsMode");
 
-        checkArgument(quantity != null && quantity != BigDecimal.ZERO, "quantity is  null");
         checkArgument(calculateMaterialCostsMode != null, "calculateMaterialCostsMode is null!");
 
         Entity technology = entity.getBelongsToField("technology");

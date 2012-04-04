@@ -37,7 +37,10 @@
 
 		<belongsTo name="product" plugin="basic" model="product"
 			lazy="false" required="true" />
-			
+		
+		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
+			lazy="false" />
+				
 		<boolean name="master" default="true" />
 		<string name="description">
 			<validatesLength max="2048" />
@@ -48,6 +51,7 @@
 			default="01draft" required="true" />
 		<hasMany name="loggings" joinField="technology" model="logging"
 			cascade="delete" />
+		
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"

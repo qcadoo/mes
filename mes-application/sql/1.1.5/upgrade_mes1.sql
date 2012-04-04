@@ -110,3 +110,4 @@ ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcy
 ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
 
 --end
+

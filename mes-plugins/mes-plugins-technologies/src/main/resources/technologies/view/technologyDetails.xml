@@ -95,6 +95,15 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="lookup" name="technologyGroup" field="technologyGroup" reference="technologyGroup">
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
 				</component>
 				
 				<component type="select" name="state" field="state" reference="state" hasLabel="false" defaultVisible="false">
