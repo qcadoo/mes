@@ -71,6 +71,8 @@
 			resource="model/technologyOperationComponent.xml" />
 
 		<model:model model="logging" resource="model/logging.xml" />
+		
+		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
 
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="operationProductInComponents"
@@ -95,6 +97,8 @@
 			view="technologiesList" />
 		<menu:menu-item name="operations" category="technology"
 			view="operationsList" />
+		<menu:menu-item name="technologyGroups" category="technology"
+			view="technologyGroupsList" />
 
 		<view:view resource="view/operationsList.xml" />
 		<view:view resource="view/operationDetails.xml" />
@@ -104,7 +108,10 @@
 		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
 		<view:view resource="view/operationProductInComponentDetails.xml" />
 		<view:view resource="view/operationProductOutComponentDetails.xml" />
-
+		
+		<view:view resource="view/technologyGroupsList.xml" />
+		<view:view resource="view/technologyGroupDetails.xml" />
+		
 		<view:resource uri="public/**/*" />
 
 		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule" />

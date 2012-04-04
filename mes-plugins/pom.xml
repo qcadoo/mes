@@ -42,6 +42,8 @@
         <module>mes-plugins-production-counting</module>
 		<module>mes-plugins-production-counting-with-costs</module>
         <module>mes-plugins-basic-production-counting</module>
+        <module>mes-plugins-cost-norms-for-materials</module>
+    <module>mes-plugins-production-lines</module>
   </modules>
 
 

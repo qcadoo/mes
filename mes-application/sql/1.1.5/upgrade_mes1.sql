@@ -98,7 +98,6 @@ UPDATE workplans_columnfororders SET alignment = '02right' WHERE identifier='pla
 
 -- end
 
-
 -- Table: productioncounting_productionrecord
 -- changed: 02.04.2012
 
@@ -106,19 +105,9 @@ ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcy
 
 -- end
 
--- Table: technologies_operation
--- changed: 03.04.2012
+-- Table: costnormsformaterials_calculationoperationcomponent
+-- changed: 3.04.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
 
-ALTER TABLE technologies_operation ADD COLUMN areproductquantitiesdivisible boolean DEFAULT true;
-ALTER TABLE technologies_operation ADD COLUMN istjdivisible boolean DEFAULT true;
+--end
 
--- end
-
--- Table: technologies_technologyoperationcomponent
--- changed: 03.04.2012
-
-ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN areproductquantitiesdivisible boolean DEFAULT true;
-ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN istjdivisible boolean DEFAULT true;
-
--- end
- 

@@ -50,7 +50,7 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>costNormsForProduct</plugin>
+			<plugin>costNormsForMaterials</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
@@ -58,7 +58,7 @@
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>materialRequirements</plugin>
+			<plugin>productionScheduling</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>

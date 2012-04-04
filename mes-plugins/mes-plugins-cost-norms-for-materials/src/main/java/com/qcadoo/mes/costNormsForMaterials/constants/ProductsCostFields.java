@@ -21,25 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForProduct;
+package com.qcadoo.mes.costNormsForMaterials.constants;
 
-import java.math.BigDecimal;
-import java.util.Map;
+public enum ProductsCostFields {
+    AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder");
 
-import com.qcadoo.model.api.Entity;
+    private final String strValue;
 
-public interface ProductsCostCalculationService {
+    private ProductsCostFields(final String strValue) {
+        this.strValue = strValue;
+    }
 
-    void calculateTotalProductsCost(final Entity costCalculation, final String sourceOfMaterialCosts);
+    public String getStrValue() {
+        return strValue;
+    }
 
-    BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String calculateMaterialCostsMode);
+    public static ProductsCostFields parseString(final String strValue) {
+        if ("01nominal".equals(strValue)) {
+            return NOMINAL;
+        } else if ("02average".equals(strValue)) {
+            return AVERAGE;
+        } else if ("03lastPurchase".equals(strValue)) {
+            return LAST_PURCHASE;
+        } else if ("04costForOrder".equals(strValue)) {
+            return COST_FOR_ORDER;
+        }
 
-    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String calculateMaterialCostsMode);
+        throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + strValue);
+    }
 
-    Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String calculateMaterialCostsMode, final Entity order);
-
-    Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts);
 }
