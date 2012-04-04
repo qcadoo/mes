@@ -24,14 +24,7 @@
     ***************************************************************************
 
 -->
-<dictionaries>
-	<row NAME="categories" ITEM="kategoria 1" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 2" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 3" DESCRIPTION="" />
-	<row NAME="categories" ITEM="kategoria 4" DESCRIPTION="" />
-	<row NAME="posts" ITEM="stanowisko 1" DESCRIPTION="" />
-	<row NAME="posts" ITEM="stanowisko 2" DESCRIPTION="" />
-	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
-	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
-	<row NAME="units" ITEM="m2" DESCRIPTION="Metr kwadratowy" />
-</dictionaries>
+<productionLinesDictionary>
+	<row NAME="productionLinePlaces" ITEM="Place 1" DESCRIPTION="" />
+	<row NAME="productionLinePlaces" ITEM="Place 2" DESCRIPTION="" />
+</productionLinesDictionary>

@@ -134,6 +134,10 @@ public class TestSamplesLoader extends SamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
+        if (isEnabled("productionLines")) {
+            readDataFromXML(dataset, "productionLines", locale);
+            readDataFromXML(dataset, "productionLines_dict", locale);
+        }
     }
 
     private void changeAdminPassword() {
@@ -200,6 +204,10 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
+        } else if ("productionLines".equals(type)) {
+            addProductionLines(values);
+        } else if ("productionLinesDictionary".equals(type)) {
+            addDictionaryItems(values);
         }
     }
 
@@ -1123,6 +1131,16 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
         validateEntity(productionbalance);
 
+    }
+
+    void addProductionLines(final Map<String, String> values) {
+        Entity productionLine = dataDefinitionService.get("productionLines", "productionLine").create();
+        productionLine.setField(L_NAME, values.get(L_NAME));
+        productionLine.setField(L_NUMBER, values.get(L_NUMBER));
+
+        productionLine = productionLine.getDataDefinition().save(productionLine);
+
+        validateEntity(productionLine);
     }
 
     void addQualityControl(final Map<String, String> values) {
