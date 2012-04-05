@@ -147,6 +147,11 @@
 			component="form" event="showOrdersWithProductPlanned"
 			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
 			method="showOrdersWithProductPlanned" />
+	
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender" 
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="updateRibbonState" />
 		
 		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule" />
 	</modules>

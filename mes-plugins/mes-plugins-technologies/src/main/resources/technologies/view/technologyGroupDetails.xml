@@ -29,28 +29,38 @@
 	name="technologyGroupDetails" modelName="technologyGroup">
 
 	<component type="window" name="window" reference="window">
-		
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
-		
+	
 		<windowTab name="mainTab">
+			<component type="form" name="product" reference="product" />
+	
 			<component type="form" name="technologyGroup" reference="form">
-				<component type="gridLayout" name="technologyGroupGridLayout" columns="3" rows="3" hasBorders="false">
+				<component type="gridLayout" name="technologyGroupGridLayout"
+					columns="3" rows="3" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number">
+						<component type="input" name="number" field="number"
+							reference="number">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name" reference="name" />
+						<component type="textarea" name="name" field="name"
+							reference="name" />
 					</layoutElement>
 				</component>
-				<option type="header" value="true"/>
+				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+	
+				<listener event="save"
+					class="com.qcadoo.mes.technologies.hooks.TechnologyGroupDetailsViewHooks"
+					method="addTechnologyGroupToProduct" />
+					
 			</component>
 		</windowTab>
-		
+	
 	</component>
 	
 </view>

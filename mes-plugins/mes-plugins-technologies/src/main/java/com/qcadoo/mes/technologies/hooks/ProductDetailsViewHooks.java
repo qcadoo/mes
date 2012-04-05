@@ -12,26 +12,39 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ProductDetailsViewHooks {
 
-    public final void addTechnologyGroup(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-            final String[] args) {
-        Long productId = (Long) componentState.getFieldValue();
+    public final void addTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
 
-        if (productId == null) {
+        if (product.getId() == null) {
             return;
         }
 
+        Long productId = product.getId();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("product.id", productId);
+
+        parameters.put("window.activeMenu", "technology.technologyGroups");
+
+        String url = "../page/technologies/technologyGroupDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showTechnologiesWithTechnologyGroup(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) componentState;
-        Entity product = form.getEntity();
+    public final void showTechnologiesWithTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
 
-        if (product == null) {
+        if (product.getId() == null) {
             return;
         }
 
@@ -49,21 +62,21 @@ public class ProductDetailsViewHooks {
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put("filters", filters);
 
-        Map<String, Object> componentsOptions = Maps.newHashMap();
-        componentsOptions.put("grid.options", gridOptions);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("grid.options", gridOptions);
 
-        componentsOptions.put("window.activeMenu", "technology.technologies");
+        parameters.put("window.activeMenu", "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
-        viewDefinitionState.redirectTo(url, false, true, componentsOptions);
+        view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showTechnologiesWithProduct(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) componentState;
-        Entity product = form.getEntity();
+    public final void showTechnologiesWithProduct(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
 
-        if (product == null) {
+        if (product.getId() == null) {
             return;
         }
 
@@ -85,15 +98,15 @@ public class ProductDetailsViewHooks {
         componentsOptions.put("window.activeMenu", "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
-        viewDefinitionState.redirectTo(url, false, true, componentsOptions);
+        view.redirectTo(url, false, true, componentsOptions);
     }
 
-    public final void showOrdersWithProductMain(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) componentState;
-        Entity product = form.getEntity();
+    public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
 
-        if (product == null) {
+        if (product.getId() == null) {
             return;
         }
 
@@ -109,21 +122,21 @@ public class ProductDetailsViewHooks {
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put("filters", filters);
 
-        Map<String, Object> componentsOptions = Maps.newHashMap();
-        componentsOptions.put("grid.options", gridOptions);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("grid.options", gridOptions);
 
-        componentsOptions.put("window.activeMenu", "orders.productionOrders");
+        parameters.put("window.activeMenu", "orders.productionOrders");
 
         String url = "../page/orders/ordersList.html";
-        viewDefinitionState.redirectTo(url, false, true, componentsOptions);
+        view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showOrdersWithProductPlanned(final ViewDefinitionState viewDefinitionState,
-            final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) componentState;
-        Entity product = form.getEntity();
+    public final void showOrdersWithProductPlanned(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
 
-        if (product == null) {
+        if (product.getId() == null) {
             return;
         }
 
@@ -139,13 +152,59 @@ public class ProductDetailsViewHooks {
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put("filters", filters);
 
-        Map<String, Object> componentsOptions = Maps.newHashMap();
-        componentsOptions.put("grid.options", gridOptions);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("grid.options", gridOptions);
 
-        componentsOptions.put("window.activeMenu", "orders.productionOrders");
+        parameters.put("window.activeMenu", "orders.productionOrders");
 
         String url = "../page/orders/ordersList.html";
-        viewDefinitionState.redirectTo(url, false, true, componentsOptions);
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    public void updateRibbonState(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        Entity product = productForm.getEntity();
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName("technologies");
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
+
+        RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
+        RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
+                .getItemByName("showTechnologiesWithTechnologyGroup");
+        RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
+                .getItemByName("showTechnologiesWithProduct");
+        RibbonActionItem showOrdersWithProductMain = (RibbonActionItem) orders.getItemByName("showOrdersWithProductMain");
+        RibbonActionItem showOrdersWithProductPlanned = (RibbonActionItem) orders.getItemByName("showOrdersWithProductPlanned");
+
+        if (product.getId() != null) {
+            updateButtonState(addTechnologyGroup, true);
+
+            Entity technologyGroup = product.getBelongsToField("technologyGroup");
+
+            if (technologyGroup == null) {
+                updateButtonState(showTechnologiesWithTechnologyGroup, false);
+            } else {
+                updateButtonState(showTechnologiesWithTechnologyGroup, true);
+            }
+
+            updateButtonState(showTechnologiesWithProduct, true);
+            updateButtonState(showOrdersWithProductMain, true);
+            updateButtonState(showOrdersWithProductPlanned, true);
+
+            return;
+        }
+
+        updateButtonState(addTechnologyGroup, false);
+        updateButtonState(showTechnologiesWithTechnologyGroup, false);
+        updateButtonState(showTechnologiesWithProduct, false);
+        updateButtonState(showOrdersWithProductMain, false);
+        updateButtonState(showOrdersWithProductPlanned, false);
+    }
+
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
     }
 
 }
