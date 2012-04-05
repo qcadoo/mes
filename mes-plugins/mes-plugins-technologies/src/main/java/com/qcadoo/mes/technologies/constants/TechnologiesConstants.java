@@ -42,6 +42,8 @@ public interface TechnologiesConstants {
 
     String MODEL_LOGGING = "logging";
 
+    String MODEL_TECHNOLOGY_GROUP = "technologyGroup";
+
     String OPERATION_COMPONENTS = "operationComponents";
 
     String FIELD_ENTITY_TYPE = "entityType";
