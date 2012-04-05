@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="ordersPlanningList"
+	modelName="order"
+	menuAccessible="true"
+	defaultAuthorizationRole="ROLE_SUPERVISOR">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group name="orderListActions">
+				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
+				<smallButton name="copy" icon="copyIcon16.png" action="#{grid}.performCopy;" state="disabled" />
+				<smallButton name="delete" icon="deleteIcon16.png" action="#{grid}.performDelete;" state="disabled" />
+				<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{window}.performRefresh;" />
+			</group>
+			<template name="standardGridTemplate" excludeGroups="actions"/>
+			<group name="status">
+				<smallButton name="acceptOrder" icon="startIcon16.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "accept") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToAcceptedForGrid', []);
+										};
+									} else if (this.state == "begin") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+										};
+									} else if (this.state == "finish") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToCompletedForGrid', []);
+										};
+									} else if (this.state == "restart") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.restartOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+										};
+									}
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+					<smallButton name="declineOrder" icon="deleteIcon16.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (this.state == "decline") {
+											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
+													#{grid}.performEvent('changeOrderStateToDeclinedForGrid', []);
+											};
+										} else if (this.state == "abandon") {
+											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
+													#{grid}.performEvent('changeOrderStateToAbandonedForGrid', []);
+											};
+										}
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
+					<smallButton name="interruptOrder" icon="pauseIcon16.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInterruptedForGrid', []);
+										};
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
+			</group>
+		</ribbon>
+		<component type="grid" name="orders" reference="grid">
+			<script>
+ 				<![CDATA[ 
+					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
+					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
+					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
+					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
+					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								acceptOrder.disable();
+								declineOrder.disable();
+								interruptOrder.disable();
+								deleteButton.disable();
+								copyButton.disable();
+							} else {
+								var noDifferentStates = true;
+ 								if(selectedEntitiesArray.length > 1)
+								{
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
+										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
+										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+											noDifferentStates = false;
+											break;
+										}
+									}
+								} 
+								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
+									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "accept";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.acceptOrder)}");
+										acceptOrder.setIcon('startIcon16.png');
+										declineOrder.enable();
+										declineOrder.state = "decline";
+										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+										declineOrder.setIcon('deleteIcon16.png');
+										interruptOrder.disable();
+									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "begin";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.activateOrder)}");
+										acceptOrder.setIcon('startIcon16.png');
+										declineOrder.enable();
+										declineOrder.state = "decline";
+										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
+										declineOrder.setIcon('deleteIcon16.png');
+										interruptOrder.disable();
+									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
+										acceptOrder.enable();
+										acceptOrder.state = "finish";
+										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.finishOrder)}");
+										acceptOrder.setIcon('acceptIcon16.png');
+										declineOrder.enable();
+										declineOrder.state = "abandon";
+										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+										declineOrder.setIcon('deleteIcon16.png');
+										interruptOrder.enable();
+									} else if (selectedEntityStatus == '06interrupted' && externalSynchronized == '1') {
+										acceptOrder.enable();
+	 									acceptOrder.state = "restart";
+	 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
+	 									acceptOrder.setIcon('acceptIcon16.png');
+										declineOrder.enable();
+										declineOrder.state = "abandon";
+										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
+										declineOrder.setIcon('deleteIcon16.png');
+										interruptOrder.disable();
+									} else {
+										acceptOrder.disable();
+										declineOrder.disable();
+										interruptOrder.disable();
+									}
+								} else {
+									acceptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									declineOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+								}
+								copyButton.enable();
+								var hasClosed = false;
+								var hasExternal = false;
+								for (var i in selectedEntitiesArray) {
+									if (selectedEntitiesArray[i].fields.state == "04completed") {
+										hasClosed = true;
+										break;
+									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
+										hasExternal = true;
+										break;	
+									}
+								}
+								if (hasClosed) {
+									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
+								} else if (hasExternal) {
+									deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
+								} else {
+									deleteButton.enable();
+								}
+							}
+						}
+					}
+					
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+			<option type="column" name="number" fields="number" link="true" width="30" />
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="60" />
+			<option type="column" name="state" fields="state" width="35" />
+			<option type="column" name="dateFrom" fields="dateFrom" width="60" />
+			<option type="column" name="dateTo" fields="dateTo" width="60" />
+ 			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
+			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
+			
+ 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
+ 			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
+			<option type="order" column="number" direction="desc" />
+			<option type="correspondingView" value="orders/orderDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,number,state,dateFrom,dateTo,productNumber,plannedQuantity,unit" />
+			<option type="orderable" value="name,number,state,dateFrom,dateTo,product,technology" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+			<option type="hasPredefinedFilters" value="true" />
+			<predefinedFilters>
+				<predefinedFilter name="all">
+				</predefinedFilter>
+				<predefinedFilter name="new">
+					<filterRestriction column="state" value="01pending" />
+					<filterOrder column="dateFrom" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="accepted">
+					<filterRestriction column="state" value="02accepted" />
+					<filterOrder column="dateFrom" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="inProgress">
+					<filterRestriction column="state" value="03inProgress" />
+					<filterOrder column="dateTo" direction="asc" />
+				</predefinedFilter>
+				<predefinedFilter name="overdueAccepted">
+					<filterRestriction column="state" value="02accepted" />
+					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
+				</predefinedFilter>
+				<predefinedFilter name="overdueInProgress">
+					<filterRestriction column="state" value="03inProgress" />
+					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
+				</predefinedFilter>
+				<predefinedFilter name="startingToday">
+					<filterRestriction column="state" value="02accepted" />
+					<filterRestriction column="dateFrom" value="@{today}" />
+				</predefinedFilter>
+				<predefinedFilter name="startingTomorrow">
+					<filterRestriction column="state" value="02accepted" />
+					<filterRestriction column="dateFrom" value="@{tomorrow}" />
+				</predefinedFilter>
+			</predefinedFilters>
+			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToAcceptedForGrid" />
+			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToInProgressForGrid" />
+			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToCompletedForGrid" />
+			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToDeclinedForGrid" />
+			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToAbandonedForGrid" />
+			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToInterruptedForGrid" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

@@ -63,6 +63,9 @@
 		<boolean name="externalSynchronized" default="true" />
 		<hasMany name="loggings" joinField="order" model="logging"
 			cascade="delete" />
+			
+		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />	
+		<datetime name="deadline" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
