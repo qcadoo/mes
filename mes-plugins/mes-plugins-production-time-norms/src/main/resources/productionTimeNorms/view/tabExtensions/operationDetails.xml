@@ -44,7 +44,7 @@
 						</component>
 			    	</layoutElement>
 					<layoutElement column="4" row="1">
-						<component type="select" name="unit" field="unit" reference="unit">
+						<component type="select" name="productionInOneCycleUNIT" field="#{form}.productionInOneCycleUNIT" reference="productionInOneCycleUNIT">
 							<option type="required" value="true" />
 							<option type="labelWidth" value="10"/>
 							<option type = "alingment" value="right"/>
@@ -104,16 +104,17 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="3" row="4">
-					<component type="gridLayout" name="gridLayoutUnitQuantity" hasBorders="false" columns="2" rows="1">
-					<layoutElement column="1" row="1">
+					<component type="gridLayout" name="gridLayoutUnitQuantity" hasBorders="false" columns="3" rows="1">
+					<layoutElement column="1" row="1" width="2">
 						<component type="input" name="countMachineOperation"
 							field="#{form}.countMachineOperation" reference="countMachineOperation"
-							hasDescription="true" defaultEnabled="false" />
+							hasDescription="true" defaultEnabled="false" >
+							<option type="labelWidth" value="40"/>
+							</component>
 					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="select" name="quantityUnit" field="quantityUnit" reference="quantityUnit">
+					<layoutElement column="3" row="1">
+						<component type="select" name="countMachineUNIT" field="#{form}.countMachineUNIT" reference="countMachineUNIT">
 							<option type="required" value="true" />
-							<option type="labelWidth" value="10"/>
 							<option type = "alingment" value="right"/>
 						</component>
 					</layoutElement>
