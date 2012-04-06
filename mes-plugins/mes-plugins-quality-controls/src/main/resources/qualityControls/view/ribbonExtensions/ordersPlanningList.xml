@@ -27,10 +27,32 @@
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="orders"
-	view="ordersList">
+	view="ordersPlanningList">
 	
-	<group name="calendar">
-		<bigButton name="showCalendar" state="enabled" icon="calendarIcon24.png" action="#{window}.fireEvent(showGanttOrdersCalendar);" />
+	<group name="qualityContol">
+		<bigButton name="generateQualityControl"
+			action="#{grid}.fireEvent(generateQualityControl);" icon="qualityControlIcon24.png"
+			state="disabled">
+			<script>
+				<![CDATA[
+					#{grid}.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								this.disable();
+							} else if (selectedEntitiesArray.length == 1) {
+								var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+								if (selectedEntityStatus == '04completed') {
+									this.disable("#{translate(orders.order.ribbon.message.stateIsDone)}");
+								} else {
+									this.enable();
+								}
+							} else {
+								this.disable("#{translate(moreThanOneRecordSelected)}");
+							}
+						}
+					});					
+				]]>
+			</script>
+		</bigButton>
 	</group>
-	
 </ribbonExtension>
