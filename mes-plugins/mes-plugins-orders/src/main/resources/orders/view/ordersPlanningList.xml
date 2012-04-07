@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="ordersList"
+	name="ordersPlanningList"
 	modelName="order"
 	menuAccessible="true"
 	defaultAuthorizationRole="ROLE_SUPERVISOR">
@@ -40,7 +40,68 @@
 				<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{window}.performRefresh;" />
 			</group>
 			<template name="standardGridTemplate" excludeGroups="actions"/>
-		</ribbon>	
+			<group name="status">
+				<smallButton name="acceptOrder" icon="startIcon16.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "accept") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToAcceptedForGrid', []);
+										};
+									} else if (this.state == "begin") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+										};
+									} else if (this.state == "finish") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToCompletedForGrid', []);
+										};
+									} else if (this.state == "restart") {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.restartOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+										};
+									}
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+					<smallButton name="declineOrder" icon="deleteIcon16.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (this.state == "decline") {
+											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
+													#{grid}.performEvent('changeOrderStateToDeclinedForGrid', []);
+											};
+										} else if (this.state == "abandon") {
+											if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
+													#{grid}.performEvent('changeOrderStateToAbandonedForGrid', []);
+											};
+										}
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
+					<smallButton name="interruptOrder" icon="pauseIcon16.png" state="disabled">
+						<script>
+							<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
+												#{grid}.performEvent('changeOrderStateToInterruptedForGrid', []);
+										};
+									}
+								});
+							]]>
+						</script>
+					</smallButton>
+			</group>
+		</ribbon>
 		<component type="grid" name="orders" reference="grid">
 			<script>
  				<![CDATA[ 
@@ -152,25 +213,23 @@
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="30" />
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="deadline" fields="deadline" width="60" />
 			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="60" />
-			<option type="column" name="productName" fields="product" expression="#product['name']" width="60" />
+			<option type="column" name="state" fields="state" width="35" />
+			<option type="column" name="dateFrom" fields="dateFrom" width="60" />
+			<option type="column" name="dateTo" fields="dateTo" width="60" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
 			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
 			
- 			<option type="order" column="number" direction="desc" />
-			
+ 			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />
+ 			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
+			<option type="order" column="number" direction="desc" />
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
-			
-			<option type="searchable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit" />
-			<option type="orderable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit" />
-			
+			<option type="searchable" value="name,number,state,dateFrom,dateTo,productNumber,plannedQuantity,unit" />
+			<option type="orderable" value="name,number,state,dateFrom,dateTo,product,technology" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			
 			<option type="hasPredefinedFilters" value="true" />
-			
 			<predefinedFilters>
 				<predefinedFilter name="all">
 				</predefinedFilter>
@@ -203,6 +262,18 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
+			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToAcceptedForGrid" />
+			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToInProgressForGrid" />
+			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToCompletedForGrid" />
+			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToDeclinedForGrid" />
+			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToAbandonedForGrid" />
+			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
+				method="changeOrderStateToInterruptedForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

@@ -155,7 +155,7 @@ public class ProductDetailsViewHooks {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("grid.options", gridOptions);
 
-        parameters.put("window.activeMenu", "orders.productionOrders");
+        parameters.put("window.activeMenu", "orders.productionOrdersPlanning");
 
         String url = "../page/orders/ordersList.html";
         view.redirectTo(url, false, true, parameters);
