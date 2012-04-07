@@ -224,11 +224,10 @@
 			view="technologyOperationComponentDetails" class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="copyTimeNormsFromOperation" />
 			
-	<!-- 		
-		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
+	<!-- 	<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.productionTimeNorms.listeners.TechnologyOperationComponentDetailsListeners"
-			method="checkIfDifferentQuantity" /> -->	
+			method="checkIfDifferentQuantity" /> -->
 		
 	</modules>
 

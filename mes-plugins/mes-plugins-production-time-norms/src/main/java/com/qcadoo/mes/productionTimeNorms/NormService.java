@@ -188,7 +188,6 @@ public class NormService {
         } else {
             countMachineOperation.setVisible(false);
             countMachineUNIT.setVisible(false);
-
         }
     }
 
