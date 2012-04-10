@@ -170,7 +170,7 @@
 		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyModelValidators"
+				class="com.qcadoo.mes.productionTimeNorms.validators.TechnologyValidators"
 				method="checkIfAllOperationComponenthHaveTJSet" />
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
@@ -178,7 +178,7 @@
 			<model:onCreate class="com.qcadoo.mes.productionTimeNorms.NormService"
 				method="copyTimeNormsToTechnologyOperationComponent" />
 		</model:model-hook>
-
+			
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -224,12 +224,18 @@
 			view="technologyOperationComponentDetails" class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="copyTimeNormsFromOperation" />
 			
-	<!-- 		
-		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
-			component="form" event="save"
-			class="com.qcadoo.mes.productionTimeNorms.listeners.TechnologyOperationComponentDetailsListeners"
-			method="checkIfDifferentQuantity" /> -->	
-		
+		<view:view-listener plugin="technologies" view="technologyDetails" component="form" event="save"
+			class="com.qcadoo.mes.productionTimeNorms.listeners.TechnologyListenersTN"
+			method="checkOperationOutputQuantities" />
+				<model:model-hook model="technology" plugin="technologies">
+		<model:validatesWith
+			class="com.qcadoo.mes.productionTimeNorms.validators.TechnologyValidators"
+			method="checkOperationOutputQuantities" />
+		</model:model-hook>
+		<view:view-hook view="technologyOperationComponentDetails"
+			type="beforeRender" plugin="technologies"
+			class="com.qcadoo.mes.productionTimeNorms.hooks.TechnologyOperationComponentViewHooksTN" method="checkOperationOutputQuantities" />
+			
 	</modules>
 
 </plugin>

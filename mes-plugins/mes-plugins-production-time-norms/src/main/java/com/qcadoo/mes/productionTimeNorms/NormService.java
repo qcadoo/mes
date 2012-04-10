@@ -28,10 +28,18 @@ import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_OPERA
 import static com.qcadoo.mes.productionTimeNorms.TimeNormsConstants.FIELDS_TECHNOLOGY;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -60,6 +68,45 @@ public class NormService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private TechnologyService technologyService;
+
+    public List<String> checkOperationOutputQuantities(final Entity technology) {
+        List<String> messages = new LinkedList<String>();
+
+        List<Entity> operationComponents = technology.getTreeField("operationComponents");
+
+        Locale locale = LocaleContextHolder.getLocale();
+
+        for (Entity operationComponent : operationComponents) {
+            BigDecimal timeNormsQuantity = operationComponent.getDecimalField("productionInOneCycle");
+
+            BigDecimal currentQuantity = BigDecimal.ZERO;
+
+            try {
+                currentQuantity = technologyService.getProductCountForOperationComponent(operationComponent);
+            } catch (IllegalStateException e) {
+                continue;
+            }
+
+            if (timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals intentionally
+                StringBuilder message = new StringBuilder();
+                message.append(translationService.translate("technologies.technology.validate.error.invalidQuantity1", locale));
+                message.append(" ");
+                message.append(operationComponent.getStringField("nodeNumber"));
+                message.append(" ");
+                message.append(translationService.translate("technologies.technology.validate.error.invalidQuantity2", locale));
+
+                messages.add(message.toString());
+            }
+        }
+
+        return messages;
+    }
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
