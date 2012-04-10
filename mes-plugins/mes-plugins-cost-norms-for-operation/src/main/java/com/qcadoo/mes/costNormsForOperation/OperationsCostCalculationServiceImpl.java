@@ -48,8 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
-import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
+import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -352,7 +351,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
             calculationOperationComponent.setField(TECHNOLOGY_OPERATION_COMPONENT_FIELD, operationComponent);
-        } else if (ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT.equals(sourceDD.getName())) {
+        } else if (TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(sourceDD.getName())) {
             calculationOperationComponent.setField(TECHNOLOGY_OPERATION_COMPONENT_FIELD,
                     operationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT_FIELD));
         }

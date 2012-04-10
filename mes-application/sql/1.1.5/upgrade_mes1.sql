@@ -105,3 +105,12 @@ ALTER TABLE productioncounting_productionrecord ALTER COLUMN executedoperationcy
 
 -- end
 
+<<<<<<< HEAD
+=======
+-- Table: costnormsformaterials_calculationoperationcomponent
+-- changed: 3.04.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
+
+--end
+
+>>>>>>> 3e787f63b318e4ea510b1a09bfda8293d0b3c7ad

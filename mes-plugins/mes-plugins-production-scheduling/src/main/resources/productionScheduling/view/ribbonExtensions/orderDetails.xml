@@ -28,31 +28,5 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="orders"
 	view="orderDetails">
-	<group name="orderParameters">
-		<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-								if(window.canClose()) {
-									#{form}.performEvent('showOrderParameters', []);
-								}
-						}
-					});		
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>	
-		</bigButton>
-	</group>
+	
 </ribbonExtension>

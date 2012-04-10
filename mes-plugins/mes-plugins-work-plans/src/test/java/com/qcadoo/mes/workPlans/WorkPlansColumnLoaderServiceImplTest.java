@@ -40,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -82,7 +81,7 @@ public class WorkPlansColumnLoaderServiceImplTest {
     private DataDefinition technologyOperationComponentDD;
 
     @Mock
-    private DataDefinition orderOperationComponentDD;
+    private DataDefinition technologyInstanceOperationComponentDD;
 
     @Mock
     private DataDefinition columnForInputProductsDD;
@@ -295,9 +294,10 @@ public class WorkPlansColumnLoaderServiceImplTest {
     public void shouldSetOrderOperationComponentsDefaultValuesIfOrderOperationComponentsIsntNull() {
         // given
         when(
-                dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT)).thenReturn(orderOperationComponentDD);
-        when(orderOperationComponentDD.find()).thenReturn(searchCriteria);
+                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(
+                technologyInstanceOperationComponentDD);
+        when(technologyInstanceOperationComponentDD.find()).thenReturn(searchCriteria);
         when(searchCriteria.list()).thenReturn(searchResult);
         when(searchResult.getEntities()).thenReturn(orderOperationComponents);
 
@@ -342,9 +342,10 @@ public class WorkPlansColumnLoaderServiceImplTest {
     public void shouldntSetOrderOperationComponentsDefaultValuesIfOrderOperationComponentsIsNull() {
         // given
         when(
-                dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT)).thenReturn(orderOperationComponentDD);
-        when(orderOperationComponentDD.find()).thenReturn(searchCriteria);
+                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(
+                technologyInstanceOperationComponentDD);
+        when(technologyInstanceOperationComponentDD.find()).thenReturn(searchCriteria);
         when(searchCriteria.list()).thenReturn(searchResult);
         when(searchResult.getEntities()).thenReturn(null);
 

@@ -112,7 +112,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="operation" reference="operation"
-						field="operation" source="#{order}.orderOperationComponents">
+						field="operation" source="#{order}.technologyInstanceOperationComponents">
 						<option type="column" name="name" fields="operation" link="true" expression="#operation['name']"
 							width="200" />
 						<option type="searchable" value="name" />

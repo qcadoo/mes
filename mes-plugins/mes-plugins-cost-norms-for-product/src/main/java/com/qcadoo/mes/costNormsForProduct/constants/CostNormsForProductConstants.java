@@ -32,9 +32,6 @@ public interface CostNormsForProductConstants {
     String PLUGIN_IDENTIFIER = "costNormsForProduct";
 
     // MODEL
-    String MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT = "orderOperationProductInComponent";
-
-    String ORDER_OPERATION_PRODUCT_IN_COMPONENTS = "orderOperationProductInComponents";
 
     Set<String> CURRENCY_FIELDS_PRODUCT = Sets.newHashSet("nominalCostCurrency", "lastPurchaseCostCurrency",
             "averageCostCurrency");

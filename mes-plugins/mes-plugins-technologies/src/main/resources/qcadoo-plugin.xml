@@ -69,6 +69,8 @@
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
+		
+		<model:model model="technologyInstanceOperationComponent" resource="model/technologyInstanceOperationComponent.xml" />
 
 		<model:model model="logging" resource="model/logging.xml" />
 		
@@ -90,7 +92,12 @@
 			<model:hasMany name="technologies" plugin="technologies"
 				model="technology" joinField="product" cascade="delete" />
 		</model:model-field>
-
+		
+		<model:model-field plugin="basic" model="product">
+			<model:belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
+				lazy="false" />
+		</model:model-field>
+		
 		<menu:menu-category name="technology" />
 
 		<menu:menu-item name="technologies" category="technology"
@@ -99,7 +106,9 @@
 			view="operationsList" />
 		<menu:menu-item name="technologyGroups" category="technology"
 			view="technologyGroupsList" />
-
+		
+		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
+		
 		<view:view resource="view/operationsList.xml" />
 		<view:view resource="view/operationDetails.xml" />
 		<view:view resource="view/technologiesList.xml" />
@@ -108,12 +117,40 @@
 		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
 		<view:view resource="view/operationProductInComponentDetails.xml" />
 		<view:view resource="view/operationProductOutComponentDetails.xml" />
+		<view:view resource="view/technologyInstanceOperationComponentDetails.xml" />
 		
 		<view:view resource="view/technologyGroupsList.xml" />
 		<view:view resource="view/technologyGroupDetails.xml" />
 		
+		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
+			
 		<view:resource uri="public/**/*" />
-
+		
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="addTechnologyGroup"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="addTechnologyGroup" />
+		
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showTechnologiesWithTechnologyGroup"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="showTechnologiesWithTechnologyGroup" />
+			
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showTechnologiesWithProduct"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="showTechnologiesWithProduct" />
+				
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showOrdersWithProductMain"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="showOrdersWithProductMain" />
+			
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showOrdersWithProductPlanned"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			method="showOrdersWithProductPlanned" />
+		
 		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule" />
 	</modules>
 

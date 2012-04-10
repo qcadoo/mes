@@ -56,6 +56,10 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>operationTimeCalculations</plugin>
+			<version>[0.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -83,33 +87,15 @@
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="orders" />
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+<!-- 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" /> -->
 
-		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
+		
 
-		<model:model-hook plugin="orders" model="order">
-			<model:validatesWith
-				class="com.qcadoo.mes.productionScheduling.NormOrderService" method="checkIfChosenTechnologyTreeIsNotEmpty" />
-		</model:model-hook>
 
-		<model:model-hook plugin="orders" model="order">
-			<model:onSave class="com.qcadoo.mes.productionScheduling.NormOrderService"
-				method="createTechnologyInstanceForOrder" />
-		</model:model-hook>
+<!-- 		<view:view-listener plugin="orders" view="orderDetails" -->
+<!-- 			component="form" event="showOrderParameters" -->
+<!-- 			class="com.qcadoo.mes.timeNormsForOperations.hooks.NormOrderService" method="showOrderParameters" /> -->
 
-		<model:model-field plugin="orders" model="order">
-			<model:tree name="orderOperationComponents" plugin="productionScheduling"
-				model="orderOperationComponent" joinField="order" cascade="delete"
-				copyable="true">
-			</model:tree>
-		</model:model-field>
-
-		<view:view-listener plugin="orders" view="orderDetails"
-			component="form" event="showOrderParameters"
-			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOrderParameters" />
-
-		<view:view resource="view/orderOperationComponentList.xml" />
-		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/orderOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
 

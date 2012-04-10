@@ -134,6 +134,10 @@ public class TestSamplesLoader extends SamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
+        if (isEnabled("productionLines")) {
+            readDataFromXML(dataset, "productionLines", locale);
+            readDataFromXML(dataset, "productionLines_dict", locale);
+        }
     }
 
     private void changeAdminPassword() {
@@ -200,6 +204,10 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
+        } else if ("productionLines".equals(type)) {
+            addProductionLines(values);
+        } else if ("productionLinesDictionary".equals(type)) {
+            addDictionaryItems(values);
         }
     }
 
@@ -1125,6 +1133,16 @@ public class TestSamplesLoader extends SamplesLoader {
 
     }
 
+    void addProductionLines(final Map<String, String> values) {
+        Entity productionLine = dataDefinitionService.get("productionLines", "productionLine").create();
+        productionLine.setField(L_NAME, values.get(L_NAME));
+        productionLine.setField(L_NUMBER, values.get(L_NUMBER));
+
+        productionLine = productionLine.getDataDefinition().save(productionLine);
+
+        validateEntity(productionLine);
+    }
+
     void addQualityControl(final Map<String, String> values) {
 
         Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.QUALITYCONTROL_PLUGIN_IDENTIFIER,
@@ -1213,8 +1231,8 @@ public class TestSamplesLoader extends SamplesLoader {
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
         return dataDefinitionService
-                .get(SamplesConstants.PRODUCTION_SCHEDULING_PLUGIN_IDENTIFIER,
-                        SamplesConstants.PRODUCTION_SCHEDULING_MODEL_PRODUCTION_SCHEDULING).find()
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
+                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo(L_ORDER, order)).add(SearchRestrictions.belongsTo(L_OPERATION, operation))
                 .setMaxResults(1).uniqueResult();
     }
@@ -1327,8 +1345,9 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
         Entity operationProdInComp = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .find().add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
-        Entity orderOperationComponent = dataDefinitionService
-                .get("productionScheduling", "orderOperationComponent")
+        Entity technologyInstanceOperationComponent = dataDefinitionService
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
+                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                 .find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
                         SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
@@ -1338,10 +1357,10 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity genealogyProductInComponent = dataDefinitionService
                 .get(L_ADVANCED_GENEALOGY_FOR_ORDERS, "genealogyProductInComponent")
                 .find()
-                .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord),
-                        SearchRestrictions.belongsTo("productInComponent", operationProdInComp),
-                        SearchRestrictions.belongsTo("orderOperationComponent", orderOperationComponent))).setMaxResults(1)
-                .uniqueResult();
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord), SearchRestrictions
+                        .belongsTo("productInComponent", operationProdInComp), SearchRestrictions.belongsTo(
+                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, technologyInstanceOperationComponent)))
+                .setMaxResults(1).uniqueResult();
         return genealogyProductInComponent;
     }
 

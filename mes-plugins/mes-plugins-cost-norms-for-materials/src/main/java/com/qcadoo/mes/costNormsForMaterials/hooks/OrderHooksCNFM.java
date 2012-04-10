@@ -1,5 +1,7 @@
 package com.qcadoo.mes.costNormsForMaterials.hooks;
 
+import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
+import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields;
-import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -44,11 +44,11 @@ public class OrderHooksCNFM {
                     Entity product = productQuantity.getKey();
 
                     Entity orderOperationProductInComponent = dataDefinitionService.get(
-                            CostNormsForProductConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForProductConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).create();
+                            CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
+                            CostNormsForMaterialsConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).create();
 
-                    orderOperationProductInComponent.setField(OrdersConstants.MODEL_ORDER, order);
-                    orderOperationProductInComponent.setField(BasicConstants.MODEL_PRODUCT, product);
+                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.ORDER, order);
+                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.PRODUCT, product);
                     orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.COST_FOR_NUMBER,
                             product.getField(ProductCostNormsFields.COST_FOR_NUMBER));
                     orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.NOMINAL_COST,
@@ -63,13 +63,12 @@ public class OrderHooksCNFM {
 
                     orderOperationProductInComponents.add(orderOperationProductInComponent);
 
-                    order.setField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS,
-                            orderOperationProductInComponents);
+                    order.setField(ORDER_OPERATION_PRODUCT_IN_COMPONENTS, orderOperationProductInComponents);
                 }
             }
         } else {
             if (technology == null && hasOrderOperationProductInComponents(order)) {
-                order.setField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS, Lists.newArrayList());
+                order.setField(ORDER_OPERATION_PRODUCT_IN_COMPONENTS, Lists.newArrayList());
             }
         }
 
@@ -77,8 +76,8 @@ public class OrderHooksCNFM {
 
     @SuppressWarnings("unchecked")
     private boolean hasOrderOperationProductInComponents(final Entity order) {
-        return ((order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null) && !((List<Entity>) order
-                .getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS)).isEmpty());
+        return ((order.getField(ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null) && !((List<Entity>) order
+                .getField(ORDER_OPERATION_PRODUCT_IN_COMPONENTS)).isEmpty());
     }
 
     private boolean shouldFill(final Entity order, final Entity technology) {

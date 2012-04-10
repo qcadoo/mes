@@ -34,7 +34,11 @@
 		<string name="name" required="true">
 			<validatesLength max="2048" />
 		</string>
+		
 		<hasMany name="technologies" model="technology" plugin="technologies"
+			joinField="technologyGroup" />
+			
+		<hasMany name="products" model="product" plugin="basic"
 			joinField="technologyGroup" />
 	</fields>
 	<hooks>

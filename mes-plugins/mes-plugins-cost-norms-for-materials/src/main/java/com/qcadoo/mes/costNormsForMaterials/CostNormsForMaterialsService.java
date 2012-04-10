@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
-import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -127,7 +127,7 @@ public class CostNormsForMaterialsService {
                 orderId);
 
         List<Entity> orderOperationProductIncomponents = existingOrder
-                .getHasManyField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS);
+                .getHasManyField(CostNormsForMaterialsConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS);
 
         if (orderOperationProductIncomponents != null) {
             for (Entity orderOperationProductIncomponent : orderOperationProductIncomponents) {

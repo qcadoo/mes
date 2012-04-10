@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -122,7 +123,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
             Entity orderOperationProductInComponent = dataDefinitionService
                     .get(CostNormsForProductConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForProductConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).find()
+                            CostNormsForMaterialsConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
                     .uniqueResult();
 

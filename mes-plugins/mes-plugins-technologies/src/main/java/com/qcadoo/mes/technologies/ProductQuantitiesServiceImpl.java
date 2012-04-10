@@ -233,9 +233,18 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private void multiplyQuantities(final BigDecimal needed, final BigDecimal actual, final Entity operationComponent,
             final Map<Entity, BigDecimal> mapWithQuantities, final Map<Entity, BigDecimal> operationRuns) {
         BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
-        multiplier = multiplier.setScale(0, RoundingMode.CEILING); // we need this CEIL here, because an operation cannot be run
-                                                                   // partially
-        operationRuns.put(operationComponent, multiplier);
+
+        if (!operationComponent.getBooleanField("areProductQuantitiesDivisible")) {
+            multiplier = multiplier.setScale(0, RoundingMode.CEILING);
+        }
+
+        BigDecimal runs = multiplier;
+
+        if (!operationComponent.getBooleanField("isTjDivisible")) {
+            runs = multiplier.setScale(0, RoundingMode.CEILING);
+        }
+
+        operationRuns.put(operationComponent, runs);
 
         for (Entity currentOut : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS_L)) {
             BigDecimal currentOutQty = mapWithQuantities.get(currentOut);

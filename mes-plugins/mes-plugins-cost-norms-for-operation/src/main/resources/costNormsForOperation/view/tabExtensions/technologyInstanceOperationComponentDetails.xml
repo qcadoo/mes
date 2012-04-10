@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="technologies" view="technologyInstanceOperationComponentDetails">
+
+	<windowTab name="costTab" reference="costTab">
+		<component type="gridLayout" name="outerGridLayout"
+			hasBorders="false" columns="3" rows="1">
+			<layoutElement column="1" row="1" width="2">
+				<component type="borderLayout" name="borderLayoutPiecework"
+					reference="borderLayoutPiecework">
+					<option type="label" value="piecework" />
+					<component type="gridLayout" name="gridLayout"
+						hasBorders="false" columns="6" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="pieceworkCost" reference="pieceworkCost"
+								field="#{form}.pieceworkCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="pieceworkCostUNIT"
+								defaultEnabled="false" hasLabel="false" reference="pieceworkCostCURRENCY" />
+						</layoutElement>
+						<layoutElement column="5" row="1" width="2">
+							<component type="input" name="numberOfOperations"
+								reference="numberOfOperations" field="#{form}.numberOfOperations">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+					</component>
+				</component>
+				<component type="borderLayout" name="borderLayoutHourly"
+					reference="borderLayoutHourly">
+					<option type="label" value="hourly" />
+					<component type="gridLayout" name="gridLayout"
+						hasBorders="false" columns="6" rows="2">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="laborHourlyCost"
+								reference="laborHourlyCost" field="#{form}.laborHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="laborHourlyCostUNIT"
+								defaultEnabled="false" hasLabel="false" reference="laborHourlyCostCURRENCY" />
+						</layoutElement>
+						<layoutElement column="1" row="2" width="3">
+							<component type="input" name="machineHourlyCost"
+								reference="machineHourlyCost" field="#{form}.machineHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="machineHourlyCostUNIT"
+								defaultEnabled="false" hasLabel="false" reference="machineHourlyCostCURRENCY" />
+						</layoutElement>
+					</component>
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+
+</windowTabExtension>

@@ -60,7 +60,7 @@ import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBal
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_OVERHEAD;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT;
-import static com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 
 import java.io.IOException;
@@ -501,8 +501,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal laborCostsBalance = laborCosts.subtract(plannedLaborCosts, numberService.getMathContext());
 
-                    operationCostComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
-                            productionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+                    operationCostComponent.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                            productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
                     operationCostComponent.setField(L_PLANNED_MACHINE_COSTS, numberService.setScale(plannedMachineCosts));
                     operationCostComponent.setField(L_MACHINE_COSTS, numberService.setScale(machineCosts));
@@ -606,8 +606,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                                 ProductionCountingWithCostsConstants.PLUGIN_IDENTIFIER,
                                 ProductionCountingWithCostsConstants.MODEL_OPERATION_PIECEWORK_COST_COMPONENT).create();
 
-                        operationPieceworkCostComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
-                                productionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+                        operationPieceworkCostComponent.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                                productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
                         operationPieceworkCostComponent
                                 .setField("plannedCyclesCosts", numberService.setScale(plannedCyclesCosts));
@@ -720,7 +720,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 .add(SearchRestrictions.belongsTo(MODEL_PRODUCTION_BALANCE, productionBalance))
                 .add(SearchRestrictions.belongsTo(
                         MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-                        operatonTimeComponent.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT).getBelongsToField(
+                        operatonTimeComponent.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getBelongsToField(
                                 MODEL_TECHNOLOGY_OPERATION_COMPONENT))).setMaxResults(1).uniqueResult();
     }
 

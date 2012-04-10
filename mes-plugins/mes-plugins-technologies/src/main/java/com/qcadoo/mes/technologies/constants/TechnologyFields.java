@@ -41,4 +41,6 @@ public class TechnologyFields {
 
     public static final String LOGGINGS = "loggings";
 
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+
 }

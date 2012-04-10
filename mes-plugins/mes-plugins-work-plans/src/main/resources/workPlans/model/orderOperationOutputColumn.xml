@@ -28,8 +28,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="orderOperationComponent" plugin="productionScheduling"
-			model="orderOperationComponent" required="true" />
+		<belongsTo name="technologyInstanceOperationComponent" plugin="technologies"
+			model="technologyInstanceOperationComponent" required="true" />
 
 		<belongsTo name="columnForOutputProducts" plugin="workPlans"
 			model="columnForOutputProducts" required="true" lazy="false" />

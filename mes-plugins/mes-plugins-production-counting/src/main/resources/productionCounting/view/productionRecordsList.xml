@@ -64,9 +64,9 @@
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
 				width="300" expression="#order != null ? #order['name'] : ''" />
-			<option type="column" name="orderOperationComponent" fields="orderOperationComponent"
+			<option type="column" name="technologyInstanceOperationComponent" fields="technologyInstanceOperationComponent"
 				link="true" width="300"
-				expression="#orderOperationComponent != null ? #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name'] : ''" />
+				expression="#technologyInstanceOperationComponent != null ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="lastRecord" fields="lastRecord"
 				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
@@ -79,8 +79,8 @@
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number,order,orderOperationComponent" />
-			<option type="orderable" value="number,order,orderOperationComponent" />
+			<option type="searchable" value="number,order,technologyInstanceOperationComponent" />
+			<option type="orderable" value="number,order,technologyInstanceOperationComponent" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>

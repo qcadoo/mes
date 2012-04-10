@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.workPlans;
 
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -41,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -578,12 +579,12 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         List<Entity> orderOperationComponents = getOrderOperationComponents();
 
         if (orderOperationComponents != null) {
-            for (Entity orderOperationComponent : orderOperationComponents) {
+            for (Entity technologyInstanceOperationComponent : orderOperationComponents) {
                 Entity orderOperationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COLUMN).create();
 
-                orderOperationInputColumn.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
-                        orderOperationComponent);
+                orderOperationInputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                        technologyInstanceOperationComponent);
                 orderOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
                 if (orderOperationInputColumn.isValid()) {
@@ -605,12 +606,12 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         List<Entity> orderOperationComponents = getOrderOperationComponents();
 
         if (orderOperationComponents != null) {
-            for (Entity orderOperationComponent : orderOperationComponents) {
+            for (Entity technologyInstanceOperationComponent : orderOperationComponents) {
                 Entity orderOperationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COLUMN).create();
 
-                orderOperationOutputColumn.setField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT,
-                        orderOperationComponent);
+                orderOperationOutputColumn.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                        technologyInstanceOperationComponent);
                 orderOperationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
                 if (orderOperationOutputColumn.isValid()) {
@@ -675,8 +676,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     private List<Entity> getOrderOperationComponents() {
         List<Entity> orderOperationComponents = dataDefinitionService
-                .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT).find().list().getEntities();
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                .find().list().getEntities();
 
         if (orderOperationComponents == null) {
             return null;

@@ -33,7 +33,7 @@
     	<module>mes-plugins-gantt-for-orders</module>
     	<module>mes-plugins-gantt-for-shifts</module>
     	<module>mes-plugins-material-flow</module>
-    	<module>mes-plugins-production-time-norms</module>
+    	<module>mes-plugins-time-norms-for-operations</module>
         <module>mes-plugins-cost-norms-for-operation</module>
         <module>mes-plugins-cost-norms-for-product</module>
         <module>mes-plugins-cost-calculation</module>
@@ -43,7 +43,8 @@
 		<module>mes-plugins-production-counting-with-costs</module>
         <module>mes-plugins-basic-production-counting</module>
         <module>mes-plugins-cost-norms-for-materials</module>
-    <module>mes-plugins-production-lines</module>
+    	<module>mes-plugins-production-lines</module>
+    	<module>mes-plugins-operation-time-calculations</module>
   </modules>
 
 

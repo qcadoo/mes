@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
@@ -159,7 +160,7 @@ public class OrderTimePredictionService {
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 technology.getTreeField("operationComponents").getRoot(), quantity);
 
-        if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
+        if (maxPathTime > orderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
             realizationTime.setFieldValue(null);
             dateTo.setFieldValue(null);

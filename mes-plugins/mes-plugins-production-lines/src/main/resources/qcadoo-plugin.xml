@@ -36,6 +36,24 @@
 	<modules>
 		<localization:translation path="locales" />
 
-	</modules>
+		<model:dictionary name="productionLinePlaces" />
 
+		<model:model model="productionLine" resource="model/productionLine.xml" />
+		
+		<model:model-field plugin="technologies" model="technologyGroup">
+			<model:manyToMany name="productionLines" joinField="groups"
+				model="productionLine" plugin="productionLines" />
+		</model:model-field>
+
+		<model:model-field plugin="technologies" model="technology">
+			<model:manyToMany name="productionLines" joinField="technologies"
+				model="productionLine" plugin="productionLines" />
+		</model:model-field>
+		
+		<menu:menu-item name="productionLines" category="basic"
+			view="productionLinesList" />
+			
+		<view:view resource="view/productionLinesList.xml" />
+		<view:view resource="view/productionLineDetails.xml" />
+	</modules>
 </plugin>
