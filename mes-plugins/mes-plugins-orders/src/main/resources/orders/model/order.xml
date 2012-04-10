@@ -64,6 +64,8 @@
 		<hasMany name="loggings" joinField="order" model="logging"
 			cascade="delete" />
 		<tree name="technologyInstanceOperationComponents" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies"/>
+		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />	
+		<datetime name="deadline" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

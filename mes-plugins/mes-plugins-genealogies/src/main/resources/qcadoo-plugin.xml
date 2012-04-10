@@ -121,7 +121,7 @@
 		<view:view resource="view/orderGenealogyDetails.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
@@ -135,10 +135,10 @@
 			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.genealogies.GenealogyTechnologyService" method="checkBatchNrReq" />
 
-		<view:view-listener plugin="orders" view="ordersList"
+		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="showGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="showGenealogy" />
-		<view:view-listener plugin="orders" view="ordersList"
+		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="newGenealogy" />
 

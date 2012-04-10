@@ -212,12 +212,28 @@
 			<model:integer name="timeNextOperation" required="true"
 				default="0" />
 		</model:model-field>
-
+		<model:model-field plugin="technologies" model="operation">
+		<model:dictionary name="productionInOneCycleUNIT" dictionary="units" required="true"/>
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="operation">
+		<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:dictionary name="productionInOneCycleUNIT" dictionary="units" required="true"/>
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+		<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+		</model:model-field>
+		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:onSave
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooks"
 				method="setDefaultValuesIfEmpty" />
 		</model:model-hook>
+		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:validatesWith
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelValidators"
@@ -248,6 +264,7 @@
 		<view:view-hook view="operationDetails" type="beforeRender"
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.OperationService"
 			method="setCountRealizedOperationValue" />
+			
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
@@ -282,6 +299,13 @@
 			event="copyTimeNormsFromOperation" plugin="technologies"
 			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.NormService"
 			method="copyTimeNormsFromOperation" />
+			
+	<!-- 		
+		<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
+			component="form" event="save"
+			class="com.qcadoo.mes.productionTimeNorms.listeners.TechnologyOperationComponentDetailsListeners"
+			method="checkIfDifferentQuantity" /> -->	
+		
 	</modules>
 
 </plugin>

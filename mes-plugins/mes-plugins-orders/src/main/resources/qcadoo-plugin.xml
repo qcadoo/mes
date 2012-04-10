@@ -90,8 +90,11 @@
 
 		<menu:menu-item name="productionOrders" category="orders"
 			view="ordersList" />
+		<menu:menu-item name="productionOrdersPlanning" category="orders"
+			view="ordersPlanningList" />
 
 		<view:view resource="view/ordersList.xml" />
+		<view:view resource="view/ordersPlanningList.xml" />
 		<view:view resource="view/orderDetails.xml" />
 
 		<view:view resource="view/technologyInstanceOperationComponentList.xml" />

@@ -38,12 +38,15 @@ public class OperationService {
                 .getComponentByReference("countRealizedOperation");
         FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
                 .getComponentByReference("countMachineOperation");
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setVisible(true);
+            countMachineUNIT.setVisible(true);
 
         } else {
             countMachineOperation.setVisible(false);
+            countMachineUNIT.setVisible(false);
         }
         countMachineOperation.requestComponentUpdateState();
     }
@@ -54,14 +57,18 @@ public class OperationService {
                 .getComponentByReference("countRealizedOperation");
         FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
                 .getComponentByReference("countMachineOperation");
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
 
         countRealizedOperation.setRequired(true);
 
         if (countRealizedOperation.getFieldValue().equals("02specified")) {
             countMachineOperation.setVisible(true);
             countMachineOperation.setEnabled(true);
+            countMachineUNIT.setVisible(true);
+            countMachineUNIT.setEnabled(true);
         } else {
             countMachineOperation.setVisible(false);
+            countMachineUNIT.setVisible(false);
         }
         countMachineOperation.requestComponentUpdateState();
     }

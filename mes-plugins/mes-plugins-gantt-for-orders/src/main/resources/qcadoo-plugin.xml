@@ -63,9 +63,9 @@
 
 		<view:view resource="view/ganttForOrders.xml" />
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/ordersList.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
 
-		<view:view-listener plugin="orders" view="ordersList"
+		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="window" event="showGanttOrdersCalendar"
 			class="com.qcadoo.mes.ganttForOrders.GanttOrderService" method="showGanttOrdersCalendar" />
 	</modules>

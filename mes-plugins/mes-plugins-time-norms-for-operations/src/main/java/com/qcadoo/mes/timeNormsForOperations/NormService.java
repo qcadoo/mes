@@ -178,12 +178,17 @@ public class NormService {
     public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
         FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
         FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
 
         if ("02specified".equals(countRealizedOperation.getFieldValue())) {
             countMachineOperation.setVisible(true);
             countMachineOperation.setEnabled(true);
+            countMachineUNIT.setVisible(true);
+            countMachineUNIT.setEnabled(true);
         } else {
             countMachineOperation.setVisible(false);
+            countMachineUNIT.setVisible(false);
+
         }
     }
 
