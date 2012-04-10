@@ -33,4 +33,5 @@
 		<bigButton name="copyTimeNormsFromTechnology" icon="copyIcon24.png" state="enabled" action="#{form}.fireEvent(copyTimeNormsFromTechnology);" />
 	</group>
 	
+	
 </ribbonExtension>

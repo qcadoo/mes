@@ -218,6 +218,7 @@
 			event="copyTimeNormsFromTechnology" plugin="productionScheduling"
 			view="orderOperationComponentDetails" class="com.qcadoo.mes.productionTimeNorms.NormService"
 			method="copyTimeNormsFromTechnology" />
+			
 
 		<view:view-listener component="form"
 			event="copyTimeNormsFromOperation" plugin="technologies"

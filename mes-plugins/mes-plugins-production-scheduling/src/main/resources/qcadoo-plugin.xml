@@ -107,12 +107,18 @@
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="showOrderParameters"
 			class="com.qcadoo.mes.productionScheduling.NormOrderService" method="showOrderParameters" />
+			
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="redirectToOperationDurationDetails"
+			class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
+			method="redirectToOperationDurationDetails"/>
 
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/orderOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
-
+		<view:view resource="view/operationDurationDetails.xml"/>
+		
 		<view:view-listener plugin="productionScheduling"
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
@@ -127,7 +133,7 @@
 			view="orderTimePrediction" component="window" event="clearAllField"
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
 			method="clearAllField" />
-
+			
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
