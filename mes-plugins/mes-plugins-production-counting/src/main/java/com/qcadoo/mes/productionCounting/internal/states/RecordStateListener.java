@@ -60,8 +60,8 @@ public class RecordStateListener {
         searchBuilder.add(SearchRestrictions.eq("lastRecord", true));
 
         if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            searchBuilder.add(SearchRestrictions.belongsTo("orderOperationComponent",
-                    productionRecord.getBelongsToField("orderOperationComponent")));
+            searchBuilder.add(SearchRestrictions.belongsTo("technologyInstanceOperationComponent",
+                    productionRecord.getBelongsToField("technologyInstanceOperationComponent")));
         }
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
             errorList.add(ChangeRecordStateMessage.error("productionCounting.record.messages.error.finalExists"));

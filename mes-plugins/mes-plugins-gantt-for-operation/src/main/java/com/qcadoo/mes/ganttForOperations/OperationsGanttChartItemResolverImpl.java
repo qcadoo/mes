@@ -47,10 +47,6 @@ import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 @Service
 public class OperationsGanttChartItemResolverImpl implements OperationsGanttChartItemResolver {
 
-    private static final String ORDER_OPERATION_COMPONENT_FIELD = "orderOperationComponent";
-
-    private static final String PRODUCTION_SCHEDULING_MODEL = "productionScheduling";
-
     private static final String NAME_FIELD = "name";
 
     private static final String NUMBER_FIELD = "number";
@@ -87,7 +83,9 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            List<Entity> operations = dataDefinitionService.get(PRODUCTION_SCHEDULING_MODEL, ORDER_OPERATION_COMPONENT_FIELD)
+            List<Entity> operations = dataDefinitionService
+                    .get(com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER,
+                            com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                     .find().add(SearchRestrictions.belongsTo(ORDER_FIELD, order)).list().getEntities();
 
             if (operations.isEmpty()) {

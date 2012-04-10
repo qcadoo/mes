@@ -27,7 +27,7 @@ public interface ProductionCountingWithCostsConstants {
 
     String PLUGIN_IDENTIFIER = "productionCountingWithCosts";
 
-    String MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT = "orderOperationProductInComponent";
+    String MODEL_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENT = "technologyInstanceOperationProductInComponent";
 
     String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
 

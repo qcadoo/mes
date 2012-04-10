@@ -133,8 +133,8 @@
 				<layoutElement column="2" row="1" height="9" width="2">
 					<component type="grid" name="productionRecords" reference="productionRecords" model="productionRecord" >
 						<option type="column" name="number" fields="number" expression="#number" />
-						<option type="column" name="operation" fields="orderOperationComponent" 
-								expression="#orderOperationComponent==null ? 'N/A' : #orderOperationComponent['nodeNumber'] + ' ' + #orderOperationComponent['operation']['name']" />
+						<option type="column" name="operation" fields="technologyInstanceOperationComponent" 
+								expression="#technologyInstanceOperationComponent==null ? 'N/A' : #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name']" />
 						<option type="column" name="lastRecord" fields="lastRecord" 
 								expression="#lastRecord" />
 						<option type="column" name="shift" fields="shift"  />

@@ -40,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -61,7 +60,7 @@ public class WorkPlansColumnLoaderServiceImplTest {
     private Entity technologyOperationComponent;
 
     @Mock
-    private Entity orderOperationComponent;
+    private Entity technologyInstanceOperationComponent;
 
     @Mock
     private List<Entity> operations;
@@ -70,7 +69,7 @@ public class WorkPlansColumnLoaderServiceImplTest {
     private List<Entity> technologyOperationComponents;
 
     @Mock
-    private List<Entity> orderOperationComponents;
+    private List<Entity> technologyInstanceOperationComponents;
 
     @Mock
     private DataDefinition parameterDD;
@@ -82,7 +81,7 @@ public class WorkPlansColumnLoaderServiceImplTest {
     private DataDefinition technologyOperationComponentDD;
 
     @Mock
-    private DataDefinition orderOperationComponentDD;
+    private DataDefinition technologyInstanceOperationComponentDD;
 
     @Mock
     private DataDefinition columnForInputProductsDD;
@@ -292,44 +291,46 @@ public class WorkPlansColumnLoaderServiceImplTest {
     }
 
     @Test
-    public void shouldSetOrderOperationComponentsDefaultValuesIfOrderOperationComponentsIsntNull() {
+    public void shouldSetTechnologyInstanceOperationComponentsDefaultValuesIfTechnologyInstanceOperationComponentsIsntNull() {
         // given
         when(
-                dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT)).thenReturn(orderOperationComponentDD);
-        when(orderOperationComponentDD.find()).thenReturn(searchCriteria);
+                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(
+                technologyInstanceOperationComponentDD);
+        when(technologyInstanceOperationComponentDD.find()).thenReturn(searchCriteria);
         when(searchCriteria.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(orderOperationComponents);
+        when(searchResult.getEntities()).thenReturn(technologyInstanceOperationComponents);
 
-        Entity orderOperationComponent1 = mock(Entity.class);
-        Entity orderOperationComponent2 = mock(Entity.class);
-        Entity orderOperationComponent3 = mock(Entity.class);
+        Entity technologyInstanceOperationComponent1 = mock(Entity.class);
+        Entity technologyInstanceOperationComponent2 = mock(Entity.class);
+        Entity technologyInstanceOperationComponent3 = mock(Entity.class);
 
-        DataDefinition orderOperationComponent1DD = mock(DataDefinition.class);
-        DataDefinition orderOperationComponent2DD = mock(DataDefinition.class);
-        DataDefinition orderOperationComponent3DD = mock(DataDefinition.class);
+        DataDefinition technologyInstanceOperationComponent1DD = mock(DataDefinition.class);
+        DataDefinition technologyInstanceOperationComponent2DD = mock(DataDefinition.class);
+        DataDefinition technologyInstanceOperationComponent3DD = mock(DataDefinition.class);
 
         @SuppressWarnings("unchecked")
         Iterator<Entity> operationsIterator = mock(Iterator.class);
         when(operationsIterator.hasNext()).thenReturn(true, true, true, false);
-        when(operationsIterator.next()).thenReturn(orderOperationComponent1, orderOperationComponent2, orderOperationComponent3);
+        when(operationsIterator.next()).thenReturn(technologyInstanceOperationComponent1, technologyInstanceOperationComponent2,
+                technologyInstanceOperationComponent3);
 
-        when(orderOperationComponents.iterator()).thenReturn(operationsIterator);
+        when(technologyInstanceOperationComponents.iterator()).thenReturn(operationsIterator);
 
-        when(orderOperationComponent1.isValid()).thenReturn(true);
-        when(orderOperationComponent2.isValid()).thenReturn(true);
-        when(orderOperationComponent3.isValid()).thenReturn(true);
+        when(technologyInstanceOperationComponent1.isValid()).thenReturn(true);
+        when(technologyInstanceOperationComponent2.isValid()).thenReturn(true);
+        when(technologyInstanceOperationComponent3.isValid()).thenReturn(true);
 
-        when(orderOperationComponent1.getDataDefinition()).thenReturn(orderOperationComponent1DD);
-        when(orderOperationComponent2.getDataDefinition()).thenReturn(orderOperationComponent2DD);
-        when(orderOperationComponent3.getDataDefinition()).thenReturn(orderOperationComponent3DD);
+        when(technologyInstanceOperationComponent1.getDataDefinition()).thenReturn(technologyInstanceOperationComponent1DD);
+        when(technologyInstanceOperationComponent2.getDataDefinition()).thenReturn(technologyInstanceOperationComponent2DD);
+        when(technologyInstanceOperationComponent3.getDataDefinition()).thenReturn(technologyInstanceOperationComponent3DD);
 
         // when
-        workPlansColumnLoaderServiceImpl.setOrderOperationComponentDefaultValues();
+        workPlansColumnLoaderServiceImpl.setTechnologyInstanceOperationComponentDefaultValues();
 
         // then
-        for (Entity orderOperationCoponent : Arrays.asList(orderOperationComponent1, orderOperationComponent2,
-                orderOperationComponent3)) {
+        for (Entity orderOperationCoponent : Arrays.asList(technologyInstanceOperationComponent1,
+                technologyInstanceOperationComponent2, technologyInstanceOperationComponent3)) {
             verify(orderOperationCoponent).setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
             verify(orderOperationCoponent).setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
             verify(orderOperationCoponent).setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
@@ -339,27 +340,30 @@ public class WorkPlansColumnLoaderServiceImplTest {
     }
 
     @Test
-    public void shouldntSetOrderOperationComponentsDefaultValuesIfOrderOperationComponentsIsNull() {
+    public void shouldntSetTechnologyInstanceOperationComponentsDefaultValuesIfTechnologyInstanceOperationComponentsIsNull() {
         // given
         when(
-                dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT)).thenReturn(orderOperationComponentDD);
-        when(orderOperationComponentDD.find()).thenReturn(searchCriteria);
+                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).thenReturn(
+                technologyInstanceOperationComponentDD);
+        when(technologyInstanceOperationComponentDD.find()).thenReturn(searchCriteria);
         when(searchCriteria.list()).thenReturn(searchResult);
         when(searchResult.getEntities()).thenReturn(null);
 
         // when
-        workPlansColumnLoaderServiceImpl.setOrderOperationComponentDefaultValues();
+        workPlansColumnLoaderServiceImpl.setTechnologyInstanceOperationComponentDefaultValues();
 
         // then
-        verify(orderOperationComponent, never()).setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-        verify(orderOperationComponent, never()).setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-        verify(orderOperationComponent, never())
-                .setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-        verify(orderOperationComponent, never())
-                .setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-        verify(orderOperationComponent, never()).setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD,
+        verify(technologyInstanceOperationComponent, never()).setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD,
                 false);
+        verify(technologyInstanceOperationComponent, never())
+                .setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
+        verify(technologyInstanceOperationComponent, never()).setField(
+                WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
+        verify(technologyInstanceOperationComponent, never()).setField(
+                WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
+        verify(technologyInstanceOperationComponent, never()).setField(
+                WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
     }
 
     @Ignore

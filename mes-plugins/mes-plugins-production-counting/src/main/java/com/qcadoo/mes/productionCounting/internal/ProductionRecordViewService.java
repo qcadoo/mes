@@ -78,7 +78,7 @@ public class ProductionRecordViewService {
 
     private static final String L_REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
 
-    private static final String L_COMPONENT_ORDER_OPERATION_COMPONENT = "orderOperationComponent";
+    private static final String L_COMPONENT_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     private static final String L_REGISTER_PRODUCTION_TIME = "registerProductionTime";
 
@@ -116,7 +116,7 @@ public class ProductionRecordViewService {
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
-        view.getComponentByReference(L_COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
+        view.getComponentByReference(L_COMPONENT_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
                 FOR_EACH.getStringValue().equals(typeOfProductionRecording));
         view.getComponentByReference("recordOperationProductOutComponent").setVisible(
                 order.getBooleanField(L_REGISTER_QUANTITY_OUT_PRODUCT));
@@ -141,7 +141,8 @@ public class ProductionRecordViewService {
     }
 
     public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FieldComponent operation = (FieldComponent) view.getComponentByReference(L_COMPONENT_ORDER_OPERATION_COMPONENT);
+        FieldComponent operation = (FieldComponent) view
+                .getComponentByReference(L_COMPONENT_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         operation.setFieldValue("");
         FormComponent form = (FormComponent) view.getComponentByReference(L_COMPONENT_FORM);
         if (form.getEntityId() == null) {
@@ -169,9 +170,10 @@ public class ProductionRecordViewService {
 
     private void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order,
             final ViewDefinitionState view) {
-        view.getComponentByReference(L_COMPONENT_ORDER_OPERATION_COMPONENT).setVisible(
+        view.getComponentByReference(L_COMPONENT_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
                 TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingType));
-        ((FieldComponent) view.getComponentByReference(L_COMPONENT_ORDER_OPERATION_COMPONENT)).requestComponentUpdateState();
+        ((FieldComponent) view.getComponentByReference(L_COMPONENT_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT))
+                .requestComponentUpdateState();
 
         boolean registerProductionTime = order.getBooleanField(L_REGISTER_PRODUCTION_TIME);
         view.getComponentByReference("borderLayoutTime").setVisible(

@@ -69,6 +69,8 @@
 		<model:model model="technology" resource="model/technology.xml" />
 		<model:model model="technologyOperationComponent"
 			resource="model/technologyOperationComponent.xml" />
+		
+		<model:model model="technologyInstanceOperationComponent" resource="model/technologyInstanceOperationComponent.xml" />
 
 		<model:model model="logging" resource="model/logging.xml" />
 		
@@ -115,6 +117,7 @@
 		<view:view resource="view/technologyReferenceTechnologyComponentDetails.xml" />
 		<view:view resource="view/operationProductInComponentDetails.xml" />
 		<view:view resource="view/operationProductOutComponentDetails.xml" />
+		<view:view resource="view/technologyInstanceOperationComponentDetails.xml" />
 		
 		<view:view resource="view/technologyGroupsList.xml" />
 		<view:view resource="view/technologyGroupDetails.xml" />

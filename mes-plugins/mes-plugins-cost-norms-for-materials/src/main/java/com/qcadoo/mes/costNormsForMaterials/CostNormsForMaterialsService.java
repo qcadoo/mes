@@ -1,10 +1,10 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields.AVERAGE_COST;
-import static com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields.COST_FOR_NUMBER;
-import static com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields.LAST_PURCHASE_COST;
-import static com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields.NOMINAL_COST;
+import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstanceOperationProductInComponentFields.AVERAGE_COST;
+import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstanceOperationProductInComponentFields.COST_FOR_NUMBER;
+import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstanceOperationProductInComponentFields.LAST_PURCHASE_COST;
+import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstanceOperationProductInComponentFields.NOMINAL_COST;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
-import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -126,24 +126,24 @@ public class CostNormsForMaterialsService {
         Entity existingOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 orderId);
 
-        List<Entity> orderOperationProductIncomponents = existingOrder
-                .getHasManyField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS);
+        List<Entity> technologyInstanceOperationProductIncomponents = existingOrder
+                .getHasManyField(CostNormsForMaterialsConstants.TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS);
 
-        if (orderOperationProductIncomponents != null) {
-            for (Entity orderOperationProductIncomponent : orderOperationProductIncomponents) {
-                Entity product = orderOperationProductIncomponent.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+        if (technologyInstanceOperationProductIncomponents != null) {
+            for (Entity technologyInstanceOperationProductIncomponent : technologyInstanceOperationProductIncomponents) {
+                Entity product = technologyInstanceOperationProductIncomponent.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-                orderOperationProductIncomponent.setField(COST_FOR_NUMBER,
+                technologyInstanceOperationProductIncomponent.setField(COST_FOR_NUMBER,
                         product.getField(ProductCostNormsFields.COST_FOR_NUMBER));
-                orderOperationProductIncomponent.setField(NOMINAL_COST, product.getField(ProductCostNormsFields.NOMINAL_COST));
-                orderOperationProductIncomponent.setField(LAST_PURCHASE_COST,
+                technologyInstanceOperationProductIncomponent.setField(NOMINAL_COST, product.getField(ProductCostNormsFields.NOMINAL_COST));
+                technologyInstanceOperationProductIncomponent.setField(LAST_PURCHASE_COST,
                         product.getField(ProductCostNormsFields.LAST_PURCHASE_COST));
-                orderOperationProductIncomponent.setField(AVERAGE_COST, product.getField(ProductCostNormsFields.AVERAGE_COST));
+                technologyInstanceOperationProductIncomponent.setField(AVERAGE_COST, product.getField(ProductCostNormsFields.AVERAGE_COST));
 
-                orderOperationProductIncomponent = orderOperationProductIncomponent.getDataDefinition().save(
-                        orderOperationProductIncomponent);
+                technologyInstanceOperationProductIncomponent = technologyInstanceOperationProductIncomponent.getDataDefinition().save(
+                        technologyInstanceOperationProductIncomponent);
 
-                inputProducts.add(orderOperationProductIncomponent);
+                inputProducts.add(technologyInstanceOperationProductIncomponent);
             }
         }
 

@@ -39,7 +39,7 @@ public interface WorkPlansColumnLoaderService {
 
     void setTechnologyOperationComponentDefaultValues();
 
-    void setOrderOperationComponentDefaultValues();
+    void setTechnologyInstanceOperationComponentDefaultValues();
 
     boolean databaseHasToBePrepared();
 }

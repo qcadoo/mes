@@ -63,7 +63,7 @@
 		<boolean name="externalSynchronized" default="true" />
 		<hasMany name="loggings" joinField="order" model="logging"
 			cascade="delete" />
-			
+		<tree name="technologyInstanceOperationComponents" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" copyable="true" />
 		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />	
 		<datetime name="deadline" />
 	</fields>
@@ -80,6 +80,7 @@
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
 		<onSave class="com.qcadoo.mes.orders.states.ChangeStateHook"
 			method="changedState" />
+		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

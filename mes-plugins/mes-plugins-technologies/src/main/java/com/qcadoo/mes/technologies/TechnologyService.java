@@ -765,7 +765,7 @@ public class TechnologyService {
                     .getTreeField("operationComponents").getRoot();
         }
 
-        if (operationComponent.getDataDefinition().getName().equals("orderOperationComponent")) {
+        if (operationComponent.getDataDefinition().getName().equals("technologyInstanceOperationComponent")) {
             operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
         }
 

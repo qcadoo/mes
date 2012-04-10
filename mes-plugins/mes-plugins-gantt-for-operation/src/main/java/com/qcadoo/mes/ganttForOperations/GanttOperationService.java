@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -96,7 +97,8 @@ public class GanttOperationService {
             return;
         }
 
-        DataDefinition dataDefinition = dataDefinitionService.get("productionScheduling", "orderOperationComponent");
+        DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
         List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
                 .list().getEntities();

@@ -72,7 +72,7 @@ public class ProductionBalanceDetailsViewHooks {
 
     private static final String L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT = "componentsCostSummaryBorderLayout";
 
-    private static final String L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS = "orderOperationProductInComponents";
+    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS = "technologyInstanceOperationProductInComponents";
 
     private static final String L_TIME_COSTS_GRID_LAYOUT = "timeCostsGridLayout";
 
@@ -127,7 +127,7 @@ public class ProductionBalanceDetailsViewHooks {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
 
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
-            viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
+            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
 
             if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
                     && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
@@ -276,7 +276,7 @@ public class ProductionBalanceDetailsViewHooks {
             fieldComponent.requestComponentUpdateState();
         }
 
-        viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setEnabled(isEnabled);
+        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setEnabled(isEnabled);
         viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setEnabled(isEnabled);
     }
 
@@ -284,7 +284,7 @@ public class ProductionBalanceDetailsViewHooks {
         viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(isVisible);
 
         viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(L_ORDER_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(isVisible);
 
         viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(isVisible);
 

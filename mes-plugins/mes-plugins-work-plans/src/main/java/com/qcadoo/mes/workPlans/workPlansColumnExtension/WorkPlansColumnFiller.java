@@ -167,7 +167,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     }
 
     private void fillProductNames(final Entity technology, final Map<Entity, Map<String, String>> valuesMap) {
-        // TODO mici, change those to orderOperationComponents?
+        // TODO mici, change those to technologyInstanceOperationComponents?
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
@@ -196,7 +196,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
     private void fillPlannedQuantities(final Entity technology, final Map<Entity, BigDecimal> productQuantities,
             final Map<Entity, Map<String, String>> valuesMap) {
-        // TODO mici, change those to orderOperationComponents?
+        // TODO mici, change those to technologyInstanceOperationComponents?
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {

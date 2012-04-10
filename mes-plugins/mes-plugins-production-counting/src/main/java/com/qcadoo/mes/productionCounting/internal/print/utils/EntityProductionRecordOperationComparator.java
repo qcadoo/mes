@@ -34,8 +34,8 @@ public class EntityProductionRecordOperationComparator implements Comparator<Ent
 
     @Override
     public final int compare(final Entity o1, final Entity o2) {
-        return o1.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
-                .compareTo(o2.getBelongsToField("orderOperationComponent").getStringField("nodeNumber"));
+        return o1.getBelongsToField("technologyInstanceOperationComponent").getStringField("nodeNumber")
+                .compareTo(o2.getBelongsToField("technologyInstanceOperationComponent").getStringField("nodeNumber"));
     }
 
 }

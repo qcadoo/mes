@@ -62,7 +62,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
-import static com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
@@ -441,8 +441,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     Entity operationTimeComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                             ProductionCountingConstants.MODEL_OPERATION_TIME_COMPONENT).create();
 
-                    operationTimeComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
-                            productionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+                    operationTimeComponent.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                            productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
                     operationTimeComponent.setField(L_PLANNED_MACHINE_TIME, productionRecord.getField(PLANNED_MACHINE_TIME));
                     operationTimeComponent.setField(L_MACHINE_TIME, productionRecord.getField(MACHINE_TIME));
@@ -487,11 +487,12 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                             ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
 
-                    operationPieceworkComponent.setField(MODEL_ORDER_OPERATION_COMPONENT,
-                            productionRecord.getBelongsToField(MODEL_ORDER_OPERATION_COMPONENT));
+                    operationPieceworkComponent.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                            productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
-                    Entity orderOperationComponent = productionRecord.getBelongsToField("orderOperationComponent");
-                    Entity proxyTechnologyOperationComponent = orderOperationComponent
+                    Entity technologyInstanceOperationComponent = productionRecord
+                            .getBelongsToField("technologyInstanceOperationComponent");
+                    Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
                             .getBelongsToField("technologyOperationComponent");
                     Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
 

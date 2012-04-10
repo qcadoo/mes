@@ -81,9 +81,7 @@ public interface SamplesConstants {
 
     String ORDERS_MODEL_ORDER = "order";
 
-    String PRODUCTION_SCHEDULING_PLUGIN_IDENTIFIER = "productionScheduling";
-
-    String PRODUCTION_SCHEDULING_MODEL_PRODUCTION_SCHEDULING = "orderOperationComponent";
+    String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     String TECHNOLOGIES_PLUGIN_IDENTIFIER = "technologies";
 

@@ -53,7 +53,7 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>productionScheduling</plugin>
+			<plugin>technologies</plugin>
 			<version>[0.4.2</version>
 		</dependency>
 	</dependencies>
@@ -67,14 +67,14 @@
 			resource="model/calculationOperationComponent.xml" />
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-ribbon-group
-			resource="view/ribbonExtensions/orderOperationComponentDetails.xml" />
+			resource="view/ribbonExtensions/technologyInstanceOperationComponentDetails.xml" />
 
 		<!-- operation -->
 		<model:model-field plugin="technologies" model="operation">
@@ -140,34 +140,33 @@
 			</model:integer>
 		</model:model-field>
 
-
-		<!-- operation - instance of technology -->
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+<!-- operation - instance of technology -->
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:integer name="numberOfOperations" default="1">
 				<model:validatesRange from="0" exclusively="true" />
 				<model:validatesUnscaledValue max="7" />
@@ -211,23 +210,16 @@
 
 		<!-- operation - instance of technology -->
 
-		<model:model-hook model="orderOperationComponent"
-			plugin="productionScheduling">
-			<model:onCreate
-				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-				method="copyCostNormsToOrderOperationComponent" />
-		</model:model-hook>
+<!-- 		<view:view-hook view="technologyOperationComponentInOrderDetails" -->
+<!-- 			type="beforeRender" plugin="timeNormsForOperations" -->
+<!-- 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" -->
+<!-- 			method="fillCurrencyFields" /> -->
 
-		<view:view-hook view="orderOperationComponentDetails"
-			type="beforeRender" plugin="productionScheduling"
-			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-			method="fillCurrencyFields" />
-
-		<view:view-listener plugin="productionScheduling"
-			view="orderOperationComponentDetails" component="form"
-			event="copyCostsFromTechnology"
-			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
-			method="copyCostValuesFromTechnology" />
+<!-- 		<view:view-listener plugin="timeNormsForOperations" -->
+<!-- 			view="technologyOperationComponentInOrderDetails" component="form" -->
+<!-- 			event="copyCostsFromTechnology" -->
+<!-- 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" -->
+<!-- 			method="copyCostValuesFromTechnology" /> -->
 	</modules>
 
 </plugin>
