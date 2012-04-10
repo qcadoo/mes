@@ -38,7 +38,7 @@
 	</fields>
 	<hooks>
 		<validatesWith
-			class="com.qcadoo.mes.workPlans.hooks.OrderOperationColumnModelValidators"
+			class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationColumnModelValidators"
 			method="checkIfColumnForOutputProductsIsNotAlreadyUsed" />
 	</hooks>
 </model>

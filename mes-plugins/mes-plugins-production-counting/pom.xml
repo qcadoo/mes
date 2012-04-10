@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-material-requirements</artifactId>
+			<artifactId>mes-plugins-orders</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>

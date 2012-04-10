@@ -84,7 +84,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class ProductionRecordService {
 
-    private static final String L_ORDER_OPERATION_COMPONENTS = "orderOperationComponents";
+    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
 
     private static final String L_STATE = "state";
 
@@ -202,7 +202,7 @@ public class ProductionRecordService {
         }
 
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
+            operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             operationComponents = newArrayList(productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
         }
@@ -239,13 +239,15 @@ public class ProductionRecordService {
             Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService
                     .getProductComponentQuantities(asList(order));
 
-            Entity orderOperationComponent = productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+            Entity technologyInstanceOperationComponent = productionRecord
+                    .getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
             for (Entry<Entity, BigDecimal> prodCompQty : productComponentQuantities.entrySet()) {
                 Entity product = prodCompQty.getKey().getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-                if (orderOperationComponent != null) {
-                    Entity operation = orderOperationComponent.getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
+                if (technologyInstanceOperationComponent != null) {
+                    Entity operation = technologyInstanceOperationComponent
+                            .getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
                     Entity currentOperation = prodCompQty.getKey().getBelongsToField("operationComponent")
                             .getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
                     if (!operation.getId().equals(currentOperation.getId())) {
@@ -296,7 +298,7 @@ public class ProductionRecordService {
             return;
         }
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
-        EntityTreeNode operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS).getRoot();
+        EntityTreeNode operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).getRoot();
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
             countPlannedTime(productionRecord, operationComponents, null);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
@@ -390,10 +392,11 @@ public class ProductionRecordService {
         Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateRealizationTimes(order, plannedQuantity,
                 true, true);
         if (orderOperComp == null) {
-            EntityTree orderOperationComponentsTree = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
-            for (Entity orderOperationComponent : orderOperationComponentsTree) {
-                countTimeOperation(orderOperationComponent, plannedTimeValues,
-                        durationOperation.get(orderOperationComponent.getBelongsToField("technologyOperationComponent")));
+            EntityTree technologyInstanceOperationComponentsTree = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponentsTree) {
+                countTimeOperation(technologyInstanceOperationComponent, plannedTimeValues,
+                        durationOperation.get(technologyInstanceOperationComponent
+                                .getBelongsToField("technologyOperationComponent")));
             }
         } else {
             countTimeOperation(orderOperComp, plannedTimeValues,
@@ -405,18 +408,20 @@ public class ProductionRecordService {
         productionRecord.setField(PLANNED_LABOR_TIME, plannedTimeValues.get(PLANNED_LABOR_TIME).setScale(0, ROUND_UP).intValue());
     }
 
-    private void countTimeOperation(final Entity orderOperationComponent, final Map<String, BigDecimal> plannedTimeValues,
-            final Integer durationOfOperation) {
+    private void countTimeOperation(final Entity technologyInstanceOperationComponent,
+            final Map<String, BigDecimal> plannedTimeValues, final Integer durationOfOperation) {
         BigDecimal durationOfOperationComponent = new BigDecimal(durationOfOperation);
         BigDecimal plannedTime = plannedTimeValues.get(PLANNED_TIME).add(durationOfOperationComponent);
         plannedTimeValues.put(PLANNED_TIME, plannedTime);
 
         BigDecimal plannedMachineTime = plannedTimeValues.get(PLANNED_MACHINE_TIME).add(
-                durationOfOperationComponent.multiply(getBigDecimal(orderOperationComponent.getField("machineUtilization")),
+                durationOfOperationComponent.multiply(
+                        getBigDecimal(technologyInstanceOperationComponent.getField("machineUtilization")),
                         numberService.getMathContext()), numberService.getMathContext());
         plannedTimeValues.put(PLANNED_MACHINE_TIME, plannedMachineTime);
         BigDecimal plannedLaborTime = plannedTimeValues.get(PLANNED_LABOR_TIME).add(
-                durationOfOperationComponent.multiply(getBigDecimal(orderOperationComponent.getField("laborUtilization")),
+                durationOfOperationComponent.multiply(
+                        getBigDecimal(technologyInstanceOperationComponent.getField("laborUtilization")),
                         numberService.getMathContext()), numberService.getMathContext());
         plannedTimeValues.put(PLANNED_LABOR_TIME, plannedLaborTime);
     }

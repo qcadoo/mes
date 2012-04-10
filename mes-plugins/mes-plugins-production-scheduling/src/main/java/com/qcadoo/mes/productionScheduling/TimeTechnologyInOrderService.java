@@ -112,7 +112,7 @@ public class TimeTechnologyInOrderService {
                 form.getEntityId());
 
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
-                order.getTreeField("orderOperationComponents").getRoot(),
+                order.getTreeField("technologyInstanceOperationComponents").getRoot(),
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                         viewDefinitionState.getLocale()));
 

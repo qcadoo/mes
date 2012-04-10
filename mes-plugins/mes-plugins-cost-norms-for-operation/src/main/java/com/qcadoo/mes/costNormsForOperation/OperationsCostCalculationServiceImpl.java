@@ -290,7 +290,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (costCalculation.getBelongsToField(ORDER_L) == null) {
             sourceOperationComponents = costCalculation.getBelongsToField(TECHNOLOGY_FIELD).getTreeField("operationComponents");
         } else {
-            sourceOperationComponents = costCalculation.getBelongsToField(ORDER_L).getTreeField("orderOperationComponents");
+            sourceOperationComponents = costCalculation.getBelongsToField(ORDER_L).getTreeField(
+                    "technologyInstanceOperationComponents");
         }
 
         createTechnologyInstanceForCalculation(sourceOperationComponents, costCalculation);
@@ -358,14 +359,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         calculationOperationComponent.setField(ENTITY_TYPE_FIELD, OPERATION_L);
 
-        List<Entity> newOrderOperationComponents = new ArrayList<Entity>();
+        List<Entity> newTechnologyInstanceOperationComponents = new ArrayList<Entity>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
-            newOrderOperationComponents.add(createCalculationOperationComponent(child, calculationOperationComponent,
-                    calculationOperationComponentDD, costCalculation));
+            newTechnologyInstanceOperationComponents.add(createCalculationOperationComponent(child,
+                    calculationOperationComponent, calculationOperationComponentDD, costCalculation));
         }
 
-        calculationOperationComponent.setField("children", newOrderOperationComponents);
+        calculationOperationComponent.setField("children", newTechnologyInstanceOperationComponents);
     }
 
     private void deleteOperationsTreeIfExists(final Entity costCalculation) {

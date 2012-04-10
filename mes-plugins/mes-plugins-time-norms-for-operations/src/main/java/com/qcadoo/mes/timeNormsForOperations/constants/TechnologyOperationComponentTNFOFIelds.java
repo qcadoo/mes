@@ -1,6 +1,6 @@
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public class TechnologyOperationComponentTNFOFIelds {
+public class TechnologyOperationComponentTNFOFields {
 
     public static final String TPZ = "tpz";
 
@@ -11,6 +11,8 @@ public class TechnologyOperationComponentTNFOFIelds {
     public static final String COUNT_REALIZED = "countRealized";
 
     public static final String COUNT_MACHINE = "countMachine";
+
+    public static final String COUNT_MACHINE_UNIT = "countMachineUNIT";
 
     public static final String TIME_NEXT_OPERATION = "timeNextOperation";
 

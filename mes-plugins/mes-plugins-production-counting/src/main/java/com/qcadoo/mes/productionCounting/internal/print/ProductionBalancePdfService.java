@@ -79,7 +79,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     private static final String PCPBRCHB_LITERAL = "productionCounting.productionBalance.report.columnHeader.balance";
 
-    private static final String ORDER_OPERATION_COMPONENT_LITERAL = "orderOperationComponent";
+    private static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL = "technologyInstanceOperationComponent";
 
     private static final String N_A_LITERAL = "";
 
@@ -435,10 +435,12 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
         for (Entity productionRecord : productionBalanceReportDataService.groupProductionRecordsByOperation(productionRecords)) {
-            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
-                    .getStringField("nodeNumber"), FontUtils.getDejavuRegular9Dark()));
-            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
-                    .getBelongsToField("operation").getStringField("number"), FontUtils.getDejavuRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(productionRecord.getBelongsToField(
+                    TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getStringField("nodeNumber"), FontUtils
+                    .getDejavuRegular9Dark()));
+            machineTimeTable.addCell(new Phrase(productionRecord
+                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getBelongsToField("operation")
+                    .getStringField("number"), FontUtils.getDejavuRegular9Dark()));
             machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
                     .getField("plannedMachineTime")), FontUtils.getDejavuRegular9Dark()));
             machineTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) productionRecord
@@ -489,9 +491,9 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         List<Entity> timeComponents = productionBalance.getHasManyField(ProductionBalanceFields.OPERATION_TIME_COMPONENTS);
 
         for (Entity timeComponent : timeComponents) {
-            laborTimeTable.addCell(new Phrase(timeComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL).getStringField(
-                    "nodeNumber"), FontUtils.getDejavuRegular9Dark()));
-            laborTimeTable.addCell(new Phrase(timeComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
+            laborTimeTable.addCell(new Phrase(timeComponent.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL)
+                    .getStringField("nodeNumber"), FontUtils.getDejavuRegular9Dark()));
+            laborTimeTable.addCell(new Phrase(timeComponent.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL)
                     .getBelongsToField("operation").getStringField("number"), FontUtils.getDejavuRegular9Dark()));
             laborTimeTable.addCell(new Phrase(timeConverterService.convertTimeToString((Integer) timeComponent
                     .getField("plannedLaborTime")), FontUtils.getDejavuRegular9Dark()));
@@ -549,10 +551,12 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         BigDecimal timeBalanceSum = BigDecimal.ZERO;
 
         for (Entity pieceworkComponent : pieceworkComponents) {
-            pieceworkTable.addCell(new Phrase(pieceworkComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
-                    .getStringField("nodeNumber"), FontUtils.getDejavuRegular9Dark()));
-            pieceworkTable.addCell(new Phrase(pieceworkComponent.getBelongsToField(ORDER_OPERATION_COMPONENT_LITERAL)
-                    .getBelongsToField("operation").getStringField("number"), FontUtils.getDejavuRegular9Dark()));
+            pieceworkTable.addCell(new Phrase(pieceworkComponent.getBelongsToField(
+                    TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getStringField("nodeNumber"), FontUtils
+                    .getDejavuRegular9Dark()));
+            pieceworkTable.addCell(new Phrase(pieceworkComponent
+                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_LITERAL).getBelongsToField("operation")
+                    .getStringField("number"), FontUtils.getDejavuRegular9Dark()));
             pieceworkTable.addCell(new Phrase(numberService.format(pieceworkComponent.getField("plannedCycles")), FontUtils
                     .getDejavuRegular9Dark()));
             pieceworkTable.addCell(new Phrase(numberService.format(pieceworkComponent.getField("cycles")), FontUtils

@@ -97,3 +97,10 @@ ALTER TABLE basic_product
 -- changed: 05.04.2012
 ALTER TABLE productionScheduling_orderOperationComponent RENAME TO technologies_technologyInstanceOperationComponent;
 -- end
+
+
+
+-- Table: orders_order
+-- changed: 10.04.2012
+ALTER TABLE orders_order RENAME COLUMN technologyOperationComponent TO technologyInstanceOperationComponent;
+-- end

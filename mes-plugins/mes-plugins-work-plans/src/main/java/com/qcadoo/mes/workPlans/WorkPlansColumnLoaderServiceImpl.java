@@ -154,21 +154,21 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
     }
 
-    public void setOrderOperationComponentDefaultValues() {
-        List<Entity> orderOperationComponents = getOrderOperationComponents();
+    public void setTechnologyInstanceOperationComponentDefaultValues() {
+        List<Entity> technologyInstanceOperationComponents = getTechnologyInstanceOperationComponents();
 
-        if (orderOperationComponents != null) {
-            for (Entity orderOperationComponent : orderOperationComponents) {
+        if (technologyInstanceOperationComponents != null) {
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                 for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
                     if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
                         continue;
                     }
 
-                    orderOperationComponent.setField(workPlanParameter, false);
+                    technologyInstanceOperationComponent.setField(workPlanParameter, false);
                 }
 
-                if (orderOperationComponent.isValid()) {
-                    orderOperationComponent.getDataDefinition().save(orderOperationComponent);
+                if (technologyInstanceOperationComponent.isValid()) {
+                    technologyInstanceOperationComponent.getDataDefinition().save(technologyInstanceOperationComponent);
                 }
             }
         }
@@ -576,10 +576,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void addOrderOperationInputColumn(final Entity columnForInputProducts) {
-        List<Entity> orderOperationComponents = getOrderOperationComponents();
+        List<Entity> technologyInstanceOperationComponents = getTechnologyInstanceOperationComponents();
 
-        if (orderOperationComponents != null) {
-            for (Entity technologyInstanceOperationComponent : orderOperationComponents) {
+        if (technologyInstanceOperationComponents != null) {
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                 Entity orderOperationInputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_INPUT_COLUMN).create();
 
@@ -603,10 +603,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void addOrderOperationOutputColumn(final Entity columnForOutputProducts) {
-        List<Entity> orderOperationComponents = getOrderOperationComponents();
+        List<Entity> technologyInstanceOperationComponents = getTechnologyInstanceOperationComponents();
 
-        if (orderOperationComponents != null) {
-            for (Entity technologyInstanceOperationComponent : orderOperationComponents) {
+        if (technologyInstanceOperationComponents != null) {
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                 Entity orderOperationOutputColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                         WorkPlansConstants.MODEL_ORDER_OPERATION_OUTPUT_COLUMN).create();
 
@@ -674,15 +674,15 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     }
 
-    private List<Entity> getOrderOperationComponents() {
-        List<Entity> orderOperationComponents = dataDefinitionService
+    private List<Entity> getTechnologyInstanceOperationComponents() {
+        List<Entity> technologyInstanceOperationComponents = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                 .find().list().getEntities();
 
-        if (orderOperationComponents == null) {
+        if (technologyInstanceOperationComponents == null) {
             return null;
         } else {
-            return orderOperationComponents;
+            return technologyInstanceOperationComponents;
         }
     }
 

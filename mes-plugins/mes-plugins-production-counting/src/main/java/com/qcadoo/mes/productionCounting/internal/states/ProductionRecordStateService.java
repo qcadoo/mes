@@ -114,8 +114,8 @@ public class ProductionRecordStateService {
     }
 
     private void enabledOrDisabledField(final ViewDefinitionState view, final boolean isEnabled) {
-        for (String reference : Arrays.asList("lastRecord", "number", "order", "orderOperationComponent", "staff", "shift",
-                "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
+        for (String reference : Arrays.asList("lastRecord", "number", "order", "technologyInstanceOperationComponent", "staff",
+                "shift", "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setEnabled(isEnabled);
             field.requestComponentUpdateState();

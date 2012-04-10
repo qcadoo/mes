@@ -882,14 +882,15 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity addRecordOperationProductInComponent(final Entity product, final BigDecimal usedQuantity,
             final BigDecimal plannedQuantity, final BigDecimal balance) {
-        Entity productInComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT).create();
+        DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
+        Entity productInComponent = productInComponentDD.create();
         productInComponent.setField(L_PRODUCT, product);
         productInComponent.setField("usedQuantity", usedQuantity);
         productInComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
         productInComponent.setField("balance", balance);
-
-        return productInComponent;
+        validateEntity(productInComponent);
+        return productInComponentDD.save(productInComponent);
     }
 
     private Entity addBasicProductionCountingRecords(final Entity product, final BigDecimal plannedQuantity,
@@ -907,14 +908,15 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity addRecordOperationProductOutComponent(final Entity product, final BigDecimal usedQuantity,
             final BigDecimal plannedQuantity, final BigDecimal balance) {
-        Entity productOutComponent = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT).create();
+        DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+                SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
+        Entity productOutComponent = productOutComponentDD.create();
         productOutComponent.setField(L_PRODUCT, product);
         productOutComponent.setField("usedQuantity", usedQuantity);
         productOutComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
         productOutComponent.setField("balance", balance);
-
-        return productOutComponent;
+        validateEntity(productOutComponent);
+        return productOutComponentDD.save(productOutComponent);
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
@@ -1034,8 +1036,7 @@ public class TestSamplesLoader extends SamplesLoader {
     void addProductionRecord(final Map<String, String> values) {
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
-        productionRecord.setField(L_NUMBER, getProductionRecordByNumber(L_NUMBER));
-        productionRecord.setField(L_NAME, values.get(L_NAME));
+        productionRecord.setField(L_NUMBER, values.get("number"));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
         productionRecord.setField("shift", getShiftByName(values.get("shift")));
         productionRecord.setField(L_STATE, values.get(L_STATE));
@@ -1050,11 +1051,8 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField("workstationType", getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
 
-        String idString3 = values.get("loggings");
-        Long id3 = Long.valueOf(idString3);
-        Entity loggings = getLoggingsByNumber(id3);
-        List<Entity> loggings1 = Lists.newArrayList(loggings);
-        productionRecord.setField("loggings", loggings1);
+        // TODO ALBR add loggings for production rrcord
+        // productionRecord.setField("loggings", loggings1);
 
         List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(
                 getProductByNumber("000018"), new BigDecimal(L_QUANTITY_150), new BigDecimal("152"), new BigDecimal("2")));
@@ -1177,7 +1175,7 @@ public class TestSamplesLoader extends SamplesLoader {
             qualitycontrol.setField(L_NUMBER, values.get(L_NUMBER));
             qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
             qualitycontrol.setField(L_OPERATION,
-                    getOrderOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+                    getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
             qualitycontrol.setField("ControlResult", values.get("controlresult"));
             qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
             qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));
@@ -1226,7 +1224,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
     }
 
-    private Entity getOrderOperationComponentByNumber(final String number, final Entity order) {
+    private Entity getTechnologyInstanceOperationComponentByNumber(final String number, final Entity order) {
         Entity operation = dataDefinitionService
                 .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER, SamplesConstants.TECHNOLOGY_MODEL_OPERATION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
@@ -1252,13 +1250,6 @@ public class TestSamplesLoader extends SamplesLoader {
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getProductionRecordByNumber(final String number) {
-        return dataDefinitionService
-                .get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
-                        SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-    }
-
     private Entity getOperationByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
@@ -1277,10 +1268,6 @@ public class TestSamplesLoader extends SamplesLoader {
     private Entity getDivisionByNumber(final String number) {
         return dataDefinitionService.get("basic", L_DIVISION).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getLoggingsByNumber(final Long id) {
-        return dataDefinitionService.get(L_PRODUCTION_COUNTING, "productionRecordLogging").get(id);
     }
 
     private Entity getTransformationByNumber(final String number) {

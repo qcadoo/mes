@@ -71,10 +71,12 @@ public class CostNormsForOperationService {
 
     public void copyCostValuesFromTechnology(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        Entity orderOperationComponent = ((FormComponent) view.getComponentByReference("form")).getEntity();
+        Entity technologyInstanceOperationComponent = ((FormComponent) view.getComponentByReference("form")).getEntity();
         // Be sure that entity isn't in detached state
-        orderOperationComponent = orderOperationComponent.getDataDefinition().get(orderOperationComponent.getId());
-        applyCostNormsFromGivenSource(view, orderOperationComponent.getBelongsToField("technologyOperationComponent"));
+        technologyInstanceOperationComponent = technologyInstanceOperationComponent.getDataDefinition().get(
+                technologyInstanceOperationComponent.getId());
+        applyCostNormsFromGivenSource(view,
+                technologyInstanceOperationComponent.getBelongsToField("technologyOperationComponent"));
 
     }
 
@@ -109,9 +111,9 @@ public class CostNormsForOperationService {
 
     /* ******* MODEL HOOKS ******* */
 
-    public void copyCostNormsToOrderOperationComponent(final DataDefinition dd, final Entity orderOperationComponent) {
-        copyCostValuesFromGivenOperation(orderOperationComponent,
-                orderOperationComponent.getBelongsToField("technologyOperationComponent"));
+    public void copyCostNormsToTechnologyInstanceOperationComponent(final DataDefinition dd, final Entity technologyInstanceOperationComponent) {
+        copyCostValuesFromGivenOperation(technologyInstanceOperationComponent,
+                technologyInstanceOperationComponent.getBelongsToField("technologyOperationComponent"));
     }
 
     public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {

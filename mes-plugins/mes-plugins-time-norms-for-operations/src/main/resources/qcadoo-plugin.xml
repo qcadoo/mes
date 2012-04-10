@@ -106,7 +106,13 @@
 				<validatesScale max="3" />
 			</model:decimal>
 		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:dictionary name="productionInOneCycleUNIT" dictionary="units" required="true"/>
+		</model:model-field>
 		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+		</model:model-field>
 		
 		
 		
@@ -158,7 +164,6 @@
 			model="technologyInstanceOperationComponent">
 		    <model:datetime name="effectiveDateFrom"/>
 		</model:model-field>
-		
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
 		     <model:datetime name="effectiveDateTo"/>
@@ -220,13 +225,6 @@
 		<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
 		</model:model-field>
 		
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-		<model:dictionary name="productionInOneCycleUNIT" dictionary="units" required="true"/>
-		</model:model-field>
-		
-		<model:model-field plugin="technologies" model="technologyOperationComponent">
-		<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
-		</model:model-field>
 		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:onSave
@@ -241,8 +239,11 @@
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
-			<model:onCreate class="com.qcadoo.mes.timeNormsForOperations.NormService"
+			<model:onCreate class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="copyTimeNormsToTechnologyOperationComponent" />
+		</model:model-hook>
+		<model:model-hook model="technologyInstanceOperationComponent" plugin="technologies">
+		    <model:onCreate class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompHooksTNFO" method="copyTimeNormsFromTechnology"/>
 		</model:model-hook>
 		
 		
@@ -258,46 +259,46 @@
 			resource="view/ribbonExtensions/technologyInstanceOperationComponentDetails.xml" />
 
 		<view:view-hook view="operationDetails" type="beforeRender"
-			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.OperationService"
+			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
 			method="updateCountMachineOperationFieldStateonWindowLoad" />
 
 		<view:view-hook view="operationDetails" type="beforeRender"
-			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.OperationService"
+			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
 			method="setCountRealizedOperationValue" />
 			
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.NormService" method="updateCountMachineOperationFieldStateonWindowLoad" />
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateCountMachineOperationFieldStateonWindowLoad" />
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.NormService" method="updateFieldsStateOnWindowLoad" />
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateFieldsStateOnWindowLoad" />
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.NormService" method="fillUnitFields" />
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="fillUnitFields" />
 		
 		<view:view-hook view="technologyInstanceOperationComponentDetails"
-			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OrderOperationComponentDetailsHooksTNFO"
+			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
 			method="disableComponents" />
 		<view:view-hook view="technologyInstanceOperationComponentDetails"
-			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OrderOperationComponentDetailsHooksTNFO"
+			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
 			method="fillUnitFields" />
 
 		<view:view-listener component="operation"
 			event="onSelectedEntityChange" plugin="technologies"
-			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.NormService"
+			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 			method="inheritOperationNormValues" />
 
 		<view:view-listener component="form"
 			event="copyTimeNormsFromTechnology" plugin="technologies"
-			view="technologyInstanceOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.NormService"
+			view="technologyInstanceOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyInstanceOperCompDetailsListenersTNFO"
 			method="copyTimeNormsFromTechnology" />
 
 		<view:view-listener component="form"
 			event="copyTimeNormsFromOperation" plugin="technologies"
-			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.NormService"
+			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 			method="copyTimeNormsFromOperation" />
 			
 	<!-- 		

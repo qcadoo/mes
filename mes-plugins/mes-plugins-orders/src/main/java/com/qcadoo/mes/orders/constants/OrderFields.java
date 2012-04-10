@@ -59,5 +59,5 @@ public class OrderFields {
 
     public static final String LOGGINGS = "loggings";
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
 }

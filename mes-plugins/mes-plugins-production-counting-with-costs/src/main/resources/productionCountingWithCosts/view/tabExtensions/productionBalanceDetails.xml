@@ -216,8 +216,8 @@
 					</component>
 				</layoutElement>
 			</component>
-			<component type="grid" name="orderOperationProductInComponents" source="#{form}.orderOperationProductInComponents"
-				 reference="orderOperationProductInComponents">
+			<component type="grid" name="technologyInstanceOperationProductInComponents" source="#{form}.technologyInstanceOperationProductInComponents"
+				 reference="technologyInstanceOperationProductInComponents">
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" />
 				<option type="column" name="productName" fields="product"

@@ -490,8 +490,9 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     operationPieceworkComponent.setField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
                             productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
-                    Entity orderOperationComponent = productionRecord.getBelongsToField("orderOperationComponent");
-                    Entity proxyTechnologyOperationComponent = orderOperationComponent
+                    Entity technologyInstanceOperationComponent = productionRecord
+                            .getBelongsToField("technologyInstanceOperationComponent");
+                    Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
                             .getBelongsToField("technologyOperationComponent");
                     Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
 

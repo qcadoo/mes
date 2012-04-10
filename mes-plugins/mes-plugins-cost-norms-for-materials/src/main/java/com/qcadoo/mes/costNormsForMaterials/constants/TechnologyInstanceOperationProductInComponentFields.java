@@ -21,24 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.hooks;
+package com.qcadoo.mes.costNormsForMaterials.constants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public class TechnologyInstanceOperationProductInComponentFields {
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    public static final String ORDER = "order";
 
-@Service
-public class OrderOperationComponentModelValidators {
+    public static final String PRODUCT = "product";
 
-    @Autowired
-    private ValidatorService validatorService;
+    public static final String COST_FOR_NUMBER = "costForNumber";
 
-    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition orderOperationComponentDD,
-            final Entity orderOperationComponent) {
+    public static final String NOMINAL_COST = "nominalCost";
 
-        return validatorService.checkIfAttachmentExtensionIsValid(orderOperationComponentDD, orderOperationComponent,
-                "imageUrlInWorkPlan");
-    }
+    public static final String LAST_PURCHASE_COST = "lastPurchaseCost";
+
+    public static final String AVERAGE_COST = "averageCost";
+
+    public static final String COST_FOR_ORDER = "costForOrder";
+
 }

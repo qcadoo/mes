@@ -61,7 +61,7 @@
 					hasDescription="true">
 					<option type="required" value="true" />
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.timeNormsForOperations.OperationService" method="changeCountRealizedOperation" required="true" />
+						class="com.qcadoo.mes.timeNormsForOperations.listeners.OperationDetailsListenersTNFO" method="changeCountRealizedOperation" required="true" />
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="4">

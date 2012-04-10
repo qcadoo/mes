@@ -26,6 +26,6 @@ package com.qcadoo.mes.workPlans.hooks;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrderOperationComponentViewHooks {
+public class TechnologyInstanceOperationComponentViewHooks {
 
 }

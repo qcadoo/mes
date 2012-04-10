@@ -47,9 +47,6 @@
 					<layoutElement column="2" row="3">
 						<component type="select" name="countRealized" field="#{form}.countRealized"
 							reference="countRealized" hasDescription="true">
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.timeNormsForOperations.hooks.NormOrderService"
-								method="changeCountRealized" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">

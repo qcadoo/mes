@@ -1,7 +1,7 @@
 package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_OPERATION_COMPONENT;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 
 import java.util.ArrayList;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -37,7 +36,7 @@ public class TechnologyOperCompHooksOrder {
 
         Entity technology = entity.getBelongsToField(TECHNOLOGY);
 
-        EntityTree technologyOperationComponents = entity.getTreeField(OrderFields.TECHNOLOGY_OPERATION_COMPONENT);
+        EntityTree technologyOperationComponents = entity.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
         if (technology == null) {
             if (technologyOperationComponents != null && technologyOperationComponents.size() > 0) {
@@ -56,18 +55,18 @@ public class TechnologyOperCompHooksOrder {
 
         EntityTreeNode operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-        entity.setField(OPERATION_COMPONENTS, Collections.singletonList(createTechnologyOperationComponent(
+        entity.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS, Collections.singletonList(createTechnologyOperationComponent(
                 operationComponentRoot, entity, technology, null, technologyOperationComponentDD)));
     }
 
     private boolean shouldPropagateFromLowerInstance(final Entity order) {
-        return !hasOrderOperationComponents(order) || technologyWasChanged(order);
+        return !hasTechnologyInstanceOperationComponents(order) || technologyWasChanged(order);
     }
 
     @SuppressWarnings("unchecked")
-    private boolean hasOrderOperationComponents(final Entity order) {
-        return ((order.getField(TECHNOLOGY_OPERATION_COMPONENT) != null) && !((List<Entity>) order
-                .getField(TECHNOLOGY_OPERATION_COMPONENT)).isEmpty());
+    private boolean hasTechnologyInstanceOperationComponents(final Entity order) {
+        return ((order.getField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS) != null) && !((List<Entity>) order
+                .getField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).isEmpty());
     }
 
     private boolean technologyWasChanged(final Entity order) {
@@ -100,31 +99,32 @@ public class TechnologyOperCompHooksOrder {
         technologyInstanceOperationComponent.setField("parent", parent);
 
         if ("operation".equals(operationComponent.getField("entityType"))) {
-            createOrCopyOrderOperationComponent(operationComponent, order, technology, technologyInstanceOperationComponentDD,
-                    technologyInstanceOperationComponent);
+            createOrCopyTechnologyInstanceOperationComponent(operationComponent, order, technology,
+                    technologyInstanceOperationComponentDD, technologyInstanceOperationComponent);
         } else {
             Entity referenceTechnology = operationComponent.getBelongsToField("referenceTechnology");
-            createOrCopyOrderOperationComponent(referenceTechnology.getTreeField(OPERATION_COMPONENTS).getRoot(), order,
-                    technology, technologyInstanceOperationComponentDD, technologyInstanceOperationComponent);
+            createOrCopyTechnologyInstanceOperationComponent(referenceTechnology.getTreeField(OPERATION_COMPONENTS).getRoot(),
+                    order, technology, technologyInstanceOperationComponentDD, technologyInstanceOperationComponent);
         }
 
         return technologyInstanceOperationComponentDD.save(technologyInstanceOperationComponent);
     }
 
-    private void createOrCopyOrderOperationComponent(final EntityTreeNode operationComponent, final Entity order,
-            final Entity technology, final DataDefinition orderOperationComponentDD,
+    private void createOrCopyTechnologyInstanceOperationComponent(final EntityTreeNode operationComponent, final Entity order,
+            final Entity technology, final DataDefinition technologyInstanceOperationComponentDD,
             final Entity technologyInstanceOperationComponent) {
 
         technologyInstanceOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
         technologyInstanceOperationComponent.setField("technologyOperationComponent", operationComponent);
         technologyInstanceOperationComponent.setField("priority", operationComponent.getField("priority"));
+        technologyInstanceOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
         technologyInstanceOperationComponent.setField("entityType", "operation");
 
         List<Entity> newTechnologyOperationComponents = new ArrayList<Entity>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
             newTechnologyOperationComponents.add(createTechnologyOperationComponent(child, order, technology,
-                    technologyInstanceOperationComponent, orderOperationComponentDD));
+                    technologyInstanceOperationComponent, technologyInstanceOperationComponentDD));
         }
 
         technologyInstanceOperationComponent.setField("children", newTechnologyOperationComponents);

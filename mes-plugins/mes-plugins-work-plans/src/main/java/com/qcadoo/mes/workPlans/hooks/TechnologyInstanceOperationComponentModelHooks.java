@@ -37,25 +37,27 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
 @Service
-public class OrderOperationComponentModelHooks {
+public class TechnologyInstanceOperationComponentModelHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void copyColumnForProducts(final DataDefinition orderOperationComponentDD, final Entity orderOperationComponent) {
+    public void copyColumnForProducts(final DataDefinition technologyInstanceOperationComponentDD,
+            final Entity technologyInstanceOperationComponent) {
 
-        if (!shouldPropagateValuesFromLowerInstance(orderOperationComponent)) {
+        if (!shouldPropagateValuesFromLowerInstance(technologyInstanceOperationComponent)) {
             return;
         }
 
-        Entity technologyOperationComponent = orderOperationComponent.getBelongsToField("technologyOperationComponent");
+        Entity technologyOperationComponent = technologyInstanceOperationComponent
+                .getBelongsToField("technologyOperationComponent");
 
         if (technologyOperationComponent == null) {
             return;
         }
 
         for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-            orderOperationComponent.setField(workPlanParameter,
+            technologyInstanceOperationComponent.setField(workPlanParameter,
                     getTechnologyOperationField(technologyOperationComponent.getId(), workPlanParameter));
         }
 
@@ -93,20 +95,20 @@ public class OrderOperationComponentModelHooks {
             }
         }
 
-        orderOperationComponent.setField("orderOperationInputColumns", orderOperationInputColumns);
-        orderOperationComponent.setField("orderOperationOutputColumns", orderOperationOutputColumns);
+        technologyInstanceOperationComponent.setField("orderOperationInputColumns", orderOperationInputColumns);
+        technologyInstanceOperationComponent.setField("orderOperationOutputColumns", orderOperationOutputColumns);
 
     }
 
-    private boolean shouldPropagateValuesFromLowerInstance(final Entity orderOperationComponent) {
+    private boolean shouldPropagateValuesFromLowerInstance(final Entity technologyInstanceOperationComponent) {
         for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
-            if (orderOperationComponent.getField(workPlanParameter) != null) {
+            if (technologyInstanceOperationComponent.getField(workPlanParameter) != null) {
                 return false;
             }
         }
 
-        return (orderOperationComponent.getField("orderOperationInputColumns") == null)
-                && (orderOperationComponent.getField("orderOperationOutputColumns") == null);
+        return (technologyInstanceOperationComponent.getField("orderOperationInputColumns") == null)
+                && (technologyInstanceOperationComponent.getField("orderOperationOutputColumns") == null);
     }
 
     private EntityList getTechnologyOperationHasManyField(final Long operationId, final String fieldName) {

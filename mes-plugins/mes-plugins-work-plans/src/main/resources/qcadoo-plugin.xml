@@ -266,7 +266,7 @@
 		<model:model-hook plugin="technologies"
 			model="technologyInstanceOperationComponent">
 			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators"
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelValidators"
 				method="checkIfAttachmentExtensionIsValid" />
 		</model:model-hook>
 	
@@ -289,7 +289,7 @@
 
 		<!-- TODO LUPO maybe used in future -->
 		<!-- <model:model-hook plugin="productionScheduling" model="technologyInstanceOperationComponent"> -->
-		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" 
+		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelHooks" 
 			method="copyColumnForProducts" /> -->
 		<!-- </model:model-hook> -->
 

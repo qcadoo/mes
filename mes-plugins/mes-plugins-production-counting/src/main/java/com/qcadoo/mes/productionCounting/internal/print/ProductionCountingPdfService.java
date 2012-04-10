@@ -249,13 +249,14 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                     translationService.translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
                     NOT_AVAILABLE, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         } else {
-            addTableCellAsTable(panelTable,
+            addTableCellAsTable(
+                    panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
-                    productionRecord.getBelongsToField("orderOperationComponent").getStringField("nodeNumber")
+                    productionRecord.getBelongsToField("technologyInstanceOperationComponent").getStringField("nodeNumber")
                             + " "
-                            + productionRecord.getBelongsToField("orderOperationComponent").getBelongsToField("operation")
-                                    .getStringField(FIELD_NAME), null, FontUtils.getDejavuBold9Dark(),
-                    FontUtils.getDejavuBold9Dark(), null);
+                            + productionRecord.getBelongsToField("technologyInstanceOperationComponent")
+                                    .getBelongsToField("operation").getStringField(FIELD_NAME), null,
+                    FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
             addTableCellAsTable(
                     panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),

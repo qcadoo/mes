@@ -10,10 +10,10 @@
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="1" defaultEnabled="false">
+				rows="1">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="operation" field="operation"
-						reference="operation">
+						reference="operation"  defaultEnabled="false">
 						<option type="column" name="name" fields="name" width="300" link="true"/>
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />

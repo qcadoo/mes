@@ -96,7 +96,7 @@
 					reference="countRealized" hasDescription="true" defaultEnabled="false">
 					<option type="required" value="true" />
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.timeNormsForOperations.NormService" method="changeCountRealizedNorm" />
+						class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO" method="changeCountRealizedNorm" />
 				</component>
 			</layoutElement>
 			<layoutElement column="3" row="4">

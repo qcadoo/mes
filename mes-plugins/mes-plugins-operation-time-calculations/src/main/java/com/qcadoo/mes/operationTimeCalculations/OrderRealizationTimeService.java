@@ -47,7 +47,7 @@ public interface OrderRealizationTimeService {
      * 
      * @param operationComponent
      *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            orderOperationComponent
+     *            technologyInstanceOperationComponent
      * @param plannedQuantity
      *            How many products we want this operation to produce
      * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish
@@ -59,7 +59,7 @@ public interface OrderRealizationTimeService {
      * 
      * @param operationComponent
      *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
-     *            orderOperationComponent
+     *            technologyInstanceOperationComponent
      * @param plannedQuantity
      *            How many products we want this operation to produce
      * @param includeTpz

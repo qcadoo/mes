@@ -30,7 +30,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class OrderOperationColumnModelValidators {
+public class TechnologyInstanceOperationColumnModelValidators {
 
     @Autowired
     private ValidatorService validatorService;

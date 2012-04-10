@@ -21,29 +21,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.timeNormsForOperations.hooks;
+package com.qcadoo.mes.timeNormsForOperations.constants;
 
-import org.springframework.stereotype.Service;
+import java.util.Set;
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+import com.google.common.collect.Sets;
 
-@Service
-public class NormOrderService {
+public interface TimeNormsConstants {
 
-    public void showOrderParameters(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealizedOperation",
+            "countMachineOperation", "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT");
 
-        if (orderId != null) {
-            String url = "../page/productionScheduling/orderOperationComponentList.html?context={\"form.id\":\"" + orderId
-                    + "\"}";
-            viewDefinitionState.redirectTo(url, false, true);
-        }
-    }
-
-    public void changeCountRealized(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        // ignore
-    }
-
+    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
+            "timeNextOperation", "machineUtilization", "laborUtilization");
 }

@@ -1,9 +1,9 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFIelds.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFIelds.COUNT_REALIZED;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFIelds.PRODUCTION_IN_ONE_CYCLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFIelds.TIME_NEXT_OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_MACHINE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.PRODUCTION_IN_ONE_CYCLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.TIME_NEXT_OPERATION;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -15,7 +15,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class OrderOperationComponentDetailsHooksTNFO {
+public class TechnologyInstanceOperCompDetailsHooksTNFO {
 
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
         FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
@@ -59,7 +59,8 @@ public class OrderOperationComponentDetailsHooksTNFO {
         Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
 
         // we can pass units only to technology level operations
-        if (formEntity.getId() == null || !"orderOperationComponent".equals(formEntity.getDataDefinition().getName())) {
+        if (formEntity.getId() == null
+                || !"technologyInstanceOperationComponent".equals(formEntity.getDataDefinition().getName())) {
             return;
         }
 

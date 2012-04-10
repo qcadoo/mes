@@ -63,7 +63,7 @@
 		<boolean name="externalSynchronized" default="true" />
 		<hasMany name="loggings" joinField="order" model="logging"
 			cascade="delete" />
-		<tree name="technologyInstanceOperationComponents" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies"/>
+		<tree name="technologyInstanceOperationComponents" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" copyable="true" />
 		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />	
 		<datetime name="deadline" />
 	</fields>

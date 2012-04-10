@@ -151,7 +151,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else if ("order".equals(entityType)) {
             technology = entity.getBelongsToField("technology");
 
-            operationComponents = entity.getTreeField("orderOperationComponents");
+            operationComponents = entity.getTreeField("technologyInstanceOperationComponents");
         } else {
             throw new IllegalStateException("Entity has to be either order or technology");
         }
@@ -205,7 +205,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            if ("orderOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+            if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
                 operationComponent.setField("operationOffSet", pathTime);
                 operationComponent.getDataDefinition().save(operationComponent);
@@ -227,7 +227,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(operationComponent);
 
-        if (operationComponent.getDataDefinition().getName().equals("orderOperationComponent")) {
+        if (operationComponent.getDataDefinition().getName().equals("technologyInstanceOperationComponent")) {
             Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
                     operationComponent.getBelongsToField("technologyOperationComponent").getId());

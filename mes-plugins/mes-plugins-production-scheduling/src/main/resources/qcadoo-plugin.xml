@@ -87,16 +87,7 @@
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="orders" />
 
-<!-- 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" /> -->
-
-		
-
-
-<!-- 		<view:view-listener plugin="orders" view="orderDetails" -->
-<!-- 			component="form" event="showOrderParameters" -->
-<!-- 			class="com.qcadoo.mes.timeNormsForOperations.hooks.NormOrderService" method="showOrderParameters" /> -->
-
-		<view:view resource="view/orderOperationProductInComponentDetails.xml" />
+		<view:view resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
 
 		<view:view-listener plugin="productionScheduling"

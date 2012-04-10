@@ -21,17 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.timeNormsForOperations;
+package com.qcadoo.mes.workPlans.hooks;
 
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Sets;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
-public interface TimeNormsConstants {
+@Service
+public class TechnologyInstanceOperationComponentModelValidators {
 
-    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "timeNextOperation", "machineUtilization", "laborUtilization");
+    @Autowired
+    private ValidatorService validatorService;
 
-    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "timeNextOperation", "machineUtilization", "laborUtilization");
+    public final boolean checkIfAttachmentExtensionIsValid(final DataDefinition technologyInstanceOperationComponentDD,
+            final Entity technologyInstanceOperationComponent) {
+
+        return validatorService.checkIfAttachmentExtensionIsValid(technologyInstanceOperationComponentDD,
+                technologyInstanceOperationComponent, "imageUrlInWorkPlan");
+    }
 }

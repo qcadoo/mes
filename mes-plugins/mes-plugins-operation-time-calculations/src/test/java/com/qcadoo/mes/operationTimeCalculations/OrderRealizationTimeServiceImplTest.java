@@ -174,8 +174,8 @@ public class OrderRealizationTimeServiceImplTest {
         DataDefinition dd = mock(DataDefinition.class);
         when(dd.getName()).thenReturn("order");
         when(order.getDataDefinition()).thenReturn(dd);
-        EntityTree orderOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
-        when(order.getTreeField("orderOperationComponents")).thenReturn(orderOperationComponents);
+        EntityTree technologyInstanceOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
+        when(order.getTreeField("technologyInstanceOperationComponents")).thenReturn(technologyInstanceOperationComponents);
 
         when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
         when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
@@ -199,8 +199,8 @@ public class OrderRealizationTimeServiceImplTest {
         DataDefinition dd = mock(DataDefinition.class);
         when(dd.getName()).thenReturn("technology");
         when(technology.getDataDefinition()).thenReturn(dd);
-        EntityTree orderOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
-        when(technology.getTreeField("operationComponents")).thenReturn(orderOperationComponents);
+        EntityTree technologyInstanceOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
+        when(technology.getTreeField("operationComponents")).thenReturn(technologyInstanceOperationComponents);
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(technology,
