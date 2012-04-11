@@ -77,8 +77,8 @@ public class TechnologyListenersTNTest {
         given(technology.getStringField("state")).willReturn("01draft");
 
         given(technology.getDataDefinition()).willReturn(dataDefinition);
-        given(technology.getId()).willReturn(0l);
-        given(dataDefinition.get(0l)).willReturn(technology);
+        given(technology.getId()).willReturn(0L);
+        given(dataDefinition.get(0L)).willReturn(technology);
 
         given(normService.checkOperationOutputQuantities(technology)).willReturn(asList("err1", "err2"));
 

@@ -58,8 +58,8 @@ public class TechnologyValidatorsTest {
         // given
         given(technology.getStringField("state")).willReturn("02accepted");
         given(technology.getDataDefinition()).willReturn(dataDefinition);
-        given(technology.getId()).willReturn(0l);
-        given(dataDefinition.get(0l)).willReturn(technology);
+        given(technology.getId()).willReturn(0L);
+        given(dataDefinition.get(0L)).willReturn(technology);
 
         ReflectionTestUtils.setField(technologyValidators, "normService", normService);
 

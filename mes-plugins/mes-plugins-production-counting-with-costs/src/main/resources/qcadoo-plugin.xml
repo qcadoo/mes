@@ -139,7 +139,7 @@
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:hasMany name="technologyInstanceOperationProductInComponents" joinField="productionBalance"
-				model="technologyInstancesOperationProductInComponent" plugin="productionCountingWithCosts" 
+				model="technologyInstanceOperationProductInComponent" plugin="productionCountingWithCosts" 
 				cascade="delete" />
 		</model:model-field>
 		
