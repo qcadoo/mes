@@ -2,17 +2,17 @@ package com.qcadoo.mes.technologies.constants;
 
 public class TechnologyInstanceOperCompFields {
 
-    public final static String TECHONOLOGY = "technology";
+    public static final String TECHONOLOGY = "technology";
 
-    public final static String OPERATION = "operation";
+    public static final String OPERATION = "operation";
 
-    public final static String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public final static String PARENT = "parent";
+    public static final String PARENT = "parent";
 
-    public final static String ENTITY_TYPE = "entityType";
+    public static final String ENTITY_TYPE = "entityType";
 
-    public final static String CHILDREN = "children";
+    public static final String CHILDREN = "children";
 
-    public final static String PRIORITY = "priority";
+    public static final String PRIORITY = "priority";
 }
