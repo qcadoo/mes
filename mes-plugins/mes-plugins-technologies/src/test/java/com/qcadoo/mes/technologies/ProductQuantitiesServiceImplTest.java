@@ -221,8 +221,8 @@ public class ProductQuantitiesServiceImplTest {
         boolean onlyComponents = false;
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                plannedQty, onlyComponents);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, plannedQty,
+                onlyComponents);
 
         // then
         assertEquals(3, productQuantities.size());
@@ -237,8 +237,7 @@ public class ProductQuantitiesServiceImplTest {
         boolean onlyComponents = true;
 
         // when
-        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders,
-                onlyComponents);
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
 
         // then
         assertEquals(2, productQuantities.size());
