@@ -55,7 +55,7 @@ public class NormService {
         for (Entity operationComponent : operationComponents) {
             BigDecimal timeNormsQuantity = operationComponent.getDecimalField("productionInOneCycle");
 
-            BigDecimal currentQuantity = BigDecimal.ZERO;
+            BigDecimal currentQuantity;
 
             try {
                 currentQuantity = technologyService.getProductCountForOperationComponent(operationComponent);
