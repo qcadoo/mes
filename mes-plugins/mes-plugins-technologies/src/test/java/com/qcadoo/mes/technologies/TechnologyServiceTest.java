@@ -89,8 +89,8 @@ public class TechnologyServiceTest {
         when(prodOutComp2.getBelongsToField("product")).thenReturn(product2);
         when(prodInComp1.getBelongsToField("product")).thenReturn(product1);
 
-        when(prodOutComp1.getField("quantity")).thenReturn(new BigDecimal(10));
-        when(prodOutComp2.getField("quantity")).thenReturn(new BigDecimal(10));
+        when(prodOutComp1.getDecimalField("quantity")).thenReturn(new BigDecimal(10));
+        when(prodOutComp2.getDecimalField("quantity")).thenReturn(new BigDecimal(10));
 
         EntityList opComp1prodIns = mockEntityIterator(asList(prodInComp1));
         when(opComp1.getHasManyField("operationProductInComponents")).thenReturn(opComp1prodIns);

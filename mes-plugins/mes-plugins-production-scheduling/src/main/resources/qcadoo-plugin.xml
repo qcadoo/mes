@@ -87,7 +87,6 @@
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="orders" />
 
-<<<<<<< HEAD
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
 		<model:model model="orderOperationComponent" resource="model/orderOperationComponent.xml" />
@@ -121,9 +120,7 @@
 		<view:view resource="view/orderOperationComponentList.xml" />
 		<view:view resource="view/orderOperationComponentDetails.xml" />
 		<view:view resource="view/orderOperationProductInComponentDetails.xml" />
-=======
 		<view:view resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
->>>>>>> 5624581f1475d11e912d9dbf73b629a069c33954
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
 		<view:view resource="view/operationDurationDetails.xml"/>
 		

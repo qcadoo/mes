@@ -1,8 +1,3 @@
--- Table: costnormsformaterials_calculationoperationcomponent
--- changed: 3.04.2012
-ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
-
---end
 
 -- Table: technologies_technologygroup
 -- changed: 03.04.2012
@@ -99,8 +94,49 @@ ALTER TABLE productionScheduling_orderOperationComponent RENAME TO technologies_
 -- end
 
 
+-- Table: costnormsformaterials_orderoperationproductincomponent
+--changed: 11.04.2012
+ALTER TABLE costnormsformaterials_orderoperationproductincomponent RENAME TO costnormsformaterials_technologyinstanceoperationproductincomponent;
+--end
 
--- Table: orders_order
--- changed: 10.04.2012
-ALTER TABLE orders_order RENAME COLUMN technologyOperationComponent TO technologyInstanceOperationComponent;
+-- Table: workplans_orderoperationoutputcolumn
+-- changed: 11.04.2012
+ALTER TABLE workplans_orderoperationoutputcolumn RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
 -- end
+
+-- Table: workplans_orderoperationinputcolumn
+-- changed: 11.04.2012
+ALTER TABLE workplans_orderoperationinputcolumn RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+-- Table: productioncountingwithcosts_orderoperationproductincomponent
+--changed: 11.04.2012
+ALTER TABLE productioncountingwithcosts_orderoperationproductincomponent RENAME TO productioncountingwithcosts_technologyinstancesoperationproduct;
+--end
+
+-- Table: productioncountingwithcosts_operationpieceworkcostcomponent
+-- changed: 11.04.2012
+ALTER TABLE productioncountingwithcosts_operationpieceworkcostcomponent RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+-- Table: productioncountingwithcosts_operationcostcomponent
+-- changed: 11.04.2012
+ALTER TABLE productioncountingwithcosts_operationcostcomponent RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+-- Table: productioncounting_productionrecord
+-- changed: 11.04.2012
+ALTER TABLE productioncounting_productionrecord RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+-- Table: productioncounting_operationtimecomponent
+-- changed: 11.04.2012
+ALTER TABLE productioncounting_operationtimecomponent RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+-- Table: productioncounting_operationpieceworkcomponent
+-- changed: 11.04.2012
+ALTER TABLE productioncounting_operationpieceworkcomponent RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
+-- end
+
+

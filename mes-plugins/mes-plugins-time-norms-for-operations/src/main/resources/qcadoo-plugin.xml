@@ -234,7 +234,7 @@
 		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelValidators"
+				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
 				method="checkIfAllOperationComponenthHaveTJSet" />
 		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
@@ -301,12 +301,19 @@
 			event="copyTimeNormsFromOperation" plugin="technologies"
 			view="technologyOperationComponentDetails" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 			method="copyTimeNormsFromOperation" />
+
+		<view:view-listener plugin="technologies" view="technologyDetails" component="form" event="save"
+			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
+			method="checkOperationOutputQuantities" />
+				<model:model-hook model="technology" plugin="technologies">
+		<model:validatesWith
+			class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+			method="checkOperationOutputQuantities" />
+		</model:model-hook>
+		<view:view-hook view="technologyOperationComponentDetails"
+			type="beforeRender" plugin="technologies"
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="checkOperationOutputQuantities" />
 			
-	<!-- 	<view:view-listener plugin="technologies" view="technologyOperationComponentDetails"
-			component="form" event="save"
-			class="com.qcadoo.mes.productionTimeNorms.listeners.TechnologyOperationComponentDetailsListeners"
-			method="checkIfDifferentQuantity" /> -->
-		
 	</modules>
 
 </plugin>

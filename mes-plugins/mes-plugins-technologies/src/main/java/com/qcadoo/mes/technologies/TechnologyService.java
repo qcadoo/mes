@@ -757,10 +757,9 @@ public class TechnologyService {
     /**
      * 
      * @param operationComponent
-     * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
-     *         product/intermediate.
+     * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
-    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+    public Entity getMainOutputProductComponent(Entity operationComponent) {
         if (REFERENCE_TECHNOLOGY_FIELD.equals(operationComponent.getStringField("entityType"))) {
             operationComponent = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD)
                     .getTreeField("operationComponents").getRoot();
@@ -780,7 +779,7 @@ public class TechnologyService {
 
             for (Entity prodOutComp : prodOutComps) {
                 if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
-                    return (BigDecimal) prodOutComp.getField("quantity");
+                    return prodOutComp;
                 }
             }
         } else {
@@ -789,14 +788,24 @@ public class TechnologyService {
             for (Entity prodOutComp : prodOutComps) {
                 for (Entity prodInComp : prodInComps) {
                     if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(prodInComp.getBelongsToField(PRODUCT_L).getId())) {
-                        return (BigDecimal) prodOutComp.getField("quantity");
+                        return prodOutComp;
                     }
                 }
             }
         }
 
-        throw new IllegalStateException("Operation doesn't have any products nor intermediates, id = "
+        throw new IllegalStateException("OperationComponent doesn't have any products nor intermediates, id = "
                 + operationComponent.getId());
+    }
+
+    /**
+     * 
+     * @param operationComponent
+     * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
+     *         product/intermediate.
+     */
+    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+        return getMainOutputProductComponent(operationComponent).getDecimalField("quantity");
     }
 
 }
