@@ -334,4 +334,43 @@ public class ProductQuantitiesServiceImplTest {
         assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
         assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
     }
+
+    @Test
+    public void shouldNotRoundOperationRunsIfTjIsDivisable() {
+        // given
+        boolean onlyComponents = false;
+
+        when(operationComponent1.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
+        when(operationComponent2.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
+
+        when(operationComponent1.getBooleanField("isTjDivisible")).thenReturn(true);
+        when(operationComponent2.getBooleanField("isTjDivisible")).thenReturn(true);
+
+        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+
+        // when
+        productQuantitiesService.getNeededProductQuantities(orders, onlyComponents, operationRuns);
+
+        // then
+        assertEquals(2, operationRuns.size());
+        assertEquals(0, new BigDecimal(4.5).compareTo(operationRuns.get(operationComponent2)));
+        assertEquals(0, new BigDecimal(9.0).compareTo(operationRuns.get(operationComponent1)));
+    }
+
+    @Test
+    public void shouldNotRoundToTheIntegerOperationRunsIfOperationComponentHasDivisableProductQuantities() {
+        // given
+        when(operationComponent1.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
+        when(operationComponent2.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
+
+        // when
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(orders);
+
+        // then
+        assertEquals(0, new BigDecimal(45).compareTo(productQuantities.get(productInComponent1)));
+        assertEquals(0, new BigDecimal(9).compareTo(productQuantities.get(productInComponent2)));
+        assertEquals(0, new BigDecimal(4.5).compareTo(productQuantities.get(productInComponent3)));
+        assertEquals(0, new BigDecimal(9).compareTo(productQuantities.get(productOutComponent2)));
+        assertEquals(0, new BigDecimal(4.5).compareTo(productQuantities.get(productOutComponent4)));
+    }
 }
