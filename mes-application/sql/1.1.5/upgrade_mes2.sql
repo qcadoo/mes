@@ -138,5 +138,3 @@ ALTER TABLE productioncounting_operationtimecomponent RENAME COLUMN orderOperati
 -- changed: 11.04.2012
 ALTER TABLE productioncounting_operationpieceworkcomponent RENAME COLUMN orderOperationComponent TO technologyInstanceOperationComponent;
 -- end
-
-

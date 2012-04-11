@@ -25,5 +25,5 @@
 
 -->
 <productionLines>
-	<row NAME="Main line" />
+	<row NUMBER="000001" NAME="Linia główna" SUPPORTSALLTECHNOLOGIES="true" />
 </productionLines>

@@ -25,6 +25,6 @@
 
 -->
 <productionLinesDictionary>
-	<row NAME="productionLinePlaces" ITEM="Place 1" DESCRIPTION="" />
-	<row NAME="productionLinePlaces" ITEM="Place 2" DESCRIPTION="" />
+	<row NAME="productionLinePlaces" ITEM="Miejsce 1" DESCRIPTION="" />
+	<row NAME="productionLinePlaces" ITEM="Miejsce 2" DESCRIPTION="" />
 </productionLinesDictionary>

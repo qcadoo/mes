@@ -1135,9 +1135,9 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity productionLine = dataDefinitionService.get("productionLines", "productionLine").create();
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
+        productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
 
         productionLine = productionLine.getDataDefinition().save(productionLine);
-
         validateEntity(productionLine);
     }
 
@@ -1174,8 +1174,10 @@ public class TestSamplesLoader extends SamplesLoader {
         } else if (L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
             qualitycontrol.setField(L_NUMBER, values.get(L_NUMBER));
             qualitycontrol.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualitycontrol.setField(L_OPERATION,
-                    getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+            qualitycontrol.setField(
+                    L_OPERATION,
+                    getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
+                            getOrderByNumber(values.get(L_ORDER))));
             qualitycontrol.setField("ControlResult", values.get("controlresult"));
             qualitycontrol.setField(L_COMMENT, values.get(L_COMMENT));
             qualitycontrol.setField(L_CLOSED, values.get(L_CLOSED));

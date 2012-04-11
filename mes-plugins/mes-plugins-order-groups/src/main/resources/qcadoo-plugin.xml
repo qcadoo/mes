@@ -95,7 +95,7 @@
 		<view:view-grid-column plugin="orders" view="ordersList"
 			component="grid">
 			<view:column name="orderGroup" fields="orderGroupName"
-				orderable="true" searchable="true" link="false" width="60" />
+				orderable="true" searchable="true" link="false" width="50" />
 		</view:view-grid-column>
 	</modules>
 

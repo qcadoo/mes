@@ -46,84 +46,13 @@
  				<![CDATA[ 
 					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
 					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
-					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
-					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
-					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								acceptOrder.disable();
-								declineOrder.disable();
-								interruptOrder.disable();
 								deleteButton.disable();
 								copyButton.disable();
 							} else {
-								var noDifferentStates = true;
- 								if(selectedEntitiesArray.length > 1)
-								{
-									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
-										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
-										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
-										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
-											noDifferentStates = false;
-											break;
-										}
-									}
-								} 
-								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
-									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
-									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
-									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
-										acceptOrder.enable();
-										acceptOrder.state = "accept";
-										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.acceptOrder)}");
-										acceptOrder.setIcon('startIcon16.png');
-										declineOrder.enable();
-										declineOrder.state = "decline";
-										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('deleteIcon16.png');
-										interruptOrder.disable();
-									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
-										acceptOrder.enable();
-										acceptOrder.state = "begin";
-										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.activateOrder)}");
-										acceptOrder.setIcon('startIcon16.png');
-										declineOrder.enable();
-										declineOrder.state = "decline";
-										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
-										declineOrder.setIcon('deleteIcon16.png');
-										interruptOrder.disable();
-									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
-										acceptOrder.enable();
-										acceptOrder.state = "finish";
-										acceptOrder.setLabel("#{translate(orders.ordersList.window.ribbon.status.finishOrder)}");
-										acceptOrder.setIcon('acceptIcon16.png');
-										declineOrder.enable();
-										declineOrder.state = "abandon";
-										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('deleteIcon16.png');
-										interruptOrder.enable();
-									} else if (selectedEntityStatus == '06interrupted' && externalSynchronized == '1') {
-										acceptOrder.enable();
-	 									acceptOrder.state = "restart";
-	 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
-	 									acceptOrder.setIcon('acceptIcon16.png');
-										declineOrder.enable();
-										declineOrder.state = "abandon";
-										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
-										declineOrder.setIcon('deleteIcon16.png');
-										interruptOrder.disable();
-									} else {
-										acceptOrder.disable();
-										declineOrder.disable();
-										interruptOrder.disable();
-									}
-								} else {
-									acceptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
-									declineOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
-									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
-								}
 								copyButton.enable();
 								var hasClosed = false;
 								var hasExternal = false;
@@ -151,58 +80,24 @@
 				]]>
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="30" />
-			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="deadline" fields="deadline" width="60" />
-			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="60" />
-			<option type="column" name="productName" fields="product" expression="#product['name']" width="60" />
+			<option type="column" name="name" fields="name" link="true" width="60" />
+			<option type="column" name="deadline" fields="deadline" width="50" />
+			<option type="column" name="productNumber" fields="product" expression="#product['number']" width="30" />
+			<option type="column" name="productName" fields="product" expression="#product['name']" width="50" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
 			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
-			
- 			<option type="order" column="number" direction="desc" />
+			<option type="column" name="companyName" fields="company" expression="#company['name']" width="50"/>
 			
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 			
-			<option type="searchable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit" />
-			<option type="orderable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit" />
+			<option type="order" column="deadline" direction="desc" />
+			
+			<option type="searchable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit,companyName" />
+			<option type="orderable" value="name,number,deadline,productNumber,productName,plannedQuantity,unit,companyName" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			
-			<option type="hasPredefinedFilters" value="true" />
-			
-			<predefinedFilters>
-				<predefinedFilter name="all">
-				</predefinedFilter>
-				<predefinedFilter name="new">
-					<filterRestriction column="state" value="01pending" />
-					<filterOrder column="dateFrom" direction="asc" />
-				</predefinedFilter>
-				<predefinedFilter name="accepted">
-					<filterRestriction column="state" value="02accepted" />
-					<filterOrder column="dateFrom" direction="asc" />
-				</predefinedFilter>
-				<predefinedFilter name="inProgress">
-					<filterRestriction column="state" value="03inProgress" />
-					<filterOrder column="dateTo" direction="asc" />
-				</predefinedFilter>
-				<predefinedFilter name="overdueAccepted">
-					<filterRestriction column="state" value="02accepted" />
-					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
-				</predefinedFilter>
-				<predefinedFilter name="overdueInProgress">
-					<filterRestriction column="state" value="03inProgress" />
-					<filterRestriction column="dateTo" value="&lt;= @{yesterday}" />
-				</predefinedFilter>
-				<predefinedFilter name="startingToday">
-					<filterRestriction column="state" value="02accepted" />
-					<filterRestriction column="dateFrom" value="@{today}" />
-				</predefinedFilter>
-				<predefinedFilter name="startingTomorrow">
-					<filterRestriction column="state" value="02accepted" />
-					<filterRestriction column="dateFrom" value="@{tomorrow}" />
-				</predefinedFilter>
-			</predefinedFilters>
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
