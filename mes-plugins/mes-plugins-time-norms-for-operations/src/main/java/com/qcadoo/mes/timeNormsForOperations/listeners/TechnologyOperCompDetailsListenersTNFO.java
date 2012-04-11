@@ -2,9 +2,9 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_REALIZED;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.PRODUCTION_IN_ONE_CYCLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -76,7 +76,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
         FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperationComponentTNFOFields.COUNT_MACHINE_UNIT);
+                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
 
         Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
         countMachine.setVisible(visibilityValue);

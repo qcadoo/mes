@@ -1,6 +1,6 @@
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public class TechnologyOperationComponentTNFOFields {
+public class TechnologyOperCompTNFOFields {
 
     public static final String TPZ = "tpz";
 
