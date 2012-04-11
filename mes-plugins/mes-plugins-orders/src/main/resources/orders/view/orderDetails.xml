@@ -277,7 +277,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="9">
-						<component type="calendar" name="deadline"
+						<component type="calendar" name="deadline" field="deadline"
 							reference="deadline">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
