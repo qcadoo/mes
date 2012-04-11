@@ -1,11 +1,11 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_MACHINE_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.COUNT_REALIZED;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.PRODUCTION_IN_ONE_CYCLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentTNFOFields.TIME_NEXT_OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TIME_NEXT_OPERATION;
 
 import java.math.BigDecimal;
 import java.util.Locale;
