@@ -38,6 +38,8 @@ public interface TechnologiesConstants {
 
     String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+
     String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
 
     String MODEL_LOGGING = "logging";

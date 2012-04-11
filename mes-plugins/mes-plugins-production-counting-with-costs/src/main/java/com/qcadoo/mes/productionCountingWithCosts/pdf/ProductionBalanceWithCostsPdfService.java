@@ -193,26 +193,26 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.productNumber",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.productNumber",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.plannedCost",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.plannedCost",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.registeredCost",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.registeredCost",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.orderOperationProductInComponents.column.balance",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.balance",
                                 locale));
 
         @SuppressWarnings("unchecked")
-        List<Entity> products = (List<Entity>) productionBalance.getField("orderOperationProductInComponents");
+        List<Entity> products = (List<Entity>) productionBalance.getField("technologyInstanceOperationProductInComponents");
 
         if (!products.isEmpty()) {
             document.add(Chunk.NEWLINE);
@@ -311,9 +311,9 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             String currency = " " + currencyService.getCurrencyAlphabeticCode();
 
             for (Entity operationComponent : operationComponents) {
-                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("orderOperationComponent").getStringField(
-                        "nodeNumber"), FontUtils.getDejavuRegular9Dark()));
-                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("orderOperationComponent")
+                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("technologyInstanceOperationComponent")
+                        .getStringField("nodeNumber"), FontUtils.getDejavuRegular9Dark()));
+                costsTable.addCell(new Phrase(operationComponent.getBelongsToField("technologyInstanceOperationComponent")
                         .getBelongsToField("operation").getStringField("name"), FontUtils.getDejavuRegular9Dark()));
 
                 String plannedCost = numberService.format(operationComponent.getField("planned"

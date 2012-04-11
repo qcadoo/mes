@@ -131,9 +131,9 @@ public class TechnologyServiceTest {
     }
 
     @Test
-    public void shouldReturnOutputProductCountForOperationComponentAlsoForOrderOperationComponent() {
+    public void shouldReturnOutputProductCountForOperationComponentAlsoForTechnologyInstanceOperationComponent() {
         // given
-        when(dataDefinition.getName()).thenReturn("orderOperationComponent");
+        when(dataDefinition.getName()).thenReturn("technologyInstanceOperationComponent");
         when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
         when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
 

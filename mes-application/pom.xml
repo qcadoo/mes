@@ -106,7 +106,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-production-time-norms</artifactId>
+			<artifactId>mes-plugins-time-norms-for-operations</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -152,6 +152,16 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-materials</artifactId>
+			<version>1.1.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-lines</artifactId>
+			<version>1.1.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-operation-time-calculations</artifactId>
 			<version>1.1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>

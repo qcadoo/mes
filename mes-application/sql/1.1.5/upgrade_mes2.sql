@@ -1,3 +1,9 @@
+-- Table: costnormsformaterials_calculationoperationcomponent
+-- changed: 3.04.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME TO costnormsformaterials_calculationoperationcomponent;
+
+--end
+
 -- Table: technologies_technologygroup
 -- changed: 03.04.2012
 
@@ -85,4 +91,16 @@ ALTER TABLE basic_product
   ADD CONSTRAINT basic_product_technologygroup_fkey FOREIGN KEY (technologygroup_id)
       REFERENCES technologies_technologygroup (id) DEFERRABLE;
       
+-- end
+
+-- Table: basic_product
+-- changed: 05.04.2012
+ALTER TABLE productionScheduling_orderOperationComponent RENAME TO technologies_technologyInstanceOperationComponent;
+-- end
+
+
+
+-- Table: orders_order
+-- changed: 10.04.2012
+ALTER TABLE orders_order RENAME COLUMN technologyOperationComponent TO technologyInstanceOperationComponent;
 -- end

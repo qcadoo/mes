@@ -28,6 +28,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="orders"
 	view="orderDetails">
+<<<<<<< HEAD
 	<group name="orderParameters">
 		<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled">
 			<script>
@@ -84,4 +85,7 @@
 			</script>	
 		</bigButton>
 	</group>
+=======
+	
+>>>>>>> 5624581f1475d11e912d9dbf73b629a069c33954
 </ribbonExtension>

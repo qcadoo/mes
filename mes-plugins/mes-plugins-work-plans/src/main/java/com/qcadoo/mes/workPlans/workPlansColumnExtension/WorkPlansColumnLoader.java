@@ -47,7 +47,7 @@ public class WorkPlansColumnLoader {
         workPlansColumnLoaderService.setParameterDefaultValues();
         workPlansColumnLoaderService.setOperationDefaultValues();
         workPlansColumnLoaderService.setTechnologyOperationComponentDefaultValues();
-        workPlansColumnLoaderService.setOrderOperationComponentDefaultValues();
+        workPlansColumnLoaderService.setTechnologyInstanceOperationComponentDefaultValues();
     }
 
     public void addWorkPlansColumnsForOrders() {

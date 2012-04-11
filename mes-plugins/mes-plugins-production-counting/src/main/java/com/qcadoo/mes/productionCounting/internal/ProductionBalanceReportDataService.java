@@ -60,7 +60,7 @@ public class ProductionBalanceReportDataService {
 
     private static final String PRODUCTION_RECORD_FIELD = "productionRecord";
 
-    private static final String ORDER_OPERATION_COMPONENT_FIELD = "orderOperationComponent";
+    private static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD = "technologyInstanceOperationComponent";
 
     private static final String PRODUCT_FIELD = "product";
 
@@ -81,14 +81,15 @@ public class ProductionBalanceReportDataService {
         for (Entity product : productsList) {
             if (product.getBelongsToField(PRODUCT_FIELD).getStringField(NUMBER_FIELD)
                     .equals(prevProduct.getBelongsToField(PRODUCT_FIELD).getStringField(NUMBER_FIELD))) {
-                if (product.getBelongsToField(PRODUCTION_RECORD_FIELD).getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD) != null
+                if (product.getBelongsToField(PRODUCTION_RECORD_FIELD).getBelongsToField(
+                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD) != null
                         && !product
                                 .getBelongsToField(PRODUCTION_RECORD_FIELD)
-                                .getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD)
+                                .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
                                 .getId()
                                 .toString()
                                 .equals(prevProduct.getBelongsToField(PRODUCTION_RECORD_FIELD)
-                                        .getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD).getId().toString())) {
+                                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD).getId().toString())) {
                     plannedQuantity = plannedQuantity.add((BigDecimal) product.getField(PLANNED_QUANTITY_FIELD),
                             numberService.getMathContext());
                 }
@@ -138,15 +139,15 @@ public class ProductionBalanceReportDataService {
 
         for (Entity record : productionRecords) {
             if (record
-                    .getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD)
+                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
                     .getBelongsToField(OPERATION_FIELD)
                     .getStringField(NUMBER_FIELD)
-                    .equals(prevRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD).getBelongsToField(OPERATION_FIELD)
-                            .getStringField(NUMBER_FIELD))
+                    .equals(prevRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
+                            .getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD))
                     && record
-                            .getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD)
+                            .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
                             .getStringField(NODE_NUMBER_FIELD)
-                            .equals(prevRecord.getBelongsToField(ORDER_OPERATION_COMPONENT_FIELD).getStringField(
+                            .equals(prevRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD).getStringField(
                                     NODE_NUMBER_FIELD))) {
                 registeredMachineTime += (Integer) record.getField(MACHINE_TIME_FIELD);
                 registeredLaborTime += (Integer) record.getField(LABOR_TIME_FIELD);

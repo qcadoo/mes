@@ -1,5 +1,7 @@
 package com.qcadoo.mes.costNormsForMaterials.hooks;
 
+import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants.TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
-import com.qcadoo.mes.costNormsForMaterials.constants.OrderOperationProductInComponentFields;
-import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
+import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstanceOperationProductInComponentFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,7 +32,7 @@ public class OrderHooksCNFM {
         Entity technology = order.getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGY);
 
         if (shouldFill(order, technology)) {
-            List<Entity> orderOperationProductInComponents = Lists.newArrayList();
+            List<Entity> technologyInstanceOperationProductInComponents = Lists.newArrayList();
 
             Long technologyId = technology.getId();
 
@@ -43,47 +43,53 @@ public class OrderHooksCNFM {
                 for (Map.Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
                     Entity product = productQuantity.getKey();
 
-                    Entity orderOperationProductInComponent = dataDefinitionService.get(
-                            CostNormsForProductConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForProductConstants.MODEL_ORDER_OPERATION_PRODUCT_IN_COMPONENT).create();
+                    Entity technologyInstanceOperationProductInComponent = dataDefinitionService.get(
+                            CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
+                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENT).create();
 
-                    orderOperationProductInComponent.setField(OrdersConstants.MODEL_ORDER, order);
-                    orderOperationProductInComponent.setField(BasicConstants.MODEL_PRODUCT, product);
-                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.COST_FOR_NUMBER,
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.ORDER, order);
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.PRODUCT, product);
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.COST_FOR_NUMBER,
                             product.getField(ProductCostNormsFields.COST_FOR_NUMBER));
-                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.NOMINAL_COST,
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.NOMINAL_COST,
                             product.getField(ProductCostNormsFields.NOMINAL_COST));
-                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.LAST_PURCHASE_COST,
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.LAST_PURCHASE_COST,
                             product.getField(ProductCostNormsFields.LAST_PURCHASE_COST));
-                    orderOperationProductInComponent.setField(OrderOperationProductInComponentFields.AVERAGE_COST,
+                    technologyInstanceOperationProductInComponent.setField(
+                            TechnologyInstanceOperationProductInComponentFields.AVERAGE_COST,
                             product.getField(ProductCostNormsFields.AVERAGE_COST));
 
-                    orderOperationProductInComponent = orderOperationProductInComponent.getDataDefinition().save(
-                            orderOperationProductInComponent);
+                    technologyInstanceOperationProductInComponent = technologyInstanceOperationProductInComponent
+                            .getDataDefinition().save(technologyInstanceOperationProductInComponent);
 
-                    orderOperationProductInComponents.add(orderOperationProductInComponent);
+                    technologyInstanceOperationProductInComponents.add(technologyInstanceOperationProductInComponent);
 
-                    order.setField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS,
-                            orderOperationProductInComponents);
+                    order.setField(TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS,
+                            technologyInstanceOperationProductInComponents);
                 }
             }
         } else {
-            if (technology == null && hasOrderOperationProductInComponents(order)) {
-                order.setField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS, Lists.newArrayList());
+            if (technology == null && hasTechnologyInstanceOperationProductInComponents(order)) {
+                order.setField(TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS, Lists.newArrayList());
             }
         }
 
     }
 
     @SuppressWarnings("unchecked")
-    private boolean hasOrderOperationProductInComponents(final Entity order) {
-        return ((order.getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS) != null) && !((List<Entity>) order
-                .getField(CostNormsForProductConstants.ORDER_OPERATION_PRODUCT_IN_COMPONENTS)).isEmpty());
+    private boolean hasTechnologyInstanceOperationProductInComponents(final Entity order) {
+        return ((order.getField(TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS) != null) && !((List<Entity>) order
+                .getField(TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS)).isEmpty());
     }
 
     private boolean shouldFill(final Entity order, final Entity technology) {
         return (technology != null) && (technology.getId() != null)
-                && (hasTechnologyChanged(order, technology) || !hasOrderOperationProductInComponents(order));
+                && (hasTechnologyChanged(order, technology) || !hasTechnologyInstanceOperationProductInComponents(order));
     }
 
     private boolean hasTechnologyChanged(final Entity order, final Entity technology) {

@@ -99,6 +99,33 @@
 				<bigButton name="print" icon="pdfIcon24.png"
 					action="#{form}.generateReportForEntity('orders','order','pdf')" />
 			</group>
+			<group name="orderParameters">
+				<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+										if(window.canClose()) {
+											#{form}.performEvent('showOrderParameters', []);
+										}
+								}
+							});		
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});					
+						]]>
+					</script>	
+				</bigButton>
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="order" reference="form">
@@ -348,6 +375,7 @@
 					class="com.qcadoo.mes.orders.states.OrderStatesService" method="changeOrderStateToAbandoned" />
 				<listener event="changeOrderStateToInterrupted"
 					class="com.qcadoo.mes.orders.states.OrderStatesService" method="changeOrderStateToInterrupted" />
+				<listener event="showOrderParameters" method="showOrderParameters" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">

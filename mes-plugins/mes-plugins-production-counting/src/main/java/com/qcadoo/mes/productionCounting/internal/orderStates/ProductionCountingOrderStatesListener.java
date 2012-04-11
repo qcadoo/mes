@@ -82,13 +82,13 @@ public class ProductionCountingOrderStatesListener extends OrderStateListener {
 
     private ChangeOrderStateMessage checkFinalProductionCountingForOrderForEach(final Entity order) {
         Boolean allowToClose = (Boolean) order.getField("allowToClose");
-        List<Entity> operations = order.getTreeField("orderOperationComponents");
+        List<Entity> operations = order.getTreeField("technologyInstanceOperationComponents");
         Integer numberOfRecord = 0;
         for (Entity operation : operations) {
             List<Entity> productionRecordings = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                     .add(SearchRestrictions.belongsTo("order", order))
-                    .add(SearchRestrictions.belongsTo("orderOperationComponent", operation))
+                    .add(SearchRestrictions.belongsTo("technologyInstanceOperationComponent", operation))
                     .add(SearchRestrictions.eq("lastRecord", true)).list().getEntities();
             if (!productionRecordings.isEmpty()) {
                 numberOfRecord++;

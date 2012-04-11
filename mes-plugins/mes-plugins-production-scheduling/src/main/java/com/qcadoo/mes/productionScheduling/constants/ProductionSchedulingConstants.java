@@ -27,5 +27,4 @@ public interface ProductionSchedulingConstants {
 
     String PLUGIN_IDENTIFIER = "productionScheduling";
 
-    String MODEL_ORDER_OPERATION_COMPONENT = "orderOperationComponent";
 }

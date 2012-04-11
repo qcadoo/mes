@@ -48,6 +48,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
@@ -61,13 +62,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
-import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -85,7 +85,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class ProductionRecordService {
 
-    private static final String L_ORDER_OPERATION_COMPONENTS = "orderOperationComponents";
+    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
 
     private static final String L_STATE = "state";
 
@@ -135,14 +135,12 @@ public class ProductionRecordService {
 
     public boolean willOrderAcceptOneMore(final DataDefinition productionRecordDD, final Entity productionRecord) {
         final Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
-        final Entity operation = productionRecord
-                .getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
+        final Entity operation = productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
         final List<Entity> productionCountings = productionRecordDD.find()
                 .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
-                .add(SearchRestrictions.belongsTo(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT, operation))
-                .list().getEntities();
+                .add(SearchRestrictions.belongsTo(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, operation)).list().getEntities();
 
         return willOrderAcceptOneMoreValidator(productionCountings, productionRecord, productionRecordDD);
     }
@@ -151,11 +149,11 @@ public class ProductionRecordService {
             final DataDefinition dd) {
         for (Entity counting : productionCountings) {
             if (counting.getBooleanField(LAST_RECORD)) {
-                if (productionRecord.getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT) == null) {
+                if (productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null) {
                     productionRecord.addError(dd.getField(OrdersConstants.MODEL_ORDER),
                             "productionCounting.record.messages.error.final");
                 } else {
-                    productionRecord.addError(dd.getField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT),
+                    productionRecord.addError(dd.getField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT),
                             "productionCounting.record.messages.error.operationFinal");
                 }
 
@@ -205,10 +203,9 @@ public class ProductionRecordService {
         }
 
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
+            operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            operationComponents = newArrayList(productionRecord
-                    .getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT));
+            operationComponents = newArrayList(productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
         }
 
         if (registerInput) {
@@ -243,14 +240,15 @@ public class ProductionRecordService {
             Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService
                     .getProductComponentQuantities(asList(order));
 
-            Entity orderOperationComponent = productionRecord
-                    .getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
+            Entity technologyInstanceOperationComponent = productionRecord
+                    .getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
             for (Entry<Entity, BigDecimal> prodCompQty : productComponentQuantities.entrySet()) {
                 Entity product = prodCompQty.getKey().getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-                if (orderOperationComponent != null) {
-                    Entity operation = orderOperationComponent.getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
+                if (technologyInstanceOperationComponent != null) {
+                    Entity operation = technologyInstanceOperationComponent
+                            .getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
                     Entity currentOperation = prodCompQty.getKey().getBelongsToField("operationComponent")
                             .getBelongsToField(TechnologiesConstants.MODEL_OPERATION);
                     if (!operation.getId().equals(currentOperation.getId())) {
@@ -281,10 +279,10 @@ public class ProductionRecordService {
     public boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {
         String recordingMode = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER).getStringField(
                 TYPE_OF_PRODUCTION_RECORDING);
-        Object orderOperation = productionRecord.getField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT);
+        Object orderOperation = productionRecord.getField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
         if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingMode) && orderOperation == null) {
-            productionRecord.addError(productionRecordDD.getField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT),
+            productionRecord.addError(productionRecordDD.getField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT),
                     "productionCounting.record.messages.error.operationIsNotSet");
             return false;
         }
@@ -301,12 +299,12 @@ public class ProductionRecordService {
             return;
         }
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
-        EntityTreeNode operationComponents = order.getTreeField(L_ORDER_OPERATION_COMPONENTS).getRoot();
+        EntityTreeNode operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).getRoot();
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
             countPlannedTime(productionRecord, operationComponents, null);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             countPlannedTime(productionRecord, operationComponents,
-                    productionRecord.getBelongsToField(ProductionSchedulingConstants.MODEL_ORDER_OPERATION_COMPONENT));
+                    productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
         }
         countTimeBalance(productionRecord);
     }
@@ -395,10 +393,11 @@ public class ProductionRecordService {
         Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateRealizationTimes(order, plannedQuantity,
                 true, true);
         if (orderOperComp == null) {
-            EntityTree orderOperationComponentsTree = order.getTreeField(L_ORDER_OPERATION_COMPONENTS);
-            for (Entity orderOperationComponent : orderOperationComponentsTree) {
-                countTimeOperation(orderOperationComponent, plannedTimeValues,
-                        durationOperation.get(orderOperationComponent.getBelongsToField("technologyOperationComponent")));
+            EntityTree technologyInstanceOperationComponentsTree = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponentsTree) {
+                countTimeOperation(technologyInstanceOperationComponent, plannedTimeValues,
+                        durationOperation.get(technologyInstanceOperationComponent
+                                .getBelongsToField("technologyOperationComponent")));
             }
         } else {
             countTimeOperation(orderOperComp, plannedTimeValues,
@@ -410,18 +409,20 @@ public class ProductionRecordService {
         productionRecord.setField(PLANNED_LABOR_TIME, plannedTimeValues.get(PLANNED_LABOR_TIME).setScale(0, ROUND_UP).intValue());
     }
 
-    private void countTimeOperation(final Entity orderOperationComponent, final Map<String, BigDecimal> plannedTimeValues,
-            final Integer durationOfOperation) {
+    private void countTimeOperation(final Entity technologyInstanceOperationComponent,
+            final Map<String, BigDecimal> plannedTimeValues, final Integer durationOfOperation) {
         BigDecimal durationOfOperationComponent = new BigDecimal(durationOfOperation);
         BigDecimal plannedTime = plannedTimeValues.get(PLANNED_TIME).add(durationOfOperationComponent);
         plannedTimeValues.put(PLANNED_TIME, plannedTime);
 
         BigDecimal plannedMachineTime = plannedTimeValues.get(PLANNED_MACHINE_TIME).add(
-                durationOfOperationComponent.multiply(getBigDecimal(orderOperationComponent.getField("machineUtilization")),
+                durationOfOperationComponent.multiply(
+                        getBigDecimal(technologyInstanceOperationComponent.getField("machineUtilization")),
                         numberService.getMathContext()), numberService.getMathContext());
         plannedTimeValues.put(PLANNED_MACHINE_TIME, plannedMachineTime);
         BigDecimal plannedLaborTime = plannedTimeValues.get(PLANNED_LABOR_TIME).add(
-                durationOfOperationComponent.multiply(getBigDecimal(orderOperationComponent.getField("laborUtilization")),
+                durationOfOperationComponent.multiply(
+                        getBigDecimal(technologyInstanceOperationComponent.getField("laborUtilization")),
                         numberService.getMathContext()), numberService.getMathContext());
         plannedTimeValues.put(PLANNED_LABOR_TIME, plannedLaborTime);
     }

@@ -29,7 +29,7 @@ public class ProductionRecordFields {
 
     public static final String ORDER = "order";
 
-    public static final String ORDER_OPERATION_COMPONENT = "orderOperationComponent";
+    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
     public static final String SHIFT = "shift";
 

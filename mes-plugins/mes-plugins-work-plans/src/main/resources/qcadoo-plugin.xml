@@ -206,41 +206,41 @@
 				joinField="technologyOperationComponent" cascade="delete" copyable="true" />
 		</model:model-field>
 
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:boolean name="hideDescriptionInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:boolean name="hideDetailsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:file name="imageUrlInWorkPlan" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:boolean name="dontPrintOutputProductsInWorkPlans" />
 		</model:model-field>
 
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:hasMany name="orderOperationInputColumns"
-				plugin="workPlans" model="orderOperationInputColumn" joinField="orderOperationComponent"
+				plugin="workPlans" model="orderOperationInputColumn" joinField="technologyInstanceOperationComponent"
 				cascade="delete" copyable="true" />
 		</model:model-field>
-		<model:model-field plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-field plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:hasMany name="orderOperationOutputColumns"
-				plugin="workPlans" model="orderOperationOutputColumn" joinField="orderOperationComponent"
+				plugin="workPlans" model="orderOperationOutputColumn" joinField="technologyInstanceOperationComponent"
 				cascade="delete" copyable="true" />
 		</model:model-field>
 
@@ -263,10 +263,10 @@
 				method="checkIfAttachmentExtensionIsValid" />
 		</model:model-hook>
 
-		<model:model-hook plugin="productionScheduling"
-			model="orderOperationComponent">
+		<model:model-hook plugin="technologies"
+			model="technologyInstanceOperationComponent">
 			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelValidators"
+				class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelValidators"
 				method="checkIfAttachmentExtensionIsValid" />
 		</model:model-hook>
 	
@@ -288,8 +288,8 @@
 		</model:model-hook>
 
 		<!-- TODO LUPO maybe used in future -->
-		<!-- <model:model-hook plugin="productionScheduling" model="orderOperationComponent"> -->
-		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.OrderOperationComponentModelHooks" 
+		<!-- <model:model-hook plugin="productionScheduling" model="technologyInstanceOperationComponent"> -->
+		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelHooks" 
 			method="copyColumnForProducts" /> -->
 		<!-- </model:model-hook> -->
 
@@ -321,7 +321,7 @@
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 
 		<!-- TODO LUPO maybe used in future -->
-		<!-- <view:view-tab resource="view/tabExtensions/orderOperationComponentDetails.xml" 
+		<!-- <view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" 
 			/> -->
 		
 		<view:view-hook plugin="workPlans" view="workPlanDetails"
