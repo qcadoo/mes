@@ -40,7 +40,7 @@
 		<hasMany name="children" model="technologyInstanceOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />
 		<priority name="priority" scope="parent" />
-		<integer name="quantityOfWorkstationTypes" /> 
+		 
 		
 		<string name="nodeNumber" />
 		<boolean name="areProductQuantitiesDivisible" default="true" />

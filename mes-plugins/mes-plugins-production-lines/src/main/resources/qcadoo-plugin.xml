@@ -53,7 +53,13 @@
 		
 		<menu:menu-item name="productionLines" category="basic"
 			view="productionLinesList" />
-			
+		
+		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+			<model:integer name="quantityOfWorkstationTypes" />
+		</model:model-field>
+		
+		<integer name="quantityOfWorkstationTypes" />
+		
 		<view:view resource="view/productionLinesList.xml" />
 		<view:view resource="view/productionLineDetails.xml" />
 		
