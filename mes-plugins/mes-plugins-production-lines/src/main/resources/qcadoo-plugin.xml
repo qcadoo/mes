@@ -51,6 +51,10 @@
 				model="productionLine" plugin="productionLines" />
 		</model:model-field>
 		
+		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+			<model:integer name="quantityOfWorkstationTypes" />
+		</model:model-field>
+
 		<menu:menu-item name="productionLines" category="basic"
 			view="productionLinesList" />
 				
