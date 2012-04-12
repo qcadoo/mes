@@ -166,3 +166,11 @@ CREATE TABLE productionlines_workstationtypecomponent
 );
 
 -- end
+
+
+-- Table:  technologies_technologyinstanceoperationcomponent
+-- changed: 12.04.2012
+
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantityofworkstationtypes integer;
+
+-- end
