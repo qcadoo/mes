@@ -74,6 +74,18 @@
 		<model:model-field plugin="orders" model="order">
 			<model:boolean name="calculate" />
 		</model:model-field>
+		
+		<model:model-field plugin="orders" model="order">
+			<model:dictionary name="operationDurationQuantityUNIT" dictionary="units" required="true"/>
+		</model:model-field>
+		
+		<model:model-field plugin="orders" model="order">
+			<model:integer name="effectiveTimeConsumption" />
+		</model:model-field>
+		
+		<model:model-field plugin="orders" model="order">
+			<model:datetime name="generatedEndDate" />
+		</model:model-field>
 
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
