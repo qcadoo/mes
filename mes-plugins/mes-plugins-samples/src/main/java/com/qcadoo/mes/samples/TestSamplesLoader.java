@@ -82,10 +82,10 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, "dictionaries", locale);
         readDataFromXML(dataset, "activeCurrency", locale);
         readDataFromXML(dataset, "company", locale);
-        readDataFromXML(dataset, "workstationTypes", locale);
+        readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
-        readDataFromXML(dataset, "shifts", locale);
+        readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
         if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
@@ -134,8 +134,8 @@ public class TestSamplesLoader extends SamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
-        if (isEnabled("productionLines")) {
-            readDataFromXML(dataset, "productionLines", locale);
+        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, "productionLines_dict", locale);
         }
     }
@@ -168,9 +168,9 @@ public class TestSamplesLoader extends SamplesLoader {
             addOperations(values);
         } else if (BASIC_MODEL_STAFF.equals(type)) {
             addStaff(values);
-        } else if ("workstationTypes".equals(type)) {
+        } else if (L_WORKSTATION_TYPES.equals(type)) {
             addWorkstationType(values);
-        } else if ("shifts".equals(type)) {
+        } else if (L_SHIFTS.equals(type)) {
             addShifts(values);
         } else if (L_DIVISION.equals(type)) {
             addDivision(values);
@@ -204,9 +204,9 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
-        } else if ("productionLines".equals(type)) {
+        } else if (L_PRODUCTION_LINES.equals(type)) {
             addProductionLines(values);
-        } else if ("productionLinesDictionary".equals(type)) {
+        } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {
             addDictionaryItems(values);
         }
     }
@@ -1132,7 +1132,8 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     void addProductionLines(final Map<String, String> values) {
-        Entity productionLine = dataDefinitionService.get("productionLines", "productionLine").create();
+        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
         productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
