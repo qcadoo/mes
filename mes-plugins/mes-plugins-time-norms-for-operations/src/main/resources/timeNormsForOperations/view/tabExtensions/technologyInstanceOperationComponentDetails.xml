@@ -19,29 +19,13 @@
 						reference="productionInOneCycle" defaultEnabled="true" required="true" hasDescription="true">
 							<option type="labelWidth" value="40"/>
 						</component>
+
 			    	</layoutElement>
 			    	<layoutElement column="4" row="1">
 						<component type="select" name="productionInOneCycleUNIT" field="#{form}.productionInOneCycleUNIT" reference="productionInOneCycleUNIT">
 							<option type="required" value="true" />
 							<option type="labelWidth" value="10"/>
 							<option type = "alingment" value="right"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
-							reference="timeNextOperation" hasDescription="true" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
-							reference="machineUtilization" />
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="input" name="laborUtilization" field="#{form}.laborUtilization"
-							reference="laborUtilization" />
-					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="select" name="countRealized" field="#{form}.countRealized"
-							reference="countRealized" hasDescription="true">
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" width="4">
