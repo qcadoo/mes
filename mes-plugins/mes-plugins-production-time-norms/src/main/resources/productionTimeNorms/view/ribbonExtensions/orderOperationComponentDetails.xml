@@ -24,6 +24,14 @@
     ***************************************************************************
 
 -->
-<productionLines>
-	<row NUMBER="000001" NAME="Main line" SUPPORTSALLTECHNOLOGIES="true" SUPPORTSOTHERTECHNOLOGIESWORKSTATIONTYPES="true" QUANTITYFOROTHERWORKSTATIONTYPES="1" />
-</productionLines>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="productionScheduling"
+	view="orderOperationComponentDetails">
+	
+	<group name="norm">
+		<bigButton name="copyTimeNormsFromTechnology" icon="copyIcon24.png" state="enabled" action="#{form}.fireEvent(copyTimeNormsFromTechnology);" />
+	</group>
+	
+	
+</ribbonExtension>

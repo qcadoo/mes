@@ -50,7 +50,7 @@
 			joinField="productionLine" cascade="delete" />
 			
 		<boolean name="supportsOtherTechnologiesWorkstationTypes" default="true" />
-		<integer name="quantityForOtherWorkstationTypes" />
+		<integer name="quantityForOtherWorkstationTypes" default="1" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

@@ -1136,6 +1136,9 @@ public class TestSamplesLoader extends SamplesLoader {
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
         productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
+        productionLine.setField("supportsOtherTechnologiesWorkstationTypes",
+                values.get("supportsothertechnologiesworkstationtypes"));
+        productionLine.setField("quantityForOtherWorkstationTypes", values.get("quantityforotherworkstationtypes"));
 
         productionLine = productionLine.getDataDefinition().save(productionLine);
         validateEntity(productionLine);

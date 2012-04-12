@@ -56,5 +56,7 @@
 			
 		<view:view resource="view/productionLinesList.xml" />
 		<view:view resource="view/productionLineDetails.xml" />
+		
+		<view:view resource="view/workstationTypeComponentDetails.xml" />
 	</modules>
 </plugin>
