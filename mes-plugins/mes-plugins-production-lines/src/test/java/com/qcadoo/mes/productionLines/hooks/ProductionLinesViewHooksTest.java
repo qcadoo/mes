@@ -13,7 +13,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 public class ProductionLinesViewHooksTest {
 
-    private ProductionLinesViewHooks productionLinesViewHooks;
+    private ProductionLineDetailsViewHooks productionLinesViewHooks;
 
     @Mock
     private ViewDefinitionState view;
@@ -25,7 +25,7 @@ public class ProductionLinesViewHooksTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        productionLinesViewHooks = new ProductionLinesViewHooks();
+        productionLinesViewHooks = new ProductionLineDetailsViewHooks();
 
         given(view.getComponentByReference("supportsAllTechnologies")).willReturn(supportsAllTechnologies);
         given(view.getComponentByReference("technologies")).willReturn(technologiesGrid);

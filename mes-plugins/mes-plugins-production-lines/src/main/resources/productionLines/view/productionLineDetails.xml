@@ -73,7 +73,7 @@
 			<component type="checkbox" name="supportsAllTechnologies"
 				field="#{form}.supportsAllTechnologies" reference="supportsAllTechnologies">
 				<listener event="onChange"
-					class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks"
+					class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 					method="disableSupportedTechnologiesGrids" />
 			</component>
 			<component type="gridLayout" name="supportedTechnologiesTabLayout"
@@ -198,7 +198,7 @@
 	</component>
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks"
+			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 			method="disableSupportedTechnologiesGrids" />
 	</hooks>
 </view>
