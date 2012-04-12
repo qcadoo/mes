@@ -26,62 +26,12 @@
 -->
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="orders"
-	view="orderDetails">
-	<group name="orderParameters">
-		<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-								if(window.canClose()) {
-									#{form}.performEvent('showOrderParameters', []);
-								}
-						}
-					});		
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>	
-		</bigButton>
+	plugin="productionScheduling"
+	view="orderOperationComponentDetails">
+	
+	<group name="norm">
+		<bigButton name="copyTimeNormsFromTechnology" icon="copyIcon24.png" state="enabled" action="#{form}.fireEvent(copyTimeNormsFromTechnology);" />
 	</group>
 	
-	<group name="operationDuration">
-		<bigButton name="operationDuration" icon="iconProducts24.png" state="enabled" >
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('redirectToOperationDurationDetails', []);
-							}
-						}
-					});	
-						
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>	
-		</bigButton>
-	</group>
+	
 </ribbonExtension>

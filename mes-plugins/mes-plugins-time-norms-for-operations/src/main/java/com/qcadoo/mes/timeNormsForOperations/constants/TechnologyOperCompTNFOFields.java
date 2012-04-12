@@ -10,7 +10,11 @@ public class TechnologyOperCompTNFOFields {
 
     public static final String COUNT_REALIZED = "countRealized";
 
+    public static final String COUNT_REALIZED_OPERATION = "countRealizedOperation";
+
     public static final String COUNT_MACHINE = "countMachine";
+
+    public static final String COUNT_MACHINE_OPERATION = "countMachineOperation";
 
     public static final String COUNT_MACHINE_UNIT = "countMachineUNIT";
 
