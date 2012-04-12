@@ -93,7 +93,7 @@ public class TechnologyOperationComponentDetailsHooksTest {
         given(view.getComponentByReference("form")).willReturn(form);
         given(form.getEntity()).willReturn(opComp1);
         given(opComp1.getDataDefinition()).willReturn(dd);
-        given(dd.get(0l)).willReturn(opComp1);
+        given(dd.get(0L)).willReturn(opComp1);
         given(technologyService.getMainOutputProductComponent(opComp1)).willReturn(prodComp1);
         given(prodComp1.getDecimalField("quantity")).willReturn(new BigDecimal(1.1f));
         given(opComp1.getDecimalField("productionInOneCycle")).willReturn(new BigDecimal(1.2f));
