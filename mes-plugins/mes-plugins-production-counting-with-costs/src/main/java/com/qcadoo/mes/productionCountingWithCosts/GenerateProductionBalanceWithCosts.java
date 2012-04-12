@@ -95,6 +95,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class GenerateProductionBalanceWithCosts implements Observer {
@@ -149,11 +150,16 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     @Override
     public void update(final Observable arg0, final Object arg1) {
-        Entity balance = (Entity) arg1;
+        // FIXME mici, well, since those observers are registered on plugin startup
+        // they are registered for all tenants. Checking if the plugin is enabled seems like a viable workaround.
+        // This problem also applies to other listeners, across the system, that are implemented using observer pattern.
+        if (PluginUtils.isEnabled("productionCountingWithCosts")) {
+            Entity balance = (Entity) arg1;
 
-        doTheCostsPart(balance);
-        fillFieldsAndGrids(balance);
-        generateBalanceWithCostsReport(balance);
+            doTheCostsPart(balance);
+            fillFieldsAndGrids(balance);
+            generateBalanceWithCostsReport(balance);
+        }
     }
 
     void generateBalanceWithCostsReport(final Entity productionBalance) {
