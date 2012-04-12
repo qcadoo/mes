@@ -1,0 +1,96 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="usedBatchSimpleDetails" 
+	modelName="usedBatchSimple">
+	
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="form" reference="form">
+				<script>
+					<![CDATA[
+						var listener = {
+					    	onSetValue: function() {
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								
+								if (isSaved) { 
+									#{batchLookup}.setEnabled(false, true);
+								} else {
+									#{batchLookup}.setEnabled(true, true);
+								}
+							}
+						};
+						
+						#{form}.addOnChangeListener(listener);
+					]]>	 
+				</script>
+				<component type="gridLayout" name="batchGridLayout" columns="4" rows="3" hasBorders="false">
+
+					<layoutElement column="1" row="1" width="3">
+						<component type="lookup" name="batch" field="batch" reference="batchLookup">
+							<option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
+							<option type="column" name="productName" fields="product" expression="#product['name']" />
+							<option type="column" name="supplierName" fields="supplier" expression="#supplier['name']"  />
+							<option type="column" name="state" fields="state" />
+							
+							<option type="searchable" value="number, productNumber, productName, supplierName, state" />
+							<option type="orderable" value="number,productNumber,productName,supplierName,state" />
+							
+							<option type="expression" value="(#supplier == null) ? #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +')' : #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +') - ' + #supplier.get('name')" />
+							<option type="fieldCode" value="number" />	
+							
+							<listener event="onSelectedEntityChange" 
+								class="com.qcadoo.mes.advancedGenealogy.hooks.UsedBatchSimpleViewHooks" 
+								method="fillUnitField" />
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="2" width="3">
+						<component type="input" name="quantity" field="quantity" reference="quantity">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="2" width="1">
+							<component type="input" name="unit" persistent="false" reference="unit" hasLabel="false" defaultEnabled="false" />
+					</layoutElement>
+				</component>
+				
+				<option type="header" value="true" />
+				<option type="expression" value="#number" />
+			
+			</component>
+		</windowTab>
+		 
+	</component>
+	
+	<hooks>
+	</hooks>
+</view>
