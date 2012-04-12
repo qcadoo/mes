@@ -53,16 +53,16 @@ public class OrderHooksCNFM {
                             TechnologyInstanceOperationProductInComponentFields.PRODUCT, product);
                     technologyInstanceOperationProductInComponent.setField(
                             TechnologyInstanceOperationProductInComponentFields.COST_FOR_NUMBER,
-                            product.getField(ProductCostNormsFields.COST_FOR_NUMBER));
+                            product.getDecimalField(ProductCostNormsFields.COST_FOR_NUMBER));
                     technologyInstanceOperationProductInComponent.setField(
                             TechnologyInstanceOperationProductInComponentFields.NOMINAL_COST,
-                            product.getField(ProductCostNormsFields.NOMINAL_COST));
+                            product.getDecimalField(ProductCostNormsFields.NOMINAL_COST));
                     technologyInstanceOperationProductInComponent.setField(
                             TechnologyInstanceOperationProductInComponentFields.LAST_PURCHASE_COST,
-                            product.getField(ProductCostNormsFields.LAST_PURCHASE_COST));
+                            product.getDecimalField(ProductCostNormsFields.LAST_PURCHASE_COST));
                     technologyInstanceOperationProductInComponent.setField(
                             TechnologyInstanceOperationProductInComponentFields.AVERAGE_COST,
-                            product.getField(ProductCostNormsFields.AVERAGE_COST));
+                            product.getDecimalField(ProductCostNormsFields.AVERAGE_COST));
 
                     technologyInstanceOperationProductInComponent = technologyInstanceOperationProductInComponent
                             .getDataDefinition().save(technologyInstanceOperationProductInComponent);
