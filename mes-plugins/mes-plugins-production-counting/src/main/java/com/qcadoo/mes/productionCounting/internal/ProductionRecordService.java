@@ -62,6 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
@@ -101,7 +102,7 @@ public class ProductionRecordService {
     private NumberService numberService;
 
     @Autowired
-    com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService orderRealizationTimeService;
+    OrderRealizationTimeService orderRealizationTimeService;
 
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField(NUMBER) == null) {

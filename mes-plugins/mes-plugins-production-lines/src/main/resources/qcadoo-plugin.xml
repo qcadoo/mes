@@ -39,6 +39,7 @@
 		<model:dictionary name="productionLinePlaces" />
 
 		<model:model model="productionLine" resource="model/productionLine.xml" />
+		<model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml" />
 		
 		<model:model-field plugin="technologies" model="technologyGroup">
 			<model:manyToMany name="productionLines" joinField="groups"
@@ -55,5 +56,7 @@
 			
 		<view:view resource="view/productionLinesList.xml" />
 		<view:view resource="view/productionLineDetails.xml" />
+		
+		<view:view resource="view/workstationTypeComponentDetails.xml" />
 	</modules>
 </plugin>

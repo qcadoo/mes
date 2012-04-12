@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.1.4
 
     This file is part of Qcadoo.
@@ -24,34 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="productionLine" activable="true" 
+<model name="workstationTypeComponent" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="division" plugin="basic" model="division" />
-		<dictionary name="place" dictionary="productionLinePlaces" required="false" />
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
-		<boolean name="supportsAllTechnologies" default="true" />
-		<file name="documentation" />
-		<manyToMany name="groups" joinField="productionLines" model="technologyGroup"
-			plugin="technologies" copyable="true" />
-		<manyToMany name="technologies" joinField="productionLines" model="technology"
-			plugin="technologies" copyable="true" />
-			
-		<hasMany name="workstationTypeComponents" model="workstationTypeComponent"
-			joinField="productionLine" cascade="delete" />
-			
-		<boolean name="supportsOtherTechnologiesWorkstationTypes" default="true" />
-		<integer name="quantityForOtherWorkstationTypes" default="1" />
+		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />
+		<belongsTo name="workstationType" plugin="basic" model="workstationType" lazy="false" required="true" />
+		
+		<integer name="quantity" required="true" />
 	</fields>
 	<hooks />
-	<identifier expression="#number + ' - ' + #name" />
 </model>

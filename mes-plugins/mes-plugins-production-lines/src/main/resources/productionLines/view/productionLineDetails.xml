@@ -24,11 +24,11 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productionLineDetails"
+	name="productionLineDetails" 
 	modelName="productionLine">
-	
+
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
@@ -55,7 +55,8 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="select" name="place" field="place" reference="productionLinePlaces" />
+						<component type="select" name="place" field="place"
+							reference="productionLinePlaces" />
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
 						<component type="textarea" name="description" field="description" />
@@ -69,73 +70,135 @@
 			</component>
 		</windowTab>
 		<windowTab name="supportedTechnologiesTab">
-			<component type="checkbox" name="supportsAllTechnologies" field="#{form}.supportsAllTechnologies" reference="supportsAllTechnologies">
-				<listener event="onChange" class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks" method="disableSupportedTechnologiesGrids" />
+			<component type="checkbox" name="supportsAllTechnologies"
+				field="#{form}.supportsAllTechnologies" reference="supportsAllTechnologies">
+				<listener event="onChange"
+					class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks"
+					method="disableSupportedTechnologiesGrids" />
 			</component>
-			<component type="gridLayout" name="supportedTechnologiesTabLayout" columns="2" rows="1">
+			<component type="gridLayout" name="supportedTechnologiesTabLayout"
+				columns="2" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="groupsLookup" reference="groupsLookup" field="#{form}.groups" defaultVisible="false" persistent="false" hasLabel="false">
+					<component type="lookup" name="groupsLookup" reference="groupsLookup"
+						field="#{form}.groups" defaultVisible="false" persistent="false"
+						hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
-							width="200" />
+							width="100" />
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
+
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+
 						<option type="multiselect" value="true" />
 					</component>
-					<component type="grid" name="groups" reference="groups" source="#{form}.groups">
+					<component type="grid" name="groups" reference="groups"
+						source="#{form}.groups">
 						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" />
-						
+						<option type="column" name="name" fields="name" width="100" />
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
-					
+
 						<option type="order" column="number" direction="desc" />
-						
+
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						
+
 						<option type="weakRelation" value="true" />
 						<option type="correspondingLookup" value="groupsLookup" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="lookup" name="technologiesLookup" reference="technologiesLookup" field="#{form}.technologies" defaultVisible="false" persistent="false" hasLabel="false">
+					<component type="lookup" name="technologiesLookup"
+						reference="technologiesLookup" field="#{form}.technologies"
+						defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
-							width="200" />
+							width="100" />
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
+
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+
 						<option type="multiselect" value="true" />
 					</component>
-					<component type="grid" name="technologies" reference="technologies" source="#{form}.technologies">
+					<component type="grid" name="technologies" reference="technologies"
+						source="#{form}.technologies">
 						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" />
-						
+						<option type="column" name="name" fields="name" width="100" />
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
-					
+
 						<option type="order" column="number" direction="desc" />
-						
+
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						
+
 						<option type="weakRelation" value="true" />
 						<option type="correspondingLookup" value="technologiesLookup" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+		<windowTab name="workstationTypesTab">
+			<component type="gridLayout" name="workstationsTabLayout"
+				columns="2" rows="5">
+				<layoutElement column="1" row="1" height="5">
+					<component type="grid" name="workstationTypeComponentGrid"
+						reference="grid" source="#{form}.workstationTypeComponents">
+						<option type="column" name="workstationTypeNumber" fields="workstationType"
+							expression="#workstationType['number']" link="true" width="50" />
+						<option type="column" name="workstationTypeName" fields="workstationType"
+							expression="#workstationType['name']" link="true" width="100" />
+						<option type="column" name="quantity" fields="quantity"
+							link="true" width="50" />
+
+						<option type="order" column="workstationTypeNumber"
+							direction="desc" />
+
+						<option type="searchable"
+							value="workstationTypeNumber,workstationTypeName,quantity" />
+
+						<option type="correspondingView"
+							value="productionLines/workstationTypeComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="checkbox"
+						name="supportsOtherTechnologiesWorkstationTypes" field="#{form}.supportsOtherTechnologiesWorkstationTypes"
+						reference="supportsOtherTechnologiesWorkstations">
+						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2">
+					<component type="input" name="quantityForOtherWorkstationTypes"
+						field="#{form}.quantityForOtherWorkstationTypes" reference="supportsOtherTechnologiesWorkstationTypes">
+						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks"
+		<beforeRender
+			class="com.qcadoo.mes.productionLines.hooks.ProductionLinesViewHooks"
 			method="disableSupportedTechnologiesGrids" />
 	</hooks>
 </view>

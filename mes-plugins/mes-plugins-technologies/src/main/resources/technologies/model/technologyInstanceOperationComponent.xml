@@ -42,6 +42,8 @@
 		<priority name="priority" scope="parent" />
 
 		<string name="nodeNumber" />
+		<boolean name="areProductQuantitiesDivisible" default="true" />
+		<boolean name="isTjDivisible" default="true"/>
 	</fields>
 	<hooks />
 </model>
