@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="operationTimeCalculations" version="${qcadoo.plugin.version}"
+<plugin plugin="operationCostCalculations" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -19,21 +19,21 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>MES - Operation time calculations</name>
+		<name>MES - Operation cost calculations</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
-	
+
 	<dependencies>
 		<dependency>
-			<plugin>timeNormsForOperations</plugin>
-			<version>[0.4.0</version>
+			<plugin>costNormsForOperation</plugin>
+			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>productionLines</plugin>
-			<version>[0.4.0</version>
+			<plugin>operationTimeCalculations</plugin>
+			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>
 

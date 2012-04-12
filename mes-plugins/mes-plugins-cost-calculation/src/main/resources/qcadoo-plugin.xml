@@ -54,7 +54,7 @@
 			<version>[0.4.1</version>
 		</dependency>
 		<dependency>
-			<plugin>costNormsForOperation</plugin>
+			<plugin>operationCostCalculations</plugin>
 			<version>[0.4.1</version>
 		</dependency>
 	</dependencies>

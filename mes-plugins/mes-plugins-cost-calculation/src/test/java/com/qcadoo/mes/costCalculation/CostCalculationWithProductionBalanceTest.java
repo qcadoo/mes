@@ -41,7 +41,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
-import com.qcadoo.mes.costNormsForOperation.OperationsCostCalculationService;
+import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;

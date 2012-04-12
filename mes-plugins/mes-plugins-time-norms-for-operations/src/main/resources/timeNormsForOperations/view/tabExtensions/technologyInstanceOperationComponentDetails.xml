@@ -37,11 +37,11 @@
 							reference="timeNextOperation" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="input" name="machineUtilization" field="machineUtilization"
+						<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
 							reference="machineUtilization" />
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="laborUtilization" field="laborUtilization"
+						<component type="input" name="laborUtilization" field="#{form}.laborUtilization"
 							reference="laborUtilization" />
 					</layoutElement>
 					<layoutElement column="2" row="3">

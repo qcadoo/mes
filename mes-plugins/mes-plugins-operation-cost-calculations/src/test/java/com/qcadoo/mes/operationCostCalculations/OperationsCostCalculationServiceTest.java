@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForOperation;
+package com.qcadoo.mes.operationCostCalculations;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -70,7 +70,7 @@ public class OperationsCostCalculationServiceTest {
     private DataDefinition dataDefinition, calculationOperationComponentDD, operationComponentDD, techOperCompDD;
 
     @Mock
-    private EntityTreeNode calculationOpComp;
+    private EntityTreeNode calculationOpComp, operationComponent;
 
     @Mock
     private ProductQuantitiesService productQuantitiesService;
@@ -82,6 +82,8 @@ public class OperationsCostCalculationServiceTest {
     private Map<Entity, BigDecimal> quantities = new HashMap<Entity, BigDecimal>();
 
     private Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+
+    private Map<Entity, Integer> realizationTimes = new HashMap<Entity, Integer>();
 
     private EntityTree treeFromTechnology;
 
@@ -185,4 +187,24 @@ public class OperationsCostCalculationServiceTest {
         operationCostCalculationService.calculateOperationsCost(wrongEntity);
     }
 
+    @Test
+    public void shouldEstimateCostCalculationForHourly() throws Exception {
+        // given
+        BigDecimal margin = BigDecimal.TEN;
+        BigDecimal plannedQuantity = BigDecimal.TEN;
+        realizationTimes.put(techOperComp, Integer.valueOf(10));
+        Long techOperCompId = 1L;
+        Integer duration = Integer.valueOf(10);
+
+        when(numberService.getMathContext()).thenReturn(MathContext.DECIMAL64);
+        when(operationComponent.getBelongsToField("technologyOperationComponent")).thenReturn(techOperComp);
+        when(techOperComp.getId()).thenReturn(techOperCompId);
+        when(techOperComp.getDataDefinition()).thenReturn(techOperCompDD);
+        when(techOperCompDD.get(techOperCompId)).thenReturn(techOperComp);
+
+        // when
+        operationCostCalculationService.estimateCostCalculationForHourlyWitoutSaving(operationComponent, margin, plannedQuantity,
+                realizationTimes);
+        // then
+    }
 }

@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 public interface TimeNormsConstants {
 
     Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealizedOperation",
-            "countMachineOperation", "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT");
+            "countMachineOperation", "timeNextOperation", "machineUtilization", "laborUtilization");
 
     Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
             "timeNextOperation", "machineUtilization", "laborUtilization");

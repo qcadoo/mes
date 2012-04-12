@@ -209,7 +209,12 @@
 			method="copyCostValuesFromOperation" />
 
 		<!-- operation - instance of technology -->
-
+		<model:model-hook model="technologyInstanceOperationComponent"
+			plugin="technologies">
+			<model:onCreate
+				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+				method="copyCostNormsToTechnologyInstanceOperationComponent" />
+		</model:model-hook>
 <!-- 		<view:view-hook view="technologyOperationComponentInOrderDetails" -->
 <!-- 			type="beforeRender" plugin="timeNormsForOperations" -->
 <!-- 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" -->

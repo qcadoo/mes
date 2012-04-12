@@ -24,39 +24,57 @@
 package com.qcadoo.mes.costNormsForProduct;
 
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 public class CostNormsForProductServiceTest {
 
+    @Mock
     private ViewDefinitionState viewDefinitionState;
 
     private CostNormsForProductService costNormsForProductService;
 
+    @Mock
     private DataDefinition dataDefinition;
 
+    @Mock
+    private DataDefinitionService dataDefinitionService;
+
+    @Mock
+    private CurrencyService currencyService;
+
+    @Mock
     private FormComponent form;
 
+    @Mock
+    private FieldComponent field1, field2, field3;
+
+    @Mock
     private Entity entity;
 
     @Before
     public void init() {
         costNormsForProductService = new CostNormsForProductService();
-        viewDefinitionState = mock(ViewDefinitionState.class);
-        dataDefinition = mock(DataDefinition.class);
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        form = mock(FormComponent.class);
 
+        MockitoAnnotations.initMocks(this);
+
+        ReflectionTestUtils.setField(costNormsForProductService, "currencyService", currencyService);
+        ReflectionTestUtils.setField(costNormsForProductService, "dataDefinitionService", dataDefinitionService);
         when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT))
                 .thenReturn(dataDefinition);
 
@@ -71,4 +89,52 @@ public class CostNormsForProductServiceTest {
         costNormsForProductService.fillCurrencyFieldsInProduct(null);
     }
 
+    @Test
+    public void shouldFillCurrencyFields() throws Exception {
+        // given
+        String currency = "PLN";
+
+        when(viewDefinitionState.getComponentByReference("nominalCostCurrency")).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference("lastPurchaseCostCurrency")).thenReturn(field2);
+        when(viewDefinitionState.getComponentByReference("averageCostCurrency")).thenReturn(field3);
+
+        when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
+        // when
+        costNormsForProductService.fillCurrencyFieldsInProduct(viewDefinitionState);
+        // then
+    }
+
+    @Test
+    public void shouldEnabledFieldForExternalID() throws Exception {
+        // given
+        Long productId = 1L;
+        String externalId = "0001";
+        when(form.getEntityId()).thenReturn(productId);
+        when(dataDefinition.get(productId)).thenReturn(entity);
+        when(entity.getStringField("externalNumber")).thenReturn(externalId);
+        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        // when
+        costNormsForProductService.enabledFieldForExternalID(viewDefinitionState);
+        // then
+        Mockito.verify(field1).setEnabled(true);
+    }
+
+    @Test
+    public void shouldFillUnitFieldWhenInProductIsTrue() throws Exception {
+        // given
+        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        // when
+        costNormsForProductService.fillUnitField(viewDefinitionState, "nominalCost", true);
+        // then
+    }
+
+    @Test
+    public void shouldFillUnitFieldWhenInProductIsFalse() throws Exception {
+        // given
+        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference("product")).thenReturn(field2);
+        // when
+        costNormsForProductService.fillUnitField(viewDefinitionState, "nominalCost", false);
+        // then
+    }
 }
