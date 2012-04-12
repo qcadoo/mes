@@ -1,5 +1,8 @@
 package com.qcadoo.mes.productionLines.hooks;
 
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -27,9 +30,9 @@ public class ProductionLinesViewHooksTest {
 
         productionLinesViewHooks = new ProductionLineDetailsViewHooks();
 
-        given(view.getComponentByReference("supportsAllTechnologies")).willReturn(supportsAllTechnologies);
-        given(view.getComponentByReference("technologies")).willReturn(technologiesGrid);
-        given(view.getComponentByReference("groups")).willReturn(groupsGrid);
+        given(view.getComponentByReference(SUPPORTSALLTECHNOLOGIES)).willReturn(supportsAllTechnologies);
+        given(view.getComponentByReference(TECHNOLOGIES)).willReturn(technologiesGrid);
+        given(view.getComponentByReference(GROUPS)).willReturn(groupsGrid);
     }
 
     @Test
