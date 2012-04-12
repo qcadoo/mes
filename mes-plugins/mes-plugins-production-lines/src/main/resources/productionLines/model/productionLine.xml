@@ -45,8 +45,13 @@
 			plugin="technologies" copyable="true" />
 		<manyToMany name="technologies" joinField="productionLines" model="technology"
 			plugin="technologies" copyable="true" />
+			
+		<hasMany name="workstationTypeComponents" model="workstationTypeComponent"
+			joinField="productionLine" cascade="delete" />
+			
+		<boolean name="supportsOtherTechnologiesWorkstationTypes" default="true" />
+		<integer name="quantityForOtherWorkstationTypes" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
 </model>

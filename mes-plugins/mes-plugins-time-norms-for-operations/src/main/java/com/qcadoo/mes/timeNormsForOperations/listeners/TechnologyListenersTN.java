@@ -35,7 +35,7 @@ public class TechnologyListenersTN {
         List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         for (String message : messages) {
-            form.addMessage(message.toString(), MessageType.INFO, false);
+            form.addMessage(message, MessageType.INFO, false);
         }
     }
 

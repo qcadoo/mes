@@ -18,6 +18,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -32,6 +33,9 @@ public class TechnologyOperationComponentDetailsHooks {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -58,7 +62,7 @@ public class TechnologyOperationComponentDetailsHooks {
             message.append(translationService.translate(
                     "technologies.technologyOperationComponent.validate.error.invalidQuantity1", locale));
             message.append(" ");
-            message.append(currentQuantity.toString());
+            message.append(numberService.format(currentQuantity));
             message.append(" ");
             message.append(productOutComponent.getBelongsToField("product").getStringField("unit"));
             message.append(" ");
