@@ -154,7 +154,7 @@
 					<layoutElement column="2" row="3">
 						<component type="lookup" name="workstationType" reference="workstationType"
 							field="workstationType">
-							<option type="column" name="name" fields="name" />
+							<option type="column" name="name" fields="name" link="true" />
 							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
