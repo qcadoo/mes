@@ -44,7 +44,7 @@
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="1">
 					<layoutElement column="1" row="1">
-						<component type="grid" name="inProductsGrid" source="#{order}.technologyInstanceOperationProductInComponents" reference="grid">
+						<component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInComps" reference="grid">
 							<option type="column" name="number" fields="product"
 								expression="#product['number']"
 								 width="100" link="true" />

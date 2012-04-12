@@ -215,16 +215,16 @@
 				class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
 				method="copyCostNormsToTechnologyInstanceOperationComponent" />
 		</model:model-hook>
-<!-- 		<view:view-hook view="technologyOperationComponentInOrderDetails" -->
-<!-- 			type="beforeRender" plugin="timeNormsForOperations" -->
-<!-- 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" -->
-<!-- 			method="fillCurrencyFields" /> -->
+		<view:view-hook view="technologyInstanceOperationComponentDetails"
+			type="beforeRender" plugin="technologies"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="fillCurrencyFields" />
 
-<!-- 		<view:view-listener plugin="timeNormsForOperations" -->
-<!-- 			view="technologyOperationComponentInOrderDetails" component="form" -->
-<!-- 			event="copyCostsFromTechnology" -->
-<!-- 			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService" -->
-<!-- 			method="copyCostValuesFromTechnology" /> -->
+		<view:view-listener plugin="technologies"
+			view="technologyInstanceOperationComponentDetails" component="form"
+			event="copyCostsFromTechnology"
+			class="com.qcadoo.mes.costNormsForOperation.CostNormsForOperationService"
+			method="copyCostValuesFromTechnology" />
 	</modules>
 
 </plugin>

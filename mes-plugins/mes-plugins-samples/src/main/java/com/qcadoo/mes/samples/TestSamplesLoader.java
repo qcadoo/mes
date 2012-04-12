@@ -254,15 +254,19 @@ public class TestSamplesLoader extends SamplesLoader {
 
         operation.setField(L_NAME, values.get(L_NAME));
         operation.setField(L_NUMBER, values.get(L_NUMBER));
-        operation.setField(L_TPZ, values.get(L_TPZ));
-        operation.setField("tj", values.get("tj"));
-        operation.setField("productionInOneCycle", values.get("productioninonecycle"));
-        operation.setField("countRealized", values.get("countRealized"));
-        operation.setField("machineUtilization", values.get("machineutilization"));
-        operation.setField("laborUtilization", values.get("laborutilization"));
-        operation.setField("countMachineOperation", values.get("countmachine"));
-        operation.setField("countRealizedOperation", "01all");
-        operation.setField("timeNextOperation", values.get("timenextoperation"));
+
+        if (isEnabled("timeNormsForOperations")) {
+            operation.setField(L_TPZ, values.get(L_TPZ));
+            operation.setField("tj", values.get("tj"));
+            operation.setField("productionInOneCycle", values.get("productioninonecycle"));
+            operation.setField("countRealized", values.get("countrealized"));
+            operation.setField("machineUtilization", values.get("machineutilization"));
+            operation.setField("laborUtilization", values.get("laborutilization"));
+            operation.setField("countMachine", values.get("countmachine"));
+            operation.setField("timeNextOperation", values.get("timenextoperation"));
+            operation.setField("areProductQuantitiesDivisible", false);
+            operation.setField("isTjDivisible", false);
+        }
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
 
@@ -921,19 +925,23 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
         Entity component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").create();
+
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
         component.setField("parent", parent);
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        component.setField(L_TPZ, operation.getField(L_TPZ));
-        component.setField("tj", operation.getField("tj"));
-        component.setField("machineUtilization", operation.getField("machineUtilization"));
-        component.setField("laborUtilization", operation.getField("laborUtilization"));
-        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        component.setField("countRealized", operation.getField("countRealizedOperation"));
-        component.setField("countMachine", operation.getField("countMachineOperation"));
-        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
-
+        if (isEnabled("timeNormsForOperations")) {
+            component.setField(L_TPZ, operation.getField(L_TPZ));
+            component.setField("tj", operation.getField("tj"));
+            component.setField("machineUtilization", operation.getField("machineUtilization"));
+            component.setField("laborUtilization", operation.getField("laborUtilization"));
+            component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
+            component.setField("countRealized", operation.getField("countRealized"));
+            component.setField("countMachine", operation.getField("countMachine"));
+            component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
+            component.setField("isTjDivisible", operation.getField("isTjDivisible"));
+            component.setField("timeNextOperation", operation.getField("timeNextOperation"));
+        }
         component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").save(component);
         validateEntity(component);
         if (LOG.isDebugEnabled()) {

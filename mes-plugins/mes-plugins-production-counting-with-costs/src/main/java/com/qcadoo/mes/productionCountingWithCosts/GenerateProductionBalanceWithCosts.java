@@ -56,7 +56,7 @@ import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBal
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TECHNOLOGY;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_OVERHEAD;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT;
@@ -212,7 +212,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
 
         fillMaterialValues(productionBalance, order);
-        fillTechnologyInstanceOperationProductInComponents(productionBalance, order);
+        fillTechnologyInstOperProductInComps(productionBalance, order);
 
         if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
                 && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
@@ -279,12 +279,12 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
     }
 
-    private void fillTechnologyInstanceOperationProductInComponents(final Entity productionBalance, final Entity order) {
+    private void fillTechnologyInstOperProductInComps(final Entity productionBalance, final Entity order) {
         if ((productionBalance == null) || (order == null)) {
             return;
         }
 
-        List<Entity> technologyInstanceOperationProductInComponents = Lists.newArrayList();
+        List<Entity> technologyInstOperProductInComps = Lists.newArrayList();
 
         Map<Entity, BigDecimal> productWithCosts = getPlannedProductsWithCosts(productionBalance, order);
 
@@ -297,9 +297,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                         product);
 
                 if (balanceOperationProductInComponent != null) {
-                    Entity technologyInstanceOperationProductInComponent = dataDefinitionService.get(
+                    Entity technologyInstOperProductInComp = dataDefinitionService.get(
                             ProductionCountingWithCostsConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingWithCostsConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENT)
+                            ProductionCountingWithCostsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP)
                             .create();
 
                     BigDecimal registeredQuantity = (BigDecimal) balanceOperationProductInComponent.getField(L_USED_QUANTITY);
@@ -315,18 +315,18 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal balance = productRegisteredCost.subtract(productCost, numberService.getMathContext());
 
-                    technologyInstanceOperationProductInComponent.setField(MODEL_PRODUCT, product);
-                    technologyInstanceOperationProductInComponent.setField("plannedCost", numberService.setScale(productCost));
-                    technologyInstanceOperationProductInComponent.setField("registeredCost",
+                    technologyInstOperProductInComp.setField(MODEL_PRODUCT, product);
+                    technologyInstOperProductInComp.setField("plannedCost", numberService.setScale(productCost));
+                    technologyInstOperProductInComp.setField("registeredCost",
                             numberService.setScale(productRegisteredCost));
-                    technologyInstanceOperationProductInComponent.setField("balance", numberService.setScale(balance));
+                    technologyInstOperProductInComp.setField("balance", numberService.setScale(balance));
 
-                    technologyInstanceOperationProductInComponents.add(technologyInstanceOperationProductInComponent);
+                    technologyInstOperProductInComps.add(technologyInstOperProductInComp);
                 }
             }
 
-            productionBalance.setField(TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS,
-                    technologyInstanceOperationProductInComponents);
+            productionBalance.setField(TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS,
+                    technologyInstOperProductInComps);
 
             productionBalance.getDataDefinition().save(productionBalance);
         }

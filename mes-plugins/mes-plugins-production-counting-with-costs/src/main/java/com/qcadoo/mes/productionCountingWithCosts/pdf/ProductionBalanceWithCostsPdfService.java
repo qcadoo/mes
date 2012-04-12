@@ -193,26 +193,26 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.productNumber",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstOperProductInComps.column.productNumber",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.plannedCost",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstOperProductInComps.column.plannedCost",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.registeredCost",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstOperProductInComps.column.registeredCost",
                                 locale));
         materialCostTableHeader
                 .add(translationService
                         .translate(
-                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstanceOperationProductInComponents.column.balance",
+                                "productionCounting.productionBalanceDetails.window.materialCostsTab.materialCostsForm.technologyInstOperProductInComps.column.balance",
                                 locale));
 
         @SuppressWarnings("unchecked")
-        List<Entity> products = (List<Entity>) productionBalance.getField("technologyInstanceOperationProductInComponents");
+        List<Entity> products = (List<Entity>) productionBalance.getField("technologyInstOperProductInComps");
 
         if (!products.isEmpty()) {
             document.add(Chunk.NEWLINE);

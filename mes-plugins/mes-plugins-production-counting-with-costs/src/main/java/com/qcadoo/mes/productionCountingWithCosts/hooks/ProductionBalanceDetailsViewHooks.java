@@ -72,7 +72,7 @@ public class ProductionBalanceDetailsViewHooks {
 
     private static final String L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT = "componentsCostSummaryBorderLayout";
 
-    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS = "technologyInstanceOperationProductInComponents";
+    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS = "technologyInstOperProductInComps";
 
     private static final String L_TIME_COSTS_GRID_LAYOUT = "timeCostsGridLayout";
 

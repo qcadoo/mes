@@ -96,7 +96,7 @@ ALTER TABLE productionScheduling_orderOperationComponent RENAME TO technologies_
 
 -- Table: costnormsformaterials_orderoperationproductincomponent
 --changed: 11.04.2012
-ALTER TABLE costnormsformaterials_orderoperationproductincomponent RENAME TO costnormsformaterials_technologyinstanceoperationproductincomponent;
+ALTER TABLE costnormsformaterials_orderoperationproductincomponent RENAME TO costnormsformaterials_technologyinstoperproductincomp;
 --end
 
 -- Table: workplans_orderoperationoutputcolumn
@@ -111,7 +111,7 @@ ALTER TABLE workplans_orderoperationinputcolumn RENAME COLUMN orderOperationComp
 
 -- Table: productioncountingwithcosts_orderoperationproductincomponent
 --changed: 11.04.2012
-ALTER TABLE productioncountingwithcosts_orderoperationproductincomponent RENAME TO productioncountingwithcosts_technologyinstancesoperationproduct;
+ALTER TABLE productioncountingwithcosts_orderoperationproductincomponent RENAME TO productioncountingwithcosts_technologyInstOperProductInComp;
 --end
 
 -- Table: productioncountingwithcosts_operationpieceworkcostcomponent
@@ -166,3 +166,12 @@ CREATE TABLE productionlines_workstationtypecomponent
 );
 
 -- end
+
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- changed: 11.04.2012
+ALTER TABLE technologies_technologyoperationcomponent RENAME COLUMN countMachineOperation TO countMachine;
+ALTER TABLE technologies_technologyoperationcomponent RENAME COLUMN countRealizedOperation TO countRealized;
+-- end
+
+

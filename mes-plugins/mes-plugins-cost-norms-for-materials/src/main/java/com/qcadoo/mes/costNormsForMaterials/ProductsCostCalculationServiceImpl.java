@@ -121,13 +121,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             Entity product = productQuantity.getKey();
             product = product.getDataDefinition().get(product.getId());
 
-            Entity technologyInstanceOperationProductInComponent = dataDefinitionService
+            Entity technologyInstOperProductInComp = dataDefinitionService
                     .get(CostNormsForProductConstants.PLUGIN_IDENTIFIER,
-                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENT).find()
+                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
                     .uniqueResult();
 
-            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(technologyInstanceOperationProductInComponent,
+            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(technologyInstOperProductInComp,
                     productQuantity.getValue(), calculateMaterialCostsMode);
             results.put(product, thisProductsCost);
         }
@@ -139,7 +139,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             return product;
         } else {
             Entity productWithCostNormsFromOrder = dataDefinitionService
-                    .get("costNormsForProduct", "technologyInstanceOperationProductInComponent").find()
+                    .get("costNormsForProduct", "technologyInstOperProductInComp").find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
                     .uniqueResult();
             if (productWithCostNormsFromOrder == null) {

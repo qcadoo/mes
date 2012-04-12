@@ -105,7 +105,7 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         given(pdfHelper.createPanelTable(3)).willReturn(threeColumnTable);
 
         List<Entity> technologyInstanceOperProdInComps = new LinkedList<Entity>();
-        given(balance.getField("technologyInstanceOperationProductInComponents")).willReturn(technologyInstanceOperProdInComps);
+        given(balance.getField("technologyInstOperProductInComps")).willReturn(technologyInstanceOperProdInComps);
 
         List<Entity> operationComponents = new LinkedList<Entity>();
         given(balance.getField("operationCostComponents")).willReturn(operationComponents);

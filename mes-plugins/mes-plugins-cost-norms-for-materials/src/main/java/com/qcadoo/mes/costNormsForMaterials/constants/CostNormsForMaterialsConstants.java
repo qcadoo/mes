@@ -5,7 +5,7 @@ public interface CostNormsForMaterialsConstants {
     String PLUGIN_IDENTIFIER = "costNormsForMaterials";
 
     // MODEL
-    String MODEL_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENT = "technologyInstanceOperationProductInComponent";
+    String MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP = "technologyInstOperProductInComp";
 
-    String TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS = "technologyInstanceOperationProductInComponents";
+    String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
 }

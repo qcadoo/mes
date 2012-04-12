@@ -75,18 +75,18 @@ public class TechnologyOperationComponentDetailsHooks {
         }
     }
 
-    public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
+    public void updateCountMachineFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
         FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
 
-        if ("02specified".equals(countRealizedOperation.getFieldValue())) {
-            countMachineOperation.setVisible(true);
-            countMachineOperation.setEnabled(true);
+        if ("02specified".equals(countRealized.getFieldValue())) {
+            countMachine.setVisible(true);
+            countMachine.setEnabled(true);
             countMachineUNIT.setVisible(true);
             countMachineUNIT.setEnabled(true);
         } else {
-            countMachineOperation.setVisible(false);
+            countMachine.setVisible(false);
             countMachineUNIT.setVisible(false);
 
         }

@@ -39,12 +39,12 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<model:model model="technologyInstanceOperationProductInComponent"
-			resource="model/technologyInstanceOperationProductInComponent.xml" />
+		<model:model model="technologyInstOperProductInComp"
+			resource="model/technologyInstOperProductInComp.xml" />
 
 		<model:model-field plugin="orders" model="order">
-			<model:hasMany name="technologyInstanceOperationProductInComponents"
-				plugin="costNormsForMaterials" model="technologyInstanceOperationProductInComponent"
+			<model:hasMany name="technologyInstOperProductInComps"
+				plugin="costNormsForMaterials" model="technologyInstOperProductInComp"
 				joinField="order" cascade="delete" copyable="true" />
 		</model:model-field>
 		
