@@ -32,7 +32,7 @@
 	<windowTab name="norm" reference="norm">
 		<component type="gridLayout" name="gridsLayout" columns="3" rows="4" hasBorders="false">
 			<layoutElement column="1" row="1">
-				<component type="time" name="tpz" field="#{form}.tpz" reference="tpz" defaultEnabled="false" />
+				<component type="time" name="tpz" field="#{form}.tpz" reference="tpz"/>
 			</layoutElement>
 			<layoutElement column="1" row="2" height="2">
 				<component type="borderLayout" name="borderLayoutCycleTime" reference="borderLayoutCycleTime">
@@ -44,7 +44,7 @@
 						</component>
 			    	</layoutElement>
 			    	<layoutElement column="4" row="1">
-						<component type="select" name="productionInOneCycleUNIT" field="#{form}.productionInOneCycleUNIT" reference="productionInOneCycleUNIT">
+						<component type="select" name="productionInOneCycleUNIT" field="#{form}.productionInOneCycleUNIT" reference="productionInOneCycleUNIT" hasLabel="false">
 							<option type="required" value="true" />
 							<option type="labelWidth" value="10"/>
 							<option type = "alingment" value="right"/>
@@ -62,7 +62,7 @@
 			</layoutElement>
 			<layoutElement column="1" row="4">
 				<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
-					reference="timeNextOperation" hasDescription="true" defaultEnabled="false" />
+					reference="timeNextOperation" hasDescription="true"/>
 			</layoutElement>
 				<layoutElement column="2" row="1" height="3">
 					<component type="borderLayout" name="borderLayoutDivisibleCostNorms" reference="borderLayoutDivisibleCostNorms">
@@ -70,13 +70,13 @@
 							<layoutElement column="1" row="1">
 								<component type="checkbox" name="areProductQuantitiesDivisible" field="#{form}.areProductQuantitiesDivisible"
 									reference="areProductQuantitiesDivisible" defaultEnabled="true" hasDescription="true" >
-									<option type="labelWidth" value="60"/>
+									<option type="labelWidth" value="80"/>
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="checkbox" name="isTjDivisible" field="#{form}.isTjDivisible"
 									reference="isTjDivisible" defaultEnabled="true" hasDescription="true" >
-								<option type="labelWidth" value="60"/>
+								<option type="labelWidth" value="80"/>
 								</component>
 							</layoutElement>
 			</component>
@@ -95,6 +95,7 @@
 				<component type="select" name="countRealizedOperation" field="#{form}.countRealizedOperation"
 					reference="countRealizedOperation" hasDescription="true" defaultEnabled="true">
 					<option type="required" value="true" />
+					<option type="labelWidth" value="40" />
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO" method="changeCountRealizedNormOperation" />
 				</component>
@@ -109,7 +110,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="1">
-						<component type="select" name="countMachineUNIT" field="#{form}.countMachineUNIT" reference="countMachineUNIT" defaultVisible="false">
+						<component type="select" name="countMachineUNIT" field="#{form}.countMachineUNIT" reference="countMachineUNIT" defaultVisible="false" hasLabel="false">
 							<option type="required" value="true" />
 							<option type = "alingment" value="right"/>
 						</component>
