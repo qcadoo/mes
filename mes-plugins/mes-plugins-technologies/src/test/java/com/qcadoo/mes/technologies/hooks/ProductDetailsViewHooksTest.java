@@ -422,4 +422,5 @@ public class ProductDetailsViewHooksTest {
         verify(showOrdersWithProductMain).setEnabled(true);
         verify(showOrdersWithProductPlanned).setEnabled(true);
     }
+
 }
