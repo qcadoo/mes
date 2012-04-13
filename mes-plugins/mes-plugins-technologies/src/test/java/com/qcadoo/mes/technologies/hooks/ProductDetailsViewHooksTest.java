@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -19,10 +18,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductDetailsViewHooksTest {
 
@@ -49,7 +48,7 @@ public class ProductDetailsViewHooksTest {
     private FormComponent productForm;
 
     @Mock
-    private WindowComponent window;
+    private WindowComponentState window;
 
     @Mock
     private Ribbon ribbon;
@@ -330,7 +329,6 @@ public class ProductDetailsViewHooksTest {
         verify(view).redirectTo(url, false, true, parameters);
     }
 
-    @Ignore
     @Test
     public void shouldntUpdateRibbonStateIfProductIsntSaved() {
         // given
@@ -361,11 +359,44 @@ public class ProductDetailsViewHooksTest {
         verify(showOrdersWithProductPlanned).setEnabled(false);
     }
 
-    @Ignore
     @Test
-    public void shouldUpdateRibbonStateIfProductIsSaved() {
+    public void shouldUpdateRibbonStateIfProductIsSavedAndTechnologyGroupIsNull() {
         // given
         given(product.getId()).willReturn(L_ID);
+
+        given(product.getBelongsToField("technologyGroup")).willReturn(null);
+
+        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+
+        given(window.getRibbon()).willReturn(ribbon);
+
+        given(ribbon.getGroupByName("technologies")).willReturn(technologies);
+        given(ribbon.getGroupByName("orders")).willReturn(orders);
+
+        given(technologies.getItemByName("addTechnologyGroup")).willReturn(addTechnologyGroup);
+        given(technologies.getItemByName("showTechnologiesWithTechnologyGroup")).willReturn(showTechnologiesWithTechnologyGroup);
+        given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
+
+        given(orders.getItemByName("showOrdersWithProductMain")).willReturn(showOrdersWithProductMain);
+        given(orders.getItemByName("showOrdersWithProductPlanned")).willReturn(showOrdersWithProductPlanned);
+
+        // when
+        productDetailsViewHooks.updateRibbonState(view);
+
+        // then
+        verify(addTechnologyGroup).setEnabled(true);
+        verify(showTechnologiesWithTechnologyGroup).setEnabled(false);
+        verify(showTechnologiesWithProduct).setEnabled(true);
+        verify(showOrdersWithProductMain).setEnabled(true);
+        verify(showOrdersWithProductPlanned).setEnabled(true);
+    }
+
+    @Test
+    public void shouldUpdateRibbonStateIfProductIsSavedAndTechnologyGroupIsntNull() {
+        // given
+        given(product.getId()).willReturn(L_ID);
+
+        given(product.getBelongsToField("technologyGroup")).willReturn(technologyGroup);
 
         given(view.getComponentByReference("window")).willReturn((ComponentState) window);
 
@@ -391,5 +422,4 @@ public class ProductDetailsViewHooksTest {
         verify(showOrdersWithProductMain).setEnabled(true);
         verify(showOrdersWithProductPlanned).setEnabled(true);
     }
-
 }
