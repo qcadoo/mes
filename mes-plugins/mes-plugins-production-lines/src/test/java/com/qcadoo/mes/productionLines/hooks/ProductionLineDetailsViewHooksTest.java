@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
-public class ProductionLinesViewHooksTest {
+public class ProductionLineDetailsViewHooksTest {
 
     private ProductionLineDetailsViewHooks productionLinesViewHooks;
 
