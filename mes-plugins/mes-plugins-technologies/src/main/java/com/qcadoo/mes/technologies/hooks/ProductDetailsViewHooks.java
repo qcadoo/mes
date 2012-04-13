@@ -100,13 +100,13 @@ public class ProductDetailsViewHooks {
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
 
-        Map<String, Object> componentsOptions = Maps.newHashMap();
-        componentsOptions.put(L_GRID_OPTIONS, gridOptions);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
 
-        componentsOptions.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
-        view.redirectTo(url, false, true, componentsOptions);
+        view.redirectTo(url, false, true, parameters);
     }
 
     public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
