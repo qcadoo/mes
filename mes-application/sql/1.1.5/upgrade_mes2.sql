@@ -187,13 +187,6 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantit
 
 -- end
 
-
--- Table: costnormsformaterials_calculationoperationcomponent
--- changed: 16.04.2012
-ALTER TABLE costnormsformaterials_calculationoperationcomponent  RENAME TO costnormsforoperation_calculationoperationcomponent;
-
---end
-
 --Table : costnormsforoperation_calculationoperationcomponent
 -- changed: 16.04.2012
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN areProductQuantitiesDivisible boolean DEFAULT true;
