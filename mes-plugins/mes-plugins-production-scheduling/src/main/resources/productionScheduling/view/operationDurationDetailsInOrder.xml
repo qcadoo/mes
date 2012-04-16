@@ -19,33 +19,37 @@
 	
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderTimePrediction" menuAccessible="true" modelPlugin="orders"
-	modelName="order">
+	name="operationDurationDetailsInOrder" modelPlugin="orders" modelName="order"
+	windowWidth="640" windowHeight="500">
 
-	<component type="window" name="window" reference="window">
+	<component type="window" name="window">
 		<ribbon>
 			<group name="navigation">
 				<bigButton name="back" action="#{window}.performBack;"
 					icon="backIcon24.png" />
 			</group>
+			<group name="action">
+				<bigButton name="save" icon="saveIcon24.png" state="enabled"
+					action="#{form}.performSave;" />
+			</group>
 			<group name="operationDuration">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{window}.fireEvent(countTimeOfTechnology);" state="enabled" />
-				<bigButton name="copy" icon="copyIcon24.png" state="enabled"
+					action="#{form}.generateReportForEntity('orders','order','pdf')" />
+				<bigButton name="copy" icon="copyIcon24.png" state="disabled"
 					action="#{form}.performCopy;">
 					<script><![CDATA[
-						#{form}.addOnChangeListener({
-							onSetValue: function(value) {
-								if (!value || !value.content)
-									return; 
-								if (value.content.entityId) {
-									this.enable();
-								} else {
-									this.disable();
-								}
-							}
-						});
-					]]></script>
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return; 
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
 				</bigButton>
 			</group>
 			<group name="orderParameters">
@@ -78,63 +82,15 @@
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<script>
-				<![CDATA[
-					function setCountTimeOfTechnologyButtonState() {
-						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
-						var technologyValue = #{technology}.getComponentData();
-						var dateFromValue = #{dateFrom}.getComponentData();
-						var quantityValue = #{quantity}.getComponentData();
-
-						if (dateFromValue.value && dateFromValue.value != "" 
-								&& quantityValue.value && quantityValue.value != "" 
-								&& technologyValue.value && technologyValue.value != "") {
-							countTimeOfTechnology.enable();
-						} else {
-							countTimeOfTechnology.disable();
-						}
-					}
-
-					var statelessFields = new Array(
-						#{realizationTime},
-						#{technology},
-						#{quantity},
-						#{dateFrom},
-						#{dateTo}
-					);					
-
-					for(var i = 0; i < statelessFields.length; i++) {
-						statelessFields[i].performUpdateState();
-						statelessFields[i].addOnChangeListener({
-							onChange: function() {
-								setCountTimeOfTechnologyButtonState();
-							}
-						});
-					}
-				]]>
-			</script>
 			<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="7">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="technology" reference="technology"
-						model="technology" plugin="technologies">
-						<option type="required" value="true" />
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
 					<component type="calendar" name="startTime" reference="startTime"
 						field="dateFrom">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="2">
 					<component type="gridLayout" name="gridQuantity"
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
@@ -145,8 +101,8 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="3" row="1">
-							 <component type="select" name="operationDurationQuantityUNIT"
-								field="operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
+							<component type="select" name="operationDurationQuantityUNIT"
+								field="#{form}.operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
 								hasLabel="false">
 								<option type="required" value="true" />
 								<option type="alingment" value="right" />
@@ -154,7 +110,7 @@
 						</layoutElement>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4">
+				<layoutElement column="1" row="3">
 					<component type="lookup" name="productionLine" reference="productionLine"
 						field="productionLine">
 						<option type="column" name="name" fields="name" link="true"
@@ -166,18 +122,42 @@
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="5">
-					<component type="calendar" name="generatedEndDate"
-						reference="generatedEndDate" field="generatedEndDate">
+				<layoutElement column="1" row="4">
+					<component type="calendar" name="deadline" reference="deadline">
+						<option type="labelWidth" value="30" />
 						<option type="withTimePicker" value="true" />
-						<listener event="initialize"
-							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-							method="clearFieldValue" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="5">
+					<component type="borderLayout" name="borderLayoutEndDates"
+						reference="borderLayoutEndDates">
+						<component type="gridLayout" name="gridLayoutEndDates"
+							hasBorders="false" columns="1" rows="2">
+							<layoutElement column="1" row="1">
+								<component type="calendar" name="stopTime" reference="stopTime"
+									field="dateTo">
+									<option type="withTimePicker" value="true" />
+									<listener event="initialize"
+										class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+										method="clearFieldValue" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="calendar" name="generatedEndDate"
+									reference="generatedEndDate" field="generatedEndDate">
+									<option type="withTimePicker" value="true" />
+									<listener event="initialize"
+										class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
+										method="clearFieldValue" />
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="EndDatesBorderLabel" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
 					<component type="time" name="effectiveTimeConsumption"
-						reference="effectiveTimeConsumption" field="effectiveTimeConsumption"
+						field="#{form}.effectiveTimeConsumption" reference="effectiveTimeConsumption"
 						hasDescription="true" required="true">
 						<option type="labelWidth" value="80" />
 					</component>
@@ -210,12 +190,5 @@
 			<listener event="showOrderParameters" method="showOrderParameters"
 				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 		</component>
-		<option type="header" value="true" />
 	</component>
-<!-- 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="setFieldDisable" />
-	</hooks> -->
-
 </view>
