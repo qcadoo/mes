@@ -232,3 +232,27 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN product
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN areproductquantitiesdivisible boolean DEFAULT true;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN istjdivisible boolean DEFAULT true;
 -- end
+
+
+-- Table: orders_order
+-- changed: 16.04.2012
+
+ALTER TABLE orders_order ADD COLUMN productionline_id bigint;
+ALTER TABLE orders_order
+  ADD CONSTRAINT orders_order_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;
+      
+ALTER TABLE orders_order ADD COLUMN deadline timestamp without time zone;
+
+-- end
+
+
+-- Table: basic_parameter
+-- changed: 16.04.2012
+
+ALTER TABLE basic_parameter ADD COLUMN defaultproductionline_id bigint;
+ALTER TABLE basic_parameter
+  ADD CONSTRAINT basic_parameter_defaultproductionline_fkey FOREIGN KEY (defaultproductionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;
+      
+-- end
