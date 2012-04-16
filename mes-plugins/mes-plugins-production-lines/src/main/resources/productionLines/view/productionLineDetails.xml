@@ -35,7 +35,7 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="productionLine" reference="form">
-				<component type="gridLayout" name="mainTabLayout" columns="3"
+				<component type="gridLayout" name="mainTabGridLayout" columns="3"
 					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" />
@@ -76,7 +76,7 @@
 					class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 					method="disableSupportedTechnologiesGrids" />
 			</component>
-			<component type="gridLayout" name="supportedTechnologiesTabLayout"
+			<component type="gridLayout" name="supportedTechnologiesTabGridLayout"
 				columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="groupsLookup" reference="groupsLookup"
@@ -151,7 +151,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="workstationTypesTab">
-			<component type="gridLayout" name="workstationsTabLayout"
+			<component type="gridLayout" name="workstationsTabGridLayout"
 				columns="2" rows="5">
 				<layoutElement column="1" row="1" height="5">
 					<component type="grid" name="workstationTypeComponentGrid"
@@ -181,15 +181,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="checkbox"
-						name="supportsOtherTechnologiesWorkstationTypes" field="#{form}.supportsOtherTechnologiesWorkstationTypes"
-						reference="supportsOtherTechnologiesWorkstations">
-						<option type="labelWidth" value="60" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="2">
 					<component type="input" name="quantityForOtherWorkstationTypes"
-						field="#{form}.quantityForOtherWorkstationTypes" reference="supportsOtherTechnologiesWorkstationTypes">
+						field="#{form}.quantityForOtherWorkstationTypes" reference="quantityForOtherWorkstationTypes">
 						<option type="labelWidth" value="60" />
 					</component>
 				</layoutElement>
