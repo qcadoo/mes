@@ -181,3 +181,7 @@ ALTER TABLE technologies_technologyoperationcomponent RENAME COLUMN countRealize
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantityofworkstationtypes integer;
 
 -- end
+
+ALTER TABLE costcalculation_costcalculation ADD COLUMN productionline_id bigint;
+ALTER TABLE costcalculation_costcalculation ADD CONSTRAINT costcalculation_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;

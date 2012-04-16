@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -111,10 +112,14 @@ public class TimeTechnologyInOrderService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
 
+        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
+        Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
+
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(),
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                        viewDefinitionState.getLocale()));
+                        viewDefinitionState.getLocale()), productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);

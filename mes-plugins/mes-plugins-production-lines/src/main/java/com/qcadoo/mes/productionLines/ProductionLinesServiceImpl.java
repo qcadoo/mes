@@ -7,7 +7,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductionLinesServiceImpl implements ProductionLinesService {
 
-    public Integer getWorkstationTypesCount(final Entity operationComponent) {
+    public Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
         return 1;
     }
 

@@ -50,10 +50,14 @@ public interface OrderRealizationTimeService {
      *            technologyInstanceOperationComponent
      * @param plannedQuantity
      *            How many products we want this operation to produce
+     * @param productionLine
+     *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
+     *            order, though.
      * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish
      *         (includeTpz).
      */
-    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity);
+    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            final Entity productionLine);
 
     /**
      * 
@@ -66,10 +70,13 @@ public interface OrderRealizationTimeService {
      *            Flag indicating if we want to include Tpz
      * @param includeAdditionalTime
      *            Flag indicating if we want to include Additional Time
+     * @param productionLine
+     *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
+     *            order, though.
      * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
      */
     int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime);
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine);
 
     /**
      * 
@@ -81,11 +88,14 @@ public interface OrderRealizationTimeService {
      *            Flag indicating if we want to include Tpz
      * @param includeAdditionalTime
      *            Flag indicating if we want to include Additional Time
+     * @param productionLine
+     *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
+     *            order, though.
      * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations,
      *         without offset added)
      */
     Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime);
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine);
 
     Object setDateToField(final Date date);
 
