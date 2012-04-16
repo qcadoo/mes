@@ -84,7 +84,7 @@
 						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
 						var technologyValue = #{technology}.getComponentData();
 						var dateFromValue = #{dateFrom}.getComponentData();
-						var quantityValue = #{quantity}.getComponentData();
+						var quantityValue = #{plannedQuantity}.getComponentData();
 
 						if (dateFromValue.value && dateFromValue.value != "" 
 								&& quantityValue.value && quantityValue.value != "" 
@@ -98,7 +98,7 @@
 					var statelessFields = new Array(
 						#{realizationTime},
 						#{technology},
-						#{quantity},
+						#{plannedQuantity},
 						#{dateFrom},
 						#{dateTo}
 					);					
