@@ -20,16 +20,4 @@ public class ProductionSchedulingListeners {
 
     }
 
-    public void redirectToOperationDurationDetailsInTechnology(final ViewDefinitionState viewDefinitionState,
-            final ComponentState triggerState, final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
-
-        if (orderId != null) {
-            String url = "../page/productionScheduling/operationDurationDetailsInTechnology.html?context={\"form.id\":\""
-                    + orderId + "\"}";
-            viewDefinitionState.redirectTo(url, false, true);
-        }
-
-    }
-
 }

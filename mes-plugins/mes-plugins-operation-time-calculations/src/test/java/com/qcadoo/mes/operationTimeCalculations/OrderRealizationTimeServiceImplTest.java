@@ -42,8 +42,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -53,25 +53,25 @@ import com.qcadoo.model.api.NumberService;
 
 public class OrderRealizationTimeServiceImplTest {
 
-    OrderRealizationTimeServiceImpl orderRealizationTimeServiceImpl;
+    private OrderRealizationTimeServiceImpl orderRealizationTimeServiceImpl;
 
     @Mock
-    EntityTreeNode opComp1, opComp2;
+    private EntityTreeNode opComp1, opComp2;
 
     @Mock
-    Entity op1, op2;
+    private Entity productionLine;
 
     @Mock
-    Entity order;
+    private Entity order;
 
     @Mock
-    ProductQuantitiesService productQuantitiesService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Mock
-    TechnologyService technologyService;
+    private ProductionLinesService productionLinesService;
 
     @Mock
-    NumberService numberService;
+    private NumberService numberService;
 
     private MathContext mathContext;
 
@@ -122,8 +122,8 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp2.getHasManyField("children")).thenReturn(opComp2Children);
 
         Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
-        operationRuns.put(opComp1, new BigDecimal(1));
-        operationRuns.put(opComp2, new BigDecimal(2));
+        operationRuns.put(opComp1, new BigDecimal(2));
+        operationRuns.put(opComp2, new BigDecimal(4));
 
         DataDefinition dd = mock(DataDefinition.class);
 
@@ -140,14 +140,14 @@ public class OrderRealizationTimeServiceImplTest {
 
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "operationRunsField", operationRuns);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "productQuantitiesService", productQuantitiesService);
-        ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "technologyService", technologyService);
         ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "numberService", numberService);
-
-        when(technologyService.getProductCountForOperationComponent(opComp1)).thenReturn(new BigDecimal(1));
-        when(technologyService.getProductCountForOperationComponent(opComp2)).thenReturn(new BigDecimal(1));
+        ReflectionTestUtils.setField(orderRealizationTimeServiceImpl, "productionLinesService", productionLinesService);
 
         mathContext = MathContext.DECIMAL64;
         when(numberService.getMathContext()).thenReturn(mathContext);
+
+        when(productionLinesService.getWorkstationTypesCount(opComp1, productionLine)).thenReturn(1);
+        when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(1);
     }
 
     @Test
@@ -159,10 +159,28 @@ public class OrderRealizationTimeServiceImplTest {
 
         // when
         int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz,
-                includeAdditionalTime);
+                includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(6, time);
+        assertEquals(10, time);
+    }
+
+    @Test
+    public void shouldShortenOperationTimeWithMoreWorkstations() {
+        // given
+        boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
+        BigDecimal plannedQuantity = new BigDecimal(1);
+
+        when(productionLinesService.getWorkstationTypesCount(opComp1, productionLine)).thenReturn(2);
+        when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
+
+        // when
+        int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz,
+                includeAdditionalTime, productionLine);
+
+        // then
+        assertEquals(7, time);
     }
 
     @Test
@@ -182,11 +200,11 @@ public class OrderRealizationTimeServiceImplTest {
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(order,
-                plannedQuantity, includeTpz, includeAdditionalTime);
+                plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(new Integer(3), operationDurations.get(opComp1));
-        assertEquals(new Integer(3), operationDurations.get(opComp2));
+        assertEquals(new Integer(4), operationDurations.get(opComp1));
+        assertEquals(new Integer(6), operationDurations.get(opComp2));
     }
 
     @Test
@@ -204,10 +222,10 @@ public class OrderRealizationTimeServiceImplTest {
 
         // when
         Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(technology,
-                plannedQuantity, includeTpz, includeAdditionalTime);
+                plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(new Integer(3), operationDurations.get(opComp1));
-        assertEquals(new Integer(3), operationDurations.get(opComp2));
+        assertEquals(new Integer(4), operationDurations.get(opComp1));
+        assertEquals(new Integer(6), operationDurations.get(opComp2));
     }
 }
