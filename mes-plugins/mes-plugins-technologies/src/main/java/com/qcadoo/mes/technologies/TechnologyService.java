@@ -804,7 +804,7 @@ public class TechnologyService {
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
      *         product/intermediate.
      */
-    public BigDecimal getProductCountForOperationComponent(Entity operationComponent) {
+    public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField("quantity");
     }
 

@@ -19,8 +19,16 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class ProductDetailsViewHooks {
 
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_FILTERS = "filters";
+
+    private static final String L_FORM = "form";
+
     public final void addTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -33,7 +41,7 @@ public class ProductDetailsViewHooks {
 
         parameters.put("product.id", productId);
 
-        parameters.put("window.activeMenu", "technology.technologyGroups");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologyGroups");
 
         String url = "../page/technologies/technologyGroupDetails.html";
         view.redirectTo(url, false, true, parameters);
@@ -41,7 +49,7 @@ public class ProductDetailsViewHooks {
 
     public final void showTechnologiesWithTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -60,12 +68,12 @@ public class ProductDetailsViewHooks {
         filters.put("technologyGroupNumber", technologyGroupNumber);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("filters", filters);
+        gridOptions.put(L_FILTERS, filters);
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("grid.options", gridOptions);
+        parameters.put(L_GRID_OPTIONS, gridOptions);
 
-        parameters.put("window.activeMenu", "technology.technologies");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
         view.redirectTo(url, false, true, parameters);
@@ -73,7 +81,7 @@ public class ProductDetailsViewHooks {
 
     public final void showTechnologiesWithProduct(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -90,12 +98,12 @@ public class ProductDetailsViewHooks {
         filters.put("productName", productName);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("filters", filters);
+        gridOptions.put(L_FILTERS, filters);
 
         Map<String, Object> componentsOptions = Maps.newHashMap();
-        componentsOptions.put("grid.options", gridOptions);
+        componentsOptions.put(L_GRID_OPTIONS, gridOptions);
 
-        componentsOptions.put("window.activeMenu", "technology.technologies");
+        componentsOptions.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
         view.redirectTo(url, false, true, componentsOptions);
@@ -103,7 +111,7 @@ public class ProductDetailsViewHooks {
 
     public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -120,12 +128,12 @@ public class ProductDetailsViewHooks {
         filters.put("productNumber", productNumber);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("filters", filters);
+        gridOptions.put(L_FILTERS, filters);
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("grid.options", gridOptions);
+        parameters.put(L_GRID_OPTIONS, gridOptions);
 
-        parameters.put("window.activeMenu", "orders.productionOrders");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 
         String url = "../page/orders/ordersList.html";
         view.redirectTo(url, false, true, parameters);
@@ -133,7 +141,7 @@ public class ProductDetailsViewHooks {
 
     public final void showOrdersWithProductPlanned(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -150,19 +158,19 @@ public class ProductDetailsViewHooks {
         filters.put("productNumber", productNumber);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put("filters", filters);
+        gridOptions.put(L_FILTERS, filters);
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("grid.options", gridOptions);
+        parameters.put(L_GRID_OPTIONS, gridOptions);
 
-        parameters.put("window.activeMenu", "orders.productionOrdersPlanning");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrdersPlanning");
 
-        String url = "../page/orders/ordersList.html";
+        String url = "../page/orders/ordersPlanningList.html";
         view.redirectTo(url, false, true, parameters);
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
