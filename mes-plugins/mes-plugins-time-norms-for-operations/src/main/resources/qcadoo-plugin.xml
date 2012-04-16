@@ -77,12 +77,12 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:enum values="01all,02specified" name="countRealizedOperation"
+			<model:enum values="01all,02specified" name="countRealized"
 				default="01all" required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="countMachineOperation" default="0"
+			<model:decimal name="countMachine" default="0"
 				required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -271,7 +271,7 @@
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateCountMachineOperationFieldStateonWindowLoad" />
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateCountMachineFieldStateonWindowLoad" />
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"

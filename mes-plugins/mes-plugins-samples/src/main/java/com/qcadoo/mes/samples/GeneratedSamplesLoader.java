@@ -249,8 +249,8 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operation.setField("countRealized", RANDOM.nextInt(10));
         operation.setField("machineUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("laborUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
-        operation.setField("countMachineOperation", RANDOM.nextInt(15));
-        operation.setField("countRealizedOperation", "01all");
+        operation.setField("countMachine", RANDOM.nextInt(15));
+        operation.setField("countRealized", "01all");
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
         operation.setField("countMachine", "0");
 

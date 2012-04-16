@@ -3,6 +3,7 @@ package com.qcadoo.mes.orders.hooks;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,7 +99,7 @@ public class TechnologyOperCompHooksOrder {
         technologyInstanceOperationComponent.setField("technology", technology);
         technologyInstanceOperationComponent.setField("parent", parent);
 
-        if ("operation".equals(operationComponent.getField("entityType"))) {
+        if (OPERATION.equals(operationComponent.getField("entityType"))) {
             createOrCopyTechnologyInstanceOperationComponent(operationComponent, order, technology,
                     technologyInstanceOperationComponentDD, technologyInstanceOperationComponent);
         } else {
@@ -114,11 +115,11 @@ public class TechnologyOperCompHooksOrder {
             final Entity technology, final DataDefinition technologyInstanceOperationComponentDD,
             final Entity technologyInstanceOperationComponent) {
 
-        technologyInstanceOperationComponent.setField("operation", operationComponent.getBelongsToField("operation"));
+        technologyInstanceOperationComponent.setField(OPERATION, operationComponent.getBelongsToField(OPERATION));
         technologyInstanceOperationComponent.setField("technologyOperationComponent", operationComponent);
         technologyInstanceOperationComponent.setField("priority", operationComponent.getField("priority"));
         technologyInstanceOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
-        technologyInstanceOperationComponent.setField("entityType", "operation");
+        technologyInstanceOperationComponent.setField("entityType", OPERATION);
 
         List<Entity> newTechnologyOperationComponents = new ArrayList<Entity>();
 

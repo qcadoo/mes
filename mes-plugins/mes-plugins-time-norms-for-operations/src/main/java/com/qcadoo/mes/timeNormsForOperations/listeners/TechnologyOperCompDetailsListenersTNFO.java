@@ -87,16 +87,14 @@ public class TechnologyOperCompDetailsListenersTNFO {
 
     public void changeCountRealizedNormOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_REALIZED_OPERATION);
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_OPERATION);
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
         FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
 
-        Boolean visibilityValue = "02specified".equals(countRealizedOperation.getFieldValue());
-        countMachineOperation.setVisible(visibilityValue);
-        countMachineOperation.setEnabled(visibilityValue);
+        Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
+        countMachine.setVisible(visibilityValue);
+        countMachine.setEnabled(visibilityValue);
         countMachineUNIT.setVisible(visibilityValue);
 
     }

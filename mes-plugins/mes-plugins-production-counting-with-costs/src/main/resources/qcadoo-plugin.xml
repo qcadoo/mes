@@ -67,7 +67,7 @@
 	<modules>
 		<localization:translation path="locales" />
 	
-		<model:model model="technologyInstanceOperationProductInComponent" resource="model/technologyInstanceOperationProductInComponent.xml" />
+		<model:model model="technologyInstOperProductInComp" resource="model/technologyInstOperProductInComp.xml" />
 		<model:model model="operationCostComponent" resource="model/operationCostComponent.xml" />
 		<model:model model="operationPieceworkCostComponent" resource="model/operationPieceworkCostComponent.xml" />
 		
@@ -138,8 +138,8 @@
 		</model:model-field>
 		
 		<model:model-field plugin="productionCounting" model="productionBalance">
-			<model:hasMany name="technologyInstanceOperationProductInComponents" joinField="productionBalance"
-				model="technologyInstanceOperationProductInComponent" plugin="productionCountingWithCosts" 
+			<model:hasMany name="technologyInstOperProductInComps" joinField="productionBalance"
+				model="technologyInstOperProductInComp" plugin="productionCountingWithCosts" 
 				cascade="delete" />
 		</model:model-field>
 		

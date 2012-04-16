@@ -59,6 +59,10 @@ public interface SamplesConstants {
 
     String PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD = "productionRecord";
 
+    String PRODUCTION_LINES_PLUGIN_IDENTIFIER = "productionLines";
+
+    String PRODUCTION_LINES_MODEL_PRODUCTION_LINE = "productionLine";
+
     String BASIC_MODEL_SUBSTITUTE = "substitute";
 
     String BASIC_MODEL_CONTRACTOR = "contractor";
@@ -88,6 +92,14 @@ public interface SamplesConstants {
     String TECHNOLOGY_MODEL_TECHNOLOGY = "technology";
 
     String TECHNOLOGY_MODEL_OPERATION = "operation";
+
+    String L_SHIFTS = "shifts";
+
+    String L_WORKSTATION_TYPES = "workstationTypes";
+
+    String L_PRODUCTION_LINES_DICTIONARY = "productionLinesDictionary";
+
+    String L_PRODUCTION_LINES = "productionLines";
 
     String L_DESCRIPTION = "description";
 

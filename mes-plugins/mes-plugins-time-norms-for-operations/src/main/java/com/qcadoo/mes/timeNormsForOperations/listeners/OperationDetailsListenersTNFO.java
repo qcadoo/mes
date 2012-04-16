@@ -25,6 +25,7 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -34,21 +35,22 @@ public class OperationDetailsListenersTNFO {
 
     public void changeCountRealizedOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countRealizedOperation");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countMachineOperation");
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE);
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
 
-        if (countRealizedOperation.getFieldValue().equals("02specified")) {
-            countMachineOperation.setVisible(true);
+        if (countRealized.getFieldValue().equals("02specified")) {
+            countMachine.setVisible(true);
             countMachineUNIT.setVisible(true);
 
         } else {
-            countMachineOperation.setVisible(false);
+            countMachine.setVisible(false);
             countMachineUNIT.setVisible(false);
         }
-        countMachineOperation.requestComponentUpdateState();
+        countMachine.requestComponentUpdateState();
     }
 
 }

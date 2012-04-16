@@ -24,15 +24,32 @@
     ***************************************************************************
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-       http://www.springframework.org/schema/beans 
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context 
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-	
-	<context:component-scan base-package="com.qcadoo.mes.productionLines" />
-
-</beans>
+<model name="technologyInstOperProductInComp" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="order" plugin="orders" model="order" />
+		<belongsTo name="product" plugin="basic" model="product" />
+		<decimal name="costForNumber" default="1">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="nominalCost" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="lastPurchaseCost" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="averageCost" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+		<decimal name="costForOrder" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="3" />
+		</decimal>
+	</fields>
+	<hooks />
+</model>

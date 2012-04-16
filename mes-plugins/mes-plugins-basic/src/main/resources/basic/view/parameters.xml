@@ -38,7 +38,7 @@
 		</ribbon>
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="parameter" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="3">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="currency" field="currency" reference="currency">
 							<option type="column" name="currency" fields="currency" link="true" />

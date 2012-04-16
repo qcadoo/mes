@@ -58,7 +58,7 @@ public class OrderHooksCNFMTest {
         ReflectionTestUtils.setField(orderHooksCNFM, "dataDefinitionService", dataDefinitionService);
 
         when(order.getDataDefinition()).thenReturn(orderDD);
-        when(dataDefinitionService.get("costNormsForMaterials", "technologyInstanceOperationProductInComponent")).thenReturn(
+        when(dataDefinitionService.get("costNormsForMaterials", "technologyInstOperProductInComp")).thenReturn(
                 techInsOperCompProdInDD);
 
     }
@@ -83,7 +83,7 @@ public class OrderHooksCNFMTest {
     }
 
     @Test
-    public void shouldCreatetTechnologyInstanceOperationProductInComponent() throws Exception {
+    public void shouldCreatetTechnologyInstOperProductInComp() throws Exception {
         // given
         Long orderId = 1L;
         Long technologyId = 2L;

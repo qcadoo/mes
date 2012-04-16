@@ -38,7 +38,7 @@ public class TechnologyGroupDetailsViewHooks {
         product.getDataDefinition().save(product);
     }
 
-    public Entity getProductFromDB(final Long productId) {
+    private Entity getProductFromDB(final Long productId) {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
 }

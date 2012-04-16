@@ -82,10 +82,10 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, "dictionaries", locale);
         readDataFromXML(dataset, "activeCurrency", locale);
         readDataFromXML(dataset, "company", locale);
-        readDataFromXML(dataset, "workstationTypes", locale);
+        readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
-        readDataFromXML(dataset, "shifts", locale);
+        readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
         if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
@@ -134,8 +134,8 @@ public class TestSamplesLoader extends SamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
-        if (isEnabled("productionLines")) {
-            readDataFromXML(dataset, "productionLines", locale);
+        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, "productionLines_dict", locale);
         }
     }
@@ -168,9 +168,9 @@ public class TestSamplesLoader extends SamplesLoader {
             addOperations(values);
         } else if (BASIC_MODEL_STAFF.equals(type)) {
             addStaff(values);
-        } else if ("workstationTypes".equals(type)) {
+        } else if (L_WORKSTATION_TYPES.equals(type)) {
             addWorkstationType(values);
-        } else if ("shifts".equals(type)) {
+        } else if (L_SHIFTS.equals(type)) {
             addShifts(values);
         } else if (L_DIVISION.equals(type)) {
             addDivision(values);
@@ -204,9 +204,9 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
-        } else if ("productionLines".equals(type)) {
+        } else if (L_PRODUCTION_LINES.equals(type)) {
             addProductionLines(values);
-        } else if ("productionLinesDictionary".equals(type)) {
+        } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {
             addDictionaryItems(values);
         }
     }
@@ -254,15 +254,19 @@ public class TestSamplesLoader extends SamplesLoader {
 
         operation.setField(L_NAME, values.get(L_NAME));
         operation.setField(L_NUMBER, values.get(L_NUMBER));
-        operation.setField(L_TPZ, values.get(L_TPZ));
-        operation.setField("tj", values.get("tj"));
-        operation.setField("productionInOneCycle", values.get("productioninonecycle"));
-        operation.setField("countRealized", values.get("countRealized"));
-        operation.setField("machineUtilization", values.get("machineutilization"));
-        operation.setField("laborUtilization", values.get("laborutilization"));
-        operation.setField("countMachineOperation", values.get("countmachine"));
-        operation.setField("countRealizedOperation", "01all");
-        operation.setField("timeNextOperation", values.get("timenextoperation"));
+
+        if (isEnabled("timeNormsForOperations")) {
+            operation.setField(L_TPZ, values.get(L_TPZ));
+            operation.setField("tj", values.get("tj"));
+            operation.setField("productionInOneCycle", values.get("productioninonecycle"));
+            operation.setField("countRealized", values.get("countrealized"));
+            operation.setField("machineUtilization", values.get("machineutilization"));
+            operation.setField("laborUtilization", values.get("laborutilization"));
+            operation.setField("countMachine", values.get("countmachine"));
+            operation.setField("timeNextOperation", values.get("timenextoperation"));
+            operation.setField("areProductQuantitiesDivisible", false);
+            operation.setField("isTjDivisible", false);
+        }
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
 
@@ -921,19 +925,30 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
         Entity component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").create();
+
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
         component.setField("parent", parent);
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        component.setField(L_TPZ, operation.getField(L_TPZ));
-        component.setField("tj", operation.getField("tj"));
-        component.setField("machineUtilization", operation.getField("machineUtilization"));
-        component.setField("laborUtilization", operation.getField("laborUtilization"));
-        component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        component.setField("countRealized", operation.getField("countRealizedOperation"));
-        component.setField("countMachine", operation.getField("countMachineOperation"));
-        component.setField("timeNextOperation", operation.getField("timeNextOperation"));
+        if (isEnabled("timeNormsForOperations")) {
+            component.setField(L_TPZ, operation.getField(L_TPZ));
+            component.setField("tj", operation.getField("tj"));
+            component.setField("machineUtilization", operation.getField("machineUtilization"));
+            component.setField("laborUtilization", operation.getField("laborUtilization"));
+            component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
+            component.setField("countRealized", operation.getField("countRealized"));
+            component.setField("countMachine", operation.getField("countMachine"));
+            component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
+            component.setField("isTjDivisible", operation.getField("isTjDivisible"));
+            component.setField("timeNextOperation", operation.getField("timeNextOperation"));
+        }
 
+        if (isEnabled("costNormsForOperation")) {
+            component.setField("pieceworkCost", operation.getField("pieceworkCost"));
+            component.setField("machineHourlyCost", operation.getField("machineHourlyCost"));
+            component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
+            component.setField("numberOfOperations", operation.getField("numberOfOperations"));
+        }
         component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").save(component);
         validateEntity(component);
         if (LOG.isDebugEnabled()) {
@@ -1132,7 +1147,8 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     void addProductionLines(final Map<String, String> values) {
-        Entity productionLine = dataDefinitionService.get("productionLines", "productionLine").create();
+        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
         productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));

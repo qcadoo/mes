@@ -39,19 +39,19 @@
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "accept") {
-										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.acceptOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.acceptOrder.confirm)}")) {
 											#{form}.performEvent('changeOrderStateToAccepted', []);
 										};
 									} else if (this.state == "begin") {
-										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.activateOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.activateOrder.confirm)}")) {
 											#{form}.performEvent('changeOrderStateToInProgress', []);
 										};
 									} else if (this.state == "finish") {
-										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.finishOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.finishOrder.confirm)}")) {
 											#{form}.performEvent('changeOrderStateToCompleted', []);
 										};
 									} else if (this.state == "restart") {
-										if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.restartOrder.confirm)}")) {
+										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.restartOrder.confirm)}")) {
 											#{form}.performEvent('changeOrderStateToInProgress', []);
 										};
 									}
@@ -67,11 +67,11 @@
 						this.addOnChangeListener({
 							onClick: function() {
 								if (this.state == "decline") {
-									if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.declineOrder.confirm)}")) {
+									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.declineOrder.confirm)}")) {
 										#{form}.performEvent('changeOrderStateToDeclined', []);
 									};
 								} else if (this.state == "abandon") {
-									if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.abandonOrder.confirm)}")) {
+									if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.abandonOrder.confirm)}")) {
 										#{form}.performEvent('changeOrderStateToAbandoned', []);
 									};
 								}
@@ -86,7 +86,7 @@
 						<![CDATA[
 						this.addOnChangeListener({
 							onClick: function() {
-								if (window.confirm("#{translate(orders.ordersList.window.ribbon.status.interruptOrder.confirm)}")) {
+								if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.interruptOrder.confirm)}")) {
 									#{form}.performEvent('changeOrderStateToInterrupted', []);
 								};
 							}

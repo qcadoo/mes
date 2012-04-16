@@ -24,29 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="technologyInstanceOperationProductInComponent" 
+<model name="technologyInstOperProductInComp" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" plugin="orders" model="order" />
-		<belongsTo name="product" plugin="basic" model="product" />
-		<decimal name="costForNumber" default="1">
+		<belongsTo name="productionBalance" model="productionBalance" plugin="productionCounting" />
+		<belongsTo name="product" model="product" plugin="basic" />
+		
+		<decimal name="plannedCost">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="nominalCost" default="0">
+		<decimal name="registeredCost">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>
-		<decimal name="lastPurchaseCost" default="0">
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="3" />
-		</decimal>
-		<decimal name="averageCost" default="0">
-			<validatesUnscaledValue max="7" />
-			<validatesScale max="3" />
-		</decimal>
-		<decimal name="costForOrder" default="0">
+		<decimal name="balance">
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="3" />
 		</decimal>

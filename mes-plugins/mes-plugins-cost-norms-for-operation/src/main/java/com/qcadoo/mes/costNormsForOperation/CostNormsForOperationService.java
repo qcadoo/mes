@@ -111,7 +111,8 @@ public class CostNormsForOperationService {
 
     /* ******* MODEL HOOKS ******* */
 
-    public void copyCostNormsToTechnologyInstanceOperationComponent(final DataDefinition dd, final Entity technologyInstanceOperationComponent) {
+    public void copyCostNormsToTechnologyInstanceOperationComponent(final DataDefinition dd,
+            final Entity technologyInstanceOperationComponent) {
         copyCostValuesFromGivenOperation(technologyInstanceOperationComponent,
                 technologyInstanceOperationComponent.getBelongsToField("technologyOperationComponent"));
     }

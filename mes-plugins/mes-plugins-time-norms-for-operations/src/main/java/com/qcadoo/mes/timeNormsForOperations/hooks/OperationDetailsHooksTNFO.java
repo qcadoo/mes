@@ -1,7 +1,12 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -9,33 +14,33 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class OperationDetailsHooksTNFO {
 
     public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countRealizedOperation");
-        if (!"02specified".equals(countRealizedOperation.getFieldValue())) {
-            countRealizedOperation.setFieldValue("01all");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        if (!"02specified".equals(countRealized.getFieldValue())) {
+            countRealized.setFieldValue("01all");
 
         }
     }
 
-    public void updateCountMachineOperationFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
+    public void updateCountMachineFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
 
-        FieldComponent countRealizedOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countRealizedOperation");
-        FieldComponent countMachineOperation = (FieldComponent) viewDefinitionState
-                .getComponentByReference("countMachineOperation");
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState
+                .getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState
+                .getComponentByReference(COUNT_MACHINE);
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(COUNT_MACHINE_UNIT);
 
-        countRealizedOperation.setRequired(true);
+        countRealized.setRequired(true);
 
-        if (countRealizedOperation.getFieldValue().equals("02specified")) {
-            countMachineOperation.setVisible(true);
-            countMachineOperation.setEnabled(true);
+        if (countRealized.getFieldValue().equals("02specified")) {
+            countMachine.setVisible(true);
+            countMachine.setEnabled(true);
             countMachineUNIT.setVisible(true);
             countMachineUNIT.setEnabled(true);
         } else {
-            countMachineOperation.setVisible(false);
+            countMachine.setVisible(false);
             countMachineUNIT.setVisible(false);
         }
-        countMachineOperation.requestComponentUpdateState();
+        countMachine.requestComponentUpdateState();
     }
 }
