@@ -25,11 +25,11 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group name="navigation">
-				<bigButton name="back" action="#{window}.performBack;"
+				<bigButton name="back" action="#{window}.performBack;" state="enabled"
 					icon="backIcon24.png" />
 			</group>
-			<group name="operationDuration">
-				<bigButton name="generate" icon="generateIcon24.png"
+			<group name="timeOfTechnology">
+				<bigButton name="countTimeOfTechnology" icon="generateIcon24.png"
 					action="#{window}.fireEvent(countTimeOfTechnology);" state="enabled" />
 				<bigButton name="copy" icon="copyIcon24.png" state="enabled"
 					action="#{form}.performCopy;">
@@ -78,42 +78,7 @@
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<script>
-				<![CDATA[
-					function setCountTimeOfTechnologyButtonState() {
-						var countTimeOfTechnology = #{window}.getRibbonItem("timeOfTechnology.countTimeOfTechnology");
-						var technologyValue = #{technology}.getComponentData();
-						var dateFromValue = #{dateFrom}.getComponentData();
-						var quantityValue = #{plannedQuantity}.getComponentData();
-
-						if (dateFromValue.value && dateFromValue.value != "" 
-								&& quantityValue.value && quantityValue.value != "" 
-								&& technologyValue.value && technologyValue.value != "") {
-							countTimeOfTechnology.enable();
-						} else {
-							countTimeOfTechnology.disable();
-						}
-					}
-
-					var statelessFields = new Array(
-						#{realizationTime},
-						#{technology},
-						#{plannedQuantity},
-						#{dateFrom},
-						#{dateTo}
-					);					
-
-					for(var i = 0; i < statelessFields.length; i++) {
-						statelessFields[i].performUpdateState();
-						statelessFields[i].addOnChangeListener({
-							onChange: function() {
-								setCountTimeOfTechnologyButtonState();
-							}
-						});
-					}
-				]]>
-			</script>
-			<component type="gridLayout" name="gridsLayout" columns="3"
+		<component type="gridLayout" name="gridsLayout" columns="3"
 				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technology" reference="technology"
@@ -138,7 +103,7 @@
 					<component type="gridLayout" name="gridQuantity"
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
-							<component type="input" name="quantity" reference="quantity"
+							<component type="input" name="plannedQuantity" reference="plannedQuantity"
 								field="plannedQuantity">
 								<option type="alignment" value="right" />
 								<option type="labelWidth" value="45" />
@@ -200,6 +165,8 @@
 								<option type="orderable" value="number, name" />
 								<option type="fullscreen" value="true" />
 								<option type="multiselect" value="true" />
+							<!-- 	<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
+								method="fillTechnologyOperations" /> -->
 							</component>
 						</layoutElement>
 					</component>
@@ -212,10 +179,4 @@
 		</component>
 		<option type="header" value="true" />
 	</component>
-<!-- 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="setFieldDisable" />
-	</hooks> -->
-
 </view>

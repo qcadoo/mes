@@ -105,7 +105,7 @@
 					rows="1" hasBorders="false">
 					<layoutElement column="1" row="1" width="2">
 						<component type="input" name="countMachine" field="#{form}.countMachine"
-							reference="countMachine" hasDescription="true" defaultEnabled="false" defaultVisible="false" >
+							reference="countMachine" hasDescription="false" defaultEnabled="false" defaultVisible="false" >
 							<option type="labelWidth" value="40" />
 						</component>
 					</layoutElement>

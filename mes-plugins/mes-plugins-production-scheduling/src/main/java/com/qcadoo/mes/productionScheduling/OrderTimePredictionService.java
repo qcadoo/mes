@@ -57,6 +57,8 @@ public class OrderTimePredictionService {
 
     private static final String DATE_TO_COMPONENT = "dateTo";
 
+    private static final String PLANNED_QUANTITY_COMPONENT = "plannedQuantity";
+
     private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
 
     @Autowired
@@ -74,7 +76,7 @@ public class OrderTimePredictionService {
     public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
 
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(PLANNED_QUANTITY_COMPONENT);
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
