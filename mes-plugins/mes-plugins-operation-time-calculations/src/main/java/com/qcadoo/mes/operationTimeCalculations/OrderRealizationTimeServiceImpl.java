@@ -249,7 +249,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
         boolean isTjDivisable = technologyOperationComponent.getBooleanField("isTjDivisible");
-        int workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
+        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
 
         BigDecimal cyclesPerOperation = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
 

@@ -170,7 +170,7 @@ public class CostCalculationViewService {
         if (cameFromOrder) {
             componentsMap.get(ORDER).setFieldValue(order.getId());
             componentsMap.get(DEFAULT_TECHNOLOGY).setEnabled(false);
-            componentsMap.get(L_PRODUCTION_LINE).setFieldValue(order.getBelongsToField(L_PRODUCTION_LINE));
+            componentsMap.get(L_PRODUCTION_LINE).setFieldValue(order.getBelongsToField(L_PRODUCTION_LINE).getId());
             componentsMap.get(QUANTITY).setFieldValue(order.getField("plannedQuantity"));
         } else {
             componentsMap.get(ORDER).setFieldValue(EMPTY);
@@ -284,10 +284,10 @@ public class CostCalculationViewService {
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
         Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
-                "number", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode", "productionCostMargin",
-                "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc", "additionalOverhead",
-                "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms", "includeTPZ",
-                "includeAdditionalTime", "sourceOfMaterialCosts"));
+                "number", "productionLine", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode",
+                "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
+                "additionalOverhead", "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms",
+                "includeTPZ", "includeAdditionalTime", "sourceOfMaterialCosts"));
         Map<String, FieldComponent> componentsMap = new HashMap<String, FieldComponent>();
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -300,7 +300,6 @@ public class CostCalculationViewService {
 
             for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
                 entry.getValue().setEnabled(false);
-
             }
         } else {
             for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
@@ -312,10 +311,6 @@ public class CostCalculationViewService {
             componentsMap.get(PRODUCT).setEnabled(true);
             componentsMap.get(QUANTITY).setEnabled(true);
             componentsMap.get(ORDER).setEnabled(true);
-            componentsMap.get(TECHNOLOGY).setEnabled(true);
-        } else if (componentsMap.get(TECHNOLOGY).getFieldValue() == null) {
-            componentsMap.get(PRODUCT).setEnabled(true);
-            componentsMap.get(QUANTITY).setEnabled(true);
             componentsMap.get(TECHNOLOGY).setEnabled(true);
         }
     }

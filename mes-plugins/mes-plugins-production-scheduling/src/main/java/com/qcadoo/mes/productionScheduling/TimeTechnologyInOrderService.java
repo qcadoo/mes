@@ -34,7 +34,6 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -112,9 +111,12 @@ public class TimeTechnologyInOrderService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
 
-        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
-        Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
+        Entity productionLine = order.getBelongsToField("productionLine");
+
+        if (productionLine == null) {
+            state.addMessage("orders.validate.global.error.noProductionLine", MessageType.FAILURE);
+            return;
+        }
 
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(),

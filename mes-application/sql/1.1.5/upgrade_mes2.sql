@@ -259,3 +259,7 @@ ALTER TABLE basic_parameter
       REFERENCES productionlines_productionline (id) DEFERRABLE;
       
 -- end
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productionline_id bigint;
+ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;
