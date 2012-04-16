@@ -111,10 +111,17 @@ public class TimeTechnologyInOrderService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
 
+        Entity productionLine = order.getBelongsToField("productionLine");
+
+        if (productionLine == null) {
+            state.addMessage("orders.validate.global.error.noProductionLine", MessageType.FAILURE);
+            return;
+        }
+
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(),
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                        viewDefinitionState.getLocale()));
+                        viewDefinitionState.getLocale()), productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);

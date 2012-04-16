@@ -24,6 +24,7 @@
 package com.qcadoo.mes.operationTimeCalculations;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,8 +41,8 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -68,9 +69,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
-    private TechnologyService technologyService;
-
-    @Autowired
     private NumberService numberService;
 
     @Autowired
@@ -78,6 +76,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductionLinesService productionLinesService;
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -120,24 +121,25 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Override
     @Transactional
-    public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity) {
-        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true, true);
+    public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            final Entity productionLine) {
+        return estimateRealizationTimeForOperation(operationComponent, plannedQuantity, true, true, productionLine);
     }
 
     @Override
     @Transactional
     public int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime) {
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField("technology");
 
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
-        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
+        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField, productionLine);
     }
 
     @Override
     public Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime) {
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
 
         String entityType = entity.getDataDefinition().getName();
@@ -164,7 +166,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             }
 
             evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
-                    includeAdditionalTime, operationRunsField);
+                    includeAdditionalTime, operationRunsField, productionLine);
         }
 
         return operationDurations;
@@ -172,34 +174,37 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
             final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Entity, BigDecimal> operationRuns) {
+            final Map<Entity, BigDecimal> operationRuns, final Entity productionLine) {
         if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(operationComponent.getStringField("entityType"))) {
             for (Entity operComp : operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents")) {
                 evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operComp, includeTpz,
-                        includeAdditionalTime, operationRuns);
+                        includeAdditionalTime, operationRuns, productionLine);
             }
         } else {
-            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField);
+            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField,
+                    productionLine);
             operationDurations.put(operationComponent, duration);
         }
     }
 
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
+            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine) {
         String entityType = operationComponent.getStringField("entityType");
 
         if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(entityType)) {
             EntityTreeNode actualOperationComponent = operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents").getRoot();
 
-            return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns);
+            return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
+                    productionLine);
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
-            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns);
+            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
+                    productionLine);
             int pathTime = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
-                int tmpPathTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns);
+                int tmpPathTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns, productionLine);
                 if (tmpPathTime > pathTime) {
                     pathTime = tmpPathTime;
                 }
@@ -217,37 +222,44 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
     }
 
+    private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
+        String modelName = operationComponent.getDataDefinition().getName();
+
+        if ("technologyInstanceOperationComponent".equals(modelName)) {
+            return (Integer) operationComponent.getField("quantityOfWorkstationTypes");
+        } else if ("technologyOperationComponent".equals(modelName)) {
+            return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
+        }
+
+        throw new IllegalStateException(
+                "operationComponent is neither technologyInstanceOperationComponent nor technologyOperationComponent");
+    }
+
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns) {
-        int operationTime = 0;
-        BigDecimal roundUp;
+            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
-        BigDecimal productionInOneCycle = (BigDecimal) operationComponent.getField("productionInOneCycle");
+        Entity technologyOperationComponent = operationComponent;
 
-        BigDecimal producedInOneRun = technologyService.getProductCountForOperationComponent(operationComponent);
-
-        if (operationComponent.getDataDefinition().getName().equals("technologyInstanceOperationComponent")) {
-            Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
                     operationComponent.getBelongsToField("technologyOperationComponent").getId());
-            roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
-                    operationRuns.get(technologyOperationComponent), numberService.getMathContext());
-        } else {
-            roundUp = producedInOneRun.divide(productionInOneCycle, numberService.getMathContext()).multiply(
-                    operationRuns.get(operationComponent), numberService.getMathContext());
         }
 
-        if ("01all".equals(operationComponent.getField("countRealized"))
-                || operationComponent.getBelongsToField("parent") == null) {
-            operationTime = roundUp.multiply(BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))),
-                    numberService.getMathContext()).intValue();
-        } else {
-            operationTime = (operationComponent.getField("countMachine") == null ? BigDecimal.ZERO
-                    : (BigDecimal) operationComponent.getField("countMachine")).multiply(
-                    BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj"))), numberService.getMathContext())
-                    .intValue();
+        BigDecimal cycles = operationRuns.get(technologyOperationComponent);
+        boolean isTjDivisable = technologyOperationComponent.getBooleanField("isTjDivisible");
+        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
+
+        BigDecimal cyclesPerOperation = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
+
+        if (!isTjDivisable) {
+            cyclesPerOperation = cyclesPerOperation.setScale(0, RoundingMode.CEILING);
         }
+
+        int tj = getIntegerValue(operationComponent.getField("tj"));
+
+        int operationTime = cyclesPerOperation.multiply(BigDecimal.valueOf(tj), numberService.getMathContext()).intValue();
 
         if (includeTpz) {
             operationTime += getIntegerValue(operationComponent.getField("tpz"));

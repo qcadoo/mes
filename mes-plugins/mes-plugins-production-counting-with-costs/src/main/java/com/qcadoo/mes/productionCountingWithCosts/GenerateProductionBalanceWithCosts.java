@@ -102,6 +102,8 @@ import com.qcadoo.plugin.api.PluginUtils;
 @Service
 public class GenerateProductionBalanceWithCosts implements Observer {
 
+    private static final String L_PRODUCTION_LINE = "productionLine";
+
     private static final String L_LABOR_HOURLY_COST = "laborHourlyCost";
 
     private static final String L_MACHINE_HOURLY_COST = "machineHourlyCost";
@@ -208,11 +210,12 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     void doTheCostsPart(final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ORDER);
         Entity technology = order.getBelongsToField(TECHNOLOGY);
+        Entity productionLine = order.getBelongsToField(L_PRODUCTION_LINE);
 
         BigDecimal quantity = (BigDecimal) order.getField(L_PLANNED_QUANTITY);
         productionBalance.setField(QUANTITY, quantity);
         productionBalance.setField(TECHNOLOGY, technology);
-
+        productionBalance.setField(L_PRODUCTION_LINE, productionLine);
         costCalculationService.calculateTotalCost(productionBalance);
 
         BigDecimal totalTechnicalProductionCosts = (BigDecimal) productionBalance.getField(TOTAL_TECHNICAL_PRODUCTION_COSTS);

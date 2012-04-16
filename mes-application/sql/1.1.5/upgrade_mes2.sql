@@ -187,6 +187,9 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantit
 
 -- end
 
+ALTER TABLE costcalculation_costcalculation ADD COLUMN productionline_id bigint;
+ALTER TABLE costcalculation_costcalculation ADD CONSTRAINT costcalculation_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;
 
 -- Table: costnormsformaterials_calculationoperationcomponent
 -- changed: 16.04.2012
@@ -256,3 +259,7 @@ ALTER TABLE basic_parameter
       REFERENCES productionlines_productionline (id) DEFERRABLE;
       
 -- end
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN productionline_id bigint;
+ALTER TABLE productioncounting_productionbalance ADD CONSTRAINT productionbalance_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE;

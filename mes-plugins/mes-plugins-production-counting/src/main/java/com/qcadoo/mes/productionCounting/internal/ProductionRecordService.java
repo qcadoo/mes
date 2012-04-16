@@ -389,9 +389,10 @@ public class ProductionRecordService {
         plannedTimeValues.put(PLANNED_MACHINE_TIME, BigDecimal.ZERO);
         plannedTimeValues.put(PLANNED_LABOR_TIME, BigDecimal.ZERO);
         Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
+        Entity productionLine = order.getBelongsToField("productionLine");
         BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY);
         Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateRealizationTimes(order, plannedQuantity,
-                true, true);
+                true, true, productionLine);
         if (orderOperComp == null) {
             EntityTree technologyInstanceOperationComponentsTree = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
             for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponentsTree) {
