@@ -63,9 +63,15 @@
 
 		<view:view resource="view/ganttForOperations.xml" />
 
-		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
-
-		<view:view-listener plugin="orders" view="orderDetails"
+		<view:view-ribbon-group resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/orderTimePrediction.xml" />
+		
+		<view:view-listener plugin="productionScheduling" view="operationDurationDetailsInOrder"
+			component="form" event="showOperationsGantt"
+			class="com.qcadoo.mes.ganttForOperations.GanttOperationService"
+			method="showOperationsGantt" />
+			
+		<view:view-listener plugin="productionScheduling" view="orderTimePrediction"
 			component="form" event="showOperationsGantt"
 			class="com.qcadoo.mes.ganttForOperations.GanttOperationService"
 			method="showOperationsGantt" />

@@ -26,16 +26,16 @@
 -->
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="orders"
-	view="orderDetails">
-	<group name="operationDuration">
-		<bigButton name="operationDuration" icon="iconProducts24.png" state="enabled" >
+	plugin="productionScheduling"
+	view="orderTimePrediction">
+	<group name="orderGantt">
+		<bigButton name="operationsGantt" icon="calendarIcon24.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
 						onClick: function() {
 							if(window.canClose()) {
-								#{form}.performEvent('redirectToOperationDurationDetailsInOrder', []);
+								#{form}.performEvent('showOperationsGantt', []);
 							}
 						}
 					});	

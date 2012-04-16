@@ -61,7 +61,6 @@
 			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
-
 	<modules>
 		<localization:translation path="locales" />
 
@@ -102,7 +101,7 @@
 
 		<view:view resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
-		<view:view resource="view/operationDurationDetails.xml"/>
+		<view:view resource="view/operationDurationDetailsInOrder.xml"/>
 		
 		<view:view-listener plugin="productionScheduling"
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
@@ -125,9 +124,9 @@
 			method="disableRealizationTime" />
 			
 		<view:view-listener plugin="orders" view="orderDetails"
-			component="form" event="redirectToOperationDurationDetails"
+			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
-			method="redirectToOperationDurationDetails" />
+			method="redirectToOperationDurationDetailsInOrder" />
 		
 	</modules>
 	
