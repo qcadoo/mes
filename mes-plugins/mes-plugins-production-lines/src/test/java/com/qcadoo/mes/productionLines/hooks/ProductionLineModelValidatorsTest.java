@@ -17,40 +17,23 @@ import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-public class ProductionLinesModelValidatorsTest {
+public class ProductionLineModelValidatorsTest {
 
     private ProductionLineModelValidators productionLineModelValidators;
 
     @Mock
     private DataDefinition productionLineDD;
 
+    private static final Integer L_QUANTITYFOROTHERWORKSTATIONTYPES = 1;
+
     @Mock
     private Entity productionLine;
-
-    private Integer quantityForOtherWorkstationTypes = 1;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         productionLineModelValidators = new ProductionLineModelValidators();
-    }
-
-    @Test
-    public void shouldReturnTrueIfQuantityForOthersWorkstationTypesIsNotNull() {
-        // given
-        given(productionLine.getBooleanField(ProductionLineFields.SUPPORTSOTHERTECHNOLOGIESWORKSTATIONTYPES)).willReturn(true);
-        given(productionLine.getField(QUANTITYFOROTHERWORKSTATIONTYPES)).willReturn(quantityForOtherWorkstationTypes);
-
-        // when
-        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsNotNull(productionLineDD,
-                productionLine);
-
-        // then
-        assertTrue(result);
-
-        verify(productionLine, never()).addError(Mockito.eq(productionLineDD.getField(QUANTITYFOROTHERWORKSTATIONTYPES)),
-                Mockito.anyString());
     }
 
     @Test
@@ -69,4 +52,22 @@ public class ProductionLinesModelValidatorsTest {
         verify(productionLine).addError(Mockito.eq(productionLineDD.getField(QUANTITYFOROTHERWORKSTATIONTYPES)),
                 Mockito.anyString());
     }
+
+    @Test
+    public void shouldReturnTrueIfQuantityForOthersWorkstationTypesIsNotNull() {
+        // given
+        given(productionLine.getBooleanField(ProductionLineFields.SUPPORTSOTHERTECHNOLOGIESWORKSTATIONTYPES)).willReturn(true);
+        given(productionLine.getField(QUANTITYFOROTHERWORKSTATIONTYPES)).willReturn(L_QUANTITYFOROTHERWORKSTATIONTYPES);
+
+        // when
+        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsNotNull(productionLineDD,
+                productionLine);
+
+        // then
+        assertTrue(result);
+
+        verify(productionLine, never()).addError(Mockito.eq(productionLineDD.getField(QUANTITYFOROTHERWORKSTATIONTYPES)),
+                Mockito.anyString());
+    }
+
 }
