@@ -942,6 +942,13 @@ public class TestSamplesLoader extends SamplesLoader {
             component.setField("isTjDivisible", operation.getField("isTjDivisible"));
             component.setField("timeNextOperation", operation.getField("timeNextOperation"));
         }
+
+        if (isEnabled("costNormsForOperation")) {
+            component.setField("pieceworkCost", operation.getField("pieceworkCost"));
+            component.setField("machineHourlyCost", operation.getField("machineHourlyCost"));
+            component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
+            component.setField("numberOfOperations", operation.getField("numberOfOperations"));
+        }
         component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").save(component);
         validateEntity(component);
         if (LOG.isDebugEnabled()) {
