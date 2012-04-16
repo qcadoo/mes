@@ -88,5 +88,7 @@
 		<view:view resource="view/productionLineDetails.xml" />
 
 		<view:view resource="view/workstationTypeComponentDetails.xml" />
+		
+		<view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
 	</modules>
 </plugin>

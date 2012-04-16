@@ -24,36 +24,21 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="orders"
-	view="orderDetails">
-	<group name="orderGantt">
-		<bigButton name="operationsGantt" icon="calendarIcon24.png" state="disabled">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('showOperationsGantt', []);
-							}
-						}
-					});	
-						
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>	
-		</bigButton>
-	</group>
-</ribbonExtension>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="technologies" 
+	view="technologyInstanceOperationComponentDetails">
+
+	<windowTab name="workstationTypesTab" reference="workstationTypesTab">
+		<component type="gridLayout" name="workstationTypesGridLayout"
+			columns="3" rows="1">
+			<layoutElement column="1" row="1">
+				<component type="input" name="quantityOfWorkstationTypes"
+					field="#{form}.quantityOfWorkstationTypes" reference="quantityOfWorkstationTypes"
+					hasDescription="true">
+					<option type="labelWidth" value="60" />
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>

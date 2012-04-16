@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -23,6 +22,8 @@ public class ProductionLineModelValidatorsTest {
 
     @Mock
     private DataDefinition productionLineDD;
+
+    private static final Integer L_ZERO = 0;
 
     private static final Integer L_QUANTITYFOROTHERWORKSTATIONTYPES = 1;
 
@@ -37,13 +38,12 @@ public class ProductionLineModelValidatorsTest {
     }
 
     @Test
-    public void shouldReturnFalseIfQuantityForOthersWorkstationTypesIsNull() {
+    public void shouldReturnFalseIfQuantityForOthersWorkstationTypesIsLowerThenOne() {
         // given
-        given(productionLine.getBooleanField(ProductionLineFields.SUPPORTSOTHERTECHNOLOGIESWORKSTATIONTYPES)).willReturn(true);
-        given(productionLine.getField(QUANTITYFOROTHERWORKSTATIONTYPES)).willReturn(null);
+        given(productionLine.getField(QUANTITYFOROTHERWORKSTATIONTYPES)).willReturn(L_ZERO);
 
         // when
-        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsNotNull(productionLineDD,
+        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsGreaterThanZero(productionLineDD,
                 productionLine);
 
         // then
@@ -54,13 +54,12 @@ public class ProductionLineModelValidatorsTest {
     }
 
     @Test
-    public void shouldReturnTrueIfQuantityForOthersWorkstationTypesIsNotNull() {
+    public void shouldReturnTrueIfQuantityForOthersWorkstationTypesIsGreaterThenZero() {
         // given
-        given(productionLine.getBooleanField(ProductionLineFields.SUPPORTSOTHERTECHNOLOGIESWORKSTATIONTYPES)).willReturn(true);
         given(productionLine.getField(QUANTITYFOROTHERWORKSTATIONTYPES)).willReturn(L_QUANTITYFOROTHERWORKSTATIONTYPES);
 
         // when
-        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsNotNull(productionLineDD,
+        boolean result = productionLineModelValidators.checkIfQuantityForOthersWorkstationTypesIsGreaterThanZero(productionLineDD,
                 productionLine);
 
         // then

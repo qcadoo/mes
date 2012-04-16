@@ -8,12 +8,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class ProductionSchedulingListeners {
 
-    public void redirectToOperationDurationDetails(final ViewDefinitionState viewDefinitionState,
+    public void redirectToOperationDurationDetailsInOrder(final ViewDefinitionState viewDefinitionState,
             final ComponentState triggerState, final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/productionScheduling/operationDurationDetails.html?context={\"form.id\":\"" + orderId + "\"}";
+            String url = "../page/productionScheduling/operationDurationDetailsInOrder.html?context={\"form.id\":\"" + orderId
+                    + "\"}";
+            viewDefinitionState.redirectTo(url, false, true);
+        }
+
+    }
+
+    public void redirectToOperationDurationDetailsInTechnology(final ViewDefinitionState viewDefinitionState,
+            final ComponentState triggerState, final String[] args) {
+        Long orderId = (Long) triggerState.getFieldValue();
+
+        if (orderId != null) {
+            String url = "../page/productionScheduling/operationDurationDetailsInTechnology.html?context={\"form.id\":\""
+                    + orderId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
 
