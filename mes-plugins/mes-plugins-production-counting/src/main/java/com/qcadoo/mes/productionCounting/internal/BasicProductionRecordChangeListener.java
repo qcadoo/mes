@@ -75,6 +75,9 @@ public class BasicProductionRecordChangeListener extends RecordStateListener {
 
         for (Entity basicProductionCounting : basicProductionCountings) {
             BigDecimal qty = (BigDecimal) basicProductionCounting.getField("producedQuantity");
+            if (qty == null) {
+                qty = BigDecimal.ZERO;
+            }
             producedQuantity = producedQuantity.add(qty, numberService.getMathContext());
         }
 
