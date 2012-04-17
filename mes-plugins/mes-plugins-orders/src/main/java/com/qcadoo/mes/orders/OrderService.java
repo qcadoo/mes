@@ -26,11 +26,13 @@ package com.qcadoo.mes.orders;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrderStates.DECLINED;
@@ -40,6 +42,10 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -96,6 +102,25 @@ public class OrderService {
 
     private DataDefinition getOrderDataDefinition() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
+    public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
+        if (order.getId() != null) {
+            return;
+        }
+
+        if (order.getBelongsToField(PRODUCTION_LINE) != null) {
+            return;
+        }
+
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
+
+        Entity defaultProductionLine = parameter.getBelongsToField("defaultProductionLine");
+
+        if (defaultProductionLine != null) {
+            order.setField(PRODUCTION_LINE, defaultProductionLine);
+        }
     }
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
@@ -325,6 +350,67 @@ public class OrderService {
         }
     }
 
+    public void checkIfProductionLineSupportsTechnology(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        checkIfProductionLineSupportsTechnology(view);
+    }
+
+    public void checkIfProductionLineSupportsTechnology(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        Entity order = orderForm.getEntity();
+
+        FieldComponent productionLineLookup = (FieldComponent) view.getComponentByReference("productionLine");
+
+        if (!checkIfProductionLineSupportsTechnology(order)) {
+            productionLineLookup.addMessage("orders.order.productionLine.error.productionLineDoesntSupportTechnology",
+                    ComponentState.MessageType.FAILURE);
+        }
+    }
+
+    public boolean checkIfProductionLineSupportsTechnology(final DataDefinition orderDD, final Entity order) {
+        if (!checkIfProductionLineSupportsTechnology(order)) {
+            order.addError(orderDD.getField(PRODUCTION_LINE),
+                    "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
+
+            return false;
+        }
+
+        return false;
+    }
+
+    private boolean checkIfProductionLineSupportsTechnology(final Entity order) {
+        Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
+        Entity technology = order.getBelongsToField(TECHNOLOGY);
+
+        if ((productionLine != null) && (technology != null)) {
+            if (!productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)) {
+                Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
+
+                if (technologyGroup != null) {
+                    List<Entity> productionLineGroups = productionLine.getManyToManyField(GROUPS);
+
+                    for (Entity productionLineGroup : productionLineGroups) {
+                        if (productionLineGroup.equals(technologyGroup)) {
+                            return true;
+                        }
+                    }
+                }
+
+                List<Entity> productionLineTechnologies = productionLine.getManyToManyField(TECHNOLOGIES);
+
+                for (Entity productionLineTechnology : productionLineTechnologies) {
+                    if (productionLineTechnology.equals(technology)) {
+                        return true;
+                    }
+                }
+
+                return false;
+
+            }
+        }
+        return true;
+    }
+
     private Entity getDefaultTechnology(final Long selectedProductId) {
         DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
@@ -484,6 +570,7 @@ public class OrderService {
             state.getComponentByReference(COMPANY).setEnabled(false);
             state.getComponentByReference(DATE_FROM).setEnabled(false);
             state.getComponentByReference(DATE_TO).setEnabled(false);
+            state.getComponentByReference(DEADLINE).setEnabled(false);
             state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
             state.getComponentByReference(PLANNED_QUANTITY).setEnabled(false);
         }

@@ -332,6 +332,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+								method="checkIfProductionLineSupportsTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="5">

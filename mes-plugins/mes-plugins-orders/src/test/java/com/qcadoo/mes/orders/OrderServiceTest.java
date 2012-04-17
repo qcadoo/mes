@@ -43,8 +43,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.products;
+package com.qcadoo.mes.orders;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -53,10 +59,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.lang.reflect.InvocationTargetException;
@@ -71,25 +77,28 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.EntityListImpl;
 import com.qcadoo.model.internal.EntityTreeImpl;
 import com.qcadoo.model.internal.types.BooleanType;
 import com.qcadoo.model.internal.types.StringType;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -98,6 +107,12 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ EntityTreeImpl.class, EntityListImpl.class })
 public class OrderServiceTest {
+
+    private static final String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
+
+    private static final String L_PRODUCTION_LINE = "productionLine";
+
+    private static final String L_FORM = "form";
 
     private OrderService orderService;
 
@@ -118,6 +133,471 @@ public class OrderServiceTest {
         setField(orderService, "translationService", translationService);
         setField(orderService, "numberGeneratorService", numberGeneratorService);
         setField(orderService, "expressionService", expressionService);
+    }
+
+    @Test
+    public void shouldntFillProductionLineIfOrderIsntSaved() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity defaultProductionLine = mock(Entity.class);
+
+        given(order.getId()).willReturn(1L);
+
+        // when
+        orderService.fillProductionLine(orderDD, order);
+
+        // then
+        verify(order, never()).setField(PRODUCTION_LINE, defaultProductionLine);
+    }
+
+    @Test
+    public void shouldntFillProductionLineIfOrderIsSavedAndProductionLineIsntNull() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity productionLine = mock(Entity.class);
+        Entity defaultProductionLine = mock(Entity.class);
+
+        given(order.getId()).willReturn(null);
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+
+        // when
+        orderService.fillProductionLine(orderDD, order);
+
+        // then
+        verify(order, never()).setField(PRODUCTION_LINE, defaultProductionLine);
+    }
+
+    @Test
+    public void shouldntFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsNull() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity defaultProductionLine = mock(Entity.class);
+
+        Entity parameter = mock(Entity.class);
+        DataDefinition parameterDD = mock(DataDefinition.class);
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+
+        given(order.getId()).willReturn(null);
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
+                .willReturn(parameterDD);
+        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+
+        given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(null);
+
+        // when
+        orderService.fillProductionLine(orderDD, order);
+
+        // then
+        verify(order, never()).setField(PRODUCTION_LINE, defaultProductionLine);
+    }
+
+    @Test
+    public void shouldFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsntNull() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity defaultProductionLine = mock(Entity.class);
+
+        Entity parameter = mock(Entity.class);
+        DataDefinition parameterDD = mock(DataDefinition.class);
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+
+        given(order.getId()).willReturn(null);
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
+                .willReturn(parameterDD);
+        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+
+        given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
+
+        // when
+        orderService.fillProductionLine(orderDD, order);
+
+        // then
+        verify(order).setField(PRODUCTION_LINE, defaultProductionLine);
+    }
+
+    @Test
+    public void shouldntAddMessageIfProductionLineIsNullAndTechnologyIsNull() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldntAddMessageIfProductionLineSupportsAllTechnologies() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        Entity technology = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(true);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldntAddMessageIfProductionLineGroupsHasTechnologyGroup() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        Entity technology = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroup, technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldntAddMessageIfProductionLineTechnologiesHasTechnology() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        Entity technology = mock(Entity.class);
+        Entity technologyOther = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+        List<Entity> productionLineTechnologies = mock(EntityList.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+        given(productionLine.getManyToManyField(TECHNOLOGIES)).willReturn(productionLineTechnologies);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineTechnologiesIterator = mock(Iterator.class);
+        given(productionLineTechnologiesIterator.hasNext()).willReturn(true, true, false);
+        given(productionLineTechnologiesIterator.next()).willReturn(technology, technologyOther);
+        given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldAddMessageIfProductionLineDoesntSupportTechnology() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        Entity technology = mock(Entity.class);
+        Entity technologyOther = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+        List<Entity> productionLineTechnologies = mock(EntityList.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+        given(productionLine.getManyToManyField(TECHNOLOGIES)).willReturn(productionLineTechnologies);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineTechnologiesIterator = mock(Iterator.class);
+        given(productionLineTechnologiesIterator.hasNext()).willReturn(true, false);
+        given(productionLineTechnologiesIterator.next()).willReturn(technologyOther);
+        given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldntAddErrorIfProductionLineIsNullAndTechnologyIsNull() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldntAddErrorIfProductionLineSupportsAllTechnologies() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity technology = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(true);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldntAddErrorIfProductionLineGroupsHasTechnologyGroup() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity technology = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroup, technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldntAddErrorIfProductionLineTechnologiesHasTechnology() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity technology = mock(Entity.class);
+        Entity technologyOther = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+        List<Entity> productionLineTechnologies = mock(EntityList.class);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+        given(productionLine.getManyToManyField(TECHNOLOGIES)).willReturn(productionLineTechnologies);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineTechnologiesIterator = mock(Iterator.class);
+        given(productionLineTechnologiesIterator.hasNext()).willReturn(true, true, false);
+        given(productionLineTechnologiesIterator.next()).willReturn(technology, technologyOther);
+        given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldAddErrorIfProductionLineDoesntSupportTechnology() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity technology = mock(Entity.class);
+        Entity technologyOther = mock(Entity.class);
+        Entity productionLine = mock(Entity.class);
+
+        Entity technologyGroup = mock(Entity.class);
+        Entity technologyGroupOther = mock(Entity.class);
+
+        List<Entity> productionLineGroups = mock(EntityList.class);
+        List<Entity> productionLineTechnologies = mock(EntityList.class);
+
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+
+        given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(productionLine.getManyToManyField(GROUPS)).willReturn(productionLineGroups);
+        given(productionLine.getManyToManyField(TECHNOLOGIES)).willReturn(productionLineTechnologies);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineGroupsIterator = mock(Iterator.class);
+        given(productionLineGroupsIterator.hasNext()).willReturn(true, false);
+        given(productionLineGroupsIterator.next()).willReturn(technologyGroupOther);
+        given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
+
+        @SuppressWarnings("unchecked")
+        Iterator<Entity> productionLineTechnologiesIterator = mock(Iterator.class);
+        given(productionLineTechnologiesIterator.hasNext()).willReturn(true, false);
+        given(productionLineTechnologiesIterator.next()).willReturn(technologyOther);
+        given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        verify(order).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
     @Test
@@ -228,7 +708,7 @@ public class OrderServiceTest {
         FormComponent form = mock(FormComponent.class);
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(form);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(form);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         given(form.getEntityId()).willReturn(null);
 
@@ -246,7 +726,7 @@ public class OrderServiceTest {
         FormComponent form = mock(FormComponent.class);
         FieldComponent orderState = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(form);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(form);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
         given(form.getEntityId()).willReturn(1L);
 
@@ -268,7 +748,7 @@ public class OrderServiceTest {
 
         // then
         verify(numberGeneratorService).generateAndInsertNumber(viewDefinitionState, OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_ORDER, "form", "number");
+                OrdersConstants.MODEL_ORDER, L_FORM, "number");
     }
 
     @Test
@@ -451,7 +931,7 @@ public class OrderServiceTest {
         FieldComponent technology = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(null);
 
@@ -470,7 +950,7 @@ public class OrderServiceTest {
         FieldComponent technology = mock(FieldComponent.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
@@ -492,7 +972,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
@@ -516,7 +996,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
@@ -540,7 +1020,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("form")).willReturn(order);
+        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
         given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getEntityId()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(

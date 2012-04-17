@@ -219,7 +219,7 @@
 			<option type="column" name="dateTo" fields="dateTo" width="50" />
  			<option type="column" name="plannedQuantity" fields="plannedQuantity" width="35" />
 			<option type="column" name="unit" fields="product" expression="#product['unit']" width="30" />
-			<option type="column" name="productionLine" fields="productionLine" width="35" />
+			<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['name']" width="35" />
 			<option type="column" name="productionLinePlace" fields="productionLine" expression="#productionLine['place']" width="35" />
 			
  			<option type="column" name="externalNumber" fields="externalNumber" hidden="true" />

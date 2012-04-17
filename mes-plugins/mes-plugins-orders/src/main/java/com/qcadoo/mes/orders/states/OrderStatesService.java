@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.orders.states;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_GRID;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
@@ -211,12 +217,13 @@ public class OrderStatesService {
             if (order.getStringField(FIELD_STATE).equals(OrderStates.ACCEPTED.getStringValue())
                     || order.getStringField(FIELD_STATE).equals(OrderStates.IN_PROGRESS.getStringValue())
                     || order.getStringField(FIELD_STATE).equals(OrderStates.INTERRUPTED.getStringValue())) {
-                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology")) {
+                for (String reference : Arrays.asList(DATE_TO, DATE_FROM, DEADLINE, DEFAULT_TECHNOLOGY, TECHNOLOGY)) {
                     FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                     field.setRequired(true);
                 }
             } else if (order.getStringField(FIELD_STATE).equals(OrderStates.COMPLETED.getStringValue())) {
-                for (String reference : Arrays.asList("dateTo", "dateFrom", "defaultTechnology", "technology", "doneQuantity")) {
+                for (String reference : Arrays
+                        .asList(DATE_TO, DATE_FROM, DEADLINE, DEFAULT_TECHNOLOGY, TECHNOLOGY, DONE_QUANTITY)) {
                     FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                     field.setRequired(true);
                 }

@@ -26,6 +26,7 @@ package com.qcadoo.mes.orders.states;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
@@ -81,7 +82,7 @@ public class OrderStateValidationService {
 
     public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
         checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, DEADLINE, TECHNOLOGY);
         List<ChangeOrderStateMessage> message = checkValidation(references, entity);
 
         Entity technology = entity.getBelongsToField(TECHNOLOGY);
@@ -105,7 +106,7 @@ public class OrderStateValidationService {
 
     public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
         checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
+        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, DEADLINE, TECHNOLOGY, DONE_QUANTITY);
         return checkValidation(references, entity);
     }
 

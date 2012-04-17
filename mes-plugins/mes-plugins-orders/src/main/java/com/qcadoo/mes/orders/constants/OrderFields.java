@@ -35,6 +35,8 @@ public class OrderFields {
 
     public static final String DATE_TO = "dateTo";
 
+    public static final String DEADLINE = "deadline";
+
     public static final String STATE = "state";
 
     public static final String COMPANY = "company";
@@ -60,4 +62,6 @@ public class OrderFields {
     public static final String LOGGINGS = "loggings";
 
     public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
+
+    public static final String PRODUCTION_LINE = "productionLine";
 }
