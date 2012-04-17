@@ -375,7 +375,7 @@ public class OrderService {
             return false;
         }
 
-        return false;
+        return true;
     }
 
     private boolean checkIfProductionLineSupportsTechnology(final Entity order) {

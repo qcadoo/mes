@@ -438,7 +438,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldntAddErrorIfProductionLineIsNullAndTechnologyIsNull() {
+    public void shouldReturnTrueIfProductionLineIsNullAndTechnologyIsNull() {
         // given
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
@@ -447,14 +447,16 @@ public class OrderServiceTest {
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
 
         // when
-        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
 
         // then
+        assertTrue(result);
+
         verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
     @Test
-    public void shouldntAddErrorIfProductionLineSupportsAllTechnologies() {
+    public void shouldReturnTrueIfProductionLineSupportsAllTechnologies() {
         // given
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
@@ -468,14 +470,16 @@ public class OrderServiceTest {
         given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(true);
 
         // when
-        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
 
         // then
+        assertTrue(result);
+
         verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
     @Test
-    public void shouldntAddErrorIfProductionLineGroupsHasTechnologyGroup() {
+    public void shouldReturnTrueIfProductionLineGroupsHasTechnologyGroup() {
         // given
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
@@ -504,14 +508,16 @@ public class OrderServiceTest {
         given(productionLineGroups.iterator()).willReturn(productionLineGroupsIterator);
 
         // when
-        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
 
         // then
+        assertTrue(result);
+
         verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
     @Test
-    public void shouldntAddErrorIfProductionLineTechnologiesHasTechnology() {
+    public void shouldReturnTrueIfProductionLineTechnologiesHasTechnology() {
         // given
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
@@ -549,14 +555,16 @@ public class OrderServiceTest {
         given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
 
         // when
-        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
 
         // then
+        assertTrue(result);
+
         verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
     @Test
-    public void shouldAddErrorIfProductionLineDoesntSupportTechnology() {
+    public void shouldReturnFalseIfProductionLineDoesntSupportTechnology() {
         // given
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
@@ -594,9 +602,11 @@ public class OrderServiceTest {
         given(productionLineTechnologies.iterator()).willReturn(productionLineTechnologiesIterator);
 
         // when
-        orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
 
         // then
+        assertFalse(result);
+
         verify(order).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
     }
 
