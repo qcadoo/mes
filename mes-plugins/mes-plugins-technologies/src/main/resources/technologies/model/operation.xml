@@ -42,8 +42,8 @@
 		<hasMany name="operationComponents" model="technologyOperationComponent"
 			joinField="operation" cascade="nullify" />
 		<file name="attachment" />
-		<boolean name="areProductQuantitiesDivisible" default="true" />
-		<boolean name="isTjDivisible" default="true"/>
+		<boolean name="areProductQuantitiesDivisible" default="false" />
+		<boolean name="isTjDivisible" default="false"/>
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

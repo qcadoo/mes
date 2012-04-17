@@ -45,7 +45,6 @@
 						reference="productionInOneCycle" defaultEnabled="true" required="true" hasDescription="true">
 							<option type="labelWidth" value="40"/>
 						</component>
-
 			    	</layoutElement>
 			    	<layoutElement column="4" row="1">
 						<component type="select" name="productionInOneCycleUNIT" field="#{form}.productionInOneCycleUNIT" reference="productionInOneCycleUNIT" hasLabel="false">
@@ -75,11 +74,13 @@
 								<component type="checkbox" name="areProductQuantitiesDivisible" field="#{form}.areProductQuantitiesDivisible"
 									reference="areProductQuantitiesDivisible" defaultEnabled="true" hasDescription="true" >
 									<option type="labelWidth" value="80"/>
+									<listener event="onChange" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
+								method="onProductionInOneCycleCheckboxChange" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="checkbox" name="isTjDivisible" field="#{form}.isTjDivisible"
-									reference="isTjDivisible" defaultEnabled="true" hasDescription="true" >
+									reference="isTjDivisible" defaultEnabled="false" hasDescription="true" >
 								<option type="labelWidth" value="80"/>
 								</component>
 							</layoutElement>

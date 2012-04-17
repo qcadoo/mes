@@ -27,4 +27,8 @@ public class TechnologyOperCompTNFOFields {
     public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
 
     public static final String OPERATION_OFF_SET = "operationOffSet";
+
+    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
+
+    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
 }

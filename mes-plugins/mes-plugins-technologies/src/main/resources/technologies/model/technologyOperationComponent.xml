@@ -46,8 +46,8 @@
 			persistent="false" />
 		<priority name="priority" scope="parent" />
 		<file name="attachment" />
-		<boolean name="areProductQuantitiesDivisible" default="true" />
-		<boolean name="isTjDivisible" default="true"/>
+		<boolean name="areProductQuantitiesDivisible" default="false" />
+		<boolean name="isTjDivisible" default="false"/>
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"

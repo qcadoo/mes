@@ -2,8 +2,10 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.ARE_PRODUCT_QUANTITIES_DIVISIBLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.IS_TJ_DIVISIBLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
@@ -96,6 +98,20 @@ public class TechnologyOperCompDetailsListenersTNFO {
         countMachine.setVisible(visibilityValue);
         countMachine.setEnabled(visibilityValue);
         countMachineUNIT.setVisible(visibilityValue);
+
+    }
+
+    public void onProductionInOneCycleCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ARE_PRODUCT_QUANTITIES_DIVISIBLE);
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference(IS_TJ_DIVISIBLE);
+        if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
+            isTjDivisible.setEnabled(true);
+        } else {
+            isTjDivisible.setEnabled(false);
+            isTjDivisible.setFieldValue("0");
+        }
 
     }
 }
