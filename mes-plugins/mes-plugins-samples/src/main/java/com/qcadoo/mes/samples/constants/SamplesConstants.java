@@ -177,6 +177,10 @@ public interface SamplesConstants {
 
     String L_DATE_TO = "dateTo";
 
+    String L_DEADLINE = "deadline";
+
+    String L_PRODUCTION_LINE = "productionLine";
+
     String L_QUALITY_CONTROLS_FOR_OPERATION = "qualityControlsForOperation";
 
     String L_QUALITY_CONTROL_TYPE = "quality_control_type";
