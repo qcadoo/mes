@@ -131,7 +131,7 @@
 				</script>
 
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="7">
+					rows="8">
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" field="generated"
 							reference="generated" defaultEnabled="false" />
@@ -208,18 +208,28 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="5">
+						<component type="lookup" name="productionLine" field="productionLine"
+							reference="productionLine">
+							<option type="column" name="name" fields="name" link="true" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#number + ' ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="6">
 						<component type="input" name="quantity" field="quantity"
 							reference="quantity">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="6">
+					<layoutElement column="2" row="7">
 						<component type="checkbox" name="printCostNormsOfMaterials" field="printCostNormsOfMaterials"
 							reference="printCostNormsOfMaterials" defaultEnabled="true" hasDescription="true" >
 							<option type="labelWidth" value="60"/>
 							</component>
 					</layoutElement>
-					<layoutElement column="2" row="7">
+					<layoutElement column="2" row="8">
 						<component type="checkbox" name="printOperationNorms" field="printOperationNorms"
 							reference="printOperationNorms" defaultEnabled="true" hasDescription="true">
 							<option type="labelWidth" value="60"/>

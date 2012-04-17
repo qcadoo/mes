@@ -69,13 +69,10 @@ public class GenerateProductionBalanceWithCostsTest {
     private ProductionBalanceService productionBalanceService;
 
     @Mock
-    private Entity balance, order, technology;
+    private Entity balance, order, technology, company, productionLine;
 
     @Mock
     private DataDefinition dataDefinition;
-
-    @Mock
-    private Entity company;
 
     @Before
     public void init() {
@@ -107,11 +104,12 @@ public class GenerateProductionBalanceWithCostsTest {
     }
 
     @Test
-    public void shouldSetQuantityTechnologyAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
+    public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
         given(balance.getField("totalTechnicalProductionCosts")).willReturn(new BigDecimal(100));
         given(order.getField("plannedQuantity")).willReturn(quantity);
+        given(order.getBelongsToField("productionLine")).willReturn(productionLine);
 
         // when
         generateProductionBalanceWithCosts.doTheCostsPart(balance);
@@ -119,6 +117,7 @@ public class GenerateProductionBalanceWithCostsTest {
         // then
         verify(balance).setField("technology", technology);
         verify(balance).setField("quantity", quantity);
+        verify(balance).setField("productionLine", productionLine);
         verify(balance).setField("totalTechnicalProductionCostPerUnit", BigDecimal.TEN.setScale(3, RoundingMode.HALF_EVEN));
         verify(dataDefinition).save(balance);
     }

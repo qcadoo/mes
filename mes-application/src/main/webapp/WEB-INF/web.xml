@@ -44,6 +44,7 @@
 			classpath*:qcadoo-shop-context.xml
 			classpath*:qcadoo-web-context.xml
 			classpath*:qcadoo-report-context.xml
+			classpath*:qcadoo-mail-context.xml
 			classpath*:root-context.xml
 			classpath*:web-context.xml
 		</param-value>

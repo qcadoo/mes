@@ -40,6 +40,7 @@
 			plugin="technologies" />
 		<belongsTo name="technology" model="technology" plugin="technologies"
 			required="true" />
+		<belongsTo name="productionLine" model="productionLine" plugin="productionLines" required="true" />
 		<decimal name="quantity" required="true" />
 		<belongsTo name="order" model="order" plugin="orders" />
 		<decimal name="totalMaterialCosts">

@@ -310,7 +310,9 @@
 			<model:boolean name="generatedWithCosts" />
 		</model:model-field>
 		
-		
+		<model:model-field plugin="productionCounting" model="productionBalance">
+			<model:belongsTo name="productionLine" model="productionLine" plugin="productionLines" />
+		</model:model-field>
 		
 		
 		
