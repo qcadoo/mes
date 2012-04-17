@@ -85,17 +85,4 @@ public class TechnologyOperCompDetailsListenersTNFO {
 
     }
 
-    public void changeCountRealizedNormOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
-
-        Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
-        countMachine.setVisible(visibilityValue);
-        countMachine.setEnabled(visibilityValue);
-        countMachineUNIT.setVisible(visibilityValue);
-
-    }
 }
