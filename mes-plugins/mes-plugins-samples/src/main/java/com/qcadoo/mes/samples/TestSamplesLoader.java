@@ -87,10 +87,16 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
         readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
+
         if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
         }
+
+        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
+        }
+
         if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, ORDERS_PLUGIN_IDENTIFIER, locale);
             if (isEnabled(L_ORDER_GROUPS)) {
@@ -101,6 +107,7 @@ public class TestSamplesLoader extends SamplesLoader {
         if (isEnabled(L_COST_CALCULATION)) {
             readDataFromXML(dataset, L_COST_CALCULATION, locale);
         }
+
         if (isEnabled(L_MATERIAL_FLOW)) {
             readDataFromXML(dataset, L_STOCK_AREAS, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
@@ -121,22 +128,17 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         if (isEnabled(L_PRODUCTION_COUNTING)) {
-
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
             readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
             readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
-
         }
+
         if (isEnabled(L_ADVANCED_GENEALOGY)) {
             readDataFromXML(dataset, L_BATCHES, locale);
             if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                 readDataFromXML(dataset, L_TRACKING_RECORDS, locale);
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
-        }
-        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
-            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
-            readDataFromXML(dataset, "productionLines_dict", locale);
         }
     }
 
@@ -401,6 +403,7 @@ public class TestSamplesLoader extends SamplesLoader {
     private void addOrder(final Map<String, String> values) {
         long startDate = System.currentTimeMillis();
         long endDate = startDate;
+        long deadline = startDate;
         long millsInHour = 3600000;
         long millsInMinute = 60000;
 
@@ -431,6 +434,8 @@ public class TestSamplesLoader extends SamplesLoader {
             endDate = startDate + 10 * millsInHour + 75 * millsInMinute;
         }
 
+        deadline = endDate;
+
         if (!values.get("scheduled_end_date").isEmpty()) {
             try {
                 endDate = FORMATTER.parse(values.get("scheduled_end_date")).getTime();
@@ -439,9 +444,18 @@ public class TestSamplesLoader extends SamplesLoader {
             }
         }
 
+        if (!values.get("deadline").isEmpty()) {
+            try {
+                deadline = FORMATTER.parse(values.get("deadline")).getTime();
+            } catch (ParseException e) {
+                LOG.warn(e.getMessage(), e);
+            }
+        }
+
         Entity order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).create();
         order.setField(L_DATE_FROM, new Date(startDate));
         order.setField(L_DATE_TO, new Date(endDate));
+        order.setField(L_DEADLINE, new Date(deadline));
         order.setField("externalSynchronized", true);
 
         order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("tech_nr")));
@@ -452,6 +466,8 @@ public class TestSamplesLoader extends SamplesLoader {
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
 
         order.setField(L_ORDER_STATE, values.get("state"));
+
+        order.setField(L_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
 
         if (!"01pending".equals(values.get(L_ORDER_STATE))) {
 
@@ -1228,6 +1244,11 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity getTechnologyByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getProductionLineByNumber(final String number) {
+        return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
