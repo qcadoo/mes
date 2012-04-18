@@ -23,19 +23,13 @@
  */
 package com.qcadoo.mes.ganttForOperations;
 
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -81,75 +75,11 @@ public class GanttOperationService {
             final String[] args) {
         orderId = (Long) triggerState.getFieldValue();
 
-        scheduleOrder(orderId);
-
         if (orderId != null) {
             String url = "../page/ganttForOperations/ganttForOperations.html?context={\"gantt.orderId\":\"" + orderId + "\"}";
 
             viewDefinitionState.redirectTo(url, false, true);
         }
-    }
-
-    private void scheduleOrder(final Long orderId) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
-
-        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
-                .list().getEntities();
-
-        Date orderStartDate = null;
-
-        if (order.getField(EFFECTIVE_DATE_FROM_FIELD) == null) {
-            if (order.getField(DATE_FROM_FIELD) == null) {
-                return;
-            } else {
-                orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
-            }
-        } else {
-            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
-        }
-
-        for (Entity operation : operations) {
-            Integer offset = (Integer) operation.getField("operationOffSet");
-            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
-
-            operation.setField(EFFECTIVE_DATE_FROM_FIELD, null);
-            operation.setField(EFFECTIVE_DATE_TO_FIELD, null);
-
-            if (offset == null || duration == null || duration.equals(0)) {
-                continue;
-            }
-
-            if (offset == 0) {
-                offset = 1;
-            }
-
-            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
-
-            if (dateFrom == null) {
-                continue;
-            }
-
-            Date dateTo = shiftsService.findDateToForOrder(orderStartDate, offset + duration);
-
-            if (dateTo == null) {
-                continue;
-            }
-
-            operation.setField(EFFECTIVE_DATE_FROM_FIELD, dateFrom);
-            operation.setField(EFFECTIVE_DATE_TO_FIELD, dateTo);
-        }
-
-        for (Entity operation : operations) {
-            dataDefinition.save(operation);
-        }
-
     }
 
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {

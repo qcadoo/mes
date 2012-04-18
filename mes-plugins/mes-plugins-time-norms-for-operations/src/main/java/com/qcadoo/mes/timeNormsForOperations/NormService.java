@@ -53,7 +53,7 @@ public class NormService {
         Locale locale = LocaleContextHolder.getLocale();
 
         for (Entity operationComponent : operationComponents) {
-            BigDecimal timeNormsQuantity = operationComponent.getDecimalField("productionInOneCycle");
+            BigDecimal timeNormsQuantity = getProductionInOneCycle(operationComponent);
 
             BigDecimal currentQuantity;
 
@@ -76,5 +76,18 @@ public class NormService {
         }
 
         return messages;
+    }
+
+    private BigDecimal getProductionInOneCycle(final Entity operationComponent) {
+        String entityType = operationComponent.getStringField("entityType");
+        if ("operation".equals(entityType)) {
+            return operationComponent.getDecimalField("productionInOneCycle");
+        } else if ("referenceTechnology".equals(entityType)) {
+            Entity refOperationComp = operationComponent.getBelongsToField("referenceTechnology")
+                    .getTreeField("technologyOperationComponent").getRoot();
+            return refOperationComp.getDecimalField("productionInOneCycle");
+        } else {
+            throw new IllegalStateException("operationComponent has illegal type, id = " + operationComponent.getId());
+        }
     }
 }

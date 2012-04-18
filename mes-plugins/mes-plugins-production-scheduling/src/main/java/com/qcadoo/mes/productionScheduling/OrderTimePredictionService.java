@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionScheduling;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,16 +34,20 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.TimeConverterService;
@@ -118,21 +123,149 @@ public class OrderTimePredictionService {
         technology.setFieldValue("");
     }
 
+    private void scheduleOrder(final Long orderId) {
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+
+        if (order == null) {
+            return;
+        }
+
+        DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+
+        List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
+                .list().getEntities();
+
+        Date orderStartDate = null;
+
+        if (order.getField("effectiveDateFrom") == null) {
+            if (order.getField("dateFrom") == null) {
+                return;
+            } else {
+                orderStartDate = (Date) order.getField("dateFrom");
+            }
+        } else {
+            orderStartDate = (Date) order.getField("effectiveDateFrom");
+        }
+
+        for (Entity operation : operations) {
+            Integer offset = (Integer) operation.getField("operationOffSet");
+            Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
+
+            operation.setField("effectiveDateFrom", null);
+            operation.setField("effectiveDateTo", null);
+
+            if (offset == null || duration == null || duration.equals(0)) {
+                continue;
+            }
+
+            if (offset == 0) {
+                offset = 1;
+            }
+
+            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
+
+            if (dateFrom == null) {
+                continue;
+            }
+
+            Date dateTo = shiftsService.findDateToForOrder(orderStartDate, offset + duration);
+
+            if (dateTo == null) {
+                continue;
+            }
+
+            operation.setField("effectiveDateFrom", dateFrom);
+            operation.setField("effectiveDateTo", dateTo);
+        }
+
+        for (Entity operation : operations) {
+            dataDefinition.save(operation);
+        }
+    }
+
+    public void copyRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
+        FieldComponent endDate = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
+        endDate.setFieldValue(generatedEndDate.getFieldValue());
+
+        state.performEvent(viewDefinitionState, "save", new String[0]);
+    }
+
+    @Transactional
+    public void generateRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
+        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
+        FieldComponent effectiveTimeConsumption = (FieldComponent) viewDefinitionState
+                .getComponentByReference("effectiveTimeConsumption");
+        FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
+
+        Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
+
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntity().getId());
+
+        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
+                viewDefinitionState.getLocale());
+
+        int maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
+                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, productionLine);
+
+        if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
+            state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
+            effectiveTimeConsumption.setFieldValue(null);
+            generatedEndDate.setFieldValue(null);
+        } else {
+            effectiveTimeConsumption.setFieldValue(maxPathTime);
+
+            Date startTime = (Date) order.getField("dateFrom");
+            Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
+
+            if (stopTime != null) {
+                startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+            }
+
+            if (stopTime == null) {
+                generatedEndDate.setFieldValue(null);
+            } else {
+                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
+                scheduleOrder(order.getId());
+            }
+        }
+    }
+
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
-
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
+        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
 
-        if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
-                || !StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            realizationTime.setFieldValue(null);
-            dateTo.setFieldValue(null);
+        if (technologyLookup.getFieldValue() == null) {
+            technologyLookup.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
+
+        if (!StringUtils.hasText((String) dateFrom.getFieldValue())) {
+            dateFrom.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
+
+        if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
+            plannedQuantity.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
+
+        if (productionLineLookup.getFieldValue() == null) {
+            productionLineLookup.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
         }
 
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
@@ -146,12 +279,6 @@ public class OrderTimePredictionService {
 
         int maxPathTime = 0;
 
-        if (technologyLookup.getFieldValue() == null) {
-            realizationTime.setFieldValue(null);
-            dateTo.setFieldValue(null);
-            return;
-        }
-
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
@@ -161,14 +288,13 @@ public class OrderTimePredictionService {
             return;
         }
 
-        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
 
         maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
                 technology.getTreeField("operationComponents").getRoot(), quantity, productionLine);
 
-        if (maxPathTime > orderRealizationTimeService.MAX_REALIZATION_TIME) {
+        if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
             realizationTime.setFieldValue(null);
             dateTo.setFieldValue(null);
@@ -185,14 +311,24 @@ public class OrderTimePredictionService {
                 dateFrom.setFieldValue(null);
             } else {
                 dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
-
             }
+
             if (stopTime == null) {
                 dateTo.setFieldValue(null);
             } else {
                 dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             }
         }
+    }
+
+    public void fillUnitField(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
+
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntity().getId());
+        Entity product = order.getBelongsToField("product");
+        unitField.setFieldValue(product.getField("unit"));
     }
 
     public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
