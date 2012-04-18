@@ -30,7 +30,7 @@
 			</group>
 			<group name="timeOfTechnology">
 				<bigButton name="countTimeOfTechnology" icon="generateIcon24.png"
-					action="#{window}.fireEvent(calculateRealizationTime,technology);" state="enabled" />
+					action="#{window}.fireEvent(changeRealizationTime);" state="enabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
@@ -46,6 +46,8 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="fillUnitField" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -67,11 +69,8 @@
 						</layoutElement>
 						<layoutElement column="3" row="1">
 							 <component type="select" name="operationDurationQuantityUNIT"
-								field="operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
-								hasLabel="false">
-								<option type="required" value="true" />
-								<option type="alingment" value="right" />
-							</component>
+								field="#{form}.operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
+								hasLabel="false" defaultEnabled="false" />
 						</layoutElement>
 					</component>
 				</layoutElement>
@@ -92,9 +91,6 @@
 					<component type="calendar" name="dateTo"
 						reference="dateTo" field="generatedEndDate" defaultEnabled="false">
 						<option type="withTimePicker" value="true" />
-						<listener event="initialize"
-							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-							method="clearFieldValue" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">

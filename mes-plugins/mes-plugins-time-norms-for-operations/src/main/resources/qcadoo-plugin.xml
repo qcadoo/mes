@@ -160,15 +160,15 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-		    <model:datetime name="effectiveDateFrom"/>
+		    <model:datetime name="effectiveDateFrom" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-		     <model:datetime name="effectiveDateTo"/>
+		     <model:datetime name="effectiveDateTo" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-		    <model:integer name="effectiveOperationRealizationTime"/>
+		    <model:integer name="effectiveOperationRealizationTime" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">

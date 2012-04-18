@@ -33,7 +33,19 @@ public class TechnologyOperCompHooksOrder {
 
     @Transactional
     public void createTechnologyInstanceFromScratch(final DataDefinition dataDefinition, final Entity order) {
+        Entity technology = order.getBelongsToField("technology");
 
+        if (technology == null) {
+            return;
+        }
+
+        EntityTreeNode operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+
+        DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+
+        order.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS, Collections.singletonList(createTechnologyOperationComponent(
+                operationComponentRoot, order, technology, null, technologyOperationComponentDD)));
     }
 
     @Transactional
@@ -109,7 +121,7 @@ public class TechnologyOperCompHooksOrder {
         technologyInstanceOperationComponent.setField("technology", technology);
         technologyInstanceOperationComponent.setField("parent", parent);
 
-        if (OPERATION.equals(operationComponent.getField("entityType"))) {
+        if (OPERATION.equals(operationComponent.getStringField("entityType"))) {
             createOrCopyTechnologyInstanceOperationComponent(operationComponent, order, technology,
                     technologyInstanceOperationComponentDD, technologyInstanceOperationComponent);
         } else {

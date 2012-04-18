@@ -104,8 +104,7 @@
 						<layoutElement column="3" row="1">
 							<component type="select" name="operationDurationQuantityUNIT"
 								field="#{form}.operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
-								hasLabel="false" defaultEnabled="false">
-							</component>
+								hasLabel="false" defaultEnabled="false" />
 						</layoutElement>
 					</component>
 				</layoutElement>

@@ -55,7 +55,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="3">
 					<component type="time" name="realizationTime" reference="realizationTime"
-						field="realizationTime">
+						field="realizationTime" defaultEnabled="false">
 						<option type="noHours" value="5"/>
 						<listener event="initialize"
 							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
@@ -64,7 +64,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="4">
 					<component type="calendar" name="stopTime" reference="stopTime"
-						field="dateTo">
+						field="dateTo" defaultEnabled="false">
 						<option type="withTimePicker" value="true" />
 						<listener event="initialize"
 							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"

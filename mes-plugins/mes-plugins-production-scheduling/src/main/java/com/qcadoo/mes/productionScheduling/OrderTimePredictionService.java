@@ -272,8 +272,7 @@ public class OrderTimePredictionService {
                 viewDefinitionState.getLocale());
 
         if (quantity.intValue() < 0) {
-            realizationTime.setFieldValue(null);
-            dateTo.setFieldValue(null);
+            plannedQuantity.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
             return;
         }
 
@@ -325,9 +324,26 @@ public class OrderTimePredictionService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
 
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntity().getId());
         Entity product = order.getBelongsToField("product");
+
+        unitField.setFieldValue(product.getField("unit"));
+    }
+
+    public void fillUnitField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
+
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
+
+        Entity product = technology.getBelongsToField("product");
+
         unitField.setFieldValue(product.getField("unit"));
     }
 

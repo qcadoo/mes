@@ -90,6 +90,16 @@ public class TimeTechnologyInOrderService {
         FieldComponent stopTime = (FieldComponent) viewDefinitionState.getComponentByReference(STOP_TIME_COMPONENT);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
+        if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
+            plannedQuantity.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
+
+        if (!StringUtils.hasText((String) startTime.getFieldValue())) {
+            startTime.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
+
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())
                 || !StringUtils.hasText((String) startTime.getFieldValue())) {
             realizationTime.setFieldValue(null);
