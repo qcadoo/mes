@@ -104,6 +104,9 @@
 		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		
+		<view:view-hook view="technologyInstanceOperationComponentDetails" type="beforeRender" plugin="technologies" 
+		    	class="com.qcadoo.mes.orders.hooks.TechnologyInstOperCompDetailsHooks" method="disabledFormWhenOrderStateIsAccepted"/>
+		
 		<report:report-template name="order"
 			resource="report/order.jrxml" />
 			
