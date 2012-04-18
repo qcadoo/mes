@@ -84,7 +84,7 @@ public class NormService {
             return operationComponent.getDecimalField("productionInOneCycle");
         } else if ("referenceTechnology".equals(entityType)) {
             Entity refOperationComp = operationComponent.getBelongsToField("referenceTechnology")
-                    .getTreeField("technologyOperationComponent").getRoot();
+                    .getTreeField("operationComponents").getRoot();
             return refOperationComp.getDecimalField("productionInOneCycle");
         } else {
             throw new IllegalStateException("operationComponent has illegal type, id = " + operationComponent.getId());
