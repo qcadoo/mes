@@ -652,12 +652,12 @@ public class OrderService {
         }
         FieldComponent dateTo = (FieldComponent) view.getComponentByReference("dateTo");
         FieldComponent deadline = (FieldComponent) view.getComponentByReference("deadline");
-        if (dateTo == null || dateTo == null) {
+        if (dateTo.getFieldValue().equals("") || deadline.getFieldValue().equals("")) {
             return;
         }
         if (timeConverterService.getDateFromField(dateTo.getFieldValue()).compareTo(
                 timeConverterService.getDateFromField(deadline.getFieldValue())) == 1) {
-            form.addTranslatedMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
+            form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
         }
     }
 }
