@@ -50,10 +50,10 @@
 			joinField="productionLine" cascade="delete" />
 			
 		<boolean name="supportsOtherTechnologiesWorkstationTypes" default="true" />
-		<integer name="quantityForOtherWorkstationTypes" default="1" required="true" />
+		<integer name="quantityForOtherWorkstationTypes" default="1" required="true">
+			<validatesRange from="0" exclusively="true" />
+		</integer>
 	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.productionLines.hooks.ProductionLineModelValidators" method="checkIfQuantityForOthersWorkstationTypesIsGreaterThanZero" />
-	</hooks>
+	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
 </model>

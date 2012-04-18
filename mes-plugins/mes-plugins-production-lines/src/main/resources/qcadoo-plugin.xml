@@ -78,7 +78,9 @@
 
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-			<model:integer name="quantityOfWorkstationTypes" />
+			<model:integer name="quantityOfWorkstationTypes" default="1" required="true">
+				<validatesRange from="0" exclusively="true" />
+			</model:integer>
 		</model:model-field>
 
 		<menu:menu-item name="productionLines" category="basic"
