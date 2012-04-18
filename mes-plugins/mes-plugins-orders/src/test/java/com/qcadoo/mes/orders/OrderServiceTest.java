@@ -114,6 +114,8 @@ public class OrderServiceTest {
 
     private static final String L_FORM = "form";
 
+    private static final long L_ID = 1L;
+
     private OrderService orderService;
 
     private DataDefinitionService dataDefinitionService;
@@ -146,13 +148,15 @@ public class OrderServiceTest {
         Entity defaultProductionLine = mock(Entity.class);
 
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
-        given(orderForm.getEntityId()).willReturn(1L);
+        given(orderForm.getEntityId()).willReturn(L_ID);
+
+        given(defaultProductionLine.getId()).willReturn(L_ID);
 
         // when
         orderService.fillProductionLine(view);
 
         // then
-        verify(productionLineLookup, never()).setFieldValue(defaultProductionLine);
+        verify(productionLineLookup, never()).setFieldValue(L_ID);
     }
 
     @Test
@@ -181,11 +185,13 @@ public class OrderServiceTest {
 
         given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
 
+        given(defaultProductionLine.getId()).willReturn(L_ID);
+
         // when
         orderService.fillProductionLine(view);
 
         // then
-        verify(productionLineLookup).setFieldValue(defaultProductionLine);
+        verify(productionLineLookup).setFieldValue(L_ID);
     }
 
     @Test
@@ -215,7 +221,7 @@ public class OrderServiceTest {
 
         Entity defaultProductionLine = mock(Entity.class);
 
-        given(order.getId()).willReturn(1L);
+        given(order.getId()).willReturn(L_ID);
 
         // when
         orderService.fillProductionLine(orderDD, order);
@@ -810,7 +816,7 @@ public class OrderServiceTest {
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(form);
         given(viewDefinitionState.getComponentByReference("state")).willReturn(orderState);
-        given(form.getEntityId()).willReturn(1L);
+        given(form.getEntityId()).willReturn(L_ID);
 
         // when
         orderService.setAndDisableState(viewDefinitionState);
