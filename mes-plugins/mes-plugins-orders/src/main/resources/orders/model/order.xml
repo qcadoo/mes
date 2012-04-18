@@ -83,7 +83,7 @@
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
 		<onSave class="com.qcadoo.mes.orders.states.ChangeStateHook"
 			method="changedState" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
+		<onCopy class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceFromScratch"/>
 		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

@@ -32,9 +32,12 @@ public class TechnologyOperCompHooksOrder {
     private ProductionLinesService productionLinesService;
 
     @Transactional
-    public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity order) {
-        boolean isEntityBeingCopied = order.getId() == null;
+    public void createTechnologyInstanceFromScratch(final DataDefinition dataDefinition, final Entity order) {
 
+    }
+
+    @Transactional
+    public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity order) {
         if (order.getBelongsToField(TECHNOLOGY) == null || !shouldCreateTechnologyInstance(order)) {
             return;
         }
