@@ -95,6 +95,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
+            readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }
 
         if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
@@ -210,6 +211,8 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionLines(values);
         } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {
             addDictionaryItems(values);
+        } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
+            addDefaultProductionLine(values);
         }
     }
 
@@ -1162,20 +1165,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
     }
 
-    void addProductionLines(final Map<String, String> values) {
-        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
-                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
-        productionLine.setField(L_NAME, values.get(L_NAME));
-        productionLine.setField(L_NUMBER, values.get(L_NUMBER));
-        productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
-        productionLine.setField("supportsOtherTechnologiesWorkstationTypes",
-                values.get("supportsothertechnologiesworkstationtypes"));
-        productionLine.setField("quantityForOtherWorkstationTypes", values.get("quantityforotherworkstationtypes"));
-
-        productionLine = productionLine.getDataDefinition().save(productionLine);
-        validateEntity(productionLine);
-    }
-
     void addQualityControl(final Map<String, String> values) {
 
         Entity qualitycontrol = dataDefinitionService.get(SamplesConstants.QUALITYCONTROL_PLUGIN_IDENTIFIER,
@@ -1244,11 +1233,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity getTechnologyByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getProductionLineByNumber(final String number) {
-        return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 

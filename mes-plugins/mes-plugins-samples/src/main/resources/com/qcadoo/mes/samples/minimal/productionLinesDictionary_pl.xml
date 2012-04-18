@@ -24,16 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="workstationTypeComponent" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" />
-		<belongsTo name="workstationType" plugin="basic" model="workstationType" lazy="false" required="true" />
-		
-		<integer name="quantity" default="1" required="true">
-			<validatesRange from="0" exclusively="true" />
-		</integer>
-	</fields>
-	<hooks />
-</model>
+<productionLinesDictionary>
+	<row NAME="productionLinePlaces" ITEM="Miejsce 1" DESCRIPTION="" />
+	<row NAME="productionLinePlaces" ITEM="Miejsce 2" DESCRIPTION="" />
+</productionLinesDictionary>

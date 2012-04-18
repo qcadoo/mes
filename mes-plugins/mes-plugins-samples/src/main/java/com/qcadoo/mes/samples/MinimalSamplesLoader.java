@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.samples;
 
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,6 +38,11 @@ public class MinimalSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, "dictionaries", locale);
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "company", locale);
+
+        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
+            readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
+        }
     }
 
 }

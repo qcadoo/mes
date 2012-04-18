@@ -146,23 +146,23 @@ ALTER TABLE productioncounting_operationpieceworkcomponent RENAME COLUMN orderOp
 
 
 -- Table: productionlines_productionline
--- changed: 12.04.2012
+-- changed: 17.04.2012
 
 ALTER TABLE productionlines_productionline ADD COLUMN supportsothertechnologiesworkstationtypes boolean DEFAULT true;
-ALTER TABLE productionlines_productionline ADD COLUMN quantityForOtherWorkstationtypes integer;
+ALTER TABLE productionlines_productionline ADD COLUMN quantityForOtherWorkstationtypes integer DEFAULT 1;
 
 -- end
 
 
 -- Table: productionlines_workstationtypecomponent
--- changed: 12.04.2012
+-- changed: 17.04.2012
 
 CREATE TABLE productionlines_workstationtypecomponent
 (
   id bigint NOT NULL,
   workstationtype_id bigint,
   productionline_id bigint,
-  quantity integer,
+  quantity integer DEFAULT 1,
   CONSTRAINT productionlines_workstationtypecomponent_pkey PRIMARY KEY (id),
   CONSTRAINT productionlines_workstationtypecomponent_wt_fkey FOREIGN KEY (workstationtype_id)
       REFERENCES basic_workstationtype (id) DEFERRABLE,
@@ -181,9 +181,9 @@ ALTER TABLE technologies_operation RENAME COLUMN countRealizedOperation TO count
 
 
 -- Table:  technologies_technologyinstanceoperationcomponent
--- changed: 12.04.2012
+-- changed: 17.04.2012
 
-ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantityofworkstationtypes integer;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN quantityofworkstationtypes integer DEFAULT 1;
 
 -- end
 
