@@ -418,6 +418,8 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+			method="fillProductionLine" />
+		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="generateOrderNumber" />
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="fillDefaultTechnology" />
