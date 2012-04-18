@@ -79,10 +79,6 @@
 		</model:model-field>
 		
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="effectiveTimeConsumption" />
-		</model:model-field>
-		
-		<model:model-field plugin="orders" model="order">
 			<model:datetime name="generatedEndDate" />
 		</model:model-field>
 
@@ -109,9 +105,14 @@
 			method="changeRealizationTime" />
 
 		<view:view-listener plugin="productionScheduling"
-			view="orderTimePrediction" component="window" event="countTimeOfTechnology"
+			view="operationDurationDetailsInOrder" component="window" event="generateRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="changeRealizationTime" />
+			method="generateRealizationTime" />
+
+		<view:view-listener plugin="productionScheduling"
+			view="operationDurationDetailsInOrder" component="window" event="copyRealizationTime"
+			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+			method="copyRealizationTime" />
 
 		<view:view-listener plugin="productionScheduling"
 			view="orderTimePrediction" component="window" event="clearAllField"

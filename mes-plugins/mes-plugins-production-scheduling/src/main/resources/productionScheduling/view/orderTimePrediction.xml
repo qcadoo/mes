@@ -30,59 +30,14 @@
 			</group>
 			<group name="timeOfTechnology">
 				<bigButton name="countTimeOfTechnology" icon="generateIcon24.png"
-					action="#{window}.fireEvent(countTimeOfTechnology);" state="enabled" />
-				<bigButton name="copy" icon="copyIcon24.png" state="enabled"
-					action="#{form}.performCopy;">
-					<script><![CDATA[
-						#{form}.addOnChangeListener({
-							onSetValue: function(value) {
-								if (!value || !value.content)
-									return; 
-								if (value.content.entityId) {
-									this.enable();
-								} else {
-									this.disable();
-								}
-							}
-						});
-					]]></script>
-				</bigButton>
-			</group>
-			<group name="orderParameters">
-				<bigButton name="orderParameters" icon="settingsIcon24.png"
-					state="enabled">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-										if(window.canClose()) {
-											#{form}.performEvent('showOrderParameters', []);
-										}
-								}
-							});		
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});					
-						]]>
-					</script>
-				</bigButton>
+					action="#{window}.fireEvent(calculateRealizationTime,technology);" state="enabled" />
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-		<component type="gridLayout" name="gridsLayout" columns="3"
+		<component type="gridLayout" name="gridsLayout" columns="2"
 				rows="7">
 				<layoutElement column="1" row="1">
-					<component type="lookup" name="technology" reference="technology"
-						model="technology" plugin="technologies">
+					<component type="lookup" field="technology" name="technology" reference="technology">
 						<option type="required" value="true" />
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
@@ -94,8 +49,9 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="startTime" reference="startTime"
+					<component type="calendar" name="dateFrom" reference="dateFrom"
 						field="dateFrom">
+						<option type="required" value="true" />
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
@@ -103,7 +59,7 @@
 					<component type="gridLayout" name="gridQuantity"
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
-							<component type="input" name="plannedQuantity" reference="plannedQuantity"
+							<component type="input" name="quantity" reference="quantity"
 								field="plannedQuantity">
 								<option type="alignment" value="right" />
 								<option type="labelWidth" value="45" />
@@ -122,6 +78,7 @@
 				<layoutElement column="1" row="4">
 					<component type="lookup" name="productionLine" reference="productionLine"
 						field="productionLine">
+						<option type="required" value="true" />
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
 						<option type="searchable" value="name,number" />
@@ -132,8 +89,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5">
-					<component type="calendar" name="generatedEndDate"
-						reference="generatedEndDate" field="generatedEndDate">
+					<component type="calendar" name="dateTo"
+						reference="dateTo" field="generatedEndDate" defaultEnabled="false">
 						<option type="withTimePicker" value="true" />
 						<listener event="initialize"
 							class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
@@ -141,41 +98,15 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="time" name="effectiveTimeConsumption"
-						reference="effectiveTimeConsumption" field="effectiveTimeConsumption"
-						hasDescription="true" required="true">
+					<component type="time" name="realizationTime"
+						reference="realizationTime" field="realizationTime"
+						hasDescription="true" required="true" defaultEnabled="false">
 						<option type="labelWidth" value="80" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="6" width="2">
-					<component type="gridLayout" name="technologyGridLayout"
-						columns="1" rows="1">
-						<layoutElement column="1" row="1">
-							<component type="grid" name="operations" reference="grid"
-								source="#{form}.technologyInstanceOperationComponents">
-								<option type="column" name="number" fields="operation"
-									expression="#operation['number']" link="true" />
-								<option type="column" name="name" fields="operation"
-									expression="#operation['name']" link="true" width="200" />
-								<option type="order" column="number" direction="asc" />
-								<option type="correspondingView"
-									value="technologies/technologyInstanceOperationComponentDetails" />
-								<option type="correspondingComponent" value="form" />
-								<option type="searchable" value="number, name" />
-								<option type="orderable" value="number, name" />
-								<option type="fullscreen" value="true" />
-								<option type="multiselect" value="true" />
-							<!-- 	<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
-								method="fillTechnologyOperations" /> -->
-							</component>
-						</layoutElement>
 					</component>
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="" />
-			<listener event="showOrderParameters" method="showOrderParameters"
-				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 		</component>
 		<option type="header" value="true" />
 	</component>
