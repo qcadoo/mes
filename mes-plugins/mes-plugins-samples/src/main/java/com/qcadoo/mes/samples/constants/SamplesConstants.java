@@ -97,9 +97,11 @@ public interface SamplesConstants {
 
     String L_WORKSTATION_TYPES = "workstationTypes";
 
+    String L_PRODUCTION_LINES = "productionLines";
+
     String L_PRODUCTION_LINES_DICTIONARY = "productionLinesDictionary";
 
-    String L_PRODUCTION_LINES = "productionLines";
+    String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
 
     String L_DESCRIPTION = "description";
 

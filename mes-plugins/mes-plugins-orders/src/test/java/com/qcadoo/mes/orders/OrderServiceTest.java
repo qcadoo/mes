@@ -136,6 +136,78 @@ public class OrderServiceTest {
     }
 
     @Test
+    public void shouldntFillProductionLineIfFormIsSaved() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity defaultProductionLine = mock(Entity.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntityId()).willReturn(1L);
+
+        // when
+        orderService.fillProductionLine(view);
+
+        // then
+        verify(productionLineLookup, never()).setFieldValue(defaultProductionLine);
+    }
+
+    @Test
+    public void shouldFillProductionLineIfFormIsntSaved() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity defaultProductionLine = mock(Entity.class);
+
+        Entity parameter = mock(Entity.class);
+        DataDefinition parameterDD = mock(DataDefinition.class);
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntityId()).willReturn(null);
+
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
+                .willReturn(parameterDD);
+        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+
+        given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
+
+        // when
+        orderService.fillProductionLine(view);
+
+        // then
+        verify(productionLineLookup).setFieldValue(defaultProductionLine);
+    }
+
+    @Test
+    public void shouldntFillProductionLineIfFormIsSavedAndProductionLineIsntNull() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        Entity productionLine = mock(Entity.class);
+        Entity defaultProductionLine = mock(Entity.class);
+
+        given(order.getId()).willReturn(null);
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+
+        // when
+        orderService.fillProductionLine(orderDD, order);
+
+        // then
+        verify(order, never()).setField(PRODUCTION_LINE, defaultProductionLine);
+    }
+
+    @Test
     public void shouldntFillProductionLineIfOrderIsntSaved() {
         // given
         Entity order = mock(Entity.class);

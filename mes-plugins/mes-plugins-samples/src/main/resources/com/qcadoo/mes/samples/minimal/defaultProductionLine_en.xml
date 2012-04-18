@@ -24,22 +24,6 @@
     ***************************************************************************
 
 -->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" 
-	view="technologyInstanceOperationComponentDetails">
-
-	<windowTab name="workstationTypesTab" reference="workstationTypesTab">
-		<component type="gridLayout" name="workstationTypesGridLayout"
-			columns="3" rows="1">
-			<layoutElement column="1" row="1">
-				<component type="input" name="quantityOfWorkstationTypes"
-					field="#{form}.quantityOfWorkstationTypes" reference="quantityOfWorkstationTypes"
-					hasDescription="true">
-					<option type="labelWidth" value="60" />
-					<option type="alignment" value="right" />
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
-</windowTabExtension>
+<defaultProductionLine>
+	<row PRODUCTION_LINE_NR="000001" />
+</defaultProductionLine>

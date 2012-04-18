@@ -82,6 +82,10 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class OrderService {
 
+    private static final String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
+
+    private static final String L_EMPTY_NUMBER = "";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -94,14 +98,26 @@ public class OrderService {
     @Autowired
     private ExpressionService expressionService;
 
-    private static final String EMPTY_NUMBER = "";
-
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
     }
 
     private DataDefinition getOrderDataDefinition() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
+    public final void fillProductionLine(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        fillProductionLine(view);
+    }
+
+    public final void fillProductionLine(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(FIELD_FORM);
+
+        FieldComponent productionLine = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
+
+        if (orderForm.getEntityId() == null) {
+            productionLine.setFieldValue(getDefaultProductionLine());
+        }
     }
 
     public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
@@ -113,13 +129,21 @@ public class OrderService {
             return;
         }
 
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-
-        Entity defaultProductionLine = parameter.getBelongsToField("defaultProductionLine");
+        Entity defaultProductionLine = getDefaultProductionLine();
 
         if (defaultProductionLine != null) {
             order.setField(PRODUCTION_LINE, defaultProductionLine);
+        }
+    }
+
+    private Entity getDefaultProductionLine() {
+        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
+                .uniqueResult();
+
+        if ((parameter == null) || (parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE) == null)) {
+            return null;
+        } else {
+            return parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE);
         }
     }
 
@@ -163,7 +187,7 @@ public class OrderService {
         if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
-        String technologyNumber = EMPTY_NUMBER;
+        String technologyNumber = L_EMPTY_NUMBER;
         if (technologyEntity != null) {
             technologyNumber = "tech. " + technologyEntity.getStringField(FIELD_NUMBER);
         }

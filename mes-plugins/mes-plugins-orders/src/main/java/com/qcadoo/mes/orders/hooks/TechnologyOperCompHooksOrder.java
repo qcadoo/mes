@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -26,6 +27,9 @@ public class TechnologyOperCompHooksOrder {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductionLinesService productionLinesService;
 
     @Transactional
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity order) {
@@ -123,6 +127,8 @@ public class TechnologyOperCompHooksOrder {
         technologyInstanceOperationComponent.setField("priority", operationComponent.getField("priority"));
         technologyInstanceOperationComponent.setField("nodeNumber", operationComponent.getField("nodeNumber"));
         technologyInstanceOperationComponent.setField("entityType", OPERATION);
+        technologyInstanceOperationComponent.setField("quantityOfWorkstationTypes",
+                productionLinesService.getWorkstationTypesCount(operationComponent, order.getBelongsToField("productionLine")));
 
         List<Entity> newTechnologyOperationComponents = new ArrayList<Entity>();
 
