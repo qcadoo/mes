@@ -73,11 +73,13 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderService {
@@ -94,6 +96,9 @@ public class OrderService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private TimeConverterService timeConverterService;
 
     @Autowired
     private ExpressionService expressionService;
@@ -592,8 +597,6 @@ public class OrderService {
             state.getComponentByReference(FIELD_NUMBER).setEnabled(false);
             state.getComponentByReference(NAME).setEnabled(false);
             state.getComponentByReference(COMPANY).setEnabled(false);
-            state.getComponentByReference(DATE_FROM).setEnabled(false);
-            state.getComponentByReference(DATE_TO).setEnabled(false);
             state.getComponentByReference(DEADLINE).setEnabled(false);
             state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
             state.getComponentByReference(PLANNED_QUANTITY).setEnabled(false);
@@ -634,5 +637,21 @@ public class OrderService {
             }
 
         });
+    }
+
+    public void compareDeadlineAndDateTo(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent dateTo = (FieldComponent) view.getComponentByReference("dateTo");
+        FieldComponent deadline = (FieldComponent) view.getComponentByReference("deadline");
+        if (dateTo == null || dateTo == null) {
+            return;
+        }
+        if (timeConverterService.getDateFromField(dateTo.getFieldValue()).compareTo(
+                timeConverterService.getDateFromField(deadline.getFieldValue())) == 1) {
+            form.addTranslatedMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
+        }
     }
 }
