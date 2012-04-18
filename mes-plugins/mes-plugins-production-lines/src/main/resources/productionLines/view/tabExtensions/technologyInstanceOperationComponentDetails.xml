@@ -37,6 +37,7 @@
 					field="#{form}.quantityOfWorkstationTypes" reference="quantityOfWorkstationTypes"
 					hasDescription="true">
 					<option type="labelWidth" value="60" />
+					<option type="alignment" value="right" />
 				</component>
 			</layoutElement>
 		</component>
