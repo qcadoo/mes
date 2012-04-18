@@ -66,6 +66,7 @@ import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -390,7 +391,7 @@ public class ProductionRecordService {
         plannedTimeValues.put(PLANNED_LABOR_TIME, BigDecimal.ZERO);
         Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
         Entity productionLine = order.getBelongsToField("productionLine");
-        BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY);
+        BigDecimal plannedQuantity = (BigDecimal) order.getField(ProductionRecordFields.PLANNED_QUANTITY);
         Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateRealizationTimes(order, plannedQuantity,
                 true, true, productionLine);
         if (orderOperComp == null) {

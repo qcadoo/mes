@@ -32,16 +32,22 @@ public class TechnologyOperCompHooksOrder {
     private ProductionLinesService productionLinesService;
 
     @Transactional
-    public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getBelongsToField(TECHNOLOGY) == null || !shouldPropagateFromLowerInstance(entity)) {
+    public void createTechnologyInstanceFromScratch(final DataDefinition dataDefinition, final Entity order) {
+
+    }
+
+    @Transactional
+    public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity order) {
+        if (order.getBelongsToField(TECHNOLOGY) == null || !shouldCreateTechnologyInstance(order)) {
             return;
         }
+
         DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
-        Entity technology = entity.getBelongsToField(TECHNOLOGY);
+        Entity technology = order.getBelongsToField(TECHNOLOGY);
 
-        EntityTree technologyOperationComponents = entity.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+        EntityTree technologyOperationComponents = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
         if (technology == null) {
             if (technologyOperationComponents != null && technologyOperationComponents.size() > 0) {
@@ -60,11 +66,11 @@ public class TechnologyOperCompHooksOrder {
 
         EntityTreeNode operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-        entity.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS, Collections.singletonList(createTechnologyOperationComponent(
-                operationComponentRoot, entity, technology, null, technologyOperationComponentDD)));
+        order.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS, Collections.singletonList(createTechnologyOperationComponent(
+                operationComponentRoot, order, technology, null, technologyOperationComponentDD)));
     }
 
-    private boolean shouldPropagateFromLowerInstance(final Entity order) {
+    private boolean shouldCreateTechnologyInstance(final Entity order) {
         return !hasTechnologyInstanceOperationComponents(order) || technologyWasChanged(order);
     }
 

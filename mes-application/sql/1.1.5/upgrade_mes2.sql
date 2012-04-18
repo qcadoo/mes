@@ -202,7 +202,6 @@ ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN isTjD
 -- changed: 16.04.2012
 ALTER TABLE orders_order ADD COLUMN generatedenddate timestamp without time zone;
 ALTER TABLE orders_order ADD COLUMN operationdurationquantityunit character varying(255);
-ALTER TABLE orders_order ADD COLUMN effectivetimeconsumption integer;
 --end
 
 --Table : technologies_operation

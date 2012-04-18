@@ -1,5 +1,7 @@
 package com.qcadoo.mes.costNormsForOperation;
 
+import static java.util.Arrays.asList;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -140,9 +142,18 @@ public class CostNormsForOperationServiceTest {
     public void shouldCopyCostNormsToTechnologyInstanceOperationComponent() throws Exception {
         // given
         when(technologyInstanceOperCompEntity.getBelongsToField("technologyOperationComponent")).thenReturn(techOperCompEntity);
+
+        for (String field : asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
+            when(techOperCompEntity.getField(field)).thenReturn(field);
+        }
+
         // when
         costNormsForOperationService.copyCostNormsToTechnologyInstanceOperationComponent(techInsOperCompDD,
                 technologyInstanceOperCompEntity);
+
         // then
+        for (String field : asList("pieceworkCost", "numberOfOperations", "laborHourlyCost", "machineHourlyCost")) {
+            verify(technologyInstanceOperCompEntity).setField(field, field);
+        }
     }
 }

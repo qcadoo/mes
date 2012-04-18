@@ -34,9 +34,9 @@
 			</group>
 			<group name="operationDuration">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.generateReportForEntity('orders','order','pdf')" />
+					action="#{window}.fireEvent(generateRealizationTime);" />
 				<bigButton name="copy" icon="copyIcon24.png" state="disabled"
-					action="#{form}.performCopy;">
+					action="#{window}.fireEvent(copyRealizationTime);">
 					<script><![CDATA[
 				#{form}.addOnChangeListener({
 					onSetValue: function(value) {
@@ -87,6 +87,7 @@
 				<layoutElement column="1" row="1">
 					<component type="calendar" name="startTime" reference="startTime"
 						field="dateFrom">
+						<option type="required" value="true" />
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
@@ -94,7 +95,7 @@
 					<component type="gridLayout" name="gridQuantity"
 						hasBorders="false" columns="3" rows="1">
 						<layoutElement column="1" row="1" width="2">
-							<component type="input" name="quantity" reference="quantity"
+							<component type="input" name="quantity" reference="plannedQuantity"
 								field="plannedQuantity">
 								<option type="alignment" value="right" />
 								<option type="labelWidth" value="45" />
@@ -103,9 +104,7 @@
 						<layoutElement column="3" row="1">
 							<component type="select" name="operationDurationQuantityUNIT"
 								field="#{form}.operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
-								hasLabel="false">
-								<option type="required" value="true" />
-								<option type="alingment" value="right" />
+								hasLabel="false" defaultEnabled="false">
 							</component>
 						</layoutElement>
 					</component>
@@ -113,6 +112,7 @@
 				<layoutElement column="1" row="3">
 					<component type="lookup" name="productionLine" reference="productionLine"
 						field="productionLine">
+						<option type="required" value="true" />
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
 						<option type="searchable" value="name,number" />
@@ -123,7 +123,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="calendar" name="deadline" reference="deadline">
+					<component type="calendar" name="deadline" field="deadline" reference="deadline">
 						<option type="labelWidth" value="30" />
 						<option type="withTimePicker" value="true" />
 					</component>
@@ -137,18 +137,12 @@
 								<component type="calendar" name="stopTime" reference="stopTime"
 									field="dateTo">
 									<option type="withTimePicker" value="true" />
-									<listener event="initialize"
-										class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-										method="clearFieldValue" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="calendar" name="generatedEndDate"
-									reference="generatedEndDate" field="generatedEndDate">
+									reference="generatedEndDate" field="generatedEndDate" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="initialize"
-										class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-										method="clearFieldValue" />
 								</component>
 							</layoutElement>
 						</component>
@@ -157,8 +151,8 @@
 				</layoutElement>
 				<layoutElement column="1" row="6">
 					<component type="time" name="effectiveTimeConsumption"
-						field="#{form}.effectiveTimeConsumption" reference="effectiveTimeConsumption"
-						hasDescription="true" required="true">
+						field="realizationTime" reference="effectiveTimeConsumption"
+						hasDescription="true" defaultEnabled="false">
 						<option type="labelWidth" value="80" />
 					</component>
 				</layoutElement>
@@ -168,10 +162,16 @@
 						<layoutElement column="1" row="1">
 							<component type="grid" name="operations" reference="grid"
 								source="#{form}.technologyInstanceOperationComponents">
+								
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']" link="true" />
 								<option type="column" name="name" fields="operation"
-									expression="#operation['name']" link="true" width="200" />
+									expression="#operation['name']" link="true" />
+								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
+								<option type="column" name="dateTo" fields="effectiveDateTo" />	
+								<option type="column" name="realizationTime" fields="effectiveOperationRealizationTime" />
+								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
+								
 								<option type="order" column="number" direction="asc" />
 								<option type="correspondingView"
 									value="technologies/technologyInstanceOperationComponentDetails" />
@@ -191,4 +191,7 @@
 				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 		</component>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="fillUnitField" />
+	</hooks>
 </view>
