@@ -35,7 +35,7 @@ public class TechnologyOperCompHooksOrder {
     public void createTechnologyInstanceForOrder(final DataDefinition dataDefinition, final Entity order) {
         boolean isEntityBeingCopied = order.getId() == null;
 
-        if (order.getBelongsToField(TECHNOLOGY) == null || !shouldCFromLowerInstance(order)) {
+        if (order.getBelongsToField(TECHNOLOGY) == null || !shouldCreateTechnologyInstance(order)) {
             return;
         }
 
