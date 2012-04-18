@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.samples;
 
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -82,6 +90,12 @@ public abstract class SamplesLoader {
             addShifts(values);
         } else if ("company".equals(type)) {
             addCompany(values);
+        } else if (L_PRODUCTION_LINES.equals(type)) {
+            addProductionLines(values);
+        } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {
+            addDictionaryItems(values);
+        } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
+            addDefaultProductionLine(values);
         }
     }
 
@@ -257,6 +271,35 @@ public abstract class SamplesLoader {
 
         shift = shift.getDataDefinition().save(shift);
         validateEntity(shift);
+    }
+
+    void addProductionLines(final Map<String, String> values) {
+        Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
+                PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
+        productionLine.setField(L_NAME, values.get(L_NAME));
+        productionLine.setField(L_NUMBER, values.get(L_NUMBER));
+        productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
+        productionLine.setField("supportsOtherTechnologiesWorkstationTypes",
+                values.get("supportsothertechnologiesworkstationtypes"));
+        productionLine.setField("quantityForOtherWorkstationTypes", values.get("quantityforotherworkstationtypes"));
+
+        productionLine = productionLine.getDataDefinition().save(productionLine);
+        validateEntity(productionLine);
+    }
+
+    void addDefaultProductionLine(final Map<String, String> values) {
+        Entity parameter = dataDefinitionService
+                .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_PARAMETER).find().uniqueResult();
+
+        parameter.setField(L_DEFAULT_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
+
+        parameter = parameter.getDataDefinition().save(parameter);
+        validateEntity(parameter);
+    }
+
+    Entity getProductionLineByNumber(final String number) {
+        return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     String getRandomDictionaryItem(final String dictionaryName) {
