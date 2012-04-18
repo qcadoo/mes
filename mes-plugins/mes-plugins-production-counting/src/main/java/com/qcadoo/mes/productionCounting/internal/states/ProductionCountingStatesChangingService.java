@@ -70,10 +70,14 @@ public class ProductionCountingStatesChangingService {
         }
 
         if (oldEntity == null && !state.equals(DRAFT)) {
-            return Arrays.asList(ChangeRecordStateMessage.error(""));
+            throw new IllegalStateException("Entity state is unsuitable.");
         }
-        if (oldEntity != null && state.equals(ACCEPTED) && !DRAFT.getStringValue().equals(oldEntity.getStringField(FIELD_STATE))) {
-            return Arrays.asList(ChangeRecordStateMessage.error(""));
+        if (oldEntity != null
+                && (state.equals(ACCEPTED) && DECLINED.getStringValue().equals(oldEntity.getStringField(FIELD_STATE)))
+                && (state.equals(DRAFT) && ACCEPTED.getStringValue().equals(oldEntity.getStringField(FIELD_STATE)))) {
+            throw new IllegalStateException("Entity state is unsuitable. State exists entity is "
+                    + oldEntity.getStringField(FIELD_STATE) + " new state is " + newEntity.getStringField(FIELD_STATE));
+
         }
         switch (state) {
             case ACCEPTED:
