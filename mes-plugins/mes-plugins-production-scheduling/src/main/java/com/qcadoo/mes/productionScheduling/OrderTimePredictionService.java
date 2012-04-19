@@ -225,12 +225,6 @@ public class OrderTimePredictionService {
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
             if (stopTime != null) {
-                startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
-            }
-
-            if (stopTime == null) {
-                generatedEndDate.setFieldValue(null);
-            } else {
                 generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
                 scheduleOrder(order.getId());
             }
