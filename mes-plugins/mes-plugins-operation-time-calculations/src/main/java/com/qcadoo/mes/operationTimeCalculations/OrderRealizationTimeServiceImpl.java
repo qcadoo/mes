@@ -161,9 +161,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
         for (Entity operationComponent : operationComponents) {
-            if ("order".equals(entityType)) {
-                operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
-            }
+            // if ("order".equals(entityType)) {
+            // operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
+            // }
 
             evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
                     includeAdditionalTime, operationRunsField, productionLine);
@@ -184,7 +184,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else {
             int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField,
                     productionLine);
-            operationDurations.put(operationComponent, duration);
+            if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+                operationDurations.put(operationComponent.getBelongsToField("technologyOperationComponent"), duration);
+            } else {
+                operationDurations.put(operationComponent, duration);
+            }
         }
     }
 

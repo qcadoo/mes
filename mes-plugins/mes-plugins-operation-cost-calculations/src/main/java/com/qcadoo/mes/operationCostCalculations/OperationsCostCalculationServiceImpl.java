@@ -141,7 +141,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             entity.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
         } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
             Entity productionLine = entity.getBelongsToField("productionLine");
-            Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(technology, quantity,
+            Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateRealizationTimes(order, quantity,
                     includeTPZ, includeAdditionalTime, productionLine);
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(operationComponents.getRoot(), margin,
