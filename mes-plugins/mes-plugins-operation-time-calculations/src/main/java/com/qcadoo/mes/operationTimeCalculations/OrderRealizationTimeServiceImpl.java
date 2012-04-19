@@ -43,6 +43,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -79,6 +80,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private ProductionLinesService productionLinesService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Override
     public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
@@ -230,23 +234,60 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
-            int pathTime = 0;
+            int offset = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
-                int tmpPathTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
-                        maxForWorkstation);
-                if (tmpPathTime > pathTime) {
-                    pathTime = tmpPathTime;
+                int childTimeConsumption = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
+                        productionLine, maxForWorkstation);
+
+                if ("02specified".equals(child.getStringField("countRealized"))) {
+                    BigDecimal productCountWhenToStartNextOperation = child.getDecimalField("countMachine");
+                    BigDecimal producedInOneCycle = technologyService.getProductCountForOperationComponent(child);
+
+                    if (productCountWhenToStartNextOperation.compareTo(producedInOneCycle) < 0) {
+                        int tpz = includeTpz ? getIntegerValue(child.getField("tpz")) : 0;
+
+                        // TODO mici, i think additional time should be omitted
+                        // int additionalTime = includeAdditionalTime ? getIntegerValue(child.getField("timeNextOperation")) : 0;
+
+                        Entity technologyOperationComponent = child;
+
+                        if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+                            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
+                                    operationComponent.getBelongsToField("technologyOperationComponent").getId());
+                        }
+
+                        BigDecimal cycles = operationRuns.get(technologyOperationComponent);
+
+                        BigDecimal howManyCyclesIsThat = producedInOneCycle.multiply(cycles, numberService.getMathContext())
+                                .divide(productCountWhenToStartNextOperation, numberService.getMathContext());
+
+                        boolean isTjDivisable = child.getBooleanField("isTjDivisible");
+
+                        if (!isTjDivisable) {
+                            howManyCyclesIsThat = howManyCyclesIsThat.setScale(0, RoundingMode.CEILING);
+                        }
+
+                        int tj = getIntegerValue(child.getField("tj"));
+
+                        childTimeConsumption = tpz
+                                + howManyCyclesIsThat.multiply(BigDecimal.valueOf(tj), numberService.getMathContext()).intValue();
+                    }
+                }
+
+                if (childTimeConsumption > offset) {
+                    offset = childTimeConsumption;
                 }
             }
 
             if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
-                operationComponent.setField("operationOffSet", pathTime);
+                operationComponent.setField("operationOffSet", offset);
                 operationComponent.getDataDefinition().save(operationComponent);
             }
 
-            return pathTime + operationTime;
+            return offset + operationTime;
         }
 
         throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
@@ -279,7 +320,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         }
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
-        boolean isTjDivisable = technologyOperationComponent.getBooleanField("isTjDivisible");
+        boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
 
         BigDecimal cyclesPerOperation = cycles;

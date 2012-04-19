@@ -26,7 +26,6 @@ package com.qcadoo.mes.ganttForOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -34,22 +33,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class GanttOperationService {
-
-    private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
-
-    private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
 
     private static final String GANTT_FIELD = "gantt";
 
     private static final String DATE_TO_FIELD = "dateTo";
 
     private static final String DATE_FROM_FIELD = "dateFrom";
-
-    @Autowired
-    private ShiftsServiceImpl shiftsService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -83,7 +76,7 @@ public class GanttOperationService {
     }
 
     public void checkDoneCalculate(final ViewDefinitionState viewDefinitionState) {
-        ComponentState form = (ComponentState) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
         Object realizationTime = order.getField("realizationTime");
@@ -93,7 +86,6 @@ public class GanttOperationService {
     }
 
     public void fillTitleLabel(final ViewDefinitionState viewDefinitionState) {
-
         FieldComponent title = (FieldComponent) viewDefinitionState.getComponentByReference("title");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
         String number = order.getField("number").toString();

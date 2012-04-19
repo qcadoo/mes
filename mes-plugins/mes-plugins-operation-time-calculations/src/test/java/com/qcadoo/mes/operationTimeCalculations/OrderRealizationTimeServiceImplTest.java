@@ -184,6 +184,24 @@ public class OrderRealizationTimeServiceImplTest {
     }
 
     @Test
+    public void shouldCalculateMaxTimeConsumptionPerWorkstationCorrectly() {
+        // given
+        boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
+        BigDecimal plannedQuantity = new BigDecimal(1);
+
+        when(productionLinesService.getWorkstationTypesCount(opComp1, productionLine)).thenReturn(2);
+        when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
+
+        // when
+        int time = orderRealizationTimeServiceImpl.estimateMaxOperationTimeConsumptionForWorkstation(opComp1, plannedQuantity,
+                includeTpz, includeAdditionalTime, productionLine);
+
+        // then
+        assertEquals(7, time);
+    }
+
+    @Test
     public void shouldReturnTimesForAllOperationsInAnOrder() {
         // given
         boolean includeTpz = true;
@@ -205,6 +223,34 @@ public class OrderRealizationTimeServiceImplTest {
         // then
         assertEquals(new Integer(4), operationDurations.get(opComp1));
         assertEquals(new Integer(6), operationDurations.get(opComp2));
+    }
+
+    @Test
+    public void shouldReturnMaxTimeConsumptionsForWorkstationsInAnOrder() {
+        // given
+        boolean includeTpz = true;
+        boolean includeAdditionalTime = true;
+        BigDecimal plannedQuantity = new BigDecimal(1);
+        DataDefinition dd = mock(DataDefinition.class);
+        when(dd.getName()).thenReturn("order");
+        when(order.getDataDefinition()).thenReturn(dd);
+        EntityTree technologyInstanceOperationComponents = mockEntityTreeIterator(asList((Entity) opComp1, (Entity) opComp2));
+        when(order.getTreeField("technologyInstanceOperationComponents")).thenReturn(technologyInstanceOperationComponents);
+
+        when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
+        when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
+
+        when(productionLinesService.getWorkstationTypesCount(opComp1, productionLine)).thenReturn(2);
+        when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
+
+        // when
+        Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl
+                .estimateMaxOperationTimeConsumptionsForWorkstations(order, plannedQuantity, includeTpz, includeAdditionalTime,
+                        productionLine);
+
+        // then
+        assertEquals(new Integer(3), operationDurations.get(opComp1));
+        assertEquals(new Integer(4), operationDurations.get(opComp2));
     }
 
     @Test
