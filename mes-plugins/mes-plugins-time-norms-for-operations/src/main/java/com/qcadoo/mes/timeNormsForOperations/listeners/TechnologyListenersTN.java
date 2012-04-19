@@ -22,7 +22,9 @@ public class TechnologyListenersTN {
     public void checkOperationOutputQuantities(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-
+        if (form.getEntityId() == null) {
+            return;
+        }
         Entity technology = form.getEntity();
 
         if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField("state"))) {

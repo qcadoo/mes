@@ -70,7 +70,7 @@
 								
 							<option type="order" column="name" direction="asc" />
 							
-							<option type="correspondingView" value="costNormsForProduct/costNormsForProductsInOrderDetails" />
+							<option type="correspondingView" value="costNormsForMaterials/costNormsForMaterialsInOrderDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
 							
