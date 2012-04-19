@@ -161,10 +161,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
 
         for (Entity operationComponent : operationComponents) {
-            // if ("order".equals(entityType)) {
-            // operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
-            // }
-
             evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
                     includeAdditionalTime, operationRunsField, productionLine);
         }
