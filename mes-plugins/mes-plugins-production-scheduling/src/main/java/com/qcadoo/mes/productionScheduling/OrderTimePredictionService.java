@@ -211,8 +211,8 @@ public class OrderTimePredictionService {
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
-        int maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
-                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, productionLine);
+        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
+                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, true, true, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
@@ -284,8 +284,8 @@ public class OrderTimePredictionService {
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
 
-        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
-                technology.getTreeField("operationComponents").getRoot(), quantity, productionLine);
+        maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(technology.getTreeField("operationComponents")
+                .getRoot(), quantity, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);

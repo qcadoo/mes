@@ -158,7 +158,7 @@ public class OrderRealizationTimeServiceImplTest {
         BigDecimal plannedQuantity = new BigDecimal(1);
 
         // when
-        int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz,
+        int time = orderRealizationTimeServiceImpl.estimateOperationTimeConsumption(opComp1, plannedQuantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
         // then
@@ -166,7 +166,7 @@ public class OrderRealizationTimeServiceImplTest {
     }
 
     @Test
-    public void shouldShortenOperationTimeWithMoreWorkstations() {
+    public void shouldActuallyMakeTimeConsumptionLongerWithMoreWorkstationsDueAdditionalTpz() {
         // given
         boolean includeTpz = true;
         boolean includeAdditionalTime = true;
@@ -176,11 +176,11 @@ public class OrderRealizationTimeServiceImplTest {
         when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
 
         // when
-        int time = orderRealizationTimeServiceImpl.estimateRealizationTimeForOperation(opComp1, plannedQuantity, includeTpz,
+        int time = orderRealizationTimeServiceImpl.estimateOperationTimeConsumption(opComp1, plannedQuantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(7, time);
+        assertEquals(14, time);
     }
 
     @Test
@@ -199,7 +199,7 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
 
         // when
-        Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(order,
+        Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateOperationTimeConsumptions(order,
                 plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then
@@ -221,7 +221,7 @@ public class OrderRealizationTimeServiceImplTest {
         when(technology.getTreeField("operationComponents")).thenReturn(technologyInstanceOperationComponents);
 
         // when
-        Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateRealizationTimes(technology,
+        Map<Entity, Integer> operationDurations = orderRealizationTimeServiceImpl.estimateOperationTimeConsumptions(technology,
                 plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then

@@ -169,7 +169,9 @@
 								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
 								<option type="column" name="dateTo" fields="effectiveDateTo" />	
 								<option type="column" name="realizationTime" fields="effectiveOperationRealizationTime" />
-								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
+<!-- 								<option type="column" name="realizationTime"
+									fields="effectiveOperationRealizationTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).duration2String(#effectiveOperationRealizationTime)"/>
+ -->							<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
 								
 								<option type="order" column="number" direction="asc" />
 								<option type="correspondingView"

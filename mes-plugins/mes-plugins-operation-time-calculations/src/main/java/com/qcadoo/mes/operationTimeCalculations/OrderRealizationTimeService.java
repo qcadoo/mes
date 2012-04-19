@@ -53,10 +53,9 @@ public interface OrderRealizationTimeService {
      * @param productionLine
      *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
      *            order, though.
-     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish
-     *         (includeTpz).
+     * @return Time consumption of an operation in seconds, including offset caused by waiting for child operations to finish.
      */
-    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+    int estimateOperationTimeConsumption(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
             final Entity productionLine);
 
     /**
@@ -73,9 +72,47 @@ public interface OrderRealizationTimeService {
      * @param productionLine
      *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
      *            order, though.
-     * @return Duration of an operation in seconds, including offset caused by waiting for child operations to finish.
+     * @return Time consumption of an operation in seconds, including offset caused by waiting for child operations to finish.
      */
-    int estimateRealizationTimeForOperation(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+    int estimateOperationTimeConsumption(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine);
+
+    /**
+     * 
+     * @param operationComponent
+     *            operationComponent of an operation we want to estimate. Can be either technologyOperationComponent or
+     *            technologyInstanceOperationComponent
+     * @param plannedQuantity
+     *            How many products we want this operation to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @param includeAdditionalTime
+     *            Flag indicating if we want to include Additional Time
+     * @param productionLine
+     *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
+     *            order, though.
+     * @return Max time consumption for workstation of an operation in seconds, including offset caused by waiting for child
+     *         operations to finish.
+     */
+    int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent, BigDecimal plannedQuantity,
+            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine);
+
+    /**
+     * 
+     * @param entity
+     *            An order or a technology for which we want to estimate operation times.
+     * @param plannedQuantity
+     *            How many products we want this order/technology to produce
+     * @param includeTpz
+     *            Flag indicating if we want to include Tpz
+     * @param includeAdditionalTime
+     *            Flag indicating if we want to include Additional Time
+     * @param productionLine
+     *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
+     *            order, though.
+     * @return Map where keys are operationComponents and values are corresponding operation time consumptions
+     */
+    Map<Entity, Integer> estimateOperationTimeConsumptions(final Entity entity, final BigDecimal plannedQuantity,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine);
 
     /**
@@ -91,12 +128,12 @@ public interface OrderRealizationTimeService {
      * @param productionLine
      *            production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
      *            order, though.
-     * @return Map where keys are operationComponents and values are corresponding operation durations (just operation durations,
-     *         without offset added)
+     * @return Map where keys are operationComponents and values are corresponding max operation time consumptions for workstation
+     *         (realization times I guess)
      */
-    Map<Entity, Integer> estimateRealizationTimes(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine);
+    Map<Entity, Integer> estimateMaxOperationTimeConsumptionsForWorkstations(final Entity entity,
+            final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine);
 
     Object setDateToField(final Date date);
-
 }

@@ -128,7 +128,7 @@ public class TimeTechnologyInOrderService {
             return;
         }
 
-        maxPathTime = orderRealizationTimeService.estimateRealizationTimeForOperation(
+        maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(),
                 orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                         viewDefinitionState.getLocale()), productionLine);
