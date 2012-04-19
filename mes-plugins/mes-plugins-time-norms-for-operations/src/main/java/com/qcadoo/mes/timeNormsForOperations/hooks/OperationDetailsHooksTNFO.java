@@ -6,7 +6,6 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperComp
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -23,12 +22,9 @@ public class OperationDetailsHooksTNFO {
 
     public void updateCountMachineFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
 
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(COUNT_MACHINE_UNIT);
+        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
+        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
 
         countRealized.setRequired(true);
 
