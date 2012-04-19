@@ -136,10 +136,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField("technology");
 
-        productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
+        Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentQuantities(technology,
+                plannedQuantity, operationRunsField);
 
         return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField, productionLine,
-                false);
+                false, productComponentQuantities);
     }
 
     @Override
@@ -149,10 +150,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField("technology");
 
-        productQuantitiesService.getProductComponentQuantities(technology, plannedQuantity, operationRunsField);
+        Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentQuantities(technology,
+                plannedQuantity, operationRunsField);
 
         return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField, productionLine,
-                true);
+                true, productComponentQuantities);
     }
 
     @Override
@@ -222,7 +224,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation) {
+            final boolean maxForWorkstation, Map<Entity, BigDecimal> productComponentQuantities) {
         String entityType = operationComponent.getStringField("entityType");
 
         if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(entityType)) {
@@ -230,7 +232,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     .getTreeField("operationComponents").getRoot();
 
             return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
-                    productionLine, maxForWorkstation);
+                    productionLine, maxForWorkstation, productComponentQuantities);
         } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
@@ -238,13 +240,14 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             for (Entity child : operationComponent.getHasManyField("children")) {
                 int childTimeConsumption = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
-                        productionLine, maxForWorkstation);
+                        productionLine, maxForWorkstation, productComponentQuantities);
 
                 if ("02specified".equals(child.getStringField("countRealized"))) {
                     BigDecimal productCountWhenToStartNextOperation = child.getDecimalField("countMachine");
-                    BigDecimal producedInOneCycle = technologyService.getProductCountForOperationComponent(child);
+                    Entity productComponent = technologyService.getMainOutputProductComponent(child);
+                    BigDecimal operationProduces = productComponentQuantities.get(productComponent);
 
-                    if (productCountWhenToStartNextOperation.compareTo(producedInOneCycle) < 0) {
+                    if (productCountWhenToStartNextOperation.compareTo(operationProduces) < 0) {
                         int tpz = includeTpz ? getIntegerValue(child.getField("tpz")) : 0;
 
                         // TODO mici, i think additional time should be omitted
@@ -259,6 +262,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         }
 
                         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
+
+                        BigDecimal producedInOneCycle = technologyService.getProductCountForOperationComponent(child);
 
                         BigDecimal howManyCyclesIsThat = producedInOneCycle.multiply(cycles, numberService.getMathContext())
                                 .divide(productCountWhenToStartNextOperation, numberService.getMathContext());
