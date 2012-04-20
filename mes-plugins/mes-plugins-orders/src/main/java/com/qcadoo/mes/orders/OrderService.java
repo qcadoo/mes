@@ -198,6 +198,7 @@ public class OrderService {
         if (technologyEntity == null) {
             technologyEntity = getDefaultTechnology(productEntity.getId());
         }
+
         String technologyNumber = L_EMPTY_NUMBER;
         if (technologyEntity != null) {
             technologyNumber = "tech. " + technologyEntity.getStringField(FIELD_NUMBER);

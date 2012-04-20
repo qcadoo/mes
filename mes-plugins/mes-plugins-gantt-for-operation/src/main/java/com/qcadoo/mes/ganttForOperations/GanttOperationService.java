@@ -79,8 +79,8 @@ public class GanttOperationService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-        Object realizationTime = order.getField("realizationTime");
-        if (realizationTime == null || "0".equals(realizationTime.toString()) || "".equals(realizationTime.toString())) {
+        Integer realizationTime = (Integer) order.getField("realizationTime");
+        if (realizationTime == null) {
             form.addMessage("orders.order.report.realizationTime", MessageType.INFO, false);
         }
     }
