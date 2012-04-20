@@ -358,8 +358,8 @@ public class WorkPlanPdfServiceTest {
         workPlanPdfService.addAdditionalFields(document, operationComponent, locale);
 
         // then
-        verify(document, times(1)).add(Mockito.any(Paragraph.class));
-        verify(document, times(1)).add(Mockito.any(Image.class));
+        verify(document, times(2)).add(Mockito.any(Paragraph.class));
+        verify(document, times(2)).add(Mockito.any(Image.class));
     }
 
     @Test
