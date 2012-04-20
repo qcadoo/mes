@@ -472,6 +472,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(new Paragraph(titleString, FontUtils.getDejavuBold10Dark()));
 
         pdfHelper.addImage(document, imagePath);
+
+        document.add(Chunk.NEXTPAGE);
     }
 
     void addMainHeader(final Document document, final Entity entity, final Locale locale) throws DocumentException {
