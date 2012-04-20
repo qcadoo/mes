@@ -133,8 +133,8 @@ public class OrderStatesServiceTest {
         ordersId.add(1L);
         when(grid.getSelectedEntitiesIds()).thenReturn(ordersId);
 
-        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "deadline",
-                "defaultTechnology", "technology")) {
+        for (String reference : Arrays.asList("product", "plannedQuantity", "dateTo", "dateFrom", "defaultTechnology",
+                "technology")) {
             when(view.getComponentByReference(reference)).thenReturn(field);
         }
         setField(orderStatesService, "dataDefinitionService", dataDefinitionService);
