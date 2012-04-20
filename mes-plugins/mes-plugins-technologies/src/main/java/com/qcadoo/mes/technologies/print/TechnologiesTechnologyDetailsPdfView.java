@@ -33,7 +33,6 @@ import static java.lang.Long.valueOf;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +41,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Phrase;
@@ -55,6 +53,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -72,6 +71,9 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Autowired
     private TranslationService translationService;
@@ -136,8 +138,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         EntityTree technologyTree = technology.getTreeField("operationComponents");
         treeNumberingService.generateTreeNumbers(technologyTree);
 
-        List<Entity> technologyOperationsList = Lists.newLinkedList(technologyTree);
-        Collections.sort(technologyOperationsList, treeNumberingService.getTreeNodesNumberComparator());
+        List<Entity> technologyOperationsList = entityTreeUtilsService.getSortedEntities(technologyTree);
 
         for (Entity technologyOperation : technologyOperationsList) {
             String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);

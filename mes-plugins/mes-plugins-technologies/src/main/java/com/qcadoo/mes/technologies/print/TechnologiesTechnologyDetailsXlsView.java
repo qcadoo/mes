@@ -30,7 +30,6 @@ import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN
 import static com.qcadoo.model.api.types.TreeType.NODE_NUMBER_FIELD;
 import static java.lang.Long.valueOf;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +47,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.xls.ReportXlsView;
 import com.qcadoo.report.api.xls.XlsHelper;
@@ -60,6 +60,9 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
 
     @Autowired
     private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Autowired
     private TranslationService translationService;
@@ -96,14 +99,13 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         EntityTree technologyTree = technology.getTreeField("operationComponents");
         treeNumberingService.generateTreeNumbers(technologyTree);
 
-        List<Entity> technologyOperationsList = Lists.newLinkedList(technologyTree);
-        Collections.sort(technologyOperationsList, treeNumberingService.getTreeNodesNumberComparator());
+        List<Entity> technologyOperationsList = entityTreeUtilsService.getSortedEntities(technologyTree);
 
         int rowNum = 1;
         for (Entity technologyOperation : technologyOperationsList) {
             String nodeNumber = technologyOperation.getStringField(NODE_NUMBER_FIELD);
             String operationName = technologyOperation.getBelongsToField("operation").getStringField("name");
-            List<Entity> technologyOperationProducts = newArrayList();
+            List<Entity> technologyOperationProducts = Lists.newLinkedList();
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductInComponents"));
             technologyOperationProducts.addAll(technologyOperation.getHasManyField("operationProductOutComponents"));
 

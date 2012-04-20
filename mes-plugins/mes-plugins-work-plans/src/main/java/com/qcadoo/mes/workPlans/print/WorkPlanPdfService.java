@@ -54,7 +54,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanColumnAlignment;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -77,6 +77,9 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Autowired
     private PdfHelper pdfHelper;
@@ -313,7 +316,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     private void fetchOperationComponentsFromTechnology(final Entity technology, final Entity workPlan, final Entity order,
             final Locale locale, final Map<Entity, Entity> opComps2Order, final Map<PrioritizedString, List<Entity>> opComps) {
-        EntityTree operationComponents = technology.getTreeField("operationComponents");
+        List<Entity> operationComponents = entityTreeUtilsService.getSortedEntities(technology
+                .getTreeField("operationComponents"));
 
         for (Entity operationComponent : operationComponents) {
             if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
@@ -351,22 +355,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
             fetchOperationComponentsFromTechnology(technology, workPlan, order, locale, operationComponent2order,
                     operationComponentsWithDistinction);
-        }
-
-        for (List<Entity> operationComponents : operationComponentsWithDistinction.values()) {
-            Collections.sort(operationComponents, new Comparator<Entity>() {
-
-                @Override
-                public int compare(final Entity o1, final Entity o2) {
-                    String o1comp = operationComponent2order.get(o1).getStringField(NUMBER_LITERAL)
-                            + o1.getStringField("nodeNumber");
-                    String o2comp = operationComponent2order.get(o2).getStringField(NUMBER_LITERAL)
-                            + o2.getStringField("nodeNumber");
-
-                    return o1comp.compareTo(o2comp);
-                }
-
-            });
         }
 
         return operationComponentsWithDistinction;

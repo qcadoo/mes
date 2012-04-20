@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import static com.google.common.collect.Lists.newLinkedList;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CALCULATION_OPERATION_COMPONENTS;
@@ -39,7 +38,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +67,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
@@ -103,22 +102,25 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private static final String L_TAB_IN_TEXT = "\t \t \t";
 
     @Autowired
-    SecurityService securityService;
+    private SecurityService securityService;
 
     @Autowired
-    DataDefinitionService dataDefinitionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    CurrencyService currencyService;
+    private CurrencyService currencyService;
 
     @Autowired
-    TreeNumberingService treeNumberingService;
+    private TreeNumberingService treeNumberingService;
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
-    TimeConverterService timeConverterService;
+    private TimeConverterService timeConverterService;
 
     @Autowired
     private NumberService numberService;
@@ -501,10 +503,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
-        List<Entity> calculationOperationComponents = newLinkedList(costCalculation
+        List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
                 .getTreeField(CALCULATION_OPERATION_COMPONENTS));
-
-        Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
 
         for (Entity calculationOperationComponent : calculationOperationComponents) {
             PdfPTable panelTableHeader = pdfHelper.createPanelTable(2);
@@ -589,10 +589,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             optionTableHeader.add(translationService.translate(translate, locale));
         }
 
-        List<Entity> calculationOperationComponents = newLinkedList(costCalculation
+        List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
                 .getTreeField(CALCULATION_OPERATION_COMPONENTS));
-
-        Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
 
         PdfPTable printCostNormsOfMaterialTable2 = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
@@ -631,10 +629,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTableHeader.add(translationService.translate(translate, locale));
         }
 
-        List<Entity> calculationOperationComponents = newLinkedList(costCalculation
+        List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
                 .getTreeField(CALCULATION_OPERATION_COMPONENTS));
-
-        Collections.sort(calculationOperationComponents, treeNumberingService.getTreeNodesNumberComparator());
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
 
