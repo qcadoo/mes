@@ -198,9 +198,10 @@ public class OrderTimePredictionService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
-        FieldComponent effectiveTimeConsumption = (FieldComponent) viewDefinitionState
-                .getComponentByReference("effectiveTimeConsumption");
+        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
 
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
@@ -216,19 +217,43 @@ public class OrderTimePredictionService {
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
-            effectiveTimeConsumption.setFieldValue(null);
+            realizationTime.setFieldValue(null);
             generatedEndDate.setFieldValue(null);
+            realizationTime.requestComponentUpdateState();
+            generatedEndDate.requestComponentUpdateState();
         } else {
-            effectiveTimeConsumption.setFieldValue(maxPathTime);
-
+            order.setField("realizationTime", maxPathTime);
             Date startTime = (Date) order.getField("dateFrom");
-            Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
+            Date stopTime = (Date) order.getField("dateTo");
+            if (startTime == null) {
+                dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
+            } else {
+                Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
-            if (stopTime != null) {
-                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
-                scheduleOrder(order.getId());
+                if (generatedStopTime != null) {
+                    if (stopTime == null) {
+
+                        order.setField("dateTo", orderRealizationTimeService.setDateToField(generatedStopTime));
+                        realizationTime.setFieldValue(maxPathTime);
+                        dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+                        generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+
+                    }
+                    order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
+
+                    scheduleOrder(order.getId());
+                }
+                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+                realizationTime.setFieldValue(maxPathTime);
+                realizationTime.requestComponentUpdateState();
+                dateTo.requestComponentUpdateState();
+                generatedEndDate.requestComponentUpdateState();
+
             }
+            order.getDataDefinition().save(order);
+
         }
+
     }
 
     @Transactional

@@ -149,8 +149,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="time" name="effectiveTimeConsumption"
-						field="realizationTime" reference="effectiveTimeConsumption"
+					<component type="time" name="realizationTime"
+						field="realizationTime" reference="realizationTime"
 						hasDescription="true" defaultEnabled="false">
 						<option type="labelWidth" value="80" />
 					</component>
