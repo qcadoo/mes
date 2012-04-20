@@ -24,9 +24,10 @@
 package com.qcadoo.mes.timeNormsForOperations;
 
 import java.math.BigDecimal;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -45,8 +46,8 @@ public class NormService {
     @Autowired
     private TechnologyService technologyService;
 
-    public List<String> checkOperationOutputQuantities(final Entity technology) {
-        List<String> messages = new LinkedList<String>();
+    public Map<String, String> checkOperationOutputQuantities(final Entity technology) {
+        Map<String, String> messages = new HashMap<String, String>();
 
         List<Entity> operationComponents = technology.getTreeField("operationComponents");
 
@@ -64,14 +65,8 @@ public class NormService {
             }
 
             if (timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals intentionally
-                StringBuilder message = new StringBuilder();
-                message.append(translationService.translate("technologies.technology.validate.error.invalidQuantity1", locale));
-                message.append(" ");
-                message.append(operationComponent.getStringField("nodeNumber"));
-                message.append(" ");
-                message.append(translationService.translate("technologies.technology.validate.error.invalidQuantity2", locale));
-
-                messages.add(message.toString());
+                messages.put("technologies.technology.validate.error.invalidQuantity",
+                        operationComponent.getStringField("nodeNumber"));
             }
         }
 

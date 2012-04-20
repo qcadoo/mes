@@ -58,20 +58,11 @@ public class TechnologyOperationComponentDetailsHooks {
         BigDecimal currentQuantity = productOutComponent.getDecimalField("quantity");
 
         if (timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals intentionally
-            StringBuilder message = new StringBuilder();
-            message.append(translationService.translate(
-                    "technologies.technologyOperationComponent.validate.error.invalidQuantity1", locale));
-            message.append(" ");
-            message.append(numberService.format(currentQuantity));
-            message.append(" ");
-            message.append(productOutComponent.getBelongsToField("product").getStringField("unit"));
-            message.append(" ");
-            message.append(translationService.translate(
-                    "technologies.technologyOperationComponent.validate.error.invalidQuantity2", locale));
-
             ComponentState productionInOneCycle = view.getComponentByReference("productionInOneCycle");
 
-            productionInOneCycle.addMessage(message.toString(), MessageType.FAILURE);
+            productionInOneCycle.addMessage("technologies.technologyOperationComponent.validate.error.invalidQuantity",
+                    MessageType.FAILURE, numberService.format(currentQuantity), productOutComponent.getBelongsToField("product")
+                            .getStringField("unit"));
         }
     }
 

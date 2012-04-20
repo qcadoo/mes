@@ -4,7 +4,8 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
 import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,10 @@ public class TechnologyValidators {
         // FIXME mici, why would I need this? Without it operationComponents are null
         Entity technology = tech.getDataDefinition().get(tech.getId());
 
-        List<String> messages = normService.checkOperationOutputQuantities(technology);
+        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
 
-        for (String message : messages) {
-            tech.addGlobalError(message);
+        for (Entry<String, String> message : messages.entrySet()) {
+            tech.addGlobalError(message.getKey(), message.getValue());
         }
 
         return messages.isEmpty();

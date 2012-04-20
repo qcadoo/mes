@@ -1,6 +1,7 @@
 package com.qcadoo.mes.timeNormsForOperations.listeners;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,10 @@ public class TechnologyListenersTN {
         // FIXME mici, why would I need this? Without it operationComponents are null
         technology = technology.getDataDefinition().get(technology.getId());
 
-        List<String> messages = normService.checkOperationOutputQuantities(technology);
+        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
 
-        for (String message : messages) {
-            form.addMessage(message, MessageType.INFO, false);
+        for (Entry<String, String> message : messages.entrySet()) {
+            form.addMessage(message.getKey(), MessageType.INFO, false, message.getValue());
         }
     }
 
