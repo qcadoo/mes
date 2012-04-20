@@ -14,12 +14,14 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
 
         Entity desiredWorkstation = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
 
-        for (Entity workComp : workComps) {
-            Entity workstation = workComp.getBelongsToField("workstationType");
+        if (desiredWorkstation != null) {
+            for (Entity workComp : workComps) {
+                Entity workstation = workComp.getBelongsToField("workstationType");
 
-            // FIXME mici, proxy entity equals thing
-            if (desiredWorkstation.getId().equals(workstation.getId())) {
-                return (Integer) workComp.getField("quantity");
+                // FIXME mici, proxy entity equals thing
+                if (desiredWorkstation.getId().equals(workstation.getId())) {
+                    return (Integer) workComp.getField("quantity");
+                }
             }
         }
 
