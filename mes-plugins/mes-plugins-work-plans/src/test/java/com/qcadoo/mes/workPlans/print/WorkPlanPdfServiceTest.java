@@ -26,7 +26,6 @@ package com.qcadoo.mes.workPlans.print;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -43,13 +42,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -64,6 +69,7 @@ import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -83,6 +89,8 @@ public class WorkPlanPdfServiceTest {
 
     private static final String NO_DISTINCTION = "No distinction";
 
+    private static final int NUM_OF_UNIQUE_OPERATIONS = 5;
+
     @Mock
     private TranslationService translationService;
 
@@ -99,7 +107,7 @@ public class WorkPlanPdfServiceTest {
     private Entity op1Comp, op2Comp, op3Comp, op4Comp, op5Comp, op6Comp;
 
     @Mock
-    private EntityList operComp1, operComp2;
+    private EntityTreeUtilsService entityTreeUtilsService;
 
     @Mock
     private Entity workstation1, workstation2;
@@ -201,6 +209,17 @@ public class WorkPlanPdfServiceTest {
         when(tech1.getTreeField("operationComponents")).thenReturn(operComp1);
         when(tech2.getTreeField("operationComponents")).thenReturn(operComp2);
 
+        when(entityTreeUtilsService.getSortedEntities(Mockito.any(EntityTree.class))).thenAnswer(new Answer<List<Entity>>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public List<Entity> answer(InvocationOnMock invocation) throws Throwable {
+                return (List<Entity>) invocation.getArguments()[0];
+            }
+        });
+
+        ReflectionTestUtils.setField(workPlanPdfService, "entityTreeUtilsService", entityTreeUtilsService);
+
         when(op1Comp.getStringField("nodeNumber")).thenReturn("2.A.1");
         when(op2Comp.getStringField("nodeNumber")).thenReturn("1.");
         when(op3Comp.getStringField("nodeNumber")).thenReturn("2.");
@@ -268,12 +287,7 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString noDistinction = new PrioritizedString(NO_DISTINCTION);
-        assertTrue(operationComponents.get(noDistinction).get(0).equals(op2Comp));
-        assertTrue(operationComponents.get(noDistinction).get(1).equals(op3Comp));
-        assertTrue(operationComponents.get(noDistinction).get(2).equals(op1Comp));
-        assertTrue(operationComponents.get(noDistinction).get(3).equals(op4Comp));
-        assertTrue(operationComponents.get(noDistinction).get(4).equals(op5Comp));
+        isDistinct(operationComponents);
     }
 
     @Test
@@ -292,12 +306,7 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString noDistinction = new PrioritizedString(NO_DISTINCTION);
-        assertTrue(operationComponents.get(noDistinction).get(0).equals(op2Comp));
-        assertTrue(operationComponents.get(noDistinction).get(1).equals(op3Comp));
-        assertTrue(operationComponents.get(noDistinction).get(2).equals(op1Comp));
-        assertTrue(operationComponents.get(noDistinction).get(3).equals(op4Comp));
-        assertTrue(operationComponents.get(noDistinction).get(4).equals(op6Comp));
+        isDistinct(operationComponents);
     }
 
     @Test
@@ -310,15 +319,7 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString workstation1String = new PrioritizedString(BY_WORKSTATION_TYPE + " workstation1");
-        PrioritizedString workstation2String = new PrioritizedString(BY_WORKSTATION_TYPE + " workstation2");
-        PrioritizedString noWorkstationString = new PrioritizedString(NO_WORKSTATION_TYPE, 1);
-
-        assertTrue(operationComponents.get(workstation1String).get(0).equals(op2Comp));
-        assertTrue(operationComponents.get(workstation1String).get(1).equals(op1Comp));
-        assertTrue(operationComponents.get(workstation2String).get(0).equals(op3Comp));
-        assertTrue(operationComponents.get(workstation2String).get(1).equals(op4Comp));
-        assertTrue(operationComponents.get(noWorkstationString).get(0).equals(op5Comp));
+        isDistinct(operationComponents);
     }
 
     @Test
@@ -331,15 +332,7 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString division1String = new PrioritizedString(BY_DIVISION + " division1");
-        PrioritizedString division2String = new PrioritizedString(BY_DIVISION + " division2");
-        PrioritizedString noDivisionString = new PrioritizedString(NO_DIVISION, 1);
-
-        assertTrue(operationComponents.get(division1String).get(0).equals(op2Comp));
-        assertTrue(operationComponents.get(division1String).get(1).equals(op1Comp));
-        assertTrue(operationComponents.get(division2String).get(0).equals(op3Comp));
-        assertTrue(operationComponents.get(division2String).get(1).equals(op4Comp));
-        assertTrue(operationComponents.get(noDivisionString).get(0).equals(op5Comp));
+        isDistinct(operationComponents);
     }
 
     @Test
@@ -352,14 +345,7 @@ public class WorkPlanPdfServiceTest {
                 workPlan, operationComponent2order, locale);
 
         // then
-        PrioritizedString product1String = new PrioritizedString(BY_END_PRODUCT + " product1");
-        PrioritizedString product2String = new PrioritizedString(BY_END_PRODUCT + " product2");
-
-        assertTrue(operationComponents.get(product1String).get(0).equals(op2Comp));
-        assertTrue(operationComponents.get(product1String).get(1).equals(op3Comp));
-        assertTrue(operationComponents.get(product1String).get(2).equals(op1Comp));
-        assertTrue(operationComponents.get(product2String).get(0).equals(op4Comp));
-        assertTrue(operationComponents.get(product2String).get(1).equals(op5Comp));
+        isDistinct(operationComponents);
     }
 
     @Test
@@ -598,4 +584,13 @@ public class WorkPlanPdfServiceTest {
         } catch (DocumentException e) {
         }
     }
+
+    private void isDistinct(final Map<PrioritizedString, List<Entity>> map) {
+        List<Entity> opComponents = Lists.newArrayList();
+        for (List<Entity> opComponent : map.values()) {
+            opComponents.addAll(opComponent);
+        }
+        Assert.assertEquals(NUM_OF_UNIQUE_OPERATIONS, Sets.newHashSet(opComponents).size());
+    }
+
 }
