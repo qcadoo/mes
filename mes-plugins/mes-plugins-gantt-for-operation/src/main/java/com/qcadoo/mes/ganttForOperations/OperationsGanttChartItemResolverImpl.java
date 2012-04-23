@@ -57,11 +57,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
     private static final String OPERATION_FIELD = "operation";
 
-    private static final String DATE_TO_FIELD = "dateTo";
-
     private static final String ORDER_FIELD = "order";
-
-    private static final String DATE_FROM_FIELD = "dateFrom";
 
     private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
 
@@ -93,22 +89,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            Date orderStartDate = null;
-            Date orderEndDate = null;
-
-            if (order.getField(EFFECTIVE_DATE_FROM_FIELD) == null) {
-                if (order.getField(DATE_FROM_FIELD) == null) {
-                    LOG.warn("Cannot find orderStartDate for " + order);
-                    return Collections.emptyMap();
-                } else {
-                    orderStartDate = (Date) order.getField(DATE_FROM_FIELD);
-                    orderEndDate = (Date) order.getField(DATE_TO_FIELD);
-                }
-            } else {
-                orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM_FIELD);
-                orderEndDate = new Date(((Date) order.getField(EFFECTIVE_DATE_FROM_FIELD)).getTime()
-                        + (((Date) order.getField(DATE_TO_FIELD)).getTime() - ((Date) order.getField(DATE_FROM_FIELD)).getTime()));
-            }
+            Date orderStartDate = getDateFromOrdersFromOperation(operations);
+            Date orderEndDate = getDateToOrdersFromOperation(operations);
 
             scale.setDateFrom(orderStartDate);
             scale.setDateTo(orderEndDate);
@@ -150,6 +132,34 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    private Date getDateFromOrdersFromOperation(final List<Entity> operations) {
+        Date beforeOperation = null;
+        for (Entity operation : operations) {
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
+            if (beforeOperation == null) {
+                beforeOperation = operationDateFrom;
+            }
+            if (operationDateFrom.compareTo(beforeOperation) == -1) {
+                beforeOperation = operationDateFrom;
+            }
+        }
+        return beforeOperation;
+    }
+
+    private Date getDateToOrdersFromOperation(final List<Entity> operations) {
+        Date laterOperation = null;
+        for (Entity operation : operations) {
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
+            if (laterOperation == null) {
+                laterOperation = operationDateFrom;
+            }
+            if (operationDateFrom.compareTo(laterOperation) == 1) {
+                laterOperation = operationDateFrom;
+            }
+        }
+        return laterOperation;
     }
 
     private String getDescriptionForOperarion(final Entity operation) {

@@ -178,7 +178,7 @@
 									value="technologies/technologyInstanceOperationComponentDetails" />
 								<option type="correspondingComponent" value="form" />
 								<option type="searchable" value="number, name" />
-								<option type="orderable" value="number, name" />
+								<option type="orderable" value="number, name,dateFrom,dateTo" />
 								<option type="fullscreen" value="true" />
 								<option type="multiselect" value="true" />
 							</component>
