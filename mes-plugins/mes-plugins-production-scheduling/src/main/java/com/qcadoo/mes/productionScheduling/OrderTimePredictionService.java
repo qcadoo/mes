@@ -200,8 +200,6 @@ public class OrderTimePredictionService {
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
 
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
@@ -224,36 +222,14 @@ public class OrderTimePredictionService {
         } else {
             order.setField("realizationTime", maxPathTime);
             Date startTime = (Date) order.getField("dateFrom");
-            Date stopTime = (Date) order.getField("dateTo");
-            if (startTime == null) {
-                dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
-            } else {
-                Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
+            Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
-                if (generatedStopTime != null) {
-                    if (stopTime == null) {
-
-                        order.setField("dateTo", orderRealizationTimeService.setDateToField(generatedStopTime));
-                        realizationTime.setFieldValue(maxPathTime);
-                        dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
-                        generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
-
-                    }
-                    order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
-
-                    scheduleOrder(order.getId());
-                }
-                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
-                realizationTime.setFieldValue(maxPathTime);
-                realizationTime.requestComponentUpdateState();
-                dateTo.requestComponentUpdateState();
-                generatedEndDate.requestComponentUpdateState();
-
+            if (stopTime != null) {
+                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
+                scheduleOrder(order.getId());
             }
             order.getDataDefinition().save(order);
-
         }
-
     }
 
     @Transactional
