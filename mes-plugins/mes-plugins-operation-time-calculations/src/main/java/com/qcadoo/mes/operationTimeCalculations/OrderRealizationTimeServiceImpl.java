@@ -246,49 +246,12 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     BigDecimal quantity = child.getDecimalField("countMachine");
 
                     int childTimeTotal = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine, true);
-
                     int childTimeForQuantity = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine,
                             true, quantity);
 
                     int difference = childTimeTotal - childTimeForQuantity;
 
                     childTime -= difference;
-
-                    // Entity productComponent = technologyService.getMainOutputProductComponent(child);
-                    // BigDecimal operationProduces = productComponentQuantities.get(productComponent);
-                    //
-                    // if (productCountWhenToStartNextOperation.compareTo(operationProduces) < 0) {
-                    // int tpz = includeTpz ? getIntegerValue(child.getField("tpz")) : 0;
-                    //
-                    // // TODO mici, i think additional time should be omitted
-                    // // int additionalTime = includeAdditionalTime ? getIntegerValue(child.getField("timeNextOperation")) : 0;
-                    //
-                    // Entity technologyOperationComponent = child;
-                    //
-                    // if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
-                    // technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    // TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    // operationComponent.getBelongsToField("technologyOperationComponent").getId());
-                    // }
-                    //
-                    // BigDecimal cycles = operationRuns.get(technologyOperationComponent);
-                    //
-                    // BigDecimal producedInOneCycle = technologyService.getProductCountForOperationComponent(child);
-                    //
-                    // BigDecimal howManyCyclesIsThat = producedInOneCycle.multiply(cycles, numberService.getMathContext())
-                    // .divide(productCountWhenToStartNextOperation, numberService.getMathContext());
-                    //
-                    // boolean isTjDivisable = child.getBooleanField("isTjDivisible");
-                    //
-                    // if (!isTjDivisable) {
-                    // howManyCyclesIsThat = howManyCyclesIsThat.setScale(0, RoundingMode.CEILING);
-                    // }
-                    //
-                    // int tj = getIntegerValue(child.getField("tj"));
-                    //
-                    // childTimeConsumption = tpz
-                    // + howManyCyclesIsThat.multiply(BigDecimal.valueOf(tj), numberService.getMathContext()).intValue();
-                    // }
                 }
 
                 if (childTime > offset) {
