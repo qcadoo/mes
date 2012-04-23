@@ -161,17 +161,17 @@
 						<layoutElement column="1" row="1">
 							<component type="grid" name="operations" reference="grid"
 								source="#{form}.technologyInstanceOperationComponents">
-								
+								<option type="column" name="nodeNumber" fields="nodeNumber" 
+								     link="true" />
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']" link="true" />
 								<option type="column" name="name" fields="operation"
 									expression="#operation['name']" link="true" />
 								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
 								<option type="column" name="dateTo" fields="effectiveDateTo" />	
-								<option type="column" name="realizationTime" fields="effectiveOperationRealizationTime" />
-<!-- 								<option type="column" name="realizationTime"
-									fields="effectiveOperationRealizationTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).duration2String(#effectiveOperationRealizationTime)"/>
- -->							<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
+ 								<option type="column" name="realizationTime"
+									fields="effectiveOperationRealizationTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#effectiveOperationRealizationTime)"/>
+								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
 								
 								<option type="order" column="number" direction="asc" />
 								<option type="correspondingView"

@@ -67,6 +67,10 @@ public class OrderTimePredictionService {
 
     private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
 
+    private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
+
+    private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
+
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
 
@@ -200,7 +204,8 @@ public class OrderTimePredictionService {
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
-
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
 
@@ -222,14 +227,57 @@ public class OrderTimePredictionService {
         } else {
             order.setField("realizationTime", maxPathTime);
             Date startTime = (Date) order.getField("dateFrom");
-            Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-            if (stopTime != null) {
-                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
-                scheduleOrder(order.getId());
+            Date stopTime = (Date) order.getField("dateTo");
+            if (startTime == null) {
+                dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
+            } else {
+                Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
+                if (generatedStopTime != null) {
+                    if (stopTime == null) {
+                        order.setField("dateTo", orderRealizationTimeService.setDateToField(generatedStopTime));
+                        realizationTime.setFieldValue(maxPathTime);
+                        dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+                        generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+                    }
+                    order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
+                    scheduleOrder(order.getId());
+                }
+                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
+                realizationTime.setFieldValue(maxPathTime);
+                realizationTime.requestComponentUpdateState();
+                dateTo.requestComponentUpdateState();
+                generatedEndDate.requestComponentUpdateState();
             }
             order.getDataDefinition().save(order);
         }
+    }
+
+    public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
+        Date beforeOperation = null;
+        for (Entity operation : operations) {
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
+            if (beforeOperation == null) {
+                beforeOperation = operationDateFrom;
+            }
+            if (operationDateFrom.compareTo(beforeOperation) == -1) {
+                beforeOperation = operationDateFrom;
+            }
+        }
+        return beforeOperation;
+    }
+
+    public Date getDateToOrdersFromOperation(final List<Entity> operations) {
+        Date laterOperation = null;
+        for (Entity operation : operations) {
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
+            if (laterOperation == null) {
+                laterOperation = operationDateFrom;
+            }
+            if (operationDateFrom.compareTo(laterOperation) == 1) {
+                laterOperation = operationDateFrom;
+            }
+        }
+        return laterOperation;
     }
 
     @Transactional

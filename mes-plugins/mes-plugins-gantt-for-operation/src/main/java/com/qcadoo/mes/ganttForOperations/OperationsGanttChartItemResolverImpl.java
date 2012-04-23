@@ -26,10 +26,10 @@ package com.qcadoo.mes.ganttForOperations;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,9 +38,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionScheduling.OrderTimePredictionService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
 import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 
@@ -62,6 +65,12 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
 
     private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
+
+    @Autowired
+    private EntityTreeUtilsService entityTreeUtilsService;
+
+    @Autowired
+    private OrderTimePredictionService orderTimePredictionService;
 
     private static final Logger LOG = LoggerFactory.getLogger(OperationsGanttChartItemResolverImpl.class);
 
@@ -89,20 +98,24 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            Date orderStartDate = getDateFromOrdersFromOperation(operations);
-            Date orderEndDate = getDateToOrdersFromOperation(operations);
-
+            Date orderStartDate = orderTimePredictionService.getDateFromOrdersFromOperation(operations);
             scale.setDateFrom(orderStartDate);
+
+            Date orderEndDate = orderTimePredictionService.getDateToOrdersFromOperation(operations);
             scale.setDateTo(orderEndDate);
 
-            Map<String, List<GanttChartItem>> items = new TreeMap<String, List<GanttChartItem>>();
+            Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
             Map<String, Integer> counters = new HashMap<String, Integer>();
 
-            for (Entity operation : operations) {
+            List<Entity> sortedOperationFromTree = entityTreeUtilsService.getSortedEntities(order
+                    .getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS));
+
+            for (Entity operationFromTree : sortedOperationFromTree) {
+                Entity operation = operations.get(operations.indexOf(operationFromTree));
                 Date dateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
                 Date dateTo = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
 
-                if (dateFrom == null || dateTo == null) {
+                if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;
                 }
 
@@ -132,34 +145,6 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
         } catch (JSONException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
-    }
-
-    private Date getDateFromOrdersFromOperation(final List<Entity> operations) {
-        Date beforeOperation = null;
-        for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
-            if (beforeOperation == null) {
-                beforeOperation = operationDateFrom;
-            }
-            if (operationDateFrom.compareTo(beforeOperation) == -1) {
-                beforeOperation = operationDateFrom;
-            }
-        }
-        return beforeOperation;
-    }
-
-    private Date getDateToOrdersFromOperation(final List<Entity> operations) {
-        Date laterOperation = null;
-        for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
-            if (laterOperation == null) {
-                laterOperation = operationDateFrom;
-            }
-            if (operationDateFrom.compareTo(laterOperation) == 1) {
-                laterOperation = operationDateFrom;
-            }
-        }
-        return laterOperation;
     }
 
     private String getDescriptionForOperarion(final Entity operation) {
