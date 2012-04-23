@@ -36,4 +36,6 @@ public class WorkPlanFields {
     public static final String GENERATED = "generated";
 
     public static final String DONT_PRINT_ORDERS_IN_WORK_PLANS = "dontPrintOrdersInWorkPlans";
+
+    public static final String ORDERS = "orders";
 }

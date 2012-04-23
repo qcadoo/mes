@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -98,6 +98,9 @@ public class WorkPlansColumnLoaderServiceImplTest {
     @Mock
     private DataDefinitionService dataDefinitionService;
 
+    @Mock
+    private ParameterService parameterService;
+
     private WorkPlansColumnLoaderServiceImpl workPlansColumnLoaderServiceImpl;
 
     @Before
@@ -107,15 +110,13 @@ public class WorkPlansColumnLoaderServiceImplTest {
         workPlansColumnLoaderServiceImpl = new WorkPlansColumnLoaderServiceImpl();
 
         ReflectionTestUtils.setField(workPlansColumnLoaderServiceImpl, "dataDefinitionService", dataDefinitionService);
-
+        ReflectionTestUtils.setField(workPlansColumnLoaderServiceImpl, "parameterService", parameterService);
     }
 
     @Test
     public void shouldSetParameterDefaultValuesIfParameterIsntNull() {
         // given
-        when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).thenReturn(parameterDD);
-        when(parameterDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.uniqueResult()).thenReturn(parameter);
+        when(parameterService.getParameter()).thenReturn(parameter);
 
         when(parameter.isValid()).thenReturn(true);
 
@@ -131,24 +132,6 @@ public class WorkPlansColumnLoaderServiceImplTest {
         verify(parameter).setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
         verify(parameter).setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
         verify(parameter).setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-    }
-
-    @Test
-    public void shouldntSetParameterDefaultValuesIfParameterIsNull() {
-        // given
-        when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).thenReturn(parameterDD);
-        when(parameterDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.uniqueResult()).thenReturn(null);
-
-        // when
-        workPlansColumnLoaderServiceImpl.setParameterDefaultValues();
-
-        // then
-        verify(parameter, never()).setField(WorkPlansConstants.HIDE_DESCRIPTION_IN_WORK_PLANS_FIELD, false);
-        verify(parameter, never()).setField(WorkPlansConstants.HIDE_DETAILS_IN_WORK_PLANS_FIELD, false);
-        verify(parameter, never()).setField(WorkPlansConstants.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS_FIELD, false);
-        verify(parameter, never()).setField(WorkPlansConstants.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
-        verify(parameter, never()).setField(WorkPlansConstants.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS_FIELD, false);
     }
 
     @Test

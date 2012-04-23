@@ -186,9 +186,13 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="6" width="2">
-					<component type="checkbox" name="dontPrintOrdersInWorkPlans" field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
-						<option type="labelWidth" value="50" />
-						<option type="align" value="left" />
+					<component type="gridLayout" name="doNotPrintOrdersWrapper" columns="2" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1" height="1" width="1">
+							<component type="checkbox" name="dontPrintOrdersInWorkPlans" field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+								<option type="labelWidth" value="50" />
+								<option type="align" value="left" />
+							</component>
+						</layoutElement>
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="7" height="4" width="2">
@@ -218,7 +222,7 @@
 			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 				method="printWorkPlan" />
 			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-				method="generateTestWorkPlan" />
+				method="generateWorkPlan" />
 		</component>
 	</component>
 	<hooks>

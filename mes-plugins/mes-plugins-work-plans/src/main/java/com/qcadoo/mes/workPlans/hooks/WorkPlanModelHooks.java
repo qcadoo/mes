@@ -24,20 +24,23 @@
 package com.qcadoo.mes.workPlans.hooks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 
 @Service
 public class WorkPlanModelHooks {
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -56,39 +59,31 @@ public class WorkPlanModelHooks {
             return;
         }
 
-        EntityList parameterOrderColumns = getParameterHasManyField("parameterOrderColumns");
-
         ArrayList<Entity> workPlanOrderColumns = Lists.newArrayList();
+        for (Entity parameterOrderColumn : getParameterHasManyField("parameterOrderColumns")) {
+            Entity columnForOrders = parameterOrderColumn.getBelongsToField("columnForOrders");
 
-        if (parameterOrderColumns != null) {
-            for (Entity parameterOrderColumn : parameterOrderColumns) {
-                Entity columnForOrders = parameterOrderColumn.getBelongsToField("columnForOrders");
+            Entity workPlanOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                    WorkPlansConstants.MODEL_WORK_PLAN_ORDER_COLUMN).create();
 
-                Entity workPlanOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                        WorkPlansConstants.MODEL_WORK_PLAN_ORDER_COLUMN).create();
+            workPlanOrderColumn.setField("columnForOrders", columnForOrders);
 
-                workPlanOrderColumn.setField("columnForOrders", columnForOrders);
-
-                workPlanOrderColumns.add(workPlanOrderColumn);
-            }
+            workPlanOrderColumns.add(workPlanOrderColumn);
         }
 
         workPlan.setField("workPlanOrderColumns", workPlanOrderColumns);
     }
 
     private boolean shouldPropagateValuesFromLowerInstance(final Entity operation) {
-        return (operation.getField("workPlanOrderColumns") == null);
+        return operation.getField("workPlanOrderColumns") == null;
     }
 
-    private EntityList getParameterHasManyField(final String fieldName) {
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-
-        if ((parameter == null) || (parameter.getHasManyField(fieldName) == null)) {
-            return null;
-        } else {
-            return parameter.getHasManyField(fieldName);
+    private List<Entity> getParameterHasManyField(final String fieldName) {
+        List<Entity> hasManyFieldValue = parameterService.getParameter().getHasManyField(fieldName);
+        if (hasManyFieldValue == null) {
+            hasManyFieldValue = Lists.newArrayList();
         }
+        return hasManyFieldValue;
     }
 
 }

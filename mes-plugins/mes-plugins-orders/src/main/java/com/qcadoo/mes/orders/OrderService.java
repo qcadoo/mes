@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderStates;
@@ -103,6 +104,9 @@ public class OrderService {
     @Autowired
     private ExpressionService expressionService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
     }
@@ -148,14 +152,7 @@ public class OrderService {
     }
 
     private Entity getDefaultProductionLine() {
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-
-        if ((parameter == null) || (parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE) == null)) {
-            return null;
-        } else {
-            return parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE);
-        }
+        return parameterService.getParameter().getBelongsToField(L_DEFAULT_PRODUCTION_LINE);
     }
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
@@ -493,16 +490,11 @@ public class OrderService {
     }
 
     public boolean checkAutogenealogyRequired() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-        if ((parameter == null) || (parameter.getField("batchForDoneOrder") == null)) {
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getField("batchForDoneOrder") == null) {
             return false;
         } else {
-            return !(parameter.getField("batchForDoneOrder").toString().equals("01none"));
+            return !"01none".equals(parameter.getStringField("batchForDoneOrder"));
         }
     }
 

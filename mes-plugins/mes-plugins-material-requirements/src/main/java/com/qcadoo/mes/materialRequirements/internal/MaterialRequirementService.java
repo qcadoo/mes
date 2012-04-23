@@ -27,13 +27,14 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -41,6 +42,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
 import com.qcadoo.mes.materialRequirements.internal.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequirementXlsService;
+import com.qcadoo.mes.orders.util.OrderHelperService;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.model.api.DataDefinition;
@@ -83,6 +85,9 @@ public class MaterialRequirementService {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private OrderHelperService orderHelperService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -133,14 +138,25 @@ public class MaterialRequirementService {
             if (materialRequirement == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(materialRequirement.getStringField("fileName"))) {
+            } else if (StringUtils.isNotBlank(materialRequirement.getStringField("fileName"))) {
                 state.addMessage(
                         "materialRequirements.materialRequirementDetails.window.materialRequirement.documentsWasGenerated",
                         MessageType.FAILURE);
                 return;
-            } else if (materialRequirement.getManyToManyField("orders").isEmpty()) {
-                state.addMessage("materialRequirements.materialRequirement.window.materialRequirement.missingAssosiatedOrders",
+            }
+
+            List<Entity> orders = materialRequirement.getManyToManyField("orders");
+            if (orders.isEmpty()) {
+                state.addMessage(
+                        "materialRequirements.materialRequirementDetails.window.materialRequirement.missingAssosiatedOrders",
                         MessageType.FAILURE);
+                return;
+            }
+            List<String> numbersOfOrdersWithoutTechnology = orderHelperService.getOrdersWithoutTechnology(orders);
+            if (!numbersOfOrdersWithoutTechnology.isEmpty()) {
+                state.addMessage(
+                        "materialRequirements.materialRequirementDetails.window.materialRequirement.missingTechnologyInOrders",
+                        MessageType.FAILURE, StringUtils.join(numbersOfOrdersWithoutTechnology, ",<br>"));
                 return;
             }
 

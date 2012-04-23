@@ -36,18 +36,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.util.OrderHelperService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
 import com.qcadoo.mes.workPlans.WorkPlansService;
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
@@ -74,7 +75,10 @@ public class WorkPlanViewHooks {
     private ReportService reportService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private OrderHelperService orderHelperService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public final void addSelectedOrdersToWorkPlan(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
@@ -123,42 +127,6 @@ public class WorkPlanViewHooks {
                 WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
-    public final void generateTestWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED);
-            ComponentState date = viewDefinitionState.getComponentByReference(DATE);
-            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER);
-
-            if ("0".equals(generated.getFieldValue())) {
-                worker.setFieldValue(securityService.getCurrentUserName());
-                generated.setFieldValue("1");
-                date.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, viewDefinitionState.getLocale())
-                        .format(new Date()));
-            }
-
-            state.performEvent(viewDefinitionState, "save", new String[0]);
-
-            if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
-                worker.setFieldValue(null);
-                generated.setFieldValue("0");
-                date.setFieldValue(null);
-                return;
-            }
-
-            Entity workPlan = workPlanService.getWorkPlan((Long) state.getFieldValue());
-
-            try {
-                workPlanService.generateWorkPlanDocuments(state, workPlan);
-                state.performEvent(viewDefinitionState, "reset", new String[0]);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            }
-        }
-    }
-
     public final void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
@@ -171,11 +139,19 @@ public class WorkPlanViewHooks {
             if (workPlan == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(workPlan.getStringField("fileName"))) {
+            } else if (StringUtils.isNotBlank(workPlan.getStringField("fileName"))) {
                 state.addMessage("workPlans.workPlanDetails.window.workPlan.documentsWasGenerated", MessageType.FAILURE);
                 return;
-            } else if (workPlan.getHasManyField("orders") == null) {
-                state.addMessage("workPlans.workPlan.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
+            }
+            List<Entity> orders = workPlan.getManyToManyField(WorkPlanFields.ORDERS);
+            if (orders == null) {
+                state.addMessage("workPlans.workPlanDetails.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
+                return;
+            }
+            List<String> numbersOfOrdersWithoutTechnology = orderHelperService.getOrdersWithoutTechnology(orders);
+            if (!numbersOfOrdersWithoutTechnology.isEmpty()) {
+                state.addMessage("workPlans.workPlanDetails.window.workPlan.missingTechnologyInOrders", MessageType.FAILURE,
+                        StringUtils.join(numbersOfOrdersWithoutTechnology, ",<br>"));
                 return;
             }
 
@@ -220,7 +196,7 @@ public class WorkPlanViewHooks {
 
         if (form.getEntityId() == null) {
             FieldComponent field = getFieldComponent(view, DONT_PRINT_ORDERS_IN_WORK_PLANS);
-            field.setFieldValue(getParameterField(DONT_PRINT_ORDERS_IN_WORK_PLANS));
+            field.setFieldValue(parameterService.getParameter().getField(DONT_PRINT_ORDERS_IN_WORK_PLANS));
         }
     }
 
@@ -230,17 +206,6 @@ public class WorkPlanViewHooks {
 
     private FieldComponent getFieldComponent(final ViewDefinitionState view, final String name) {
         return (FieldComponent) view.getComponentByReference(name);
-    }
-
-    private Object getParameterField(final String fieldName) {
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-
-        if ((parameter == null) || (parameter.getField(fieldName) == null)) {
-            return null;
-        } else {
-            return parameter.getField(fieldName);
-        }
     }
 
 }

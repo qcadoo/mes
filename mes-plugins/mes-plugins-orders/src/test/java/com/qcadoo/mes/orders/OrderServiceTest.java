@@ -82,6 +82,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -91,7 +92,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.EntityListImpl;
@@ -124,17 +124,21 @@ public class OrderServiceTest {
 
     private NumberGeneratorService numberGeneratorService;
 
+    private ParameterService parameterService;
+
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         numberGeneratorService = mock(NumberGeneratorService.class);
+        parameterService = mock(ParameterService.class);
         ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
         setField(orderService, "dataDefinitionService", dataDefinitionService);
         setField(orderService, "translationService", translationService);
         setField(orderService, "numberGeneratorService", numberGeneratorService);
         setField(orderService, "expressionService", expressionService);
+        setField(orderService, "parameterService", parameterService);
     }
 
     @Test
@@ -170,18 +174,13 @@ public class OrderServiceTest {
         Entity defaultProductionLine = mock(Entity.class);
 
         Entity parameter = mock(Entity.class);
-        DataDefinition parameterDD = mock(DataDefinition.class);
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
 
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(null);
 
         given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineLookup);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
-                .willReturn(parameterDD);
-        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+        given(parameterService.getParameter()).willReturn(parameter);
 
         given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
 
@@ -258,16 +257,11 @@ public class OrderServiceTest {
         Entity defaultProductionLine = mock(Entity.class);
 
         Entity parameter = mock(Entity.class);
-        DataDefinition parameterDD = mock(DataDefinition.class);
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
 
         given(order.getId()).willReturn(null);
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
-                .willReturn(parameterDD);
-        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+        given(parameterService.getParameter()).willReturn(parameter);
 
         given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(null);
 
@@ -287,16 +281,11 @@ public class OrderServiceTest {
         Entity defaultProductionLine = mock(Entity.class);
 
         Entity parameter = mock(Entity.class);
-        DataDefinition parameterDD = mock(DataDefinition.class);
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
 
         given(order.getId()).willReturn(null);
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER))
-                .willReturn(parameterDD);
-        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
+        given(parameterService.getParameter()).willReturn(parameter);
 
         given(parameter.getBelongsToField(L_DEFAULT_PRODUCTION_LINE)).willReturn(defaultProductionLine);
 

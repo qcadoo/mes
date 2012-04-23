@@ -98,7 +98,7 @@ public class OrderReportService {
                 errorMessages.append(translatedError);
                 errorMessages.append("\n");
             }
-            state.addMessage(errorMessages.toString(), MessageType.FAILURE, false);
+            state.addTranslatedMessage(errorMessages.toString(), MessageType.FAILURE, false);
         }
         return null;
     }

@@ -26,10 +26,8 @@ package com.qcadoo.mes.workPlans.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -39,7 +37,7 @@ import com.qcadoo.view.api.components.FormComponent;
 public class OperationViewHooks {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ParameterService parameterService;
 
     public final void setOperationDefaultValues(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
@@ -52,7 +50,8 @@ public class OperationViewHooks {
         if (form.getEntityId() == null) {
             for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
                 FieldComponent field = getFieldComponent(view, workPlanParameter);
-                field.setFieldValue(getParameterField(workPlanParameter));
+                Object parameterValue = parameterService.getParameter().getField(workPlanParameter);
+                field.setFieldValue(parameterValue);
             }
         }
     }
@@ -65,14 +64,4 @@ public class OperationViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    private Object getParameterField(final String fieldName) {
-        Entity parameter = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                .uniqueResult();
-
-        if ((parameter == null) || (parameter.getField(fieldName) == null)) {
-            return null;
-        } else {
-            return parameter.getField(fieldName);
-        }
-    }
 }
