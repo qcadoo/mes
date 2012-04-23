@@ -89,11 +89,15 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            Date orderStartDate = getDateFromOrdersFromOperation(operations);
-            Date orderEndDate = getDateToOrdersFromOperation(operations);
+            if (scale.getDateFrom() == null) {
+                Date orderStartDate = getDateFromOrdersFromOperation(operations);
+                scale.setDateFrom(orderStartDate);
+            }
 
-            scale.setDateFrom(orderStartDate);
-            scale.setDateTo(orderEndDate);
+            if (scale.getDateTo() == null) {
+                Date orderEndDate = getDateToOrdersFromOperation(operations);
+                scale.setDateTo(orderEndDate);
+            }
 
             Map<String, List<GanttChartItem>> items = new TreeMap<String, List<GanttChartItem>>();
             Map<String, Integer> counters = new HashMap<String, Integer>();
@@ -102,7 +106,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 Date dateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
                 Date dateTo = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
 
-                if (dateFrom == null || dateTo == null) {
+                if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;
                 }
 
