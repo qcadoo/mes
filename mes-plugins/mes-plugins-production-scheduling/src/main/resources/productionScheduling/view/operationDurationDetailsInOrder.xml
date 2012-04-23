@@ -161,7 +161,8 @@
 						<layoutElement column="1" row="1">
 							<component type="grid" name="operations" reference="grid"
 								source="#{form}.technologyInstanceOperationComponents">
-								
+								<option type="column" name="nodeNumber" fields="nodeNumber" 
+								     link="true" />
 								<option type="column" name="number" fields="operation"
 									expression="#operation['number']" link="true" />
 								<option type="column" name="name" fields="operation"
