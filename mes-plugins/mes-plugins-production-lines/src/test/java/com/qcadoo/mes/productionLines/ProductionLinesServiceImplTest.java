@@ -38,9 +38,9 @@ public class ProductionLinesServiceImplTest {
         given(productionLine.getHasManyField("workstationTypeComponents")).willReturn(workstationComps);
         given(workComp1.getBelongsToField("workstationType")).willReturn(work1);
         given(workComp2.getBelongsToField("workstationType")).willReturn(work2);
-        given(work1.getId()).willReturn(1l);
-        given(work2.getId()).willReturn(2l);
-        given(work3.getId()).willReturn(3l);
+        given(work1.getId()).willReturn(1L);
+        given(work2.getId()).willReturn(2L);
+        given(work3.getId()).willReturn(3L);
         given(opComp1.getBelongsToField("operation")).willReturn(operation);
         given(workComp1.getField("quantity")).willReturn(123);
         given(workComp2.getField("quantity")).willReturn(234);
