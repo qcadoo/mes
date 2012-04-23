@@ -87,7 +87,6 @@
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
 			method="setVisibleAlert" />
 
-		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
 		<view:view resource="view/orderTimePrediction.xml" />
