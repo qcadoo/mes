@@ -41,8 +41,8 @@
 		<priority name="priority" scope="parent" />
 		<integer name="tpz" />
 		<integer name="tj" />
-		<boolean name="areProductQuantitiesDivisible" default="true" />
-		<boolean name="isTjDivisible" default="true"/>
+		<boolean name="areProductQuantitiesDivisible" default="false" />
+		<boolean name="isTjDivisible" default="false"/>
 		<decimal name="machineUtilization" />
 		<decimal name="laborUtilization" />
 		<decimal name="productionInOneCycle" required="true" default="1" />
