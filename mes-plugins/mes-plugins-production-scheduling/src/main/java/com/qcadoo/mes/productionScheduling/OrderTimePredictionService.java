@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.productionScheduling;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +39,7 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -55,21 +61,15 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class OrderTimePredictionService {
 
+    private static final String PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
+
     private static final String TECHNOLOGY_COMPONENT = "technology";
 
     private static final String QUANTITY_COMPONENT = "quantity";
 
-    private static final String DATE_FROM_COMPONENT = "dateFrom";
-
-    private static final String DATE_TO_COMPONENT = "dateTo";
-
     private static final String PLANNED_QUANTITY_COMPONENT = "plannedQuantity";
 
     private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
-
-    private static final String EFFECTIVE_DATE_TO_FIELD = "effectiveDateTo";
-
-    private static final String EFFECTIVE_DATE_FROM_FIELD = "effectiveDateFrom";
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -87,8 +87,8 @@ public class OrderTimePredictionService {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
 
         FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(PLANNED_QUANTITY_COMPONENT);
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
@@ -116,8 +116,8 @@ public class OrderTimePredictionService {
         FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
 
         FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
 
         quantity.setFieldValue("");
@@ -142,22 +142,22 @@ public class OrderTimePredictionService {
 
         Date orderStartDate = null;
 
-        if (order.getField("effectiveDateFrom") == null) {
-            if (order.getField("dateFrom") == null) {
+        if (order.getField(EFFECTIVE_DATE_FROM) == null) {
+            if (order.getField(OrderFields.DATE_FROM) == null) {
                 return;
             } else {
-                orderStartDate = (Date) order.getField("dateFrom");
+                orderStartDate = (Date) order.getField(DATE_FROM);
             }
         } else {
-            orderStartDate = (Date) order.getField("effectiveDateFrom");
+            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM);
         }
 
         for (Entity operation : operations) {
             Integer offset = (Integer) operation.getField("operationOffSet");
             Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
 
-            operation.setField("effectiveDateFrom", null);
-            operation.setField("effectiveDateTo", null);
+            operation.setField(EFFECTIVE_DATE_FROM, null);
+            operation.setField(EFFECTIVE_DATE_TO, null);
 
             if (offset == null || duration == null || duration.equals(0)) {
                 continue;
@@ -179,8 +179,8 @@ public class OrderTimePredictionService {
                 continue;
             }
 
-            operation.setField("effectiveDateFrom", dateFrom);
-            operation.setField("effectiveDateTo", dateTo);
+            operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
+            operation.setField(EFFECTIVE_DATE_TO, dateTo);
         }
 
         for (Entity operation : operations) {
@@ -226,15 +226,15 @@ public class OrderTimePredictionService {
             generatedEndDate.requestComponentUpdateState();
         } else {
             order.setField("realizationTime", maxPathTime);
-            Date startTime = (Date) order.getField("dateFrom");
-            Date stopTime = (Date) order.getField("dateTo");
+            Date startTime = (Date) order.getField(DATE_FROM);
+            Date stopTime = (Date) order.getField(DATE_TO);
             if (startTime == null) {
                 dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
                 Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
                 if (generatedStopTime != null) {
                     if (stopTime == null) {
-                        order.setField("dateTo", orderRealizationTimeService.setDateToField(generatedStopTime));
+                        order.setField(DATE_TO, orderRealizationTimeService.setDateToField(generatedStopTime));
                         realizationTime.setFieldValue(maxPathTime);
                         dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                         generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
@@ -255,7 +255,7 @@ public class OrderTimePredictionService {
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
         Date beforeOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM);
             if (beforeOperation == null) {
                 beforeOperation = operationDateFrom;
             }
@@ -269,7 +269,7 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
+            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO);
             if (laterOperation == null) {
                 laterOperation = operationDateFrom;
             }
@@ -286,28 +286,28 @@ public class OrderTimePredictionService {
 
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM_COMPONENT);
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO_COMPONENT);
+        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
+        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
         FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
 
         if (technologyLookup.getFieldValue() == null) {
-            technologyLookup.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            technologyLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
         if (!StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            dateFrom.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            dateFrom.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            plannedQuantity.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            plannedQuantity.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
         if (productionLineLookup.getFieldValue() == null) {
-            productionLineLookup.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            productionLineLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
@@ -315,7 +315,7 @@ public class OrderTimePredictionService {
                 viewDefinitionState.getLocale());
 
         if (quantity.intValue() < 0) {
-            plannedQuantity.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            plannedQuantity.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
@@ -367,8 +367,6 @@ public class OrderTimePredictionService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
 
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
-
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntity().getId());
         Entity product = order.getBelongsToField("product");
@@ -377,7 +375,6 @@ public class OrderTimePredictionService {
     }
 
     public void fillUnitField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
 
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");

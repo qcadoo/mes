@@ -303,4 +303,10 @@ public interface SamplesConstants {
 
     String L_2400 = "2400";
 
+    String COUNT_REALIZED = "countRealized";
+
+    String TPZ = "tpz";
+
+    String TJ = "tj";
+
 }
