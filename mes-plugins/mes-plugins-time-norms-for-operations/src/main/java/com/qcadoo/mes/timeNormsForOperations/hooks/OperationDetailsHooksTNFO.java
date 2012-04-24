@@ -20,11 +20,14 @@ public class OperationDetailsHooksTNFO {
         }
     }
 
-    public void updateCountMachineFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
+    public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
 
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
         FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
+        FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
+                .getComponentByReference("areProductQuantitiesDivisible");
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
 
         countRealized.setRequired(true);
 
@@ -38,5 +41,8 @@ public class OperationDetailsHooksTNFO {
             countMachineUNIT.setVisible(false);
         }
         countMachine.requestComponentUpdateState();
+        if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
+            isTjDivisible.setEnabled(true);
+        }
     }
 }

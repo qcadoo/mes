@@ -44,7 +44,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Cost norms for materials</name>
+		<name>MES - Cost norms for materials</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>

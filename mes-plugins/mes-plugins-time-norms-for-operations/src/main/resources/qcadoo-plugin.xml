@@ -262,7 +262,7 @@
 
 		<view:view-hook view="operationDetails" type="beforeRender"
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
-			method="updateCountMachineFieldStateonWindowLoad" />
+			method="updateFieldsStateOnWindowLoad" />
 
 		<view:view-hook view="operationDetails" type="beforeRender"
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
@@ -284,6 +284,7 @@
 		<view:view-hook view="technologyInstanceOperationComponentDetails"
 			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
 			method="disableComponents" />
+			
 		<view:view-hook view="technologyInstanceOperationComponentDetails"
 			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
 			method="fillUnitFields" />

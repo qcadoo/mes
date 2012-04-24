@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -37,6 +38,9 @@ public class ParameterService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     /**
      * Returns basic parameter entity id for current user
@@ -64,8 +68,7 @@ public class ParameterService {
 
     private Entity createParameter(final DataDefinition dataDefinition) {
         Entity newParameter = dataDefinition.create();
-        newParameter.setField("checkDoneOrderForQuality", false);
-        newParameter.setField("batchForDoneOrder", "01none");
+        newParameter.setField("currency", currencyService.getCurrentCurrency());
         newParameter = dataDefinition.save(newParameter);
         return newParameter;
     }

@@ -44,7 +44,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Production lines</name>
+		<name>MES - Production lines</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
@@ -65,6 +65,10 @@
 
 		<model:model model="productionLine" resource="model/productionLine.xml" />
 		<model:model model="workstationTypeComponent" resource="model/workstationTypeComponent.xml" />
+		
+		<model:model-field plugin="basic" model="parameter">
+		    <model:belongsTo name="defaultProductionLine" plugin="productionLines" model="productionLine" required="true" />
+		</model:model-field>
 
 		<model:model-field plugin="technologies" model="technologyGroup">
 			<model:manyToMany name="productionLines" joinField="groups"
@@ -82,7 +86,11 @@
 				<validatesRange from="0" exclusively="true" />
 			</model:integer>
 		</model:model-field>
-
+		
+		<model:model-hook model="parameter" plugin="basic">
+		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
+		</model:model-hook>
+		
 		<menu:menu-item name="productionLines" category="basic"
 			view="productionLinesList" />
 

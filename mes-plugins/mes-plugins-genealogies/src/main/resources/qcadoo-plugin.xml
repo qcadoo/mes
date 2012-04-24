@@ -108,6 +108,9 @@
 			<model:enum name="batchForDoneOrder" values="01none,02active,03lastUsed"
 				default="01none" />
 		</model:model-field>
+		<model:model-hook model="parameter" plugin="basic">
+		    <model:onCreate class="com.qcadoo.mes.genealogies.ParameterServiceGeneal" method="addFieldsForParameter"/>
+		</model:model-hook>
 
 		<menu:menu-category name="reports" />
 		<menu:menu-item-url name="genealogyAttributes"

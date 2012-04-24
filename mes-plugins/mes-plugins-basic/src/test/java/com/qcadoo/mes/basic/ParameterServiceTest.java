@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -89,7 +90,7 @@ public class ParameterServiceTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-
+        CurrencyService currencyService = mock(CurrencyService.class);
         Entity newParameter = mock(Entity.class);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).willReturn(
@@ -102,17 +103,19 @@ public class ParameterServiceTest {
 
         given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(dataDefinition.save(newParameter)).willReturn(savedEntity);
+        Entity currency = mock(Entity.class);
+        given(currencyService.getCurrentCurrency()).willReturn(currency);
 
         ParameterService parameterService = new ParameterService();
-        setField(parameterService, "dataDefinitionService", dataDefinitionService);
 
+        setField(parameterService, "dataDefinitionService", dataDefinitionService);
+        setField(parameterService, "currencyService", currencyService);
         // when
         Entity returnedParameter = parameterService.getParameter();
 
         // then
         verify(dataDefinition).save(newParameter);
-        verify(newParameter).setField("checkDoneOrderForQuality", false);
-        verify(newParameter).setField("batchForDoneOrder", "01none");
+        verify(newParameter).setField("currency", currency);
         assertEquals(Long.valueOf(15L), returnedParameter.getId());
     }
 
@@ -121,6 +124,7 @@ public class ParameterServiceTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
+        CurrencyService currencyService = mock(CurrencyService.class);
 
         Entity newParameter = mock(Entity.class);
 
@@ -134,17 +138,18 @@ public class ParameterServiceTest {
 
         given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
         given(dataDefinition.save(newParameter)).willReturn(savedEntity);
+        Entity currency = mock(Entity.class);
+        given(currencyService.getCurrentCurrency()).willReturn(currency);
 
         ParameterService parameterService = new ParameterService();
         setField(parameterService, "dataDefinitionService", dataDefinitionService);
-
+        setField(parameterService, "currencyService", currencyService);
         // when
         Long id = parameterService.getParameterId();
 
         // then
         verify(dataDefinition).save(newParameter);
-        verify(newParameter).setField("checkDoneOrderForQuality", false);
-        verify(newParameter).setField("batchForDoneOrder", "01none");
+        verify(newParameter).setField("currency", currency);
         assertEquals(Long.valueOf(15L), id);
     }
 

@@ -90,6 +90,10 @@ public class TechnologyOperationComponentDetailsHooks {
                 .getComponentByReference(PRODUCTION_IN_ONE_CYCLE);
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
+        FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
+                .getComponentByReference("areProductQuantitiesDivisible");
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
+
         Object value = countRealized.getFieldValue();
 
         tpzNorm.setEnabled(true);
@@ -101,6 +105,9 @@ public class TechnologyOperationComponentDetailsHooks {
             countRealized.setFieldValue("01all");
         }
         timeNextOperation.setEnabled(true);
+        if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
+            isTjDivisible.setEnabled(true);
+        }
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
