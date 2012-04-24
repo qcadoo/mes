@@ -162,6 +162,10 @@
 			<model:hasMany name="productionCountings" model="productionCounting"
 				joinField="order" plugin="productionCounting" cascade="delete" />
 		</model:model-field>
+		
+		<model:model-hook model="parameter" plugin="basic">
+		    <model:onCreate class="com.qcadoo.mes.productionCounting.internal.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
+		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />

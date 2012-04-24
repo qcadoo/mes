@@ -94,6 +94,10 @@
 			<model:onSave class="com.qcadoo.mes.qualityControls.QualityControlService"
 				method="generateOnSaveQualityControl" />
 		</model:model-hook>
+		
+		<model:model-hook model="parameter" plugin="basic">
+		    <model:onCreate class="com.qcadoo.mes.qualityControls.ParameterServiceQC" method="addFieldsForParameter"/>
+		</model:model-hook>
 
 		<menu:menu-category name="quality" />
 		<menu:menu-category name="reports" />
