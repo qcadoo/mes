@@ -26,6 +26,9 @@ public class TechnologyInstanceOperCompDetailsHooksTNFO {
         FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
         FieldComponent countMachineUnit = (FieldComponent) viewDefinitionState.getComponentByReference("countMachineUNIT");
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
+        FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
+                .getComponentByReference("areProductQuantitiesDivisible");
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
 
         tpz.setEnabled(true);
         tpz.setRequired(true);
@@ -52,6 +55,11 @@ public class TechnologyInstanceOperCompDetailsHooksTNFO {
 
         timeNextOperation.setEnabled(true);
         timeNextOperation.setRequired(true);
+
+        if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
+            isTjDivisible.setEnabled(true);
+        }
+
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
