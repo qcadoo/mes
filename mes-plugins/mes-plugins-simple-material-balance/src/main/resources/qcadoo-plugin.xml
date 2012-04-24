@@ -48,6 +48,17 @@
 		</vendor>
 	</information>
 
+	<dependencies>
+		<dependency>
+			<plugin>materialFlow</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+		<dependency>
+			<plugin>materialRequirements</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
 	<modules>
 		<localization:translation path="locales" />
 

@@ -27,6 +27,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PROD
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.COUNT_REALIZED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
@@ -34,6 +35,8 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_ID
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TJ;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TPZ;
 import static java.util.Collections.singletonMap;
 
 import java.math.BigDecimal;
@@ -238,19 +241,19 @@ public class GeneratedSamplesLoader extends SamplesLoader {
 
         String number = generateString(CHARS_ONLY, RANDOM.nextInt(40) + 5);
 
-        operation.setField("number", number);
+        operation.setField(L_NUMBER, number);
         operation.setField("name", getNameFromNumberAndPrefix("Operation-", number));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getRandomMachine());
 
-        operation.setField("tpz", RANDOM.nextInt(1000));
-        operation.setField("tj", RANDOM.nextInt(1000));
+        operation.setField(TPZ, RANDOM.nextInt(1000));
+        operation.setField(TJ, RANDOM.nextInt(1000));
         operation.setField("productionInOneCycle", RANDOM.nextInt(20));
-        operation.setField("countRealized", RANDOM.nextInt(10));
+        operation.setField(COUNT_REALIZED, RANDOM.nextInt(10));
         operation.setField("machineUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("laborUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("countMachine", RANDOM.nextInt(15));
-        operation.setField("countRealized", "01all");
+        operation.setField(COUNT_REALIZED, "01all");
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
         operation.setField("countMachine", "0");
 
@@ -320,18 +323,18 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         int productInComponentQuantity = RANDOM.nextInt(productsComponentsQuantity);
         int productOutComponentQuantity = productsComponentsQuantity - productInComponentQuantity;
 
-        operationComponent.setField("name", "operationComponent" + generateString(CHARS_AND_DIGITS, 15));
-        operationComponent.setField("number", generateString(CHARS_AND_DIGITS, 20));
+        operationComponent.setField(L_NAME, "operationComponent" + generateString(CHARS_AND_DIGITS, 15));
+        operationComponent.setField(L_NUMBER, generateString(CHARS_AND_DIGITS, 20));
         operationComponent.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
         operationComponent.setField("parent", parent);
         operationComponent.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         operationComponent.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        operationComponent.setField("tpz", operation.getField("tpz"));
-        operationComponent.setField("tj", operation.getField("tj"));
+        operationComponent.setField(TPZ, operation.getField(TPZ));
+        operationComponent.setField(TJ, operation.getField(TJ));
         operationComponent.setField("machineUtilization", operation.getField("machineUtilization"));
         operationComponent.setField("laborUtilization", operation.getField("laborUtilization"));
         operationComponent.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        operationComponent.setField("countRealized", operation.getField("countRealized"));
+        operationComponent.setField(COUNT_REALIZED, operation.getField(COUNT_REALIZED));
         operationComponent.setField("countMachine", "0");
         operationComponent.setField("timeNextOperation", operation.getField("timeNextOperation"));
 

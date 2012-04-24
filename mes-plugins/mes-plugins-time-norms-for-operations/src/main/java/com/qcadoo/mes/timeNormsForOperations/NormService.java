@@ -26,22 +26,16 @@ package com.qcadoo.mes.timeNormsForOperations;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class NormService {
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -50,8 +44,6 @@ public class NormService {
         Map<String, String> messages = new HashMap<String, String>();
 
         List<Entity> operationComponents = technology.getTreeField("operationComponents");
-
-        Locale locale = LocaleContextHolder.getLocale();
 
         for (Entity operationComponent : operationComponents) {
             BigDecimal timeNormsQuantity = getProductionInOneCycle(operationComponent);

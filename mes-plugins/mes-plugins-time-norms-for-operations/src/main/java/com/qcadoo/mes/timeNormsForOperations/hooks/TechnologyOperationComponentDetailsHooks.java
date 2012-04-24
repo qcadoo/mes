@@ -8,14 +8,11 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperComp
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TIME_NEXT_OPERATION;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -27,9 +24,6 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class TechnologyOperationComponentDetailsHooks {
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -52,8 +46,6 @@ public class TechnologyOperationComponentDetailsHooks {
         } catch (IllegalStateException e) {
             return;
         }
-
-        Locale locale = LocaleContextHolder.getLocale();
 
         BigDecimal currentQuantity = productOutComponent.getDecimalField("quantity");
 

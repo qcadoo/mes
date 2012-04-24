@@ -56,10 +56,6 @@
 			<plugin>orders</plugin>
 			<version>[0.4.0</version>
 		</dependency>
-		<dependency>
-			<plugin>productionScheduling</plugin>
-			<version>[0.4.0</version>
-		</dependency>
 	</dependencies>
 
 	<modules>
