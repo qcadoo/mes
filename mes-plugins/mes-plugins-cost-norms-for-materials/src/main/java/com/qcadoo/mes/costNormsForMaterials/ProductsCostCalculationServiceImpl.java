@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
-import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -122,7 +121,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             product = product.getDataDefinition().get(product.getId());
 
             Entity technologyInstOperProductInComp = dataDefinitionService
-                    .get(CostNormsForProductConstants.PLUGIN_IDENTIFIER,
+                    .get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
                             CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
                     .uniqueResult();
@@ -139,7 +138,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
             return product;
         } else {
             Entity productWithCostNormsFromOrder = dataDefinitionService
-                    .get("costNormsForProduct", "technologyInstOperProductInComp").find()
+                    .get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
+                            CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).find()
                     .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.belongsTo("product", product))
                     .uniqueResult();
             if (productWithCostNormsFromOrder == null) {
