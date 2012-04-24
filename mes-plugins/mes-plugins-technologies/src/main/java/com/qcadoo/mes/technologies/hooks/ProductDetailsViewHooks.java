@@ -27,6 +27,7 @@ public class ProductDetailsViewHooks {
 
     private static final String L_FORM = "form";
 
+    // TODO MAKU Fix passing values to another view
     public final void addTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
@@ -38,8 +39,6 @@ public class ProductDetailsViewHooks {
         Long productId = product.getId();
 
         Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("product.id", productId);
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologyGroups");
 

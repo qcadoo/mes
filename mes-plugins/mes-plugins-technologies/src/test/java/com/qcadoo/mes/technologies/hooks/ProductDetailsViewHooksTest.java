@@ -98,8 +98,6 @@ public class ProductDetailsViewHooksTest {
         // given
         given(product.getId()).willReturn(L_ID);
 
-        parameters.put("product.id", L_ID);
-
         parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologyGroups");
 
         String url = "../page/technologies/technologyGroupDetails.html";
