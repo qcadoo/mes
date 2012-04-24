@@ -30,19 +30,19 @@
 	view="productDetails">
 	
 	<group name="technologies">
-		<bigButton name="addTechnologyGroup" icon="newGenealogyIcon24.png">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('addTechnologyGroup', []);
-							}
-						}
-					});		
-				]]>
-			</script>
-		</bigButton>
+<!-- 		<bigButton name="addTechnologyGroup" icon="newGenealogyIcon24.png"> -->
+<!-- 			<script> -->
+<!-- 				<![CDATA[ -->
+<!-- 					this.addOnChangeListener({ -->
+<!-- 						onClick: function() { -->
+<!-- 							if(window.canClose()) { -->
+<!-- 								#{form}.performEvent('addTechnologyGroup', []); -->
+<!-- 							} -->
+<!-- 						} -->
+<!-- 					});		 -->
+<!-- 				]]> -->
+<!-- 			</script> -->
+<!-- 		</bigButton> -->
 		<bigButton name="showTechnologiesWithTechnologyGroup" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[
