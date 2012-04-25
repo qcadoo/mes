@@ -6,7 +6,7 @@
 	<parent>
     <artifactId>mes-plugins</artifactId>
     <groupId>com.qcadoo.mes</groupId>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.5</version>
   </parent>
 
 	<artifactId>mes-plugins-operation-time-calculations</artifactId>
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-time-norms-for-operations</artifactId>
-			<version>1.1.5-SNAPSHOT</version>
+			<version>1.1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-lines</artifactId>
-			<version>1.1.5-SNAPSHOT</version>
+			<version>1.1.5</version>
 		</dependency>
 	</dependencies>
 	
