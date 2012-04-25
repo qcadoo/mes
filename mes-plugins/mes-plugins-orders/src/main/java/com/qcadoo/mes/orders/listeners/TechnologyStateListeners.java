@@ -68,7 +68,7 @@ public class TechnologyStateListeners implements AfterStateChangeListener {
     private void changedStateFromCheckedToDraft(final ComponentState state, final Entity technology) {
         MessageHolder message = deleteCheckedTechnologyFromOrder(technology);
         if (message != null) {
-            state.addMessage(message.getMessageKey(), message.getMessageType(), false);
+            state.addMessage(message.getMessageKey(), message.getMessageType(), false, message.getVars());
         }
     }
 
@@ -79,13 +79,14 @@ public class TechnologyStateListeners implements AfterStateChangeListener {
         for (Entity order : ordersList) {
             order.setField(TECHNOLOGY, null);
             orderDD.save(order);
-            ordersNumberList.append(" {");
+            ordersNumberList.append("{");
             ordersNumberList.append(order.getStringField(NUMBER));
             ordersNumberList.append("}");
         }
         if (ordersList.isEmpty()) {
             return null;
         }
+
         return MessageHolder.info("orders.order.technology.removed", ordersNumberList.toString());
     }
 
