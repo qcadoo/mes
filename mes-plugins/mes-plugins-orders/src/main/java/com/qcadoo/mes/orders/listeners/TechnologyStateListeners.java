@@ -77,6 +77,9 @@ public class TechnologyStateListeners implements AfterStateChangeListener {
         List<Entity> ordersList = orderDD.find().add(SearchRestrictions.belongsTo(TECHNOLOGY, technology)).list().getEntities();
         StringBuilder ordersNumberList = new StringBuilder();
         for (Entity order : ordersList) {
+            if (ordersNumberList.length() != 0) {
+                ordersNumberList.append(", ");
+            }
             order.setField(TECHNOLOGY, null);
             orderDD.save(order);
             ordersNumberList.append("{");
