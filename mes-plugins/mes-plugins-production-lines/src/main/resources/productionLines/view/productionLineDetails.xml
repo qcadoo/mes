@@ -38,7 +38,7 @@
 				<component type="gridLayout" name="mainTabGridLayout" columns="3"
 					rows="5">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" />
+						<component type="input" name="number" field="number" reference="number" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" />
@@ -193,5 +193,6 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 			method="disableSupportedTechnologiesGrids" />
+		<beforeRender class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks" method="generateProductionLineNumber" />
 	</hooks>
 </view>
