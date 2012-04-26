@@ -27,13 +27,19 @@ import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROU
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class ProductionLineDetailsViewHooks {
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public void disableSupportedTechnologiesGrids(final ViewDefinitionState view) {
         ComponentState supportsAllTechnologies = view.getComponentByReference(SUPPORTSALLTECHNOLOGIES);
@@ -50,5 +56,10 @@ public class ProductionLineDetailsViewHooks {
     public void disableSupportedTechnologiesGrids(final ViewDefinitionState view, final ComponentState component,
             final String[] args) {
         disableSupportedTechnologiesGrids(view);
+    }
+
+    public void generateProductionLineNumber(final ViewDefinitionState viewDefinitionState) {
+        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_PRODUCTION_LINE, "form", "number");
     }
 }

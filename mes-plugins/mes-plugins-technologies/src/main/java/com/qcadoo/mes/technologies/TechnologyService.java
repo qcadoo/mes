@@ -274,6 +274,11 @@ public class TechnologyService {
         }
     }
 
+    public void generateTechnologyGroupNumber(final ViewDefinitionState viewDefinitionState) {
+        numberGeneratorService.generateAndInsertNumber(viewDefinitionState, TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, "form", "number");
+    }
+
     public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");

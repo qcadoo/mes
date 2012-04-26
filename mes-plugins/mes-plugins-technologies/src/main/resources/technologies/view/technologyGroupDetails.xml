@@ -43,7 +43,7 @@
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 							reference="number">
-							<option type="alignment" value="right" />
+							<option type="alignment" value="left" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
@@ -62,5 +62,7 @@
 		</windowTab>
 	
 	</component>
-	
+		<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyGroupNumber" />
+		</hooks>
 </view>
