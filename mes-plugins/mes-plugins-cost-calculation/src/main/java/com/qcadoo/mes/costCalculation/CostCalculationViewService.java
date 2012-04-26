@@ -38,7 +38,6 @@ import static com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -199,10 +198,6 @@ public class CostCalculationViewService {
     private void generateNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_COST_CALCULATION, FORM, "number");
-    }
-
-    public void generateDateOfCalculation(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("date", new Date());
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
@@ -403,7 +398,6 @@ public class CostCalculationViewService {
 
     public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
         disableCheckboxIfPieceworkIsSelected(viewDefinitionState);
     }
 

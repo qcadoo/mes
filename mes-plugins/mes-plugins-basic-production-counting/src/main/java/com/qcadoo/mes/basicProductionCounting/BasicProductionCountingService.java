@@ -25,9 +25,6 @@ package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,12 +34,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -70,74 +65,7 @@ public class BasicProductionCountingService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
     private TechnologyService technologyService;
-
-    public void generateProducedProducts(final ViewDefinitionState state) {
-        final String orderNumber = (String) state.getComponentByReference("number").getFieldValue();
-
-        if (orderNumber != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                    .add(SearchRestrictions.eq("number", orderNumber)).uniqueResult();
-            if (order != null) {
-                updateProductsForOrder(order, BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING, "plannedQuantity");
-            }
-        }
-    }
-
-    private void updateProductsForOrder(final Entity order, final String pluginName, final String modelName,
-            final String fieldName) {
-        final Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order), true);
-
-        List<Entity> producedProducts = dataDefinitionService.get(pluginName, modelName).find()
-                .add(SearchRestrictions.belongsTo(MODEL_FIELD_ORDER, order)).list().getEntities();
-
-        for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-            Entity foundProduct = null;
-
-            for (Entity producedProduct : producedProducts) {
-                if (producedProduct.getBelongsToField(MODEL_FIELD_PRODUCT).getId().equals(product.getKey().getId())) {
-                    foundProduct = producedProduct;
-                    break;
-                }
-            }
-
-            if (foundProduct == null) {
-                final Entity newProduct = dataDefinitionService.get(pluginName, modelName).create();
-                newProduct.setField(MODEL_FIELD_ORDER, order);
-                newProduct.setField(MODEL_FIELD_PRODUCT, product.getKey());
-                newProduct.setField(fieldName, product.getValue());
-                newProduct.getDataDefinition().save(newProduct);
-                if (!newProduct.isValid()) {
-                    throw new IllegalStateException("new product entity is invalid  " + product.getValue() + "\n\n\n");
-                }
-            } else {
-                BigDecimal plannedQuantity = (BigDecimal) foundProduct.getField(fieldName);
-                if (plannedQuantity != product.getValue()) {
-                    foundProduct.setField(fieldName, product.getValue());
-                    foundProduct.getDataDefinition().save(foundProduct);
-                }
-            }
-        }
-        producedProducts = dataDefinitionService.get(pluginName, modelName).find()
-                .add(SearchRestrictions.belongsTo(MODEL_FIELD_ORDER, order)).list().getEntities();
-
-        for (Entity producedProduct : producedProducts) {
-            boolean found = false;
-            for (Entry<Entity, BigDecimal> product : products.entrySet()) {
-                if (producedProduct.getBelongsToField(MODEL_FIELD_PRODUCT).equals(product.getKey())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                dataDefinitionService.get(pluginName, modelName).delete(producedProduct.getId());
-            }
-        }
-    }
 
     public void showProductionCounting(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
         Long orderId = (Long) triggerState.getFieldValue();
