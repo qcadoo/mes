@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public class TechnologyFields {
+public final class TechnologyFields {
+
+    private TechnologyFields() {
+
+    }
 
     public static final String NUMBER = "number";
 

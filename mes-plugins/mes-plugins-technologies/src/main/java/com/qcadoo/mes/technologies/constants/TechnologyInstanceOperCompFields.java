@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public class TechnologyInstanceOperCompFields {
+public final class TechnologyInstanceOperCompFields {
+
+    private TechnologyInstanceOperCompFields() {
+
+    }
 
     public static final String TECHONOLOGY = "technology";
 

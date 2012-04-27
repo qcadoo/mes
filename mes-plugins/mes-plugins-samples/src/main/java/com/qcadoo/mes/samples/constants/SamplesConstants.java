@@ -175,6 +175,16 @@ public interface SamplesConstants {
 
     String L_DIVISION = "division";
 
+    String L_SHIFT = "shift";
+
+    String L_WORKSTATION_TYPE = "workstationType";
+
+    String L_LAST_RECORD = "lastRecord";
+
+    String L_MACHINE_TIME = "machineTime";
+
+    String L_LABOR_TIME = "laborTime";
+
     String L_DATE_FROM = "dateFrom";
 
     String L_DATE_TO = "dateTo";
@@ -214,6 +224,12 @@ public interface SamplesConstants {
     String L_CLOSED = "closed";
 
     String L_OPERATION = "operation";
+
+    String COUNT_REALIZED = "countRealized";
+
+    String TPZ = "tpz";
+
+    String TJ = "tj";
 
     String L_PROD_NR_10 = "000010";
 
@@ -302,11 +318,5 @@ public interface SamplesConstants {
     String L_1600 = "1600";
 
     String L_2400 = "2400";
-
-    String COUNT_REALIZED = "countRealized";
-
-    String TPZ = "tpz";
-
-    String TJ = "tj";
 
 }

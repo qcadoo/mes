@@ -24,10 +24,10 @@
 package com.qcadoo.mes.operationCostCalculations;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields.LABOR_HOURLY_COST;
+import static com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields.MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.LABOR_HOURLY_COST;
-import static com.qcadoo.mes.costNormsForOperation.constants.OperationsCostCalculationConstants.MACHINE_HOURLY_COST;
 import static java.math.BigDecimal.ROUND_UP;
 import static java.util.Arrays.asList;
 
@@ -61,19 +61,21 @@ import com.qcadoo.model.api.NumberService;
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
 
-    private static final String QUANTITY_FIELD = "quantity";
+    private static final String L_PRODUCTION_LINE = "productionLine";
 
-    private static final String TECHNOLOGY_FIELD = "technology";
+    private static final String L_QUANTITY = "quantity";
 
-    private static final String ORDER_L = "order";
+    private static final String L_TECHNOLOGY = "technology";
 
-    private static final String OPERATION_L = "operation";
+    private static final String L_ORDER = "order";
 
-    private static final String ENTITY_TYPE_FIELD = "entityType";
+    private static final String L_OPERATION = "operation";
 
-    private static final String PRODUCTION_IN_ONE_CYCLE_FIELD = "productionInOneCycle";
+    private static final String L_ENTITY_TYPE = "entityType";
 
-    private static final String TECHNOLOGY_OPERATION_COMPONENT_FIELD = "technologyOperationComponent";
+    private static final String L_PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
+
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     private static final String L_CALCULATION_OPERATION_COMPONENTS = "calculationOperationComponents";
 
@@ -107,7 +109,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(entity
                 .getStringField("calculateOperationCostsMode"));
-        BigDecimal quantity = getBigDecimal(entity.getField(QUANTITY_FIELD));
+        BigDecimal quantity = getBigDecimal(entity.getField(L_QUANTITY));
         Boolean includeTPZ = entity.getBooleanField("includeTPZ");
         Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
         BigDecimal margin = getBigDecimal(entity.getField("productionCostMargin"));
@@ -120,10 +122,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         checkArgument(operationComponents != null, "given operation components is null");
 
-        Entity technology = entity.getBelongsToField(TECHNOLOGY_FIELD);
-        Entity order = entity.getBelongsToField("order");
+        Entity technology = entity.getBelongsToField(L_TECHNOLOGY);
+        Entity order = entity.getBelongsToField(L_ORDER);
         if (order != null) {
-            Entity technologyFromOrder = order.getBelongsToField(TECHNOLOGY_FIELD);
+            Entity technologyFromOrder = order.getBelongsToField(L_TECHNOLOGY);
             technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyFromOrder.getId());
         }
@@ -132,15 +134,15 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
             productQuantitiesService.getProductComponentQuantities(technology, quantity, productComponentQuantities);
             if (operationComponents.getRoot() == null) {
-                entity.addError(entity.getDataDefinition().getField("order"), "costCalculation.lackOfTreeComponents");
-                entity.addError(entity.getDataDefinition().getField(TECHNOLOGY_FIELD), "costCalculation.lackOfTreeComponents");
+                entity.addError(entity.getDataDefinition().getField(L_ORDER), "costCalculation.lackOfTreeComponents");
+                entity.addError(entity.getDataDefinition().getField(L_TECHNOLOGY), "costCalculation.lackOfTreeComponents");
                 return;
             }
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(operationComponents.getRoot(),
                     productComponentQuantities, margin, quantity);
             entity.setField("totalPieceworkCosts", numberService.setScale(totalPieceworkCost));
         } else if (CalculateOperationCostMode.HOURLY.equals(mode)) {
-            Entity productionLine = entity.getBelongsToField("productionLine");
+            Entity productionLine = entity.getBelongsToField(L_PRODUCTION_LINE);
             Entity entityForCalculation = (order == null) ? technology : order;
             Map<Entity, Integer> realizationTimes = orderRealizationTimeService.estimateOperationTimeConsumptions(
                     entityForCalculation, quantity, includeTPZ, includeAdditionalTime, productionLine);
@@ -289,10 +291,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         deleteOperationsTreeIfExists(costCalculation);
 
-        if (costCalculation.getBelongsToField(ORDER_L) == null) {
-            sourceOperationComponents = costCalculation.getBelongsToField(TECHNOLOGY_FIELD).getTreeField("operationComponents");
+        if (costCalculation.getBelongsToField(L_ORDER) == null) {
+            sourceOperationComponents = costCalculation.getBelongsToField(L_TECHNOLOGY).getTreeField("operationComponents");
         } else {
-            sourceOperationComponents = costCalculation.getBelongsToField(ORDER_L).getTreeField(
+            sourceOperationComponents = costCalculation.getBelongsToField(L_ORDER).getTreeField(
                     "technologyInstanceOperationComponents");
         }
 
@@ -323,7 +325,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         calculationOperationComponent.setField("parent", parent);
         calculationOperationComponent.setField(parentEntity.getDataDefinition().getName(), parentEntity);
 
-        if (OPERATION_L.equals(sourceTreeNode.getField(ENTITY_TYPE_FIELD))) {
+        if (L_OPERATION.equals(sourceTreeNode.getField(L_ENTITY_TYPE))) {
             createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponentDD,
                     calculationOperationComponent, parentEntity);
         } else {
@@ -340,26 +342,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             final Entity costCalculation) {
         DataDefinition sourceDD = operationComponent.getDataDefinition();
 
-        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", PRODUCTION_IN_ONE_CYCLE_FIELD,
-                "countMachine", "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
+        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", L_PRODUCTION_IN_ONE_CYCLE, "countMachine",
+                "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
                 "effectiveDateTo", "pieceworkCost", "laborHourlyCost", "machineHourlyCost", "numberOfOperations",
                 "totalOperationCost", "laborUtilization", "machineUtilization")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 
-        calculationOperationComponent.setField(OPERATION_L, operationComponent.getBelongsToField(OPERATION_L));
+        calculationOperationComponent.setField(L_OPERATION, operationComponent.getBelongsToField(L_OPERATION));
 
         calculationOperationComponent.setField("countRealized", operationComponent.getField("countRealized") == null ? "01all"
                 : operationComponent.getField("countRealized"));
 
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
-            calculationOperationComponent.setField(TECHNOLOGY_OPERATION_COMPONENT_FIELD, operationComponent);
+            calculationOperationComponent.setField(L_TECHNOLOGY_OPERATION_COMPONENT, operationComponent);
         } else if (TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(sourceDD.getName())) {
-            calculationOperationComponent.setField(TECHNOLOGY_OPERATION_COMPONENT_FIELD,
-                    operationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT_FIELD));
+            calculationOperationComponent.setField(L_TECHNOLOGY_OPERATION_COMPONENT,
+                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT));
         }
 
-        calculationOperationComponent.setField(ENTITY_TYPE_FIELD, OPERATION_L);
+        calculationOperationComponent.setField(L_ENTITY_TYPE, L_OPERATION);
 
         List<Entity> newTechnologyInstanceOperationComponents = new ArrayList<Entity>();
 

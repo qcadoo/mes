@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-public class OperationPieceworkCostComponentFields {
+public final class OperationPieceworkCostComponentFields {
+
+    private OperationPieceworkCostComponentFields() {
+
+    }
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
 

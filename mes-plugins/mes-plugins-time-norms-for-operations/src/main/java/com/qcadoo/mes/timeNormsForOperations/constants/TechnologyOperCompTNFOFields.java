@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public class TechnologyOperCompTNFOFields {
+public final class TechnologyOperCompTNFOFields {
+
+    private TechnologyOperCompTNFOFields() {
+
+    }
 
     public static final String TPZ = "tpz";
 

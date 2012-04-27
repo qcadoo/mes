@@ -34,7 +34,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderHelperService {
 
-    public List<String> getOrdersWithoutTechnology(List<Entity> orders) {
+    public List<String> getOrdersWithoutTechnology(final List<Entity> orders) {
         List<String> ordersWithoutTechnology = Lists.newArrayList();
         for (Entity order : orders) {
             if (order.getBelongsToField("technology") == null) {
