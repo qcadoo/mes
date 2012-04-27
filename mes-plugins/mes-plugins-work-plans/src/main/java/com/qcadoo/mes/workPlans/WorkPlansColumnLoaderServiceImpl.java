@@ -111,8 +111,12 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             parameter.setField(workPlanParameter, false);
         }
 
+        parameter.getDataDefinition().save(parameter);
+
         if (parameter.isValid()) {
-            parameter.getDataDefinition().save(parameter);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Parameter saved {column=" + parameter.toString() + "}");
+            }
         }
     }
 
@@ -129,8 +133,12 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     operation.setField(workPlanParameter, false);
                 }
 
+                operation.getDataDefinition().save(operation);
+
                 if (operation.isValid()) {
-                    operation.getDataDefinition().save(operation);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Operation saved {column=" + operation.toString() + "}");
+                    }
                 }
             }
         }
@@ -149,8 +157,12 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     technologyOperationComponent.setField(workPlanParameter, false);
                 }
 
+                technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
+
                 if (technologyOperationComponent.isValid()) {
-                    technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Technology Operation Component saved {column=" + technologyOperationComponent.toString() + "}");
+                    }
                 }
             }
         }
@@ -170,8 +182,13 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     technologyInstanceOperationComponent.setField(workPlanParameter, false);
                 }
 
+                technologyInstanceOperationComponent.getDataDefinition().save(technologyInstanceOperationComponent);
+
                 if (technologyInstanceOperationComponent.isValid()) {
-                    technologyInstanceOperationComponent.getDataDefinition().save(technologyInstanceOperationComponent);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Technology Instance Operation Component saved {column="
+                                + technologyInstanceOperationComponent.toString() + "}");
+                    }
                 }
             }
         }
@@ -268,9 +285,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(L_NAME) + "}");
         }
 
-        if (columnForOrders.isValid()) {
-            columnForOrders = columnForOrders.getDataDefinition().save(columnForOrders);
+        columnForOrders = columnForOrders.getDataDefinition().save(columnForOrders);
 
+        if (columnForOrders.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column for input products saved {column=" + columnForOrders.toString() + "}");
             }
@@ -307,9 +324,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(L_NAME) + "}");
         }
 
-        if (columnForInputProduct.isValid()) {
-            columnForInputProduct = columnForInputProduct.getDataDefinition().save(columnForInputProduct);
+        columnForInputProduct = columnForInputProduct.getDataDefinition().save(columnForInputProduct);
 
+        if (columnForInputProduct.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column for input products saved {column=" + columnForInputProduct.toString() + "}");
             }
@@ -348,9 +365,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(L_NAME) + "}");
         }
 
-        if (columnForOutputProduct.isValid()) {
-            columnForOutputProduct = columnForOutputProduct.getDataDefinition().save(columnForOutputProduct);
+        columnForOutputProduct = columnForOutputProduct.getDataDefinition().save(columnForOutputProduct);
 
+        if (columnForOutputProduct.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column for output products saved {column=" + columnForOutputProduct.toString() + "}");
             }
@@ -384,9 +401,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         parameterOrderColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
         parameterOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
 
-        if (parameterOrderColumn.isValid()) {
-            parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
+        parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
 
+        if (parameterOrderColumn.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column added to parameter order columns {column=" + parameterOrderColumn.toString() + "}");
             }
@@ -404,9 +421,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             workPlanOrderColumn.setField(WorkPlansConstants.MODEL_WORK_PLAN, workPlan);
             workPlanOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
 
-            if (workPlanOrderColumn.isValid()) {
-                workPlanOrderColumn = workPlanOrderColumn.getDataDefinition().save(workPlanOrderColumn);
+            workPlanOrderColumn = workPlanOrderColumn.getDataDefinition().save(workPlanOrderColumn);
 
+            if (workPlanOrderColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to work plan order columns {column=" + workPlanOrderColumn.toString() + "}");
                 }
@@ -425,9 +442,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         parameterInputColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
         parameterInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-        if (parameterInputColumn.isValid()) {
-            parameterInputColumn = parameterInputColumn.getDataDefinition().save(parameterInputColumn);
+        parameterInputColumn = parameterInputColumn.getDataDefinition().save(parameterInputColumn);
 
+        if (parameterInputColumn.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column added to parameter input columns {column=" + parameterInputColumn.toString() + "}");
             }
@@ -445,9 +462,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         parameterOutputColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
         parameterOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-        if (parameterOutputColumn.isValid()) {
-            parameterOutputColumn = parameterOutputColumn.getDataDefinition().save(parameterOutputColumn);
+        parameterOutputColumn = parameterOutputColumn.getDataDefinition().save(parameterOutputColumn);
 
+        if (parameterOutputColumn.isValid()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Column added to parameter output columns {column=" + parameterOutputColumn.toString() + "}");
             }
@@ -465,9 +482,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             operationInputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
             operationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-            if (operationInputColumn.isValid()) {
-                operationInputColumn = operationInputColumn.getDataDefinition().save(operationInputColumn);
+            operationInputColumn = operationInputColumn.getDataDefinition().save(operationInputColumn);
 
+            if (operationInputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to operation input columns {column=" + operationInputColumn.toString() + "}");
                 }
@@ -486,9 +503,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             operationOutputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
             operationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-            if (operationOutputColumn.isValid()) {
-                operationOutputColumn = operationOutputColumn.getDataDefinition().save(operationOutputColumn);
+            operationOutputColumn = operationOutputColumn.getDataDefinition().save(operationOutputColumn);
 
+            if (operationOutputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to operation output columns {column=" + operationOutputColumn.toString() + "}");
                 }
@@ -508,10 +525,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     technologyOperationComponent);
             technologyOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-            if (technologyOperationInputColumn.isValid()) {
-                technologyOperationInputColumn = technologyOperationInputColumn.getDataDefinition().save(
-                        technologyOperationInputColumn);
+            technologyOperationInputColumn = technologyOperationInputColumn.getDataDefinition().save(
+                    technologyOperationInputColumn);
 
+            if (technologyOperationInputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to technology operation input columns {column="
                             + technologyOperationInputColumn.toString() + "}");
@@ -533,10 +550,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             technologyOperationOutputColumn
                     .setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-            if (technologyOperationOutputColumn.isValid()) {
-                technologyOperationOutputColumn = technologyOperationOutputColumn.getDataDefinition().save(
-                        technologyOperationOutputColumn);
+            technologyOperationOutputColumn = technologyOperationOutputColumn.getDataDefinition().save(
+                    technologyOperationOutputColumn);
 
+            if (technologyOperationOutputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to technology operation output columns {column="
                             + technologyOperationOutputColumn.toString() + "}");
@@ -557,9 +574,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     technologyInstanceOperationComponent);
             orderOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
 
-            if (orderOperationInputColumn.isValid()) {
-                orderOperationInputColumn = orderOperationInputColumn.getDataDefinition().save(orderOperationInputColumn);
+            orderOperationInputColumn = orderOperationInputColumn.getDataDefinition().save(orderOperationInputColumn);
 
+            if (orderOperationInputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to order operation input columns {column=" + orderOperationInputColumn.toString()
                             + "}");
@@ -580,9 +597,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     technologyInstanceOperationComponent);
             orderOperationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
 
-            if (orderOperationOutputColumn.isValid()) {
-                orderOperationOutputColumn = orderOperationOutputColumn.getDataDefinition().save(orderOperationOutputColumn);
+            orderOperationOutputColumn = orderOperationOutputColumn.getDataDefinition().save(orderOperationOutputColumn);
 
+            if (orderOperationOutputColumn.isValid()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Column added to order operation output columns {column=" + orderOperationOutputColumn.toString()
                             + "}");

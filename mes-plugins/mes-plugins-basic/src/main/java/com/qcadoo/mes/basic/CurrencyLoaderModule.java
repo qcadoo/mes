@@ -122,9 +122,8 @@ public class CurrencyLoaderModule extends Module {
             LOG.debug("Add test currency item {currency=" + currency.getStringField(L_CURRENCY) + "}");
         }
 
+        currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
         if (currency.isValid()) {
-            currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
-
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Currency saved {currency=" + currency.toString() + "}");
             }
