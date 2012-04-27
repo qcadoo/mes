@@ -1070,19 +1070,16 @@ public class TestSamplesLoader extends SamplesLoader {
     void addProductionRecord(final Map<String, String> values) {
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
-        productionRecord.setField(L_NUMBER, values.get("number"));
+
+        productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionRecord.setField("shift", getShiftByName(values.get("shift")));
         productionRecord.setField(L_STATE, values.get(L_STATE));
-        productionRecord.setField("lastRecord", values.get("lastrecord"));
-        productionRecord.setField("machineTime", values.get("machinetime"));
-        productionRecord.setField("machineTimeBalance", values.get("machinetimebalance"));
-        productionRecord.setField("laborTime", values.get("labortime"));
-        productionRecord.setField("laborTimeBalance", values.get("labortimebalance"));
-        productionRecord.setField("plannedTime", values.get("plannedtime"));
-        productionRecord.setField("plannedLaborTime", values.get("plannedlabortime"));
+        productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
+        productionRecord.setField(L_MACHINE_TIME, values.get("machinetime"));
+        productionRecord.setField(L_LABOR_TIME, values.get("labortime"));
         productionRecord.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
-        productionRecord.setField("workstationType", getWorkstationTypeByNumber(values.get("workstationtype")));
+        productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
 
         // TODO ALBR add loggings for production rrcord
