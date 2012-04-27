@@ -71,55 +71,51 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class TechnologyService {
 
-    private static final String QUANTITY_FIELD = "quantity";
+    private static final String L_FORM = "form";
 
-    private static final String UNIT_SAMPLING_NR_FIELD = "unitSamplingNr";
+    private static final String L_QUANTITY = "quantity";
 
-    private static final String QUALITY_CONTROL_TYPE_FIELD = "qualityControlType";
+    private static final String L_UNIT_SAMPLING_NR = "unitSamplingNr";
 
-    private static final String ENTITY_TYPE_FIELD = "entityType";
+    private static final String L_QUALITY_CONTROL_TYPE = "qualityControlType";
 
-    private static final String OPERATION_COMPONENTS_FIELD = "operationComponents";
+    private static final String L_ENTITY_TYPE = "entityType";
 
-    private static final String REFERENCE_TECHNOLOGY_FIELD = "referenceTechnology";
+    private static final String L_OPERATION_COMPONENTS = "operationComponents";
 
-    private static final String PRODUCT_L = "product";
+    private static final String L_REFERENCE_TECHNOLOGY = "referenceTechnology";
 
-    private static final String NAME_FIELD = "name";
+    private static final String L_PRODUCT = "product";
 
-    private static final String PARENT_FIELD = "parent";
+    private static final String L_NAME = "name";
 
-    private static final String NUMBER = "number";
+    private static final String L_PARENT = "parent";
 
-    public static final String WASTE = "04waste";
+    private static final String L_NUMBER = "number";
 
-    public static final String FINAL_PRODUCT = "03finalProduct";
+    public static final String L_04_WASTE = "04waste";
 
-    public static final String COMPONENT = "01component";
+    public static final String L_03_FINAL_PRODUCT = "03finalProduct";
 
-    public static final String INTERMEDIATE = "02intermediate";
+    public static final String L_01_COMPONENT = "01component";
 
-    public static final String UNRELATED = "00unrelated";
+    public static final String L_02_INTERMEDIATE = "02intermediate";
 
-    private static final String CONST_TECHNOLOGY = "technology";
+    public static final String L_00_UNRELATED = "00unrelated";
 
-    private static final String CONST_MASTER = "master";
+    private static final String L_TECHNOLOGY = "technology";
 
-    private static final String CONST_ENTITY_TYPE = ENTITY_TYPE_FIELD;
+    private static final String L_MASTER = "master";
 
-    private static final String CONST_OPERATION = "operation";
+    private static final String L_OPERATION = "operation";
 
-    private static final String CONST_OPERATION_COMPONENTS = OPERATION_COMPONENTS_FIELD;
+    private static final String L_OPERATION_COMPONENT = "operationComponent";
 
-    private static final String CONST_OPERATION_COMPONENT = "operationComponent";
+    private static final String L_OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
-    private static final String CONST_OPERATION_COMP_PRODUCT_IN = "operationProductInComponents";
+    private static final String L_OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
 
-    private static final String CONST_OPERATION_COMP_PRODUCT_OUT = "operationProductOutComponents";
-
-    private static final String CONST_REFERENCE_MODE = "referenceMode";
-
-    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+    private static final String L_REFERENCE_MODE = "referenceMode";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -164,27 +160,27 @@ public class TechnologyService {
     }
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(CONST_MASTER, false);
+        entity.setField(L_MASTER, false);
         return true;
     }
 
     public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField(CONST_MASTER)) {
+        if ((Boolean) entity.getField(L_MASTER)) {
             return;
         }
         SearchCriteriaBuilder searchCriteria = dataDefinition.find();
-        searchCriteria.add(SearchRestrictions.belongsTo(PRODUCT_L, entity.getBelongsToField(PRODUCT_L)));
-        entity.setField(CONST_MASTER, searchCriteria.list().getTotalNumberOfEntities() == 0);
+        searchCriteria.add(SearchRestrictions.belongsTo(L_PRODUCT, entity.getBelongsToField(L_PRODUCT)));
+        entity.setField(L_MASTER, searchCriteria.list().getTotalNumberOfEntities() == 0);
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!((Boolean) entity.getField(CONST_MASTER))) {
+        if (!((Boolean) entity.getField(L_MASTER))) {
             return true;
         }
 
         SearchCriteriaBuilder searchCriteries = dataDefinition.find();
-        searchCriteries.add(SearchRestrictions.eq(CONST_MASTER, true));
-        searchCriteries.add(SearchRestrictions.belongsTo(PRODUCT_L, entity.getBelongsToField(PRODUCT_L)));
+        searchCriteries.add(SearchRestrictions.eq(L_MASTER, true));
+        searchCriteries.add(SearchRestrictions.belongsTo(L_PRODUCT, entity.getBelongsToField(L_PRODUCT)));
 
         if (entity.getId() != null) {
             searchCriteries.add(SearchRestrictions.idNe(entity.getId()));
@@ -193,7 +189,7 @@ public class TechnologyService {
         if (searchCriteries.list().getTotalNumberOfEntities() == 0) {
             return true;
         }
-        entity.addError(dataDefinition.getField(CONST_MASTER), "orders.validate.global.error.default");
+        entity.addError(dataDefinition.getField(L_MASTER), "orders.validate.global.error.default");
         return false;
     }
 
@@ -215,7 +211,7 @@ public class TechnologyService {
         GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
-        if (!REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(CONST_ENTITY_TYPE))) {
+        if (!REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(L_ENTITY_TYPE))) {
             // inProductsGrid.setEnabled(true);
             inProductsGrid.setEditable(true);
             // outProductsGrid.setEnabled(true);
@@ -224,11 +220,11 @@ public class TechnologyService {
         }
 
         Entity technology = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY);
-        EntityTree operations = technology.getTreeField(CONST_OPERATION_COMPONENTS);
+        EntityTree operations = technology.getTreeField(L_OPERATION_COMPONENTS);
         Entity rootOperation = operations.getRoot();
 
         if (rootOperation != null) {
-            outProductsGrid.setEntities(rootOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT));
+            outProductsGrid.setEntities(rootOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS));
         }
 
         List<Entity> inProducts = new ArrayList<Entity>();
@@ -240,9 +236,9 @@ public class TechnologyService {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
 
-            inProduct.setField(CONST_OPERATION_COMPONENT, rootOperation);
-            inProduct.setField(PRODUCT_L, productQuantity.getKey());
-            inProduct.setField(QUANTITY_FIELD, productQuantity.getValue());
+            inProduct.setField(L_OPERATION_COMPONENT, rootOperation);
+            inProduct.setField(L_PRODUCT, productQuantity.getKey());
+            inProduct.setField(L_QUANTITY, productQuantity.getValue());
             inProducts.add(inProduct);
         }
 
@@ -261,7 +257,7 @@ public class TechnologyService {
 
         FieldComponent qualityControlType = (FieldComponent) state;
 
-        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference(UNIT_SAMPLING_NR_FIELD);
+        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference(L_UNIT_SAMPLING_NR);
 
         if (qualityControlType.getFieldValue() != null) {
             if (qualityControlType.getFieldValue().equals("02forUnit")) {
@@ -276,17 +272,17 @@ public class TechnologyService {
 
     public void generateTechnologyGroupNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, "form", "number");
+                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, L_FORM, L_NUMBER);
     }
 
     public void generateTechnologyNumber(final ViewDefinitionState state, final ComponentState componentState, final String[] args) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent number = (FieldComponent) state.getComponentByReference(NUMBER);
+        FieldComponent number = (FieldComponent) state.getComponentByReference(L_NUMBER);
         FieldComponent productState = (FieldComponent) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state, "form", NUMBER) || productState.getFieldValue() == null) {
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, L_FORM, L_NUMBER) || productState.getFieldValue() == null) {
             return;
         }
 
@@ -296,8 +292,10 @@ public class TechnologyService {
             return;
         }
 
-        String numberValue = product.getField(NUMBER) + "-"
-                + numberGeneratorService.generateNumber("technologies", CONST_TECHNOLOGY, 3);
+        String numberValue = product.getField(L_NUMBER)
+                + "-"
+                + numberGeneratorService.generateNumber(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY, 3);
         number.setFieldValue(numberValue);
     }
 
@@ -305,7 +303,7 @@ public class TechnologyService {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
-        FieldComponent name = (FieldComponent) state.getComponentByReference(NAME_FIELD);
+        FieldComponent name = (FieldComponent) state.getComponentByReference(L_NAME);
         FieldComponent productState = (FieldComponent) componentState;
 
         if (StringUtils.hasText((String) name.getFieldValue()) || productState.getFieldValue() == null) {
@@ -322,14 +320,14 @@ public class TechnologyService {
         cal.setTime(new Date());
 
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
-                product.getStringField(NAME_FIELD), product.getStringField(NUMBER),
+                product.getStringField(L_NAME), product.getStringField(L_NUMBER),
                 cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1)));
     }
 
     public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         if (form.getEntityId() != null) {
-            ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference(CONST_REFERENCE_MODE);
+            ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference(L_REFERENCE_MODE);
             referenceModeComponent.setFieldValue("01reference");
             referenceModeComponent.setVisible(false);
         }
@@ -340,13 +338,13 @@ public class TechnologyService {
     }
 
     public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (!REFERENCE_TECHNOLOGY.equals(entity.getField(CONST_ENTITY_TYPE)) && entity.getField(REFERENCE_TECHNOLOGY) == null) {
+        if (!REFERENCE_TECHNOLOGY.equals(entity.getField(L_ENTITY_TYPE)) && entity.getField(REFERENCE_TECHNOLOGY) == null) {
             return true;
         }
 
-        boolean copy = "02copy".equals(entity.getField(CONST_REFERENCE_MODE));
+        boolean copy = "02copy".equals(entity.getField(L_REFERENCE_MODE));
 
-        Entity technology = entity.getBelongsToField(CONST_TECHNOLOGY);
+        Entity technology = entity.getBelongsToField(L_TECHNOLOGY);
         Entity referencedTechnology = entity.getBelongsToField(REFERENCE_TECHNOLOGY);
 
         Set<Long> technologies = new HashSet<Long>();
@@ -361,16 +359,16 @@ public class TechnologyService {
         }
 
         if (copy) {
-            EntityTreeNode root = referencedTechnology.getTreeField(CONST_OPERATION_COMPONENTS).getRoot();
-            Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField(CONST_TECHNOLOGY));
+            EntityTreeNode root = referencedTechnology.getTreeField(L_OPERATION_COMPONENTS).getRoot();
+            Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField(L_TECHNOLOGY));
 
             for (Entry<String, Object> entry : copiedRoot.getFields().entrySet()) {
-                if (!(entry.getKey().equals("id") || entry.getKey().equals("parent"))) {
+                if (!(entry.getKey().equals("id") || entry.getKey().equals(L_PARENT))) {
                     entity.setField(entry.getKey(), entry.getValue());
                 }
             }
 
-            entity.setField(CONST_ENTITY_TYPE, CONST_OPERATION);
+            entity.setField(L_ENTITY_TYPE, L_OPERATION);
             entity.setField(REFERENCE_TECHNOLOGY, null);
         }
 
@@ -384,8 +382,8 @@ public class TechnologyService {
 
         technologies.add(referencedTechnology.getId());
 
-        for (Entity operationComponent : referencedTechnology.getTreeField(CONST_OPERATION_COMPONENTS)) {
-            if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(CONST_ENTITY_TYPE))) {
+        for (Entity operationComponent : referencedTechnology.getTreeField(L_OPERATION_COMPONENTS)) {
+            if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(L_ENTITY_TYPE))) {
                 boolean cyclic = checkForCyclicReferences(technologies,
                         operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY), false);
 
@@ -402,8 +400,8 @@ public class TechnologyService {
         Entity copy = node.copy();
 
         copy.setId(null);
-        copy.setField(PARENT_FIELD, null);
-        copy.setField(CONST_TECHNOLOGY, technology);
+        copy.setField(L_PARENT, null);
+        copy.setField(L_TECHNOLOGY, technology);
 
         for (Entry<String, Object> entry : node.getFields().entrySet()) {
             Object value = entry.getValue();
@@ -423,18 +421,18 @@ public class TechnologyService {
 
     public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
         boolean isValid = true;
-        if (CONST_OPERATION.equals(entity.getStringField(CONST_ENTITY_TYPE))) {
-            if (entity.getField(CONST_OPERATION) == null) {
-                entity.addError(dataDefinition.getField(CONST_OPERATION), "qcadooView.validate.field.error.missing");
+        if (L_OPERATION.equals(entity.getStringField(L_ENTITY_TYPE))) {
+            if (entity.getField(L_OPERATION) == null) {
+                entity.addError(dataDefinition.getField(L_OPERATION), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
-        } else if (REFERENCE_TECHNOLOGY.equals(entity.getStringField(CONST_ENTITY_TYPE))) {
+        } else if (REFERENCE_TECHNOLOGY.equals(entity.getStringField(L_ENTITY_TYPE))) {
             if (entity.getField(REFERENCE_TECHNOLOGY) == null) {
                 entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY), "qcadooView.validate.field.error.missing");
                 isValid = false;
             }
-            if (entity.getField(CONST_REFERENCE_MODE) == null) {
-                entity.setField(CONST_REFERENCE_MODE, "01reference");
+            if (entity.getField(L_REFERENCE_MODE) == null) {
+                entity.setField(L_REFERENCE_MODE, "01reference");
             }
         } else {
             throw new IllegalStateException("unknown entityType");
@@ -448,10 +446,10 @@ public class TechnologyService {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
         if (operations != null && !operations.isEmpty()) {
             for (Entity operation : operations) {
-                if (CONST_OPERATION.equals(operation.getStringField(CONST_ENTITY_TYPE))) {
+                if (L_OPERATION.equals(operation.getStringField(L_ENTITY_TYPE))) {
                     return true;
                 }
             }
@@ -466,12 +464,12 @@ public class TechnologyService {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final Entity product = savedTechnology.getBelongsToField(PRODUCT_L);
-        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final Entity product = savedTechnology.getBelongsToField(L_PRODUCT);
+        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
         final EntityTreeNode root = operations.getRoot();
-        final EntityList productOutComps = root.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+        final EntityList productOutComps = root.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
         for (Entity productOutComp : productOutComps) {
-            if (product.getId().equals(productOutComp.getBelongsToField(PRODUCT_L).getId())) {
+            if (product.getId().equals(productOutComp.getBelongsToField(L_PRODUCT).getId())) {
                 return true;
             }
         }
@@ -485,14 +483,15 @@ public class TechnologyService {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree operations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
         for (Entity operation : operations) {
-            if (CONST_OPERATION.equals(operation.getStringField(CONST_ENTITY_TYPE))) {
+            if (L_OPERATION.equals(operation.getStringField(L_ENTITY_TYPE))) {
                 continue;
             }
-            final Entity referenceTechnology = operation.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD);
-            if (referenceTechnology != null && !"02accepted".equals(referenceTechnology.getStringField(STATE))) {
-                technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+            final Entity referenceTechnology = operation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
+            if (referenceTechnology != null
+                    && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
+                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
                         "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
                 return false;
             }
@@ -506,9 +505,9 @@ public class TechnologyService {
             return true;
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree technologyOperations = savedTechnology.getTreeField(CONST_OPERATION_COMPONENTS);
+        final EntityTree technologyOperations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
         if (!checkIfConsumesSubOpsProds(technologyOperations)) {
-            technology.addError(dataDefinition.getField(CONST_OPERATION_COMPONENTS),
+            technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
                     "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
             return false;
         }
@@ -518,7 +517,7 @@ public class TechnologyService {
     private boolean checkIfAtLeastOneCommonElement(final List<Entity> prodsIn, final List<Entity> prodsOut) {
         for (Entity prodOut : prodsOut) {
             for (Entity prodIn : prodsIn) {
-                if (prodIn.getBelongsToField(PRODUCT_L).getId().equals(prodOut.getBelongsToField(PRODUCT_L).getId())) {
+                if (prodIn.getBelongsToField(L_PRODUCT).getId().equals(prodOut.getBelongsToField(L_PRODUCT).getId())) {
                     return true;
                 }
             }
@@ -528,13 +527,13 @@ public class TechnologyService {
 
     private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
         for (Entity technologyOperation : technologyOperations) {
-            final Entity parent = technologyOperation.getBelongsToField(PARENT_FIELD);
-            if (parent == null || REFERENCE_TECHNOLOGY_FIELD.equals(parent.getStringField(CONST_ENTITY_TYPE))) {
+            final Entity parent = technologyOperation.getBelongsToField(L_PARENT);
+            if (parent == null || L_REFERENCE_TECHNOLOGY.equals(parent.getStringField(L_ENTITY_TYPE))) {
                 continue;
             }
-            final EntityList prodsOut = parent.getHasManyField(CONST_OPERATION_COMP_PRODUCT_IN);
-            if (CONST_OPERATION.equals(technologyOperation.getStringField(CONST_ENTITY_TYPE))) {
-                final EntityList prodsIn = technologyOperation.getHasManyField(CONST_OPERATION_COMP_PRODUCT_OUT);
+            final EntityList prodsOut = parent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
+            if (L_OPERATION.equals(technologyOperation.getStringField(L_ENTITY_TYPE))) {
+                final EntityList prodsIn = technologyOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
                 if (prodsIn == null || prodsOut == null) {
                     return false;
                 }
@@ -542,7 +541,7 @@ public class TechnologyService {
                     return false;
                 }
             } else {
-                final Entity prodIn = technologyOperation.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD);
+                final Entity prodIn = technologyOperation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
 
                 if (prodIn == null || prodsOut == null) {
                     return false;
@@ -556,13 +555,13 @@ public class TechnologyService {
     }
 
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_FIELD);
+        String qualityControlType = (String) entity.getField(L_QUALITY_CONTROL_TYPE);
         if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-            BigDecimal unitSamplingNr = (BigDecimal) entity.getField(UNIT_SAMPLING_NR_FIELD);
+            BigDecimal unitSamplingNr = (BigDecimal) entity.getField(L_UNIT_SAMPLING_NR);
             if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
                     || unitSamplingNr.precision() > 7) {
                 entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField(UNIT_SAMPLING_NR_FIELD),
+                entity.addError(dataDefinition.getField(L_UNIT_SAMPLING_NR),
                         "technologies.technology.validate.global.error.unitSamplingNr");
                 return false;
             }
@@ -571,8 +570,8 @@ public class TechnologyService {
     }
 
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference(CONST_OPERATION);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_OPERATION);
 
         operationLookup.setEnabled(form.getEntityId() == null);
     }
@@ -580,17 +579,17 @@ public class TechnologyService {
     public final void performTreeNumbering(final DataDefinition dd, final Entity technology) {
         DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, CONST_TECHNOLOGY, technology.getId());
+        treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, L_TECHNOLOGY, technology.getId());
 
     }
 
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
-        Entity technology = technologyOperation.getBelongsToField(CONST_TECHNOLOGY);
-        EntityTreeNode rootNode = technology.getTreeField(CONST_OPERATION_COMPONENTS).getRoot();
-        if (rootNode == null || technologyOperation.getBelongsToField(PARENT_FIELD) != null) {
+        Entity technology = technologyOperation.getBelongsToField(L_TECHNOLOGY);
+        EntityTreeNode rootNode = technology.getTreeField(L_OPERATION_COMPONENTS).getRoot();
+        if (rootNode == null || technologyOperation.getBelongsToField(L_PARENT) != null) {
             return;
         }
-        technologyOperation.setField(PARENT_FIELD, rootNode);
+        technologyOperation.setField(L_PARENT, rootNode);
     }
 
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
@@ -600,14 +599,14 @@ public class TechnologyService {
     public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
         Entity technology = null;
         String errorMessageKey = "technologies.technology.state.error.modifyBelongsToAcceptedTechnology";
-        if (CONST_TECHNOLOGY.equals(dataDefinition.getName())) {
+        if (L_TECHNOLOGY.equals(dataDefinition.getName())) {
             technology = entity;
             errorMessageKey = "technologies.technology.state.error.modifyAcceptedTechnology";
         } else if ("technologyOperationComponent".equals(dataDefinition.getName())) {
-            technology = entity.getBelongsToField(CONST_TECHNOLOGY);
+            technology = entity.getBelongsToField(L_TECHNOLOGY);
         } else if ("operationProductOutComponent".equals(dataDefinition.getName())
                 || "operationProductInComponent".equals(dataDefinition.getName())) {
-            technology = entity.getBelongsToField(CONST_OPERATION_COMPONENT).getBelongsToField(CONST_TECHNOLOGY);
+            technology = entity.getBelongsToField(L_OPERATION_COMPONENT).getBelongsToField(L_TECHNOLOGY);
         }
 
         if (technology == null || technology.getId() == null) {
@@ -619,7 +618,7 @@ public class TechnologyService {
             return true;
         }
         if (isTechnologyIsAlreadyAccepted(technology, existingTechnology)) {
-            entity.addGlobalError(errorMessageKey, technology.getStringField(NAME_FIELD));
+            entity.addGlobalError(errorMessageKey, technology.getStringField(L_NAME));
             return false;
         }
 
@@ -628,7 +627,7 @@ public class TechnologyService {
 
     private boolean checkIfDeactivated(final DataDefinition dataDefinition, final Entity technology,
             final Entity existingTechnology) {
-        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && CONST_TECHNOLOGY.equals(dataDefinition.getName())
+        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && L_TECHNOLOGY.equals(dataDefinition.getName())
                 && technology.isActive() != existingTechnology.isActive()) {
             return true;
         }
@@ -650,7 +649,7 @@ public class TechnologyService {
         boolean contains = false;
 
         for (Entity entity : components) {
-            if (entity.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
+            if (entity.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
                 contains = true;
                 break;
             }
@@ -668,7 +667,7 @@ public class TechnologyService {
 
         SearchCriteriaBuilder search = dd.find();
         search.add(SearchRestrictions.eq("product.id", product.getId()));
-        search.createAlias(CONST_OPERATION_COMPONENT, CONST_OPERATION_COMPONENT);
+        search.createAlias(L_OPERATION_COMPONENT, L_OPERATION_COMPONENT);
         search.add(SearchRestrictions.belongsTo("operationComponent.technology", technology));
 
         return search;
@@ -685,26 +684,26 @@ public class TechnologyService {
         boolean goesOutInAroot = productComponentsContainProduct(searchOutsForRoots.list().getEntities(), product);
 
         if (goesOutInAroot) {
-            if (technology.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
-                return FINAL_PRODUCT;
+            if (technology.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
+                return L_03_FINAL_PRODUCT;
             } else {
-                return WASTE;
+                return L_04_WASTE;
             }
         }
 
         if (goesIn && !goesOut) {
-            return COMPONENT;
+            return L_01_COMPONENT;
         }
 
         if (goesIn && goesOut) {
-            return INTERMEDIATE;
+            return L_02_INTERMEDIATE;
         }
 
         if (!goesIn && goesOut) {
-            return WASTE;
+            return L_04_WASTE;
         }
 
-        return UNRELATED;
+        return L_00_UNRELATED;
     }
 
     public void switchStateToDraftOnCopy(final DataDefinition technologyDataDefinition, final Entity technology) {
@@ -713,26 +712,27 @@ public class TechnologyService {
 
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
         for (Entity operationComponent : entityTree) {
-            if (OPERATION_NODE_ENTITY_TYPE.equals(operationComponent.getField(ENTITY_TYPE_FIELD))) {
+            if (L_OPERATION.equals(operationComponent.getField(L_ENTITY_TYPE))) {
                 operationComponents.add(operationComponent);
             } else {
-                addOperationsFromSubtechnologiesToList(operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD)
-                        .getTreeField(OPERATION_COMPONENTS_FIELD), operationComponents);
+                addOperationsFromSubtechnologiesToList(
+                        operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY).getTreeField(L_OPERATION_COMPONENTS),
+                        operationComponents);
             }
         }
     }
 
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition dataDefinition, final Entity operationProduct) {
         if (operationProduct.getId() == null) {
-            Entity product = operationProduct.getBelongsToField(PRODUCT_L);
-            Entity operationComponent = operationProduct.getBelongsToField(CONST_OPERATION_COMPONENT);
+            Entity product = operationProduct.getBelongsToField(L_PRODUCT);
+            Entity operationComponent = operationProduct.getBelongsToField(L_OPERATION_COMPONENT);
 
             String fieldName;
 
             if ("operationProductInComponent".equals(dataDefinition.getName())) {
-                fieldName = CONST_OPERATION_COMP_PRODUCT_IN;
+                fieldName = L_OPERATION_PRODUCT_IN_COMPONENTS;
             } else {
-                fieldName = CONST_OPERATION_COMP_PRODUCT_OUT;
+                fieldName = L_OPERATION_PRODUCT_OUT_COMPONENTS;
             }
 
             EntityList products = operationComponent.getHasManyField(fieldName);
@@ -742,7 +742,7 @@ public class TechnologyService {
             }
 
             if (products != null && listContainsProduct(products, product)) {
-                operationProduct.addError(dataDefinition.getField(PRODUCT_L),
+                operationProduct.addError(dataDefinition.getField(L_PRODUCT),
                         "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
                 return false;
             }
@@ -752,7 +752,7 @@ public class TechnologyService {
 
     private boolean listContainsProduct(final EntityList list, final Entity product) {
         for (Entity prod : list) {
-            if (prod.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
+            if (prod.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
                 return true;
             }
         }
@@ -765,34 +765,34 @@ public class TechnologyService {
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
     public Entity getMainOutputProductComponent(Entity operationComponent) {
-        if (REFERENCE_TECHNOLOGY_FIELD.equals(operationComponent.getStringField("entityType"))) {
-            operationComponent = operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY_FIELD)
-                    .getTreeField("operationComponents").getRoot();
+        if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(L_ENTITY_TYPE))) {
+            operationComponent = operationComponent.getBelongsToField(L_REFERENCE_TECHNOLOGY)
+                    .getTreeField(L_OPERATION_COMPONENTS).getRoot();
         }
 
         if (operationComponent.getDataDefinition().getName().equals("technologyInstanceOperationComponent")) {
             operationComponent = operationComponent.getBelongsToField("technologyOperationComponent");
         }
 
-        Entity parentOpComp = operationComponent.getBelongsToField("parent");
+        Entity parentOpComp = operationComponent.getBelongsToField(L_PARENT);
 
-        List<Entity> prodOutComps = operationComponent.getHasManyField("operationProductOutComponents");
+        List<Entity> prodOutComps = operationComponent.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
 
         if (parentOpComp == null) {
-            Entity technology = operationComponent.getBelongsToField("technology");
-            Entity product = technology.getBelongsToField(PRODUCT_L);
+            Entity technology = operationComponent.getBelongsToField(L_TECHNOLOGY);
+            Entity product = technology.getBelongsToField(L_PRODUCT);
 
             for (Entity prodOutComp : prodOutComps) {
-                if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(product.getId())) {
+                if (prodOutComp.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
                     return prodOutComp;
                 }
             }
         } else {
-            List<Entity> prodInComps = parentOpComp.getHasManyField("operationProductInComponents");
+            List<Entity> prodInComps = parentOpComp.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
 
             for (Entity prodOutComp : prodOutComps) {
                 for (Entity prodInComp : prodInComps) {
-                    if (prodOutComp.getBelongsToField(PRODUCT_L).getId().equals(prodInComp.getBelongsToField(PRODUCT_L).getId())) {
+                    if (prodOutComp.getBelongsToField(L_PRODUCT).getId().equals(prodInComp.getBelongsToField(L_PRODUCT).getId())) {
                         return prodOutComp;
                     }
                 }
@@ -810,7 +810,7 @@ public class TechnologyService {
      *         product/intermediate.
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
-        return getMainOutputProductComponent(operationComponent).getDecimalField("quantity");
+        return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
     }
 
 }
