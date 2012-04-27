@@ -354,8 +354,8 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		<windowTab name="timeTab">
-			<component type="gridLayout" name="timeGridLayout" columns="3" rows="1">
+		<windowTab name="workTab">
+			<component type="gridLayout" name="workGridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
 				<component type="borderLayout" name="borderLayoutTime" defaultVisible="false" reference="borderLayoutTime">
 					<option type="label" value="time" />
