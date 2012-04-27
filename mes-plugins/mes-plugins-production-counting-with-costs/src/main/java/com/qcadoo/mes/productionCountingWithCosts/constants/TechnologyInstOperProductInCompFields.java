@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-public class TechnologyInstOperProductInCompFields {
+public final class TechnologyInstOperProductInCompFields {
+
+    private TechnologyInstOperProductInCompFields() {
+
+    }
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
 

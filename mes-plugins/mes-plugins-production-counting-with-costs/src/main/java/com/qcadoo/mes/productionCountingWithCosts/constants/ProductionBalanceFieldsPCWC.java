@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionCountingWithCosts.constants;
 
-public class ProductionBalanceFieldsPCWC {
+public final class ProductionBalanceFieldsPCWC {
+
+    private ProductionBalanceFieldsPCWC() {
+
+    }
 
     public static final String PRINT_COST_NORMS_OF_MATERIALS = "printCostNormsOfMaterials";
 

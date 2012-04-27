@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.costNormsForProduct.constants;
 
-public class ProductCostNormsFields {
+public final class ProductCostNormsFields {
+
+    private ProductCostNormsFields() {
+
+    }
 
     public static final String COST_FOR_NUMBER = "costForNumber";
 

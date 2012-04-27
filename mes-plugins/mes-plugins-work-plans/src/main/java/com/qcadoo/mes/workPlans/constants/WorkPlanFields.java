@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.constants;
 
-public class WorkPlanFields {
+public final class WorkPlanFields {
+
+    private WorkPlanFields() {
+
+    }
 
     public static final String NAME = "name";
 

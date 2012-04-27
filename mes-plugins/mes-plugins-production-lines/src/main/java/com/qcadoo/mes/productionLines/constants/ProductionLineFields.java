@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionLines.constants;
 
-public class ProductionLineFields {
+public final class ProductionLineFields {
+
+    private ProductionLineFields() {
+
+    }
 
     public static final String PLUGIN_IDENTIFIER = "productionCountingWithCosts";
 

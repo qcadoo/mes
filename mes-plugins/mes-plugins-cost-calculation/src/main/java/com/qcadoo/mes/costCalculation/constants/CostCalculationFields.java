@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public class CostCalculationFields {
+public final class CostCalculationFields {
+
+    private CostCalculationFields() {
+
+    }
 
     public static final String NUMBER = "number";
 

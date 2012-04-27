@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public class TechnologyOperationComponentFields {
+public final class TechnologyOperationComponentFields {
+
+    private TechnologyOperationComponentFields() {
+
+    }
 
     public static final String NODE_NUMBER = "nodeNumber";
 

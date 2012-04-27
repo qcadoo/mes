@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionLines.constants;
 
-public class WorkstationTypeComponentFields {
+public final class WorkstationTypeComponentFields {
+
+    private WorkstationTypeComponentFields() {
+
+    }
 
     public static final String PRODUCTIONLINE = "productionLine";
 
