@@ -69,6 +69,8 @@
 			component="form" event="showOperationsGantt"
 			class="com.qcadoo.mes.ganttForOperations.GanttOperationService"
 			method="showOperationsGantt" />
+		<view:view-hook view="operationDurationDetailsInOrder" type="beforeRender" plugin="productionScheduling" 
+		    	class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="disableCalendarButtonWhenRealizationTimeNotGenerated"/>
 	</modules>
 
 </plugin>

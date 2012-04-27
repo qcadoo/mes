@@ -27,4 +27,8 @@ public interface ProductionSchedulingConstants {
 
     String PLUGIN_IDENTIFIER = "productionScheduling";
 
+    String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
+
+    String VIEW_RIBBON_ACTION_ITEM_NAME = "operationsGantt";
+
 }
