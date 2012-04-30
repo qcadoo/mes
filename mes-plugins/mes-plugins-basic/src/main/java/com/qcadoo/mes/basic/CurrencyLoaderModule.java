@@ -123,10 +123,9 @@ public class CurrencyLoaderModule extends Module {
         }
 
         currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
-        if (currency.isValid()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Currency saved {currency=" + currency.toString() + "}");
-            }
+
+        if (currency.isValid() && LOG.isDebugEnabled()) {
+            LOG.debug("Currency saved {currency=" + currency.toString() + "}");
         } else {
             throw new IllegalStateException("Saved entity have validation errors - " + values.get("CURRENCY"));
         }

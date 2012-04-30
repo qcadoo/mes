@@ -59,11 +59,6 @@ public class OrderReportService {
 
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
-        return printForOrder(state, plugin, entityName, null, entityFieldsMap, orderValidator);
-    }
-
-    public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
-            final String detailEntityName, final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
         if (!(state instanceof GridComponent)) {
             throw new IllegalStateException("method avalible only for grid");
         }
@@ -89,7 +84,7 @@ public class OrderReportService {
             }
         }
         if (errors.isEmpty()) {
-            return createNewOrderPrint(ordersEntities, plugin, entityName, detailEntityName, entityFieldsMap, state.getLocale());
+            return createNewOrderPrint(ordersEntities, plugin, entityName, entityFieldsMap, state.getLocale());
         } else {
             StringBuilder errorMessages = new StringBuilder();
             for (ErrorMessage error : errors) {
@@ -104,7 +99,7 @@ public class OrderReportService {
     }
 
     private Entity createNewOrderPrint(final Set<Entity> orders, final String plugin, final String entityName,
-            final String joinEntityName, final Map<String, Object> entityFieldsMap, final Locale locale) {
+            final Map<String, Object> entityFieldsMap, final Locale locale) {
 
         DataDefinition data = dataDefinitionService.get(plugin, entityName);
 

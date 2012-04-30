@@ -108,8 +108,9 @@ public class GanttOperationService {
         Integer realizationTime = (Integer) order.getField("realizationTime");
         if (realizationTime == null || realizationTime == 0) {
             return false;
-        } else
+        } else {
             return true;
+        }
     }
 
     public void disableCalendarButtonWhenRealizationTimeNotGenerated(final ViewDefinitionState view) {
@@ -122,12 +123,11 @@ public class GanttOperationService {
         RibbonActionItem showOnCalendarButton = window.getRibbon()
                 .getGroupByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP)
                 .getItemByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
-        if (!isRealizationTimeGenerated(view)) {
+        if (isRealizationTimeGenerated(view)) {
+            showOnCalendarButton.setEnabled(true);
+        } else {
             showOnCalendarButton.setEnabled(false);
             showOnCalendarButton.setMessage("message");
-        } else {
-
-            showOnCalendarButton.setEnabled(true);
         }
         showOnCalendarButton.requestUpdate(true);
     }

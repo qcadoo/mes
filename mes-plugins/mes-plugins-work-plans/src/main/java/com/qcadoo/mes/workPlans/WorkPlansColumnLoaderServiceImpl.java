@@ -113,10 +113,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         parameter.getDataDefinition().save(parameter);
 
-        if (parameter.isValid()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Parameter saved {column=" + parameter.toString() + "}");
-            }
+        if (parameter.isValid() && LOG.isDebugEnabled()) {
+            LOG.debug("Parameter saved {column=" + parameter.toString() + "}");
         }
     }
 
@@ -135,10 +133,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
                 operation.getDataDefinition().save(operation);
 
-                if (operation.isValid()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Operation saved {column=" + operation.toString() + "}");
-                    }
+                if (operation.isValid() && LOG.isDebugEnabled()) {
+                    LOG.debug("Operation saved {column=" + operation.toString() + "}");
                 }
             }
         }
@@ -159,10 +155,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
                 technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
 
-                if (technologyOperationComponent.isValid()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Technology Operation Component saved {column=" + technologyOperationComponent.toString() + "}");
-                    }
+                if (technologyOperationComponent.isValid() && LOG.isDebugEnabled()) {
+                    LOG.debug("Technology Operation Component saved {column=" + technologyOperationComponent.toString() + "}");
                 }
             }
         }
@@ -184,11 +178,9 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
                 technologyInstanceOperationComponent.getDataDefinition().save(technologyInstanceOperationComponent);
 
-                if (technologyInstanceOperationComponent.isValid()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Technology Instance Operation Component saved {column="
-                                + technologyInstanceOperationComponent.toString() + "}");
-                    }
+                if (technologyInstanceOperationComponent.isValid() && LOG.isDebugEnabled()) {
+                    LOG.debug("Technology Instance Operation Component saved {column="
+                            + technologyInstanceOperationComponent.toString() + "}");
                 }
             }
         }
