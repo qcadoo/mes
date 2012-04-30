@@ -30,700 +30,701 @@
 	plugin="productionCounting" view="productionBalanceDetails">
 
 	<windowTab name="inputDataForCostsTab">
-		<component type="form" name="inputDataForCostsForm"
-			reference="inputDataForCostsForm">
-			<component type="gridLayout" name="inputDataForCostsGridLayout"
-				reference="inputDataForCostsGridLayout" columns="3" rows="5">
-				<layoutElement column="1" row="1">
-					<component type="checkbox" name="printCostNormsOfMaterials"
-						field="#{form}.printCostNormsOfMaterials" reference="printCostNormsOfMaterials">
-						<option type="textRepresentationOnDisabled" value="false" />
+		<component type="gridLayout" name="inputDataForCostsGridLayout"
+			reference="inputDataForCostsGridLayout" columns="3" rows="5">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" name="printCostNormsOfMaterials"
+					field="#{form}.printCostNormsOfMaterials" reference="printCostNormsOfMaterials">
+					<option type="textRepresentationOnDisabled" value="false" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2" height="2">
+				<component type="borderLayout" name="parametersBorderLayout"
+					reference="parametersBorderLayout">
+					<component type="gridLayout" name="parametersGridLayout"
+						reference="parametersGridLayout" columns="1" rows="2">
+						<layoutElement column="1" row="1">
+							<component type="select" name="sourceOfMaterialCosts"
+								field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts">
+								
+								<listener event="onSelectedEntityChange"
+									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+									method="checkIfOptionsAreAvailable" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="select" name="calculateMaterialCostsMode"
+								field="#{form}.calculateMaterialCostsMode" reference="calculateMaterialCostsMode">
+								
+								<listener event="onSelectedEntityChange"
+									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
+									method="checkIfOptionsAreAvailable" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="2">
-					<component type="borderLayout" name="parametersBorderLayout"
-						reference="parametersBorderLayout">
-						<component type="gridLayout" name="parametersGridLayout"
-							reference="parametersGridLayout" columns="1" rows="2">
-							<layoutElement column="1" row="1">
-								<component type="select" name="sourceOfMaterialCosts"
-									field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts">
-									
-									<listener event="onSelectedEntityChange"
-										class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
-										method="checkIfOptionsAreAvailable" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="select" name="calculateMaterialCostsMode"
-									field="#{form}.calculateMaterialCostsMode" reference="calculateMaterialCostsMode">
-									
-									<listener event="onSelectedEntityChange"
-										class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsViewHooks"
-										method="checkIfOptionsAreAvailable" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="parameters" />
+					<option type="label" value="parameters" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="4" height="2">
+				<component type="borderLayout" name="assumptionsBorderLayout"
+					reference="assumptionsBorderLayout">
+					<component type="gridLayout" name="assumptionsGridLayout"
+						reference="assumptionsGridLayout" columns="4" rows="2"
+						hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="averageMachineHourlyCost"
+								field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="averageMachineHourlyCostCurrency"
+								reference="averageMachineHourlyCostCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="3">
+							<component type="input" name="averageLaborHourlyCost"
+								field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="averageLaborHourlyCostCurrency"
+								reference="averageLaborHourlyCostCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="4" height="2">
-					<component type="borderLayout" name="assumptionsBorderLayout"
-						reference="assumptionsBorderLayout">
-						<component type="gridLayout" name="assumptionsGridLayout"
-							reference="assumptionsGridLayout" columns="4" rows="2"
-							hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="averageMachineHourlyCost"
-									field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost">
-									<option type="labelWidth" value="50" />
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="averageMachineHourlyCostCurrency"
-									reference="averageMachineHourlyCostCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="averageLaborHourlyCost"
-									field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost">
-									<option type="labelWidth" value="50" />
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="2">
-								<component type="input" name="averageLaborHourlyCostCurrency"
-									reference="averageLaborHourlyCostCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="assumptions" />
+					<option type="label" value="assumptions" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="1" height="3">
+				<component type="borderLayout" name="overheadsBorderLayout"
+					reference="overheadsBorderLayout">
+					<component type="gridLayout" name="overheadsGridLayout"
+						reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="productionCostMargin"
+								field="#{form}.productionCostMargin" reference="productionCostMargin">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="productionCostMarginProc"
+								reference="productionCostMarginProc" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="3">
+							<component type="input" name="materialCostMargin"
+								field="#{form}.materialCostMargin" reference="materialCostMargin">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="materialCostMarginProc"
+								reference="materialCostMarginProc" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3" width="3">
+							<component type="input" name="additionalOverhead"
+								field="#{form}.additionalOverhead" reference="additionalOverhead">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="3">
+							<component type="input" name="additionalOverheadCurrency"
+								reference="additionalOverheadCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="3">
-					<component type="borderLayout" name="overheadsBorderLayout"
-						reference="overheadsBorderLayout">
-						<component type="gridLayout" name="overheadsGridLayout"
-							reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="productionCostMargin"
-									field="#{form}.productionCostMargin" reference="productionCostMargin">
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="productionCostMarginProc"
-									reference="productionCostMarginProc" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="materialCostMargin"
-									field="#{form}.materialCostMargin" reference="materialCostMargin">
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="2">
-								<component type="input" name="materialCostMarginProc"
-									reference="materialCostMarginProc" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3" width="3">
-								<component type="input" name="additionalOverhead"
-									field="#{form}.additionalOverhead" reference="additionalOverhead">
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="3">
-								<component type="input" name="additionalOverheadCurrency"
-									reference="additionalOverheadCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="overheads" />
-					</component>
-				</layoutElement>
-			</component>
+					<option type="label" value="overheads" />
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
 	<windowTab name="materialCostsTab">
-		<component type="form" name="materialCostsForm" reference="materialCostsForm">
-			<component type="gridLayout" name="materialCostsGridLayout"
-				reference="materialCostsGridLayout" columns="1" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="componentsCostSummaryBorderLayout"
-						reference="componentsCostSummaryBorderLayout">
-						<component type="gridLayout" name="componentsCostSummaryGridLayout"
-							columns="12" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="plannedComponentsCosts"
-									field="#{form}.plannedComponentsCosts" reference="plannedComponentsCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="plannedComponentsCostsCurrency"
-									reference="plannedComponentsCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+		<component type="gridLayout" name="materialCostsGridLayout"
+			reference="materialCostsGridLayout" columns="1" rows="1">
+			<layoutElement column="1" row="1">
+				<component type="borderLayout" name="componentsCostSummaryBorderLayout"
+					reference="componentsCostSummaryBorderLayout">
+					<component type="gridLayout" name="componentsCostSummaryGridLayout"
+						columns="12" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="plannedComponentsCosts"
+								field="#{form}.plannedComponentsCosts" reference="plannedComponentsCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-							<layoutElement column="5" row="1" width="3">
-								<component type="input" name="componentsCosts"
-									field="#{form}.componentsCosts" reference="componentsCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="8" row="1">
-								<component type="input" name="componentsCostsCurrency"
-									reference="componentsCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="plannedComponentsCostsCurrency"
+								reference="plannedComponentsCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="5" row="1" width="3">
+							<component type="input" name="componentsCosts"
+								field="#{form}.componentsCosts" reference="componentsCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-							<layoutElement column="9" row="1" width="3">
-								<component type="input" name="componentsCostsBalance"
-									field="#{form}.componentsCostsBalance" reference="componentsCostsBalance"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="12" row="1">
-								<component type="input" name="componentsCostsBalanceCurrency"
-									reference="componentsCostsBalanceCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+						</layoutElement>
+						<layoutElement column="8" row="1">
+							<component type="input" name="componentsCostsCurrency"
+								reference="componentsCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="9" row="1" width="3">
+							<component type="input" name="componentsCostsBalance"
+								field="#{form}.componentsCostsBalance" reference="componentsCostsBalance"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-						</component>
-
-						<option type="label" value="componentsCostSummary" />
+						</layoutElement>
+						<layoutElement column="12" row="1">
+							<component type="input" name="componentsCostsBalanceCurrency"
+								reference="componentsCostsBalanceCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-			</component>
-			<component type="grid" name="technologyInstOperProductInComps" source="#{form}.technologyInstOperProductInComps"
-				 reference="technologyInstOperProductInComp">
-				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" />
-				<option type="column" name="productName" fields="product"
-					expression="#product['name']" />
-				<option type="column" name="plannedCost" fields="plannedCost" />
-				<option type="column" name="registeredCost" fields="registeredCost" />
-				<option type="column" name="balance" fields="balance" />
-					
-				<option type="order" column="productNumber" direction="asc" />
-			</component>
+
+					<option type="label" value="componentsCostSummary" />
+				</component>
+			</layoutElement>
+		</component>
+		<component type="grid" name="technologyInstOperProductInComps" source="#{form}.technologyInstOperProductInComps"
+			 reference="technologyInstOperProductInComps">
+			<option type="column" name="productNumber" fields="product"
+				expression="#product['number']" />
+			<option type="column" name="productName" fields="product"
+				expression="#product['name']" />
+			<option type="column" name="plannedCost" fields="plannedCost" />
+			<option type="column" name="registeredCost" fields="registeredCost" />
+			<option type="column" name="balance" fields="balance" />
+				
+			<option type="order" column="productNumber" direction="asc" />
 		</component>
 	</windowTab>
-	<windowTab name="timeCostsTab">
-		<component type="form" name="timeCostsForm" reference="timeCostsForm">
-			<component type="gridLayout" name="timeCostsGridLayout"
-				reference="timeCostsGridLayout" columns="1" rows="2">
-				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="machineCostsBorderLayout"
-						reference="machineCostsBorderLayout">
-						<component type="gridLayout" name="machineCostsGridLayout" 
-							columns="12" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="plannedMachineCosts"
-									field="#{form}.plannedMachineCosts" reference="plannedMachineCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="plannedMachineCostsCurrency"
-									reference="plannedMachineCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+	<windowTab name="workCostsTab">
+		<component type="gridLayout" name="workCostsGridLayout"
+			reference="workCostsGridLayout" columns="1" rows="2">
+			<layoutElement column="1" row="1">
+				<component type="borderLayout" name="machineCostsBorderLayout"
+					reference="machineCostsBorderLayout">
+					<component type="gridLayout" name="machineCostsGridLayout" 
+						columns="12" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="plannedMachineCosts"
+								field="#{form}.plannedMachineCosts" reference="plannedMachineCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-							<layoutElement column="5" row="1" width="3">
-								<component type="input" name="machineCosts"
-									field="#{form}.machineCosts" reference="machineCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="8" row="1">
-								<component type="input" name="machineCostsCurrency"
-									reference="machineCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="plannedMachineCostsCurrency"
+								reference="plannedMachineCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="5" row="1" width="3">
+							<component type="input" name="machineCosts"
+								field="#{form}.machineCosts" reference="machineCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-							<layoutElement column="9" row="1" width="3">
-								<component type="input" name="machineCostsBalance"
-									field="#{form}.machineCostsBalance" reference="machineCostsBalance"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="12" row="1">
-								<component type="input" name="machineCostsBalanceCurrency"
-									reference="machineCostsBalanceCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
+						</layoutElement>
+						<layoutElement column="8" row="1">
+							<component type="input" name="machineCostsCurrency"
+								reference="machineCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="9" row="1" width="3">
+							<component type="input" name="machineCostsBalance"
+								field="#{form}.machineCostsBalance" reference="machineCostsBalance"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
 								</component>
-							</layoutElement>
-						</component>
-
-						<option type="label" value="machineCosts" />
+						</layoutElement>
+						<layoutElement column="12" row="1">
+							<component type="input" name="machineCostsBalanceCurrency"
+								reference="machineCostsBalanceCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="borderLayout" name="laborCostsBorderLayout"
-						reference="laborCostsBorderLayout">
-						<component type="gridLayout" name="laborCostsGridLayout"
-							columns="12" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="plannedLaborCosts"
-									field="#{form}.plannedLaborCosts" reference="plannedLaborCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="plannedLaborCostsCurrency"
-									reference="plannedLaborCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="5" row="1" width="3">
-								<component type="input" name="laborCosts"
-									field="#{form}.laborCosts" reference="laborCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="8" row="1">
-								<component type="input" name="laborCostsCurrency"
-									reference="laborCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="9" row="1" width="3">
-								<component type="input" name="laborCostsBalance"
-									field="#{form}.laborCostsBalance" reference="laborCostsBalance"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="12" row="1">
-								<component type="input" name="laborCostsBalanceCurrency"
-									reference="laborCostsBalanceCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="laborCosts" />
+					<option type="label" value="machineCosts" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="borderLayout" name="laborCostsBorderLayout"
+					reference="laborCostsBorderLayout">
+					<component type="gridLayout" name="laborCostsGridLayout"
+						columns="12" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="plannedLaborCosts"
+								field="#{form}.plannedLaborCosts" reference="plannedLaborCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+								</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="plannedLaborCostsCurrency"
+								reference="plannedLaborCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="5" row="1" width="3">
+							<component type="input" name="laborCosts"
+								field="#{form}.laborCosts" reference="laborCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+								</component>
+						</layoutElement>
+						<layoutElement column="8" row="1">
+							<component type="input" name="laborCostsCurrency"
+								reference="laborCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="9" row="1" width="3">
+							<component type="input" name="laborCostsBalance"
+								field="#{form}.laborCostsBalance" reference="laborCostsBalance"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+								</component>
+						</layoutElement>
+						<layoutElement column="12" row="1">
+							<component type="input" name="laborCostsBalanceCurrency"
+								reference="laborCostsBalanceCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-			</component>
-			<component type="grid" name="operationsCost" source="#{form}.operationCostComponents"
-				reference="operationsCostGrid">
-				<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-				<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('name')" />
-				<option type="column" name="plannedMachineCosts" fields="plannedMachineCosts"
-					expression="#plannedMachineCosts" />
-				<option type="column" name="machineCosts" fields="machineCosts" />
-				<option type="column" name="machineCostsBalance" fields="machineCostsBalance" />
-				<option type="column" name="plannedLaborCosts" fields="plannedLaborCosts"
-					expression="#plannedLaborCosts" />
-				<option type="column" name="laborCosts" fields="laborCosts" />
-				<option type="column" name="laborCostsBalance" fields="laborCostsBalance" />
-				
-				<option type="order" column="operationNumber" direction="asc" />
-			</component>
+
+					<option type="label" value="laborCosts" />
+				</component>
+			</layoutElement>
+		</component>
+		<component type="grid" name="operationsCost" source="#{form}.operationCostComponents"
+			reference="operationsCostGrid">
+			<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('nodeNumber')" />
+			<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
+			<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+			<option type="column" name="plannedMachineCosts" fields="plannedMachineCosts"
+				expression="#plannedMachineCosts" />
+			<option type="column" name="machineCosts" fields="machineCosts" />
+			<option type="column" name="machineCostsBalance" fields="machineCostsBalance" />
+			<option type="column" name="plannedLaborCosts" fields="plannedLaborCosts"
+				expression="#plannedLaborCosts" />
+			<option type="column" name="laborCosts" fields="laborCosts" />
+			<option type="column" name="laborCostsBalance" fields="laborCostsBalance" />
 			
-			<component type="gridLayout" name="pieceworkCostsGridLayout"
-				reference="pieceworkCostsGridLayout" columns="1" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="pieceworkCostsBorderLayout"
-						reference="pieceworkCostsBorderLayout">
-						<component type="gridLayout" name="pieceworkCostsGridLayout" 
-							columns="12" rows="1" hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="plannedCyclesCosts"
-									field="#{form}.plannedCyclesCosts" reference="plannedCyclesCosts"
-									defaultEnabled="false" >
-										<option type="alignment" value="right" />
-										</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="plannedCyclesCostsCurrency"
-									reference="plannedCyclesCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="5" row="1" width="3">
-								<component type="input" name="cyclesCosts"
-									field="#{form}.cyclesCosts" reference="cyclesCosts"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="8" row="1">
-								<component type="input" name="cyclesCostsCurrency"
-									reference="cyclesCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="9" row="1" width="3">
-								<component type="input" name="cyclesCostsBalance"
-									field="#{form}.cyclesCostsBalance" reference="cyclesCostsBalance"
-									defaultEnabled="false" >
-									<option type="alignment" value="right" />
-									</component>
-							</layoutElement>
-							<layoutElement column="12" row="1">
-								<component type="input" name="cyclesCostsBalanceCurrency"
-									reference="cyclesCostsBalanceCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
-
-						<option type="label" value="pieceworkCosts" />
+			<option type="order" column="operationNumber" direction="asc" />
+		</component>
+		
+		<component type="gridLayout" name="pieceworkCostsGridLayout"
+			reference="pieceworkCostsGridLayout" columns="1" rows="1">
+			<layoutElement column="1" row="1">
+				<component type="borderLayout" name="pieceworkCostsBorderLayout"
+					reference="pieceworkCostsBorderLayout">
+					<component type="gridLayout" name="pieceworkCostsGridLayout" 
+						columns="12" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="plannedCyclesCosts"
+								field="#{form}.plannedCyclesCosts" reference="plannedCyclesCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="plannedCyclesCostsCurrency"
+								reference="plannedCyclesCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="5" row="1" width="3">
+							<component type="input" name="cyclesCosts"
+								field="#{form}.cyclesCosts" reference="cyclesCosts"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="8" row="1">
+							<component type="input" name="cyclesCostsCurrency"
+								reference="cyclesCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="9" row="1" width="3">
+							<component type="input" name="cyclesCostsBalance"
+								field="#{form}.cyclesCostsBalance" reference="cyclesCostsBalance"
+								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="12" row="1">
+							<component type="input" name="cyclesCostsBalanceCurrency"
+								reference="cyclesCostsBalanceCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-			</component>
-			<component type="grid" name="operationsPieceworkCost" source="#{form}.operationPieceworkCostComponents"
-				reference="operationsPieceworkCostGrid">
-				<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('nodeNumber')" />
-				<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
-				<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
-					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('name')" />
-				<option type="column" name="plannedCyclesCosts" fields="plannedCyclesCosts"
-					expression="#plannedCyclesCosts" />
-				<option type="column" name="cyclesCosts" fields="cyclesCosts" />
-				<option type="column" name="cyclesCostsBalance" fields="cyclesCostsBalance" />
-				
-				<option type="order" column="operationNumber" direction="asc" />
-			</component>
+
+					<option type="label" value="pieceworkCosts" />
+				</component>
+			</layoutElement>
+		</component>
+		<component type="grid" name="operationsPieceworkCost" source="#{form}.operationPieceworkCostComponents"
+			reference="operationsPieceworkCostGrid">
+			<option type="column" name="operationLevel" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('nodeNumber')" />
+			<option type="column" name="operationNumber" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
+			<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
+				expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('name')" />
+			<option type="column" name="plannedCyclesCosts" fields="plannedCyclesCosts"
+				expression="#plannedCyclesCosts" />
+			<option type="column" name="cyclesCosts" fields="cyclesCosts" />
+			<option type="column" name="cyclesCostsBalance" fields="cyclesCostsBalance" />
+			
+			<option type="order" column="operationNumber" direction="asc" />
 		</component>
 	</windowTab>
 	<windowTab name="costsSummaryTab">
-		<component type="form" name="costsSummaryForm" reference="costsSummaryForm">
-			<component type="gridLayout" name="costsSummaryGridLayout"
-				reference="costsSummaryGridLayout" columns="3" rows="12">
-				<layoutElement column="1" row="1" height="4">
-					<component type="borderLayout"
-						name="registeredTechnicalProductionCostsBorderLayout" reference="registeredTechnicalProductionCostsBorderLayout">
-						<component type="gridLayout"
-							name="registeredTechnicalProductionCostsGridLayout" columns="3"
-							rows="4" hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="label" name="registeredTotalTechnicalProductionCostsLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="registeredTotalTechnicalProductionCosts"
-									field="#{form}.registeredTotalTechnicalProductionCosts" reference="registeredTotalTechnicalProductionCosts"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="2">
-								<component type="input"
-									name="registeredTotalTechnicalProductionCostsCurrency" reference="registeredTotalTechnicalProductionCostsCurrency"
-									defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="label" name="registeredTotalTechnicalProductionCostPerUnitLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="registeredTotalTechnicalProductionCostPerUnit"
-									field="#{form}.registeredTotalTechnicalProductionCostPerUnit" reference="registeredTotalTechnicalProductionCostPerUnit"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="4">
-								<component type="input" name="registeredTotalTechnicalProductionCostPerUnitUnit"
-									reference="registeredTotalTechnicalProductionCostPerUnitUnit" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
-
-						<option type="label" value="registeredTechnicalProductionCosts" />
+		<component type="gridLayout" name="costsSummaryGridLayout"
+			reference="costsSummaryGridLayout" columns="3" rows="12">
+			<layoutElement column="1" row="1" height="4">
+				<component type="borderLayout"
+					name="registeredTechnicalProductionCostsBorderLayout" reference="registeredTechnicalProductionCostsBorderLayout">
+					<component type="gridLayout"
+						name="registeredTechnicalProductionCostsGridLayout" columns="3"
+						rows="4" hasBorders="false">
+						<layoutElement column="1" row="1" width="2">
+							<component type="label" name="registeredTotalTechnicalProductionCostsLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="2">
+							<component type="input" name="registeredTotalTechnicalProductionCosts"
+								field="#{form}.registeredTotalTechnicalProductionCosts" reference="registeredTotalTechnicalProductionCosts"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="2">
+							<component type="input"
+								name="registeredTotalTechnicalProductionCostsCurrency" reference="registeredTotalTechnicalProductionCostsCurrency"
+								defaultEnabled="false" hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="label" name="registeredTotalTechnicalProductionCostPerUnitLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4" width="2">
+							<component type="input" name="registeredTotalTechnicalProductionCostPerUnit"
+								field="#{form}.registeredTotalTechnicalProductionCostPerUnit" reference="registeredTotalTechnicalProductionCostPerUnit"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="4">
+							<component type="input" name="registeredTotalTechnicalProductionCostPerUnitUnit"
+								reference="registeredTotalTechnicalProductionCostPerUnitUnit" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="5" height="4">
-					<component type="borderLayout"
-						name="plannedTechnicalProductionCostsBorderLayout" reference="plannedTechnicalProductionCostsBorderLayout">
-						<component type="gridLayout"
-							name="plannedTechnicalProductionCostsGridLayout" columns="3"
-							rows="4" hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="label" name="totalTechnicalProductionCostsLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="totalTechnicalProductionCosts"
-									field="#{form}.totalTechnicalProductionCosts" reference="totalTechnicalProductionCosts"
-									hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="2">
-								<component type="input" name="totalTechnicalProductionCostsCurrency"
-									reference="totalTechnicalProductionCostsCurrency"
-									defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="label" name="totalTechnicalProductionCostPerUnitLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="totalTechnicalProductionCostPerUnit"
-									field="#{form}.totalTechnicalProductionCostPerUnit" reference="plannedTotalCostPerUnit"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="4">
-								<component type="input" name="totalTechnicalProductionCostPerUnitUnit"
-									reference="totalTechnicalProductionCostPerUnitUnit" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="plannedTechnicalProductionCosts" />
+					<option type="label" value="registeredTechnicalProductionCosts" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="5" height="4">
+				<component type="borderLayout"
+					name="plannedTechnicalProductionCostsBorderLayout" reference="plannedTechnicalProductionCostsBorderLayout">
+					<component type="gridLayout"
+						name="plannedTechnicalProductionCostsGridLayout" columns="3"
+						rows="4" hasBorders="false">
+						<layoutElement column="1" row="1" width="2">
+							<component type="label" name="totalTechnicalProductionCostsLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="2">
+							<component type="input" name="totalTechnicalProductionCosts"
+								field="#{form}.totalTechnicalProductionCosts" reference="totalTechnicalProductionCosts"
+								hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="2">
+							<component type="input" name="totalTechnicalProductionCostsCurrency"
+								reference="totalTechnicalProductionCostsCurrency"
+								defaultEnabled="false" hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="label" name="totalTechnicalProductionCostPerUnitLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4" width="2">
+							<component type="input" name="totalTechnicalProductionCostPerUnit"
+								field="#{form}.totalTechnicalProductionCostPerUnit" reference="plannedTotalCostPerUnit"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="4">
+							<component type="input" name="totalTechnicalProductionCostPerUnitUnit"
+								reference="totalTechnicalProductionCostPerUnitUnit" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="9" height="4">
-					<component type="borderLayout"
-						name="technicalProductionCostsBalanceBorderLayout" reference="technicalProductionCostsBalanceBorderLayout">
-						<component type="gridLayout"
-							name="technicalProductionCostsBalanceGridLayout" columns="3" rows="4"
-							hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="label" name="balanceTechnicalProductionCostsLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="balanceTechnicalProductionCosts"
-									field="#{form}.balanceTechnicalProductionCosts" reference="balanceTechnicalProductionCosts"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="2">
-								<component type="input" name="balanceTechnicalProductionCostsCurrency"
-									reference="balanceTechnicalProductionCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="label" name="balanceTechnicalProductionCostPerUnitLabel" hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="balanceTechnicalProductionCostPerUnit"
-									field="#{form}.balanceTechnicalProductionCostPerUnit" reference="balanceTechnicalProductionCostPerUnit"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="4">
-								<component type="input" name="balanceTechnicalProductionCostPerUnitUnit" reference="balanceTechnicalProductionCostPerUnitUnit"
-									defaultEnabled="false" hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="technicalProductionCostsBalance" />
+					<option type="label" value="plannedTechnicalProductionCosts" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="9" height="4">
+				<component type="borderLayout"
+					name="technicalProductionCostsBalanceBorderLayout" reference="technicalProductionCostsBalanceBorderLayout">
+					<component type="gridLayout"
+						name="technicalProductionCostsBalanceGridLayout" columns="3" rows="4"
+						hasBorders="false">
+						<layoutElement column="1" row="1" width="2">
+							<component type="label" name="balanceTechnicalProductionCostsLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="2">
+							<component type="input" name="balanceTechnicalProductionCosts"
+								field="#{form}.balanceTechnicalProductionCosts" reference="balanceTechnicalProductionCosts"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="2">
+							<component type="input" name="balanceTechnicalProductionCostsCurrency"
+								reference="balanceTechnicalProductionCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="label" name="balanceTechnicalProductionCostPerUnitLabel" hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4" width="2">
+							<component type="input" name="balanceTechnicalProductionCostPerUnit"
+								field="#{form}.balanceTechnicalProductionCostPerUnit" reference="balanceTechnicalProductionCostPerUnit"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="4">
+							<component type="input" name="balanceTechnicalProductionCostPerUnitUnit" reference="balanceTechnicalProductionCostPerUnitUnit"
+								defaultEnabled="false" hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1" height="6">
-					<component type="borderLayout" name="overheadsForRegisteredCostsBorderLayout"
-						reference="overheadsForRegisteredCostsBorderLayout">
-						<component type="gridLayout" name="overheadsForRegisteredCostsGridLayout"
-							columns="3" rows="5" hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="input" name="productionCostMarginValue"
-									field="#{form}.productionCostMarginValue" reference="productionCostMarginValue"
-									defaultEnabled="false">
-									<option type="labelWidth" value="40" />
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="1">
-								<component type="input" name="productionCostMarginValueCurrency"
-									reference="productionCostMarginValueCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="materialCostMarginValue"
-									field="#{form}.materialCostMarginValue" reference="materialCostMarginValue"
-									defaultEnabled="false">
-									<option type="labelWidth" value="40" />
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="2">
-								<component type="input" name="materialCostMarginValueCurrency"
-									reference="materialCostMarginValueCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3" width="2">
-								<component type="input" name="additionalOverheadValue"
-									field="#{form}.additionalOverheadValue" reference="additionalOverheadValue"
-									defaultEnabled="false">
-									<option type="labelWidth" value="40" />
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="3">
-								<component type="input" name="additionalOverheadValueCurrency"
-									reference="additionalOverheadValueCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4">
-								<component type="label" name="totalOverheadLabel"
-									hasLabel="false">
-									<option type="labelWidth" value="40" />
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="5" width="2">
-								<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
-									reference="totalOverhead" defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="5">
-								<component type="input" name="totalOverheadCurrency"
-									reference="totalOverheadCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="overheadsForRegisteredCosts" />
+					<option type="label" value="technicalProductionCostsBalance" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="1" height="6">
+				<component type="borderLayout" name="overheadsForRegisteredCostsBorderLayout"
+					reference="overheadsForRegisteredCostsBorderLayout">
+					<component type="gridLayout" name="overheadsForRegisteredCostsGridLayout"
+						columns="3" rows="5" hasBorders="false">
+						<layoutElement column="1" row="1" width="2">
+							<component type="input" name="productionCostMarginValue"
+								field="#{form}.productionCostMarginValue" reference="productionCostMarginValue"
+								defaultEnabled="false">
+								<option type="labelWidth" value="40" />
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="1">
+							<component type="input" name="productionCostMarginValueCurrency"
+								reference="productionCostMarginValueCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="2">
+							<component type="input" name="materialCostMarginValue"
+								field="#{form}.materialCostMarginValue" reference="materialCostMarginValue"
+								defaultEnabled="false">
+								<option type="labelWidth" value="40" />
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="2">
+							<component type="input" name="materialCostMarginValueCurrency"
+								reference="materialCostMarginValueCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3" width="2">
+							<component type="input" name="additionalOverheadValue"
+								field="#{form}.additionalOverheadValue" reference="additionalOverheadValue"
+								defaultEnabled="false">
+								<option type="labelWidth" value="40" />
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="3">
+							<component type="input" name="additionalOverheadValueCurrency"
+								reference="additionalOverheadValueCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4">
+							<component type="label" name="totalOverheadLabel"
+								hasLabel="false">
+								<option type="labelWidth" value="40" />
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="5" width="2">
+							<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
+								reference="totalOverhead" defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="5">
+							<component type="input" name="totalOverheadCurrency"
+								reference="totalOverheadCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-				<layoutElement column="3" row="1" height="4">
-					<component type="borderLayout" name="summaryForRegisteredCostsBorderLayout"
-						reference="summaryForRegisteredCostsBorderLayout">
-						<component type="gridLayout" name="summaryForRegisteredCostsGridLayout"
-							columns="3" rows="4" hasBorders="false">
-							<layoutElement column="1" row="1" width="2">
-								<component type="label" name="totalCostsLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="2">
-								<component type="input" name="totalCosts"
-									field="#{form}.totalCosts" reference="totalCosts"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="2">
-								<component type="input" name="totalCostsCurrency"
-									reference="totalCostsCurrency" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="label" name="totalCostPerUnitLabel"
-									hasLabel="false">
-									<option type="labelStyle" value="text" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4" width="2">
-								<component type="input" name="totalCostPerUnit"
-									field="#{form}.totalCostPerUnit" reference="totalCostPerUnit"
-									defaultEnabled="false" hasLabel="false">
-									<option type="alignment" value="right" />
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="3" row="4">
-								<component type="input" name="totalCostPerUnitUnit"
-									reference="totalCostPerUnitUnit" defaultEnabled="false"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
 
-						<option type="label" value="summaryForRegisteredCosts" />
+					<option type="label" value="overheadsForRegisteredCosts" />
+				</component>
+			</layoutElement>
+			<layoutElement column="3" row="1" height="4">
+				<component type="borderLayout" name="summaryForRegisteredCostsBorderLayout"
+					reference="summaryForRegisteredCostsBorderLayout">
+					<component type="gridLayout" name="summaryForRegisteredCostsGridLayout"
+						columns="3" rows="4" hasBorders="false">
+						<layoutElement column="1" row="1" width="2">
+							<component type="label" name="totalCostsLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="2">
+							<component type="input" name="totalCosts"
+								field="#{form}.totalCosts" reference="totalCosts"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="2">
+							<component type="input" name="totalCostsCurrency"
+								reference="totalCostsCurrency" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="label" name="totalCostPerUnitLabel"
+								hasLabel="false">
+								<option type="labelStyle" value="text" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4" width="2">
+							<component type="input" name="totalCostPerUnit"
+								field="#{form}.totalCostPerUnit" reference="totalCostPerUnit"
+								defaultEnabled="false" hasLabel="false">
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+						<layoutElement column="3" row="4">
+							<component type="input" name="totalCostPerUnitUnit"
+								reference="totalCostPerUnitUnit" defaultEnabled="false"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
-				</layoutElement>
-			</component>
+
+					<option type="label" value="summaryForRegisteredCosts" />
+				</component>
+			</layoutElement>
 		</component>
 	</windowTab>
 </windowTabExtension>

@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public class ProductionBalanceFields {
+public final class ProductionBalanceFields {
+
+    private ProductionBalanceFields() {
+
+    }
 
     public static final String GENERATED = "generated";
 

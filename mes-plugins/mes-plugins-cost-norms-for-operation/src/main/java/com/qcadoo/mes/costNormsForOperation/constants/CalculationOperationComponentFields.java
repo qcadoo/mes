@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.costNormsForOperation.constants;
 
-public class CalculationOperationComponentFields {
+public final class CalculationOperationComponentFields {
+
+    private CalculationOperationComponentFields() {
+
+    }
 
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
 

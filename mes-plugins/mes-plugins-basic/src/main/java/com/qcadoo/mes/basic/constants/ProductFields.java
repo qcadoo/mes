@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public class ProductFields {
+public final class ProductFields {
+
+    private ProductFields() {
+
+    }
 
     public static final String NUMBER = "number";
 

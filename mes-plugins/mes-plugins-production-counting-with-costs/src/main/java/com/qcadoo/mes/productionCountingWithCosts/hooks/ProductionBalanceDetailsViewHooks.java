@@ -72,9 +72,9 @@ public class ProductionBalanceDetailsViewHooks {
 
     private static final String L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT = "componentsCostSummaryBorderLayout";
 
-    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS = "technologyInstOperProductInComps";
+    private static final String L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
 
-    private static final String L_TIME_COSTS_GRID_LAYOUT = "timeCostsGridLayout";
+    private static final String L_WORK_COSTS_GRID_LAYOUT = "workCostsGridLayout";
 
     private static final String L_MACHINE_COSTS_BORDER_LAYOUT = "machineCostsBorderLayout";
 
@@ -127,11 +127,11 @@ public class ProductionBalanceDetailsViewHooks {
             viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(true);
 
             viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(true);
-            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(true);
+            viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_COMPS).setVisible(true);
 
             if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
                     && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
-                viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(true);
+                viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(true);
 
                 if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                     viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(true);
@@ -149,7 +149,7 @@ public class ProductionBalanceDetailsViewHooks {
                 viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_COST_GRID).setVisible(false);
             } else if (PIECEWORK.getStringValue().equals(calculateOperationCostMode.getFieldValue())
                     && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
-                viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(false);
+                viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(false);
 
                 viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(false);
                 viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(false);
@@ -276,7 +276,7 @@ public class ProductionBalanceDetailsViewHooks {
             fieldComponent.requestComponentUpdateState();
         }
 
-        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setEnabled(isEnabled);
+        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_COMPS).setEnabled(isEnabled);
         viewDefinitionState.getComponentByReference(L_OPERATIONS_COST_GRID).setEnabled(isEnabled);
     }
 
@@ -284,9 +284,9 @@ public class ProductionBalanceDetailsViewHooks {
         viewDefinitionState.getComponentByReference(L_MATERIAL_COSTS_GRID_LAYOUT).setVisible(isVisible);
 
         viewDefinitionState.getComponentByReference(L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_PRODUCT_IN_COMPONENTS).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPER_PRODUCT_IN_COMPS).setVisible(isVisible);
 
-        viewDefinitionState.getComponentByReference(L_TIME_COSTS_GRID_LAYOUT).setVisible(isVisible);
+        viewDefinitionState.getComponentByReference(L_WORK_COSTS_GRID_LAYOUT).setVisible(isVisible);
 
         viewDefinitionState.getComponentByReference(L_MACHINE_COSTS_BORDER_LAYOUT).setVisible(isVisible);
         viewDefinitionState.getComponentByReference(L_LABOR_COSTS_BORDER_LAYOUT).setVisible(isVisible);

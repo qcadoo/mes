@@ -67,7 +67,7 @@ public class ProductionBalanceViewService {
 
     private static final String L_OUTPUT_PRODUCTS_GRID = "outputProductsGrid";
 
-    private static final String L_TIME_GRID_LAYOUT = "timeGridLayout";
+    private static final String L_TIME_GRID_LAYOUT = "workGridLayout";
 
     private static final String L_LABOR_TIME_BORDER_LAYOUT = "laborTimeBorderLayout";
 

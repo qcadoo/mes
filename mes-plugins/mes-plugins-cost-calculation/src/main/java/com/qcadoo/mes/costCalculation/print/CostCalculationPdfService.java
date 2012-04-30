@@ -68,7 +68,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
-import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -109,9 +108,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private TreeNumberingService treeNumberingService;
 
     @Autowired
     private EntityTreeUtilsService entityTreeUtilsService;

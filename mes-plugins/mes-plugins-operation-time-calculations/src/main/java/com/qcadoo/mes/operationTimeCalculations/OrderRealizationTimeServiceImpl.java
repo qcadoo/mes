@@ -59,11 +59,15 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
 
-    private static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
-    private static final String OPERATION_NODE_ENTITY_TYPE = "operation";
+    private static final String L_ORDER = "order";
 
-    private static final String REFERENCE_TECHNOLOGY_ENTITY_TYPE = "referenceTechnology";
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_REFERENCE_TECHNOLOGY = "referenceTechnology";
 
     private final Map<Entity, BigDecimal> operationRunsField = new HashMap<Entity, BigDecimal>();
 
@@ -188,7 +192,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             technology = entity;
 
             operationComponents = technology.getTreeField("operationComponents");
-        } else if ("order".equals(entityType)) {
+        } else if (L_ORDER.equals(entityType)) {
             technology = entity.getBelongsToField(TECHNOLOGY);
 
             operationComponents = entity.getTreeField("technologyInstanceOperationComponents");
@@ -209,7 +213,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
             final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Entity, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
-        if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(operationComponent.getStringField("entityType"))) {
+        if (L_REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField("entityType"))) {
             for (Entity operComp : operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents")) {
                 evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operComp, includeTpz,
@@ -218,8 +222,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } else {
             int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRunsField,
                     productionLine, maxForWorkstation);
-            if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
-                operationDurations.put(operationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT), duration);
+            if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
+                operationDurations.put(operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT), duration);
             } else {
                 operationDurations.put(operationComponent, duration);
             }
@@ -228,16 +232,16 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation, Map<Entity, BigDecimal> productComponentQuantities) {
+            final boolean maxForWorkstation, final Map<Entity, BigDecimal> productComponentQuantities) {
         String entityType = operationComponent.getStringField("entityType");
 
-        if (REFERENCE_TECHNOLOGY_ENTITY_TYPE.equals(entityType)) {
+        if (L_REFERENCE_TECHNOLOGY.equals(entityType)) {
             EntityTreeNode actualOperationComponent = operationComponent.getBelongsToField("referenceTechnology")
                     .getTreeField("operationComponents").getRoot();
 
             return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
-        } else if (OPERATION_NODE_ENTITY_TYPE.equals(entityType)) {
+        } else if (L_OPERATION.equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
             int offset = 0;
@@ -263,7 +267,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+            if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
                 operationComponent.setField("effectiveOperationRealizationTime", operationTime);
                 operationComponent.setField("operationOffSet", offset);
                 operationComponent.getDataDefinition().save(operationComponent);
@@ -278,9 +282,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
         String modelName = operationComponent.getDataDefinition().getName();
 
-        if ("technologyInstanceOperationComponent".equals(modelName)) {
+        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(modelName)) {
             return (Integer) operationComponent.getField("quantityOfWorkstationTypes");
-        } else if (TECHNOLOGY_OPERATION_COMPONENT.equals(modelName)) {
+        } else if (L_TECHNOLOGY_OPERATION_COMPONENT.equals(modelName)) {
             return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
         }
 
@@ -295,10 +299,10 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         Entity technologyOperationComponent = operationComponent;
 
-        if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
             technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    operationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT).getId());
+                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
 
         BigDecimal cycles = operationRuns.get(technologyOperationComponent);
@@ -308,15 +312,15 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation, BigDecimal forQuantity) {
+            final boolean maxForWorkstation, final BigDecimal forQuantity) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         Entity technologyOperationComponent = operationComponent;
 
-        if ("technologyInstanceOperationComponent".equals(operationComponent.getDataDefinition().getName())) {
+        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
             technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    operationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT).getId());
+                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
 
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");

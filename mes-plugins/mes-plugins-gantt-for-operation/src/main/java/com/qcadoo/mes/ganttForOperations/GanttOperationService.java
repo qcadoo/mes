@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -34,6 +35,8 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class GanttOperationService {
@@ -94,4 +97,36 @@ public class GanttOperationService {
         title.setFieldValue(name + " - " + number);
         title.requestComponentUpdateState();
     }
+
+    public boolean isRealizationTimeGenerated(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return false;
+        }
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                form.getEntityId());
+        Integer realizationTime = (Integer) order.getField("realizationTime");
+
+        return (realizationTime == null || realizationTime == 0);
+    }
+
+    public void disableCalendarButtonWhenRealizationTimeNotGenerated(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem showOnCalendarButton = window.getRibbon()
+                .getGroupByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP)
+                .getItemByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
+        if (isRealizationTimeGenerated(view)) {
+            showOnCalendarButton.setEnabled(true);
+        } else {
+            showOnCalendarButton.setEnabled(false);
+            showOnCalendarButton.setMessage("message");
+        }
+        showOnCalendarButton.requestUpdate(true);
+    }
+
 }

@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public class BalanceOperationProductOutComponent {
+public final class BalanceOperationProductOutComponent {
+
+    private BalanceOperationProductOutComponent() {
+
+    }
 
     public static final String PRODUCTION_RECORD = "productionRecord";
 

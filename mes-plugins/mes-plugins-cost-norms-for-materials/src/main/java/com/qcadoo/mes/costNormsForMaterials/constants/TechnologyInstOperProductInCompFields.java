@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.constants;
 
-public class TechnologyInstOperProductInCompFields {
+public final class TechnologyInstOperProductInCompFields {
+
+    private TechnologyInstOperProductInCompFields() {
+
+    }
 
     public static final String ORDER = "order";
 

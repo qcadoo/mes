@@ -410,31 +410,28 @@ public class OrderService {
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
         Entity technology = order.getBelongsToField(TECHNOLOGY);
 
-        if ((productionLine != null) && (technology != null)) {
-            if (!productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)) {
-                Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
+        if ((productionLine != null) && (technology != null) && !productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)) {
+            Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
 
-                if (technologyGroup != null) {
-                    List<Entity> productionLineGroups = productionLine.getManyToManyField(GROUPS);
+            if (technologyGroup != null) {
+                List<Entity> productionLineGroups = productionLine.getManyToManyField(GROUPS);
 
-                    for (Entity productionLineGroup : productionLineGroups) {
-                        if (productionLineGroup.equals(technologyGroup)) {
-                            return true;
-                        }
-                    }
-                }
-
-                List<Entity> productionLineTechnologies = productionLine.getManyToManyField(TECHNOLOGIES);
-
-                for (Entity productionLineTechnology : productionLineTechnologies) {
-                    if (productionLineTechnology.equals(technology)) {
+                for (Entity productionLineGroup : productionLineGroups) {
+                    if (productionLineGroup.equals(technologyGroup)) {
                         return true;
                     }
                 }
-
-                return false;
-
             }
+
+            List<Entity> productionLineTechnologies = productionLine.getManyToManyField(TECHNOLOGIES);
+
+            for (Entity productionLineTechnology : productionLineTechnologies) {
+                if (productionLineTechnology.equals(technology)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
         return true;
     }

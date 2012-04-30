@@ -314,8 +314,7 @@ public abstract class SamplesLoader {
     }
 
     private InputStream getXmlFile(final String dataset, final String object, final String locale) throws IOException {
-        return TestSamplesLoader.class.getResourceAsStream("/com/qcadoo/mes/samples/" + dataset + "/" + object + "_" + locale
-                + ".xml");
+        return TestSamplesLoader.class.getResourceAsStream("/samples/" + dataset + "/" + object + "_" + locale + ".xml");
     }
 
 }

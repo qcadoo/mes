@@ -59,8 +59,6 @@ public class ProductDetailsViewHooks {
             return;
         }
 
-        Long productId = product.getId();
-
         Map<String, Object> parameters = Maps.newHashMap();
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologyGroups");

@@ -94,7 +94,7 @@ public class TechnologyDetailsListenersCNFM {
             products.add(productInComponent.getBelongsToField(BasicConstants.MODEL_PRODUCT));
         }
         for (Entity product : products) {
-            if (technologyService.getProductType(product, technology).equals(TechnologyService.COMPONENT)
+            if (technologyService.getProductType(product, technology).equals(TechnologyService.L_01_COMPONENT)
                     && (product.getField(COST_FOR_NUMBER) == null || product.getField(NOMINAL_COST) == null
                             || product.getField(LAST_PURCHASE_COST) == null || product.getField(AVERAGE_COST) == null)) {
                 form.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO, false);

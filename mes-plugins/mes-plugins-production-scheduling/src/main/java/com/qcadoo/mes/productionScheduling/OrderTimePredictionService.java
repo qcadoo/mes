@@ -394,4 +394,5 @@ public class OrderTimePredictionService {
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         state.setFieldValue(null);
     }
+
 }

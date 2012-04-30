@@ -373,7 +373,7 @@ public class ProductionRecordViewService {
         }
         for (Entity counting : productionCountings) {
             Entity aProduct = (Entity) counting.getField("product");
-            if (technologyService.getProductType(aProduct, technology).equals(TechnologyService.FINAL_PRODUCT)) {
+            if (technologyService.getProductType(aProduct, technology).equals(TechnologyService.L_03_FINAL_PRODUCT)) {
                 doneQuantity.setFieldValue(counting.getField("producedQuantity"));
                 break;
             }

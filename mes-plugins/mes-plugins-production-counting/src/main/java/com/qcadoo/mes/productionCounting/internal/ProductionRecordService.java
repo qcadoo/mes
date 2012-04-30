@@ -302,10 +302,9 @@ public class ProductionRecordService {
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         EntityTreeNode operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).getRoot();
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            countPlannedTime(productionRecord, operationComponents, null);
+            countPlannedTime(productionRecord, null);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            countPlannedTime(productionRecord, operationComponents,
-                    productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
+            countPlannedTime(productionRecord, productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
         }
         countTimeBalance(productionRecord);
     }
@@ -383,8 +382,7 @@ public class ProductionRecordService {
         }
     }
 
-    private void countPlannedTime(final Entity productionRecord, final EntityTreeNode operationComponents,
-            final Entity orderOperComp) {
+    private void countPlannedTime(final Entity productionRecord, final Entity orderOperComp) {
         Map<String, BigDecimal> plannedTimeValues = new HashMap<String, BigDecimal>();
         plannedTimeValues.put(PLANNED_TIME, BigDecimal.ZERO);
         plannedTimeValues.put(PLANNED_MACHINE_TIME, BigDecimal.ZERO);
