@@ -90,55 +90,55 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
 
-        if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
         }
 
-        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }
 
-        if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(ORDERS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, ORDERS_PLUGIN_IDENTIFIER, locale);
-            if (isEnabled(L_ORDER_GROUPS)) {
+            if (isEnabledOrEnabling(L_ORDER_GROUPS)) {
                 readDataFromXML(dataset, L_ORDER_GROUPS, locale);
             }
         }
 
-        if (isEnabled(L_COST_CALCULATION)) {
+        if (isEnabledOrEnabling(L_COST_CALCULATION)) {
             readDataFromXML(dataset, L_COST_CALCULATION, locale);
         }
 
-        if (isEnabled(L_MATERIAL_FLOW)) {
+        if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
             readDataFromXML(dataset, L_STOCK_AREAS, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
             readDataFromXML(dataset, L_TRANSFER, locale);
             readDataFromXML(dataset, L_STOCK_CORRECTION, locale);
         }
 
-        if (isEnabled(L_QUALITY_CONTROLS)) {
+        if (isEnabledOrEnabling(L_QUALITY_CONTROLS)) {
             readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
         }
 
-        if (isEnabled(L_MATERIAL_REQUIREMENTS)) {
+        if (isEnabledOrEnabling(L_MATERIAL_REQUIREMENTS)) {
             readDataFromXML(dataset, L_MATERIAL_REQUIREMENTS, locale);
         }
 
-        if (isEnabled(L_WORK_PLANS)) {
+        if (isEnabledOrEnabling(L_WORK_PLANS)) {
             readDataFromXML(dataset, L_WORK_PLANS, locale);
         }
 
-        if (isEnabled(L_PRODUCTION_COUNTING)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
             readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
             readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
         }
 
-        if (isEnabled(L_ADVANCED_GENEALOGY)) {
+        if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
             readDataFromXML(dataset, L_BATCHES, locale);
-            if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+            if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                 readDataFromXML(dataset, L_TRACKING_RECORDS, locale);
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
@@ -261,7 +261,7 @@ public class TestSamplesLoader extends SamplesLoader {
         operation.setField(L_NAME, values.get(L_NAME));
         operation.setField(L_NUMBER, values.get(L_NUMBER));
 
-        if (isEnabled("timeNormsForOperations")) {
+        if (isEnabledOrEnabling("timeNormsForOperations")) {
             operation.setField(L_TPZ, values.get(L_TPZ));
             operation.setField("tj", values.get("tj"));
             operation.setField("productionInOneCycle", values.get("productioninonecycle"));
@@ -276,7 +276,7 @@ public class TestSamplesLoader extends SamplesLoader {
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
 
-        if (isEnabled("costNormsForOperation")) {
+        if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
             operation.setField("machineHourlyCost", values.get("machinehourlycost"));
             operation.setField("laborHourlyCost", values.get("laborhourlycost"));
@@ -311,7 +311,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
         product.setField("unit", values.get("unit"));
 
-        if (isEnabled("costNormsForProduct")) {
+        if (isEnabledOrEnabling("costNormsForProduct")) {
             product.setField("costForNumber", values.get("costfornumber"));
             product.setField("nominalCost", values.get("nominalcost"));
             product.setField("lastPurchaseCost", values.get("lastpurchasecost"));
@@ -604,7 +604,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
-        if (isEnabled(L_PRODUCTION_COUNTING)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             order.setField("typeOfProductionRecording", values.get("type_of_production_recording"));
             order.setField("registerQuantityInProduct", values.get("register_quantity_in_product"));
             order.setField("registerQuantityOutProduct", values.get("register_quantity_out_product"));
@@ -615,7 +615,7 @@ public class TestSamplesLoader extends SamplesLoader {
             order.setField("autoCloseOrder", values.get("auto_close_order"));
         }
 
-        if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+        if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
             order.setField("trackingRecordTreatment", "01duringProduction");
             order.setField("trackingRecordForOrderTreatment", values.get("tracking_record_for_order_treatment"));
         }
@@ -793,13 +793,13 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
 
-            if (isEnabled(L_QUALITY_CONTROLS_FOR_OPERATION)
+            if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
                     && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);
             }
 
-            if (!(isEnabled(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
-                    && isEnabled(L_QUALITY_CONTROLS)
+            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
+                    && isEnabledOrEnabling(L_QUALITY_CONTROLS)
                     && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
                             .get(L_QUALITY_CONTROL_TYPE)))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITY_CONTROL_TYPE));
@@ -939,7 +939,7 @@ public class TestSamplesLoader extends SamplesLoader {
         component.setField("parent", parent);
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        if (isEnabled("timeNormsForOperations")) {
+        if (isEnabledOrEnabling("timeNormsForOperations")) {
             component.setField(L_TPZ, operation.getField(L_TPZ));
             component.setField("tj", operation.getField("tj"));
             component.setField("machineUtilization", operation.getField("machineUtilization"));
@@ -958,7 +958,7 @@ public class TestSamplesLoader extends SamplesLoader {
             component.setField("timeNextOperation", operation.getField("timeNextOperation"));
         }
 
-        if (isEnabled("costNormsForOperation")) {
+        if (isEnabledOrEnabling("costNormsForOperation")) {
             component.setField("pieceworkCost", operation.getField("pieceworkCost"));
             component.setField("machineHourlyCost", operation.getField("machineHourlyCost"));
             component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
@@ -1147,7 +1147,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
         productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
 
-        if (isEnabled("productionCountingWithCosts")) {
+        if (isEnabledOrEnabling("productionCountingWithCosts")) {
             productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
             productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 

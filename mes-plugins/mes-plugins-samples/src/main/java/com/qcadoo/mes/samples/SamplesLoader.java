@@ -158,7 +158,7 @@ public abstract class SamplesLoader {
 
         params.setField("currency", currency);
 
-        if (isEnabled("productionCounting")) {
+        if (isEnabledOrEnabling("productionCounting")) {
             params.setField("registerQuantityInProduct", true);
             params.setField("registerQuantityOutProduct", true);
             params.setField("registerProductionTime", true);
@@ -167,20 +167,20 @@ public abstract class SamplesLoader {
             params.setField("autoCloseOrder", false);
         }
 
-        if (isEnabled("qualityControls")) {
+        if (isEnabledOrEnabling("qualityControls")) {
             params.setField("checkDoneOrderForQuality", false);
             params.setField("autoGenerateQualityControl", false);
         }
 
-        if (isEnabled("genealogies")) {
+        if (isEnabledOrEnabling("genealogies")) {
             params.setField("batchForDoneOrder", "01none");
         }
 
-        if (isEnabled("advancedGenealogy")) {
+        if (isEnabledOrEnabling("advancedGenealogy")) {
             params.setField("batchNumberUniqueness", "01globally");
         }
 
-        if (isEnabled("advancedGenealogyForOrders")) {
+        if (isEnabledOrEnabling("advancedGenealogyForOrders")) {
             params.setField("trackingRecordForOrderTreatment", "01duringProduction");
         }
 
@@ -309,8 +309,8 @@ public abstract class SamplesLoader {
                 .setMaxResults(1).uniqueResult();
     }
 
-    protected boolean isEnabled(final String pluginIdentifier) {
-        return PluginUtils.isEnabled(pluginIdentifier);
+    protected boolean isEnabledOrEnabling(final String pluginIdentifier) {
+        return PluginUtils.isEnabledOrEnabling(pluginIdentifier);
     }
 
     private InputStream getXmlFile(final String dataset, final String object, final String locale) throws IOException {

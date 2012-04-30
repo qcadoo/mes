@@ -123,23 +123,23 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         for (int i = 0; i < 10; i++) {
             generateAndAddShift(locale);
         }
-        if (isEnabled(TECHNOLOGY_PLUGIN_NAME)) {
+        if (isEnabledOrEnabling(TECHNOLOGY_PLUGIN_NAME)) {
             for (int i = 0; i < iterations; i++) {
                 generateAndAddOperation();
             }
             generateAndAddTechnologies();
         }
-        if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(ORDERS_PLUGIN_IDENTIFIER)) {
             for (int i = 0; i < iterations; i++) {
                 generateAndAddOrder();
             }
-            if (isEnabled(ORDER_GROUPS_PLUGIN_NAME)) {
+            if (isEnabledOrEnabling(ORDER_GROUPS_PLUGIN_NAME)) {
                 for (int i = 0; i < 10; i++) {
                     generateAndAddOrderGroup();
                 }
             }
         }
-        if (isEnabled("workPlans")) {
+        if (isEnabledOrEnabling("workPlans")) {
             for (int i = 0; i < (iterations / 40); i++) {
                 generateAndAddWorkPlan();
             }
@@ -248,7 +248,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
         operation.setField("countMachine", "0");
 
-        if (isEnabled("costNormsForOperation")) {
+        if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", RANDOM.nextInt(100));
             operation.setField("machineHourlyCost", RANDOM.nextInt(100));
             operation.setField("laborHourlyCost", RANDOM.nextInt(100));
