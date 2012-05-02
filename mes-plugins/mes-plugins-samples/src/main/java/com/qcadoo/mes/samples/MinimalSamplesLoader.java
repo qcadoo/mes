@@ -39,7 +39,7 @@ public class MinimalSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "company", locale);
 
-        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }

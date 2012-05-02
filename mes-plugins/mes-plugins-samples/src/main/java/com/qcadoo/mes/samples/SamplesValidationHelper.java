@@ -1,0 +1,54 @@
+package com.qcadoo.mes.samples;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
+
+@Service
+public class SamplesValidationHelper {
+
+    public void validateEntity(final Entity entity) {
+        if (!entity.isValid()) {
+            Map<String, ErrorMessage> errors = entity.getErrors();
+            List<ErrorMessage> globalErrors = entity.getGlobalErrors();
+            Set<String> keys = errors.keySet();
+            StringBuilder stringError = new StringBuilder("Saved entity ");
+            stringError.append(entity.getDataDefinition().getPluginIdentifier());
+            stringError.append('.');
+            stringError.append(entity.getDataDefinition().getName());
+            stringError.append(" is invalid\n");
+            stringError.append("Global errors:\n");
+            for (ErrorMessage error : globalErrors) {
+                stringError.append(error.getMessage()).append("\nError vars:\n");
+                String[] vars = error.getVars();
+                for (String errorVar : vars) {
+                    stringError.append("\t").append(errorVar).append("\n");
+                }
+            }
+            stringError.append("Errors:\n");
+            for (String key : keys) {
+                stringError.append("\t").append(key).append("  -  ").append(errors.get(key).getMessage()).append("\nError vars:");
+                String[] vars = errors.get(key).getVars();
+                for (String errorVar : vars) {
+                    stringError.append("\t").append(errorVar).append("\n");
+                }
+            }
+            stringError.append("Fields:\n");
+            Map<String, Object> fields = entity.getFields();
+            for (Entry<String, Object> entry : fields.entrySet()) {
+                if (entry.getValue() == null) {
+                    stringError.append("\t\t");
+                }
+                stringError.append(entry.getKey()).append(" - ").append(entry.getValue()).append("\n");
+            }
+            throw new IllegalStateException("Saved entity is invalid\n" + stringError.toString());
+        }
+    }
+
+}

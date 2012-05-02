@@ -615,40 +615,40 @@ public class ProductionBalancePdfService extends PdfDocumentService {
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.plannedMachineTime",
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.plannedMachineTime",
                         locale)
                         + ":", timeConverterService.convertTimeToString(plannedMachineTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.machineTime", locale)
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.machineTime", locale)
                         + ":", timeConverterService.convertTimeToString(machineTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.machineTimeBalance",
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.machineTimeBalance",
                         locale)
                         + ":", timeConverterService.convertTimeToString(machineTimeBalance.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.plannedLaborTime",
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.plannedLaborTime",
                         locale)
                         + ":", timeConverterService.convertTimeToString(plannedLaborTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.laborTime", locale)
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.laborTime", locale)
                         + ":", timeConverterService.convertTimeToString(laborTime.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);
         addTableCellAsTable(
                 timePanel,
                 translationService.translate(
-                        "productionCounting.productionBalanceDetails.window.timeTab.operationsTime.column.laborTimeBalance",
+                        "productionCounting.productionBalanceDetails.window.workTab.operationsTime.column.laborTimeBalance",
                         locale)
                         + ":", timeConverterService.convertTimeToString(laborTimeBalance.intValue()), null,
                 FontUtils.getDejavuRegular9Dark(), FontUtils.getDejavuRegular9Dark(), null);

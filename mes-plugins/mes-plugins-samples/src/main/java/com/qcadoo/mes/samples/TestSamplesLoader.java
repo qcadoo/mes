@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
@@ -50,6 +51,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 
 @Component
+@Transactional
 public class TestSamplesLoader extends SamplesLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoader.class);
@@ -88,61 +90,62 @@ public class TestSamplesLoader extends SamplesLoader {
         readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
 
-        if (isEnabled(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
         }
 
-        if (isEnabled(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
             readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
         }
 
-        if (isEnabled(ORDERS_PLUGIN_IDENTIFIER)) {
+        if (isEnabledOrEnabling(ORDERS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, ORDERS_PLUGIN_IDENTIFIER, locale);
-            if (isEnabled(L_ORDER_GROUPS)) {
+            if (isEnabledOrEnabling(L_ORDER_GROUPS)) {
                 readDataFromXML(dataset, L_ORDER_GROUPS, locale);
             }
         }
 
-        if (isEnabled(L_COST_CALCULATION)) {
+        if (isEnabledOrEnabling(L_COST_CALCULATION)) {
             readDataFromXML(dataset, L_COST_CALCULATION, locale);
         }
 
-        if (isEnabled(L_MATERIAL_FLOW)) {
+        if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
             readDataFromXML(dataset, L_STOCK_AREAS, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
             readDataFromXML(dataset, L_TRANSFER, locale);
             readDataFromXML(dataset, L_STOCK_CORRECTION, locale);
         }
 
-        if (isEnabled(L_QUALITY_CONTROLS)) {
+        if (isEnabledOrEnabling(L_QUALITY_CONTROLS)) {
             readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
         }
 
-        if (isEnabled(L_MATERIAL_REQUIREMENTS)) {
+        if (isEnabledOrEnabling(L_MATERIAL_REQUIREMENTS)) {
             readDataFromXML(dataset, L_MATERIAL_REQUIREMENTS, locale);
         }
 
-        if (isEnabled(L_WORK_PLANS)) {
+        if (isEnabledOrEnabling(L_WORK_PLANS)) {
             readDataFromXML(dataset, L_WORK_PLANS, locale);
         }
 
-        if (isEnabled(L_PRODUCTION_COUNTING)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
             readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
             readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
         }
 
-        if (isEnabled(L_ADVANCED_GENEALOGY)) {
+        if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {
             readDataFromXML(dataset, L_BATCHES, locale);
-            if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+            if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                 readDataFromXML(dataset, L_TRACKING_RECORDS, locale);
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
     }
 
+    // FIXME MAKU we still need it?
     private void changeAdminPassword() {
         DataDefinition userDD = dataDefinitionService.get("qcadooSecurity", "user");
         Entity user = userDD.find().add(SearchRestrictions.eq("userName", "admin")).setMaxResults(1).uniqueResult();
@@ -151,7 +154,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     @Override
-    void readData(final Map<String, String> values, final String type, final Element node) {
+    protected void readData(final Map<String, String> values, final String type, final Element node) {
         if ("activeCurrency".equals(type)) {
             addParameters(values);
         } else if ("company".equals(type)) {
@@ -204,6 +207,7 @@ public class TestSamplesLoader extends SamplesLoader {
         } else if (L_PRODUCTION_RECORD.equals(type)) {
             addProductionRecord(values);
         } else if (L_PRODUCTION_COUNTING.equals(type)) {
+            prepareProductionRecords(values);
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
@@ -231,8 +235,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
-
-        validateEntity(machine);
     }
 
     private void addStaff(final Map<String, String> values) {
@@ -251,7 +253,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
-        validateEntity(staff);
     }
 
     private void addOperations(final Map<String, String> values) {
@@ -260,7 +261,7 @@ public class TestSamplesLoader extends SamplesLoader {
         operation.setField(L_NAME, values.get(L_NAME));
         operation.setField(L_NUMBER, values.get(L_NUMBER));
 
-        if (isEnabled("timeNormsForOperations")) {
+        if (isEnabledOrEnabling("timeNormsForOperations")) {
             operation.setField(L_TPZ, values.get(L_TPZ));
             operation.setField("tj", values.get("tj"));
             operation.setField("productionInOneCycle", values.get("productioninonecycle"));
@@ -275,7 +276,7 @@ public class TestSamplesLoader extends SamplesLoader {
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
 
-        if (isEnabled("costNormsForOperation")) {
+        if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
             operation.setField("machineHourlyCost", values.get("machinehourlycost"));
             operation.setField("laborHourlyCost", values.get("laborhourlycost"));
@@ -288,7 +289,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).save(operation);
-        validateEntity(operation);
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -311,7 +311,7 @@ public class TestSamplesLoader extends SamplesLoader {
         }
         product.setField("unit", values.get("unit"));
 
-        if (isEnabled("costNormsForProduct")) {
+        if (isEnabledOrEnabling("costNormsForProduct")) {
             product.setField("costForNumber", values.get("costfornumber"));
             product.setField("nominalCost", values.get("nominalcost"));
             product.setField("lastPurchaseCost", values.get("lastpurchasecost"));
@@ -351,7 +351,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
-        validateEntity(substitute);
 
         for (int i = 0; i < 1; i++) {
             addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
@@ -372,12 +371,14 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").save(substituteComponent);
-        validateEntity(substituteComponent);
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
         Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        technology.setField(L_ORDER_STATE, "02accepted");
+        if (STATE_ACCEPTED.equals(technology.getStringField(L_ORDER_STATE))) {
+            return;
+        }
+        technology.setField(L_ORDER_STATE, STATE_ACCEPTED);
         technology.getDataDefinition().save(technology);
     }
 
@@ -393,14 +394,12 @@ public class TestSamplesLoader extends SamplesLoader {
         orderGroup.setField(L_DATE_FROM, order2.getField(L_DATE_FROM));
 
         orderGroup = orderGroup.getDataDefinition().save(orderGroup);
-        validateEntity(orderGroup);
 
         order3.setField("orderGroup", orderGroup);
         order2.setField("orderGroup", orderGroup);
 
-        validateEntity(order3.getDataDefinition().save(order3));
-        validateEntity(order2.getDataDefinition().save(order2));
-
+        order3.getDataDefinition().save(order3);
+        order2.getDataDefinition().save(order2);
     }
 
     private void addOrder(final Map<String, String> values) {
@@ -461,7 +460,9 @@ public class TestSamplesLoader extends SamplesLoader {
         order.setField(L_DEADLINE, new Date(deadline));
         order.setField("externalSynchronized", true);
 
-        order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("tech_nr")));
+        Entity technology = getTechnologyByNumber(values.get("tech_nr"));
+        order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
+
         order.setField(L_NAME,
                 (values.get(L_NAME).isEmpty() || values.get(L_NAME) == null) ? values.get(L_ORDER_NR) : values.get(L_NAME));
         order.setField(L_NUMBER, values.get(L_ORDER_NR));
@@ -598,13 +599,12 @@ public class TestSamplesLoader extends SamplesLoader {
                         BigDecimal.ZERO, BigDecimal.ZERO));
             }
 
-            validateEntity(productionCounting);
             order.setField("basicProductionCountings", productionCountings);
         }
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
-        if (isEnabled(L_PRODUCTION_COUNTING)) {
+        if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             order.setField("typeOfProductionRecording", values.get("type_of_production_recording"));
             order.setField("registerQuantityInProduct", values.get("register_quantity_in_product"));
             order.setField("registerQuantityOutProduct", values.get("register_quantity_out_product"));
@@ -615,7 +615,7 @@ public class TestSamplesLoader extends SamplesLoader {
             order.setField("autoCloseOrder", values.get("auto_close_order"));
         }
 
-        if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+        if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
             order.setField("trackingRecordTreatment", "01duringProduction");
             order.setField("trackingRecordForOrderTreatment", values.get("tracking_record_for_order_treatment"));
         }
@@ -648,8 +648,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
-        validateEntity(order);
-
     }
 
     private void addBatches(final Map<String, String> values) {
@@ -661,7 +659,6 @@ public class TestSamplesLoader extends SamplesLoader {
         batch.setField(L_STATE, "01tracked");
 
         batch = batch.getDataDefinition().save(batch);
-        validateEntity(batch);
     }
 
     private void addTrackingRecord(final Map<String, String> values) {
@@ -674,7 +671,6 @@ public class TestSamplesLoader extends SamplesLoader {
         trackingRecord.setField(L_STATE, "01draft");
 
         trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
-        validateEntity(trackingRecord);
 
         buildTrackingRecord(trackingRecord);
     }
@@ -689,7 +685,6 @@ public class TestSamplesLoader extends SamplesLoader {
         genealogyTable.setField(L_BATCH, getBatchByNumber(values.get("batch_no")));
 
         genealogyTable = genealogyTable.getDataDefinition().save(genealogyTable);
-        validateEntity(genealogyTable);
     }
 
     private void addDivision(final Map<String, String> values) {
@@ -700,7 +695,6 @@ public class TestSamplesLoader extends SamplesLoader {
         division.setField("supervisor", values.get("SUPERVISOR"));
 
         division = division.getDataDefinition().save(division);
-        validateEntity(division);
     }
 
     private void addCostCalculation(final Map<String, String> values) {
@@ -722,8 +716,6 @@ public class TestSamplesLoader extends SamplesLoader {
         costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
 
         costCalculation = costCalculation.getDataDefinition().save(costCalculation);
-
-        validateEntity(costCalculation);
     }
 
     private void addStokckArea(final Map<String, String> values) {
@@ -733,7 +725,6 @@ public class TestSamplesLoader extends SamplesLoader {
         stockArea.setField(L_NAME, values.get(L_NAME));
 
         stockArea = stockArea.getDataDefinition().save(stockArea);
-        validateEntity(stockArea);
     }
 
     private void addTransformation(final Map<String, String> values) {
@@ -747,7 +738,6 @@ public class TestSamplesLoader extends SamplesLoader {
         transformation.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
 
         transformation = transformation.getDataDefinition().save(transformation);
-        validateEntity(transformation);
     }
 
     private void addStockCorrection(final Map<String, String> values) {
@@ -761,7 +751,6 @@ public class TestSamplesLoader extends SamplesLoader {
         stockCorrection.setField("found", values.get("found"));
 
         stockCorrection = stockCorrection.getDataDefinition().save(stockCorrection);
-        validateEntity(stockCorrection);
     }
 
     private void addTransfer(final Map<String, String> values) {
@@ -780,7 +769,6 @@ public class TestSamplesLoader extends SamplesLoader {
         transfer.setField("transformationsProduction", getTransformationByNumber(values.get("transformations_production")));
 
         transfer = transfer.getDataDefinition().save(transfer);
-        validateEntity(transfer);
     }
 
     private void addTechnology(final Map<String, String> values) {
@@ -805,13 +793,13 @@ public class TestSamplesLoader extends SamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
 
-            if (isEnabled(L_QUALITY_CONTROLS_FOR_OPERATION)
+            if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
                     && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);
             }
 
-            if (!(isEnabled(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
-                    && isEnabled(L_QUALITY_CONTROLS)
+            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
+                    && isEnabledOrEnabling(L_QUALITY_CONTROLS)
                     && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
                             .get(L_QUALITY_CONTROL_TYPE)))) {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITY_CONTROL_TYPE));
@@ -832,7 +820,6 @@ public class TestSamplesLoader extends SamplesLoader {
             }
 
             technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
-            validateEntity(technology);
 
             if (L_PROD_NR_10.equals(values.get(L_PRODUCT_NR))) {
                 addTechnologyOperationComponentsForTableAdvanced(technology);
@@ -868,7 +855,7 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_27));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_26));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_25));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"), new BigDecimal(4));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_21));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_30));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_29));
@@ -877,10 +864,10 @@ public class TestSamplesLoader extends SamplesLoader {
         Entity parent1 = addOperationComponent(technology, parent, getOperationByNumber("4"));
         addProductInComponent(parent1, BigDecimal.ONE, getProductByNumber(L_PROD_NR_33));
         addProductOutComponent(parent1, BigDecimal.ONE, getProductByNumber(L_PROD_NR_29));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"), new BigDecimal(4));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_31));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_28));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"), new BigDecimal(4));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_32));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_31));
     }
@@ -890,15 +877,15 @@ public class TestSamplesLoader extends SamplesLoader {
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_18));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_19));
         addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_17));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("6"), new BigDecimal(4));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_21));
         addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_20));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_22));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_19));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("1"), new BigDecimal(4));
         addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_23));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_22));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
+        parent = addOperationComponent(technology, parent, getOperationByNumber("2"), new BigDecimal(4));
         addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_24));
         addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_23));
     }
@@ -912,7 +899,6 @@ public class TestSamplesLoader extends SamplesLoader {
         productInComponent.setField("usedQuantity", usedQuantity);
         productInComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
         productInComponent.setField("balance", balance);
-        validateEntity(productInComponent);
         return productInComponentDD.save(productInComponent);
     }
 
@@ -938,23 +924,33 @@ public class TestSamplesLoader extends SamplesLoader {
         productOutComponent.setField("usedQuantity", usedQuantity);
         productOutComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
         productOutComponent.setField("balance", balance);
-        validateEntity(productOutComponent);
         return productOutComponentDD.save(productOutComponent);
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
+        return addOperationComponent(technology, parent, operation, null);
+    }
+
+    private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation,
+            final BigDecimal productionInOneCycle) {
         Entity component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").create();
 
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
         component.setField("parent", parent);
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
         component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
-        if (isEnabled("timeNormsForOperations")) {
+        if (isEnabledOrEnabling("timeNormsForOperations")) {
             component.setField(L_TPZ, operation.getField(L_TPZ));
             component.setField("tj", operation.getField("tj"));
             component.setField("machineUtilization", operation.getField("machineUtilization"));
             component.setField("laborUtilization", operation.getField("laborUtilization"));
-            component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
+            BigDecimal prodInOneCycleForComp = null;
+            if (productionInOneCycle == null) {
+                prodInOneCycleForComp = operation.getDecimalField("productionInOneCycle");
+            } else {
+                prodInOneCycleForComp = productionInOneCycle;
+            }
+            component.setField("productionInOneCycle", prodInOneCycleForComp);
             component.setField("countRealized", operation.getField("countRealized"));
             component.setField("countMachine", operation.getField("countMachine"));
             component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
@@ -962,14 +958,13 @@ public class TestSamplesLoader extends SamplesLoader {
             component.setField("timeNextOperation", operation.getField("timeNextOperation"));
         }
 
-        if (isEnabled("costNormsForOperation")) {
+        if (isEnabledOrEnabling("costNormsForOperation")) {
             component.setField("pieceworkCost", operation.getField("pieceworkCost"));
             component.setField("machineHourlyCost", operation.getField("machineHourlyCost"));
             component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
         component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").save(component);
-        validateEntity(component);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField(TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER) + ", parent="
@@ -990,7 +985,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent").save(
                 productComponent);
-        validateEntity(productComponent);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product component {product="
@@ -1011,7 +1005,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductOutComponent").save(
                 productComponent);
-        validateEntity(productComponent);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product component {product="
                     + ((Entity) productComponent.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER)
@@ -1042,7 +1036,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         requirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
                 SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).save(requirement);
-        validateEntity(requirement);
     }
 
     private void addWorkPlan(final Map<String, String> values) {
@@ -1064,7 +1057,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         workPlan = dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER,
                 SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN).save(workPlan);
-        validateEntity(workPlan);
     }
 
     void addProductionRecord(final Map<String, String> values) {
@@ -1115,7 +1107,14 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
 
         productionRecord = productionRecord.getDataDefinition().save(productionRecord);
-        validateEntity(productionRecord);
+    }
+
+    private void prepareProductionRecords(final Map<String, String> values) {
+        Entity order = getOrderByNumber(values.get(L_ORDER));
+        for (Entity productionRecord : order.getHasManyField("productionRecords")) {
+            productionRecord.setField(L_STATE, STATE_ACCEPTED);
+            productionRecord.getDataDefinition().save(productionRecord);
+        }
     }
 
     void addProductionCounting(final Map<String, String> values) {
@@ -1132,7 +1131,6 @@ public class TestSamplesLoader extends SamplesLoader {
 
         productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).save(productionCounting);
-        validateEntity(productionCounting);
     }
 
     void addProductionBalance(final Map<String, String> values) {
@@ -1149,7 +1147,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productionbalance.setField(L_FILE_NAME, values.get("filename"));
         productionbalance.setField("calculateOperationCostsMode", values.get("calculateoperationcostsmode"));
 
-        if (isEnabled("productionCountingWithCosts")) {
+        if (isEnabledOrEnabling("productionCountingWithCosts")) {
             productionbalance.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
             productionbalance.setField("calculateMaterialCostsMode", values.get("calculatematerialcostsmode"));
 
@@ -1158,8 +1156,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         productionbalance = productionbalance.getDataDefinition().save(productionbalance);
-        validateEntity(productionbalance);
-
     }
 
     void addQualityControl(final Map<String, String> values) {
@@ -1209,7 +1205,6 @@ public class TestSamplesLoader extends SamplesLoader {
         }
 
         qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
-        validateEntity(qualitycontrol);
     }
 
     private Entity getRandomStaff() {
@@ -1345,7 +1340,6 @@ public class TestSamplesLoader extends SamplesLoader {
         genealogyProductInBatch.setField("genealogyProductInComponent", genealogyProductInComponent);
 
         genealogyProductInBatch = genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
-        validateEntity(genealogyProductInBatch);
     }
 
     private Entity addGenealogyProductInComponent(final Entity trackingRecord, final String productNumber,

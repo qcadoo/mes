@@ -32,7 +32,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -118,8 +117,6 @@ public class WorkPlanPdfServiceTest {
     private WorkPlanPdfService workPlanPdfService;
 
     private Locale locale;
-
-    private DecimalFormat df;
 
     private final Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
@@ -242,8 +239,6 @@ public class WorkPlanPdfServiceTest {
         when(translationService.translate("workPlans.workPlan.report.title.byEndProduct", locale)).thenReturn(BY_END_PRODUCT);
         when(translationService.translate("workPlans.workPlan.report.title.byDivision", locale)).thenReturn(BY_DIVISION);
         when(translationService.translate("workPlans.workPlan.report.title.noDivision", locale)).thenReturn(NO_DIVISION);
-
-        df = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
     }
 
     @Test
@@ -571,7 +566,7 @@ public class WorkPlanPdfServiceTest {
 
         // when
         try {
-            workPlanPdfService.addProductsSeries(components, document, columnValues, operationComponent, df, direction, locale);
+            workPlanPdfService.addProductsSeries(components, document, columnValues, operationComponent, direction, locale);
         } catch (DocumentException e) {
         }
 

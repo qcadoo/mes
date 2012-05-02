@@ -106,11 +106,7 @@ public class GanttOperationService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
         Integer realizationTime = (Integer) order.getField("realizationTime");
-        if (realizationTime == null || realizationTime == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return (realizationTime == null || realizationTime == 0);
     }
 
     public void disableCalendarButtonWhenRealizationTimeNotGenerated(final ViewDefinitionState view) {
@@ -123,12 +119,11 @@ public class GanttOperationService {
         RibbonActionItem showOnCalendarButton = window.getRibbon()
                 .getGroupByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP)
                 .getItemByName(ProductionSchedulingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
-        if (!isRealizationTimeGenerated(view)) {
+        if (isRealizationTimeGenerated(view)) {
+            showOnCalendarButton.setEnabled(true);
+        } else {
             showOnCalendarButton.setEnabled(false);
             showOnCalendarButton.setMessage("message");
-        } else {
-
-            showOnCalendarButton.setEnabled(true);
         }
         showOnCalendarButton.requestUpdate(true);
     }

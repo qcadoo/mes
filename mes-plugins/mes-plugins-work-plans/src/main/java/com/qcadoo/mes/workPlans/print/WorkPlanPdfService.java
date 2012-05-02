@@ -24,7 +24,6 @@
 package com.qcadoo.mes.workPlans.print;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,19 +97,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Override
     public void buildPdfContent(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
-        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-        decimalFormat.setMaximumFractionDigits(3);
-        decimalFormat.setMinimumFractionDigits(3);
-
         addMainHeader(document, workPlan, locale);
         if (!workPlan.getBooleanField("dontPrintOrdersInWorkPlans")) {
-            addOrdersTable(document, workPlan, locale, decimalFormat);
+            addOrdersTable(document, workPlan, locale);
         }
-        addOperations(document, workPlan, decimalFormat, locale);
+        addOperations(document, workPlan, locale);
     }
 
-    private void addOrdersTable(final Document document, final Entity workPlan, final Locale locale,
-            final DecimalFormat decimalFormat) throws DocumentException {
+    private void addOrdersTable(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
         List<Entity> columns = fetchOrderColumnDefinitions(workPlan);
 
         if (!columns.isEmpty()) {
@@ -138,8 +132,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
     }
 
-    void addOperations(final Document document, final Entity workPlan, final DecimalFormat df, final Locale locale)
-            throws DocumentException {
+    void addOperations(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
         Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
 
         List<Entity> orders = workPlan.getManyToManyField("orders");
@@ -172,11 +165,11 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 }
 
                 if (isOutputProductTableEnabled(operationComponent)) {
-                    addOutProductsSeries(document, columnValues, operationComponent, df, locale);
+                    addOutProductsSeries(document, columnValues, operationComponent, locale);
                 }
 
                 if (isInputProductTableEnabled(operationComponent)) {
-                    addInProductsSeries(document, columnValues, operationComponent, df, locale);
+                    addInProductsSeries(document, columnValues, operationComponent, locale);
                 }
 
                 addAdditionalFields(document, operationComponent, locale);
@@ -387,7 +380,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     void addProductsSeries(final List<Entity> productComponentsArg, final Document document,
-            final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent, final DecimalFormat df,
+            final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent,
             final ProductDirection direction, final Locale locale) throws DocumentException {
         if (productComponentsArg.isEmpty()) {
             return;
@@ -432,19 +425,19 @@ public class WorkPlanPdfService extends PdfDocumentService {
     }
 
     void addInProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
-            final Entity operationComponent, final DecimalFormat df, final Locale locale) throws DocumentException {
+            final Entity operationComponent, final Locale locale) throws DocumentException {
 
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductInComponents");
 
-        addProductsSeries(productComponents, document, columnValues, operationComponent, df, ProductDirection.IN, locale);
+        addProductsSeries(productComponents, document, columnValues, operationComponent, ProductDirection.IN, locale);
     }
 
     void addOutProductsSeries(final Document document, final Map<Entity, Map<String, String>> columnValues,
-            final Entity operationComponent, final DecimalFormat df, final Locale locale) throws DocumentException {
+            final Entity operationComponent, final Locale locale) throws DocumentException {
 
         List<Entity> productComponents = operationComponent.getHasManyField("operationProductOutComponents");
 
-        addProductsSeries(productComponents, document, columnValues, operationComponent, df, ProductDirection.OUT, locale);
+        addProductsSeries(productComponents, document, columnValues, operationComponent, ProductDirection.OUT, locale);
     }
 
     void addAdditionalFields(final Document document, final Entity operationComponent, final Locale locale)

@@ -68,7 +68,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        getAllQuantitiesForOrders(orders, false, productComponentQuantities, operationRuns, nonComponents);
+        getAllQuantitiesForOrders(orders, productComponentQuantities, operationRuns, nonComponents);
         return productComponentQuantities;
     }
 
@@ -99,7 +99,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationMultipliers, nonComponents);
+        getAllQuantitiesForOrders(orders, productComponentQuantities, operationMultipliers, nonComponents);
 
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
@@ -109,7 +109,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        getAllQuantitiesForOrders(orders, false, productComponentQuantities, operationMultipliers, nonComponents);
+        getAllQuantitiesForOrders(orders, productComponentQuantities, operationMultipliers, nonComponents);
 
         return getProducts(productComponentQuantities, nonComponents, false, OUT_PRODUCT);
     }
@@ -119,7 +119,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
-        getAllQuantitiesForOrders(orders, onlyComponents, productComponentQuantities, operationRuns, nonComponents);
+        getAllQuantitiesForOrders(orders, productComponentQuantities, operationRuns, nonComponents);
 
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
@@ -154,9 +154,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
-    private void getAllQuantitiesForOrders(final List<Entity> orders, final boolean onlyComponents,
-            final Map<Entity, BigDecimal> productComponentQuantities, final Map<Entity, BigDecimal> operationRuns,
-            final Set<Entity> nonComponents) {
+    private void getAllQuantitiesForOrders(final List<Entity> orders, final Map<Entity, BigDecimal> productComponentQuantities,
+            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
         for (Entity order : orders) {
             BigDecimal plannedQty = (BigDecimal) order.getField("plannedQuantity");
 

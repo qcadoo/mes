@@ -254,9 +254,9 @@
 				<option type="order" column="outputProductNumber" direction="asc" />
 			</component>
 		</windowTab>
-		<windowTab name="timeTab">
-			<component type="gridLayout" name="timeGridLayout"
-				reference="timeGridLayout" columns="1" rows="2">
+		<windowTab name="workTab">
+			<component type="gridLayout" name="workGridLayout"
+				reference="workGridLayout" columns="1" rows="2">
 				<layoutElement column="1" row="1">
 					<component type="borderLayout" name="machineTimeBorderLayout"
 						reference="machineTimeBorderLayout">
@@ -266,21 +266,21 @@
 								<component type="time" name="plannedMachineTime"
 									field="#{form}.plannedMachineTime" reference="plannedMachineTime"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="2" row="1">
 								<component type="time" name="machineTime"
 									field="#{form}.machineTime" reference="machineTime"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="3" row="1">
 								<component type="time" name="machineTimeBalance"
 									field="#{form}.machineTimeBalance" reference="machineTimeBalance"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 						</component>
@@ -297,21 +297,21 @@
 								<component type="time" name="plannedLaborTime"
 									field="#{form}.plannedLaborTime" reference="plannedLaborTime"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="2" row="1">
 								<component type="time" name="laborTime"
 									field="#{form}.laborTime" reference="laborTime"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="3" row="1">
 								<component type="time" name="laborTimeBalance"
 									field="#{form}.laborTimeBalance" reference="laborTimeBalance"
 									defaultEnabled="false">
-									<option type="noHours" value="5"/>
+									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 						</component>
