@@ -108,8 +108,9 @@ public class GanttOperationService {
         Integer realizationTime = (Integer) order.getField("realizationTime");
         if (realizationTime == null || realizationTime == 0) {
             return false;
-        } else
+        } else {
             return true;
+        }
     }
 
     public void disableCalendarButtonWhenRealizationTimeNotGenerated(final ViewDefinitionState view) {
