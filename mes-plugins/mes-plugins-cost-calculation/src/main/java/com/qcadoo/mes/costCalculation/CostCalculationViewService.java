@@ -33,7 +33,6 @@ import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationConstants.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY;
-import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
 import static com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
 
 import java.math.BigDecimal;
@@ -314,12 +313,11 @@ public class CostCalculationViewService {
 
     /* Event handler, fire total calculation */
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity costCalculation = getEntityFromForm(view);
-
-        if (costCalculation.getId() == null) {
-            view.getComponentByReference(FORM).addMessage("costCalculation.messages.failure.calculationOnUnsavedEntity", FAILURE);
+        componentState.performEvent(view, "save", new String[0]);
+        if (componentState.isHasError()) {
             return;
         }
+        Entity costCalculation = getEntityFromForm(view);
         attachBelongsToFields(costCalculation);
         // Fire cost calculation algorithm
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
