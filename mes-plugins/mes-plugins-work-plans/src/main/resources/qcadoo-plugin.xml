@@ -295,6 +295,7 @@
 			view="workPlansList" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
 
 		<view:view resource="view/workPlansList.xml" />
 		<view:view resource="view/workPlanDetails.xml" />
@@ -310,8 +311,7 @@
 		<view:view resource="view/technologyOperationOutputColumnDetails.xml" />
 		<view:view resource="view/orderOperationInputColumnDetails.xml" />
 		<view:view resource="view/orderOperationOutputColumnDetails.xml" />
-
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view resource="view/workPlanParameters.xml" />
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
@@ -338,6 +338,11 @@
 			event="onSelectedEntityChange"
 			class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentViewHooks"
 			method="setTechnologyOperationComponentDefaultValues" />
+			
+		<view:view-listener plugin="basic" view="parameters"
+			component="form" event="redirectToWorkPlanParameters"
+			class="com.qcadoo.mes.workPlans.listeners.WorkPlanListeners"
+			method="redirectToWorkPlanParameters" />
 
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlansOnStartupService" />
 	</modules>

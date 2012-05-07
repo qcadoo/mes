@@ -32,7 +32,7 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			<group name="actions">
+			<group name="actions" hasLabel="false">
 				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
 			</group>
 		</ribbon>

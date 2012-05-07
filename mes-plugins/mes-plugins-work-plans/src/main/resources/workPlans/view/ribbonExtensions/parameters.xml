@@ -24,20 +24,36 @@
     ***************************************************************************
 
 -->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="basic" view="parameters">
-
-	<windowTab name="genealogyTab" reference="genealogyTab">
-		<component type="gridLayout" name="genealogyLayout" columns="3"
-			rows="1">
-			<layoutElement column="1" row="1">
-				<component type="select" name="batchForDoneOrder" field="#{form}.batchForDoneOrder"
-					reference="batchForDoneOrder">
-					<option type="labelWidth" value="50" />
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
-</windowTabExtension>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="basic"
+	view="parameters">
+	<group name="parameters">
+		<bigButton name="workPlansParameters" icon="calendarIcon24.png" state="disabled">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('redirectToWorkPlanParameters', []);
+							}
+						}
+					});	
+						
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});					
+				]]>
+			</script>	
+		</bigButton>
+	</group>
+</ribbonExtension>
