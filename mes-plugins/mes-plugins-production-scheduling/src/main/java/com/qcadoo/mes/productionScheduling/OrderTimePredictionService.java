@@ -387,10 +387,6 @@ public class OrderTimePredictionService {
         unitField.setFieldValue(product.getField("unit"));
     }
 
-    public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT).setEnabled(false);
-    }
-
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         state.setFieldValue(null);
     }
