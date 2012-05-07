@@ -68,18 +68,6 @@ public class TimeTechnologyInOrderService {
     @Autowired
     private TimeConverterService timeConverterService;
 
-    public void setVisibleAlert(final ViewDefinitionState viewDefinitionState) {
-        ComponentState alert = viewDefinitionState.getComponentByReference("alert");
-
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FORM_COMPONENT);
-
-        if (form.getEntityId() == null) {
-            alert.setVisible(true);
-        } else {
-            alert.setVisible(false);
-        }
-    }
-
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -160,10 +148,6 @@ public class TimeTechnologyInOrderService {
 
             }
         }
-    }
-
-    public void disableRealizationTime(final ViewDefinitionState viewDefinitionState) {
-        viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT).setEnabled(false);
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

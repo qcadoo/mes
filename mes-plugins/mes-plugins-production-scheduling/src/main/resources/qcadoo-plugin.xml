@@ -68,9 +68,6 @@
 			<model:integer name="realizationTime" copyable="false" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:string name="alert" />
-		</model:model-field>
-		<model:model-field plugin="orders" model="order">
 			<model:boolean name="calculate" />
 		</model:model-field>
 		
@@ -81,11 +78,6 @@
 		<model:model-field plugin="orders" model="order">
 			<model:datetime name="generatedEndDate" copyable="false" />
 		</model:model-field>
-
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			method="setVisibleAlert" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
@@ -122,11 +114,6 @@
 			view="orderTimePrediction" component="window" event="clearAllField"
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
 			method="clearAllField" />
-			
-		<view:view-hook view="orderDetails" type="beforeRender"
-			plugin="orders"
-			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
-			method="disableRealizationTime" />
 			
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
