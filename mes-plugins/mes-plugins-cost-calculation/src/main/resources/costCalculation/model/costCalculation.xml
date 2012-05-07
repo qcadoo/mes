@@ -112,13 +112,15 @@
 		<string name="fileName" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="ifSourceOfMaterialIsFromOrderThenOrderIsNeeded" />
-		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
-		<validatesWith class="com.qcadoo.mes.costCalculation.CostCalculationModelValidators" method="checkIfTheTechnologyHasCorrectState" />
+		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="ifSourceOfMaterialIsFromOrderThenOrderIsNeeded" />
+		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="checkIfCurrentGlobalIsSelected"/>
+		<validatesWith class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelValidators" method="checkIfTheTechnologyHasCorrectState" />
 		<onCopy
-			class="com.qcadoo.mes.costCalculation.CostCalculationServiceImpl"
+			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelHooks"
 			method="clearGeneratedOnCopy" />
-			
+		<onCopy
+			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationModelHooks"
+			method="clearGeneratedCosts" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -50,13 +49,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Autowired
     private NumberService numberService;
-
-    public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField("fileName", null);
-        entity.setField("generated", false);
-        entity.setField("date", null);
-        return true;
-    }
 
     @Override
     public Entity calculateTotalCost(final Entity entity) {
