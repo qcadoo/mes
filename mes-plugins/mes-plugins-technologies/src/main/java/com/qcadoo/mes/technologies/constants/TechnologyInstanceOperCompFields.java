@@ -42,4 +42,6 @@ public final class TechnologyInstanceOperCompFields {
     public static final String CHILDREN = "children";
 
     public static final String PRIORITY = "priority";
+
+    public static final String NODE_NUMBER = "nodeNumber";
 }
