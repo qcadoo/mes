@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.samples.SamplesValidationHelper;
+import com.qcadoo.mes.samples.util.SamplesValidationHelper;
 import com.qcadoo.model.api.Entity;
 
 @Aspect

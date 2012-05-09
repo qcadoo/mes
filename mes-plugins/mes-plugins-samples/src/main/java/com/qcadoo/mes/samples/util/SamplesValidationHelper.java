@@ -1,4 +1,4 @@
-package com.qcadoo.mes.samples;
+package com.qcadoo.mes.samples.util;
 
 import java.util.List;
 import java.util.Map;

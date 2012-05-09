@@ -386,13 +386,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void addParameterOrderColumn(final Entity columnForOrders) {
-        Entity parameter = parameterService.getParameter();
         Entity parameterOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_PARAMETER_ORDER_COLUMN).create();
-
-        parameterOrderColumn.setField(BasicConstants.MODEL_PARAMETER, parameter);
         parameterOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
-
+        parameterOrderColumn.setField("parameter", parameterService.getParameter());
         parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
 
         if (parameterOrderColumn.isValid()) {
