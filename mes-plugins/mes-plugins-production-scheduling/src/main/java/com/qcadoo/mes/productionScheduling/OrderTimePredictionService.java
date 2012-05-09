@@ -379,12 +379,14 @@ public class OrderTimePredictionService {
 
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
 
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
+        if (technologyLookup.getFieldValue() != null) {
+            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
 
-        Entity product = technology.getBelongsToField("product");
+            Entity product = technology.getBelongsToField("product");
 
-        unitField.setFieldValue(product.getField("unit"));
+            unitField.setFieldValue(product.getField("unit"));
+        }
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
