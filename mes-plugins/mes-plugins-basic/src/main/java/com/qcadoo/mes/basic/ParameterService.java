@@ -23,24 +23,28 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
+/**
+ * Service for accessing parameters
+ * 
+ * @since 1.1.5
+ */
 @Service
 public class ParameterService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     /**
      * Returns basic parameter entity id for current user
@@ -52,13 +56,14 @@ public class ParameterService {
     }
 
     /**
-     * Returns basic parameter entity for current user
+     * Returns basic parameter entity for current user. If parameter does not exist the new parameter entity will be created,
+     * saved and returned.
      * 
      * @return parameter entity
      */
     @Transactional
     public Entity getParameter() {
-        DataDefinition dataDefinition = getParameterDataDef();
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER);
         Entity parameter = dataDefinition.find().setMaxResults(1).uniqueResult();
         if (parameter == null) {
             parameter = createParameter(dataDefinition);
@@ -67,14 +72,10 @@ public class ParameterService {
     }
 
     private Entity createParameter(final DataDefinition dataDefinition) {
-        Entity newParameter = dataDefinition.create();
-        newParameter.setField("currency", currencyService.getCurrentCurrency());
-        newParameter = dataDefinition.save(newParameter);
-        return newParameter;
-    }
-
-    private DataDefinition getParameterDataDef() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
+        Entity parameter = dataDefinition.create();
+        parameter = dataDefinition.save(parameter);
+        checkState(parameter.isValid(), "Parameter entity has validation errors! " + parameter);
+        return parameter;
     }
 
 }

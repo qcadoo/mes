@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_CURRENCY;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.Module;
@@ -64,38 +67,28 @@ public class CurrencyLoaderModule extends Module {
 
     @Override
     @Transactional
-    public void multiTenantEnable() {
-        if (!databaseHasToBePrepared()) {
-            return;
+    public final void multiTenantEnable() {
+        if (databaseHasToBePrepared()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Currency table will be populated...");
+            }
+            readDataFromXML();
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Currency table will be populated...");
-        }
-        readDataFromXML(L_CURRENCY);
 
     }
 
-    private void readDataFromXML(final String type) {
-        LOG.info("Loading test data from " + type + ".xml ...");
+    private void readDataFromXML() {
+        LOG.info("Loading test data from currency.xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
-            Document document = builder.build(getXmlFile(type));
+            Document document = builder.build(getCurrencyXmlFile());
             Element rootNode = document.getRootElement();
+
             @SuppressWarnings("unchecked")
-            List<Element> list = rootNode.getChildren("row");
-
-            for (int i = 0; i < list.size(); i++) {
-                Element node = list.get(i);
-                @SuppressWarnings("unchecked")
-                List<Attribute> listOfAtribute = node.getAttributes();
-                Map<String, String> values = new HashMap<String, String>();
-
-                for (int j = 0; j < listOfAtribute.size(); j++) {
-                    values.put(listOfAtribute.get(j).getName().toLowerCase(Locale.ENGLISH), listOfAtribute.get(j).getValue());
-                }
-                readData(type, values);
+            List<Element> nodes = rootNode.getChildren("row");
+            for (Element node : nodes) {
+                parseAndAddCurrency(node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -104,39 +97,42 @@ public class CurrencyLoaderModule extends Module {
         }
     }
 
-    private void readData(final String type, final Map<String, String> values) {
-        if (L_CURRENCY.equals(type)) {
-            addCurrency(values);
+    private void parseAndAddCurrency(final Element node) {
+        @SuppressWarnings("unchecked")
+        List<Attribute> attributes = node.getAttributes();
+        Map<String, String> values = new HashMap<String, String>();
+        for (Attribute attribute : attributes) {
+            values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
         }
+        addCurrency(values);
     }
 
     private void addCurrency(final Map<String, String> values) {
-        Entity currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).create();
+        DataDefinition currencyDataDefinition = getCurrencyDataDefinition();
+        Entity currency = currencyDataDefinition.create();
 
         currency.setField(L_CURRENCY, values.get(L_CURRENCY.toLowerCase(Locale.ENGLISH)));
         currency.setField(L_ALPHABETIC_CODE, values.get(L_ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
         currency.setField(L_ISO_CODE, Integer.valueOf(values.get(L_ISO_CODE.toLowerCase(Locale.ENGLISH))));
         currency.setField(L_MINOR_UNIT, Integer.valueOf(values.get(L_MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add test currency item {currency=" + currency.getStringField(L_CURRENCY) + "}");
-        }
-
-        currency = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).save(currency);
-
+        currency = currencyDataDefinition.save(currency);
         if (currency.isValid() && LOG.isDebugEnabled()) {
             LOG.debug("Currency saved {currency=" + currency.toString() + "}");
         } else {
-            throw new IllegalStateException("Saved entity have validation errors - " + values.get("CURRENCY"));
+            throw new IllegalStateException("Saved currency entity have validation errors - " + values.get("CURRENCY"));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY).find().list()
-                .getTotalNumberOfEntities() == 0;
+        return getCurrencyDataDefinition().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private InputStream getXmlFile(final String type) throws IOException {
-        return CurrencyLoaderModule.class.getResourceAsStream("/basic/model/data/" + type + ".xml");
+    private DataDefinition getCurrencyDataDefinition() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_CURRENCY);
+    }
+
+    private InputStream getCurrencyXmlFile() throws IOException {
+        return CurrencyLoaderModule.class.getResourceAsStream("/basic/model/data/currency.xml");
     }
 }
