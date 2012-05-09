@@ -64,9 +64,7 @@
 
 		<model:model model="costCalculation" resource="model/costCalculation.xml" />
 
-		<menu:menu-category name="costCalculation" />
-
-		<menu:menu-item name="costCalculation" category="costCalculation"
+		<menu:menu-item name="costCalculation" category="orders"
 			view="costCalculationList" />
 
 		<model:model-field model="calculationOperationComponent"
