@@ -23,167 +23,164 @@
  */
 package com.qcadoo.mes.productionCounting.internal;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.EXECUTED_OPERATION_CYCLES;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LABOR_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.MACHINE_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.NODE_NUMBER;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
+import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordOperationComparator;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
 @Service
 public class ProductionBalanceReportDataService {
 
-    private static final String LABOR_TIME_BALANCE_FIELD = "laborTimeBalance";
+    private static final String L_USED_QUANTITY = "usedQuantity";
 
-    private static final String MACHINE_TIME_BALANCE_FIELD = "machineTimeBalance";
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
-    private static final String OPERATION_FIELD = "operation";
+    private static final String L_BALANCE = "balance";
 
-    private static final String LABOR_TIME_FIELD = "laborTime";
+    private static final String L_PRODUCTION_RECORD = "productionRecord";
 
-    private static final String MACHINE_TIME_FIELD = "machineTime";
-
-    private static final String NODE_NUMBER_FIELD = "nodeNumber";
-
-    private static final String PLANNED_LABOR_TIME_FIELD = "plannedLaborTime";
-
-    private static final String PLANNED_MACHINE_TIME_FIELD = "plannedMachineTime";
-
-    private static final String BALANCE_FIELD = "balance";
-
-    private static final String USED_QUANTITY_FIELD = "usedQuantity";
-
-    private static final String PRODUCTION_RECORD_FIELD = "productionRecord";
-
-    private static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD = "technologyInstanceOperationComponent";
-
-    private static final String PRODUCT_FIELD = "product";
-
-    private static final String NUMBER_FIELD = "number";
-
-    private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
+    private static final String L_PRODUCT = "product";
 
     @Autowired
     private NumberService numberService;
 
-    public List<Entity> groupProductInOutComponentsByProduct(final List<Entity> productsList) {
+    public List<Entity> groupProductInOutComponentsByProduct(final List<Entity> products) {
+        Collections.sort(products, new EntityProductInOutComparator());
+
         List<Entity> groupedProducts = new ArrayList<Entity>();
 
-        Entity prevProduct = productsList.get(0);
-        BigDecimal plannedQuantity = (BigDecimal) productsList.get(0).getField(PLANNED_QUANTITY_FIELD);
-        BigDecimal usedQuantity = null;
+        Entity prevProduct = products.get(0);
 
-        for (Entity product : productsList) {
-            if (product.getBelongsToField(PRODUCT_FIELD).getStringField(NUMBER_FIELD)
-                    .equals(prevProduct.getBelongsToField(PRODUCT_FIELD).getStringField(NUMBER_FIELD))) {
-                if (product.getBelongsToField(PRODUCTION_RECORD_FIELD).getBelongsToField(
-                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD) != null
-                        && !product
-                                .getBelongsToField(PRODUCTION_RECORD_FIELD)
-                                .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
-                                .getId()
-                                .toString()
-                                .equals(prevProduct.getBelongsToField(PRODUCTION_RECORD_FIELD)
-                                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD).getId().toString())) {
-                    plannedQuantity = plannedQuantity.add((BigDecimal) product.getField(PLANNED_QUANTITY_FIELD),
-                            numberService.getMathContext());
-                }
-                if (product.getField(USED_QUANTITY_FIELD) != null) {
-                    if (usedQuantity == null) {
-                        usedQuantity = (BigDecimal) product.getField(USED_QUANTITY_FIELD);
-                    } else {
-                        usedQuantity = usedQuantity.add((BigDecimal) product.getField(USED_QUANTITY_FIELD),
+        BigDecimal plannedQuantity = products.get(0).getDecimalField(L_PLANNED_QUANTITY);
+        BigDecimal usedQuantity = (products.get(0).getField(L_USED_QUANTITY) == null) ? null : products.get(0).getDecimalField(
+                L_USED_QUANTITY);
+
+        if (!products.isEmpty()) {
+            for (Entity product : products) {
+                if (checkIfProductHasChanged(prevProduct, product) || (products.indexOf(product) == (products.size() - 1))) {
+                    prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
+                    prevProduct.setField(L_USED_QUANTITY, usedQuantity);
+                    prevProduct.setField(
+                            L_BALANCE,
+                            (usedQuantity == null) ? null
+                                    : usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
+
+                    groupedProducts.add(prevProduct);
+
+                    prevProduct = product;
+
+                    plannedQuantity = product.getDecimalField(L_PLANNED_QUANTITY);
+                    usedQuantity = (product.getField(L_USED_QUANTITY) == null) ? null : product.getDecimalField(L_USED_QUANTITY);
+                } else {
+                    if (checkIfTechnologyInstanceOperationComponentHasChanged(prevProduct, product)) {
+                        plannedQuantity = plannedQuantity.add(product.getDecimalField(L_PLANNED_QUANTITY),
                                 numberService.getMathContext());
                     }
+                    if (product.getField(L_USED_QUANTITY) != null) {
+                        usedQuantity = (usedQuantity == null) ? product.getDecimalField(L_USED_QUANTITY) : usedQuantity.add(
+                                product.getDecimalField(L_USED_QUANTITY), numberService.getMathContext());
+                    }
                 }
-            } else {
-                prevProduct.setField(PLANNED_QUANTITY_FIELD, plannedQuantity);
-                prevProduct.setField(USED_QUANTITY_FIELD, usedQuantity);
-                if (usedQuantity == null) {
-                    prevProduct.setField(BALANCE_FIELD, null);
-                } else {
-                    prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
-                }
-                groupedProducts.add(prevProduct);
-                prevProduct = product;
-                plannedQuantity = (BigDecimal) product.getField(PLANNED_QUANTITY_FIELD);
-                usedQuantity = (BigDecimal) product.getField(USED_QUANTITY_FIELD);
             }
         }
-        prevProduct.setField(PLANNED_QUANTITY_FIELD, plannedQuantity);
-        prevProduct.setField(USED_QUANTITY_FIELD, usedQuantity);
-        if (usedQuantity == null) {
-            prevProduct.setField(BALANCE_FIELD, null);
-        } else {
-            prevProduct.setField(BALANCE_FIELD, usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
-        }
-        groupedProducts.add(prevProduct);
 
         return groupedProducts;
     }
 
     public List<Entity> groupProductionRecordsByOperation(final List<Entity> productionRecords) {
-        List<Entity> groupedProducts = new ArrayList<Entity>();
+        Collections.sort(productionRecords, new EntityProductionRecordOperationComparator());
 
-        Entity prevRecord = productionRecords.get(0);
-        Integer plannedMachineTime = (Integer) productionRecords.get(0).getField(PLANNED_MACHINE_TIME_FIELD);
-        Integer registeredMachineTime = 0;
-        Integer plannedLaborTime = (Integer) productionRecords.get(0).getField(PLANNED_LABOR_TIME_FIELD);
-        Integer registeredLaborTime = 0;
-        BigDecimal executedOperationCycles = BigDecimal.ZERO;
+        List<Entity> groupedProductionRecords = new ArrayList<Entity>();
 
-        for (Entity record : productionRecords) {
-            if (record
-                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
-                    .getBelongsToField(OPERATION_FIELD)
-                    .getStringField(NUMBER_FIELD)
-                    .equals(prevRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
-                            .getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD))
-                    && record
-                            .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD)
-                            .getStringField(NODE_NUMBER_FIELD)
-                            .equals(prevRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT_FIELD).getStringField(
-                                    NODE_NUMBER_FIELD))) {
-                registeredMachineTime += (Integer) record.getField(MACHINE_TIME_FIELD);
-                registeredLaborTime += (Integer) record.getField(LABOR_TIME_FIELD);
-                if (record.getField(EXECUTED_OPERATION_CYCLES) != null) {
-                    executedOperationCycles = executedOperationCycles.add(
-                            (BigDecimal) record.getField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
-                }
-            } else {
-                prevRecord.setField(PLANNED_MACHINE_TIME_FIELD, plannedMachineTime);
-                prevRecord.setField(MACHINE_TIME_FIELD, registeredMachineTime);
-                prevRecord.setField(MACHINE_TIME_BALANCE_FIELD, registeredMachineTime - plannedMachineTime);
-                prevRecord.setField(PLANNED_LABOR_TIME_FIELD, plannedLaborTime);
-                prevRecord.setField(LABOR_TIME_FIELD, registeredLaborTime);
-                prevRecord.setField(LABOR_TIME_BALANCE_FIELD, registeredLaborTime - plannedLaborTime);
-                groupedProducts.add(prevRecord);
-                prevRecord = record;
-                plannedMachineTime = (Integer) record.getField(PLANNED_MACHINE_TIME_FIELD);
-                registeredMachineTime = (Integer) record.getField(MACHINE_TIME_FIELD);
-                plannedLaborTime = (Integer) record.getField(PLANNED_LABOR_TIME_FIELD);
-                registeredLaborTime = (Integer) record.getField(LABOR_TIME_FIELD);
-                if (record.getField(EXECUTED_OPERATION_CYCLES) == null) {
-                    executedOperationCycles = BigDecimal.ZERO;
+        Entity prevProductionRecord = productionRecords.get(0);
+
+        Integer machineTime = (Integer) productionRecords.get(0).getField(MACHINE_TIME);
+        Integer laborTime = (Integer) productionRecords.get(0).getField(LABOR_TIME);
+
+        BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+                : productionRecords.get(0).getDecimalField(EXECUTED_OPERATION_CYCLES);
+
+        if (!productionRecords.isEmpty()) {
+            for (Entity productionRecord : productionRecords) {
+                if (checkIfOperationHasChanged(prevProductionRecord, productionRecord)
+                        || (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1))) {
+                    prevProductionRecord.setField(MACHINE_TIME, machineTime);
+                    prevProductionRecord.setField(LABOR_TIME, laborTime);
+                    prevProductionRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
+
+                    groupedProductionRecords.add(prevProductionRecord);
+
+                    prevProductionRecord = productionRecord;
+
+                    machineTime = (Integer) productionRecord.getField(MACHINE_TIME);
+                    laborTime = (Integer) productionRecord.getField(LABOR_TIME);
+
+                    executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+                            : productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES);
                 } else {
-                    executedOperationCycles = (BigDecimal) record.getField(EXECUTED_OPERATION_CYCLES);
+                    machineTime += (Integer) productionRecord.getField(MACHINE_TIME);
+                    laborTime += (Integer) productionRecord.getField(LABOR_TIME);
+
+                    if (productionRecord.getField(EXECUTED_OPERATION_CYCLES) != null) {
+                        executedOperationCycles = (executedOperationCycles == null) ? productionRecord
+                                .getDecimalField(EXECUTED_OPERATION_CYCLES) : executedOperationCycles.add(
+                                productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
+                    }
                 }
             }
         }
-        prevRecord.setField(PLANNED_MACHINE_TIME_FIELD, plannedMachineTime);
-        prevRecord.setField(MACHINE_TIME_FIELD, registeredMachineTime);
-        prevRecord.setField(MACHINE_TIME_BALANCE_FIELD, registeredMachineTime - plannedMachineTime);
-        prevRecord.setField(PLANNED_LABOR_TIME_FIELD, plannedLaborTime);
-        prevRecord.setField(LABOR_TIME_FIELD, registeredLaborTime);
-        prevRecord.setField(LABOR_TIME_BALANCE_FIELD, registeredLaborTime - plannedLaborTime);
-        prevRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
-        groupedProducts.add(prevRecord);
 
-        return groupedProducts;
+        return groupedProductionRecords;
+    }
+
+    private boolean checkIfProductHasChanged(final Entity prevProduct, final Entity product) {
+        return (!product.getBelongsToField(L_PRODUCT).getStringField(NUMBER)
+                .equals(prevProduct.getBelongsToField(L_PRODUCT).getStringField(NUMBER)));
+    }
+
+    private boolean checkIfTechnologyInstanceOperationComponentHasChanged(final Entity prevProduct, final Entity product) {
+        return (product.getBelongsToField(L_PRODUCTION_RECORD).getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) != null && !product
+                .getBelongsToField(L_PRODUCTION_RECORD)
+                .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                .getId()
+                .equals(prevProduct.getBelongsToField(L_PRODUCTION_RECORD)
+                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getId()));
+    }
+
+    private boolean checkIfOperationHasChanged(final Entity prevProductionRecord, final Entity productionRecord) {
+        if ((productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null)
+                && (prevProductionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null)) {
+            return false;
+        } else if ((productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null)
+                || (prevProductionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) == null)) {
+            return true;
+        } else {
+            return (!productionRecord
+                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                    .getBelongsToField(OPERATION)
+                    .getStringField(NUMBER)
+                    .equals(prevProductionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                            .getBelongsToField(OPERATION).getStringField(NUMBER)) || !productionRecord
+                    .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                    .getStringField(NODE_NUMBER)
+                    .equals(prevProductionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).getStringField(
+                            NODE_NUMBER)));
+        }
     }
 }

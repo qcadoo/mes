@@ -47,15 +47,9 @@
 
 		<boolean name="lastRecord" />
 
-		<integer name="plannedMachineTime" />
 		<integer name="machineTime" />
-		<integer name="machineTimeBalance" />
 		
-		<integer name="plannedLaborTime" />
 		<integer name="laborTime" />
-		<integer name="laborTimeBalance" />
-		
-		<integer name="plannedTime" />
 		
 		<decimal name="executedOperationCycles">
 			<validatesUnscaledValue max="7" />
@@ -80,9 +74,6 @@
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductsFromOrderOperation" />
-		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
-			method="countPlannedTimeAndBalance" />
 		<onCreate
 			class="com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService"
 			method="logCreateEvent" />
