@@ -619,7 +619,11 @@ public class TechnologyService {
 
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField(L_TECHNOLOGY);
-        EntityTreeNode rootNode = technology.getTreeField(L_OPERATION_COMPONENTS).getRoot();
+        EntityTree technologyOperationsTree = technology.getTreeField(L_OPERATION_COMPONENTS);
+        if (technologyOperationsTree == null) {
+            return;
+        }
+        EntityTreeNode rootNode = technologyOperationsTree.getRoot();
         if (rootNode == null || technologyOperation.getBelongsToField(L_PARENT) != null) {
             return;
         }

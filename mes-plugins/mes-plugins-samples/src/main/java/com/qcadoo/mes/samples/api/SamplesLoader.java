@@ -21,28 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.samples;
+package com.qcadoo.mes.samples.api;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+/**
+ * Samples data set loader
+ * 
+ * @since 1.1.6
+ */
+public interface SamplesLoader {
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class MinimalSamplesLoader extends SamplesLoader {
-
-    @Override
-    void loadData(final String dataset, final String locale) {
-        readDataFromXML(dataset, "activeCurrency", locale);
-        readDataFromXML(dataset, "dictionaries", locale);
-        readDataFromXML(dataset, "shifts", locale);
-        readDataFromXML(dataset, "company", locale);
-
-        if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
-            readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
-            readDataFromXML(dataset, L_DEFAULT_PRODUCTION_LINE, locale);
-        }
-    }
+    /**
+     * Perform database preparation with sample data set
+     */
+    void load();
 
 }
