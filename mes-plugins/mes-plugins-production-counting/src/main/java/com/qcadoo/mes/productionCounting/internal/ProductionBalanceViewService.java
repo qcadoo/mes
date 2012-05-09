@@ -26,6 +26,10 @@ package com.qcadoo.mes.productionCounting.internal;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.DESCRIPTION;
@@ -37,16 +41,13 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRINT_OPERATION_NORMS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_IN_PRODUCTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_OUT_PRODUCTS;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PIECEWORK;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PARAM_REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,17 @@ public class ProductionBalanceViewService {
 
     private static final String L_OPERATIONS_PIECEWORK_GRID = "operationsPieceworkGrid";
 
+    private static final List<String> FIELDS_AND_CHECKBOXES = Arrays.asList(ORDER, NAME, DESCRIPTION, PRINT_OPERATION_NORMS,
+            CALCULATE_OPERATION_COST_MODE, INCLUDE_TPZ, INCLUDE_ADDITIONAL_TIME);
+
+    private static final List<String> FIELDS = FIELDS_AND_CHECKBOXES.subList(0, FIELDS_AND_CHECKBOXES.size() - 2);
+
+    private static final List<String> GRIDS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID);
+
+    private static final List<String> GRIDS_AND_LAYOUTS = Arrays.asList(L_INPUT_PRODUCTS_GRID, L_OUTPUT_PRODUCTS_GRID,
+            L_TIME_GRID_LAYOUT, L_MACHINE_TIME_BORDER_LAYOUT, L_LABOR_TIME_BORDER_LAYOUT, L_OPERATIONS_TIME_GRID,
+            L_OPERATIONS_PIECEWORK_GRID);
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -89,7 +101,7 @@ public class ProductionBalanceViewService {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((form == null) || (form.getEntityId() == null) || (generated == null) || "0".equals(generated.getFieldValue())) {
-            setComponentsVisibility(viewDefinitionState, false);
+            setComponentsVisibility(viewDefinitionState, GRIDS_AND_LAYOUTS, false, false);
         }
 
         FieldComponent calculateOperationCostMode = (FieldComponent) viewDefinitionState
@@ -100,7 +112,7 @@ public class ProductionBalanceViewService {
         Long orderId = (Long) orderLookup.getFieldValue();
 
         if (orderId == null) {
-            setComponentsVisibility(viewDefinitionState, false);
+            setComponentsVisibility(viewDefinitionState, GRIDS_AND_LAYOUTS, false, false);
 
             return;
         }
@@ -108,16 +120,16 @@ public class ProductionBalanceViewService {
         Entity order = productionBalanceService.getOrderFromDB(orderId);
 
         if ("1".equals(generated.getFieldValue()) && (calculateOperationCostMode != null) && (order != null)) {
-            if (order.getBooleanField(PARAM_REGISTER_IN_PRODUCTS)) {
+            if (order.getBooleanField(REGISTER_QUANTITY_IN_PRODUCT)) {
                 viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(true);
             }
 
-            if (order.getBooleanField(PARAM_REGISTER_OUT_PRODUCTS)) {
+            if (order.getBooleanField(REGISTER_QUANTITY_OUT_PRODUCT)) {
                 viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(true);
             }
 
             if (HOURLY.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(PARAM_REGISTER_PRODUCTION_TIME)) {
+                    && order.getBooleanField(REGISTER_PRODUCTION_TIME)) {
                 viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(true);
 
                 if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
@@ -132,7 +144,7 @@ public class ProductionBalanceViewService {
 
                 viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(false);
             } else if (PIECEWORK.getStringValue().equals(calculateOperationCostMode.getFieldValue())
-                    && order.getBooleanField(PARAM_REGISTER_PIECEWORK)) {
+                    && order.getBooleanField(REGISTER_PIECEWORK)) {
                 viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(false);
 
                 viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(false);
@@ -177,9 +189,11 @@ public class ProductionBalanceViewService {
         FieldComponent generated = (FieldComponent) viewDefinitionState.getComponentByReference(GENERATED);
 
         if ((generated != null) && (generated.getFieldValue() != null) && "1".equals(generated.getFieldValue())) {
-            setComponentsState(viewDefinitionState, false);
+            setComponentsState(viewDefinitionState, FIELDS_AND_CHECKBOXES, false, true);
+            setComponentsState(viewDefinitionState, GRIDS, false, false);
         } else {
-            setComponentsState(viewDefinitionState, true);
+            setComponentsState(viewDefinitionState, FIELDS, true, true);
+            setComponentsState(viewDefinitionState, GRIDS, true, false);
         }
     }
 
@@ -236,29 +250,26 @@ public class ProductionBalanceViewService {
         recordsNumberField.setFieldValue(null);
     }
 
-    private void setComponentsState(final ViewDefinitionState viewDefinitionState, final boolean isEnabled) {
-        for (String fieldName : Arrays.asList(ORDER, NAME, DESCRIPTION, PRINT_OPERATION_NORMS, CALCULATE_OPERATION_COST_MODE,
-                INCLUDE_TPZ, INCLUDE_ADDITIONAL_TIME)) {
-            FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
-            fieldComponent.setEnabled(isEnabled);
-            fieldComponent.requestComponentUpdateState();
+    public void setComponentsState(final ViewDefinitionState viewDefinitionState, final List<String> componentReferences,
+            final boolean isEnabled, final boolean requestComponentUpdateState) {
+        for (String componentReference : componentReferences) {
+            viewDefinitionState.getComponentByReference(componentReference).setEnabled(isEnabled);
+
+            if (requestComponentUpdateState) {
+                ((FieldComponent) viewDefinitionState.getComponentByReference(componentReference)).requestComponentUpdateState();
+            }
         }
 
-        viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setEnabled(isEnabled);
-        viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setEnabled(isEnabled);
     }
 
-    private void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final boolean isVisible) {
-        viewDefinitionState.getComponentByReference(L_INPUT_PRODUCTS_GRID).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(L_OUTPUT_PRODUCTS_GRID).setVisible(isVisible);
+    public void setComponentsVisibility(final ViewDefinitionState viewDefinitionState, final List<String> componentReferences,
+            final boolean isVisible, final boolean requestComponentUpdateState) {
+        for (String componentReference : componentReferences) {
+            viewDefinitionState.getComponentByReference(componentReference).setVisible(isVisible);
 
-        viewDefinitionState.getComponentByReference(L_TIME_GRID_LAYOUT).setVisible(isVisible);
-
-        viewDefinitionState.getComponentByReference(L_MACHINE_TIME_BORDER_LAYOUT).setVisible(isVisible);
-        viewDefinitionState.getComponentByReference(L_LABOR_TIME_BORDER_LAYOUT).setVisible(isVisible);
-
-        viewDefinitionState.getComponentByReference(L_OPERATIONS_TIME_GRID).setVisible(isVisible);
-
-        viewDefinitionState.getComponentByReference(L_OPERATIONS_PIECEWORK_GRID).setVisible(isVisible);
+            if (requestComponentUpdateState) {
+                ((FieldComponent) viewDefinitionState.getComponentByReference(componentReference)).requestComponentUpdateState();
+            }
+        }
     }
 }

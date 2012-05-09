@@ -178,7 +178,7 @@
 					<layoutElement column="2" row="4" height="3">
 						<component type="borderLayout" name="parametersBorderLayout">
 							<component type="gridLayout" name="parametersGidLayout"
-								columns="1" rows="1">
+								columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="select" name="calculateOperationsCostsMode"
 										field="calculateOperationCostsMode" reference="calculateOperationCostsMode" >
@@ -187,15 +187,16 @@
 											method="disableCheckboxes" />
 									</component>
 								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="includeTPZ" field="includeTPZ"
+										reference="includeTPZ" />
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="checkbox" name="includeAdditionalTime" field="includeAdditionalTime"
+										reference="includeAdditionalTime" />
+								</layoutElement>
 							</component>
-							
-							<!--  TODO LUPO change hidden fields to checkboxes during refactor of production balance -->
-							
-							<component type="hidden" name="includeTPZ" field="includeTPZ"
-								reference="includeTPZ" />
-							<component type="hidden" name="includeAdditionalTime" field="includeAdditionalTime"
-								reference="includeAdditionalTime" />
-										
+			
 							<option type="label" value="parameters" />
 						</component>
 					</layoutElement>
@@ -366,6 +367,5 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 			method="disableFieldsAndGridsWhenGenerated" />
-	
 	</hooks>
 </view>

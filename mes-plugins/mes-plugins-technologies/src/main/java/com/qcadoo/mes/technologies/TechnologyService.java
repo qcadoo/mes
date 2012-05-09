@@ -506,11 +506,32 @@ public class TechnologyService {
         }
         final Entity savedTechnology = dataDefinition.get(technology.getId());
         final EntityTree technologyOperations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
-        if (!checkIfConsumesSubOpsProds(technologyOperations)) {
-            technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
-                    "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts");
+        Set<Entity> operations = checkIfConsumesSubOpsProds(technologyOperations);
+
+        if (!operations.isEmpty()) {
+            StringBuilder levels = new StringBuilder();
+
+            for (Entity operation : operations) {
+                if (levels.length() != 0) {
+                    levels.append(", ");
+                }
+
+                levels.append(operation.getStringField("nodeNumber"));
+            }
+
+            if (operations.size() == 1) {
+                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
+                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts",
+                        levels.toString());
+            } else {
+                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
+                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural",
+                        levels.toString());
+            }
+
             return false;
         }
+
         return true;
     }
 
@@ -525,33 +546,46 @@ public class TechnologyService {
         return false;
     }
 
-    private boolean checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
+    private Set<Entity> checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
+        Set<Entity> operations = new HashSet<Entity>();
+
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(L_PARENT);
             if (parent == null || L_REFERENCE_TECHNOLOGY.equals(parent.getStringField(L_ENTITY_TYPE))) {
                 continue;
             }
-            final EntityList prodsOut = parent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
+            final EntityList prodsIn = parent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
             if (L_OPERATION.equals(technologyOperation.getStringField(L_ENTITY_TYPE))) {
-                final EntityList prodsIn = technologyOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
-                if (prodsIn == null || prodsOut == null) {
-                    return false;
+                final EntityList prodsOut = technologyOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
+                if (prodsIn == null || prodsIn.isEmpty()) {
+                    operations.add(parent);
                 }
-                if (!checkIfAtLeastOneCommonElement(prodsIn, prodsOut)) {
-                    return false;
+
+                if (prodsOut == null || prodsOut.isEmpty()) {
+                    operations.add(technologyOperation);
+                }
+
+                if (!checkIfAtLeastOneCommonElement(prodsOut, prodsIn)) {
+                    operations.add(technologyOperation);
                 }
             } else {
-                final Entity prodIn = technologyOperation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
+                final Entity prodOut = technologyOperation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
 
-                if (prodIn == null || prodsOut == null) {
-                    return false;
+                if (prodOut == null) {
+                    operations.add(parent);
                 }
-                if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodIn), prodsOut)) {
-                    return false;
+
+                if (prodsIn == null || prodsIn.isEmpty()) {
+                    operations.add(technologyOperation);
+                }
+
+                if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodOut), prodsIn)) {
+                    operations.add(technologyOperation);
                 }
             }
         }
-        return true;
+
+        return operations;
     }
 
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {

@@ -47,23 +47,13 @@ public final class ProductionRecordFields {
 
     public static final String MACHINE_TIME = "machineTime";
 
-    public static final String MACHINE_TIME_BALANCE = "machineTimeBalance";
-
     public static final String LABOR_TIME = "laborTime";
-
-    public static final String LABOR_TIME_BALANCE = "laborTimeBalance";
-
-    public static final String PLANNED_TIME = "plannedTime";
 
     public static final String USED_QUANTITY = "usedQuantity";
 
     public static final String BALANCE = "balance";
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String PLANNED_MACHINE_TIME = "plannedMachineTime";
-
-    public static final String PLANNED_LABOR_TIME = "plannedLaborTime";
 
     public static final String EXECUTED_OPERATION_CYCLES = "executedOperationCycles";
 
