@@ -23,12 +23,94 @@
  */
 package com.qcadoo.mes.samples;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_1;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_2;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_5;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCH;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCHES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BOM_ID;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_CLOSED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMMENT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COST_CALCULATION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_TO;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEADLINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DIVISION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EAN;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_FILE_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABLES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENERATED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_TIME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LAST_RECORD;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MACHINE_TIME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_REQUIREMENTS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION_COMPONENT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_GROUPS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_NR;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_STATE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PLANNED_QUANTITY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_BALANCE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_COUNTING;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_RECORD;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT_NR;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITYCONTROLTYPE_3;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS_FOR_OPERATION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE2;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFTS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STAFF;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STATE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_AREAS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_CORRECTION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SUPPLIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SURNAME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TIME;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TPZ;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRACKING_RECORDS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFORMATIONS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPES;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORK_PLANS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTS_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,7 +130,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.utils.TreeNumberingService;
 
 @Component
 @Transactional
@@ -64,13 +145,12 @@ public class TestSamplesLoader extends SamplesLoader {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TreeNumberingService treeNumberingService;
-
-    @Autowired
     private NumberService numberService;
 
     @Value("${setAsDemoEnviroment}")
     private boolean setAsDemoEnviroment;
+
+    private HashMap<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
 
     @Override
     void loadData(final String dataset, final String locale) {
@@ -93,6 +173,9 @@ public class TestSamplesLoader extends SamplesLoader {
         if (isEnabledOrEnabling(TECHNOLOGIES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, "operations", locale);
             readDataFromXML(dataset, TECHNOLOGIES_PLUGIN_IDENTIFIER, locale);
+            readDataFromXML(dataset, "technologyOperComp", locale);
+            readDataFromXML(dataset, "operationProductInComp", locale);
+            readDataFromXML(dataset, "operationProductOutComp", locale);
         }
 
         if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
@@ -166,6 +249,12 @@ public class TestSamplesLoader extends SamplesLoader {
             addOrder(values);
         } else if (TECHNOLOGIES_PLUGIN_IDENTIFIER.equals(type)) {
             addTechnology(values);
+        } else if ("technologyOperComp".equals(type)) {
+            addOperationComponent(values);
+        } else if ("operationProductInComp".equals(type)) {
+            addProductInComponent(values);
+        } else if ("operationProductOutComp".equals(type)) {
+            addProductOutComponent(values);
         } else if ("dictionaries".equals(type)) {
             addDictionaryItems(values);
         } else if ("users".equals(type)) {
@@ -233,7 +322,6 @@ public class TestSamplesLoader extends SamplesLoader {
             LOG.debug("Add test machine item {machine=" + machine.getField(L_NAME) + ", " + L_NUMBER + "="
                     + machine.getField(L_NUMBER) + "}");
         }
-
         machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
     }
 
@@ -251,7 +339,6 @@ public class TestSamplesLoader extends SamplesLoader {
             LOG.debug("Add test staff item {staff=" + staff.getField(L_NAME) + ", " + L_SURNAME + "= "
                     + staff.getField(L_SURNAME) + "}");
         }
-
         staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
     }
 
@@ -287,7 +374,6 @@ public class TestSamplesLoader extends SamplesLoader {
             LOG.debug("Add test operation item {name=" + operation.getField(L_NAME) + ", " + L_NUMBER + "="
                     + operation.getField(L_NUMBER) + "}");
         }
-
         operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).save(operation);
     }
 
@@ -374,7 +460,7 @@ public class TestSamplesLoader extends SamplesLoader {
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
-        Entity technology = getTechnologyByNumber(values.get("tech_nr"));
+        Entity technology = getTechnologyByNumber(values.get("tech_nr").toString());
         if (STATE_ACCEPTED.equals(technology.getStringField(L_ORDER_STATE))) {
             return;
         }
@@ -473,134 +559,134 @@ public class TestSamplesLoader extends SamplesLoader {
 
         order.setField(L_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
 
-        if (!"01pending".equals(values.get(L_ORDER_STATE))) {
+        // if (!"01pending".equals(values.get(L_ORDER_STATE))) {
+        //
+        // List<Entity> productionCountings = Lists.newArrayList();
+        // DataDefinition productionCountingDD = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+        // BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING);
+        // Entity productionCounting = productionCountingDD.create();
+        //
+        // if ("000001".equals(values.get(L_ORDER_NR))) {
+        // //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal("55"),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal("55"),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal("55"),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal("55"),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("55"),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12),
+        // new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10),
+        // new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
+        //
+        // } else if ("000002".equals(values.get(L_ORDER_NR))) {
+        //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28),
+        // new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27),
+        // new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26),
+        // new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32),
+        // new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31),
+        // new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30),
+        // new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29),
+        // new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33),
+        // new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+        // new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25),
+        // new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
+        //
+        // } else if ("000003".equals(values.get(L_ORDER_NR))) {
+        //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+        // new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19),
+        // new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18),
+        // new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24),
+        // new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23),
+        // new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22),
+        // new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+        // new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17),
+        // new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
+        //
+        // } else if ("000004".equals(values.get(L_ORDER_NR))) {
+        //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12), new BigDecimal(L_60),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10), new BigDecimal(L_15),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        //
+        // } else if ("000005".equals(values.get(L_ORDER_NR))) {
+        //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
+        // new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19), new BigDecimal(L_40),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18), new BigDecimal(L_10),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24), new BigDecimal(L_10),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23), new BigDecimal(L_40),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22), new BigDecimal(L_40),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
+        // new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17), new BigDecimal(L_10),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        //
+        // } else if ("000006".equals(values.get(L_ORDER_NR))) {
+        //
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28), new BigDecimal(L_20),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27), new BigDecimal(L_5),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26), new BigDecimal(L_20),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32), new BigDecimal(L_5),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31), new BigDecimal(L_20),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30), new BigDecimal(L_20),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29), new BigDecimal(L_80),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33), new BigDecimal(L_80),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21), new BigDecimal(L_80),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25), new BigDecimal(L_5),
+        // BigDecimal.ZERO, BigDecimal.ZERO));
+        // }
 
-            List<Entity> productionCountings = Lists.newArrayList();
-            DataDefinition productionCountingDD = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
-                    BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING);
-            Entity productionCounting = productionCountingDD.create();
-
-            if ("000001".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal("55"),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal("55"),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal("55"),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal("55"),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal("55"),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12),
-                        new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10),
-                        new BigDecimal(L_220), BigDecimal.ZERO, BigDecimal.ZERO));
-
-            } else if ("000002".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28),
-                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27),
-                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26),
-                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32),
-                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31),
-                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30),
-                        new BigDecimal(L_400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29),
-                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33),
-                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal(L_1600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25),
-                        new BigDecimal(L_100), BigDecimal.ZERO, BigDecimal.ZERO));
-
-            } else if ("000003".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
-                        new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19),
-                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18),
-                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24),
-                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23),
-                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22),
-                        new BigDecimal(L_600), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal(L_2400), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17),
-                        new BigDecimal(L_150), BigDecimal.ZERO, BigDecimal.ZERO));
-
-            } else if ("000004".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_13), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_14), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_15), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_16), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_11), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_12), new BigDecimal(L_60),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_10), new BigDecimal(L_15),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-
-            } else if ("000005".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_20),
-                        new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_19), new BigDecimal(L_40),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_18), new BigDecimal(L_10),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_24), new BigDecimal(L_10),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_23), new BigDecimal(L_40),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_22), new BigDecimal(L_40),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21),
-                        new BigDecimal(L_160), BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_17), new BigDecimal(L_10),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-
-            } else if ("000006".equals(values.get(L_ORDER_NR))) {
-
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_28), new BigDecimal(L_20),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_27), new BigDecimal(L_5),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_26), new BigDecimal(L_20),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_32), new BigDecimal(L_5),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_31), new BigDecimal(L_20),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_30), new BigDecimal(L_20),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_29), new BigDecimal(L_80),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_33), new BigDecimal(L_80),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_21), new BigDecimal(L_80),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-                productionCountings.add(addBasicProductionCountingRecords(getProductByNumber(L_PROD_NR_25), new BigDecimal(L_5),
-                        BigDecimal.ZERO, BigDecimal.ZERO));
-            }
-
-            order.setField("basicProductionCountings", productionCountings);
-        }
+        // order.setField("basicProductionCountings", productionCountings);
+        // }
 
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
@@ -798,7 +884,8 @@ public class TestSamplesLoader extends SamplesLoader {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);
             }
 
-            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
+            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values
+                    .get(L_QUALITY_CONTROL_TYPE)))
                     && isEnabledOrEnabling(L_QUALITY_CONTROLS)
                     && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
                             .get(L_QUALITY_CONTROL_TYPE)))) {
@@ -821,136 +908,72 @@ public class TestSamplesLoader extends SamplesLoader {
 
             technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
 
-            if (L_PROD_NR_10.equals(values.get(L_PRODUCT_NR))) {
-                addTechnologyOperationComponentsForTableAdvanced(technology);
-            } else if (L_PROD_NR_17.equals(values.get(L_PRODUCT_NR))) {
-                addTechnologyOperationComponentsForTabouretAdvanced(technology);
-            } else if (L_PROD_NR_25.equals(values.get(L_PRODUCT_NR))) {
-                addTechnologyOperationComponentsForStoolAdvanced(technology);
-            }
-
-            treeNumberingService.generateNumbersAndUpdateTree(
-                    dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent"),
-                    TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
+            // if (L_PROD_NR_10.equals(values.get(L_PRODUCT_NR))) {
+            // addTechnologyOperationComponentsForTableAdvanced(technology);
+            // } else if (L_PROD_NR_17.equals(values.get(L_PRODUCT_NR))) {
+            // addTechnologyOperationComponentsForTabouretAdvanced(technology);
+            // } else if (L_PROD_NR_25.equals(values.get(L_PRODUCT_NR))) {
+            // addTechnologyOperationComponentsForStoolAdvanced(technology);
+            // }
+            // TODO ALBR
+            // treeNumberingService.generateNumbersAndUpdateTree(
+            // dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent"),
+            // TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
         }
     }
 
-    private void addTechnologyOperationComponentsForTableAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_14));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_13));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_12));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_11));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_10));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_15));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_11));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_16));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_15));
-    }
-
-    private void addTechnologyOperationComponentsForStoolAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_27));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_26));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_25));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"), new BigDecimal(4));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_21));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_30));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_29));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_28));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_26));
-        Entity parent1 = addOperationComponent(technology, parent, getOperationByNumber("4"));
-        addProductInComponent(parent1, BigDecimal.ONE, getProductByNumber(L_PROD_NR_33));
-        addProductOutComponent(parent1, BigDecimal.ONE, getProductByNumber(L_PROD_NR_29));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"), new BigDecimal(4));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_31));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_28));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"), new BigDecimal(4));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_32));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_31));
-    }
-
-    private void addTechnologyOperationComponentsForTabouretAdvanced(final Entity technology) {
-        Entity parent = addOperationComponent(technology, null, getOperationByNumber(L_5));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_18));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_19));
-        addProductOutComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_17));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("6"), new BigDecimal(4));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_21));
-        addProductInComponent(parent, new BigDecimal("16"), getProductByNumber(L_PROD_NR_20));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_22));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_19));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("1"), new BigDecimal(4));
-        addProductInComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_23));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_22));
-        parent = addOperationComponent(technology, parent, getOperationByNumber("2"), new BigDecimal(4));
-        addProductInComponent(parent, BigDecimal.ONE, getProductByNumber(L_PROD_NR_24));
-        addProductOutComponent(parent, new BigDecimal("4"), getProductByNumber(L_PROD_NR_23));
-    }
-
-    private Entity addRecordOperationProductInComponent(final Entity product, final BigDecimal usedQuantity,
-            final BigDecimal plannedQuantity, final BigDecimal balance) {
+    private void addRecordOperationProductInComponent(final Map<String, String> values) {
         DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
         Entity productInComponent = productInComponentDD.create();
-        productInComponent.setField(L_PRODUCT, product);
-        productInComponent.setField("usedQuantity", usedQuantity);
-        productInComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
-        productInComponent.setField("balance", balance);
-        return productInComponentDD.save(productInComponent);
+        productInComponent.setField("productiioRecord", getProductionRecordByNumber(values.get("productionrecord")));
+        productInComponent.setField(L_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT)));
+        productInComponent.setField("usedQuantity", values.get("usedquantity"));
+        productInComponent.setField(L_PLANNED_QUANTITY, values.get("plannedquantity"));
+        productInComponent.setField("balance", values.get("balance"));
+        productInComponentDD.save(productInComponent);
     }
 
-    private Entity addBasicProductionCountingRecords(final Entity product, final BigDecimal plannedQuantity,
-            final BigDecimal producedQuantity, final BigDecimal usedQuantity) {
-        Entity productionCounting = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
-                BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING).create();
-        productionCounting.setField(L_PRODUCT, product);
-        productionCounting.setField(L_PLANNED_QUANTITY, plannedQuantity);
-        productionCounting.setField("producedQuantity", producedQuantity);
-        productionCounting.setField("usedQuantity", usedQuantity);
+    // private Entity addBasicProductionCountingRecords(final Map<String, String> values) {
+    // Entity productionCounting = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
+    // BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING).create();
+    // productionCounting.setField(L_PRODUCT, product);
+    // productionCounting.setField(L_PLANNED_QUANTITY, plannedQuantity);
+    // productionCounting.setField("producedQuantity", producedQuantity);
+    // productionCounting.setField("usedQuantity", usedQuantity);
+    //
+    // return productionCounting;
+    //
+    // }
 
-        return productionCounting;
-
-    }
-
-    private Entity addRecordOperationProductOutComponent(final Entity product, final BigDecimal usedQuantity,
-            final BigDecimal plannedQuantity, final BigDecimal balance) {
+    private Entity addRecordOperationProductOutComponent(final Map<String, String> values) {
         DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
         Entity productOutComponent = productOutComponentDD.create();
-        productOutComponent.setField(L_PRODUCT, product);
-        productOutComponent.setField("usedQuantity", usedQuantity);
-        productOutComponent.setField(L_PLANNED_QUANTITY, plannedQuantity);
-        productOutComponent.setField("balance", balance);
+        productOutComponent.setField("productiioRecord", getProductionRecordByNumber(values.get("productionrecord")));
+        productOutComponent.setField(L_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT)));
+        productOutComponent.setField("usedQuantity", values.get("usedquantity"));
+        productOutComponent.setField(L_PLANNED_QUANTITY, values.get("plannedquantity"));
+        productOutComponent.setField("balance", values.get("balance"));
         return productOutComponentDD.save(productOutComponent);
     }
 
-    private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation) {
-        return addOperationComponent(technology, parent, operation, null);
-    }
-
-    private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation,
-            final BigDecimal productionInOneCycle) {
-        Entity component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").create();
-
+    private void addOperationComponent(final Map<String, String> values) {
+        DataDefinition techOperCompDD = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent");
+        Entity component = techOperCompDD.create();
+        Entity technology = getTechnologyByNumber(values.get("technology_nr"));
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
+        Entity parent = operationComponents.get(values.get("parent"));
         component.setField("parent", parent);
+        Entity operation = getOperationByNumber(values.get("operation_nr"));
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
-        component.setField("entityType", TECHNOLOGY_MODEL_OPERATION);
+        component.setField("entityType", values.get("entity_type"));
         if (isEnabledOrEnabling("timeNormsForOperations")) {
             component.setField(L_TPZ, operation.getField(L_TPZ));
             component.setField("tj", operation.getField("tj"));
             component.setField("machineUtilization", operation.getField("machineUtilization"));
             component.setField("laborUtilization", operation.getField("laborUtilization"));
-            BigDecimal prodInOneCycleForComp = null;
-            if (productionInOneCycle == null) {
-                prodInOneCycleForComp = operation.getDecimalField("productionInOneCycle");
-            } else {
-                prodInOneCycleForComp = productionInOneCycle;
-            }
-            component.setField("productionInOneCycle", prodInOneCycleForComp);
+            component.setField("productionInOneCycle", operation.getDecimalField("productionInOneCycle"));
             component.setField("countRealized", operation.getField("countRealized"));
             component.setField("countMachine", operation.getField("countMachine"));
             component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
@@ -964,22 +987,22 @@ public class TestSamplesLoader extends SamplesLoader {
             component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
-        component = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "technologyOperationComponent").save(component);
+        component = techOperCompDD.save(component);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField(TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER) + ", parent="
                     + (parent == null ? 0 : parent.getId()) + ", operation="
                     + ((Entity) component.getField(TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + "}");
         }
-        return component;
+        operationComponents.put(values.get(L_BOM_ID), component);
     }
 
-    private void addProductInComponent(final Entity component, final BigDecimal quantity, final Entity product) {
+    private void addProductInComponent(final Map<String, String> values) {
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .create();
-        productComponent.setField(L_OPERATION_COMPONENT, component);
-        productComponent.setField(L_QUANTITY, quantity);
-        productComponent.setField(BASIC_MODEL_PRODUCT, product);
+        productComponent.setField(L_OPERATION_COMPONENT, operationComponents.get(values.get("operation_comp_id")));
+        productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
+        productComponent.setField(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR).toString()));
         productComponent.setField("batchRequired", true);
         productComponent.setField("productBatchRequired", true);
 
@@ -996,12 +1019,12 @@ public class TestSamplesLoader extends SamplesLoader {
         }
     }
 
-    private void addProductOutComponent(final Entity component, final BigDecimal quantity, final Entity product) {
+    private void addProductOutComponent(final Map<String, String> values) {
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductOutComponent")
                 .create();
-        productComponent.setField(L_OPERATION_COMPONENT, component);
-        productComponent.setField(L_QUANTITY, quantity);
-        productComponent.setField(BASIC_MODEL_PRODUCT, product);
+        productComponent.setField(L_OPERATION_COMPONENT, operationComponents.get(values.get("operation_comp_id")));
+        productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
+        productComponent.setField(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR).toString()));
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductOutComponent").save(
                 productComponent);
@@ -1073,41 +1096,46 @@ public class TestSamplesLoader extends SamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-
-        // TODO ALBR add loggings for production rrcord
-        // productionRecord.setField("loggings", loggings1);
-
-        List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(
-                getProductByNumber("000018"), new BigDecimal(L_QUANTITY_150), new BigDecimal("152"), new BigDecimal("2")));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000019"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000020"), new BigDecimal(
-                L_QUANTITY_2400), new BigDecimal(L_QUANTITY_2400), BigDecimal.ZERO));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000021"), new BigDecimal(
-                L_QUANTITY_2400), new BigDecimal(L_QUANTITY_2400), BigDecimal.ZERO));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000022"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000023"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-        recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000024"), new BigDecimal(
-                L_QUANTITY_150), new BigDecimal("182"), new BigDecimal("32")));
-
-        productionRecord.setField("recordOperationProductInComponents", recOpProdInComponents);
-
-        List<Entity> recOpProdOutComponents1 = Lists.newArrayList(addRecordOperationProductOutComponent(
-                getProductByNumber("000017"), new BigDecimal(L_QUANTITY_150), new BigDecimal(L_QUANTITY_150), BigDecimal.ZERO));
-
-        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000019"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000022"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-        recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000023"), new BigDecimal(
-                L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
-
-        productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
-
         productionRecord = productionRecord.getDataDefinition().save(productionRecord);
     }
+
+    // void addRecordOperationProduct(final Map<String, String> values){
+
+    // TODO ALBR add loggings for production rrcord
+    // productionRecord.setField("loggings", loggings1);
+
+    // List<Entity> recOpProdInComponents = Lists.newArrayList(addRecordOperationProductInComponent(getProductByNumber("000018"),
+    // new BigDecimal(L_QUANTITY_150), new BigDecimal("152"), new BigDecimal("2")));
+
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000019"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000020"), new BigDecimal(
+    // L_QUANTITY_2400), new BigDecimal(L_QUANTITY_2400), BigDecimal.ZERO));
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000021"), new BigDecimal(
+    // L_QUANTITY_2400), new BigDecimal(L_QUANTITY_2400), BigDecimal.ZERO));
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000022"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000023"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    // recOpProdInComponents.add(addRecordOperationProductInComponent(getProductByNumber("000024"), new BigDecimal(
+    // L_QUANTITY_150), new BigDecimal("182"), new BigDecimal("32")));
+    // }
+    // productionRecord.setField("recordOperationProductInComponents", recOpProdInComponents);
+    //
+    // List<Entity> recOpProdOutComponents1 = Lists.newArrayList(addRecordOperationProductOutComponent(
+    // getProductByNumber("000017"), new BigDecimal(L_QUANTITY_150), new BigDecimal(L_QUANTITY_150), BigDecimal.ZERO));
+    //
+    // recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000019"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    // recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000022"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    // recOpProdOutComponents1.add(addRecordOperationProductOutComponent(getProductByNumber("000023"), new BigDecimal(
+    // L_QUANTITY_600), new BigDecimal(L_QUANTITY_600), BigDecimal.ZERO));
+    //
+    // productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
+    //
+    // productionRecord = productionRecord.getDataDefinition().save(productionRecord);
+    // }
 
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
@@ -1265,6 +1293,11 @@ public class TestSamplesLoader extends SamplesLoader {
 
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getProductionRecordByNumber(final String number) {
+        return dataDefinitionService.get(PRODUCTION_COUNTING_PLUGIN_IDENTIFIER, L_PRODUCTION_RECORD).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 

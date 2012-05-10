@@ -228,7 +228,6 @@ public class TechnologyService {
         }
 
         List<Entity> inProducts = new ArrayList<Entity>();
-
         Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                 BigDecimal.ONE, false);
 
@@ -619,7 +618,11 @@ public class TechnologyService {
 
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField(L_TECHNOLOGY);
-        EntityTreeNode rootNode = technology.getTreeField(L_OPERATION_COMPONENTS).getRoot();
+        EntityTree tree = technology.getTreeField(L_OPERATION_COMPONENTS);
+        if (tree == null || tree.isEmpty()) {
+            return;
+        }
+        EntityTreeNode rootNode = tree.getRoot();
         if (rootNode == null || technologyOperation.getBelongsToField(L_PARENT) != null) {
             return;
         }
@@ -640,7 +643,11 @@ public class TechnologyService {
             technology = entity.getBelongsToField(L_TECHNOLOGY);
         } else if ("operationProductOutComponent".equals(dataDefinition.getName())
                 || "operationProductInComponent".equals(dataDefinition.getName())) {
-            technology = entity.getBelongsToField(L_OPERATION_COMPONENT).getBelongsToField(L_TECHNOLOGY);
+            Entity operationComponent = entity.getBelongsToField(L_OPERATION_COMPONENT);
+            if (operationComponent == null) {
+                return true;
+            }
+            technology = operationComponent.getBelongsToField(L_TECHNOLOGY);
         }
 
         if (technology == null || technology.getId() == null) {

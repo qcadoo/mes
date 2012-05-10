@@ -93,6 +93,12 @@ public interface SamplesConstants {
 
     String TECHNOLOGY_MODEL_OPERATION = "operation";
 
+    String TECHNOLOGY_MODEL_OPERATION_PROD_IN_COMP = "operationProductInComponent";
+
+    String TECHNOLOGY_MODEL_OPERATION_PROD_OUT_COMP = "operationProductOutComponent";
+
+    String TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     String L_SHIFTS = "shifts";
 
     String L_WORKSTATION_TYPES = "workstationTypes";
