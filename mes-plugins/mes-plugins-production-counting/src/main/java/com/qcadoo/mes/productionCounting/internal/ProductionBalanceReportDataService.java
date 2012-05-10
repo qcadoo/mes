@@ -73,15 +73,8 @@ public class ProductionBalanceReportDataService {
 
         if (!products.isEmpty()) {
             for (Entity product : products) {
-                if (checkIfProductHasChanged(prevProduct, product) || (products.indexOf(product) == (products.size() - 1))) {
-                    prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
-                    prevProduct.setField(L_USED_QUANTITY, usedQuantity);
-                    prevProduct.setField(
-                            L_BALANCE,
-                            (usedQuantity == null) ? null
-                                    : usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
-
-                    groupedProducts.add(prevProduct);
+                if (checkIfProductHasChanged(prevProduct, product)) {
+                    addProduct(groupedProducts, prevProduct, plannedQuantity, usedQuantity);
 
                     prevProduct = product;
 
@@ -97,10 +90,24 @@ public class ProductionBalanceReportDataService {
                                 product.getDecimalField(L_USED_QUANTITY), numberService.getMathContext());
                     }
                 }
+
+                if (products.indexOf(product) == (products.size() - 1)) {
+                    addProduct(groupedProducts, prevProduct, plannedQuantity, usedQuantity);
+                }
             }
         }
 
         return groupedProducts;
+    }
+
+    private void addProduct(List<Entity> groupedProducts, Entity prevProduct, final BigDecimal plannedQuantity,
+            final BigDecimal usedQuantity) {
+        prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
+        prevProduct.setField(L_USED_QUANTITY, usedQuantity);
+        prevProduct.setField(L_BALANCE,
+                (usedQuantity == null) ? null : usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
+
+        groupedProducts.add(prevProduct);
     }
 
     public List<Entity> groupProductionRecordsByOperation(final List<Entity> productionRecords) {
@@ -118,13 +125,9 @@ public class ProductionBalanceReportDataService {
 
         if (!productionRecords.isEmpty()) {
             for (Entity productionRecord : productionRecords) {
-                if (checkIfOperationHasChanged(prevProductionRecord, productionRecord)
-                        || (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1))) {
-                    prevProductionRecord.setField(MACHINE_TIME, machineTime);
-                    prevProductionRecord.setField(LABOR_TIME, laborTime);
-                    prevProductionRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
-
-                    groupedProductionRecords.add(prevProductionRecord);
+                if (checkIfOperationHasChanged(prevProductionRecord, productionRecord)) {
+                    addProductionRecord(groupedProductionRecords, prevProductionRecord, machineTime, laborTime,
+                            executedOperationCycles);
 
                     prevProductionRecord = productionRecord;
 
@@ -143,10 +146,24 @@ public class ProductionBalanceReportDataService {
                                 productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
                     }
                 }
+
+                if (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1)) {
+                    addProductionRecord(groupedProductionRecords, prevProductionRecord, machineTime, laborTime,
+                            executedOperationCycles);
+                }
             }
         }
 
         return groupedProductionRecords;
+    }
+
+    private void addProductionRecord(List<Entity> groupedProductionRecords, Entity prevProductionRecord,
+            final Integer machineTime, final Integer laborTime, final BigDecimal executedOperationCycles) {
+        prevProductionRecord.setField(MACHINE_TIME, machineTime);
+        prevProductionRecord.setField(LABOR_TIME, laborTime);
+        prevProductionRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
+
+        groupedProductionRecords.add(prevProductionRecord);
     }
 
     private boolean checkIfProductHasChanged(final Entity prevProduct, final Entity product) {
