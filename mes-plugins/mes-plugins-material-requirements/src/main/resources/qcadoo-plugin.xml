@@ -65,9 +65,8 @@
 				joinField="orders" model="materialRequirement" plugin="materialRequirements" />
 		</model:model-field>
 
-		<menu:menu-category name="reports" />
-
-		<menu:menu-item name="materialRequirements" category="reports"
+		<menu:menu-category name="requirements"/>
+		<menu:menu-item name="materialRequirements" category="requirements"
 			view="materialRequirementsList" />
 
 		<view:view resource="view/materialRequirementsList.xml" />

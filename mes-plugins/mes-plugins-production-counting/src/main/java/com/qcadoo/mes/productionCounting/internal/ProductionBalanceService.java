@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.internal;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.model.api.DataDefinition;
@@ -57,4 +58,7 @@ public interface ProductionBalanceService {
     Entity getProductionBalanceFromDB(final Long productionBalanceId);
 
     Entity getCompanyFromDB();
+
+    Map<Entity, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
+            final List<Entity> productionRecords);
 }

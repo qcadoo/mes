@@ -88,12 +88,12 @@
 		<model:model model="operationPieceworkComponent"
 			resource="model/operationPieceworkComponent.xml" />
 			
-		<menu:menu-item name="productionCounting" category="orders"
+		<menu:menu-item name="productionCounting" category="ordersTracking"
 			view="productionRecordsList" />
-		<menu:menu-item name="productionBalance" category="orders"
+		<menu:menu-item name="productionBalance" category="ordersTracking"
 			view="productionBalancesList" />
 		<menu:menu-item name="productionCountingsList"
-			category="reports" view="productionCountingsList" />
+			category="ordersTracking" view="productionCountingsList" />
 
 		<view:view resource="view/productionRecordsList.xml" />
 		<view:view resource="view/productionRecordDetails.xml" />

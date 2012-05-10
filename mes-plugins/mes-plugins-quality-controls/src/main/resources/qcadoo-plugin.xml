@@ -100,9 +100,8 @@
 		</model:model-hook>
 
 		<menu:menu-category name="quality" />
-		<menu:menu-category name="reports" />
 
-		<menu:menu-item name="qualityControlReport" category="reports"
+		<menu:menu-item name="qualityControlReport" category="quality"
 			view="qualityControlReport" />
 		<menu:menu-item name="forOrder" category="quality"
 			view="qualityControlsForOrderList" />

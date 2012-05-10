@@ -30,4 +30,12 @@ public final class OrderFieldsPC {
     }
 
     public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    public static final String REGISTER_PRODUCTION_TIME = "registerProductionTime";
+
+    public static final String REGISTER_PIECEWORK = "registerPiecework";
+
+    public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
+
+    public static final String REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";
 }

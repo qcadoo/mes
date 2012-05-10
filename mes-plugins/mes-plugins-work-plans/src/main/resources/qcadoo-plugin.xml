@@ -289,9 +289,8 @@
 			method="copyColumnForProducts" /> -->
 		<!-- </model:model-hook> -->
 
-		<menu:menu-category name="reports" />
 
-		<menu:menu-item name="workPlans" category="reports"
+		<menu:menu-item name="workPlans" category="orders"
 			view="workPlansList" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />

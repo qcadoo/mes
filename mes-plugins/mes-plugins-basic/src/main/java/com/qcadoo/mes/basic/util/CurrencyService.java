@@ -26,25 +26,35 @@ package com.qcadoo.mes.basic.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.model.api.Entity;
 
+/**
+ * Service for accessing currently used currency
+ * 
+ */
 @Service
 public class CurrencyService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ParameterService parameterService;
 
+    /**
+     * Returns currently used currency {@link Entity}.
+     * 
+     * @return currently used currency {@link Entity}.
+     */
     public Entity getCurrentCurrency() {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
-
-        return dd.find().uniqueResult().getBelongsToField("currency");
+        return parameterService.getParameter().getBelongsToField("currency");
     }
 
+    /**
+     * Returns alphabetic (ISO-4217) code for currently used currency.
+     * 
+     * @return alphabetic (ISO-4217) code for currently used currency.
+     */
     public String getCurrencyAlphabeticCode() {
-        return getCurrentCurrency().getField("alphabeticCode").toString();
+        return getCurrentCurrency().getStringField("alphabeticCode");
     }
 
 }

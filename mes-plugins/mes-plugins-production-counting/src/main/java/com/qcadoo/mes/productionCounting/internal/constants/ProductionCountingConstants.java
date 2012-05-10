@@ -64,13 +64,4 @@ public interface ProductionCountingConstants {
     String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
 
     String VIEW_RECORD_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "recordOperationProductOutComponentDetails";
-
-    // RECORDING PARAMETERS
-    String PARAM_REGISTER_OUT_PRODUCTS = "registerQuantityOutProduct";
-
-    String PARAM_REGISTER_IN_PRODUCTS = "registerQuantityInProduct";
-
-    String PARAM_REGISTER_PRODUCTION_TIME = "registerProductionTime";
-
-    String PARAM_REGISTER_PIECEWORK = "registerPiecework";
 }

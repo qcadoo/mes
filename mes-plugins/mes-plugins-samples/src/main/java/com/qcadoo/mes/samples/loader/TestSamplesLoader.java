@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.samples;
+package com.qcadoo.mes.samples.loader;
 
 import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,11 +53,9 @@ import com.qcadoo.model.api.utils.TreeNumberingService;
 
 @Component
 @Transactional
-public class TestSamplesLoader extends SamplesLoader {
+public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestSamplesLoader.class);
-
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
     private static final long MILLIS_IN_DAY = 86400000;
 
@@ -73,7 +72,8 @@ public class TestSamplesLoader extends SamplesLoader {
     private boolean setAsDemoEnviroment;
 
     @Override
-    void loadData(final String dataset, final String locale) {
+    protected void loadData(final String locale) {
+        final String dataset = "test";
 
         if (setAsDemoEnviroment) {
             changeAdminPassword();
@@ -155,19 +155,15 @@ public class TestSamplesLoader extends SamplesLoader {
 
     @Override
     protected void readData(final Map<String, String> values, final String type, final Element node) {
-        if ("activeCurrency".equals(type)) {
-            addParameters(values);
-        } else if ("company".equals(type)) {
-            addCompany(values);
-        } else if (PRODUCTS_PLUGIN_IDENTIFIER.equals(type)) {
+        super.readData(values, type, node);
+
+        if (PRODUCTS_PLUGIN_IDENTIFIER.equals(type)) {
             addProduct(values);
         } else if (ORDERS_PLUGIN_IDENTIFIER.equals(type)) {
             prepareTechnologiesForOrder(values);
             addOrder(values);
         } else if (TECHNOLOGIES_PLUGIN_IDENTIFIER.equals(type)) {
             addTechnology(values);
-        } else if ("dictionaries".equals(type)) {
-            addDictionaryItems(values);
         } else if ("users".equals(type)) {
             addUser(values);
         } else if ("operations".equals(type)) {
@@ -176,8 +172,6 @@ public class TestSamplesLoader extends SamplesLoader {
             addStaff(values);
         } else if (L_WORKSTATION_TYPES.equals(type)) {
             addWorkstationType(values);
-        } else if (L_SHIFTS.equals(type)) {
-            addShifts(values);
         } else if (L_DIVISION.equals(type)) {
             addDivision(values);
         } else if (L_ORDER_GROUPS.equals(type)) {
@@ -211,12 +205,6 @@ public class TestSamplesLoader extends SamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
-        } else if (L_PRODUCTION_LINES.equals(type)) {
-            addProductionLines(values);
-        } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {
-            addDictionaryItems(values);
-        } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
-            addDefaultProductionLine(values);
         }
     }
 
@@ -234,7 +222,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + machine.getField(L_NUMBER) + "}");
         }
 
-        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
     }
 
     private void addStaff(final Map<String, String> values) {
@@ -252,7 +240,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + staff.getField(L_SURNAME) + "}");
         }
 
-        staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
     }
 
     private void addOperations(final Map<String, String> values) {
@@ -288,7 +276,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + operation.getField(L_NUMBER) + "}");
         }
 
-        operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).save(operation);
+        dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).save(operation);
     }
 
     private void addProduct(final Map<String, String> values) {
@@ -318,7 +306,7 @@ public class TestSamplesLoader extends SamplesLoader {
             product.setField("averageCost", values.get("averagecost"));
         }
 
-        product = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).save(product);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).save(product);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
@@ -350,7 +338,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + ((Entity) substitute.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + "}");
         }
 
-        substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
 
         for (int i = 0; i < 1; i++) {
             addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
@@ -370,7 +358,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + substituteComponent.getField(L_QUANTITY) + "}");
         }
 
-        substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").save(substituteComponent);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").save(substituteComponent);
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
@@ -411,7 +399,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (!values.get("scheduled_start_date").isEmpty()) {
             try {
-                startDate = FORMATTER.parse(values.get("scheduled_start_date")).getTime();
+                startDate = getDateFormat().parse(values.get("scheduled_start_date")).getTime();
             } catch (ParseException e) {
                 LOG.warn(e.getMessage(), e);
             }
@@ -440,7 +428,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (!values.get("scheduled_end_date").isEmpty()) {
             try {
-                endDate = FORMATTER.parse(values.get("scheduled_end_date")).getTime();
+                endDate = getDateFormat().parse(values.get("scheduled_end_date")).getTime();
             } catch (ParseException e) {
                 LOG.warn(e.getMessage(), e);
             }
@@ -448,7 +436,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         if (!values.get("deadline").isEmpty()) {
             try {
-                deadline = FORMATTER.parse(values.get("deadline")).getTime();
+                deadline = getDateFormat().parse(values.get("deadline")).getTime();
             } catch (ParseException e) {
                 LOG.warn(e.getMessage(), e);
             }
@@ -476,9 +464,6 @@ public class TestSamplesLoader extends SamplesLoader {
         if (!"01pending".equals(values.get(L_ORDER_STATE))) {
 
             List<Entity> productionCountings = Lists.newArrayList();
-            DataDefinition productionCountingDD = dataDefinitionService.get(BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER,
-                    BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING);
-            Entity productionCounting = productionCountingDD.create();
 
             if ("000001".equals(values.get(L_ORDER_NR))) {
 
@@ -647,7 +632,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + order.getField("trackingRecordTreatment") + ", state=" + order.getField(L_ORDER_STATE) + "}");
         }
 
-        order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
     }
 
     private void addBatches(final Map<String, String> values) {
@@ -658,7 +643,7 @@ public class TestSamplesLoader extends SamplesLoader {
         batch.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
         batch.setField(L_STATE, "01tracked");
 
-        batch = batch.getDataDefinition().save(batch);
+        batch.getDataDefinition().save(batch);
     }
 
     private void addTrackingRecord(final Map<String, String> values) {
@@ -684,7 +669,7 @@ public class TestSamplesLoader extends SamplesLoader {
         genealogyTable.setField("directRelatedOnly", values.get("direct_related_only"));
         genealogyTable.setField(L_BATCH, getBatchByNumber(values.get("batch_no")));
 
-        genealogyTable = genealogyTable.getDataDefinition().save(genealogyTable);
+        genealogyTable.getDataDefinition().save(genealogyTable);
     }
 
     private void addDivision(final Map<String, String> values) {
@@ -694,7 +679,7 @@ public class TestSamplesLoader extends SamplesLoader {
         division.setField(L_NAME, values.get("NAME"));
         division.setField("supervisor", values.get("SUPERVISOR"));
 
-        division = division.getDataDefinition().save(division);
+        division.getDataDefinition().save(division);
     }
 
     private void addCostCalculation(final Map<String, String> values) {
@@ -715,7 +700,7 @@ public class TestSamplesLoader extends SamplesLoader {
         costCalculation.setField("productionCostMargin", values.get("productioncostmargin"));
         costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
 
-        costCalculation = costCalculation.getDataDefinition().save(costCalculation);
+        costCalculation.getDataDefinition().save(costCalculation);
     }
 
     private void addStokckArea(final Map<String, String> values) {
@@ -724,7 +709,7 @@ public class TestSamplesLoader extends SamplesLoader {
         stockArea.setField(L_NUMBER, values.get(L_NUMBER));
         stockArea.setField(L_NAME, values.get(L_NAME));
 
-        stockArea = stockArea.getDataDefinition().save(stockArea);
+        stockArea.getDataDefinition().save(stockArea);
     }
 
     private void addTransformation(final Map<String, String> values) {
@@ -737,7 +722,7 @@ public class TestSamplesLoader extends SamplesLoader {
         transformation.setField("stockAreasTo", getStockAreaByNumber(values.get("stock_areas_to")));
         transformation.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
 
-        transformation = transformation.getDataDefinition().save(transformation);
+        transformation.getDataDefinition().save(transformation);
     }
 
     private void addStockCorrection(final Map<String, String> values) {
@@ -750,7 +735,7 @@ public class TestSamplesLoader extends SamplesLoader {
         stockCorrection.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
         stockCorrection.setField("found", values.get("found"));
 
-        stockCorrection = stockCorrection.getDataDefinition().save(stockCorrection);
+        stockCorrection.getDataDefinition().save(stockCorrection);
     }
 
     private void addTransfer(final Map<String, String> values) {
@@ -768,7 +753,7 @@ public class TestSamplesLoader extends SamplesLoader {
         transfer.setField("transformationsConsumption", getTransformationByNumber(values.get("transformations_consumption")));
         transfer.setField("transformationsProduction", getTransformationByNumber(values.get("transformations_production")));
 
-        transfer = transfer.getDataDefinition().save(transfer);
+        transfer.getDataDefinition().save(transfer);
     }
 
     private void addTechnology(final Map<String, String> values) {
@@ -798,7 +783,8 @@ public class TestSamplesLoader extends SamplesLoader {
                 technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);
             }
 
-            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values.get(L_QUALITY_CONTROL_TYPE)))
+            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values
+                    .get(L_QUALITY_CONTROL_TYPE)))
                     && isEnabledOrEnabling(L_QUALITY_CONTROLS)
                     && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
                             .get(L_QUALITY_CONTROL_TYPE)))) {
@@ -1034,7 +1020,7 @@ public class TestSamplesLoader extends SamplesLoader {
                     + requirement.getField("onlyComponents") + ", generated=" + requirement.getField(L_GENERATED) + "}");
         }
 
-        requirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
+        dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
                 SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).save(requirement);
     }
 
@@ -1055,8 +1041,8 @@ public class TestSamplesLoader extends SamplesLoader {
                     + ", worker=" + workPlan.getField(L_WORKER) + ", generated=" + workPlan.getField(L_GENERATED) + "}");
         }
 
-        workPlan = dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER,
-                SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN).save(workPlan);
+        dataDefinitionService.get(SamplesConstants.WORK_PLANS_PLUGIN_IDENTIFIER, SamplesConstants.WORK_PLANS_MODEL_WORK_PLAN)
+                .save(workPlan);
     }
 
     void addProductionRecord(final Map<String, String> values) {
@@ -1106,7 +1092,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         productionRecord.setField("recordOperationProductOutComponents", recOpProdOutComponents1);
 
-        productionRecord = productionRecord.getDataDefinition().save(productionRecord);
+        productionRecord.getDataDefinition().save(productionRecord);
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
@@ -1129,7 +1115,7 @@ public class TestSamplesLoader extends SamplesLoader {
         productionCounting.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
         productionCounting.setField(L_FILE_NAME, values.get("filename"));
 
-        productionCounting = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
+        dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_COUNTING_MODEL_PRODUCTION_COUNTING).save(productionCounting);
     }
 
@@ -1155,7 +1141,7 @@ public class TestSamplesLoader extends SamplesLoader {
             productionbalance.setField("averageLaborHourlyCost", values.get("averagelaborhourlycost"));
         }
 
-        productionbalance = productionbalance.getDataDefinition().save(productionbalance);
+        productionbalance.getDataDefinition().save(productionbalance);
     }
 
     void addQualityControl(final Map<String, String> values) {
@@ -1204,7 +1190,7 @@ public class TestSamplesLoader extends SamplesLoader {
 
         }
 
-        qualitycontrol = qualitycontrol.getDataDefinition().save(qualitycontrol);
+        qualitycontrol.getDataDefinition().save(qualitycontrol);
     }
 
     private Entity getRandomStaff() {
@@ -1339,7 +1325,7 @@ public class TestSamplesLoader extends SamplesLoader {
         genealogyProductInBatch.setField(L_BATCH, getBatchByNumber(batchNumber));
         genealogyProductInBatch.setField("genealogyProductInComponent", genealogyProductInComponent);
 
-        genealogyProductInBatch = genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
+        genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
     }
 
     private Entity addGenealogyProductInComponent(final Entity trackingRecord, final String productNumber,
@@ -1366,6 +1352,10 @@ public class TestSamplesLoader extends SamplesLoader {
                         SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, technologyInstanceOperationComponent)))
                 .setMaxResults(1).uniqueResult();
         return genealogyProductInComponent;
+    }
+
+    private DateFormat getDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
 
 }
