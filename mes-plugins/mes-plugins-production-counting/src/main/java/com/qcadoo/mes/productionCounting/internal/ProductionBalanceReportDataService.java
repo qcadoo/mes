@@ -68,8 +68,7 @@ public class ProductionBalanceReportDataService {
         Entity prevProduct = products.get(0);
 
         BigDecimal plannedQuantity = products.get(0).getDecimalField(L_PLANNED_QUANTITY);
-        BigDecimal usedQuantity = (products.get(0).getField(L_USED_QUANTITY) == null) ? null : products.get(0).getDecimalField(
-                L_USED_QUANTITY);
+        BigDecimal usedQuantity = null;
 
         if (!products.isEmpty()) {
             for (Entity product : products) {
@@ -117,8 +116,8 @@ public class ProductionBalanceReportDataService {
 
         Entity prevProductionRecord = productionRecords.get(0);
 
-        Integer machineTime = (Integer) productionRecords.get(0).getField(MACHINE_TIME);
-        Integer laborTime = (Integer) productionRecords.get(0).getField(LABOR_TIME);
+        Integer machineTime = 0;
+        Integer laborTime = 0;
 
         BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? null
                 : productionRecords.get(0).getDecimalField(EXECUTED_OPERATION_CYCLES);

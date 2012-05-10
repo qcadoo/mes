@@ -64,7 +64,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.productionCounting.internal.ProductionBalanceReportDataService;
 import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.Entity;
@@ -94,9 +93,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private ProductionBalanceReportDataService productionBalanceReportDataService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -311,7 +307,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
             PdfPTable inputProductsTable = pdfHelper.createTableWithHeader(6, inputProductsTableHeader, false);
 
-            for (Entity inputProduct : productionBalanceReportDataService.groupProductInOutComponentsByProduct(inputProductsList)) {
+            for (Entity inputProduct : inputProductsList) {
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
                 inputProductsTable.addCell(new Phrase(inputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils
@@ -366,8 +362,7 @@ public class ProductionBalancePdfService extends PdfDocumentService {
 
             PdfPTable outputProductsTable = pdfHelper.createTableWithHeader(6, outputProductsTableHeader, false);
 
-            for (Entity outputProduct : productionBalanceReportDataService
-                    .groupProductInOutComponentsByProduct(outputProductsList)) {
+            for (Entity outputProduct : outputProductsList) {
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NUMBER), FontUtils
                         .getDejavuRegular9Dark()));
                 outputProductsTable.addCell(new Phrase(outputProduct.getBelongsToField(PRODUCT).getStringField(NAME), FontUtils

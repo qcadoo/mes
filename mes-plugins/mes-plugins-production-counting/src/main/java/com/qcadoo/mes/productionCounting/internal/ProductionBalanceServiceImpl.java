@@ -267,7 +267,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         List<Entity> productionRecords = getProductionRecordsFromDB(order);
 
-        Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes = fillProductionRecordsWithPlannedTimes(
+        Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = fillProductionRecordsWithPlannedTimes(
                 productionBalance, productionRecords);
 
         List<Entity> groupedProductionRecords = productionBalanceReportDataService
@@ -380,7 +380,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void fillTimeValues(final Entity productionBalance, final List<Entity> productionRecords,
-            final Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
         if (productionBalance == null) {
             return;
         }
@@ -394,14 +394,14 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if (!productionRecords.isEmpty() || !productionRecordsWithPlannedTimes.isEmpty()) {
             for (Entity productionRecord : productionRecords) {
                 plannedMachineTime = plannedMachineTime.add(
-                        new BigDecimal((Integer) productionRecordsWithPlannedTimes.get(productionRecord).get(
-                                L_PLANNED_MACHINE_TIME)), numberService.getMathContext());
+                        new BigDecimal(productionRecordsWithPlannedTimes.get(productionRecord.getId())
+                                .get(L_PLANNED_MACHINE_TIME)), numberService.getMathContext());
                 machineTime = machineTime.add(new BigDecimal((Integer) productionRecord.getField(MACHINE_TIME)),
                         numberService.getMathContext());
 
-                plannedLaborTime = plannedLaborTime.add(
-                        new BigDecimal((Integer) productionRecordsWithPlannedTimes.get(productionRecord)
-                                .get(L_PLANNED_LABOR_TIME)), numberService.getMathContext());
+                plannedLaborTime = plannedLaborTime
+                        .add(new BigDecimal(productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
+                                L_PLANNED_LABOR_TIME)), numberService.getMathContext());
 
                 laborTime = laborTime.add(new BigDecimal((Integer) productionRecord.getField(LABOR_TIME)),
                         numberService.getMathContext());
@@ -423,7 +423,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void fillOperationTimeComponents(final Entity productionBalance, final List<Entity> productionRecords,
-            final Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
         if (productionBalance == null) {
             return;
         }
@@ -438,17 +438,17 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                 operationTimeComponent.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
                         productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
-                operationTimeComponent.setField(PLANNED_MACHINE_TIME, productionRecordsWithPlannedTimes.get(productionRecord)
-                        .get(L_PLANNED_MACHINE_TIME));
+                operationTimeComponent.setField(PLANNED_MACHINE_TIME,
+                        productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(L_PLANNED_MACHINE_TIME));
                 operationTimeComponent.setField(MACHINE_TIME, productionRecord.getField(MACHINE_TIME));
                 operationTimeComponent.setField(MACHINE_TIME_BALANCE, (Integer) productionRecord.getField(MACHINE_TIME)
-                        - productionRecordsWithPlannedTimes.get(productionRecord).get(L_PLANNED_MACHINE_TIME));
+                        - productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(L_PLANNED_MACHINE_TIME));
 
                 operationTimeComponent.setField(PLANNED_LABOR_TIME,
-                        productionRecordsWithPlannedTimes.get(productionRecord).get(L_PLANNED_LABOR_TIME));
+                        productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(L_PLANNED_LABOR_TIME));
                 operationTimeComponent.setField(LABOR_TIME, productionRecord.getField(LABOR_TIME));
                 operationTimeComponent.setField(LABOR_TIME_BALANCE, (Integer) productionRecord.getField(LABOR_TIME)
-                        - productionRecordsWithPlannedTimes.get(productionRecord).get(L_PLANNED_LABOR_TIME));
+                        - productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(L_PLANNED_LABOR_TIME));
 
                 operationTimeComponents.add(operationTimeComponent);
             }
@@ -538,29 +538,30 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         }
     }
 
-    public Map<Entity, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
+    public Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
             final List<Entity> productionRecords) {
-        Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes = new HashMap<Entity, Map<String, Integer>>();
+        Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = new HashMap<Long, Map<String, Integer>>();
 
         if (!productionRecords.isEmpty()) {
             for (Entity productionRecord : productionRecords) {
                 Map<String, Integer> plannedTimes = countPlannedTimes(productionBalance, productionRecord);
 
-                if (productionRecordsWithPlannedTimes.containsKey(productionRecord)) {
-                    Map<String, Integer> productionRecordPlannedTimes = productionRecordsWithPlannedTimes.get(productionRecord);
+                if (productionRecordsWithPlannedTimes.containsKey(productionRecord.getId())) {
+                    Map<String, Integer> productionRecordPlannedTimes = productionRecordsWithPlannedTimes.get(productionRecord
+                            .getId());
 
                     Integer plannedMachineTime = productionRecordPlannedTimes.get(L_PLANNED_MACHINE_TIME)
                             + plannedTimes.get(L_PLANNED_MACHINE_TIME);
 
-                    Integer plannedLaborTime = productionRecordPlannedTimes.get(L_PLANNED_MACHINE_TIME)
-                            + plannedTimes.get(L_PLANNED_MACHINE_TIME);
+                    Integer plannedLaborTime = productionRecordPlannedTimes.get(L_PLANNED_LABOR_TIME)
+                            + plannedTimes.get(L_PLANNED_LABOR_TIME);
 
                     productionRecordPlannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
                     productionRecordPlannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);
 
-                    productionRecordsWithPlannedTimes.put(productionRecord, productionRecordPlannedTimes);
+                    productionRecordsWithPlannedTimes.put(productionRecord.getId(), productionRecordPlannedTimes);
                 } else {
-                    productionRecordsWithPlannedTimes.put(productionRecord, plannedTimes);
+                    productionRecordsWithPlannedTimes.put(productionRecord.getId(), plannedTimes);
                 }
             }
         }
@@ -592,9 +593,9 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     durationOperation.get(productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                             .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT)));
         } else if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            EntityTree technologyInstanceOperationComponentsTree = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+            EntityTree technologyInstanceOperationComponents = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
-            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponentsTree) {
+            for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                 countTimeOperation(technologyInstanceOperationComponent, plannedTimes,
                         durationOperation.get(technologyInstanceOperationComponent
                                 .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT)));
