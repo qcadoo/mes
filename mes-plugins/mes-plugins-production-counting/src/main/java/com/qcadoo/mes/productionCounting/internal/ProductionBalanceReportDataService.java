@@ -99,7 +99,7 @@ public class ProductionBalanceReportDataService {
         return groupedProducts;
     }
 
-    private void addProduct(List<Entity> groupedProducts, Entity prevProduct, final BigDecimal plannedQuantity,
+    private void addProduct(final List<Entity> groupedProducts, final Entity prevProduct, final BigDecimal plannedQuantity,
             final BigDecimal usedQuantity) {
         prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
         prevProduct.setField(L_USED_QUANTITY, usedQuantity);
@@ -156,7 +156,7 @@ public class ProductionBalanceReportDataService {
         return groupedProductionRecords;
     }
 
-    private void addProductionRecord(List<Entity> groupedProductionRecords, Entity prevProductionRecord,
+    private void addProductionRecord(final List<Entity> groupedProductionRecords, final Entity prevProductionRecord,
             final Integer machineTime, final Integer laborTime, final BigDecimal executedOperationCycles) {
         prevProductionRecord.setField(MACHINE_TIME, machineTime);
         prevProductionRecord.setField(LABOR_TIME, laborTime);
