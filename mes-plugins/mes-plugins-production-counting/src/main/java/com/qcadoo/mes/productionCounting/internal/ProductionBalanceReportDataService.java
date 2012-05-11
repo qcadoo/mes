@@ -119,7 +119,7 @@ public class ProductionBalanceReportDataService {
         Integer machineTime = 0;
         Integer laborTime = 0;
 
-        BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+        BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO
                 : productionRecords.get(0).getDecimalField(EXECUTED_OPERATION_CYCLES);
 
         if (!productionRecords.isEmpty()) {
@@ -130,20 +130,22 @@ public class ProductionBalanceReportDataService {
 
                     prevProductionRecord = productionRecord;
 
-                    machineTime = (Integer) productionRecord.getField(MACHINE_TIME);
-                    laborTime = (Integer) productionRecord.getField(LABOR_TIME);
+                    machineTime = (productionRecord.getField(MACHINE_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(MACHINE_TIME);
+                    laborTime = (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(LABOR_TIME);
 
-                    executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+                    executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO
                             : productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES);
                 } else {
-                    machineTime += (Integer) productionRecord.getField(MACHINE_TIME);
-                    laborTime += (Integer) productionRecord.getField(LABOR_TIME);
+                    machineTime += (productionRecord.getField(MACHINE_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(MACHINE_TIME);
+                    laborTime += (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(LABOR_TIME);
 
-                    if (productionRecord.getField(EXECUTED_OPERATION_CYCLES) != null) {
-                        executedOperationCycles = (executedOperationCycles == null) ? productionRecord
-                                .getDecimalField(EXECUTED_OPERATION_CYCLES) : executedOperationCycles.add(
-                                productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
-                    }
+                    executedOperationCycles = (productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES) == null) ? executedOperationCycles
+                            : executedOperationCycles.add(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES),
+                                    numberService.getMathContext());
                 }
 
                 if (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1)) {

@@ -329,14 +329,18 @@
 					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('number')" />	
 				<option type="column" name="operationName" fields="technologyInstanceOperationComponent"
 					expression="(#technologyInstanceOperationComponent==null) ? 'N/A' : #technologyInstanceOperationComponent.get('operation').get('name')" />
-				<option type="column" name="plannedMachineTime" fields="plannedMachineTime"
-					expression="#plannedMachineTime" />
-				<option type="column" name="machineTime" fields="machineTime" />
-				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" />
-				<option type="column" name="plannedLaborTime" fields="plannedLaborTime"
-					expression="#plannedLaborTime" />
-				<option type="column" name="laborTime" fields="laborTime" />
-				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" />
+				<option type="column" name="plannedMachineTime" fields="plannedMachineTime" 
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedMachineTime)" />
+				<option type="column" name="machineTime" fields="machineTime" 
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineTime)" />
+				<option type="column" name="machineTimeBalance" fields="machineTimeBalance" 
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineTimeBalance)" />
+				<option type="column" name="plannedLaborTime" fields="plannedLaborTime" 
+					expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#plannedLaborTime)" />
+				<option type="column" name="laborTime" fields="laborTime" 
+					 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)" />
+				<option type="column" name="laborTimeBalance" fields="laborTimeBalance" 
+					 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeBalance)"/>
 				
 				<option type="order" column="operationNumber" direction="asc" />
 			</component>
