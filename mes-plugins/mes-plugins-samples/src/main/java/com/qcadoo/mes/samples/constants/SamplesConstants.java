@@ -29,8 +29,6 @@ public interface SamplesConstants {
 
     String BASIC_PLUGIN_IDENTIFIER = "basic";
 
-    String BASIC_MODEL_PARAMETER = "parameter";
-
     String BASIC_MODEL_COMPANY = "company";
 
     String BASIC_MODEL_CURRENCY = "currency";

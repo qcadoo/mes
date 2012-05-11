@@ -13,7 +13,7 @@ public class DummySamplesLoader implements SamplesLoader {
 
     @Override
     public void load() {
-        LOG.debug("Database won't bo changed ... ");
+        LOG.debug("Database won't be changed ... ");
     }
 
 }

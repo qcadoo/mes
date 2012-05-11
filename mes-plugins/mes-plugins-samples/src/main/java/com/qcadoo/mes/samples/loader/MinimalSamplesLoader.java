@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -56,6 +57,9 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     @Autowired
     private SecurityRolesService securityRolesService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     protected void loadData(final String locale) {
@@ -152,11 +156,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected void addDefaultProductionLine(final Map<String, String> values) {
-        Entity parameter = dataDefinitionService
-                .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_PARAMETER).find().uniqueResult();
-
+        Entity parameter = parameterService.getParameter();
         parameter.setField(L_DEFAULT_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
-
         parameter.getDataDefinition().save(parameter);
     }
 

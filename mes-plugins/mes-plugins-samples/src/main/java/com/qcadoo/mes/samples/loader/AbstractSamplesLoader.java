@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.samples.loader;
 
+import static com.qcadoo.mes.samples.constants.ParameterFieldsSamples.SAMPLES_WERE_LOADED;
+
 import java.util.Map;
 import java.util.Random;
 
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.api.SamplesLoader;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.mes.samples.resolver.SamplesLocaleResolver;
@@ -52,6 +55,9 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     public static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -62,8 +68,9 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         if (databaseHasToBePrepared()) {
             LOG.debug("Database has to be prepared ...");
             loadData(samplesLocaleResolver.resolve());
+            markSamplesAsLoaded();
         } else {
-            LOG.debug("Database won't bo changed ... ");
+            LOG.debug("Database won't be changed ... ");
         }
     }
 
@@ -76,8 +83,14 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     protected abstract void loadData(final String locale);
 
     private boolean databaseHasToBePrepared() {
-        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_PARAMETER).find()
-                .list().getTotalNumberOfEntities() == 0;
+        Entity parameter = parameterService.getParameter();
+        return !parameter.getBooleanField(SAMPLES_WERE_LOADED);
+    }
+
+    private void markSamplesAsLoaded() {
+        Entity parameter = parameterService.getParameter();
+        parameter.setField(SAMPLES_WERE_LOADED, true);
+        parameter.getDataDefinition().save(parameter);
     }
 
     @SuppressWarnings("deprecation")
@@ -116,8 +129,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected void addParameters(final Map<String, String> values) {
         LOG.info("Adding parameters");
-        Entity params = dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER,
-                SamplesConstants.BASIC_MODEL_PARAMETER).create();
+        Entity params = parameterService.getParameter();
 
         Entity currency = dataDefinitionService
                 .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
