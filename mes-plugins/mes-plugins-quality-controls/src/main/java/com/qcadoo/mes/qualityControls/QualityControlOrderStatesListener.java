@@ -31,7 +31,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinition;
@@ -46,6 +46,9 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @Override
     public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
         checkArgument(newEntity != null, "entity is null");
@@ -59,19 +62,8 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
     }
 
     private boolean isQualityControlAutoCheckEnabled() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-
-        if (parameter == null) {
-            return false;
-        } else {
-            return (Boolean) parameter.getField("checkDoneOrderForQuality");
-        }
+        Entity parameter = parameterService.getParameter();
+        return parameter.getBooleanField("checkDoneOrderForQuality");
     }
 
     private boolean checkIfAllQualityControlsAreClosed(final Entity order) {
