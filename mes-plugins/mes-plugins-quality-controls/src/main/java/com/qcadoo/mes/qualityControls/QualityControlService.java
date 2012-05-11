@@ -33,7 +33,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -128,6 +128,9 @@ public final class QualityControlService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private SecurityService securityService;
@@ -660,20 +663,8 @@ public final class QualityControlService {
     }
 
     private boolean isQualityControlAutoGenEnabled() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-
-        if (parameter == null) {
-            return false;
-        } else {
-            return parameter.getField("autoGenerateQualityControl") == null ? false : (Boolean) parameter
-                    .getField("autoGenerateQualityControl");
-        }
+        Entity parameter = parameterService.getParameter();
+        return parameter.getBooleanField("autoGenerateQualityControl");
     }
 
     private void generateQualityControlForGivenType(final String qualityControlType, final Entity technology, final Entity order) {
