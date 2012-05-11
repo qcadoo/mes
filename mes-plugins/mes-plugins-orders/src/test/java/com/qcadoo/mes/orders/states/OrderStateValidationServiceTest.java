@@ -104,17 +104,6 @@ public class OrderStateValidationServiceTest {
         verify(dataDefinition).save(entity);
     }
 
-    @Test
-    public void shouldThrowExceptionWhenShiftIsNull() throws Exception {
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING)).willReturn(
-                dataDefinition);
-        given(dataDefinition.create()).willReturn(entity);
-        given(shiftsServiceImpl.getShiftFromDate(Mockito.any(Date.class))).willReturn(null);
-        given(entity.getDataDefinition()).willReturn(dataDefinition);
-
-        orderStateValidationService.saveLogging(order, previousState, currentState);
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationAccepted() throws Exception {
         // when
@@ -134,12 +123,6 @@ public class OrderStateValidationServiceTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenValidatingAccepted() throws Exception {
-        // when
-        orderStateValidationService.validationAccepted(order);
-    }
-
-    @Test
     public void shouldPerformValidationAccepted() throws Exception {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
@@ -150,12 +133,6 @@ public class OrderStateValidationServiceTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenValidatingInProgress() throws Exception {
-        // when
-        orderStateValidationService.validationInProgress(order);
-    }
-
-    @Test
     public void shouldPerformValidationInProgress() throws Exception {
         // given
         Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
@@ -163,12 +140,6 @@ public class OrderStateValidationServiceTest {
         List<ChangeOrderStateMessage> errors = orderStateValidationService.validationInProgress(order);
         // then
         Assert.assertTrue(errors.isEmpty());
-    }
-
-    @Test
-    public void shouldReturnErrorWhenValidatingCompleted() throws Exception {
-        // when
-        orderStateValidationService.validationCompleted(order);
     }
 
     @Test
