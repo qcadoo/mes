@@ -306,7 +306,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             product.setField("averageCost", values.get("averagecost"));
         }
 
-        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).save(product);
+        product = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).save(product);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
@@ -338,7 +338,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + ((Entity) substitute.getField(BASIC_MODEL_PRODUCT)).getField(L_NUMBER) + "}");
         }
 
-        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
+        substitute = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_SUBSTITUTE).save(substitute);
 
         for (int i = 0; i < 1; i++) {
             addSubstituteComponent(substitute, getRandomProduct(), 100 * RANDOM.nextDouble());
