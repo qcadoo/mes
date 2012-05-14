@@ -31,13 +31,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
 import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class GenealogyOrderStatesListener extends OrderStateListener {
@@ -76,44 +75,31 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private AutoGenealogyService autoGenealogyService;
 
     @Override
     public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
         checkArgument(newEntity != null, "entity is null");
         List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-        Entity parameter = null;
+        Entity parameter = parameterService.getParameter();
 
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
+        if ("02active".equals(parameter.getStringField(BATCH_FOR_DONE_ORDER_FIELD))) {
+            listOfMessage = autoGenealogyService.createGenealogy(newEntity, false);
+        } else if ("03lastUsed".equals(parameter.getStringField(BATCH_FOR_DONE_ORDER_FIELD))) {
+            listOfMessage = autoGenealogyService.createGenealogy(newEntity, true);
         }
-        if (parameter != null) {
-            if (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("02active")) {
-                listOfMessage = autoGenealogyService.createGenealogy(newEntity, false);
-            } else if (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("03lastUsed")) {
-                listOfMessage = autoGenealogyService.createGenealogy(newEntity, true);
-            }
-            if (checkAutogenealogyRequired() && !checkRequiredBatch(newEntity)) {
-                listOfMessage.add(ChangeOrderStateMessage.error("genealogies.message.batchNotFound"));
-            }
+        if (checkAutogenealogyRequired() && !checkRequiredBatch(newEntity)) {
+            listOfMessage.add(ChangeOrderStateMessage.error("genealogies.message.batchNotFound"));
         }
         return listOfMessage;
     }
 
     private boolean checkAutogenealogyRequired() {
-        SearchResult searchResult = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)
-                .find().setMaxResults(1).list();
-        Entity parameter = null;
-        if (searchResult.getEntities().size() > 0) {
-            parameter = searchResult.getEntities().get(0);
-        }
-        if ((parameter == null) || (parameter.getField(BATCH_FOR_DONE_ORDER_FIELD) == null)) {
-            return false;
-        } else {
-            return !(parameter.getField(BATCH_FOR_DONE_ORDER_FIELD).toString().equals("01none"));
-        }
+        Entity parameter = parameterService.getParameter();
+        return !("01none".equals(parameter.getStringField(BATCH_FOR_DONE_ORDER_FIELD)));
     }
 
     private boolean checkRequiredBatch(final Entity entity) {

@@ -26,10 +26,12 @@
 -->
 <plugin plugin="samples" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:custom="http://schema.qcadoo.org/modules/custom"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
 		http://schema.qcadoo.org/plugin 
 		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
 
@@ -50,6 +52,14 @@
 
 	<modules>
 		<custom:custom class="com.qcadoo.mes.samples.SamplesChooserModule" />
+		
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="samplesWereLoaded" default="true" />
+		</model:model-field>
+		
+		<model:model-hook model="parameter" plugin="basic">
+			<model:onCreate class="com.qcadoo.mes.samples.hook.ParameterModelHooksSamples" method="setSamplesField" />
+		</model:model-hook>
 	</modules>
 
 </plugin>

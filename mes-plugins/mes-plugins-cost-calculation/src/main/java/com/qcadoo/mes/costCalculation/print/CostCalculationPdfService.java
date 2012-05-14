@@ -600,8 +600,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
             printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
                     TechnologiesConstants.MODEL_OPERATION).getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
 
-            printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getField("pieceworkCost").toString(),
-                    FontUtils.getDejavuRegular9Dark()));
+            printCostNormsOfMaterialTable2.addCell(new Phrase(
+                    (calculationOperationComponent.getField("pieceworkCost") == null) ? "" : calculationOperationComponent
+                            .getField("pieceworkCost").toString(), FontUtils.getDejavuRegular9Dark()));
 
             printCostNormsOfMaterialTable2.addCell(new Phrase(calculationOperationComponent.getField("numberOfOperations")
                     .toString(), FontUtils.getDejavuRegular9Dark()));

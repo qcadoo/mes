@@ -68,20 +68,12 @@ public class ProductionBalanceReportDataService {
         Entity prevProduct = products.get(0);
 
         BigDecimal plannedQuantity = products.get(0).getDecimalField(L_PLANNED_QUANTITY);
-        BigDecimal usedQuantity = (products.get(0).getField(L_USED_QUANTITY) == null) ? null : products.get(0).getDecimalField(
-                L_USED_QUANTITY);
+        BigDecimal usedQuantity = null;
 
         if (!products.isEmpty()) {
             for (Entity product : products) {
-                if (checkIfProductHasChanged(prevProduct, product) || (products.indexOf(product) == (products.size() - 1))) {
-                    prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
-                    prevProduct.setField(L_USED_QUANTITY, usedQuantity);
-                    prevProduct.setField(
-                            L_BALANCE,
-                            (usedQuantity == null) ? null
-                                    : usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
-
-                    groupedProducts.add(prevProduct);
+                if (checkIfProductHasChanged(prevProduct, product)) {
+                    addProduct(groupedProducts, prevProduct, plannedQuantity, usedQuantity);
 
                     prevProduct = product;
 
@@ -97,10 +89,24 @@ public class ProductionBalanceReportDataService {
                                 product.getDecimalField(L_USED_QUANTITY), numberService.getMathContext());
                     }
                 }
+
+                if (products.indexOf(product) == (products.size() - 1)) {
+                    addProduct(groupedProducts, prevProduct, plannedQuantity, usedQuantity);
+                }
             }
         }
 
         return groupedProducts;
+    }
+
+    private void addProduct(final List<Entity> groupedProducts, final Entity prevProduct, final BigDecimal plannedQuantity,
+            final BigDecimal usedQuantity) {
+        prevProduct.setField(L_PLANNED_QUANTITY, plannedQuantity);
+        prevProduct.setField(L_USED_QUANTITY, usedQuantity);
+        prevProduct.setField(L_BALANCE,
+                (usedQuantity == null) ? null : usedQuantity.subtract(plannedQuantity, numberService.getMathContext()));
+
+        groupedProducts.add(prevProduct);
     }
 
     public List<Entity> groupProductionRecordsByOperation(final List<Entity> productionRecords) {
@@ -110,43 +116,55 @@ public class ProductionBalanceReportDataService {
 
         Entity prevProductionRecord = productionRecords.get(0);
 
-        Integer machineTime = (Integer) productionRecords.get(0).getField(MACHINE_TIME);
-        Integer laborTime = (Integer) productionRecords.get(0).getField(LABOR_TIME);
+        Integer machineTime = 0;
+        Integer laborTime = 0;
 
-        BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+        BigDecimal executedOperationCycles = (productionRecords.get(0).getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO
                 : productionRecords.get(0).getDecimalField(EXECUTED_OPERATION_CYCLES);
 
         if (!productionRecords.isEmpty()) {
             for (Entity productionRecord : productionRecords) {
-                if (checkIfOperationHasChanged(prevProductionRecord, productionRecord)
-                        || (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1))) {
-                    prevProductionRecord.setField(MACHINE_TIME, machineTime);
-                    prevProductionRecord.setField(LABOR_TIME, laborTime);
-                    prevProductionRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
-
-                    groupedProductionRecords.add(prevProductionRecord);
+                if (checkIfOperationHasChanged(prevProductionRecord, productionRecord)) {
+                    addProductionRecord(groupedProductionRecords, prevProductionRecord, machineTime, laborTime,
+                            executedOperationCycles);
 
                     prevProductionRecord = productionRecord;
 
-                    machineTime = (Integer) productionRecord.getField(MACHINE_TIME);
-                    laborTime = (Integer) productionRecord.getField(LABOR_TIME);
+                    machineTime = (productionRecord.getField(MACHINE_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(MACHINE_TIME);
+                    laborTime = (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(LABOR_TIME);
 
-                    executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? null
+                    executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO
                             : productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES);
                 } else {
-                    machineTime += (Integer) productionRecord.getField(MACHINE_TIME);
-                    laborTime += (Integer) productionRecord.getField(LABOR_TIME);
+                    machineTime += (productionRecord.getField(MACHINE_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(MACHINE_TIME);
+                    laborTime += (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord
+                            .getField(LABOR_TIME);
 
-                    if (productionRecord.getField(EXECUTED_OPERATION_CYCLES) != null) {
-                        executedOperationCycles = (executedOperationCycles == null) ? productionRecord
-                                .getDecimalField(EXECUTED_OPERATION_CYCLES) : executedOperationCycles.add(
-                                productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES), numberService.getMathContext());
-                    }
+                    executedOperationCycles = (productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES) == null) ? executedOperationCycles
+                            : executedOperationCycles.add(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES),
+                                    numberService.getMathContext());
+                }
+
+                if (productionRecords.indexOf(productionRecord) == (productionRecords.size() - 1)) {
+                    addProductionRecord(groupedProductionRecords, prevProductionRecord, machineTime, laborTime,
+                            executedOperationCycles);
                 }
             }
         }
 
         return groupedProductionRecords;
+    }
+
+    private void addProductionRecord(final List<Entity> groupedProductionRecords, final Entity prevProductionRecord,
+            final Integer machineTime, final Integer laborTime, final BigDecimal executedOperationCycles) {
+        prevProductionRecord.setField(MACHINE_TIME, machineTime);
+        prevProductionRecord.setField(LABOR_TIME, laborTime);
+        prevProductionRecord.setField(EXECUTED_OPERATION_CYCLES, executedOperationCycles);
+
+        groupedProductionRecords.add(prevProductionRecord);
     }
 
     private boolean checkIfProductHasChanged(final Entity prevProduct, final Entity product) {

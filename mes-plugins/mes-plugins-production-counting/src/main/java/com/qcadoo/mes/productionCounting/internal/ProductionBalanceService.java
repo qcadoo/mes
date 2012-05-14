@@ -59,6 +59,6 @@ public interface ProductionBalanceService {
 
     Entity getCompanyFromDB();
 
-    Map<Entity, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
+    Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
             final List<Entity> productionRecords);
 }

@@ -107,18 +107,19 @@ public class GenerateProductionBalanceWithCostsTest {
     public void shouldSetQuantityTechnologyProductionLineAndTechnicalProductionCostPerUnitFieldsAndSaveEntity() {
         // given
         BigDecimal quantity = BigDecimal.TEN;
-        given(balance.getField("totalTechnicalProductionCosts")).willReturn(new BigDecimal(100));
-        given(order.getField("plannedQuantity")).willReturn(quantity);
+        given(balance.getDecimalField("totalTechnicalProductionCosts")).willReturn(BigDecimal.valueOf(100));
+        given(order.getDecimalField("plannedQuantity")).willReturn(quantity);
         given(order.getBelongsToField("productionLine")).willReturn(productionLine);
 
         // when
         generateProductionBalanceWithCosts.doTheCostsPart(balance);
 
         // then
-        verify(balance).setField("technology", technology);
         verify(balance).setField("quantity", quantity);
+        verify(balance).setField("technology", technology);
         verify(balance).setField("productionLine", productionLine);
         verify(balance).setField("totalTechnicalProductionCostPerUnit", BigDecimal.TEN.setScale(3, RoundingMode.HALF_EVEN));
+
         verify(dataDefinition).save(balance);
     }
 

@@ -112,6 +112,7 @@ import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCosts
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.aop.Monitorable;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -191,7 +192,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         Entity technology = order.getBelongsToField(TECHNOLOGY);
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
 
-        BigDecimal quantity = (BigDecimal) order.getField(PLANNED_QUANTITY);
+        BigDecimal quantity = order.getDecimalField(PLANNED_QUANTITY);
 
         productionBalance.setField(QUANTITY, quantity);
         productionBalance.setField(TECHNOLOGY, technology);
@@ -199,8 +200,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         costCalculationService.calculateTotalCost(productionBalance);
 
-        BigDecimal totalTechnicalProductionCosts = (BigDecimal) productionBalance.getField(TOTAL_TECHNICAL_PRODUCTION_COSTS);
+        BigDecimal totalTechnicalProductionCosts = productionBalance.getDecimalField(TOTAL_TECHNICAL_PRODUCTION_COSTS);
         BigDecimal perUnit = totalTechnicalProductionCosts.divide(quantity, numberService.getMathContext());
+
         productionBalance.setField(TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT, numberService.setScale(perUnit));
 
         productionBalance.getDataDefinition().save(productionBalance);
@@ -215,9 +217,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         List<Entity> productionRecords = productionBalanceService.getProductionRecordsFromDB(order);
 
-        Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes = productionBalanceService
-                .fillProductionRecordsWithPlannedTimes(productionBalance, productionRecords);
-
         List<Entity> groupedProductionRecords = productionBalanceReportDataService
                 .groupProductionRecordsByOperation(productionRecords);
 
@@ -228,6 +227,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         if (HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE))
                 && order.getBooleanField(REGISTER_PRODUCTION_TIME)) {
+            Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = productionBalanceService
+                    .fillProductionRecordsWithPlannedTimes(productionBalance, productionRecords);
+
             if (FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING))) {
                 fillCostValues(productionBalance, groupedProductionRecords, productionRecordsWithPlannedTimes);
                 fillOperationCostComponents(productionBalance, groupedProductionRecords, productionRecordsWithPlannedTimes);
@@ -243,6 +245,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         sumarizeCostValues(productionBalance, order);
     }
 
+    @Monitorable
     private void fillMaterialValues(final Entity productionBalance, final Map<Entity, BigDecimal> productWithCosts) {
         if (productionBalance == null) {
             return;
@@ -260,7 +263,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                         product);
 
                 if (balanceOperationProductInComponent != null) {
-                    BigDecimal registeredQuantity = (BigDecimal) balanceOperationProductInComponent.getField(USED_QUANTITY);
+                    BigDecimal registeredQuantity = balanceOperationProductInComponent.getDecimalField(USED_QUANTITY);
 
                     BigDecimal productRegisteredCost = BigDecimal.ZERO;
 
@@ -289,6 +292,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
     }
 
+    @Monitorable
     private void fillTechnologyInstOperProductInComps(final Entity productionBalance,
             final Map<Entity, BigDecimal> productWithCosts) {
         if (productionBalance == null) {
@@ -310,7 +314,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                             ProductionCountingWithCostsConstants.PLUGIN_IDENTIFIER,
                             ProductionCountingWithCostsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).create();
 
-                    BigDecimal registeredQuantity = (BigDecimal) balanceOperationProductInComponent.getField(USED_QUANTITY);
+                    BigDecimal registeredQuantity = balanceOperationProductInComponent.getDecimalField(USED_QUANTITY);
 
                     BigDecimal productRegisteredCost = BigDecimal.ZERO;
 
@@ -340,8 +344,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         }
     }
 
+    @Monitorable
     private void fillCostValues(final Entity productionBalance, final List<Entity> productionRecords,
-            final Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
         if (productionBalance == null) {
             return;
         }
@@ -361,9 +366,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     if (calculationOperationComponent != null) {
                         BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-                        BigDecimal machineHourlyCost = (BigDecimal) calculationOperationComponent.getField(MACHINE_HOURLY_COST);
+                        BigDecimal machineHourlyCost = calculationOperationComponent.getDecimalField(MACHINE_HOURLY_COST);
 
-                        Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord).get(
+                        Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
                                 L_PLANNED_MACHINE_TIME);
                         BigDecimal plannedMachineTimeHours = BigDecimal.valueOf(plannedMachineTime).divide(milisecondsInHour,
                                 numberService.getMathContext());
@@ -378,9 +383,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                         machineCosts = machineCosts.add((BigDecimal) machineHourlyCost.multiply(machineTimeHours),
                                 numberService.getMathContext());
 
-                        BigDecimal laborHourlyCost = (BigDecimal) calculationOperationComponent.getField(LABOR_HOURLY_COST);
+                        BigDecimal laborHourlyCost = calculationOperationComponent.getDecimalField(LABOR_HOURLY_COST);
 
-                        Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord).get(
+                        Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
                                 L_PLANNED_LABOR_TIME);
                         BigDecimal plannedLaborTimeHours = BigDecimal.valueOf(plannedLaborTime).divide(milisecondsInHour,
                                 numberService.getMathContext());
@@ -401,9 +406,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 for (Entity productionRecord : productionRecords) {
                     BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-                    BigDecimal averageMachineHourlyCost = (BigDecimal) productionBalance.getField(AVERAGE_MACHINE_HOURLY_COST);
+                    BigDecimal averageMachineHourlyCost = productionBalance.getDecimalField(AVERAGE_MACHINE_HOURLY_COST);
 
-                    Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord).get(
+                    Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
                             L_PLANNED_MACHINE_TIME);
                     BigDecimal plannedMachineTimeHours = BigDecimal.valueOf(plannedMachineTime).divide(milisecondsInHour,
                             numberService.getMathContext());
@@ -421,7 +426,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal averageLaborHourlyCost = (BigDecimal) productionBalance.getField(AVERAGE_LABOR_HOURLY_COST);
 
-                    Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord).get(L_PLANNED_LABOR_TIME);
+                    Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
+                            L_PLANNED_LABOR_TIME);
                     BigDecimal plannedLaborTimeHours = BigDecimal.valueOf(plannedLaborTime).divide(milisecondsInHour,
                             numberService.getMathContext());
 
@@ -452,8 +458,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
+    @Monitorable
     private void fillOperationCostComponents(final Entity productionBalance, final List<Entity> productionRecords,
-            final Map<Entity, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
         if (productionBalance == null) {
             return;
         }
@@ -471,9 +478,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-                    BigDecimal machineHourlyCost = (BigDecimal) calculationOperationComponent.getField(MACHINE_HOURLY_COST);
+                    BigDecimal machineHourlyCost = calculationOperationComponent.getDecimalField(MACHINE_HOURLY_COST);
 
-                    Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord).get(
+                    Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
                             L_PLANNED_MACHINE_TIME);
                     BigDecimal plannedMachineTimeHours = BigDecimal.valueOf(plannedMachineTime).divide(milisecondsInHour,
                             numberService.getMathContext());
@@ -488,9 +495,10 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal machineCostsBalance = machineCosts.subtract(plannedMachineCosts, numberService.getMathContext());
 
-                    BigDecimal laborHourlyCost = (BigDecimal) calculationOperationComponent.getField(LABOR_HOURLY_COST);
+                    BigDecimal laborHourlyCost = calculationOperationComponent.getDecimalField(LABOR_HOURLY_COST);
 
-                    Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord).get(L_PLANNED_LABOR_TIME);
+                    Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(productionRecord.getId()).get(
+                            L_PLANNED_LABOR_TIME);
                     BigDecimal plannedLaborTimeHours = BigDecimal.valueOf(plannedLaborTime).divide(milisecondsInHour,
                             numberService.getMathContext());
 
@@ -526,6 +534,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
+    @Monitorable
     private void fillPieceworkCostValues(final Entity productionBalance, final List<Entity> productionRecords) {
         if (productionBalance == null) {
             return;
@@ -564,6 +573,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
+    @Monitorable
     private void fillOperationPieceworkCostComponents(final Entity productionBalance, final List<Entity> productionRecords) {
         if (productionBalance == null) {
             return;

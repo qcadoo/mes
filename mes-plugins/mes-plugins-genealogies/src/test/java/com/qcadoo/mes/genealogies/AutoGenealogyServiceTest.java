@@ -33,8 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
@@ -44,13 +42,8 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.aspectj.AnnotationTransactionAspect;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -59,10 +52,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
 import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.security.api.SecurityService;
@@ -83,14 +73,12 @@ public class AutoGenealogyServiceTest {
 
     private PluginManager pluginManager;
 
-    private Entity entity;
-
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         securityService = mock(SecurityService.class);
         pluginManager = mock(PluginManager.class);
-        entity = mock(Entity.class);
+
         autoGenealogyService = new AutoGenealogyService();
 
         setField(autoGenealogyService, "dataDefinitionService", dataDefinitionService);
@@ -146,305 +134,6 @@ public class AutoGenealogyServiceTest {
         // then
         verify(state, times(2)).getFieldValue();
         verify(state).addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyIfProductIsNull() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(null);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyIfTechnologyIsNull() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(null);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyIfMainBatchIsNull() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("number")).willReturn("test");
-        given(product.getField("name")).willReturn("test");
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyIfExistingGenealogyWithBatch() throws Exception {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("batch")).willReturn("test");
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(mock(Entity.class));
-
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
-        SearchCriterion eq = mock(SearchCriterion.class);
-        SearchCriterion belongsTo = mock(SearchCriterion.class);
-        SearchResult searchResult = mock(SearchResult.class);
-
-        mockStatic(SearchRestrictions.class);
-
-        when(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find())
-                .thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(list);
-        when(SearchRestrictions.eq("batch", "test")).thenReturn(eq);
-        when(SearchRestrictions.belongsTo("order", order)).thenReturn(belongsTo);
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                        .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "false" });
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyWithLastUsedBatchOtherError() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-
-        Entity order = mock(Entity.class);
-        Entity product = mock(Entity.class);
-        Entity technology = mock(Entity.class);
-        given(order.getBelongsToField("product")).willReturn(product);
-        given(order.getBelongsToField("technology")).willReturn(technology);
-        given(product.getField("lastUsedBatch")).willReturn("test");
-        given(technology.getField("shiftFeatureRequired")).willReturn(false);
-        given(technology.getField("postFeatureRequired")).willReturn(false);
-        given(technology.getField("otherFeatureRequired")).willReturn(false);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(mock(Entity.class));
-
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
-        SearchCriterion eq = mock(SearchCriterion.class);
-        SearchCriterion belongsTo = mock(SearchCriterion.class);
-        SearchResult searchResult = mock(SearchResult.class);
-
-        mockStatic(SearchRestrictions.class);
-
-        when(dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find())
-                .thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
-        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(list);
-        when(SearchRestrictions.eq("batch", "test")).thenReturn(eq);
-        when(SearchRestrictions.belongsTo("order", order)).thenReturn(belongsTo);
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).find()
-                        .add(eq).add(belongsTo).setMaxResults(1).list().getEntities()).willReturn(list);
-
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY).create()
-                        .isValid()).willReturn(true);
-        given(
-                dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER, GenealogiesConstants.MODEL_GENEALOGY)
-                        .save(any(Entity.class)).getGlobalErrors().isEmpty()).willReturn(true);
-
-        TransactionStatus txStatus = mock(TransactionStatus.class);
-        given(txStatus.isRollbackOnly()).willReturn(false);
-
-        PlatformTransactionManager txManager = mock(PlatformTransactionManager.class);
-        given(txManager.getTransaction((TransactionDefinition) Mockito.anyObject())).willReturn(txStatus);
-
-        AnnotationTransactionAspect txAspect = AnnotationTransactionAspect.aspectOf();
-        txAspect.setTransactionManager(txManager);
-
-        // when
-        autoGenealogyService.autocompleteGenealogy(viewDefinitionState, state, new String[] { "true" });
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfNoRowIsSelected() throws Exception {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(null);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-        Entity parameter = mock(Entity.class);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list()).willReturn(searchResult);
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(parameter);
-        when(searchResult.getEntities()).thenReturn(list);
-        when(parameter.getField("batchForDoneOrder")).thenReturn(false, true);
-        // when
-        autoGenealogyService.onCompleted(entity);
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfFormHasNoIdentifier() throws Exception {
-        // given
-        FormComponent state = mock(FormComponent.class);
-        given(state.getFieldValue()).willReturn(null);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-
-        Entity parameter = mock(Entity.class);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list()).willReturn(searchResult);
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(parameter);
-        when(searchResult.getEntities()).thenReturn(list);
-        when(parameter.getField("batchForDoneOrder")).thenReturn(false, true);
-        // when
-        autoGenealogyService.onCompleted(entity);
-
-        // then
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfOrderIsNull() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getLocale()).willReturn(Locale.ENGLISH);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L))
-                .willReturn(null);
-
-        Entity parameter = mock(Entity.class);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list()).willReturn(searchResult);
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(parameter);
-        when(searchResult.getEntities()).thenReturn(list);
-        when(parameter.getField("batchForDoneOrder")).thenReturn(false, true);
-        // when
-        autoGenealogyService.onCompleted(entity);
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfHasNotGoodStatus() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-
-        Entity order = mock(Entity.class);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-        Entity parameter = mock(Entity.class);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list()).willReturn(searchResult);
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(parameter);
-        // when
-        when(searchResult.getEntities()).thenReturn(list);
-        when(parameter.getField("batchForDoneOrder")).thenReturn(false, true);
-
-        autoGenealogyService.onCompleted(entity);
-
-    }
-
-    @Test
-    public void shouldFailAutoCreateGenealogyOnChangeOrderStatusIfParameterIsNull() {
-        // given
-        ComponentState state = mock(ComponentState.class);
-        given(state.getFieldValue()).willReturn(13L);
-        given(state.getLocale()).willReturn(Locale.ENGLISH);
-
-        Entity order = mock(Entity.class);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(13L)).willReturn(
-                order);
-
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
-        Entity parameter = mock(Entity.class);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).list()).willReturn(searchResult);
-        List<Entity> list = new ArrayList<Entity>();
-        list.add(parameter);
-        // when
-        when(searchResult.getEntities()).thenReturn(list);
-        when(parameter.getField("batchForDoneOrder")).thenReturn(false, true);
-        autoGenealogyService.onCompleted(entity);
-
     }
 
     @Test

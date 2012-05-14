@@ -68,7 +68,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -83,7 +82,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -1356,48 +1354,6 @@ public class OrderServiceTest {
         // then
         assertFalse(results);
         verify(entity).addError(orderField, "orders.validate.global.error.orderTechnologyMustHaveOperation");
-    }
-
-    private void prepareCheckIfAllQualityControlsAreClosed(final Entity order, final boolean expected) {
-        if (expected) {
-            DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-            given(order.getBelongsToField("technology").getField("qualityControlType").toString()).willReturn("01forBatch");
-            given(dataDefinitionService.get("qualityControls", "qualityControl")).willReturn(dataDefinition);
-            given(dataDefinition.find().list().getTotalNumberOfEntities()).willReturn(0);
-        } else {
-            given(order.getBelongsToField("technology").getField("qualityControlType")).willReturn(null);
-        }
-    }
-
-    private void prepareIsQualityControlAutoCheckEnabled(final boolean expected) {
-        if (expected) {
-            Entity entity = mock(Entity.class);
-            List<Entity> entities = new ArrayList<Entity>();
-            entities.add(entity);
-            given(entity.getField("checkDoneOrderForQuality")).willReturn(true);
-            given(
-                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                            .setMaxResults(1).list().getEntities().size()).willReturn(1);
-            given(
-                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                            .setMaxResults(1).list().getEntities()).willReturn(entities);
-        } else {
-            given(
-                    dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                            .setMaxResults(1).list().getEntities().size()).willReturn(0);
-        }
-    }
-
-    private void prepareCheckRequiredBatch(final Entity order, final boolean expected) {
-        if (expected) {
-            given(order.getField("technology")).willReturn(null);
-        } else {
-            Entity technology = mock(Entity.class);
-            given(order.getField("technology")).willReturn(technology);
-            given(order.getHasManyField("genealogies").size()).willReturn(0);
-            given(technology.getField("batchRequired")).willReturn(false);
-            given(technology.getField("shiftFeatureRequired")).willReturn(true);
-        }
     }
 
     @Test
