@@ -23,39 +23,57 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-import java.util.ArrayList;
-
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 
 public class ParameterServiceTest {
+
+    private ParameterService parameterService;
+
+    @Mock
+    private DataDefinitionService dataDefinitionService;
+
+    @Mock
+    private DataDefinition dataDefinition;
+
+    @Mock
+    private SearchCriteriaBuilder searchBuilder;
+
+    @Before
+    public final void init() {
+        MockitoAnnotations.initMocks(this);
+        parameterService = new ParameterService();
+        ReflectionTestUtils.setField(parameterService, "dataDefinitionService", dataDefinitionService);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER)).willReturn(dataDefinition);
+        given(dataDefinition.find()).willReturn(searchBuilder);
+        given(searchBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchBuilder);
+        given(searchBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchBuilder);
+    }
 
     @Test
     public void shouldReturnExistingParameterEntityId() throws Exception {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).uniqueResult()).willReturn(parameter);
-
-        ParameterService parameterService = new ParameterService();
-        setField(parameterService, "dataDefinitionService", dataDefinitionService);
+        given(searchBuilder.uniqueResult()).willReturn(parameter);
 
         // when
         Long id = parameterService.getParameterId();
@@ -69,14 +87,8 @@ public class ParameterServiceTest {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
-        given(
-                dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find()
-                        .setMaxResults(1).uniqueResult()).willReturn(parameter);
-
-        ParameterService parameterService = new ParameterService();
-        setField(parameterService, "dataDefinitionService", dataDefinitionService);
+        given(searchBuilder.uniqueResult()).willReturn(parameter);
+        given(parameter.isValid()).willReturn(true);
 
         // when
         Entity existingParameter = parameterService.getParameter();
@@ -88,69 +100,38 @@ public class ParameterServiceTest {
     @Test
     public void shouldReturnNewParameterEntity() throws Exception {
         // given
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        CurrencyService currencyService = mock(CurrencyService.class);
-        Entity newParameter = mock(Entity.class);
+        Entity parameter = mock(Entity.class);
+        given(parameter.isValid()).willReturn(true);
+        given(dataDefinition.create()).willReturn(parameter);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).uniqueResult()).willReturn(null);
-        given(dataDefinition.create()).willReturn(newParameter);
+        Entity savedParameter = mock(Entity.class);
+        given(savedParameter.isValid()).willReturn(true);
+        given(savedParameter.getId()).willReturn(15L);
 
-        Entity savedEntity = mock(Entity.class);
-        given(savedEntity.getId()).willReturn(15L);
+        given(dataDefinition.save(parameter)).willReturn(savedParameter);
 
-        given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
-        given(dataDefinition.save(newParameter)).willReturn(savedEntity);
-        Entity currency = mock(Entity.class);
-        given(currencyService.getCurrentCurrency()).willReturn(currency);
-
-        ParameterService parameterService = new ParameterService();
-
-        setField(parameterService, "dataDefinitionService", dataDefinitionService);
-        setField(parameterService, "currencyService", currencyService);
         // when
         Entity returnedParameter = parameterService.getParameter();
 
         // then
-        verify(dataDefinition).save(newParameter);
-        verify(newParameter).setField("currency", currency);
+        verify(dataDefinition).save(parameter);
         assertEquals(Long.valueOf(15L), returnedParameter.getId());
     }
 
-    @Test
-    public void shouldReturnNewGenealogyAttributeId() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfNewParameterEntityIsNotValid() throws Exception {
         // given
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        CurrencyService currencyService = mock(CurrencyService.class);
+        Entity parameter = mock(Entity.class);
+        given(parameter.isValid()).willReturn(true);
+        given(dataDefinition.create()).willReturn(parameter);
 
-        Entity newParameter = mock(Entity.class);
+        Entity savedParameter = mock(Entity.class);
+        given(savedParameter.isValid()).willReturn(false);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER)).willReturn(
-                dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).uniqueResult()).willReturn(null);
-        given(dataDefinition.create()).willReturn(newParameter);
+        given(dataDefinition.save(parameter)).willReturn(savedParameter);
 
-        Entity savedEntity = mock(Entity.class);
-        given(savedEntity.getId()).willReturn(15L);
-
-        given(dataDefinition.find().setMaxResults(1).list().getEntities()).willReturn(new ArrayList<Entity>());
-        given(dataDefinition.save(newParameter)).willReturn(savedEntity);
-        Entity currency = mock(Entity.class);
-        given(currencyService.getCurrentCurrency()).willReturn(currency);
-
-        ParameterService parameterService = new ParameterService();
-        setField(parameterService, "dataDefinitionService", dataDefinitionService);
-        setField(parameterService, "currencyService", currencyService);
         // when
-        Long id = parameterService.getParameterId();
-
-        // then
-        verify(dataDefinition).save(newParameter);
-        verify(newParameter).setField("currency", currency);
-        assertEquals(Long.valueOf(15L), id);
+        parameterService.getParameter();
     }
 
 }

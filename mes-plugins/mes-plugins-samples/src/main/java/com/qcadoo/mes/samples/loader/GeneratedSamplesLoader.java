@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.samples;
+package com.qcadoo.mes.samples.loader;
 
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
@@ -52,6 +52,7 @@ import org.apache.commons.lang.LocaleUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -64,7 +65,8 @@ import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
-public class GeneratedSamplesLoader extends SamplesLoader {
+@Transactional
+public class GeneratedSamplesLoader extends AbstractSamplesLoader {
 
     private static final String STATE_L = "state";
 
@@ -110,7 +112,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
     private int iterations;
 
     @Override
-    void loadData(final String dataset, final String locale) {
+    protected void loadData(final String locale) {
         generateAndAddUser();
         generateAndAddDictionary();
         addParameters(singletonMap("code", "PLN"));
@@ -254,7 +256,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
             operation.setField("laborHourlyCost", RANDOM.nextInt(100));
             operation.setField("numberOfOperations", RANDOM.nextInt(10) + 1);
         }
-        operation = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_OPERATION).save(operation);
+        dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_OPERATION).save(operation);
     }
 
     private Entity getRandomMachine() {
@@ -296,7 +298,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
                 TECHNOLOGY_MODEL_TECHNOLOGY, technology.getId());
 
         technology.setField(STATE_L, "02accepted");
-        technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
+        dataDefinitionService.get(TECHNOLOGIES_PLUGIN, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
     }
 
     private Entity addOperationComponent(final Entity technology, final Entity parent, final Entity operation,
@@ -434,7 +436,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         order.setField("typeOfProductionRecording", "01basic");
         order.setField("trackingRecordTreatment", "01duringProduction");
 
-        order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
     }
 
     private Long generateRandomDate(final Long dateFrom) {
@@ -457,7 +459,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         staff.setField("surname", generateString(CHARS_ONLY, RANDOM.nextInt(12)));
         staff.setField("post", generateString(CHARS_ONLY, RANDOM.nextInt(5)));
 
-        staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
     }
 
     private String getNameFromNumberAndPrefix(final String prefix, final String number) {
@@ -477,7 +479,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         machine.setField(L_NUMBER, number);
         machine.setField("description", generateString(CHARS_ONLY, RANDOM.nextInt(100)));
 
-        machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).save(machine);
     }
 
     private String generateWorkingHours(final String locale) {
@@ -513,7 +515,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
             shift.setField(SHIFT_HOURS[i], generateWorkingHours(locale));
         }
 
-        shift = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "shift").save(shift);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "shift").save(shift);
     }
 
     private void generateAndAddProduct() {
@@ -557,7 +559,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         substituteComponent.setField(BASIC_MODEL_PRODUCT, product);
         substituteComponent.setField("substitute", substitute);
 
-        substituteComponent = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").save(substituteComponent);
+        dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "substituteComponent").save(substituteComponent);
     }
 
     private void generateAndAddUser() {
@@ -573,7 +575,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         user.setField("passwordConfirmation", "123");
         user.setField("enabled", true);
 
-        user = dataDefinitionService.get("qcadooSecurity", "user").save(user);
+        dataDefinitionService.get("qcadooSecurity", "user").save(user);
     }
 
     private void generateAndAddCompany() {
@@ -614,7 +616,7 @@ public class GeneratedSamplesLoader extends SamplesLoader {
         item.setField("dictionary", dictionary);
         item.setField(L_NAME, generateString(CHARS_ONLY, 8));
 
-        item = dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
+        dataDefinitionService.get("qcadooModel", "dictionaryItem").save(item);
     }
 
     private String generateTypeOfProduct() {

@@ -84,7 +84,6 @@
 		</model:model-field>
 
 		<menu:menu-category name="materialFlow" />
-		<menu:menu-category name="reports" />
 
 		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail"
 			component="form" event="refreshShouldBeInStockCorrectionDetail"
@@ -99,7 +98,7 @@
 			view="transferList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
 			view="stockAreasList" />
-		<menu:menu-item name="materialsInStockAreas" category="reports"
+		<menu:menu-item name="materialsInStockAreas" category="materialFlow"
 			view="materialsInStockAreasList" />
 		<menu:menu-item name="transformations" category="materialFlow"
 			view="transformationsList" />

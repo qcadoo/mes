@@ -554,14 +554,28 @@ public class TechnologyService {
                 continue;
             }
             final EntityList prodsIn = parent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
+
             if (L_OPERATION.equals(technologyOperation.getStringField(L_ENTITY_TYPE))) {
                 final EntityList prodsOut = technologyOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
-                if (prodsIn == null || prodsIn.isEmpty()) {
+
+                if (prodsIn == null) {
                     operations.add(parent);
+                    continue;
                 }
 
-                if (prodsOut == null || prodsOut.isEmpty()) {
+                if (prodsIn.isEmpty()) {
+                    operations.add(parent);
+                    continue;
+                }
+
+                if (prodsOut == null) {
                     operations.add(technologyOperation);
+                    continue;
+                }
+
+                if (prodsOut.isEmpty()) {
+                    operations.add(technologyOperation);
+                    continue;
                 }
 
                 if (!checkIfAtLeastOneCommonElement(prodsOut, prodsIn)) {
@@ -572,10 +586,17 @@ public class TechnologyService {
 
                 if (prodOut == null) {
                     operations.add(parent);
+                    continue;
                 }
 
-                if (prodsIn == null || prodsIn.isEmpty()) {
+                if (prodsIn == null) {
                     operations.add(technologyOperation);
+                    continue;
+                }
+
+                if (prodsIn.isEmpty()) {
+                    operations.add(technologyOperation);
+                    continue;
                 }
 
                 if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodOut), prodsIn)) {
@@ -619,7 +640,10 @@ public class TechnologyService {
     public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
         Entity technology = technologyOperation.getBelongsToField(L_TECHNOLOGY);
         EntityTree tree = technology.getTreeField(L_OPERATION_COMPONENTS);
-        if (tree == null || tree.isEmpty()) {
+        if (tree == null) {
+            return;
+        }
+        if (tree.isEmpty()) {
             return;
         }
         EntityTreeNode rootNode = tree.getRoot();

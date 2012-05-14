@@ -30,5 +30,7 @@
 	<fields>
 		<belongsTo name="currency" plugin="basic" model="currency" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks" method="setDefaultCurrency" />
+	</hooks>
 </model>

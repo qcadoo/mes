@@ -214,7 +214,7 @@
 			</layoutElement>
 		</component>
 		<component type="grid" name="technologyInstOperProductInComps" source="#{form}.technologyInstOperProductInComps"
-			 reference="technologyInstOperProductInComps">
+			 reference="technologyInstOperProductInGrid">
 			<option type="column" name="productNumber" fields="product"
 				expression="#product['number']" />
 			<option type="column" name="productName" fields="product"

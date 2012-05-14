@@ -112,10 +112,10 @@
 		    <model:onCreate class="com.qcadoo.mes.genealogies.ParameterServiceGeneal" method="addFieldsForParameter"/>
 		</model:model-hook>
 
-		<menu:menu-category name="reports" />
+		<menu:menu-category name="advancedGenealogy" />
 		<menu:menu-item-url name="genealogyAttributes"
-			category="basic" url="genealogyAttribute.html" />
-		<menu:menu-item name="genealogyForProduct" category="reports"
+			category="advancedGenealogy" url="genealogyAttribute.html" />
+		<menu:menu-item name="genealogyForProduct" category="advancedGenealogy"
 			view="genealogyForProduct" />
 
 		<view:view resource="view/currentAttribute.xml" />

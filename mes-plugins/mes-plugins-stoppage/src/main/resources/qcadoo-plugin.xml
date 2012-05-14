@@ -65,8 +65,8 @@
 				model="stoppage" joinField="order" cascade="delete" />
 		</model:model-field>
 
-		<menu:menu-category name="orders" />
-		<menu:menu-item name="stoppages" category="orders"
+		<menu:menu-category name="ordersTracking" />
+		<menu:menu-item name="stoppages" category="ordersTracking"
 			view="allStoppages" />
 
 		<view:view resource="view/allStoppages.xml" />

@@ -86,6 +86,7 @@
 		</model:model-hook>
 
 		<menu:menu-category name="orders" />
+		<menu:menu-category name="ordersTracking" />
 
 		<menu:menu-item name="productionOrders" category="orders"
 			view="ordersList" />
@@ -107,6 +108,7 @@
 			resource="report/order.jrxml" />
 			
 		<custom:custom class="com.qcadoo.mes.orders.TechnologyOnStartupModule" />
+		<view:resource uri="public/**/*" />
 	</modules>
 
 </plugin>

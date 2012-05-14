@@ -576,7 +576,7 @@
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="fillCurrencyFields" />
 		<beforeRender
-		class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
-		method="disableCheckboxIfPieceworkIsSelected"/>
+			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
+			method="disableCheckboxIfPieceworkIsSelected"/>
 	</hooks>
 </view>
