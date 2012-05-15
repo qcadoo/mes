@@ -40,10 +40,12 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCou
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
@@ -62,6 +64,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -170,7 +173,9 @@ public class ProductionRecordService {
     }
 
     public void copyProductsFromOrderOperation(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        Entity order = productionRecord.getBelongsToField(OrdersConstants.MODEL_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER);
+        Entity technologyInstanceOperationComponent = productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         if (typeOfProductionRecording == null) {
             return;
@@ -184,29 +189,28 @@ public class ProductionRecordService {
             return;
         }
 
-        for (String fieldName : newArrayList(RECORD_OPERATION_PRODUCT_IN_COMPONENTS, RECORD_OPERATION_PRODUCT_OUT_COMPONENTS)) {
-            if (productionRecord.getField(fieldName) != null) {
-                return;
+        if (shouldCopy(productionRecord, order, technologyInstanceOperationComponent)) {
+            if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
+                operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+            } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+                operationComponents = newArrayList(productionRecord
+                        .getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
             }
-        }
 
-        if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            operationComponents = order.getTreeField(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
-        } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            operationComponents = newArrayList(productionRecord.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
-        }
-
-        if (registerInput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
-        }
-        if (registerOutput) {
-            copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+            if (registerInput) {
+                copyOperationProductComponents(operationComponents, productionRecord,
+                        MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
+            }
+            if (registerOutput) {
+                copyOperationProductComponents(operationComponents, productionRecord,
+                        MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT);
+            }
         }
     }
 
     private void copyOperationProductComponents(final List<Entity> orderOperations, final Entity productionRecord,
             final String modelName) {
-        if (checkIfOperationListIsEmpty(orderOperations)) {
+        if (isOperationListEmpty(orderOperations)) {
             return;
         }
 
@@ -350,7 +354,37 @@ public class ProductionRecordService {
         }
     }
 
-    private static boolean checkIfOperationListIsEmpty(final List<Entity> orderOperations) {
+    private boolean shouldCopy(final Entity productionRecord, Entity order, Entity technologyInstanceOperationComponent) {
+        return (hasValueChanged(productionRecord, order, ORDER)
+                || hasValueChanged(productionRecord, technologyInstanceOperationComponent,
+                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) || !hasRecordOperationProductComponents(productionRecord));
+    }
+
+    private boolean hasRecordOperationProductComponents(final Entity productionRecord) {
+        return ((productionRecord.getField(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS) != null) && (productionRecord
+                .getField(ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS) != null));
+    }
+
+    private boolean hasValueChanged(final Entity productionRecord, final Entity value, final String model) {
+        Entity existingProductionRecord = getExistingProductionRecord(productionRecord);
+        if (existingProductionRecord == null) {
+            return false;
+        }
+        Entity existingProductionRecordValue = existingProductionRecord.getBelongsToField(model);
+        if (existingProductionRecordValue == null) {
+            return true;
+        }
+        return !existingProductionRecordValue.equals(value);
+    }
+
+    private Entity getExistingProductionRecord(final Entity productionRecord) {
+        if (productionRecord.getId() == null) {
+            return null;
+        }
+        return productionRecord.getDataDefinition().get(productionRecord.getId());
+    }
+
+    private static boolean isOperationListEmpty(final List<Entity> orderOperations) {
         return orderOperations == null || orderOperations.isEmpty() || orderOperations.get(0) == null;
     }
 
