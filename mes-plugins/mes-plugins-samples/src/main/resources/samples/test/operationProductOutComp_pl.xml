@@ -1,4 +1,5 @@
 <operationProductOutComps>
+    
     <row OPERATION_COMP_ID="1" PRODUCT_NR="S-1" QUANTITY="1"/>
     <row OPERATION_COMP_ID="2" PRODUCT_NR="B-1" QUANTITY="1"/>
     <row OPERATION_COMP_ID="3" PRODUCT_NR="B-NH" QUANTITY="1"/>

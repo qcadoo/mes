@@ -28,9 +28,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAF
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_1;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_2;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_5;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCH;
@@ -152,6 +149,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private HashMap<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
 
+    private HashMap<String, Entity> genealogyProductsIn = new LinkedHashMap<String, Entity>();
+
     @Override
     protected void loadData(final String locale) {
         final String dataset = "test";
@@ -227,6 +226,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_BATCHES, locale);
             if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                 readDataFromXML(dataset, L_TRACKING_RECORDS, locale);
+                readDataFromXML(dataset, "usedBatches", locale);
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
@@ -258,10 +258,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addProductInComponent(values);
         } else if ("operationProductOutComp".equals(type)) {
             addProductOutComponent(values);
-        } else if ("dictionaries".equals(type)) {
-            addDictionaryItems(values);
-        } else if ("users".equals(type)) {
-            addUser(values);
         } else if ("operations".equals(type)) {
             addOperations(values);
         } else if (BASIC_MODEL_STAFF.equals(type)) {
@@ -286,6 +282,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addBatches(values);
         } else if (L_TRACKING_RECORDS.equals(type)) {
             addTrackingRecord(values);
+        } else if ("usedBatches".equals(type)) {
+            addUsedBatch(values);
         } else if (L_GENEALOGY_TABLES.equals(type)) {
             addGenealogyTables(values);
         } else if (L_QUALITY_CONTROLS.equals(type)) {
@@ -616,16 +614,51 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addTrackingRecord(final Map<String, String> values) {
         Entity trackingRecord = dataDefinitionService.get(L_ADVANCED_GENEALOGY, "trackingRecord").create();
-
         trackingRecord.setField("entityType", values.get("entity_type"));
         trackingRecord.setField(L_NUMBER, values.get(L_NUMBER));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
         trackingRecord.setField(L_STATE, "01draft");
-
         trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
+    }
 
-        buildTrackingRecord(trackingRecord);
+    private void addUsedBatch(final Map<String, String> values) {
+        Entity genealogyProductInBatch = dataDefinitionService.get(L_ADVANCED_GENEALOGY_FOR_ORDERS, "genealogyProductInBatch")
+                .create();
+
+        genealogyProductInBatch.setField(L_BATCH, getBatchByNumber(values.get("batch")));
+        Entity trackingRecord = dataDefinitionService.get(L_ADVANCED_GENEALOGY, "trackingRecord").find()
+                .add(SearchRestrictions.eq(L_NUMBER, values.get("trackingrecord"))).uniqueResult();
+        Entity genealogyProductInComponent = addGenealogyProductInComponent(trackingRecord, values.get(BASIC_MODEL_PRODUCT),
+                values.get(TECHNOLOGY_MODEL_OPERATION));
+        genealogyProductInBatch.setField("genealogyProductInComponent", genealogyProductInComponent);
+        genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
+    }
+
+    private Entity addGenealogyProductInComponent(final Entity trackingRecord, final String productNumber,
+            final String operationNumber) {
+        Entity product = getProductByNumber(productNumber);
+        Entity order = trackingRecord.getBelongsToField(ORDERS_MODEL_ORDER);
+        Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
+        Entity operationProdInComp = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
+                .find().add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
+        Entity technologyInstanceOperationComponent = dataDefinitionService
+                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
+                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                .find()
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
+                        SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
+                        SearchRestrictions.belongsTo(L_OPERATION, getOperationByNumber(operationNumber)))).setMaxResults(1)
+                .uniqueResult();
+
+        Entity genealogyProductInComponent = dataDefinitionService
+                .get(L_ADVANCED_GENEALOGY_FOR_ORDERS, "genealogyProductInComponent")
+                .find()
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord), SearchRestrictions
+                        .belongsTo("productInComponent", operationProdInComp), SearchRestrictions.belongsTo(
+                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, technologyInstanceOperationComponent)))
+                .setMaxResults(1).uniqueResult();
+        return genealogyProductInComponent;
     }
 
     private void addGenealogyTables(final Map<String, String> values) {
@@ -774,7 +807,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             }
 
             technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
-            technology.setField(L_STATE, "05checked");
+            technology.setField(L_STATE, "01draft");
             dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         }
     }
@@ -1150,59 +1183,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .getTotalNumberOfEntities();
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
-    }
-
-    private void buildTrackingRecord(final Entity trackingRecord) {
-        Entity genProdIn = addGenealogyProductInComponent(trackingRecord, "000011", L_5);
-        addUsedBatch(genProdIn, "321DEW");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000012", L_5);
-        addUsedBatch(genProdIn, "706FCV");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000014", L_5);
-        addUsedBatch(genProdIn, "980DEN");
-        addUsedBatch(genProdIn, "767BMM");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000013", L_5);
-        addUsedBatch(genProdIn, "876DEW");
-        addUsedBatch(genProdIn, "444VWM");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000015", L_1);
-        addUsedBatch(genProdIn, "349SWA");
-        genProdIn = addGenealogyProductInComponent(trackingRecord, "000016", L_2);
-        addUsedBatch(genProdIn, "150DEB");
-    }
-
-    private void addUsedBatch(final Entity genealogyProductInComponent, final String batchNumber) {
-        Entity genealogyProductInBatch = dataDefinitionService.get(L_ADVANCED_GENEALOGY_FOR_ORDERS, "genealogyProductInBatch")
-                .create();
-
-        genealogyProductInBatch.setField(L_BATCH, getBatchByNumber(batchNumber));
-        genealogyProductInBatch.setField("genealogyProductInComponent", genealogyProductInComponent);
-
-        genealogyProductInBatch.getDataDefinition().save(genealogyProductInBatch);
-    }
-
-    private Entity addGenealogyProductInComponent(final Entity trackingRecord, final String productNumber,
-            final String operationNumber) {
-        Entity product = getProductByNumber(productNumber);
-        Entity order = trackingRecord.getBelongsToField(ORDERS_MODEL_ORDER);
-        Entity technology = order.getBelongsToField(TECHNOLOGY_MODEL_TECHNOLOGY);
-        Entity operationProdInComp = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
-                .find().add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
-        Entity technologyInstanceOperationComponent = dataDefinitionService
-                .get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                .find()
-                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ORDERS_MODEL_ORDER, order),
-                        SearchRestrictions.belongsTo(TECHNOLOGY_MODEL_TECHNOLOGY, technology),
-                        SearchRestrictions.belongsTo(L_OPERATION, getOperationByNumber(operationNumber)))).setMaxResults(1)
-                .uniqueResult();
-
-        Entity genealogyProductInComponent = dataDefinitionService
-                .get(L_ADVANCED_GENEALOGY_FOR_ORDERS, "genealogyProductInComponent")
-                .find()
-                .add(SearchRestrictions.and(SearchRestrictions.belongsTo("trackingRecord", trackingRecord), SearchRestrictions
-                        .belongsTo("productInComponent", operationProdInComp), SearchRestrictions.belongsTo(
-                        SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, technologyInstanceOperationComponent)))
-                .setMaxResults(1).uniqueResult();
-        return genealogyProductInComponent;
     }
 
     private DateFormat getDateFormat() {

@@ -113,6 +113,8 @@ public interface SamplesConstants {
 
     String L_ID = "id";
 
+    String L_BOM_NR = "bom_nr";
+
     String L_EAN = "ean";
 
     String L_NAME = "name";
