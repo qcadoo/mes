@@ -700,7 +700,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         costCalculation.setField("additionalOverhead", values.get("additionaloverhead"));
         costCalculation.setField("productionCostMargin", values.get("productioncostmargin"));
         costCalculation.setField("materialCostMargin", values.get("materialcostmargin"));
-
+        costCalculation.setField("productionLine", getProductionLineByNumber(values.get("productionlines")));
         costCalculation.getDataDefinition().save(costCalculation);
     }
 
