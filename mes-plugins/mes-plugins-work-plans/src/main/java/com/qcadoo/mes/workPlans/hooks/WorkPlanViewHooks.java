@@ -39,6 +39,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
@@ -127,6 +128,7 @@ public class WorkPlanViewHooks {
                 WorkPlansConstants.MODEL_WORK_PLAN);
     }
 
+    @Transactional
     public final void generateWorkPlan(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
@@ -163,6 +165,8 @@ public class WorkPlanViewHooks {
             }
 
             state.performEvent(viewDefinitionState, "save", new String[0]);
+
+            workPlan = workPlanService.getWorkPlan((Long) state.getFieldValue());
 
             if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
                 worker.setFieldValue(null);

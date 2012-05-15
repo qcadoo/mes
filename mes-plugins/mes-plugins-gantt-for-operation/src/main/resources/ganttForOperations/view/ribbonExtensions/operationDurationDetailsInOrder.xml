@@ -29,31 +29,6 @@
 	plugin="productionScheduling"
 	view="operationDurationDetailsInOrder">
 	<group name="orderGantt">
-		<bigButton name="operationsGantt" icon="calendarIcon24.png" state="disabled">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('showOperationsGantt', []);
-							}
-						}
-					});	
-						
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
-				]]>
-			</script>	
-		</bigButton>
+		<bigButton name="operationsGantt" icon="calendarIcon24.png" action="#{form}.fireEvent(showOperationsGantt);" />
 	</group>
 </ribbonExtension>
