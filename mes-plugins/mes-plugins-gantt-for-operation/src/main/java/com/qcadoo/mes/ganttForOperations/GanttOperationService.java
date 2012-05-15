@@ -106,7 +106,7 @@ public class GanttOperationService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
         Integer realizationTime = (Integer) order.getField("realizationTime");
-        return (realizationTime == null || realizationTime == 0);
+        return !(realizationTime == null || realizationTime == 0);
     }
 
     public void disableCalendarButtonWhenRealizationTimeNotGenerated(final ViewDefinitionState view) {
@@ -123,7 +123,6 @@ public class GanttOperationService {
             showOnCalendarButton.setEnabled(true);
         } else {
             showOnCalendarButton.setEnabled(false);
-            showOnCalendarButton.setMessage("message");
         }
         showOnCalendarButton.requestUpdate(true);
     }
