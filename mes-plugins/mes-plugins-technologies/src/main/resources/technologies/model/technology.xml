@@ -60,10 +60,6 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfUnitSampligNrIsReq" />
-
-		<!-- <validatesWith class="com.qcadoo.mes.technologies.TechnologyService" 
-			method="invalidateIfBelongsToAcceptedTechnology" /> -->
-
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfTechnologyHasAtLeastOneComponent" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"

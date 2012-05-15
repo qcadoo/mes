@@ -94,7 +94,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TY
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORK_PLANS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTS_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT;
@@ -148,8 +147,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private boolean setAsDemoEnviroment;
 
     private HashMap<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
-
-    private HashMap<String, Entity> genealogyProductsIn = new LinkedHashMap<String, Entity>();
 
     @Override
     protected void loadData(final String locale) {
@@ -500,7 +497,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 LOG.warn(e.getMessage(), e);
             }
         }
-
+        startDate = startDate + Integer.valueOf(values.get("delay_started_date")) * 3600000;
         endDate = startDate + (RANDOM.nextInt(1) + 1) * MILLIS_IN_DAY + (RANDOM.nextInt(9) + 1) * millsInHour
                 + (RANDOM.nextInt(40) + 35) * millsInMinute;
 
@@ -1131,11 +1128,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number.toString())).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getProductionRecordByNumber(final String number) {
-        return dataDefinitionService.get(PRODUCTION_COUNTING_PLUGIN_IDENTIFIER, L_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getOperationByNumber(final String number) {
