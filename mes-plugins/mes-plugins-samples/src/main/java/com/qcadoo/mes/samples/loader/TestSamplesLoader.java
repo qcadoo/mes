@@ -497,7 +497,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 LOG.warn(e.getMessage(), e);
             }
         }
-        startDate = startDate + Integer.valueOf(values.get("delay_started_date")) * 3600000;
+        startDate = startDate + Long.valueOf(values.get("delay_started_date")) * 3600000;
         endDate = startDate + (RANDOM.nextInt(1) + 1) * MILLIS_IN_DAY + (RANDOM.nextInt(9) + 1) * millsInHour
                 + (RANDOM.nextInt(40) + 35) * millsInMinute;
 
@@ -616,7 +616,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
         trackingRecord.setField(L_STATE, "01draft");
-        trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
+        trackingRecord.getDataDefinition().save(trackingRecord);
     }
 
     private void addUsedBatch(final Map<String, String> values) {
@@ -968,7 +968,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord = productionRecord.getDataDefinition().save(productionRecord);
+        productionRecord.getDataDefinition().save(productionRecord);
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
