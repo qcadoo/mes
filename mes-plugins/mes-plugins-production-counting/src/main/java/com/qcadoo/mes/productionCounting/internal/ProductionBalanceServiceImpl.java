@@ -447,16 +447,16 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 balanceOperationProductComponentModel).create();
 
-        // balanceOperationProductComponent.setField(PRODUCTION_RECORD,
-        // recordOperationProductComponent.getField(PRODUCTION_RECORD));
         balanceOperationProductComponent.setField(PRODUCT, recordOperationProductComponent.getField(PRODUCT));
         balanceOperationProductComponent.setField(PLANNED_QUANTITY,
                 numberService.setScale(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY)));
         balanceOperationProductComponent.setField(USED_QUANTITY, numberService.setScale((recordOperationProductComponent
                 .getField(USED_QUANTITY) == null) ? BigDecimal.ZERO : recordOperationProductComponent
                 .getDecimalField(USED_QUANTITY)));
-        balanceOperationProductComponent.setField(BALANCE, numberService.setScale((recordOperationProductComponent
-                .getField(BALANCE) == null) ? BigDecimal.ZERO : recordOperationProductComponent.getDecimalField(BALANCE)));
+        balanceOperationProductComponent.setField(
+                BALANCE,
+                numberService.setScale(recordOperationProductComponent.getDecimalField(USED_QUANTITY).subtract(
+                        recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY), numberService.getMathContext())));
 
         balanceOperationProductComponents.put(productId, balanceOperationProductComponent);
     }
