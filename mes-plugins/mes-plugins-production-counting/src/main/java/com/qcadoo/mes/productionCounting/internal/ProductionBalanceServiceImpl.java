@@ -348,13 +348,16 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     private void addProductionRecord(Map<Long, Entity> groupedProductionRecords, final Entity productionRecord,
             Long technologyInstanceOperationComponentId) {
-        productionRecord.setField(MACHINE_TIME, (productionRecord.getField(MACHINE_TIME) == null) ? 0
-                : (Integer) productionRecord.getField(MACHINE_TIME));
-        productionRecord.setField(MACHINE_TIME,
-                (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord.getField(LABOR_TIME));
-        productionRecord.setField(EXECUTED_OPERATION_CYCLES, numberService.setScale((productionRecord
-                .getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO : productionRecord
-                .getDecimalField(EXECUTED_OPERATION_CYCLES)));
+
+        Integer machineTime = (productionRecord.getField(MACHINE_TIME) == null) ? 0 : (Integer) productionRecord
+                .getField(MACHINE_TIME);
+        Integer laborTime = (productionRecord.getField(LABOR_TIME) == null) ? 0 : (Integer) productionRecord.getField(LABOR_TIME);
+        BigDecimal executedOperationCycles = (productionRecord.getField(EXECUTED_OPERATION_CYCLES) == null) ? BigDecimal.ZERO
+                : productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES);
+
+        productionRecord.setField(MACHINE_TIME, machineTime);
+        productionRecord.setField(MACHINE_TIME, laborTime);
+        productionRecord.setField(EXECUTED_OPERATION_CYCLES, numberService.setScale(executedOperationCycles));
 
         groupedProductionRecords.put(technologyInstanceOperationComponentId, productionRecord);
     }
@@ -447,16 +450,17 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 balanceOperationProductComponentModel).create();
 
+        BigDecimal plannedQuantity = recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY);
+        BigDecimal usedQuantity = (recordOperationProductComponent.getField(USED_QUANTITY) == null) ? BigDecimal.ZERO
+                : recordOperationProductComponent.getDecimalField(USED_QUANTITY);
+
+        BigDecimal balance = usedQuantity.subtract(plannedQuantity, numberService.getMathContext());
+
         balanceOperationProductComponent.setField(PRODUCT, recordOperationProductComponent.getField(PRODUCT));
-        balanceOperationProductComponent.setField(PLANNED_QUANTITY,
-                numberService.setScale(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY)));
-        balanceOperationProductComponent.setField(USED_QUANTITY, numberService.setScale((recordOperationProductComponent
-                .getField(USED_QUANTITY) == null) ? BigDecimal.ZERO : recordOperationProductComponent
-                .getDecimalField(USED_QUANTITY)));
-        balanceOperationProductComponent.setField(
-                BALANCE,
-                numberService.setScale(recordOperationProductComponent.getDecimalField(USED_QUANTITY).subtract(
-                        recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY), numberService.getMathContext())));
+
+        balanceOperationProductComponent.setField(PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
+        balanceOperationProductComponent.setField(USED_QUANTITY, numberService.setScale(usedQuantity));
+        balanceOperationProductComponent.setField(BALANCE, numberService.setScale(balance));
 
         balanceOperationProductComponents.put(productId, balanceOperationProductComponent);
     }
@@ -643,7 +647,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
                     if (technologyInstanceOperationComponent == null) {
                         if (productionRecordsWithPlannedTimes.isEmpty()) {
-                            addNewProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
+                            addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
                         } else {
                             updateProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
                         }
@@ -654,7 +658,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                             updateProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
                                     technologyInstanceOperationComponentId);
                         } else {
-                            addNewProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
+                            addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
                                     technologyInstanceOperationComponentId);
                         }
                     }
@@ -665,7 +669,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return productionRecordsWithPlannedTimes;
     }
 
-    private void addNewProductionRecordWithPlannedTimes(Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
+    private void addProductionRecordWithPlannedTimes(Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
             final Map<String, Integer> plannedTimes, final Long technologyInstanceOperationComponentId) {
         productionRecordsWithPlannedTimes.put(technologyInstanceOperationComponentId, plannedTimes);
     }
@@ -684,7 +688,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         productionRecordPlannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
         productionRecordPlannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);
 
-        addNewProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, productionRecordPlannedTimes,
+        addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, productionRecordPlannedTimes,
                 technologyInstanceOperationComponentId);
     }
 
