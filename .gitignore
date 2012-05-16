@@ -2,6 +2,7 @@
 .project
 .settings
 .DS_Store
+.pmd
 target
 mes.log*
 mes-application/src/main/java/HibernateTest.java

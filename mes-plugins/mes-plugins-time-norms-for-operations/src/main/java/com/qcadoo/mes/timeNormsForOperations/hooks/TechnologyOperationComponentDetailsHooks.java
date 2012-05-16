@@ -36,11 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -54,9 +52,6 @@ public class TechnologyOperationComponentDetailsHooks {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private TranslationService translationService;
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -77,8 +72,6 @@ public class TechnologyOperationComponentDetailsHooks {
         BigDecimal currentQuantity = productOutComponent.getDecimalField("quantity");
 
         if (timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals intentionally
-            ComponentState productionInOneCycle = view.getComponentByReference("productionInOneCycle");
-
             form.addMessage("technologies.technologyOperationComponent.validate.error.invalidQuantity", MessageType.INFO, false,
                     numberService.format(currentQuantity), productOutComponent.getBelongsToField("product")
                             .getStringField("unit"));
