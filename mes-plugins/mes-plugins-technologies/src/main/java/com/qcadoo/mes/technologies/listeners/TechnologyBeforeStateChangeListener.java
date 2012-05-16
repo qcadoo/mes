@@ -23,12 +23,20 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
+import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
+
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.TechnologyStateBeforeChangeNotifierService.BeforeStateChangeListener;
+import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -39,14 +47,36 @@ public class TechnologyBeforeStateChangeListener implements BeforeStateChangeLis
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private TechnologyTreeValidationService technologyTreeValidationService;
+
     @Override
     public boolean canChange(final ComponentState gridOrForm, final Entity technology, final TechnologyState newState) {
+        boolean result = true;
         if ((TechnologyState.OUTDATED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))
                 || (TechnologyState.DECLINED.equals(newState) && technologyService.isTechnologyUsedInActiveOrder(technology))) {
             gridOrForm.addMessage("technologies.technology.state.error.orderInProgress", MessageType.FAILURE);
 
-            return false;
+            result = false;
         }
-        return true;
+
+        if (ACCEPTED == newState || CHECKED == newState) {
+            checkConsumingManyProductsFromOneSubOp(gridOrForm, technology);
+        }
+
+        return result;
+    }
+
+    private void checkConsumingManyProductsFromOneSubOp(final ComponentState gridOrForm, final Entity technology) {
+        final Entity existingTechnology = technology.getDataDefinition().get(technology.getId());
+        final Map<String, Set<String>> parentChildNodeNums = technologyTreeValidationService
+                .checkConsumingManyProductsFromOneSubOp(existingTechnology.getTreeField(OPERATION_COMPONENTS));
+
+        for (Map.Entry<String, Set<String>> parentChildNodeNum : parentChildNodeNums.entrySet()) {
+            for (String childNodeNum : parentChildNodeNum.getValue()) {
+                gridOrForm.addMessage("technologies.technology.validate.global.info.consumingManyProductsFromOneSubOperations",
+                        MessageType.INFO, parentChildNodeNum.getKey(), childNodeNum);
+            }
+        }
     }
 }
