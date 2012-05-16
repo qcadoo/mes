@@ -223,7 +223,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
             operationComponent.setField("duration", duration.setScale(0, ROUND_UP).longValue());
 
-            checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(), "invalid operationComponent");
+            checkArgument(operationComponent.getDataDefinition().save(operationComponent).isValid(),
+                    "invalid operationComponent id =" + operationComponent.getId());
         }
 
         resultsMap.put(MACHINE_HOURLY_COST,

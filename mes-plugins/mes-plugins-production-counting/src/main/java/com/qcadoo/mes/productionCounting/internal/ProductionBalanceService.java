@@ -42,23 +42,28 @@ public interface ProductionBalanceService {
 
     boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance);
 
-    void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
-
     void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
+
+    void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args);
 
     void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
             DocumentException;
 
-    boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order);
-
-    List<Entity> getProductionRecordsFromDB(final Entity order);
-
-    Entity getOrderFromDB(final Long orderId);
-
-    Entity getProductionBalanceFromDB(final Long productionBalanceId);
-
-    Entity getCompanyFromDB();
+    Map<Long, Entity> groupProductionRecords(final List<Entity> productionRecords);
 
     Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
             final List<Entity> productionRecords);
+
+    boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order);
+
+    Entity getProductionBalanceFromDB(final Long productionBalanceId);
+
+    List<Entity> getProductionRecordsFromDB(final Entity order);
+
+    Entity getTechnologyOperationComponentFromDB(final Long technologyOperationComponentId);
+
+    Entity getOrderFromDB(final Long orderId);
+
+    Entity getCompanyFromDB();
+
 }
