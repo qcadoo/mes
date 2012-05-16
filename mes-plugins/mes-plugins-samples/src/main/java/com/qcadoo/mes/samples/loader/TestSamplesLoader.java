@@ -30,6 +30,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORK
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BALANCE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCH;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCHES;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BOM_ID;
@@ -107,7 +108,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -146,7 +146,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     @Value("${setAsDemoEnviroment}")
     private boolean setAsDemoEnviroment;
 
-    private HashMap<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
+    private Map<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
 
     @Override
     protected void loadData(final String locale) {
@@ -816,7 +816,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .uniqueResult();
         productInComponent.setField("usedQuantity", values.get("usedquantity"));
-        productInComponent.setField("balance", values.get("balance"));
+        productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
         productInComponentDD.save(productInComponent);
     }
 
@@ -827,7 +827,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
                 .uniqueResult();
         productOutComponent.setField("usedQuantity", values.get("usedquantity"));
-        productOutComponent.setField("balance", values.get("balance"));
+        productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
         return productOutComponentDD.save(productOutComponent);
     }
 
@@ -846,7 +846,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField("tj", operation.getField("tj"));
             component.setField("machineUtilization", operation.getField("machineUtilization"));
             component.setField("laborUtilization", operation.getField("laborUtilization"));
-            component.setField("productionInOneCycle", values.get("productioninonecycle"));
+            component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
             component.setField("countRealized", operation.getField("countRealized"));
             component.setField("countMachine", operation.getField("countMachine"));
             component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
@@ -1087,7 +1087,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private Entity getTechnologyByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number.toString())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultTechnologyForProduct(final Entity product) {
@@ -1122,17 +1122,17 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private Entity getOrderByNumber(final String number) {
         return dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number.toString())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getProductByNumber(final String number) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number.toString())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getOperationByNumber(final String number) {
         return dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_OPERATION).find()
-                .add(SearchRestrictions.eq(L_NUMBER, number.toString())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getStaffByNumber(final String number) {
