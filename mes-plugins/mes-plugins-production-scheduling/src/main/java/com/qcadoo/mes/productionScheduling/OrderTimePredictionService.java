@@ -112,21 +112,6 @@ public class OrderTimePredictionService {
         realizationTime.requestComponentUpdateState();
     }
 
-    public void clearAllField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
-
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
-
-        quantity.setFieldValue("");
-        dateFrom.setFieldValue("");
-        dateTo.setFieldValue("");
-        realizationTime.setFieldValue("");
-        technology.setFieldValue("");
-    }
-
     private void scheduleOrder(final Long orderId) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 

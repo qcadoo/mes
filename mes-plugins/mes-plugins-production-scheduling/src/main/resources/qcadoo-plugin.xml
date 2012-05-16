@@ -110,11 +110,6 @@
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
 			method="copyRealizationTime" />
 
-		<view:view-listener plugin="productionScheduling"
-			view="orderTimePrediction" component="window" event="clearAllField"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="clearAllField" />
-			
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"

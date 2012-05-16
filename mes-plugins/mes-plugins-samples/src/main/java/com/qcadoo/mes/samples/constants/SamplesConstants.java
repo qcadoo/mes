@@ -129,6 +129,8 @@ public interface SamplesConstants {
 
     String L_GENERATED = "generated";
 
+    String L_BALANCE = "balance";
+
     String L_DATE = "date";
 
     String L_WORKER = "worker";
