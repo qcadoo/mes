@@ -375,7 +375,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         machineTime += getNotNullInteger((Integer) productionRecord.getField(MACHINE_TIME));
         laborTime += getNotNullInteger((Integer) productionRecord.getField(LABOR_TIME));
-
         executedOperationCycles = executedOperationCycles
                 .add(getNotNullBigDecimal(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES)),
                         numberService.getMathContext());
@@ -657,18 +656,13 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     if (isTypeOfProductionRecordingForEach(order)) {
                         Long technologyInstanceOperationComponentId = technologyInstanceOperationComponent.getId();
 
-                        if (productionRecordsWithPlannedTimes.containsKey(technologyInstanceOperationComponentId)) {
-                            updateProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
-                                    technologyInstanceOperationComponentId);
-                        } else {
+                        if (!productionRecordsWithPlannedTimes.containsKey(technologyInstanceOperationComponentId)) {
                             addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
                                     technologyInstanceOperationComponentId);
                         }
                     } else if (isTypeOfProductionRecordingCumulated(order)) {
                         if (productionRecordsWithPlannedTimes.isEmpty()) {
                             addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
-                        } else {
-                            updateProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
                         }
                     }
                 }
@@ -681,24 +675,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     private void addProductionRecordWithPlannedTimes(Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
             final Map<String, Integer> plannedTimes, final Long technologyInstanceOperationComponentId) {
         productionRecordsWithPlannedTimes.put(technologyInstanceOperationComponentId, plannedTimes);
-    }
-
-    private void updateProductionRecordWithPlannedTimes(Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
-            final Map<String, Integer> plannedTimes, final Long technologyInstanceOperationComponentId) {
-        Map<String, Integer> productionRecordPlannedTimes = productionRecordsWithPlannedTimes
-                .get(technologyInstanceOperationComponentId);
-
-        Integer plannedMachineTime = productionRecordPlannedTimes.get(L_PLANNED_MACHINE_TIME)
-                + plannedTimes.get(L_PLANNED_MACHINE_TIME);
-
-        Integer plannedLaborTime = productionRecordPlannedTimes.get(L_PLANNED_LABOR_TIME)
-                + plannedTimes.get(L_PLANNED_LABOR_TIME);
-
-        productionRecordPlannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
-        productionRecordPlannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);
-
-        addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, productionRecordPlannedTimes,
-                technologyInstanceOperationComponentId);
     }
 
     private Map<String, Integer> countPlannedTimes(final Entity productionBalance, final Entity productionRecord) {
