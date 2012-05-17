@@ -356,8 +356,8 @@ public class ProductionRecordService {
 
     private boolean shouldCopy(final Entity productionRecord, Entity order, Entity technologyInstanceOperationComponent) {
         return (hasValueChanged(productionRecord, order, ORDER)
-                || hasValueChanged(productionRecord, technologyInstanceOperationComponent,
-                        TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) || !hasRecordOperationProductComponents(productionRecord));
+                || (technologyInstanceOperationComponent != null && hasValueChanged(productionRecord,
+                        technologyInstanceOperationComponent, TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)) || !hasRecordOperationProductComponents(productionRecord));
     }
 
     private boolean hasRecordOperationProductComponents(final Entity productionRecord) {
