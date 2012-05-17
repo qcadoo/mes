@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.5
+ * Version: 1.1.6
  *
  * This file is part of Qcadoo.
  *
@@ -21,7 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-
 package com.qcadoo.mes.workPlans.listeners;
 
 import org.springframework.stereotype.Service;
