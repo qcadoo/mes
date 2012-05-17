@@ -37,7 +37,6 @@
 			<validatesScale max="3" />
 		</decimal>
 		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="3" />
 		</decimal>
