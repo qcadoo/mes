@@ -18,3 +18,12 @@ BEGIN;
 COMMIT;
 
 -- end
+
+
+-- Table: productioncounting_balanceoperationproductin/outcomponents
+-- changed: 17.05.2012
+
+ALTER TABLE productioncounting_balanceoperationproductincomponents DROP COLUMN productionrecord_id;
+ALTER TABLE productioncounting_balanceoperationproductoutcomponents DROP COLUMN productionrecord_id;
+
+-- end
