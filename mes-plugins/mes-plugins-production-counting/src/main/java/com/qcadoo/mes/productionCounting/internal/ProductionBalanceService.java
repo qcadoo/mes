@@ -49,12 +49,10 @@ public interface ProductionBalanceService {
     void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
             DocumentException;
 
-    Map<Long, Entity> groupProductionRecords(final List<Entity> productionRecords);
+    Map<Long, Entity> groupProductionRecordsRegisteredTimes(final Entity productionBalance, final List<Entity> productionRecords);
 
     Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
             final List<Entity> productionRecords);
-
-    boolean checkIfTypeOfProductionRecordingIsBasic(final Entity order);
 
     Entity getProductionBalanceFromDB(final Long productionBalanceId);
 
@@ -65,5 +63,15 @@ public interface ProductionBalanceService {
     Entity getOrderFromDB(final Long orderId);
 
     Entity getCompanyFromDB();
+
+    boolean isCalculateOperationCostModeHourly(final Entity productionBalance);
+
+    boolean isCalculateOperationCostModePiecework(final Entity productionBalance);
+
+    boolean isTypeOfProductionRecordingBasic(final Entity order);
+
+    boolean isTypeOfProductionRecordingForEach(final Entity order);
+
+    boolean isTypeOfProductionRecordingCumulated(final Entity order);
 
 }

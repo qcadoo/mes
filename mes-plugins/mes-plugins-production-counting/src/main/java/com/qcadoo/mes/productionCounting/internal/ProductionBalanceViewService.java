@@ -216,7 +216,7 @@ public class ProductionBalanceViewService {
             return;
         }
 
-        if (productionBalanceService.checkIfTypeOfProductionRecordingIsBasic(order)) {
+        if (productionBalanceService.isTypeOfProductionRecordingBasic(order)) {
             clearProductAndRecordsNumber(viewDefinitionState);
 
             orderLookup.addMessage("productionCounting.productionBalance.report.error.orderWithoutRecordingType",
