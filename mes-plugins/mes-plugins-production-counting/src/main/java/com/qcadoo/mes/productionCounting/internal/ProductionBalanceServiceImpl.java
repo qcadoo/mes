@@ -351,8 +351,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return groupedProductionRecords;
     }
 
-    private void addProductionRecordRegisteredTimes(Map<Long, Entity> groupedProductionRecords, final Entity productionRecord,
-            Long technologyInstanceOperationComponentId) {
+    private void addProductionRecordRegisteredTimes(final Map<Long, Entity> groupedProductionRecords,
+            final Entity productionRecord, final Long technologyInstanceOperationComponentId) {
 
         Integer machineTime = getNotNullInteger((Integer) productionRecord.getField(MACHINE_TIME));
         Integer laborTime = getNotNullInteger((Integer) productionRecord.getField(LABOR_TIME));
@@ -365,8 +365,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         groupedProductionRecords.put(technologyInstanceOperationComponentId, productionRecord);
     }
 
-    private void updateProductionRecordRegisteredTimes(Map<Long, Entity> groupedProductionRecords, final Entity productionRecord,
-            final Long technologyInstanceOperationComponentId) {
+    private void updateProductionRecordRegisteredTimes(final Map<Long, Entity> groupedProductionRecords,
+            final Entity productionRecord, final Long technologyInstanceOperationComponentId) {
         Entity addedProductionRecord = groupedProductionRecords.get(technologyInstanceOperationComponentId);
 
         Integer machineTime = (Integer) addedProductionRecord.getField(MACHINE_TIME);
@@ -448,7 +448,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
-    private void addBalanceOperationComponent(Map<Long, Entity> balanceOperationProductComponents,
+    private void addBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
             final String balanceOperationProductComponentModel, final Entity recordOperationProductComponent, final Long productId) {
         Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 balanceOperationProductComponentModel).create();
@@ -467,7 +467,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         balanceOperationProductComponents.put(productId, balanceOperationProductComponent);
     }
 
-    private void updateBalanceOperationComponent(Map<Long, Entity> balanceOperationProductComponents,
+    private void updateBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
             final Entity recordOperationProductComponent, final Long productId, final boolean shouldAddPlannedQuantity) {
         Entity addedBalanceOperationProductInComponent = balanceOperationProductComponents.get(productId);
 
@@ -660,10 +660,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                             addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes,
                                     technologyInstanceOperationComponentId);
                         }
-                    } else if (isTypeOfProductionRecordingCumulated(order)) {
-                        if (productionRecordsWithPlannedTimes.isEmpty()) {
-                            addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
-                        }
+                    } else if (isTypeOfProductionRecordingCumulated(order) && productionRecordsWithPlannedTimes.isEmpty()) {
+                        addProductionRecordWithPlannedTimes(productionRecordsWithPlannedTimes, plannedTimes, 0L);
                     }
                 }
             }
@@ -672,7 +670,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return productionRecordsWithPlannedTimes;
     }
 
-    private void addProductionRecordWithPlannedTimes(Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
+    private void addProductionRecordWithPlannedTimes(final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes,
             final Map<String, Integer> plannedTimes, final Long technologyInstanceOperationComponentId) {
         productionRecordsWithPlannedTimes.put(technologyInstanceOperationComponentId, plannedTimes);
     }
