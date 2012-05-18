@@ -134,14 +134,14 @@ public class TechnologyTreeValidationServiceImplTest {
         Entity product11 = mockProductComponent(11L);
         Entity product12 = mockProductComponent(12L);
 
-        EntityTreeNode node1_A_3 = mockOperationComponent("1.A.3.", newArrayList(product11, product12), newArrayList(product10));
-        EntityTreeNode node1_A_2 = mockOperationComponent("1.A.2.", newArrayList(product10),
-                newArrayList(product7, product8, product9), newArrayList(node1_A_3));
-        EntityTreeNode node1_A_1 = mockOperationComponent("1.A.1.", newArrayList(product7, product8, product9),
-                newArrayList(product2, product3), newArrayList(node1_A_2));
-        EntityTreeNode node1_B_1 = mockOperationComponent("1.B.1.", newArrayList(product6), newArrayList(product4, product5));
+        EntityTreeNode node1A3 = mockOperationComponent("1.A.3.", newArrayList(product11, product12), newArrayList(product10));
+        EntityTreeNode node1A2 = mockOperationComponent("1.A.2.", newArrayList(product10),
+                newArrayList(product7, product8, product9), newArrayList(node1A3));
+        EntityTreeNode node1A1 = mockOperationComponent("1.A.1.", newArrayList(product7, product8, product9),
+                newArrayList(product2, product3), newArrayList(node1A2));
+        EntityTreeNode node1B1 = mockOperationComponent("1.B.1.", newArrayList(product6), newArrayList(product4, product5));
         EntityTreeNode node1 = mockOperationComponent("1.", newArrayList(product2, product3, product4, product5),
-                newArrayList(product1), newArrayList(node1_A_1, node1_B_1));
+                newArrayList(product1), newArrayList(node1A1, node1B1));
 
         given(tree.getRoot()).willReturn(node1);
 
@@ -153,9 +153,9 @@ public class TechnologyTreeValidationServiceImplTest {
         assertFalse(resultMap.isEmpty());
         assertEquals(2, resultMap.size());
         assertEquals(2, resultMap.get(node1.getStringField(NODE_NUMBER)).size());
-        hasNodeNumbersFor(node1, node1_A_1);
-        hasNodeNumbersFor(node1, node1_B_1);
-        hasNodeNumbersFor(node1_A_1, node1_A_2);
+        hasNodeNumbersFor(node1, node1A1);
+        hasNodeNumbersFor(node1, node1B1);
+        hasNodeNumbersFor(node1A1, node1A2);
     }
 
     @Test
@@ -168,10 +168,10 @@ public class TechnologyTreeValidationServiceImplTest {
         Entity product5 = mockProductComponent(5L);
         Entity product6 = mockProductComponent(6L);
 
-        EntityTreeNode node2_B = mockOperationComponent("2.B.", newArrayList(product6), newArrayList(product4));
-        EntityTreeNode node2_A = mockOperationComponent("2.A.", newArrayList(product5), newArrayList(product3));
+        EntityTreeNode node2B = mockOperationComponent("2.B.", newArrayList(product6), newArrayList(product4));
+        EntityTreeNode node2A = mockOperationComponent("2.A.", newArrayList(product5), newArrayList(product3));
         EntityTreeNode node2 = mockOperationComponent("2.", newArrayList(product3, product4), newArrayList(product2),
-                newArrayList(node2_A, node2_B));
+                newArrayList(node2A, node2B));
         EntityTreeNode node1 = mockOperationComponent("1.", newArrayList(product2), newArrayList(product1), newArrayList(node2));
         given(tree.getRoot()).willReturn(node1);
 
