@@ -46,6 +46,7 @@
     	<module>mes-plugins-production-lines</module>
     	<module>mes-plugins-operation-time-calculations</module>
     <module>mes-plugins-operation-cost-calculations</module>
+    <module>mes-plugins-production-per-shift</module>
   </modules>
 
 

@@ -40,7 +40,5 @@ public class ProductionSchedulingListeners {
                     + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
-
     }
-
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="productionPerShift" version="1.1.7-SNAPSHOT"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>MES - Production per shift</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+
+	<dependencies>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<view:view resource="view/productionPerShift.xml" />
+
+		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+		
+		<model:model-field plugin="orders" model="order">
+			<model:enum name="plannedProgressType" persistent="false" values="01planned,02corrected" />
+		</model:model-field>
+		
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="redirectToProductionPerShift"
+			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+			method="redirectToProductionPerShift" />
+	</modules>
+
+</plugin>
