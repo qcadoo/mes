@@ -5,12 +5,7 @@
 	<component type="window" name="window" reference="window">
 		
 		<ribbon>
-		    <group name="navigation" hasLabel="false">
-				<bigButton name="back" action="#{window}.performBack;" icon="backIcon24.png" />
-			</group>
-			<group name="actions" hasLabel="false">
-				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
-			</group>
+			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack"/>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
