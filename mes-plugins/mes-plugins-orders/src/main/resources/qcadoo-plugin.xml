@@ -66,6 +66,8 @@
 		<model:model model="order" resource="model/order.xml" />
 		<model:model model="logging" resource="model/logging.xml" />
 		
+		<model:dictionary name="reasonTypeOfChaningOrderState" />
+		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="orders" plugin="orders" model="order"
 				joinField="product" cascade="nullify" />
@@ -96,6 +98,7 @@
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/ordersPlanningList.xml" />
 		<view:view resource="view/orderDetails.xml" />
+		<view:view resource="view/loggingDetails.xml" />
 
 		<view:view resource="view/technologyInstanceOperationComponentList.xml" />
 		

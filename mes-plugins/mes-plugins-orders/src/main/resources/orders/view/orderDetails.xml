@@ -382,37 +382,153 @@
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
-			<component type="gridLayout" name="detailsTablayout"
-				columns="3" rows="2">
+		    <component type="gridLayout" name="detailsTablayout"
+				columns="3" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="calendar" name="effectiveDateFrom"
-						field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
-						defaultEnabled="false">
-						<option type="withTimePicker" value="true" />
+			   		 <component type="borderLayout" name="startDates">
+						<component type="gridLayout" name="startDatesGridLayout"
+							columns="1" rows="3" reference="startDatesGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="calendar" name="plannedDateFrom"
+									field="#{form}.dateFrom" reference="plannedDateFrom"
+									defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+									<component type="calendar" name="correctedDateFrom"
+									field="#{form}.correctedDateFrom" reference="correctedDateFrom"
+									defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3">
+									<component type="calendar" name="effectiveDateFrom"
+									field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
+									defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+							<option type="label" value="startDatesLabel" />
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="calendar" name="effectiveDateTo" field="#{form}.effectiveDateTo"
-						reference="effectiveDateTo" defaultEnabled="false">
-						<option type="withTimePicker" value="true" />
+					 <component type="borderLayout" name="causeOfPlannedDateFromCorrection">
+						<component type="gridLayout" name="causeOfPlannedDateFromCorrectionGridLayout"
+							columns="1" rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="select" name="reasonTypeCorrectionDateFrom"
+									field="#{form}.reasonTypeCorrectionDateFrom" reference="reasonTypeCorrectionDateFrom"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" height="2">
+									<component type="textarea" name="commentReasonTypeCorrectionDateFrom"
+									field="#{form}.commentReasonTypeCorrectionDateFrom" reference="commentReasonTypeCorrectionDateFrom"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="causeOfPlannedDateFromCorrectionLabel" />
+					</component>	
+					 <component type="borderLayout" name="causeDeviationsOfEffectiveStart">
+						<component type="gridLayout" name="causeDeviationsOfEffectiveStartGridLayout"
+							columns="1" rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="select" name="reasonTypeDeviationsOfEffectiveStart"
+									reference="reasonTypeDeviationsOfEffectiveStart" field="#{form}.reasonTypeDeviationsOfEffectiveStart"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" height="2">
+									<component type="textarea" name="commentReasonTypeDeviationsOfEffectiveStart"
+								 	 reference="commentReasonTypeDeviationsOfEffectiveStart"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="causeDeviationsOfEffectiveStartLabel" />
+					</component>	
+					</layoutElement>
+					<layoutElement column="2" row="1">	
+					<component type="borderLayout" name="endDates">
+						<component type="gridLayout" name="endDatesGridLayout"
+							columns="1" rows="3" reference="endDatesGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="calendar" name="plannedDateTo"
+									field="#{form}.dateTo" reference="plannedDateTo"
+									defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+									<component type="calendar" name="correctedDateTo"
+									field="#{form}.correctedDateTo" reference="correctedDateTo"
+									defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3">
+								<component type="calendar" name="effectiveDateTo" field="#{form}.effectiveDateTo"
+									reference="effectiveDateTo" defaultEnabled="false">
+									<option type="withTimePicker" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="endDatesLabel" />
 					</component>
+					 <component type="borderLayout" name="causeOfPlannedDateToCorrection">
+						<component type="gridLayout" name="causeOfPlannedDateToCorrectionGridLayout"
+							columns="1" rows="3" reference="causeOfPlannedDateToCorrectionGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="select" name="reasonTypeCorrectionDateTo"
+									field="#{form}.reasonTypeCorrectionDateTo" reference="reasonTypeCorrectionDateTo"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" height="2">
+									<component type="textarea" name="commentReasonTypeCorrectionDateTo"
+									field="#{form}.commentReasonTypeCorrectionDateTo" reference="commentReasonTypeCorrectionDateTo"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="causeOfPlannedDateToCorrectionLabel" />
+					</component>
+					 <component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
+						<component type="gridLayout" name="causeDeviationsOfEffectiveEndGridLayout"
+							columns="1" rows="3" reference="causeDeviationsOfEffectiveEndGridLayout">
+							<layoutElement column="1" row="1">
+								<component type="select" name="reasonTypeDeviationsOfEffectiveEnd"
+									reference="reasonTypeDeviationsOfEffectiveEnd" field="#{form}.reasonTypeDeviationsOfEffectiveEnd"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" height="2">
+									<component type="textarea" name="commentReasonTypeDeviationsOfEffectiveEnd"
+								 	 reference="commentReasonTypeDeviationsOfEffectiveEnd"
+									defaultEnabled="false">
+								</component>
+							</layoutElement>
+						</component>
+						<option type="label" value="causeDeviationsOfEffectiveEndLabel" />
+					</component>	
 				</layoutElement>
 			</component>
 		</windowTab>
 		<windowTab name="history">
 			<component type="grid" name="loggings" reference="grid"
 				source="#{form}.loggings">
-				<option type="column" name="dateAndTime" fields="dateAndTime" />
-				<option type="column" name="previousState" fields="previousState"
-				expression="'@orders.order.state.value.' + #previousState" />
+				<option type="column" name="dateAndTime" fields="dateAndTime" link="true"/>
 				<option type="column" name="currentState" fields="currentState"
-					expression="'@orders.order.state.value.' + #currentState" />
-				<option type="column" name="shift" fields="shift"
-					expression="#shift == null ? 'N/A' : #shift['name']" />
+					expression="'@orders.order.state.value.' + #currentState" link="true" />
 				<option type="column" name="worker" fields="worker" />
+				<option type="column" name="reasonType" fields="reasonType" />
+				<option type="column" name="comment" fields="comment" />
 				<option type="order" column="dateAndTime" direction="desc" />
 				<option type="searchable" value="dateAndTime,previousState,currentState" />
 				<option type="orderable" value="dateAndTime,previousState,currentState" />
+				<option type="correspondingView" value="orders/loggingDetails" />
+				<option type="correspondingComponent" value="form" />
 			</component>
 		</windowTab>
 	</component>
@@ -435,6 +551,9 @@
 			method="disableOrderFormForExternalItems" />
 		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService"
 			method="setFieldsRequired" />
-	
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderLogginsDetailsHooks"
+			method="fillReasonTypeDeviationsOfEffectiveStart" />
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderLogginsDetailsHooks"
+			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 	</hooks>
 </view>
