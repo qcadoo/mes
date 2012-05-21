@@ -31,6 +31,9 @@ public class OrderLogginsDetailsHooks {
     private void fillReasonTypeDeviations(final ViewDefinitionState view, final String typeReasonReference,
             final String commentReference, final String previousState, final String currentState) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
         FieldComponent typeReasonField = (FieldComponent) view.getComponentByReference(typeReasonReference);
         FieldComponent comment = (FieldComponent) view.getComponentByReference(commentReference);
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
