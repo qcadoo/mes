@@ -64,26 +64,27 @@
 				<component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
 					reference="timeNextOperation" hasDescription="true" />
 			</layoutElement>
-				<layoutElement column="2" row="1" height="3">
-					<component type="borderLayout" name="borderLayoutDivisibleCostNorms" reference="borderLayoutDivisibleCostNorms">
-						<component type="gridLayout" name="gridLayout" hasBorders="false" columns="1" rows="2">
-							<layoutElement column="1" row="1">
-								<component type="checkbox" name="areProductQuantitiesDivisible" field="#{form}.areProductQuantitiesDivisible"
-									reference="areProductQuantitiesDivisible" defaultEnabled="true" hasDescription="true" >
-									<option type="labelWidth" value="80"/>
-									<listener event="onChange" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
-								method="onProductionInOneCycleCheckboxChange" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="checkbox" name="isTjDivisible" field="#{form}.isTjDivisible"
-									reference="isTjDivisible" defaultEnabled="false" hasDescription="true" >
+			<layoutElement column="2" row="1" height="3">
+				<component type="borderLayout" name="borderLayoutDivisibleCostNorms" reference="borderLayoutDivisibleCostNorms">
+					<component type="gridLayout" name="gridLayout" hasBorders="false" columns="1" rows="2">
+						<layoutElement column="1" row="1">
+							<component type="checkbox" name="areProductQuantitiesDivisible" field="#{form}.areProductQuantitiesDivisible"
+								reference="areProductQuantitiesDivisible" defaultEnabled="true" hasDescription="true" >
 								<option type="labelWidth" value="80"/>
-								</component>
-							</layoutElement>
-			</component>
-				 <option type="label" value="divisibleCostNormsBorderLabel" />
-			</component>
+								<listener event="onChange" class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
+									method="onProductionInOneCycleCheckboxChange" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="checkbox" name="isTjDivisible" field="#{form}.isTjDivisible"
+								reference="isTjDivisible" defaultEnabled="false" hasDescription="true" >
+							<option type="labelWidth" value="80"/>
+							</component>
+						</layoutElement>
+					</component>
+					
+					 <option type="label" value="divisibleCostNormsBorderLabel" />
+				</component>
 			</layoutElement>
 			<layoutElement column="3" row="1">
 				<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
