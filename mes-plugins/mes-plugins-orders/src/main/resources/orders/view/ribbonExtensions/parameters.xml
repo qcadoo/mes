@@ -24,25 +24,23 @@
     ***************************************************************************
 
 -->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="basic"
 	view="parameters">
-	
-	<windowTab name="ordersTab" reference="ordersTab">
-		<component type="gridLayout" name="ordersTabGridLayout" columns="3" rows="1">
-			<layoutElement column="1" row="1">
-				<component type="lookup" name="defaultProductionLine" field="#{form}.defaultProductionLine" 
-					reference="defaultProductionLine">
-					<option type="column" name="name" fields="name" link="true"
-						width="300" />
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
-</windowTabExtension>
+	<group name="parameters">
+		<bigButton name="ordersParameters" icon="calendarIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('redirectToOrdersParameters', []);
+							}
+						}
+					});	
+				]]>
+			</script>	
+		</bigButton>
+	</group>
+</ribbonExtension>

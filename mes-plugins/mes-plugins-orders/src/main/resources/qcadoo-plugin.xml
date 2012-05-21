@@ -78,7 +78,50 @@
 		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
 		    <model:belongsTo name="order" plugin="orders" model="order" required="true"/>
 		</model:model-field>
-
+	
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenCorrectingDateTo" default="false" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenChangingStateToDeclined" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenChangingStateToInterrupted" default="false" />
+		</model:model-field>
+				<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenChangingStateToAbandoned" default="false" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenDelayedEffectiveDateFrom" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenEarlierEffectiveDateFrom" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenDelayedEffectiveDateTo" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenEarlierEffectiveDateTo" default="false" />
+		</model:model-field>
+		
+		<model:model-field plugin="basic" model="parameter">
+		    <model:integer name="delayedEffectiveDateFromTime" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:integer name="earlierEffectiveDateFromTime" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:integer name="delayedEffectiveDateToTime" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:integer name="earlierEffectiveDateToTime" />
+		</model:model-field>
+		
 		<model:model-hook plugin="technologies" model="technology">
 			<model:validatesWith
 				class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"
@@ -96,11 +139,17 @@
 		<view:view resource="view/ordersList.xml" />
 		<view:view resource="view/ordersPlanningList.xml" />
 		<view:view resource="view/orderDetails.xml" />
+		<view:view resource="view/ordersParameters.xml" />
 
 		<view:view resource="view/technologyInstanceOperationComponentList.xml" />
 		
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
 		
+		<view:view-listener plugin="basic" view="parameters"
+			component="form" event="redirectToOrdersParameters"
+			class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+			method="redirectToOrdersParameters" />
+			
 		<view:view-hook view="technologyInstanceOperationComponentDetails" type="beforeRender" plugin="technologies" 
 		    	class="com.qcadoo.mes.orders.hooks.TechnologyInstOperCompDetailsHooks" method="disabledFormWhenOrderStateIsAccepted"/>
 		
