@@ -133,24 +133,40 @@
 								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateFrom"
 									field="#{form}.reasonNeededWhenDelayedEffectiveDateFrom" reference="reasonNeededWhenDelayedEffectiveDateFrom">
 									<option type="labelWidth" value="70" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+										method="showTimeField" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateFrom"
 									field="#{form}.reasonNeededWhenEarlierEffectiveDateFrom" reference="reasonNeededWhenEarlierEffectiveDateFrom">
 									<option type="labelWidth" value="70" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+										method="showTimeField" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="3">
 								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateTo"
 									field="#{form}.reasonNeededWhenDelayedEffectiveDateTo" reference="reasonNeededWhenDelayedEffectiveDateTo">
 									<option type="labelWidth" value="70" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+										method="showTimeField" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="4">
 								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateTo"
 									field="#{form}.reasonNeededWhenEarlierEffectiveDateTo" reference="reasonNeededWhenEarlierEffectiveDateTo">
 									<option type="labelWidth" value="70" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+										method="showTimeField" />
 								</component>
 							</layoutElement>
 							<layoutElement column="2" row="1">
@@ -176,6 +192,9 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-
+	
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="showTimeFields" />
+	</hooks>
 </view>

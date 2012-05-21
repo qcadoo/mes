@@ -645,4 +645,20 @@ public class OrderService {
             form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
         }
     }
+
+    public void changeFieldState(final ViewDefinitionState viewDefinitionState, final String booleanFieldComponentName,
+            final String fieldComponentName) {
+        FieldComponent booleanFieldComponent = (FieldComponent) viewDefinitionState
+                .getComponentByReference(booleanFieldComponentName);
+
+        FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldComponentName);
+
+        if ("1".equals(booleanFieldComponent.getFieldValue())) {
+            fieldComponent.setEnabled(true);
+            fieldComponent.requestComponentUpdateState();
+        } else {
+            fieldComponent.setEnabled(false);
+            fieldComponent.requestComponentUpdateState();
+        }
+    }
 }

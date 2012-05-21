@@ -29,43 +29,30 @@ public final class ParameterFieldsO {
 
     }
 
-    public static final String NUMBER = "number";
+    public static final String REASON_NEEDED_WHEN_CORRECTING_DATEF_ROM = "reasonNeededWhenCorrectingDateFrom";
 
-    public static final String NAME = "name";
+    public static final String REASON_NEEDED_WHEN_CORRECTING_DATE_TO = "reasonNeededWhenCorrectingDateTo";
 
-    public static final String DESCRIPTION = "description";
+    public static final String REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED = "reasonNeededWhenChangingStateToDeclined";
 
-    public static final String DATE_FROM = "dateFrom";
+    public static final String REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED = "reasonNeededWhenChangingStateToInterrupted";
 
-    public static final String DATE_TO = "dateTo";
+    public static final String REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED = "reasonNeededWhenChangingStateToAbandoned";
 
-    public static final String DEADLINE = "deadline";
+    public static final String REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM = "reasonNeededWhenDelayedEffectiveDateFrom";
 
-    public static final String STATE = "state";
+    public static final String REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM = "reasonNeededWhenEarlierEffectiveDateFrom";
 
-    public static final String COMPANY = "company";
+    public static final String REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO = "reasonNeededWhenDelayedEffectiveDateTo";
 
-    public static final String PRODUCT = "product";
+    public static final String REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO = "reasonNeededWhenEarlierEffectiveDateTo";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String DELAYED_EFFECTIVE_DATE_FROM_TIME = "delayedEffectiveDateFromTime";
 
-    public static final String TECHNOLOGY = "technology";
+    public static final String EARLIER_EFFECTIVE_DATE_FROM_TIME = "earlierEffectiveDateFromTime";
 
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
+    public static final String DELAYED_EFFECTIVE_DATE_TO_TIME = "delayedEffectiveDateToTime";
 
-    public static final String DONE_QUANTITY = "doneQuantity";
+    public static final String EARLIER_EFFECTIVE_DATE_TO_TIME = "earlierEffectiveDateToTime";
 
-    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
-
-    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
-
-    public static final String EXTERNAL_NUMBER = "externalNumber";
-
-    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
-
-    public static final String LOGGINGS = "loggings";
-
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
-
-    public static final String PRODUCTION_LINE = "productionLine";
 }

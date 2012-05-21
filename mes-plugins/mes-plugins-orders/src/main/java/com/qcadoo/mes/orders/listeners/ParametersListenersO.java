@@ -23,9 +23,19 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_TO_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -37,6 +47,9 @@ public class ParametersListenersO {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OrderService orderService;
 
     public void redirectToOrdersParameters(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
@@ -60,7 +73,7 @@ public class ParametersListenersO {
     }
 
     private Long getDictionaryId(final String name) {
-        Entity dictionary = dataDefinitionService.get("qcadoomodel", "dictionary").find()
+        Entity dictionary = dataDefinitionService.get("qcadooModel", "dictionary").find()
                 .add(SearchRestrictions.eq("name", name)).setMaxResults(1).uniqueResult();
         if (dictionary == null) {
             return null;
@@ -68,4 +81,23 @@ public class ParametersListenersO {
             return dictionary.getId();
         }
     }
+
+    public void showTimeField(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
+            final String[] args) {
+        String componentStateName = componentState.getName();
+        if (REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM.equals(componentStateName)) {
+            orderService.changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
+                    DELAYED_EFFECTIVE_DATE_FROM_TIME);
+        } else if (REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM.equals(componentStateName)) {
+            orderService.changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
+                    EARLIER_EFFECTIVE_DATE_FROM_TIME);
+        } else if (REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO.equals(componentStateName)) {
+            orderService.changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
+                    DELAYED_EFFECTIVE_DATE_TO_TIME);
+        } else if (REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO.equals(componentStateName)) {
+            orderService.changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
+                    EARLIER_EFFECTIVE_DATE_TO_TIME);
+        }
+    }
+
 }
