@@ -29,7 +29,7 @@
 	plugin="basic"
 	view="parameters">
 	<group name="parameters">
-		<bigButton name="workPlansParameters" icon="calendarIcon24.png" state="disabled">
+		<bigButton name="workPlansParameters" icon="calendarIcon24.png">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -39,19 +39,6 @@
 							}
 						}
 					});	
-						
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
-							if (! value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});					
 				]]>
 			</script>	
 		</bigButton>

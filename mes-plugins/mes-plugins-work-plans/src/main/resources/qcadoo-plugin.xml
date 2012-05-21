@@ -340,7 +340,7 @@
 			
 		<view:view-listener plugin="basic" view="parameters"
 			component="form" event="redirectToWorkPlanParameters"
-			class="com.qcadoo.mes.workPlans.listeners.WorkPlanListeners"
+			class="com.qcadoo.mes.workPlans.listeners.ParametersListenersWP"
 			method="redirectToWorkPlanParameters" />
 
 		<custom:custom class="com.qcadoo.mes.workPlans.WorkPlansOnStartupService" />

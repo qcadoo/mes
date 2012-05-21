@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.1.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="ordersParameters" modelName="parameter" modelPlugin="basic"
+	menuAccessible="true">
+
+	<component type="window" name="window">
+		<ribbon>
+			<group name="actions" hasLabel="false">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+			</group>
+			<group name="dictionary">
+				<bigButton name="deviationsDictionary" icon="calendarIcon24.png" action="">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('redirectToDeviationsDictionary', []);
+									}
+								}
+							});	
+						]]>
+					</script>	
+				</bigButton>
+			</group>
+		</ribbon>
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="ordersParameters" reference="form">
+				<component type="gridLayout" name="mainTabGridLayout"
+					columns="3" rows="1">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="defaultProductionLine"
+							field="#{form}.defaultProductionLine" reference="defaultProductionLine">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+				</component>
+				
+				<listener event="redirectToDeviationsDictionary"
+					class="com.qcadoo.mes.orders.listeners.ParametersListenersO" method="redirectToDeviationsDictionary" />
+			</component>
+		</windowTab>
+		<windowTab name="deviationsDocumentationTab" reference="deviationsDocumentationTab">
+			<component type="gridLayout" name="deviationsDocumentationTabGridLayout"
+				columns="3" rows="2">
+				<layoutElement column="1" row="1" width="3">
+					<component type="label" name="deviationsDocumentation">
+						<option type="labelStyle" value="text" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="gridLayout" name="reasonNeededWhenGridLayout"
+						columns="1" rows="5">
+						<layoutElement column="1" row="1" height="2">
+							<component type="borderLayout" name="correctionOfDateBorderLayout">
+								<component type="gridLayout" name="correctionOfDateGridLayout"
+									columns="1" rows="2">
+									<layoutElement column="1" row="1">
+										<component type="checkbox" name="reasonNeededWhenCorrectingDateFrom"
+											field="#{form}.reasonNeededWhenCorrectingDateFrom" reference="reasonNeededWhenCorrectingDateFrom">
+											<option type="labelWidth" value="70" />
+										</component>
+									</layoutElement>
+									<layoutElement column="1" row="2">
+										<component type="checkbox" name="reasonNeededWhenCorrectingDateTo"
+											field="#{form}.reasonNeededWhenCorrectingDateTo" reference="reasonNeededWhenCorrectingDateTo">
+											<option type="labelWidth" value="70" />
+										</component>
+									</layoutElement>
+								</component>
+								
+								<option type="label" value="correctionOfDate" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3">
+							<component type="checkbox" name="reasonNeededWhenChangingStateToDeclined"
+								field="#{form}.reasonNeededWhenChangingStateToDeclined" reference="reasonNeededWhenChangingStateToDeclined">
+								<option type="labelWidth" value="70" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4">
+							<component type="checkbox" name="reasonNeededWhenChangingStateToInterrupted"
+								field="#{form}.reasonNeededWhenChangingStateToInterrupted" reference="reasonNeededWhenChangingStateToInterrupted">
+								<option type="labelWidth" value="70" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="5">
+							<component type="checkbox" name="reasonNeededWhenChangingStateToAbandoned"
+								field="#{form}.reasonNeededWhenChangingStateToAbandoned" reference="reasonNeededWhenChangingStateToAbandoned">
+								<option type="labelWidth" value="70" />
+							</component>
+						</layoutElement>
+						
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="2" width="2">
+					<component type="borderLayout" name="deviationsFromPlannedAndCorretedDatesBorderLayout">
+						<component type="gridLayout" name="deviationsFromPlannedAndCorretedDatesGridLayout"
+							columns="2" rows="4">
+							<layoutElement column="1" row="1">
+								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateFrom"
+									field="#{form}.reasonNeededWhenDelayedEffectiveDateFrom" reference="reasonNeededWhenDelayedEffectiveDateFrom">
+									<option type="labelWidth" value="70" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateFrom"
+									field="#{form}.reasonNeededWhenEarlierEffectiveDateFrom" reference="reasonNeededWhenEarlierEffectiveDateFrom">
+									<option type="labelWidth" value="70" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3">
+								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateTo"
+									field="#{form}.reasonNeededWhenDelayedEffectiveDateTo" reference="reasonNeededWhenDelayedEffectiveDateTo">
+									<option type="labelWidth" value="70" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="4">
+								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateTo"
+									field="#{form}.reasonNeededWhenEarlierEffectiveDateTo" reference="reasonNeededWhenEarlierEffectiveDateTo">
+									<option type="labelWidth" value="70" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="time" name="delayedEffectiveDateFromTime"
+									field="#{form}.delayedEffectiveDateFromTime" reference="delayedEffectiveDateFromTime" />
+							</layoutElement>
+							<layoutElement column="2" row="2">
+								<component type="time" name="earlierEffectiveDateFromTime"
+									field="#{form}.earlierEffectiveDateFromTime" reference="earlierEffectiveDateFromTime" />
+							</layoutElement>
+							<layoutElement column="2" row="3">
+								<component type="time" name="delayedEffectiveDateToTime"
+									field="#{form}.delayedEffectiveDateToTime" reference="delayedEffectiveDateToTime" />
+							</layoutElement>
+							<layoutElement column="2" row="4">
+								<component type="time" name="earlierEffectiveDateToTime"
+									field="#{form}.earlierEffectiveDateToTime" reference="earlierEffectiveDateToTime" />
+							</layoutElement>
+						</component>
+								
+						<option type="label" value="deviationsFromPlannedAndCorretedDates" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+
+	</component>
+</view>

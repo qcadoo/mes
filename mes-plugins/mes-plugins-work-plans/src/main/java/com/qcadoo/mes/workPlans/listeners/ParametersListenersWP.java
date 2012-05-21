@@ -29,14 +29,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class WorkPlanListeners {
+public class ParametersListenersWP {
 
-    public void redirectToWorkPlanParameters(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+    public void redirectToWorkPlanParameters(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+        Long parameterId = (Long) componentState.getFieldValue();
 
-        if (orderId != null) {
-            String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + orderId + "\"}";
+        if (parameterId != null) {
+            String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }
     }
