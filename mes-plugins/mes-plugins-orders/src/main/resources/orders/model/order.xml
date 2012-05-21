@@ -66,6 +66,14 @@
 		<tree name="technologyInstanceOperationComponents" copyable="true" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" />
 		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" required="true" />	
 		<datetime name="deadline" />
+		<datetime name="correctedDateFrom" />
+		<datetime name="correctedDateTo" />
+		<dictionary name="reasonTypeCorrectionDateFrom" dictionary="reasonTypeOfChaningOrderState" />
+		<dictionary name="reasonTypeCorrectionDateTo" dictionary="reasonTypeOfChaningOrderState" />
+		<dictionary name="reasonTypeDeviationsOfEffectiveStart" dictionary="reasonTypeOfChaningOrderState" persistent="false"/>
+		<dictionary name="reasonTypeDeviationsOfEffectiveEnd" dictionary="reasonTypeOfChaningOrderState" persistent="false" />
+		<string name="commentReasonTypeCorrectionDateFrom"/>
+		<string name="commentReasonTypeCorrectionDateTo"/>
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

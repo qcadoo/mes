@@ -34,6 +34,8 @@
 		<string name="currentState" />
 		<belongsTo name="shift" model="shift" plugin="basic" />
 		<string name="worker" />
+		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
+		<string name="comment" />
 	</fields>
 	<hooks />
 </model>

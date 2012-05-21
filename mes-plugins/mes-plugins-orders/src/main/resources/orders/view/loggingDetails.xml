@@ -1,0 +1,44 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="loggingDetails" modelName="logging">
+
+	<component type="window" name="window" reference="window">
+		
+		<ribbon>
+		    <group name="navigation" hasLabel="false">
+				<bigButton name="back" action="#{window}.performBack;" icon="backIcon24.png" />
+			</group>
+			<group name="actions" hasLabel="false">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+			</group>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="logging" reference="form">
+			  	<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="input" name="dateAndTime" field="#{form}.dateAndTime" reference="dateAndTime" defaultEnabled="false"/>
+					</layoutElement>  
+					<layoutElement column="1" row="2">
+						<component type="input" name="worker" field="#{form}.worker" reference="worker" defaultEnabled="false"/>
+					</layoutElement>  
+					<layoutElement column="1" row="3">
+					    <component type="input" name="previousState" field="#{form}.previousState" reference="previousState" defaultEnabled="false"/>
+					</layoutElement>  
+					<layoutElement column="1" row="4">
+					    <component type="input" name="currentState" field="#{form}.currentState" reference="currentState" defaultEnabled="false"/>
+					</layoutElement>  
+					<layoutElement column="1" row="5">
+<!-- 						<component type="checkbox" name="master" field="master" reference="master" /> -->
+					</layoutElement>  
+					<layoutElement column="2" row="1" >
+					    <component type="select" name="reasonType" field="#{form}.reasonType" reference="reasonType"/>
+					</layoutElement>
+					<layoutElement column="2" row="2" height="2">
+						<component type="textarea" name="comment" field="#{form}.comment" reference="comment" />    
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+			</component>
+		</windowTab>
+	</component>
+</view>
