@@ -41,6 +41,9 @@ public class OrderLogginsDetailsHooks {
         Entity logging = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING).find()
                 .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("previousState", previousState))
                 .add(SearchRestrictions.eq("currentState", currentState)).uniqueResult();
+        if (logging == null) {
+            return;
+        }
         typeReasonField.setFieldValue(logging.getField("reasonType"));
         comment.setFieldValue(logging.getField("comment"));
         typeReasonField.requestComponentUpdateState();
