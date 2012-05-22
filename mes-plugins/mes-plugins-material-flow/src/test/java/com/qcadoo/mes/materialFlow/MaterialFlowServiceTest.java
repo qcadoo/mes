@@ -130,7 +130,7 @@ public class MaterialFlowServiceTest {
 
         given(resultTo.getEntities()).willReturn(list);
 
-        assertEquals(new BigDecimal(1500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
+        assertEquals(new BigDecimal(1500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, productId, FORDATE));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class MaterialFlowServiceTest {
 
         given(transfer.find(Mockito.anyString()).list()).willReturn(resultTo);
 
-        assertEquals(new BigDecimal(1000), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
+        assertEquals(new BigDecimal(1000), materialFlowService.calculateShouldBeInStockArea(stockAreasId, productId, FORDATE));
     }
 
     @Test
@@ -191,6 +191,6 @@ public class MaterialFlowServiceTest {
 
         given(resultTo.getEntities()).willReturn(transferList);
 
-        assertEquals(new BigDecimal(2500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, PRODUCT, FORDATE));
+        assertEquals(new BigDecimal(2500), materialFlowService.calculateShouldBeInStockArea(stockAreasId, productId, FORDATE));
     }
 }
