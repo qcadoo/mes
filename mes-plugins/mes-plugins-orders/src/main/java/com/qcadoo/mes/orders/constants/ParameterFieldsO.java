@@ -29,7 +29,7 @@ public final class ParameterFieldsO {
 
     }
 
-    public static final String REASON_NEEDED_WHEN_CORRECTING_DATEF_ROM = "reasonNeededWhenCorrectingDateFrom";
+    public static final String REASON_NEEDED_WHEN_CORRECTING_DATE_FROM = "reasonNeededWhenCorrectingDateFrom";
 
     public static final String REASON_NEEDED_WHEN_CORRECTING_DATE_TO = "reasonNeededWhenCorrectingDateTo";
 

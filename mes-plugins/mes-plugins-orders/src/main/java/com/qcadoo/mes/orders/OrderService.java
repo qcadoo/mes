@@ -42,6 +42,18 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_TO_TIME;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
@@ -644,6 +656,76 @@ public class OrderService {
                 timeConverterService.getDateFromField(deadline.getFieldValue())) == 1) {
             form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
         }
+    }
+
+    public boolean isReasonNeededWhenCorrectingDateFrom() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM);
+    }
+
+    public boolean isReasonNeededWhenCorrectingDateTo() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO);
+    }
+
+    public boolean isReasonNeededWhenChangingStateToDeclined() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED);
+    }
+
+    public boolean isReasonNeededWhenChangingStateToInterrupted() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED);
+    }
+
+    public boolean isReasonNeededWhenChangingStateToAbandoned() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED);
+    }
+
+    public boolean isReasonNeededWhenChangingEffectiveDateFrom(final Entity order) {
+        Date dateFrom = (Date) order.getField(DATE_FROM);
+        Date correctedDateFrom = (Date) order.getField(OrderFields.CORRECTED_DATE_FROM);
+        Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+
+        if ((dateFrom == null) || (effectiveDateFrom == null)) {
+            return false;
+        }
+
+        Long dateFromTime = null;
+        if (correctedDateFrom == null) {
+            dateFromTime = dateFrom.getTime();
+        } else {
+            dateFromTime = correctedDateFrom.getTime();
+        }
+
+        Long effectiveDateFromTime = effectiveDateFrom.getTime();
+
+        Long delayedEffectiveDateFromTime = (Long) parameterService.getParameter().getField(DELAYED_EFFECTIVE_DATE_FROM_TIME);
+        Long earlierEffectiveDateFromTime = (Long) parameterService.getParameter().getField(EARLIER_EFFECTIVE_DATE_FROM_TIME);
+
+        return ((parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM) && (dateFromTime > (effectiveDateFromTime + delayedEffectiveDateFromTime))) || (parameterService
+                .getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM) && (dateFromTime < (effectiveDateFromTime - earlierEffectiveDateFromTime))));
+    }
+
+    public boolean isReasonNeededWhenChangingEffectiveDateTo(final Entity order) {
+        Date dateTo = (Date) order.getField(DATE_TO);
+        Date correctedDateTo = (Date) order.getField(OrderFields.CORRECTED_DATE_TO);
+        Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
+
+        if ((dateTo == null) || (effectiveDateTo == null)) {
+            return false;
+        }
+
+        Long dateToTime = null;
+        if (correctedDateTo == null) {
+            dateToTime = dateTo.getTime();
+        } else {
+            dateToTime = correctedDateTo.getTime();
+        }
+
+        Long effectiveDateToTime = effectiveDateTo.getTime();
+
+        Long delayedEffectiveDateToTime = (Long) parameterService.getParameter().getField(DELAYED_EFFECTIVE_DATE_TO_TIME);
+        Long earlierEffectiveDateToTime = (Long) parameterService.getParameter().getField(EARLIER_EFFECTIVE_DATE_TO_TIME);
+
+        return ((parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && (dateToTime > (effectiveDateToTime + delayedEffectiveDateToTime))) || (parameterService
+                .getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && (dateToTime < (effectiveDateToTime - earlierEffectiveDateToTime))));
     }
 
     public void changeFieldState(final ViewDefinitionState viewDefinitionState, final String booleanFieldComponentName,

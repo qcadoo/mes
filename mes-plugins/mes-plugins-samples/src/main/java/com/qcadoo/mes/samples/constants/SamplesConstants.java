@@ -105,6 +105,8 @@ public interface SamplesConstants {
 
     String L_PRODUCTION_LINES_DICTIONARY = "productionLinesDictionary";
 
+    String L_REASON_TYPE_OF_CHANING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+
     String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
 
     String L_DESCRIPTION = "description";

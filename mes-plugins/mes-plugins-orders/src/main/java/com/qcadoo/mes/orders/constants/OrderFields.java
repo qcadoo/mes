@@ -68,4 +68,8 @@ public final class OrderFields {
     public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
 
     public static final String PRODUCTION_LINE = "productionLine";
+
+    public static final String CORRECTED_DATE_FROM = "correctedDateFrom";
+
+    public static final String CORRECTED_DATE_TO = "correctedDateTo";
 }
