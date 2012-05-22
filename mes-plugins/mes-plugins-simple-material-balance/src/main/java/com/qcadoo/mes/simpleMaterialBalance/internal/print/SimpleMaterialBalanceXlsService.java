@@ -126,7 +126,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
             BigDecimal available = BigDecimal.ZERO;
             for (Entity stockAreas : stockAreass) {
                 available = available.add(materialFlowService.calculateShouldBeInStockArea(
-                        stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId().toString(),
+                        stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId(),
                         (Date) simpleMaterialBalance.getField(DATE_FIELD)), numberService.getMathContext());
             }
             row.createCell(4).setCellValue(numberService.format(available));
