@@ -75,6 +75,7 @@
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
 		<model:dictionary name="units" />
+		<model:dictionary name="reasonTypeOfChaningOrderState" />
 	
 		<menu:menu-category name="basic" />
 
