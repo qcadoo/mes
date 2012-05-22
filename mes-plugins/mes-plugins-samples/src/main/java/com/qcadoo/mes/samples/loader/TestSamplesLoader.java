@@ -455,7 +455,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
-        Entity technology = getTechnologyByNumber(values.get("tech_nr").toString());
+        Entity technology = getTechnologyByNumber(values.get("tech_nr"));
         if (STATE_ACCEPTED.equals(technology.getStringField(L_ORDER_STATE))) {
             return;
         }
