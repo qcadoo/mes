@@ -28,8 +28,9 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="orders"
 	view="orderDetails">
+	
 	<group name="orderProgressPlans">
-		<bigButton name="productionPerShift" icon="genealogyClockIcon24.png" state="enabled" >
+		<bigButton name="productionPerShift" icon="genealogyClockIcon24.png">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
