@@ -241,11 +241,13 @@ public class OrderTimePredictionService {
         Date beforeOperation = null;
         for (Entity operation : operations) {
             Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM);
-            if (beforeOperation == null) {
-                beforeOperation = operationDateFrom;
-            }
-            if (operationDateFrom.compareTo(beforeOperation) == -1) {
-                beforeOperation = operationDateFrom;
+            if (operationDateFrom != null) {
+                if (beforeOperation == null) {
+                    beforeOperation = operationDateFrom;
+                }
+                if (operationDateFrom.compareTo(beforeOperation) == -1) {
+                    beforeOperation = operationDateFrom;
+                }
             }
         }
         return beforeOperation;
@@ -254,12 +256,14 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_TO);
-            if (laterOperation == null) {
-                laterOperation = operationDateFrom;
-            }
-            if (operationDateFrom.compareTo(laterOperation) == 1) {
-                laterOperation = operationDateFrom;
+            Date operationDateTo = (Date) operation.getField(EFFECTIVE_DATE_TO);
+            if (operationDateTo != null) {
+                if (laterOperation == null) {
+                    laterOperation = operationDateTo;
+                }
+                if (operationDateTo.compareTo(laterOperation) == 1) {
+                    laterOperation = operationDateTo;
+                }
             }
         }
         return laterOperation;
