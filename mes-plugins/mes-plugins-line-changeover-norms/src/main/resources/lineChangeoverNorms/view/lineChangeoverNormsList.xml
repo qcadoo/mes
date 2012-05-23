@@ -1,0 +1,33 @@
+<view name="lineChangeoverNormsList" modelName="lineChangeoverNorms" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardGridTemplate" excludeItems="actions.copy"/>
+		</ribbon>
+		<component type="grid" name="lineChangeoverNormsList" reference="grid">
+			<option type="column" name="number" fields="number" link="true"
+				width="150" />
+			<option type="column" name="fromTechnology" fields="fromTechnology" link="true"
+				width="300" expression="#fromTechnology['number']" />
+			<option type="column" name="toTechnology" fields="toTechnology" link="true"
+				width="300" expression="#toTechnology['number']" />
+			<option type="column" name="fromTechnologyGroup" fields="fromTechnologyGroup" link="true"
+				width="300" expression="#fromTechnologyGroup['number']" />
+			<option type="column" name="toTechnologyGroup" fields="toTechnologyGroup" link="true"
+				width="300" expression="#toTechnologyGroup['number']" />
+			<option type="column" name="productionLine" fields="productionLine"
+				width="300" expression="#productionLine['number']" />
+			<option type="column" name="duration" fields="duration" 
+				width="300"  />
+			<option type="order" column="name" direction="asc" />
+			<option type="correspondingView" value="lineChangeoverNorms/lineChangeoverNormsDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="name,number" />
+			<option type="orderable" value="name,number" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

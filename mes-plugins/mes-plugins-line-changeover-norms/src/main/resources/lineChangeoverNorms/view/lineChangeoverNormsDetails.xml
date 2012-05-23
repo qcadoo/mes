@@ -1,0 +1,82 @@
+<view name="lineChangeoverNormsDetails" modelName="lineChangeoverNorms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" excludeItems="actions.copy"/>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="lineChangeoverNormsDetails" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" reference="number">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="select" name="changeoverType" field="changeoverType" reference="changeoverType" >
+						    <listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="invisibleAndSetRequiredFields" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="fromTechnology" field="fromTechnology" reference="fromTechnology" >
+							<option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="lookup" name="toTechnology" field="toTechnology" reference="toTechnology" >
+						    <option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="time" name="duration" field="duration" reference="duration" />
+					</layoutElement>	
+					<layoutElement column="2" row="2">
+						<component type="lookup" name="productionLine" field="productionLine" reference="productionLine" >
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>	
+					<layoutElement column="2" row="3">
+						<component type="lookup" name="fromTechnologyGroup" field="fromTechnologyGroup" reference="fromTechnologyGroup" >
+						    <option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="lookup" name="toTechnologyGroup" field="toTechnologyGroup" reference="toTechnologyGroup" >
+						    <option type="column" name="name" fields="name" link="true" width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>			
+				</component>
+				<option type="header" value="true"/>
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+	    <beforeRender class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+			method="invisibleField" />
+	    </hooks>
+</view>

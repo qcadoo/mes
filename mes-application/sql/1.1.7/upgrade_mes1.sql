@@ -48,3 +48,36 @@ ALTER TABLE orders_logging ADD COLUMN reasontype character varying(255);
 ALTER TABLE orders_logging ADD COLUMN "comment" character varying(255);
 
 -- end
+
+CREATE TABLE linechangeovernorms_linechangeovernorms
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  changeovertype character varying(255) DEFAULT '01fromTechForSpecificLine'::character varying,
+  fromtechnology_id bigint,
+  totechnology_id bigint,
+  fromtechnologygroup_id bigint,
+  totechnologygroup_id bigint,
+  productionline_id bigint,
+  duration integer,
+  CONSTRAINT linechangeovernorms_linechangeovernorms_pkey PRIMARY KEY (id),
+  CONSTRAINT fk95403ebf63154a1c FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT linechangeovernorms_technology_fkey FOREIGN KEY (totechnology_id)
+      REFERENCES technologies_technology (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT linechangeovernorms_technology_fkey FOREIGN KEY (fromtechnology_id)
+      REFERENCES technologies_technology (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT linechangeovernorms_technologyGroup_fkey FOREIGN KEY (fromtechnologygroup_id)
+      REFERENCES technologies_technologygroup (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT linechangeovernorms_technologyGroup_fkey FOREIGN KEY (totechnologygroup_id)
+      REFERENCES technologies_technologygroup (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
