@@ -41,7 +41,8 @@ public class ChangeoverNormsServiceImpl implements ChangeoverNormsService {
         return matchingNorm;
     }
 
-    private Entity searchMatchingChangeroverNorms(final Entity fromTechnology, final Entity toTechnology,
+    @Override
+    public Entity searchMatchingChangeroverNorms(final Entity fromTechnology, final Entity toTechnology,
             final Entity fromTechnologyGroup, final Entity toTechnologyGroup, final Entity producionLine) {
         return dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
