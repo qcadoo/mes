@@ -189,6 +189,7 @@ public class ProductDetailsViewHooks {
         view.redirectTo(url, false, true, parameters);
     }
 
+    // TODO lupo fix when problem with navigation will be done
     public void updateRibbonState(final ViewDefinitionState view) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity product = productForm.getEntity();
@@ -197,16 +198,16 @@ public class ProductDetailsViewHooks {
         RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName("technologies");
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
 
-        RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
+        // RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
         RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
                 .getItemByName("showTechnologiesWithTechnologyGroup");
-        RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
-                .getItemByName("showTechnologiesWithProduct");
+        // RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
+        // .getItemByName("showTechnologiesWithProduct");
         RibbonActionItem showOrdersWithProductMain = (RibbonActionItem) orders.getItemByName("showOrdersWithProductMain");
         RibbonActionItem showOrdersWithProductPlanned = (RibbonActionItem) orders.getItemByName("showOrdersWithProductPlanned");
 
         if (product.getId() != null) {
-            updateButtonState(addTechnologyGroup, true);
+            // updateButtonState(addTechnologyGroup, true);
 
             Entity technologyGroup = product.getBelongsToField("technologyGroup");
 
@@ -216,16 +217,16 @@ public class ProductDetailsViewHooks {
                 updateButtonState(showTechnologiesWithTechnologyGroup, true);
             }
 
-            updateButtonState(showTechnologiesWithProduct, true);
+            // updateButtonState(showTechnologiesWithProduct, true);
             updateButtonState(showOrdersWithProductMain, true);
             updateButtonState(showOrdersWithProductPlanned, true);
 
             return;
         }
 
-        updateButtonState(addTechnologyGroup, false);
+        // updateButtonState(addTechnologyGroup, false);
         updateButtonState(showTechnologiesWithTechnologyGroup, false);
-        updateButtonState(showTechnologiesWithProduct, false);
+        // updateButtonState(showTechnologiesWithProduct, false);
         updateButtonState(showOrdersWithProductMain, false);
         updateButtonState(showOrdersWithProductPlanned, false);
     }
