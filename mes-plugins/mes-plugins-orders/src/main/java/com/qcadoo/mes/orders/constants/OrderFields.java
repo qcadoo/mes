@@ -72,4 +72,13 @@ public final class OrderFields {
     public static final String CORRECTED_DATE_FROM = "correctedDateFrom";
 
     public static final String CORRECTED_DATE_TO = "correctedDateTo";
+
+    public static final String REASON_TYPE_CORRECTION_DATE_FROM = "reasonTypeCorrectionDateFrom";
+
+    public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_FROM = "commentReasonTypeCorrectionDateFrom";
+
+    public static final String REASON_TYPE_CORRECTION_DATE_TO = "reasonTypeCorrectionDateTo";
+
+    public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_TO = "commentReasonTypeCorrectionDateTo";
+
 }
