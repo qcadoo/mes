@@ -31,6 +31,7 @@ public class LineChangeoverNormsDetailsHooks {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
             field.setVisible(selectForTechnology);
             field.setRequired(selectForTechnology);
+            field.setFieldValue(selectForTechnology ? field.getFieldValue() : null);
             field.requestComponentUpdateState();
         }
 
@@ -39,6 +40,7 @@ public class LineChangeoverNormsDetailsHooks {
             field.setVisible(!selectForTechnology);
             field.setRequired(!selectForTechnology);
             field.requestComponentUpdateState();
+            field.setFieldValue(!selectForTechnology ? field.getFieldValue() : null);
         }
     }
 

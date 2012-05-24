@@ -27,7 +27,6 @@ public class LineChangeoverNormsHooks {
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkUniqueNorms(final DataDefinition dataDefinition, final Entity entity) {
-
         Entity lineChangeoverNorms = dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
                 .find().add(SearchRestrictions.ne(NUMBER, entity.getStringField(NUMBER)))
