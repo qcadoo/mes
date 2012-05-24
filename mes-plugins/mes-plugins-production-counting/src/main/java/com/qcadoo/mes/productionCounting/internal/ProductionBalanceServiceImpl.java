@@ -150,6 +150,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
 
+    @Override
     public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
 
@@ -163,6 +164,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         }
     }
 
+    @Override
     public void clearGeneratedOnCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         productionBalance.setField(FILE_NAME, null);
         productionBalance.setField(GENERATED, false);
@@ -170,6 +172,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         productionBalance.setField(WORKER, null);
     }
 
+    @Override
     public boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
 
@@ -206,6 +209,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return true;
     }
 
+    @Override
     public void printProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
@@ -213,6 +217,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     @Transactional
+    @Override
     public void generateProductionBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         state.performEvent(viewDefinitionState, "save", new String[0]);
@@ -252,6 +257,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         }
     }
 
+    @Override
     public void generateProductionBalanceDocuments(final Entity productionBalance, final Locale locale) throws IOException,
             DocumentException {
 
@@ -317,6 +323,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         }
     }
 
+    @Override
     public Map<Long, Entity> groupProductionRecordsRegisteredTimes(final Entity productionBalance,
             final List<Entity> productionRecords) {
         Map<Long, Entity> groupedProductionRecords = Maps.newHashMap();
@@ -639,6 +646,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         productionBalance.getDataDefinition().save(productionBalance);
     }
 
+    @Override
     public Map<Long, Map<String, Integer>> fillProductionRecordsWithPlannedTimes(final Entity productionBalance,
             final List<Entity> productionRecords) {
         Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = Maps.newHashMap();
@@ -745,11 +753,13 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return value;
     }
 
+    @Override
     public Entity getProductionBalanceFromDB(final Long productionBalanceId) {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE).get(productionBalanceId);
     }
 
+    @Override
     public List<Entity> getProductionRecordsFromDB(final Entity order) {
         return dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
@@ -757,36 +767,44 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                 .list().getEntities();
     }
 
+    @Override
     public Entity getTechnologyOperationComponentFromDB(final Long technologyOperationComponentId) {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
     }
 
+    @Override
     public Entity getOrderFromDB(final Long orderId) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 
+    @Override
     public Entity getCompanyFromDB() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
     }
 
+    @Override
     public boolean isCalculateOperationCostModeHourly(final Entity productionBalance) {
         return HOURLY.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE));
     }
 
+    @Override
     public boolean isCalculateOperationCostModePiecework(final Entity productionBalance) {
         return PIECEWORK.getStringValue().equals(productionBalance.getStringField(CALCULATE_OPERATION_COST_MODE));
     }
 
+    @Override
     public boolean isTypeOfProductionRecordingBasic(final Entity order) {
         return BASIC.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
+    @Override
     public boolean isTypeOfProductionRecordingForEach(final Entity order) {
         return FOR_EACH.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
 
+    @Override
     public boolean isTypeOfProductionRecordingCumulated(final Entity order) {
         return CUMULATED.getStringValue().equals(order.getStringField(TYPE_OF_PRODUCTION_RECORDING));
     }
