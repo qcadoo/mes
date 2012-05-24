@@ -34,7 +34,7 @@
 			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
 		</ribbon>
 		
-		<windowTab name="mainTab" reference="inProductsCostTab">
+		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="technologies" reference="technology" />
 			
 			<component type="form" name="form" reference="form">

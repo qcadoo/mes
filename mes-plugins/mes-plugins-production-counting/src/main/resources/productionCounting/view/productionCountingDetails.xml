@@ -108,7 +108,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-					<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
+					<component type="lookup" name="product" field="product" reference="product">
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="required" value="true" />
 						<option type="searchable" value="name" />

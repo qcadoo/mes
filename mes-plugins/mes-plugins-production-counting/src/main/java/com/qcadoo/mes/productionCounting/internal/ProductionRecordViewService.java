@@ -251,7 +251,7 @@ public class ProductionRecordViewService {
 
         view.getComponentByReference(L_USED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
         view.getComponentByReference(L_PLANNED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
-        for (String reference : Arrays.asList(L_NUMBER, L_NAME, L_TYPE, L_USED_QUANTITY_UNIT, L_PLANNED_QUANTITY_UNIT)) {
+        for (String reference : Arrays.asList(L_NUMBER, L_NAME, L_USED_QUANTITY_UNIT, L_PLANNED_QUANTITY_UNIT)) {
             ((FieldComponent) view.getComponentByReference(reference)).requestComponentUpdateState();
         }
 
