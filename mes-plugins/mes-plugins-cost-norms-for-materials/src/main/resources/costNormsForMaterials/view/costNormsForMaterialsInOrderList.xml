@@ -38,7 +38,7 @@
 			</group>
 		</ribbon>
 		
-		<windowTab name="mainTab" reference="inProductsCostTab">
+		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="order" reference="order" />
 			
 			<component type="form" name="form" reference="form">
