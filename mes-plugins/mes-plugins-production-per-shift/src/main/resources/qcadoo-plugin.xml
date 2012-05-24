@@ -46,6 +46,14 @@
 			<model:enum name="plannedProgressType" persistent="false" values="01planned,02corrected" />
 		</model:model-field>
 		
+		<model:model-field model="order" plugin="orders">
+			<model:dictionary name="plannedProgressCorrectionType" dictionary="reasonTypeOfChaningOrderState" required="false" />
+		</model:model-field>
+		
+		<model:model-field model="order" plugin="orders">
+			<model:text name="plannedProgressCorrectionComment" />
+		</model:model-field>
+		
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToProductionPerShift"
 			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
