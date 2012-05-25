@@ -21,8 +21,8 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public Entity searchMatchingChangeroverNormsForTechnologyWithLine(Entity fromTechnology, Entity toTechnology,
-            Entity productionLine) {
+    public Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
+            final Entity productionLine) {
         return dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
                 .find().add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, fromTechnology))
@@ -33,8 +33,8 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     }
 
     @Override
-    public Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(Entity fromTechnologyGroup, Entity toTechnologyGroup,
-            Entity productionLine) {
+    public Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
+            final Entity toTechnologyGroup, final Entity productionLine) {
         return dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
                 .find().add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, null))

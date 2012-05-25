@@ -40,7 +40,7 @@ public class LineChangeoverNormsDetailsHooks {
             field.setVisible(!selectForTechnology);
             field.setRequired(!selectForTechnology);
             field.requestComponentUpdateState();
-            field.setFieldValue(!selectForTechnology ? field.getFieldValue() : null);
+            field.setFieldValue(selectForTechnology ? null : field.getFieldValue());
         }
     }
 
