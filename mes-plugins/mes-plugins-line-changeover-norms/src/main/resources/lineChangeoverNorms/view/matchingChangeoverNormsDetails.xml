@@ -48,10 +48,8 @@
 					  <option type="label" value="matchingChangeoverNormLabel" />
 				  </component>
 			  </layoutElement>
-			   <layoutElement column="1" row="2" >
-			      <component type="label" name="matchingNormNotFound" reference="matchingNormNotFound"/>
-			      </layoutElement>
 			  <layoutElement column="1" row="2" width="3" >
+			   <component type="label" name="matchingNormNotFound" reference="matchingNormNotFound" defaultEnabled="false"/>
 			       <component type="borderLayout" name="matchingNorm" reference="matchingNorm">
 			      <component type="gridLayout" name="gridLayout" columns="3" rows="4" >
 					<layoutElement column="1" row="1" >
