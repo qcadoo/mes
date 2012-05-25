@@ -31,11 +31,11 @@ public class MatchingChangeoverNormsDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
+    private static final String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
 
-    private static String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
+    private static final String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
 
-    private static String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
+    private static final String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
 
     public void matchingChangeoverNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {

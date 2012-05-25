@@ -9,7 +9,11 @@ import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFi
 import java.util.Arrays;
 import java.util.List;
 
-public class LineChangeoverNormsConstants {
+public final class LineChangeoverNormsConstants {
+
+    private LineChangeoverNormsConstants() {
+
+    }
 
     public static final String PLUGIN_IDENTIFIER = "lineChangeoverNorms";
 

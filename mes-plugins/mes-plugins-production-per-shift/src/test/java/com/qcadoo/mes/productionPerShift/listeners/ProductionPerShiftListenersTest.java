@@ -54,7 +54,7 @@ public class ProductionPerShiftListenersTest {
     @Test
     public void shouldRedirectToTheProductionPerShiftView() {
         // given
-        Long id = 5l;
+        Long id = 5L;
         given(componentState.getFieldValue()).willReturn(id);
         String url = "../page/productionPerShift/productionPerShiftView.html";
 
@@ -71,7 +71,7 @@ public class ProductionPerShiftListenersTest {
     @Test
     public void shouldFillProducesFieldAfterSelection() {
         // given
-        Long id = 3l;
+        Long id = 3L;
         String prodName = "asdf";
 
         given(viewState.getComponentByReference("productionPerShiftOperation")).willReturn(lookup);

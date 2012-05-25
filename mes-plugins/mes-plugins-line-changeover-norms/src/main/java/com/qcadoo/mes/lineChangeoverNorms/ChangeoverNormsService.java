@@ -8,7 +8,4 @@ import com.qcadoo.model.api.Entity;
 public interface ChangeoverNormsService {
 
     Entity matchingChangeoverNorms(final Entity technologyFrom, final Entity toTechnology, final Entity productionLine);
-
-    Entity searchMatchingChangeroverNorms(final Entity fromTechnology, final Entity toTechnology,
-            final Entity fromTechnologyGroup, final Entity toTechnologyGroup, final Entity producionLine);
 }
