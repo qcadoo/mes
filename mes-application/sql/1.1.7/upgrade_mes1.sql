@@ -81,3 +81,52 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
+
+-- Table: productionpershift_productionpershift
+
+-- DROP TABLE productionpershift_productionpershift;
+
+CREATE TABLE productionpershift_productionpershift
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  plannedprogresscorrectiontype character varying(255),
+  plannedprogresscorrectioncomment text,
+  technologyinstanceoperationcomponent_id bigint,
+  CONSTRAINT productionpershift_productionpershift_pkey PRIMARY KEY (id),
+  CONSTRAINT productionpershift_tioc_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
+      REFERENCES technologies_technologyinstanceoperationcomponent (id) DEFERRABLE,
+  CONSTRAINT productionpershift_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+
+-- Table: productionpershift_progressforday
+
+-- DROP TABLE productionpershift_progressforday;
+
+CREATE TABLE productionpershift_progressforday
+(
+  id bigint NOT NULL,
+  technologyinstanceoperationcomponent_id bigint,
+  "day" integer,
+  CONSTRAINT productionpershift_progressforday_pkey PRIMARY KEY (id),
+  CONSTRAINT progressforday_tioc_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
+      REFERENCES technologies_technologyinstanceoperationcomponent (id) DEFERRABLE
+);
+
+-- Table: productionpershift_dailyprogress
+
+-- DROP TABLE productionpershift_dailyprogress;
+
+CREATE TABLE productionpershift_dailyprogress
+(
+  id bigint NOT NULL,
+  progressforday_id bigint,
+  shift_id bigint,
+  quantity numeric(10,3),
+  CONSTRAINT productionpershift_dailyprogress_pkey PRIMARY KEY (id),
+  CONSTRAINT dailyprogress_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE,
+  CONSTRAINT dailyprogress_progressforday_fkey FOREIGN KEY (progressforday_id)
+      REFERENCES productionpershift_progressforday (id) DEFERRABLE
+);
