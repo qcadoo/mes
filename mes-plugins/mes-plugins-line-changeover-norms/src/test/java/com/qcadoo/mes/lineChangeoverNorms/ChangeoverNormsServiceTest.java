@@ -68,9 +68,11 @@ public class ChangeoverNormsServiceTest {
                         productionLine)).thenReturn(changeover);
 
         // when
-        changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        Entity returnedChangeover = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
+                productionLine);
+
         // then
-        Assert.assertNotNull(changeover);
+        Assert.assertEquals(changeover, returnedChangeover);
     }
 
     @Test
@@ -82,10 +84,10 @@ public class ChangeoverNormsServiceTest {
         when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
                 .thenReturn(changeover);
         // when
-        Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        Entity changeoverNorms = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         // then
 
-        Assert.assertNotNull(changeoverNorms);
+        Assert.assertEquals(changeover, changeoverNorms);
     }
 
     @Test
@@ -111,10 +113,10 @@ public class ChangeoverNormsServiceTest {
         when(
                 changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
                         toTechnologyGroup, productionLine)).thenReturn(changeover);
-        Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        Entity changeoverNorms = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         // then
 
-        Assert.assertNotNull(changeoverNorms);
+        Assert.assertEquals(changeover, changeoverNorms);
     }
 
     @Test
@@ -143,10 +145,24 @@ public class ChangeoverNormsServiceTest {
         when(
                 changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
                         toTechnologyGroup, null)).thenReturn(changeover);
-        Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        Entity changeoverNorms = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         // then
 
-        Assert.assertNotNull(changeoverNorms);
+        Assert.assertEquals(changeover, changeoverNorms);
     }
 
+    @Test
+    public void shouldReturnNullIfNoMatchingChangeoverNormWasFound() {
+        // given
+        when(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                        productionLine)).thenReturn(null);
+
+        // when
+        Entity returnedChangeover = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
+                productionLine);
+
+        // then
+        Assert.assertNull(returnedChangeover);
+    }
 }

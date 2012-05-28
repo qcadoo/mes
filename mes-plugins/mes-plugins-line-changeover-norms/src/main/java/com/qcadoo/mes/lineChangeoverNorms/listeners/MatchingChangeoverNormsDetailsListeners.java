@@ -44,7 +44,7 @@ public class MatchingChangeoverNormsDetailsListeners {
         Entity toTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_TO_TECHNOLOGY);
         Entity productionLine = getProductionLinesFromLookup(viewDefinitionState);
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity changeoverNorm = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        Entity changeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         if (changeoverNorm == null) {
             clearField(viewDefinitionState);
             changeStateEditButton(viewDefinitionState, false);
