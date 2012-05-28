@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -29,11 +31,34 @@ public class ProductionPerShiftListeners {
             return;
         }
 
+        long ppsId = createCorrespondingProductionPerShfitEntity(orderId);
+
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderId);
+        parameters.put("form.id", ppsId);
 
         String url = "../page/productionPerShift/productionPerShiftView.html";
         viewState.redirectTo(url, false, true, parameters);
+    }
+
+    private long createCorrespondingProductionPerShfitEntity(Long orderId) {
+        DataDefinition orderDD = dataDefinitionService.get("orders", "order");
+        Entity order = orderDD.get(orderId);
+
+        DataDefinition ppsDD = dataDefinitionService.get("productionPerShift", "productionPerShift");
+
+        Entity pps = getPps(order, ppsDD);
+
+        if (pps == null) {
+            pps = ppsDD.create();
+            pps.setField("order", order);
+            ppsDD.save(pps);
+        }
+
+        return getPps(order, ppsDD).getId();
+    }
+
+    private Entity getPps(final Entity order, final DataDefinition ppsDD) {
+        return ppsDD.find().add(SearchRestrictions.belongsTo("order", order)).uniqueResult();
     }
 
     public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {

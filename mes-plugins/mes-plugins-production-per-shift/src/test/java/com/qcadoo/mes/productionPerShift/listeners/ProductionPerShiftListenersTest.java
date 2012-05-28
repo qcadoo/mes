@@ -63,7 +63,7 @@ public class ProductionPerShiftListenersTest {
 
         // then
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", id);
+        parameters.put("order.id", id);
 
         verify(viewState).redirectTo(url, false, true, parameters);
     }
