@@ -31,11 +31,11 @@ public class MatchingChangeoverNormsDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
+    private static final String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
 
-    private static String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
+    private static final String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
 
-    private static String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
+    private static final String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
 
     public void matchingChangeoverNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
@@ -66,7 +66,7 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
     }
 
-    private void changeStateEditButton(final ViewDefinitionState view, boolean enabled) {
+    private void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonActionItem edit = window.getRibbon().getGroupByName("matching").getItemByName("edit");
         edit.setEnabled(enabled);
@@ -91,7 +91,7 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
         for (String reference : LineChangeoverNormsConstants.FIELDS_ENTITY) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(entity.getBelongsToField(reference) != null ? entity.getBelongsToField(reference).getId() : null);
+            field.setFieldValue(entity.getBelongsToField(reference) == null ? null : entity.getBelongsToField(reference).getId());
         }
     }
 

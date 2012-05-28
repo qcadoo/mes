@@ -1,6 +1,10 @@
 package com.qcadoo.mes.lineChangeoverNorms.constants;
 
-public class LineChangeoverNormsFields {
+public final class LineChangeoverNormsFields {
+
+    private LineChangeoverNormsFields() {
+
+    }
 
     public static final String NUMBER = "number";
 

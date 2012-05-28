@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.technologies.states;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import com.qcadoo.view.api.ComponentState.MessageType;
 
 public final class MessageHolder {
@@ -40,7 +44,13 @@ public final class MessageHolder {
         this.messageKey = messageKey;
         this.targetReferenceName = targetReferenceName;
         this.messageType = messageType;
-        this.vars = vars;
+
+        if (ArrayUtils.isEmpty(vars)) {
+            this.vars = ArrayUtils.EMPTY_STRING_ARRAY;
+        } else {
+            this.vars = vars;
+        }
+
     }
 
     public static MessageHolder error(final String messageKey, final String targetReferenceName, final String... vars) {
@@ -72,7 +82,7 @@ public final class MessageHolder {
     }
 
     public String[] getVars() {
-        return vars;
+        return Arrays.copyOf(vars, vars.length);
     }
 
 }

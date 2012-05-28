@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionCounting.internal.states;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import com.qcadoo.view.api.ComponentState.MessageType;
 
 public class ChangeRecordStateMessage {
@@ -40,7 +44,12 @@ public class ChangeRecordStateMessage {
         this.message = message;
         this.referenceToField = referenceToField;
         this.type = type;
-        this.vars = vars;
+
+        if (ArrayUtils.isEmpty(vars)) {
+            this.vars = ArrayUtils.EMPTY_STRING_ARRAY;
+        } else {
+            this.vars = vars;
+        }
     }
 
     public static ChangeRecordStateMessage errorForComponent(final String message, final String referenceToField,
@@ -85,7 +94,7 @@ public class ChangeRecordStateMessage {
     }
 
     public String[] getVars() {
-        return vars;
+        return Arrays.copyOf(vars, vars.length);
     }
 
 }

@@ -555,5 +555,7 @@
 			method="fillReasonTypeDeviationsOfEffectiveStart" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderLogginsDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+		    method="enabledFieldForSpecificOrderState"/>
 	</hooks>
 </view>

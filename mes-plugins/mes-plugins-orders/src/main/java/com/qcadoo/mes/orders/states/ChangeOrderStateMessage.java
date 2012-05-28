@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.orders.states;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import com.qcadoo.view.api.ComponentState.MessageType;
 
 public class ChangeOrderStateMessage {
@@ -40,7 +44,12 @@ public class ChangeOrderStateMessage {
         this.referenceToField = referenceToField;
         this.message = message;
         this.type = type;
-        this.vars = vars;
+
+        if (ArrayUtils.isEmpty(vars)) {
+            this.vars = ArrayUtils.EMPTY_STRING_ARRAY;
+        } else {
+            this.vars = vars;
+        }
     }
 
     public static ChangeOrderStateMessage errorForComponent(final String message, final String referenceToField,
@@ -85,7 +94,6 @@ public class ChangeOrderStateMessage {
     }
 
     public String[] getVars() {
-        return vars;
+        return Arrays.copyOf(vars, vars.length);
     }
-
 }

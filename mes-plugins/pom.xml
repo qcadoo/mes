@@ -48,6 +48,7 @@
     <module>mes-plugins-operation-cost-calculations</module>
     <module>mes-plugins-production-per-shift</module>
     <module>mes-plugins-line-changeover-norms</module>
+	<module>mes-plugins-states</module>
   </modules>
 
 

@@ -66,11 +66,11 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     @Mock
     private ComponentState state, fromTechnologyLookup, toTechnologyLookup, productionLinesLookup;
 
-    private static String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
+    private static final String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
 
-    private static String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
+    private static final String MATCHING_TO_TECHNOLOGY = "matchingToTechnology";
 
-    private static String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
+    private static final String MATCHING_PRODUCTION_LINE = "matchingProductionLine";
 
     @Before
     public void init() {

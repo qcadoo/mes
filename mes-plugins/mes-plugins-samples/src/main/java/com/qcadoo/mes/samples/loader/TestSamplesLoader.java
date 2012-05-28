@@ -590,7 +590,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         String state = values.get(L_STATE);
         Entity order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_ORDER_NR))).uniqueResult();
-        if (state.equals("03inProgress")) {
+        if ("03inProgress".equals(state)) {
             order.setField(L_STATE, "02accepted");
             order.getDataDefinition().save(order);
         }
