@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -17,7 +16,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -66,7 +64,7 @@ public class ChangeoverNormsServiceTest {
         // given
 
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
                         productionLine)).thenReturn(changeover);
 
         // when
@@ -76,27 +74,75 @@ public class ChangeoverNormsServiceTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnMatchingChangeoverNormsFromTechToTechWithoutLine() throws Exception {
         // given
-        Long fromTechGrId = 1L;
-        Long toTechGrId = 1L;
-        when(fromTechnologyGroup.getId()).thenReturn(fromTechGrId);
-        when(toTechnologyGroup.getId()).thenReturn(toTechGrId);
-        when(technologyGrDataDefinition.get(fromTechGrId)).thenReturn(fromTechnologyGroup);
-        when(technologyGrDataDefinition.get(toTechGrId)).thenReturn(toTechnologyGroup);
-        when(fromTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).thenReturn(fromTechnologyGroup);
-        when(toTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).thenReturn(toTechnologyGroup);
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
                         productionLine)).thenReturn(null);
-        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology, null))
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
+                .thenReturn(changeover);
+        // when
+        Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        // then
+
+        Assert.assertNotNull(changeoverNorms);
+    }
+
+    @Test
+    public void shouldReturnMatchingChangeoverNormsFromTechGrWhenForTechDosnotExists() throws Exception {
+        // given
+        Long fromTechGrId = 1L;
+        Long toTechGrId = 2L;
+        // when
+        when(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                        productionLine)).thenReturn(null);
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
                 .thenReturn(null);
+
+        when(toTechnology.getBelongsToField("technologyGroup")).thenReturn(toTechnologyGroup);
+        when(toTechnologyGroup.getId()).thenReturn(toTechGrId);
+        when(technologyGrDataDefinition.get(toTechGrId)).thenReturn(toTechnologyGroup);
+
+        when(fromTechnology.getBelongsToField("technologyGroup")).thenReturn(fromTechnologyGroup);
+        when(fromTechnologyGroup.getId()).thenReturn(fromTechGrId);
+        when(technologyGrDataDefinition.get(fromTechGrId)).thenReturn(fromTechnologyGroup);
+
         when(
                 changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
                         toTechnologyGroup, productionLine)).thenReturn(changeover);
+        Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+        // then
 
+        Assert.assertNotNull(changeoverNorms);
+    }
+
+    @Test
+    public void shouldReturnMatchingChangeoverNormsFromTechGrWithoutLineWhenFromTechGrDoesnotExists() throws Exception {
+        // given
+        Long fromTechGrId = 1L;
+        Long toTechGrId = 2L;
         // when
+        when(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                        productionLine)).thenReturn(null);
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
+                .thenReturn(null);
+
+        when(toTechnology.getBelongsToField("technologyGroup")).thenReturn(toTechnologyGroup);
+        when(toTechnologyGroup.getId()).thenReturn(toTechGrId);
+        when(technologyGrDataDefinition.get(toTechGrId)).thenReturn(toTechnologyGroup);
+
+        when(fromTechnology.getBelongsToField("technologyGroup")).thenReturn(fromTechnologyGroup);
+        when(fromTechnologyGroup.getId()).thenReturn(fromTechGrId);
+        when(technologyGrDataDefinition.get(fromTechGrId)).thenReturn(fromTechnologyGroup);
+
+        when(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                        toTechnologyGroup, productionLine)).thenReturn(null);
+        when(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                        toTechnologyGroup, null)).thenReturn(changeover);
         Entity changeoverNorms = changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         // then
 
