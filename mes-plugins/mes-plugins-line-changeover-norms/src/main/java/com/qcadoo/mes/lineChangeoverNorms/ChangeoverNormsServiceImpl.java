@@ -19,10 +19,10 @@ public class ChangeoverNormsServiceImpl implements ChangeoverNormsService {
 
     @Override
     public Entity matchingChangeoverNorms(final Entity fromTechnology, final Entity toTechnology, final Entity productionLine) {
-        Entity matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
+        Entity matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology,
                 toTechnology, productionLine);
         if (matchingNorm == null) {
-            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
+            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology,
                     toTechnology, null);
         }
         if (matchingNorm == null) {
