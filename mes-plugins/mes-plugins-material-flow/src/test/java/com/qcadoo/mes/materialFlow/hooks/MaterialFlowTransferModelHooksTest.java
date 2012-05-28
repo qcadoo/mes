@@ -73,7 +73,6 @@ public class MaterialFlowTransferModelHooksTest {
         verify(transfer).setField("type", "Production");
         verify(transfer).setField("time", "1234");
         verify(transfer).setField("stockAreasTo", stockAreasTo);
-        verify(transfer).setField("stockAreasFrom", stockAreasFrom);
         verify(transfer).setField("staff", staff);
     }
 
@@ -92,7 +91,6 @@ public class MaterialFlowTransferModelHooksTest {
         // then
         verify(transfer).setField("type", "Consumption");
         verify(transfer).setField("time", "1234");
-        verify(transfer).setField("stockAreasTo", stockAreasTo);
         verify(transfer).setField("stockAreasFrom", stockAreasFrom);
         verify(transfer).setField("staff", staff);
     }

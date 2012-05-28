@@ -42,14 +42,14 @@ public class MaterialFlowTransferModelHooks {
                 return;
             } else {
                 transfer.setField("type", "Consumption");
+                transfer.setField("stockAreasFrom", transformation.getBelongsToField("stockAreasFrom"));
             }
         } else {
             transfer.setField("type", "Production");
+            transfer.setField("stockAreasTo", transformation.getBelongsToField("stockAreasTo"));
         }
 
         transfer.setField("time", transformation.getField("time"));
-        transfer.setField("stockAreasTo", transformation.getBelongsToField("stockAreasTo"));
-        transfer.setField("stockAreasFrom", transformation.getBelongsToField("stockAreasFrom"));
         transfer.setField("staff", transformation.getBelongsToField("staff"));
     }
 }
