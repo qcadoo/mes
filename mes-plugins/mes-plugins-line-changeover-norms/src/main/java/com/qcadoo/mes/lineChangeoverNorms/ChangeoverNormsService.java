@@ -7,5 +7,5 @@ import com.qcadoo.model.api.Entity;
 @Service
 public interface ChangeoverNormsService {
 
-    Entity matchingChangeoverNorms(final Entity technologyFrom, final Entity toTechnology, final Entity productionLine);
+    Entity getMatchingChangeoverNorms(final Entity technologyFrom, final Entity toTechnology, final Entity productionLine);
 }

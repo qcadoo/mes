@@ -104,7 +104,7 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     public void shouldClearFieldAndDisabledButtonWhenMatchingChangeoverNormWasnotFound() throws Exception {
         // given
 
-        when(changeoverNormsService.matchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).thenReturn(null);
+        when(changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).thenReturn(null);
         when(view.getComponentByReference(LineChangeoverNormsFields.NUMBER)).thenReturn(number);
         when(view.getComponentByReference(LineChangeoverNormsFields.FROM_TECHNOLOGY)).thenReturn(fromTechField);
         when(view.getComponentByReference(LineChangeoverNormsFields.TO_TECHNOLOGY)).thenReturn(toTechField);
