@@ -128,5 +128,7 @@
 	<hooks>
 	    <beforeRender class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
 			method="invisibleField" />
+	    <beforeRender class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
+			method="fillOrCleanFields" />
 	    </hooks>
 </view>
