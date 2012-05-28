@@ -59,7 +59,7 @@ public class ProductionPerShiftListenersTest {
         String url = "../page/productionPerShift/productionPerShiftView.html";
 
         // when
-        productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, null);
+        productionPerShiftListeners.redirect(viewState, id);
 
         // then
         Map<String, Object> parameters = Maps.newHashMap();

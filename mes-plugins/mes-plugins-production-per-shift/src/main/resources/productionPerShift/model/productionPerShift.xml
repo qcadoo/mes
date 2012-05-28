@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="productionPerShift" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="order" model="order" plugin="orders" />
+
+		<dictionary name="plannedProgressCorrectionType"
+			dictionary="reasonTypeOfChaningOrderState" />
+
+		<text name="plannedProgressCorrectionComment" />
+
+		<belongsTo persistent="false" name="technologyInstanceOperationComponent"
+			model="technologyInstanceOperationComponent" plugin="technologies" />
+			
+		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected" />
+	</fields>
+	<hooks />
+</model>

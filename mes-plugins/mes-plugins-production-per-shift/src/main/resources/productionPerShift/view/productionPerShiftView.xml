@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productionPerShiftView" modelPlugin="orders" modelName="order">
+	name="productionPerShiftView" modelPlugin="productionPerShift"
+	modelName="productionPerShift">
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group name="navigation">
@@ -14,6 +15,24 @@
 			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
+			<component type="lookup" name="order" field="#{form}.order"
+				reference="order" defaultVisible="false">
+				<option type="column" name="name" fields="name" link="true" />
+				<option type="column" name="state" fields="state" />
+				<option type="column" name="typeOfProductionRecording"
+					fields="typeOfProductionRecording" />
+
+				<option type="required" value="true" />
+
+				<option type="searchable" value="name,number" />
+				<option type="orderable" value="name,number" />
+
+				<option type="order" column="number" direction="desc" />
+
+				<option type="expression"
+					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+				<option type="fieldCode" value="number" />
+			</component>
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="mainGridLayout"
 					columns="3" rows="1">
@@ -60,10 +79,10 @@
 					<layoutElement column="2" row="1" width="2">
 						<component type="borderLayout" name="operationProgress">
 							<component type="gridLayout" name="plannedProgressGridLayout"
-								columns="2" rows="1">
+								columns="2" rows="2">
 								<layoutElement column="1" row="1">
-									<component persistent="false" type="lookup"
-										name="productionPerShiftOperation" source="#{form}.technologyInstanceOperationComponents"
+									<component type="lookup" name="productionPerShiftOperation"
+										field="#{form}.technologyInstanceOperationComponent" source="#{order}.technologyInstanceOperationComponents"
 										reference="productionPerShiftOperation">
 										<option type="column" name="name" fields="operation"
 											expression="#operation['name']" link="true" />
@@ -74,12 +93,25 @@
 										<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 										<option type="fieldCode" value="nodeNumber" />
 										<listener event="onSelectedEntityChange"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" method="fillProducedField" />
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+											method="fillProducedField" />
 									</component>
 								</layoutElement>
 								<layoutElement column="2" row="1">
 									<component type="input" name="produces" reference="produces"
 										defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" width="2" row="2">
+									<component type="awesomeDynamicList" name="progressForDay"
+										source="#{productionPerShiftOperation}.progressForDay"
+										reference="progressForDay">
+										<option type="hasBorder" value="false" />
+										<option type="hasButtons" value="true" />
+										<components>
+											<component type="input" name="day" field="day"
+												reference="day" />
+										</components>
+									</component>
 								</layoutElement>
 							</component>
 							<option type="label" value="operationProgressLabel" />
