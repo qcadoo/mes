@@ -33,6 +33,10 @@ public class ProductionPerShiftListeners {
 
         long ppsId = createCorrespondingProductionPerShfitEntity(orderId);
 
+        redirect(viewState, ppsId);
+    }
+
+    void redirect(final ViewDefinitionState viewState, final Long ppsId) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
