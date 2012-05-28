@@ -21,23 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.listeners;
+package com.qcadoo.mes.lineChangeoverNormsForOrders.constants;
 
-import org.springframework.stereotype.Service;
+import java.util.Arrays;
+import java.util.List;
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+public interface LineChangeoverNormsForOrdersConstants {
 
-@Service
-public class ParametersListenersWP {
+    List<String> PREVIOUS_ORDER_FIELDS = Arrays.asList("previousOrder", "previousOrderTechnologyNumber",
+            "previousOrderTechnologyGroupNumber", "previousOrderDateFrom", "previousOrderDateTo");
 
-    public void redirectToWorkPlanParameters(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
+    List<String> ORDER_FIELDS = Arrays.asList("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateTo");
 
-        if (parameterId != null) {
-            String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
-            view.redirectTo(url, false, true);
-        }
-    }
 }

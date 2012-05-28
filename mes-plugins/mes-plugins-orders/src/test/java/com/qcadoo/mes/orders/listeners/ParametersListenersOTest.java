@@ -30,7 +30,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class ParametersListenersOTest {
 
     @Mock
-    private ViewDefinitionState viewDefinitionState;
+    private ViewDefinitionState view;
 
     @Mock
     private ComponentState componentState;
@@ -72,10 +72,10 @@ public class ParametersListenersOTest {
         String url = "../page/orders/ordersParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
 
         // when
-        parametersListenersO.redirectToOrdersParameters(viewDefinitionState, componentState, null);
+        parametersListenersO.redirectToOrdersParameters(view, componentState, null);
 
         // then
-        verify(viewDefinitionState).redirectTo(url, false, true);
+        verify(view).redirectTo(url, false, true);
     }
 
     @Test
@@ -88,10 +88,10 @@ public class ParametersListenersOTest {
         String url = "../page/orders/ordersParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
 
         // when
-        parametersListenersO.redirectToOrdersParameters(viewDefinitionState, componentState, null);
+        parametersListenersO.redirectToOrdersParameters(view, componentState, null);
 
         // then
-        verify(viewDefinitionState, never()).redirectTo(url, false, true);
+        verify(view, never()).redirectTo(url, false, true);
     }
 
     @Test
@@ -111,10 +111,10 @@ public class ParametersListenersOTest {
         String url = "../page/qcadooDictionaries/dictionaryDetails.html?context={\"form.id\":\"" + dictionaryId + "\"}";
 
         // when
-        parametersListenersO.redirectToDeviationsDictionary(viewDefinitionState, componentState, null);
+        parametersListenersO.redirectToDeviationsDictionary(view, componentState, null);
 
         // then
-        verify(viewDefinitionState).redirectTo(url, false, true);
+        verify(view).redirectTo(url, false, true);
     }
 
     @Test
@@ -132,10 +132,10 @@ public class ParametersListenersOTest {
         String url = "../page/qcadooDictionaries/dictionaryDetails.html?context={\"form.id\":\"" + dictionaryId + "\"}";
 
         // when
-        parametersListenersO.redirectToDeviationsDictionary(viewDefinitionState, componentState, null);
+        parametersListenersO.redirectToDeviationsDictionary(view, componentState, null);
 
         // then
-        verify(viewDefinitionState, never()).redirectTo(url, false, true);
+        verify(view, never()).redirectTo(url, false, true);
     }
 
     @Test
@@ -144,10 +144,10 @@ public class ParametersListenersOTest {
         given(componentState.getName()).willReturn(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM);
 
         // when
-        parametersListenersO.showTimeField(viewDefinitionState, componentState, null);
+        parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
                 DELAYED_EFFECTIVE_DATE_FROM_TIME);
     }
 
@@ -157,10 +157,10 @@ public class ParametersListenersOTest {
         given(componentState.getName()).willReturn(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM);
 
         // when
-        parametersListenersO.showTimeField(viewDefinitionState, componentState, null);
+        parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
                 EARLIER_EFFECTIVE_DATE_FROM_TIME);
     }
 
@@ -170,10 +170,10 @@ public class ParametersListenersOTest {
         given(componentState.getName()).willReturn(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO);
 
         // when
-        parametersListenersO.showTimeField(viewDefinitionState, componentState, null);
+        parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
                 DELAYED_EFFECTIVE_DATE_TO_TIME);
     }
 
@@ -183,10 +183,10 @@ public class ParametersListenersOTest {
         given(componentState.getName()).willReturn(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO);
 
         // when
-        parametersListenersO.showTimeField(viewDefinitionState, componentState, null);
+        parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
                 EARLIER_EFFECTIVE_DATE_TO_TIME);
     }
 

@@ -2130,7 +2130,7 @@ public class OrderServiceTest {
     @Test
     public void shouldChangeFieldStateIfCheckboxIsSelected() {
         // given
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
 
         String booleanFieldComponentName = "booleanFieldComponentName";
         String fieldComponentName = "fieldComponentName";
@@ -2138,13 +2138,13 @@ public class OrderServiceTest {
         FieldComponent booleanFieldComponent = mock(FieldComponent.class);
         FieldComponent fieldComponent = mock(FieldComponent.class);
 
-        given(viewDefinitionState.getComponentByReference(booleanFieldComponentName)).willReturn(booleanFieldComponent);
-        given(viewDefinitionState.getComponentByReference(fieldComponentName)).willReturn(fieldComponent);
+        given(view.getComponentByReference(booleanFieldComponentName)).willReturn(booleanFieldComponent);
+        given(view.getComponentByReference(fieldComponentName)).willReturn(fieldComponent);
 
         given(booleanFieldComponent.getFieldValue()).willReturn("1");
 
         // when
-        orderService.changeFieldState(viewDefinitionState, booleanFieldComponentName, fieldComponentName);
+        orderService.changeFieldState(view, booleanFieldComponentName, fieldComponentName);
 
         // then
         verify(fieldComponent).setEnabled(true);
@@ -2153,7 +2153,7 @@ public class OrderServiceTest {
     @Test
     public void shouldntChangeFieldStateIfCheckboxIsntSelected() {
         // given
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
 
         String booleanFieldComponentName = "booleanFieldComponentName";
         String fieldComponentName = "fieldComponentName";
@@ -2161,13 +2161,13 @@ public class OrderServiceTest {
         FieldComponent booleanFieldComponent = mock(FieldComponent.class);
         FieldComponent fieldComponent = mock(FieldComponent.class);
 
-        given(viewDefinitionState.getComponentByReference(booleanFieldComponentName)).willReturn(booleanFieldComponent);
-        given(viewDefinitionState.getComponentByReference(fieldComponentName)).willReturn(fieldComponent);
+        given(view.getComponentByReference(booleanFieldComponentName)).willReturn(booleanFieldComponent);
+        given(view.getComponentByReference(fieldComponentName)).willReturn(fieldComponent);
 
         given(booleanFieldComponent.getFieldValue()).willReturn("0");
 
         // when
-        orderService.changeFieldState(viewDefinitionState, booleanFieldComponentName, fieldComponentName);
+        orderService.changeFieldState(view, booleanFieldComponentName, fieldComponentName);
 
         // then
         verify(fieldComponent).setEnabled(false);

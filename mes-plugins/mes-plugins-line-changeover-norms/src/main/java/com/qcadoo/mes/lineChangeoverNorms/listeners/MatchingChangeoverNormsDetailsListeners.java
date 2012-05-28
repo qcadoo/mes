@@ -66,14 +66,14 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
     }
 
-    private void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
+    public void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonActionItem edit = window.getRibbon().getGroupByName("matching").getItemByName("edit");
         edit.setEnabled(enabled);
         edit.requestUpdate(true);
     }
 
-    private void clearField(final ViewDefinitionState view) {
+    public void clearField(final ViewDefinitionState view) {
         for (String reference : Arrays.asList(NUMBER, CHANGEOVER_TYPE, DURATION)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(null);
@@ -84,7 +84,7 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
     }
 
-    private void fillField(final ViewDefinitionState view, final Entity entity) {
+    public void fillField(final ViewDefinitionState view, final Entity entity) {
         for (String reference : Arrays.asList(NUMBER, CHANGEOVER_TYPE, DURATION)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(entity.getField(reference));

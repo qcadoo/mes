@@ -21,23 +21,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.listeners;
+package com.qcadoo.mes.lineChangeoverNormsForOrders.constants;
 
-import org.springframework.stereotype.Service;
+public final class OrderFieldsLCNFO {
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+    private OrderFieldsLCNFO() {
 
-@Service
-public class ParametersListenersWP {
-
-    public void redirectToWorkPlanParameters(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
-
-        if (parameterId != null) {
-            String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
-            view.redirectTo(url, false, true);
-        }
     }
+
+    public static final String OWN_LINE_CHANGEOVER = "ownLineChangeover";
+
+    public static final String OWN_LINE_CHANGEOVER_DURATION = "ownLineChangeoverDuration";
+
+    public static final String PREVIOUS_ORDER = "previousOrder";
+
+    public static final String ORDER = "order";
+
+    public static final String LINE_CHANGEOVER_NORM = "lineChangeoverNorm";
 }

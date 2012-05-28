@@ -29,6 +29,7 @@ ALTER TABLE basic_parameter ALTER COLUMN earliedEffectiveDateTo TYPE integer;
 
 -- end
 
+
 -- table: orders_order
 -- changed: 17.05.2012
 
@@ -41,6 +42,7 @@ ALTER TABLE orders_order ADD COLUMN commentreasontypecorrectiondateto character 
 
 -- end
 
+
 -- table: orders_logging
 -- changed: 21.05.2012
 
@@ -48,6 +50,10 @@ ALTER TABLE orders_logging ADD COLUMN reasontype character varying(255);
 ALTER TABLE orders_logging ADD COLUMN "comment" character varying(255);
 
 -- end
+
+
+-- table: linechangeovernorms_linechangeovernorms
+-- changed: 25.05.2012
 
 CREATE TABLE linechangeovernorms_linechangeovernorms
 (
@@ -61,26 +67,29 @@ CREATE TABLE linechangeovernorms_linechangeovernorms
   productionline_id bigint,
   duration integer,
   CONSTRAINT linechangeovernorms_linechangeovernorms_pkey PRIMARY KEY (id),
-  CONSTRAINT fk95403ebf63154a1c FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT linechangeovernorms_technology_fkey FOREIGN KEY (totechnology_id)
-      REFERENCES technologies_technology (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT linechangeovernorms_technology_fkey FOREIGN KEY (fromtechnology_id)
-      REFERENCES technologies_technology (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT linechangeovernorms_technologyGroup_fkey FOREIGN KEY (fromtechnologygroup_id)
-      REFERENCES technologies_technologygroup (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT linechangeovernorms_technologyGroup_fkey FOREIGN KEY (totechnologygroup_id)
-      REFERENCES technologies_technologygroup (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-)
-WITH (
-  OIDS=FALSE
+  CONSTRAINT linechangeovernorms_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
+  CONSTRAINT linechangeovernorms_fromtechnology_fkey FOREIGN KEY (fromtechnology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE,
+  CONSTRAINT linechangeovernorms_totechnology_fkey FOREIGN KEY (totechnology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE,
+  CONSTRAINT linechangeovernorms_fromtechnologygroup_fkey FOREIGN KEY (fromtechnologygroup_id)
+      REFERENCES technologies_technologygroup (id) DEFERRABLE,
+  CONSTRAINT linechangeovernorms_totechnologygroup_fkey FOREIGN KEY (totechnologygroup_id)
+      REFERENCES technologies_technologygroup (id) DEFERRABLE
 );
-ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
+
+-- end
+
+-- table: orders_order
+-- changed: 25.05.2012
+
+ALTER TABLE orders_order ALTER COLUMN ownlinechangeover  TYPE boolean;
+ALTER TABLE orders_order ALTER COLUMN ownlinechangeover SET DEFAULT false;
+
+ALTER TABLE orders_order ALTER COLUMN ownlinechangeoverduration TYPE integer;
+
+-- end
 
 -- Table: productionpershift_productionpershift
 
