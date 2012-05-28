@@ -22,7 +22,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class ParametersHooksOTest {
 
     @Mock
-    private ViewDefinitionState viewDefinitionState;
+    private ViewDefinitionState view;
 
     @Mock
     private OrderService orderService;
@@ -44,16 +44,16 @@ public class ParametersHooksOTest {
         // given
 
         // when
-        parametersHooksO.showTimeFields(viewDefinitionState);
+        parametersHooksO.showTimeFields(view);
 
         // then
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
                 DELAYED_EFFECTIVE_DATE_FROM_TIME);
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
                 EARLIER_EFFECTIVE_DATE_FROM_TIME);
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
                 DELAYED_EFFECTIVE_DATE_TO_TIME);
-        verify(orderService).changeFieldState(viewDefinitionState, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
                 EARLIER_EFFECTIVE_DATE_TO_TIME);
     }
 

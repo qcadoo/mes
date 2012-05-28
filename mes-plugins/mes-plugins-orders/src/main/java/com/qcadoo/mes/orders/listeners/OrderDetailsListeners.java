@@ -31,13 +31,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class OrderDetailsListeners {
 
-    public void showOrderParameters(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
+    public void showOrderParameters(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+        Long orderId = (Long) componentState.getFieldValue();
 
         if (orderId != null) {
             String url = "../page/orders/technologyOperationComponentInOrderList.html?context={\"form.id\":\"" + orderId + "\"}";
-            viewDefinitionState.redirectTo(url, false, true);
+            view.redirectTo(url, false, true);
         }
     }
 }
