@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.tree;
 import java.util.Map;
 import java.util.Set;
 
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
 /**
@@ -42,5 +43,13 @@ public interface TechnologyTreeValidationService {
      *         than one parent's input products.
      */
     Map<String, Set<String>> checkConsumingManyProductsFromOneSubOp(EntityTree technologyTree);
+
+    /**
+     * @param technologyTree
+     *            tree structure of operation to be validated
+     * @return A map where parent's node number is a key, and a set of maps where each map represents single violation. than one
+     *         parent's input products.
+     */
+    Map<String, Set<Entity>> checkConsumingTheSameProductFromManySubOperations(EntityTree technologyTree);
 
 }

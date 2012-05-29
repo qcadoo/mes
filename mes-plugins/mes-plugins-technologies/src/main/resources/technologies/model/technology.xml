@@ -68,7 +68,8 @@
 			method="checkIfAllReferenceTechnologiesAreAceepted" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfOperationsUsesSubOperationsProds" />
-
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
+			method="checkConsumingTheSameProductFromManySubOperations" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"

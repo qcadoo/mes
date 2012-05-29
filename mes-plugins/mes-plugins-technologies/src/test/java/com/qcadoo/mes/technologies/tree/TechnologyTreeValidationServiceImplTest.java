@@ -43,8 +43,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.ImmutableList;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
@@ -57,6 +60,12 @@ public class TechnologyTreeValidationServiceImplTest {
     private static final List<EntityTreeNode> EMPTY_TREE_NODES_LIST = new ImmutableList.Builder<EntityTreeNode>().build();
 
     @Mock
+    private DataDefinitionService dataDefinitionService;
+
+    @Mock
+    private DataDefinition dataDefinition;
+
+    @Mock
     private EntityTree tree;
 
     private Map<String, Set<String>> resultMap;
@@ -67,6 +76,10 @@ public class TechnologyTreeValidationServiceImplTest {
         technologyTreeValidationService = new TechnologyTreeValidationServiceImpl();
         given(tree.isEmpty()).willReturn(false);
         resultMap = null;
+
+        ReflectionTestUtils.setField(technologyTreeValidationService, "dataDefinitionService", dataDefinitionService);
+
+        given(dataDefinitionService.get("basic", "product")).willReturn(dataDefinition);
     }
 
     @Test
@@ -116,6 +129,34 @@ public class TechnologyTreeValidationServiceImplTest {
         assertFalse(resultMap.isEmpty());
         assertEquals(1, resultMap.size());
         hasNodeNumbersFor(node2, node3);
+    }
+
+    @Test
+    public final void shouldReturnNotEmptyMapIfSubOpsProduceTheSameOutputsWhichAreConsumed() {
+        // given
+        Entity product1 = mockProductComponent(1L);
+        Entity product2 = mockProductComponent(2L);
+        Entity product3 = mockProductComponent(3L);
+        Entity product4 = mockProductComponent(4L);
+        Entity product5 = mockProductComponent(5L);
+        Entity product6 = mockProductComponent(6L);
+
+        EntityTreeNode node3 = mockOperationComponent("3.", newArrayList(product5), newArrayList(product2, product3));
+        EntityTreeNode node2 = mockOperationComponent("2.", newArrayList(product6), newArrayList(product2, product4));
+        EntityTreeNode node1 = mockOperationComponent("1.", newArrayList(product2), newArrayList(product1),
+                newArrayList(node2, node3));
+        given(tree.getRoot()).willReturn(node1);
+
+        // when
+        Map<String, Set<Entity>> returnedMap = technologyTreeValidationService
+                .checkConsumingTheSameProductFromManySubOperations(tree);
+
+        // then
+        assertNotNull(returnedMap);
+        assertFalse(returnedMap.isEmpty());
+        assertEquals(1, returnedMap.size());
+        assertTrue(returnedMap.containsKey("1."));
+        assertTrue(returnedMap.get("1.").contains(product2));
     }
 
     @Test
@@ -233,6 +274,7 @@ public class TechnologyTreeValidationServiceImplTest {
         given(product.getId()).willReturn(productId);
         given(productComponent.getField("product")).willReturn(product);
         given(productComponent.getBelongsToField("product")).willReturn(product);
+        given(dataDefinition.get(productId)).willReturn(productComponent);
         return productComponent;
     }
 

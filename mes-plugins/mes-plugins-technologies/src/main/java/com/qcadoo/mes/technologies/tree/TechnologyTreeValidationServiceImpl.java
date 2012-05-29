@@ -28,12 +28,16 @@ import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponent
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -43,6 +47,9 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
 
     private static final String L_PRODUCT = "product";
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     @Override
     public final Map<String, Set<String>> checkConsumingManyProductsFromOneSubOp(final EntityTree technologyTree) {
         final Map<String, Set<String>> parentToChildsMap = Maps.newHashMap();
@@ -51,6 +58,65 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
             collectChildrenProducingManyParentInputs(parentToChildsMap, rootNode);
         }
         return parentToChildsMap;
+    }
+
+    @Override
+    public Map<String, Set<Entity>> checkConsumingTheSameProductFromManySubOperations(EntityTree technologyTree) {
+        Map<String, Set<Entity>> parentToProductsMap = Maps.newHashMap();
+
+        if (technologyTree != null && !technologyTree.isEmpty()) {
+            final EntityTreeNode rootNode = technologyTree.getRoot();
+            collectChildrenProducingTheSameParentInputs(parentToProductsMap, rootNode);
+        }
+
+        return parentToProductsMap;
+    }
+
+    private void collectChildrenProducingTheSameParentInputs(final Map<String, Set<Entity>> parentToProductsMap,
+            final EntityTreeNode parentOperation) {
+        final Set<Long> parentInProdIds = getProductIdsFromOperationComponent(parentOperation, OPERATION_PRODUCT_IN_COMPONENTS);
+
+        Map<String, Set<Long>> intersections = Maps.newHashMap();
+
+        for (EntityTreeNode subOperation : parentOperation.getChildren()) {
+            final Set<Long> childOutProdIds = getProductIdsFromOperationComponent(subOperation, OPERATION_PRODUCT_OUT_COMPONENTS);
+
+            Set<Long> intersection = Sets.intersection(parentInProdIds, childOutProdIds);
+            intersections.put(subOperation.getStringField("nodeNumber"), intersection);
+        }
+
+        for (Entry<String, Set<Long>> entry : intersections.entrySet()) {
+            for (Entry<String, Set<Long>> entry1 : intersections.entrySet()) {
+                if (entry.getKey().equals(entry1.getKey())) {
+                    continue;
+                }
+
+                Set<Long> commonProds = Sets.intersection(entry.getValue(), entry1.getValue());
+                if (!commonProds.isEmpty()) {
+                    appendProductsToMap(parentToProductsMap, parentOperation, commonProds);
+                }
+            }
+        }
+
+        for (EntityTreeNode subOperation : parentOperation.getChildren()) {
+            collectChildrenProducingTheSameParentInputs(parentToProductsMap, subOperation);
+        }
+    }
+
+    private void appendProductsToMap(final Map<String, Set<Entity>> parentToProductsMap, final EntityTreeNode parent,
+            final Set<Long> commonProds) {
+        DataDefinition dd = dataDefinitionService.get("basic", "product");
+        String nodeNumber = parent.getStringField("nodeNumber");
+        Set<Entity> productsSet = parentToProductsMap.get(nodeNumber);
+        if (productsSet == null) {
+            productsSet = Sets.newHashSet();
+        }
+
+        for (Long prodId : commonProds) {
+            productsSet.add(dd.get(prodId));
+        }
+
+        parentToProductsMap.put(nodeNumber, productsSet);
     }
 
     private void collectChildrenProducingManyParentInputs(final Map<String, Set<String>> parentToChildsMap,
@@ -92,5 +158,4 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
         final Set<Long> prodIdsIntersect = Sets.intersection(parentInProdIds, childInProdIds);
         return prodIdsIntersect.size() > 1;
     }
-
 }
