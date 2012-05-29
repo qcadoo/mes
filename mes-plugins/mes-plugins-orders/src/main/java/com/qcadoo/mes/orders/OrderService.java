@@ -728,12 +728,12 @@ public class OrderService {
                 .getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && (dateToTime < (effectiveDateToTime - earlierEffectiveDateToTime))));
     }
 
-    public void changeFieldState(final ViewDefinitionState viewDefinitionState, final String booleanFieldComponentName,
+    public void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
             final String fieldComponentName) {
-        FieldComponent booleanFieldComponent = (FieldComponent) viewDefinitionState
+        FieldComponent booleanFieldComponent = (FieldComponent) view
                 .getComponentByReference(booleanFieldComponentName);
 
-        FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(fieldComponentName);
+        FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 
         if ("1".equals(booleanFieldComponent.getFieldValue())) {
             fieldComponent.setEnabled(true);

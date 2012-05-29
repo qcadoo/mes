@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="lineChangeoverNormsForOrderDetails" modelPlugin="orders"
+	modelName="order">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<group name="actions" hasLabel="false">
+				<bigButton name="saveOwnTime" icon="saveIcon24.png"
+					action="#{form}.performSave;" />
+			</group>
+			<group name="orders">
+				<bigButton name="showPreviousOrder" icon="calendarIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showPreviousOrder', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
+			<group name="lineChangeoverNorms">
+				<bigButton name="showBestFittingLineChangeoverNorm" icon="qualityControlIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showBestFittingLineChangeoverNorm', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+				<bigButton name="showLineChangeoverNormForGroup" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showLineChangeoverNormForGroup', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+				<bigButton name="showLineChangeoverNormForTechnology" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showLineChangeoverNormForTechnology', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="changeoverGridLayout"
+					hasBorders="false" columns="3" rows="2">
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="productionLine" field="productionLine"
+							reference="productionLine" defaultEnabled="false">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="borderLayout" name="previousOrderBorderLayout">
+							<component type="gridLayout" name="previousOrderGridLayout"
+								columns="1" rows="5">
+								<layoutElement column="1" row="1">
+									<component type="lookup" name="previousOrder" field="previousOrder"
+										reference="previousOrder">
+										<option type="column" name="name" fields="name" link="true" />
+										<option type="column" name="state" fields="state" />
+
+										<option type="searchable" value="name,number,state" />
+										<option type="orderable" value="name,number,state" />
+
+										<option type="expression" value="#number + ' - ' + #name" />
+										<option type="fieldCode" value="number" />
+
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+											method="checkIfOrderHasCorrectStateAndIsPrevious" />
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+											method="fillPreviousOrderForm" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="input" name="previousOrderTechnologyNumber"
+										reference="previousOrderTechnologyNumber" defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="input" name="previousOrderTechnologyGroupNumber"
+										reference="previousOrderTechnologyGroupNumber" defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="calendar" name="previousOrderDateFrom"
+										reference="previousOrderDateFrom" defaultEnabled="false">
+										<option type="labelWidth" value="50" />
+										<option type="withTimePicker" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="5">
+									<component type="calendar" name="previousOrderDateTo"
+										reference="previousOrderDateTo" defaultEnabled="false">
+										<option type="labelWidth" value="50" />
+										<option type="withTimePicker" value="true" />
+									</component>
+								</layoutElement>
+							</component>
+
+							<option type="label" value="previousOrder" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="borderLayout" name="selectedOrderBorderLayout">
+							<component type="gridLayout" name="selectedOrderGridLayout"
+								columns="1" rows="5">
+								<layoutElement column="1" row="1">
+									<component type="lookup" name="order" field="order"
+										reference="order" defaultEnabled="false">
+										<option type="column" name="name" fields="name" link="true" />
+										<option type="column" name="state" fields="state" />
+
+										<option type="searchable" value="name,number,state" />
+										<option type="orderable" value="name,number,state" />
+
+										<option type="expression" value="#number + ' - ' + #name" />
+										<option type="fieldCode" value="number" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="input" name="technologyNumber"
+										reference="technologyNumber" defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="input" name="technologyGroupNumber"
+										reference="technologyGroupNumber" defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="calendar" name="dateFrom" reference="dateFrom"
+										defaultEnabled="false">
+										<option type="labelWidth" value="50" />
+										<option type="withTimePicker" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="5">
+									<component type="calendar" name="dateTo" reference="dateTo"
+										defaultEnabled="false">
+										<option type="labelWidth" value="50" />
+										<option type="withTimePicker" value="true" />
+									</component>
+								</layoutElement>
+							</component>
+
+							<option type="label" value="selectedOrder" />
+						</component>
+					</layoutElement>
+					<layoutElement column="3" row="2">
+						<component type="borderLayout" name="changeoverBorderLayout">
+							<component type="gridLayout" name="changeoverGridLayout"
+								columns="1" rows="4">
+								<layoutElement column="1" row="1">
+									<component type="lookup" name="lineChangeoverNorm" field="lineChangeoverNorm"
+										reference="lineChangeoverNorm" persistent="false"
+										defaultEnabled="false">
+
+										<option type="expression" value="#number" />
+										<option type="fieldCode" value="number" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="time" name="lineChangeoverNormDuration"
+										reference="lineChangeoverNormDuration" defaultEnabled="false" />
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="checkbox" name="ownLineChangeover"
+										field="ownLineChangeover" reference="ownLineChangeover">
+										<listener event="onChange"
+											class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+											method="showOwnLineChangeoverDurationField" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="4">
+									<component type="time" name="ownLineChangeoverDuration"
+										field="ownLineChangeoverDuration" reference="ownLineChangeoverDuration" />
+								</layoutElement>
+							</component>
+
+							<option type="label" value="lineChangeover" />
+						</component>
+					</layoutElement>
+				</component>
+
+				<listener event="showPreviousOrder"
+					class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+					method="showPreviousOrder" />
+				<listener event="showBestFittingLineChangeoverNorm"
+					class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+					method="showBestFittingLineChangeoverNorm" />
+				<listener event="showLineChangeoverNormForGroup"
+					class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+					method="showLineChangeoverNormForGroup" />
+				<listener event="showLineChangeoverNormForTechnology"
+					class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.LineChangeoverNormsForOrderDetailsListeners"
+					method="showLineChangeoverNormForTechnology" />
+			</component>
+		</windowTab>
+
+		<option type="header" value="false" />
+	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
+			method="fillOrderForms" />
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
+			method="fillLineChangeoverNorm" />
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
+			method="updateRibbonState" />
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
+			method="showOwnLineChangeoverDurationField" />
+	</hooks>
+</view>

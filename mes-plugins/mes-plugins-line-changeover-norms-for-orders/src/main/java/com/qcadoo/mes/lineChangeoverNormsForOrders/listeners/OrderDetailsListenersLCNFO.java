@@ -21,23 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.listeners;
+package com.qcadoo.mes.lineChangeoverNormsForOrders.listeners;
+
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class ParametersListenersWP {
+public class OrderDetailsListenersLCNFO {
 
-    public void redirectToWorkPlanParameters(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
+    public final void showChangeover(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        Long orderId = (Long) componentState.getFieldValue();
 
-        if (parameterId != null) {
-            String url = "../page/workPlans/workPlanParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
-            view.redirectTo(url, false, true);
+        if (orderId == null) {
+            return;
         }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderId);
+
+        String url = "../page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
+        viewState.redirectTo(url, false, true, parameters);
     }
 }

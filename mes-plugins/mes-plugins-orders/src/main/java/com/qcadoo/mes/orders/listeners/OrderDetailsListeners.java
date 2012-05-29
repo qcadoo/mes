@@ -49,13 +49,12 @@ public class OrderDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void showOrderParameters(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
-            final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+    public void showOrderParameters(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        Long orderId = (Long) componentState.getFieldValue();
 
         if (orderId != null) {
             String url = "../page/orders/technologyOperationComponentInOrderList.html?context={\"form.id\":\"" + orderId + "\"}";
-            viewDefinitionState.redirectTo(url, false, true);
+            view.redirectTo(url, false, true);
         }
     }
 
