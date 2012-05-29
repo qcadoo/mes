@@ -3,36 +3,44 @@
 	name="loggingDetails" modelName="logging">
 
 	<component type="window" name="window" reference="window">
-		
+
 		<ribbon>
-			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack"/>
+			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack" />
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
-			  	<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
+				<component type="gridLayout" name="gridsLayout" columns="3"
+					rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="input" name="dateAndTime" field="#{form}.dateAndTime" reference="dateAndTime" defaultEnabled="false"/>
-					</layoutElement>  
+						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
+							reference="dateAndTime" defaultEnabled="false" />
+					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="worker" field="#{form}.worker" reference="worker" defaultEnabled="false"/>
-					</layoutElement>  
+						<component type="input" name="worker" field="#{form}.worker"
+							reference="worker" defaultEnabled="false" />
+					</layoutElement>
 					<layoutElement column="1" row="3">
-					    <component type="input" name="previousState" field="#{form}.previousState" reference="previousState" defaultEnabled="false"/>
-					</layoutElement>  
+						<component type="select" name="previousState" field="#{form}.previousState"
+							reference="previousState" defaultEnabled="false" />
+					</layoutElement>
 					<layoutElement column="1" row="4">
-					    <component type="input" name="currentState" field="#{form}.currentState" reference="currentState" defaultEnabled="false"/>
-					</layoutElement>  
+						<component type="select" name="currentState" field="#{form}.currentState"
+							reference="currentState" defaultEnabled="false" />
+					</layoutElement>
 					<layoutElement column="1" row="5">
-<!-- 						<component type="checkbox" name="master" field="master" reference="master" /> -->
-					</layoutElement>  
-					<layoutElement column="2" row="1" >
-					    <component type="select" name="reasonType" field="#{form}.reasonType" reference="reasonType"/>
+						<!-- <component type="checkbox" name="master" field="master" reference="master" 
+							/> -->
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="select" name="reasonType" field="#{form}.reasonType"
+							reference="reasonType" />
 					</layoutElement>
 					<layoutElement column="2" row="2" height="2">
-						<component type="textarea" name="comment" field="#{form}.comment" reference="comment" />    
+						<component type="textarea" name="comment" field="#{form}.comment"
+							reference="comment" />
 					</layoutElement>
 				</component>
-				<option type="header" value="false" />
+				<option type="header" value="true" />
 			</component>
 		</windowTab>
 	</component>

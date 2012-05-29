@@ -30,8 +30,8 @@
 	<fields>
 		<belongsTo name="order" model="order" />
 		<datetime name="dateAndTime" />
-		<string name="previousState" />
-		<string name="currentState" />
+		<enum name="previousState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
+		<enum name="currentState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
 		<belongsTo name="shift" model="shift" plugin="basic" />
 		<string name="worker" />
 		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />

@@ -527,8 +527,7 @@
 			<component type="grid" name="loggings" reference="grid"
 				source="#{form}.loggings">
 				<option type="column" name="dateAndTime" fields="dateAndTime" link="true"/>
-				<option type="column" name="currentState" fields="currentState"
-					expression="'@orders.order.state.value.' + #currentState" link="true" />
+				<option type="column" name="currentState" fields="currentState"  />
 				<option type="column" name="worker" fields="worker" />
 				<option type="column" name="reasonType" fields="reasonType" />
 				<option type="column" name="comment" fields="comment" />
