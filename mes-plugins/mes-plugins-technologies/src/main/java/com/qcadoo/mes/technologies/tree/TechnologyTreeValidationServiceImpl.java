@@ -84,9 +84,14 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
             Set<Long> intersection = Sets.intersection(parentInProdIds, childOutProdIds);
             intersections.put(subOperation.getStringField("nodeNumber"), intersection);
         }
-
+        if (intersections.isEmpty()) {
+            return;
+        }
         for (Entry<String, Set<Long>> entry : intersections.entrySet()) {
             for (Entry<String, Set<Long>> entry1 : intersections.entrySet()) {
+                if (entry.getKey() == null || entry1.getKey() == null) {
+                    continue;
+                }
                 if (entry.getKey().equals(entry1.getKey())) {
                     continue;
                 }
