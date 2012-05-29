@@ -34,6 +34,7 @@ import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsL
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,10 +58,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     private OrderService orderService;
 
     @Autowired
-    private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
+    private ChangeoverNormsService changeoverNormsService;
 
     @Autowired
-    private ChangeoverNormsService lineChangeoverNormsService;
+    private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public final void fillOrderForms(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -111,7 +112,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
 
                 Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
 
-                Entity lineChangeoverNorm = lineChangeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
+                Entity lineChangeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
                         productionLine);
 
                 if (lineChangeoverNorm != null) {
@@ -160,14 +161,15 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             updateButtonState(showBestFittingChangeoverNorm, true);
         }
 
-        if ((previousOrderTechnologyGroupNumberField.getFieldValue() == null)
-                || (technologyGroupNumberField.getFieldValue() == null)) {
+        if (StringUtils.isEmpty((String) previousOrderTechnologyGroupNumberField.getFieldValue())
+                || StringUtils.isEmpty((String) technologyGroupNumberField.getFieldValue())) {
             updateButtonState(showChangeoverNormForGroup, false);
         } else {
             updateButtonState(showChangeoverNormForGroup, true);
         }
 
-        if ((previousOrderTechnologyNumberField.getFieldValue() == null) || (technologyNumberField.getFieldValue() == null)) {
+        if (StringUtils.isEmpty((String) previousOrderTechnologyNumberField.getFieldValue())
+                || StringUtils.isEmpty((String) technologyNumberField.getFieldValue())) {
             updateButtonState(showChangeoverNormForTechnology, false);
         } else {
             updateButtonState(showChangeoverNormForTechnology, true);

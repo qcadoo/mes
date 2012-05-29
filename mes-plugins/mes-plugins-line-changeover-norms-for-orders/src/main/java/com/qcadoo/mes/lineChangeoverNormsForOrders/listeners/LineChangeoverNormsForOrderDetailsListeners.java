@@ -32,6 +32,7 @@ import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsL
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +101,7 @@ public class LineChangeoverNormsForOrderDetailsListeners {
         String previousOrderTechnologyGroupNumber = (String) previousOrderTechnologyGroupNumberField.getFieldValue();
         String technologyGroupNumber = (String) technologyGroupNumberField.getFieldValue();
 
-        if ((previousOrderTechnologyGroupNumber == null) || (technologyGroupNumber == null)) {
+        if (StringUtils.isEmpty(previousOrderTechnologyGroupNumber) || StringUtils.isEmpty(technologyGroupNumber)) {
             return;
         }
 
@@ -128,6 +129,10 @@ public class LineChangeoverNormsForOrderDetailsListeners {
 
         String previousOrderTechnologyNumber = (String) previousOrderTechnologyNumberField.getFieldValue();
         String technologyNumber = (String) technologyNumberField.getFieldValue();
+
+        if (StringUtils.isEmpty(previousOrderTechnologyNumber) || StringUtils.isEmpty(technologyNumber)) {
+            return;
+        }
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("fromTechnology", previousOrderTechnologyNumber);

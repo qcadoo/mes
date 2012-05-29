@@ -104,12 +104,12 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     @Override
     public boolean checkIfOrderHasCorrectStateAndIsPrevious(final Entity previousOrder, final Entity order) {
-        if ((previousOrder != null) && (order != null)) {
-            if (ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
-                    || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE))
-                    || (((Date) previousOrder.getField(DATE_TO)).getTime() > ((Date) order.getField(DATE_FROM)).getTime())) {
-                return false;
-            }
+        if ((previousOrder != null)
+                && (order != null)
+                && (ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
+                        || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE)) || (((Date) previousOrder
+                        .getField(DATE_TO)).getTime() > ((Date) order.getField(DATE_FROM)).getTime()))) {
+            return false;
         }
 
         return true;
