@@ -141,9 +141,9 @@ public class TechnologyTreeValidationServiceImplTest {
         Entity product5 = mockProductComponent(5L);
         Entity product6 = mockProductComponent(6L);
 
-        EntityTreeNode node3 = mockOperationComponent("3.", newArrayList(product5), newArrayList(product2, product3));
-        EntityTreeNode node2 = mockOperationComponent("2.", newArrayList(product6), newArrayList(product2, product4));
-        EntityTreeNode node1 = mockOperationComponent("1.", newArrayList(product2), newArrayList(product1),
+        EntityTreeNode node3 = mockOperationComponent(3L, "3.", newArrayList(product5), newArrayList(product2, product3));
+        EntityTreeNode node2 = mockOperationComponent(2L, "2.", newArrayList(product6), newArrayList(product2, product4));
+        EntityTreeNode node1 = mockOperationComponent(1L, "1.", newArrayList(product2), newArrayList(product1),
                 newArrayList(node2, node3));
         given(tree.getRoot()).willReturn(node1);
 
@@ -240,9 +240,16 @@ public class TechnologyTreeValidationServiceImplTest {
         return mockOperationComponent(nodeNumber, inputProducts, outputProducts, EMPTY_TREE_NODES_LIST);
     }
 
-    private EntityTreeNode mockOperationComponent(final String nodeNuber, final Collection<Entity> inputProducts,
+    private EntityTreeNode mockOperationComponent(final Long id, final String nodeNumber, final Collection<Entity> inputProducts,
+            final Collection<Entity> outputProducts) {
+        return mockOperationComponent(id, nodeNumber, inputProducts, outputProducts, EMPTY_TREE_NODES_LIST);
+    }
+
+    private EntityTreeNode mockOperationComponent(final Long id, final String nodeNumber, final Collection<Entity> inputProducts,
             final Collection<Entity> outputProducts, final List<EntityTreeNode> subOperations) {
         EntityTreeNode operationComponent = mock(EntityTreeNode.class);
+
+        given(operationComponent.getId()).willReturn(id);
 
         EntityList inputProductsList = mockProductComponentsList(inputProducts);
         given(operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS)).willReturn(inputProductsList);
@@ -252,12 +259,17 @@ public class TechnologyTreeValidationServiceImplTest {
         given(operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS)).willReturn(outputProductsList);
         given(operationComponent.getField(OPERATION_PRODUCT_OUT_COMPONENTS)).willReturn(outputProductsList);
 
-        given(operationComponent.getField(NODE_NUMBER)).willReturn(nodeNuber);
-        given(operationComponent.getStringField(NODE_NUMBER)).willReturn(nodeNuber);
+        given(operationComponent.getField(NODE_NUMBER)).willReturn(nodeNumber);
+        given(operationComponent.getStringField(NODE_NUMBER)).willReturn(nodeNumber);
 
         given(operationComponent.getChildren()).willReturn(subOperations);
 
         return operationComponent;
+    }
+
+    private EntityTreeNode mockOperationComponent(final String nodeNumber, final Collection<Entity> inputProducts,
+            final Collection<Entity> outputProducts, final List<EntityTreeNode> subOperations) {
+        return mockOperationComponent(null, nodeNumber, inputProducts, outputProducts, subOperations);
     }
 
     private EntityList mockProductComponentsList(final Collection<Entity> productComponents) {

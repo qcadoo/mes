@@ -76,17 +76,17 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
             final EntityTreeNode parentOperation) {
         final Set<Long> parentInProdIds = getProductIdsFromOperationComponent(parentOperation, OPERATION_PRODUCT_IN_COMPONENTS);
 
-        Map<String, Set<Long>> intersections = Maps.newHashMap();
+        Map<Long, Set<Long>> intersections = Maps.newHashMap();
 
         for (EntityTreeNode subOperation : parentOperation.getChildren()) {
             final Set<Long> childOutProdIds = getProductIdsFromOperationComponent(subOperation, OPERATION_PRODUCT_OUT_COMPONENTS);
 
             Set<Long> intersection = Sets.intersection(parentInProdIds, childOutProdIds);
-            intersections.put(subOperation.getStringField("nodeNumber"), intersection);
+            intersections.put(subOperation.getId(), intersection);
         }
 
-        for (Entry<String, Set<Long>> entry : intersections.entrySet()) {
-            for (Entry<String, Set<Long>> entry1 : intersections.entrySet()) {
+        for (Entry<Long, Set<Long>> entry : intersections.entrySet()) {
+            for (Entry<Long, Set<Long>> entry1 : intersections.entrySet()) {
                 if (entry.getKey().equals(entry1.getKey())) {
                     continue;
                 }
