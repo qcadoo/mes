@@ -7,7 +7,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public interface ChangeoverNormsSearchService {
 
-    Entity searchMatchingChangeroverNormsForTechnology(final Entity fromTechnology, final Entity toTechnology,
+    Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
             final Entity productionLine);
 
     Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -116,6 +117,12 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     @Override
+    public Entity getProductionLineFromDB(final Long productionLineId) {
+        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get(productionLineId);
+    }
+
+    @Override
     public Entity getOrderFromDB(final Long orderId) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
@@ -127,13 +134,26 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     @Override
+    public Entity getTechnologyByNumberFromDB(final String number) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).find()
+                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    @Override
+    public Entity getTechnologyGroupByNumberFromDB(final String number) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_GROUP)
+                .find().add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    @Override
     public Entity getPreviousOrderFromDB(final Entity order) {
         return dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .find()
                 .add(SearchRestrictions.or(SearchRestrictions.ne(STATE, DECLINED.getStringValue()),
                         SearchRestrictions.ne(STATE, ABANDONED.getStringValue())))
-                .add(SearchRestrictions.le(DATE_TO, (Date) order.getField(DATE_FROM))).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.le(DATE_TO, (Date) order.getField(DATE_FROM))).orderDescBy(DATE_TO).setMaxResults(1)
+                .uniqueResult();
     }
 
 }

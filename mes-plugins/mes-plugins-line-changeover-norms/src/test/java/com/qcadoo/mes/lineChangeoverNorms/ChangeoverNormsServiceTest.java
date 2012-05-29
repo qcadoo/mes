@@ -64,7 +64,7 @@ public class ChangeoverNormsServiceTest {
         // given
 
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).thenReturn(changeover);
 
         // when
@@ -79,9 +79,9 @@ public class ChangeoverNormsServiceTest {
     public void shouldReturnMatchingChangeoverNormsFromTechToTechWithoutLine() throws Exception {
         // given
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).thenReturn(null);
-        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology, null))
                 .thenReturn(changeover);
         // when
         Entity changeoverNorms = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
@@ -97,9 +97,9 @@ public class ChangeoverNormsServiceTest {
         Long toTechGrId = 2L;
         // when
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).thenReturn(null);
-        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology, null))
                 .thenReturn(null);
 
         when(toTechnology.getBelongsToField("technologyGroup")).thenReturn(toTechnologyGroup);
@@ -126,9 +126,9 @@ public class ChangeoverNormsServiceTest {
         Long toTechGrId = 2L;
         // when
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).thenReturn(null);
-        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology, null))
+        when(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology, null))
                 .thenReturn(null);
 
         when(toTechnology.getBelongsToField("technologyGroup")).thenReturn(toTechnologyGroup);
@@ -155,7 +155,7 @@ public class ChangeoverNormsServiceTest {
     public void shouldReturnNullIfNoMatchingChangeoverNormWasFound() {
         // given
         when(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnology(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).thenReturn(null);
 
         // when

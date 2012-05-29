@@ -14,9 +14,15 @@ public interface LineChangeoverNormsForOrdersService {
 
     boolean checkIfOrderHasCorrectStateAndIsPrevious(final Entity previousOrder, final Entity order);
 
+    Entity getProductionLineFromDB(final Long productionLineId);
+
     Entity getOrderFromDB(final Long orderId);
 
     Entity getTechnologyFromDB(final Long technologyId);
+
+    Entity getTechnologyByNumberFromDB(final String number);
+
+    Entity getTechnologyGroupByNumberFromDB(final String number);
 
     Entity getPreviousOrderFromDB(final Entity order);
 

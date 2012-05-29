@@ -21,7 +21,7 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public Entity searchMatchingChangeroverNormsForTechnology(final Entity fromTechnology, final Entity toTechnology,
+    public Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
             final Entity productionLine) {
         return dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)

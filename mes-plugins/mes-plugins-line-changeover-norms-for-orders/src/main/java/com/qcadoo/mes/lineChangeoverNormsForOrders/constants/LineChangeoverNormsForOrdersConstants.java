@@ -28,6 +28,8 @@ import java.util.List;
 
 public interface LineChangeoverNormsForOrdersConstants {
 
+    String PLUGIN_IDENTIFIER = "LineChangeoverNormsForOrders";
+
     List<String> PREVIOUS_ORDER_FIELDS = Arrays.asList("previousOrder", "previousOrderTechnologyNumber",
             "previousOrderTechnologyGroupNumber", "previousOrderDateFrom", "previousOrderDateTo");
 
