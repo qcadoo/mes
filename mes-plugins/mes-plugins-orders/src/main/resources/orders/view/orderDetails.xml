@@ -263,19 +263,17 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7">
-						<component type="calendar" name="dateFrom" field="dateFrom"
+						<component type="calendar" name="dateFrom" field="startDate"
 							reference="dateFrom">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
-							<listener event="onChange" method="copyStartDate"  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="8">
-						<component type="calendar" name="dateTo" field="dateTo"
+						<component type="calendar" name="dateTo" field="finishDate"
 							reference="dateTo">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
-							<listener event="onChange" method="copyEndDate"  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="9">
@@ -395,7 +393,8 @@
 									field="#{form}.dateFrom" reference="plannedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" method="copyStartDate"  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyStartDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
@@ -403,6 +402,8 @@
 									field="#{form}.correctedDateFrom" reference="correctedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyStartDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="3">
@@ -461,7 +462,8 @@
 									field="#{form}.dateTo" reference="plannedDateTo"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" method="copyEndDate"  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyEndDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
@@ -469,6 +471,8 @@
 									field="#{form}.correctedDateTo" reference="correctedDateTo"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyEndDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="3">
@@ -551,15 +555,17 @@
 			method="setAndDisableState" />
 		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
 			method="fillProductUnitBeforeRender" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="disableOrderFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.orders.states.OrderStatesService"
-			method="setFieldsRequired" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderLogginsDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveStart" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderLogginsDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 		    method="enabledFieldForSpecificOrderState"/>
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+		    method="enabledFieldForSpecificOrderState"/>
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+		    method="setDatesToFields" />
 	</hooks>
 </view>

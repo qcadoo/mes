@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 
@@ -59,12 +61,12 @@ public class OrderDetailsListeners {
 
     private void copyDate(final ViewDefinitionState viewDefinitionState, final String fromNameField, final String toNameField) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        if (form.getEntityId() == null) {
-            return;
-        }
-        Entity order = getOrderFromForm(form.getEntityId());
         FieldComponent fromField = (FieldComponent) viewDefinitionState.getComponentByReference(fromNameField);
         FieldComponent toField = (FieldComponent) viewDefinitionState.getComponentByReference(toNameField);
+        if (form.getEntityId() == null) {
+            toField.setFieldValue(fromField.getFieldValue());
+        }
+        Entity order = getOrderFromForm(form.getEntityId());
 
         if (!fromField.getFieldValue().equals(order.getField(fromNameField))) {
             toField.setFieldValue(fromField.getFieldValue());
@@ -73,18 +75,18 @@ public class OrderDetailsListeners {
     }
 
     public void copyStartDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(DATE_FROM)) {
-            copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
-        } else {
+        if (triggerState.getName().equals(PLANNED_DATE_FROM)) {
             copyDate(view, PLANNED_DATE_FROM, DATE_FROM);
+        } else {
+            copyDate(view, CORRECTED_DATE_FROM, DATE_FROM);
         }
     }
 
     public void copyEndDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
-        if (triggerState.getName().equals(DATE_TO)) {
-            copyDate(view, DATE_TO, PLANNED_DATE_TO);
-        } else {
+        if (triggerState.getName().equals(PLANNED_DATE_TO)) {
             copyDate(view, PLANNED_DATE_TO, DATE_TO);
+        } else {
+            copyDate(view, CORRECTED_DATE_TO, DATE_TO);
         }
 
     }

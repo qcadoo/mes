@@ -54,8 +54,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -66,8 +64,6 @@ public class OrderTimePredictionService {
     private static final String TECHNOLOGY_COMPONENT = "technology";
 
     private static final String QUANTITY_COMPONENT = "quantity";
-
-    private static final String PLANNED_QUANTITY_COMPONENT = "plannedQuantity";
 
     private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
 
@@ -82,35 +78,6 @@ public class OrderTimePredictionService {
 
     @Autowired
     private TimeConverterService timeConverterService;
-
-    public void setFieldDisable(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
-
-        FieldComponent quantity = (FieldComponent) viewDefinitionState.getComponentByReference(PLANNED_QUANTITY_COMPONENT);
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference(REALIZATION_TIME_COMPONENT);
-
-        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
-        RibbonActionItem countTimeOfTechnology = window.getRibbon().getGroupByName("timeOfTechnology")
-                .getItemByName("countTimeOfTechnology");
-
-        quantity.setRequired(true);
-        dateFrom.setRequired(true);
-        technology.setRequired(true);
-
-        quantity.setEnabled(true);
-        dateFrom.setEnabled(true);
-        dateTo.setEnabled(false);
-        realizationTime.setEnabled(false);
-        countTimeOfTechnology.setEnabled(false);
-
-        quantity.requestComponentUpdateState();
-        dateFrom.requestComponentUpdateState();
-        dateTo.requestComponentUpdateState();
-        technology.requestComponentUpdateState();
-        realizationTime.requestComponentUpdateState();
-    }
 
     private void scheduleOrder(final Long orderId) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);

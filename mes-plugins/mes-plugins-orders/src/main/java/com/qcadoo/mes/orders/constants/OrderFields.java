@@ -81,4 +81,8 @@ public final class OrderFields {
 
     public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_TO = "commentReasonTypeCorrectionDateTo";
 
+    public static final String START_DATE = "startDate";
+
+    public static final String FINISH_DATE = "finishDate";
+
 }

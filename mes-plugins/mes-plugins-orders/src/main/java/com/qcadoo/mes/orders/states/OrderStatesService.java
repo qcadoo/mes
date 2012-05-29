@@ -23,16 +23,9 @@
  */
 package com.qcadoo.mes.orders.states;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_GRID;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_STATE;
-
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -202,30 +195,6 @@ public class OrderStatesService {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
             changeOrderStateToForGrid(state, id, OrderStates.INTERRUPTED);
-        }
-    }
-
-    public void setFieldsRequired(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FIELD_FORM);
-        if (form.getEntityId() == null) {
-            return;
-        }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
-        if (order != null) {
-            if (order.getStringField(FIELD_STATE).equals(OrderStates.ACCEPTED.getStringValue())
-                    || order.getStringField(FIELD_STATE).equals(OrderStates.IN_PROGRESS.getStringValue())
-                    || order.getStringField(FIELD_STATE).equals(OrderStates.INTERRUPTED.getStringValue())) {
-                for (String reference : Arrays.asList(DATE_TO, DATE_FROM, DEFAULT_TECHNOLOGY, TECHNOLOGY)) {
-                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                    field.setRequired(true);
-                }
-            } else if (order.getStringField(FIELD_STATE).equals(OrderStates.COMPLETED.getStringValue())) {
-                for (String reference : Arrays.asList(DATE_TO, DATE_FROM, DEFAULT_TECHNOLOGY, TECHNOLOGY, DONE_QUANTITY)) {
-                    FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-                    field.setRequired(true);
-                }
-            }
         }
     }
 

@@ -4,6 +4,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CO
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -45,7 +47,7 @@ public class OrderDetailsHooksTest {
 
     @Mock
     FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, reasonDateFromField,
-            reasonDateToField;
+            dateFrom, dateTo, reasonDateToField;
 
     @Before
     public void init() {
@@ -65,6 +67,8 @@ public class OrderDetailsHooksTest {
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
         when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(reasonDateFromField);
         when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(reasonDateToField);
+        when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
+        when(view.getComponentByReference(DATE_TO)).thenReturn(dateTo);
     }
 
     @Test
@@ -80,6 +84,8 @@ public class OrderDetailsHooksTest {
         Mockito.verify(commentDateToField).setEnabled(true);
         Mockito.verify(reasonDateFromField).setEnabled(true);
         Mockito.verify(reasonDateToField).setEnabled(true);
+        Mockito.verify(dateFrom).setEnabled(true);
+        Mockito.verify(dateTo).setEnabled(true);
     }
 
     @Test
@@ -92,6 +98,7 @@ public class OrderDetailsHooksTest {
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
         Mockito.verify(reasonDateToField).setEnabled(true);
+        Mockito.verify(dateTo).setEnabled(true);
     }
 
 }

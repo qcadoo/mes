@@ -81,3 +81,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
+
+
+ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
+ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;

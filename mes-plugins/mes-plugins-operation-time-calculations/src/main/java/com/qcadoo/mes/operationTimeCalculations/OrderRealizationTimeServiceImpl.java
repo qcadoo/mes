@@ -39,10 +39,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -51,10 +49,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
@@ -72,16 +66,10 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private final Map<Entity, BigDecimal> operationRunsField = new HashMap<Entity, BigDecimal>();
 
     @Autowired
-    private ShiftsServiceImpl shiftsService;
-
-    @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -91,40 +79,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Override
-    public void changeDateFrom(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
-        FieldComponent dateTo = (FieldComponent) state;
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("dateFrom");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        if (StringUtils.hasText((String) dateTo.getFieldValue()) && !StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            Date date = shiftsService.findDateFromForOrder(timeConverterService.getDateFromField(dateTo.getFieldValue()),
-                    Integer.valueOf((String) realizationTime.getFieldValue()));
-            if (date != null) {
-                dateFrom.setFieldValue(setDateToField(date));
-            }
-        }
-    }
-
-    @Override
-    public void changeDateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
-        FieldComponent dateFrom = (FieldComponent) state;
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("dateTo");
-        FieldComponent realizationTime = (FieldComponent) viewDefinitionState.getComponentByReference("realizationTime");
-        if (!StringUtils.hasText((String) dateTo.getFieldValue()) && StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            Date date = shiftsService.findDateToForOrder(timeConverterService.getDateFromField(dateFrom.getFieldValue()),
-                    Integer.valueOf((String) realizationTime.getFieldValue()));
-            if (date != null) {
-                dateTo.setFieldValue(setDateToField(date));
-            }
-        }
-    }
 
     @Override
     public Object setDateToField(final Date date) {

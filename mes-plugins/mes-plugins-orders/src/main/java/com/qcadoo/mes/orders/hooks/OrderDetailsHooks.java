@@ -4,6 +4,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CO
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -38,12 +40,12 @@ public class OrderDetailsHooks {
         if (order.getStringField(STATE).equals(OrderStates.ACCEPTED.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
             enabledFields(view, references);
         }
         if (order.getStringField(STATE).equals(OrderStates.IN_PROGRESS.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_TO);
             enabledFields(view, references);
         }
     }
@@ -55,4 +57,5 @@ public class OrderDetailsHooks {
             field.requestComponentUpdateState();
         }
     }
+
 }
