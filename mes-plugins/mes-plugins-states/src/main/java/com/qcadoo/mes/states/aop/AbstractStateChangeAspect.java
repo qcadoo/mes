@@ -1,10 +1,10 @@
-package com.qcadoo.mes.states.service;
+package com.qcadoo.mes.states.aop;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
+import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -14,7 +14,7 @@ import com.qcadoo.model.api.Entity;
  * entity's field which should be prevented for changing outside {@link StateChangeService}.
  */
 @Aspect
-public abstract class AbstractStateChangeService implements StateChangeService {
+public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     /**
      * @return name of field representing entity state
@@ -33,7 +33,7 @@ public abstract class AbstractStateChangeService implements StateChangeService {
 
     /**
      * Determine pointcut for changing state join points ({@link StateChangeService#changeState(Entity)}) using additional
-     * restrictions from {@link AbstractStateChangeService#stateChangeServiceSelector()} pointcut.
+     * restrictions from {@link AbstractStateChangeAspect#stateChangeServiceSelector()} pointcut.
      * 
      * @param stateChangeEntity
      *            entity which represent state change flow
@@ -57,15 +57,13 @@ public abstract class AbstractStateChangeService implements StateChangeService {
      * @param entity
      * @throws Throwable
      */
-    @Around("call(public void com.qcadoo.model.api.Entity.setField(..)) && args(fieldName, *) "
+    @Before("call(public void com.qcadoo.model.api.Entity.setField(..)) && args(fieldName, *) "
             + "&& !cflow(stateChangeServiceSelector()) && target(entity)")
-    public void throwExceptionIfStateIsChangedOutsideSCS(final ProceedingJoinPoint jp, final String fieldName, final Entity entity)
-            throws Throwable {
+    public void throwExceptionIfStateIsChangedOutsideSCS(final String fieldName, final Entity entity) throws Throwable {
         if (entityMatchModel(entity, fieldName)) {
             throw new IllegalArgumentException(
                     "Changing entity state outside StateChangeService or their subclasses is not permitted.");
         }
-        jp.proceed();
     }
 
     /**

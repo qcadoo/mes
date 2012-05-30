@@ -212,6 +212,32 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<instrumentation>
+						<ignores>
+							<ignore>org.aspectj.*</ignore>
+						</ignores>
+						<excludes>
+							<exclude>**/*$AjcClosure*</exclude>
+							<exclude>com/qcadoo/mes/beans/**/*.class</exclude>
+							<exclude>**/*Advice.class</exclude>
+							<exclude>**/*Aspect.class</exclude>
+						</excludes>
+					</instrumentation>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>cobertura</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -282,24 +308,24 @@
 					</reportSets>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<instrumentation>
-						<ignores>
-							<ignore>org.aspectj.*</ignore>
-						</ignores>
-						<excludes>
-							<exclude>**/*$AjcClosure*</exclude>
-							<exclude>com/qcadoo/mes/beans/**/*.class</exclude>
-							<exclude>**/*Advice.class</exclude>
-							<exclude>**/*Aspect.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.codehaus.mojo</groupId> -->
+<!-- 				<artifactId>cobertura-maven-plugin</artifactId> -->
+<!-- 				<version>2.4</version> -->
+<!-- 				<configuration> -->
+<!-- 					<instrumentation> -->
+<!-- 						<ignores> -->
+<!-- 							<ignore>org.aspectj.*</ignore> -->
+<!-- 						</ignores> -->
+<!-- 						<excludes> -->
+<!-- 							<exclude>**/*$AjcClosure*</exclude> -->
+<!-- 							<exclude>com/qcadoo/mes/beans/**/*.class</exclude> -->
+<!-- 							<exclude>**/*Advice.class</exclude> -->
+<!-- 							<exclude>**/*Aspect.class</exclude> -->
+<!-- 						</excludes> -->
+<!-- 					</instrumentation> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</reporting>
 
