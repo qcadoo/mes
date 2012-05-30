@@ -5,7 +5,7 @@
 	<fields>
 		<belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent" plugin="technologies" />
 		<integer name="day" />
-		<hasMany name="dailyProgress" joinField="progressForDay" model="dailyProgress"/> 
+		<hasMany name="dailyProgress" joinField="progressForDay" model="dailyProgress" cascade="delete"/> 
 	</fields>
 	<hooks />
 </model>
