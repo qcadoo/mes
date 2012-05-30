@@ -48,7 +48,7 @@ public abstract class AbstractStateChangeService implements StateChangeService {
      * Definie stateChanging pointcut's aditional restriction. Usually pointcut expression looks like "this(TypeName)"
      */
     @Pointcut
-    protected abstract void stateChangeServiceSelector();
+    public abstract void stateChangeServiceSelector();
 
     /**
      * This advice prevent from setting entity state field outside dedicated StateChangeService.
