@@ -46,7 +46,7 @@ public class ProductionPerShiftListeners {
         viewState.redirectTo(url, false, true, parameters);
     }
 
-    private long createCorrespondingProductionPerShfitEntity(Long orderId) {
+    private long createCorrespondingProductionPerShfitEntity(final Long orderId) {
         DataDefinition orderDD = dataDefinitionService.get("orders", "order");
         Entity order = orderDD.get(orderId);
 
