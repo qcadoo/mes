@@ -75,13 +75,10 @@ public class OrderDetailsHooks {
         if (form.getEntityId() == null) {
             return;
         }
-
         Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(form.getEntityId());
-
         if (entity == null) {
             return;
         }
-
         String externalNumber = entity.getStringField(EXTERNAL_NUMBER);
         boolean externalSynchronized = (Boolean) entity.getField(EXTERNAL_SYNCHRONIZED);
 
