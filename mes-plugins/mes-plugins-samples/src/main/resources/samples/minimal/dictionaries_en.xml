@@ -33,10 +33,10 @@
 	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
 	<row NAME="units" ITEM="pair" DESCRIPTION="Pair" />
 	<row NAME="units" ITEM="set" DESCRIPTION="Set" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Nieobecność pracownika" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Opóźnienia w dostawie surowców" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Wadliwe surowce" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Przeciążenia zasobów produkcji" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Awaria maszyny" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Inne" DESCRIPTION="" />
+	<row NAME="reasonTypeOfChaningOrderState" ITEM="Employee absence" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Delays in materials delivery" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Faulty materials" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Production resources overload" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Machine malfunction" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Other" DESCRIPTION="" />
 </dictionaries>

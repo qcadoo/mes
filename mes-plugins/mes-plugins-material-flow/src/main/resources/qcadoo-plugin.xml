@@ -104,7 +104,10 @@
 			view="materialsInStockAreasList" />
 		<menu:menu-item name="transformations" category="materialFlow"
 			view="transformationsList" />
+		<menu:menu-item name="multitransfer" category="materialFlow"
+			view="multitransfer" />
 
+		<view:view resource="view/multitransfer.xml" />
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
 		<view:view resource="view/transferTemplateList.xml" />
