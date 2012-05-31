@@ -23,10 +23,8 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
@@ -580,32 +578,6 @@ public class OrderService {
         }
     }
 
-    public void disableOrderFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
-
-        if (form.getEntityId() == null) {
-            return;
-        }
-
-        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(form.getEntityId());
-
-        if (entity == null) {
-            return;
-        }
-
-        String externalNumber = entity.getStringField(EXTERNAL_NUMBER);
-        boolean externalSynchronized = (Boolean) entity.getField(EXTERNAL_SYNCHRONIZED);
-
-        if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
-            state.getComponentByReference(FIELD_NUMBER).setEnabled(false);
-            state.getComponentByReference(NAME).setEnabled(false);
-            state.getComponentByReference(COMPANY).setEnabled(false);
-            state.getComponentByReference(DEADLINE).setEnabled(false);
-            state.getComponentByReference(BASIC_MODEL_PRODUCT).setEnabled(false);
-            state.getComponentByReference(PLANNED_QUANTITY).setEnabled(false);
-        }
-    }
-
     public boolean checkChosenTechnologyState(final DataDefinition orderDD, final Entity order) {
         if (DECLINED.getStringValue().equals(order.getStringField(STATE))) {
             return true;
@@ -730,8 +702,7 @@ public class OrderService {
 
     public void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
             final String fieldComponentName) {
-        FieldComponent booleanFieldComponent = (FieldComponent) view
-                .getComponentByReference(booleanFieldComponentName);
+        FieldComponent booleanFieldComponent = (FieldComponent) view.getComponentByReference(booleanFieldComponentName);
 
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 

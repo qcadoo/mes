@@ -187,7 +187,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                     toTechnologyGroup, productionLine) == null) {
                 updateButtonState(showChangeoverNormForGroup, false);
             } else {
-                updateButtonState(showChangeoverNormForGroup, false);
+                updateButtonState(showChangeoverNormForGroup, true);
             }
         }
 

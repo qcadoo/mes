@@ -15,12 +15,12 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.OrderService;
@@ -42,7 +42,17 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
     private static final long L_ID = 1L;
 
-    private static final String L_FIELD_VALUE = "1L";
+    private static final String L_PREVIOUS_ORDER = "000001";
+
+    private static final String L_LINE_CHANGEOVER_NORM = "000001";
+
+    private static final String L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER = "000001";
+
+    private static final String L_TECHNOLOGY_GROUP_NUMBER = "000002";
+
+    private static final String L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER = "000001";
+
+    private static final String L_TECHNOLOGY_NUMBER = "000002";
 
     private static final long L_PREVIOUS_ORDER_ID = 1L;
 
@@ -59,6 +69,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private ChangeoverNormsService changeoverNormsService;
 
     @Mock
+    private ChangeoverNormsSearchService changeoverNormsSearchService;
+
+    @Mock
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     @Mock
@@ -68,12 +81,13 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private FormComponent orderForm;
 
     @Mock
-    private FieldComponent previousOrderField, orderField, lineChangeoverNormField, lineChangeoverNormDurationField,
-            previousOrderTechnologyGroupNumberField, technologyGroupNumberField, previousOrderTechnologyNumberField,
-            technologyNumberField;
+    private FieldComponent previousOrderField, orderField, productionLineField, lineChangeoverNormField,
+            lineChangeoverNormDurationField, previousOrderTechnologyGroupNumberField, technologyGroupNumberField,
+            previousOrderTechnologyNumberField, technologyNumberField;
 
     @Mock
-    private Entity previousOrder, order, fromTechnology, toTechnology, productionLine, lineChangeoverNorm;
+    private Entity previousOrder, order, fromTechnologyGroup, toTechnologyGroup, fromTechnology, toTechnology, productionLine,
+            lineChangeoverNorm, lineChangeoverNormForGroup, lineChangeoverNormForTechnology;
 
     @Mock
     private WindowComponentState window;
@@ -96,6 +110,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
         setField(lineChangeoverNormsForOrderDetailsViewHooks, "orderService", orderService);
         setField(lineChangeoverNormsForOrderDetailsViewHooks, "changeoverNormsService", changeoverNormsService);
+        setField(lineChangeoverNormsForOrderDetailsViewHooks, "changeoverNormsSearchService", changeoverNormsSearchService);
         setField(lineChangeoverNormsForOrderDetailsViewHooks, "lineChangeoverNormsForOrdersService",
                 lineChangeoverNormsForOrdersService);
     }
@@ -371,12 +386,13 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         verify(lineChangeoverNormDurationField).setFieldValue(Mockito.any());
     }
 
-    // TODO lupo fix problem with test
-    @Ignore
     @Test
     public void shouldntUpdateRibbonState() {
         // given
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
+
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+
         given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
 
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
@@ -400,6 +416,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(lineChangeoverNorms.getItemByName("showLineChangeoverNormForGroup")).willReturn(showLineChangeoverNormForGroup);
         given(lineChangeoverNorms.getItemByName("showLineChangeoverNormForTechnology")).willReturn(
                 showLineChangeoverNormForTechnology);
+
+        given(productionLineField.getFieldValue()).willReturn(L_ID);
+        given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(productionLine);
 
         given(previousOrderField.getFieldValue()).willReturn(null);
         given(lineChangeoverNormField.getFieldValue()).willReturn(null);
@@ -418,12 +437,13 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         verify(showLineChangeoverNormForTechnology).setEnabled(false);
     }
 
-    // TODO lupo fix problem with test
-    @Ignore
     @Test
-    public void shouldUpdateRibbonState() {
+    public void shouldntUpdateRibbonStateIfSearchLineChangeoverNormIsNull() {
         // given
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
+
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+
         given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
 
         given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
@@ -448,12 +468,97 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(lineChangeoverNorms.getItemByName("showLineChangeoverNormForTechnology")).willReturn(
                 showLineChangeoverNormForTechnology);
 
-        given(previousOrderField.getFieldValue()).willReturn(L_FIELD_VALUE);
-        given(lineChangeoverNormField.getFieldValue()).willReturn(L_FIELD_VALUE);
-        given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_FIELD_VALUE);
-        given(technologyGroupNumberField.getFieldValue()).willReturn(L_FIELD_VALUE);
-        given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_FIELD_VALUE);
-        given(technologyNumberField.getFieldValue()).willReturn(L_FIELD_VALUE);
+        given(productionLineField.getFieldValue()).willReturn(L_ID);
+        given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(null);
+
+        given(previousOrderField.getFieldValue()).willReturn(null);
+        given(lineChangeoverNormField.getFieldValue()).willReturn(null);
+        given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER);
+        given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+        given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);
+        given(technologyNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(lineChangeoverNormsForOrdersService.getTechnologyGroupByNumberFromDB(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER))
+                .willReturn(null);
+        given(lineChangeoverNormsForOrdersService.getTechnologyGroupByNumberFromDB(L_TECHNOLOGY_GROUP_NUMBER)).willReturn(null);
+
+        given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER)).willReturn(
+                null);
+        given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_TECHNOLOGY_NUMBER)).willReturn(null);
+
+        given(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(null, null, null))
+                .willReturn(null);
+
+        given(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(null, null, null))
+                .willReturn(null);
+
+        // when
+        lineChangeoverNormsForOrderDetailsViewHooks.updateRibbonState(view);
+
+        // then
+        verify(showPreviousOrder).setEnabled(false);
+        verify(showBestFittingLineChangeoverNorm).setEnabled(false);
+        verify(showLineChangeoverNormForGroup).setEnabled(false);
+        verify(showLineChangeoverNormForTechnology).setEnabled(false);
+    }
+
+    @Test
+    public void shouldUpdateRibbonState() {
+        // given
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLineField);
+
+        given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderField);
+
+        given(view.getComponentByReference(LINE_CHANGEOVER_NORM)).willReturn(lineChangeoverNormField);
+
+        given(view.getComponentByReference("previousOrderTechnologyGroupNumber")).willReturn(
+                previousOrderTechnologyGroupNumberField);
+        given(view.getComponentByReference("technologyGroupNumber")).willReturn(technologyGroupNumberField);
+
+        given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
+        given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
+
+        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+
+        given(window.getRibbon()).willReturn(ribbon);
+
+        given(ribbon.getGroupByName("orders")).willReturn(orders);
+        given(ribbon.getGroupByName("lineChangeoverNorms")).willReturn(lineChangeoverNorms);
+
+        given(orders.getItemByName("showPreviousOrder")).willReturn(showPreviousOrder);
+
+        given(lineChangeoverNorms.getItemByName("showBestFittingLineChangeoverNorm")).willReturn(
+                showBestFittingLineChangeoverNorm);
+        given(lineChangeoverNorms.getItemByName("showLineChangeoverNormForGroup")).willReturn(showLineChangeoverNormForGroup);
+        given(lineChangeoverNorms.getItemByName("showLineChangeoverNormForTechnology")).willReturn(
+                showLineChangeoverNormForTechnology);
+
+        given(productionLineField.getFieldValue()).willReturn(L_ID);
+        given(lineChangeoverNormsForOrdersService.getProductionLineFromDB(L_ID)).willReturn(productionLine);
+
+        given(previousOrderField.getFieldValue()).willReturn(L_PREVIOUS_ORDER);
+        given(lineChangeoverNormField.getFieldValue()).willReturn(L_LINE_CHANGEOVER_NORM);
+        given(previousOrderTechnologyGroupNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER);
+        given(technologyGroupNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+        given(previousOrderTechnologyNumberField.getFieldValue()).willReturn(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);
+        given(technologyNumberField.getFieldValue()).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(lineChangeoverNormsForOrdersService.getTechnologyGroupByNumberFromDB(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER))
+                .willReturn(fromTechnologyGroup);
+        given(lineChangeoverNormsForOrdersService.getTechnologyGroupByNumberFromDB(L_TECHNOLOGY_GROUP_NUMBER)).willReturn(
+                toTechnologyGroup);
+
+        given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER)).willReturn(
+                fromTechnology);
+        given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_TECHNOLOGY_NUMBER)).willReturn(toTechnology);
+
+        given(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                        toTechnologyGroup, productionLine)).willReturn(lineChangeoverNormForGroup);
+
+        given(
+                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                        productionLine)).willReturn(lineChangeoverNormForTechnology);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.updateRibbonState(view);
