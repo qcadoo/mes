@@ -38,11 +38,11 @@
 		
 		<component type="grid" name="grid" reference="grid">
 			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom==null) ? 'N/A' : #stockAreasFrom['name']" />
+				expression="(#stockAreasFrom==null) ? 'N/A' : #stockAreasFrom['name']" link="true" />
 			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo==null) ? 'N/A' : #stockAreasTo['name']" />
+				expression="(#stockAreasTo==null) ? 'N/A' : #stockAreasTo['name']" link="true" />
 			<option type="column" name="product" fields="product"
-				expression="(#product==null) ? 'N/A' : #product['name']" />
+				expression="(#product==null) ? 'N/A' : #product['name']" link="true" />
 				
 			<option type="order" column="product" direction="asc" />
 			

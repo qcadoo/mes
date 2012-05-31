@@ -62,6 +62,7 @@
 
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
+		<model:model model="transferTemplate" resource="model/transferTemplate.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />
 		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
 		<model:model model="materialsInStockAreasComponent"
@@ -96,7 +97,7 @@
 			view="stockCorrectionList" />
 		<menu:menu-item name="transfers" category="materialFlow"
 			view="transferList" />
-		<menu:menu-item name="transfers" category="materialFlow"
+		<menu:menu-item name="transferTemplates" category="materialFlow"
 			view="transferTemplateList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
 			view="stockAreasList" />

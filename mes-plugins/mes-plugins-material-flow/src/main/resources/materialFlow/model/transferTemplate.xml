@@ -33,4 +33,8 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.TransferTemplateModelHooks"
+			method="checkIfOneOfStockAreasIsNotNull" />
+	</hooks>
 </model>
