@@ -183,8 +183,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             Entity toTechnologyGroup = lineChangeoverNormsForOrdersService
                     .getTechnologyGroupByNumberFromDB((String) technologyGroupNumberField.getFieldValue());
 
-            if (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
-                    toTechnologyGroup, productionLine) == null) {
+            if ((changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                    toTechnologyGroup, productionLine) == null)
+                    && (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
+                            fromTechnologyGroup, toTechnologyGroup, null) == null)) {
                 updateButtonState(showChangeoverNormForGroup, false);
             } else {
                 updateButtonState(showChangeoverNormForGroup, true);
@@ -200,8 +202,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             Entity toTechnology = lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB((String) technologyNumberField
                     .getFieldValue());
 
-            if (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
-                    productionLine) == null) {
+            if ((changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                    productionLine) == null)
+                    && (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
+                            toTechnology, null) == null)) {
                 updateButtonState(showChangeoverNormForTechnology, false);
             } else {
                 updateButtonState(showChangeoverNormForTechnology, true);
