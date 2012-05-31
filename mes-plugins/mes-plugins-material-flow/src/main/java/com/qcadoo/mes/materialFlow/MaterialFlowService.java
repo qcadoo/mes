@@ -49,7 +49,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
@@ -466,5 +468,30 @@ public class MaterialFlowService {
             stockAreasFrom.setEnabled(false);
             staff.setEnabled(false);
         }
+    }
+
+    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference("products");
+        List<FormComponent> formComponents = adlc.getFormComponents();
+
+        for (FormComponent formComponent : formComponents) {
+            Entity productQuantity = formComponent.getEntity();
+            formComponent.setEntity(productQuantity);
+        }
+
+        // if (productId == null) {
+        // return;
+        // }
+        // Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+        // FieldComponent unitField = null;
+        // String unit = product.getField("unit").toString();
+        // for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
+        // unitField = (FieldComponent) view.getComponentByReference(referenceName);
+        // if (unitField == null) {
+        // continue;
+        // }
+        // unitField.setFieldValue(unit);
+        // unitField.requestComponentUpdateState();
+        // }
     }
 }

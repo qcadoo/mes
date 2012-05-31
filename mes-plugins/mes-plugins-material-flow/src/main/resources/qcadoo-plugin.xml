@@ -60,6 +60,7 @@
 	<modules>
 		<localization:translation path="locales" />
 
+		<model:model model="productQuantity" resource="model/productQuantity.xml" />
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />
@@ -83,6 +84,12 @@
 				model="materialsInStockAreasComponent" joinField="stockAreas" />
 		</model:model-field>
 
+		<!--  just for multitransfer's sake. To attach some model to ADL  -->
+		<model:model-field plugin="materialFlow" model="transfer">
+			<model:hasMany persistent="false" name="products" plugin="materialFlow"
+				model="productQuantity" joinField="transfer" />
+		</model:model-field>
+		
 		<menu:menu-category name="materialFlow" />
 
 		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail"
