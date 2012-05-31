@@ -11,7 +11,7 @@
 			</group>
 			<group name="action">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
-					action="#{form}.performSave;" />
+					action="#{progressForDaysADL}.fireEvent(save); #{form}.performSave;" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
@@ -95,6 +95,9 @@
 										<listener event="onSelectedEntityChange"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="fillProducedField" />
+										<listener event="onSelectedEntityChange"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+											method="fillProgressForDays" />
 									</component>
 								</layoutElement>
 								<layoutElement column="2" row="1">
@@ -104,12 +107,43 @@
 								<layoutElement column="1" width="2" row="2">
 									<component type="awesomeDynamicList" name="progressForDay"
 										source="#{productionPerShiftOperation}.progressForDay"
-										reference="progressForDay">
-										<option type="hasBorder" value="false" />
+										reference="progressForDaysADL">
+										<option type="hasBorder" value="true" />
 										<option type="hasButtons" value="true" />
+										<listener event="save"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+											method="saveProgressForDays" />
 										<components>
-											<component type="input" name="day" field="day"
-												reference="day" />
+											<component type="gridLayout" name="plannedDayProgressGridLayout"
+												columns="3" rows="1">
+												<layoutElement column="1" row="1">
+													<component type="input" name="day" field="day"
+														reference="day" />
+												</layoutElement>
+												<layoutElement column="2" row="1" width="2">
+													<component type="awesomeDynamicList" name="dailyProgressADL"
+														source="dailyProgress" reference="dailyProgressADL">
+														<option type="hasBorder" value="true" />
+														<option type="hasButtons" value="true" />
+														<components>
+															<component type="gridLayout" name="dailyProgressGridLayout"
+																columns="2" rows="1">
+																<layoutElement column="1" row="1">
+																	<component type="lookup" name="shift" field="shift"
+																		reference="shift">
+																		<option type="expression" value="#name" />
+																		<option type="fieldCode" value="name" />
+																	</component>
+																</layoutElement>
+																<layoutElement column="2" row="1">
+																	<component type="input" name="quantity"
+																		field="quantity" reference="quantity" />
+																</layoutElement>
+															</component>
+														</components>
+													</component>
+												</layoutElement>
+											</component>
 										</components>
 									</component>
 								</layoutElement>

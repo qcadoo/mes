@@ -10,6 +10,8 @@
 
 		<text name="plannedProgressCorrectionComment" />
 
+		<!-- Not persistent fields below -->
+
 		<belongsTo persistent="false" name="technologyInstanceOperationComponent"
 			model="technologyInstanceOperationComponent" plugin="technologies" />
 			

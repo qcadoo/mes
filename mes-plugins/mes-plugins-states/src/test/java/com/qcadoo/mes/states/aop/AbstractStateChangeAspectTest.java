@@ -1,4 +1,4 @@
-package com.qcadoo.mes.states.service;
+package com.qcadoo.mes.states.aop;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -13,11 +13,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.internal.DefaultEntity;
 
-public class AbstractStateChangeServiceTest {
+public class AbstractStateChangeAspectTest {
 
     private static final String STATE_FIELD_NAME = "state";
 
@@ -40,7 +41,7 @@ public class AbstractStateChangeServiceTest {
     }
 
     @Aspect
-    public static class TestStateChangeService extends AbstractStateChangeService {
+    public static class TestStateChangeService extends AbstractStateChangeAspect {
 
         @Override
         protected String getStateFieldName() {
@@ -70,7 +71,7 @@ public class AbstractStateChangeServiceTest {
     }
 
     @Aspect
-    public static class AnotherStateChangeService extends AbstractStateChangeService {
+    public static class AnotherStateChangeService extends AbstractStateChangeAspect {
 
         @Override
         protected String getStateFieldName() {
