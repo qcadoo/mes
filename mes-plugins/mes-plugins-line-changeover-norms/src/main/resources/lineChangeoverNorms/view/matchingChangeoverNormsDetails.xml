@@ -120,7 +120,7 @@
 			  </layoutElement>
 		  </component>
 		  <listener event="matchingChangeoverNorm"
-					class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="getMatchingChangeoverNorm" />
+					class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="matchingChangeoverNorm" />
 		  <listener event="editChangeoverNorm"
 					class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="redirectToChangedNormsDetails" />
 	  </component>
