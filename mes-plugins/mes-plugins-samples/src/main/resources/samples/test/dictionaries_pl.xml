@@ -22,14 +22,14 @@
 	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Metr kwadratowy" />
 	<row NAME="reasonTypeOfChaningOrderState" ITEM="Nieobecność pracownika"
-		DESCRIPTION="" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Opóźnienia w dostawie surowców"
-		DESCRIPTION="" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Wadliwe surowce"
-		DESCRIPTION="" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Przeciążenia zasobów produkcji"
-		DESCRIPTION="" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Awaria maszyny"
-		DESCRIPTION="" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Inne" DESCRIPTION="" />
+        DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Opóźnienia w dostawie surowców"
+        DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Wadliwe surowce"
+        DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Przeciążenia zasobów produkcji"
+        DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Awaria maszyny"
+        DESCRIPTION="" />
+    <row NAME="reasonTypeOfChaningOrderState" ITEM="Inne" DESCRIPTION="" />
 </dictionaries>
