@@ -64,6 +64,7 @@ public class OrderDetailsListeners {
         FieldComponent toField = (FieldComponent) viewDefinitionState.getComponentByReference(toNameField);
         if (form.getEntityId() == null) {
             toField.setFieldValue(fromField.getFieldValue());
+            return;
         }
         Entity order = getOrderFromForm(form.getEntityId());
 
