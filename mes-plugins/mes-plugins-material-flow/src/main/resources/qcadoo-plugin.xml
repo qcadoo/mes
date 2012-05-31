@@ -96,6 +96,8 @@
 			view="stockCorrectionList" />
 		<menu:menu-item name="transfers" category="materialFlow"
 			view="transferList" />
+		<menu:menu-item name="transfers" category="materialFlow"
+			view="transferTemplateList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
 			view="stockAreasList" />
 		<menu:menu-item name="materialsInStockAreas" category="materialFlow"
@@ -105,6 +107,8 @@
 
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
+		<view:view resource="view/transferTemplateList.xml" />
+		<view:view resource="view/transferTemplateDetail.xml" />
 		<view:view resource="view/stockCorrectionList.xml" />
 		<view:view resource="view/stockCorrectionDetail.xml" />
 		<view:view resource="view/stockAreasList.xml" />
