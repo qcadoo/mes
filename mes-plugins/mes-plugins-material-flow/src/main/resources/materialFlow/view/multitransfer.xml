@@ -49,8 +49,7 @@
 								<component type="gridLayout" name="product" columns="4"
 									rows="1">
 									<layoutElement column="1" width="2" row="1">
-										<component type="lookup" name="product" field="product"
-											reference="product">
+										<component type="lookup" name="product" field="product">
 											<option type="searchable" value="name" />
 											<option type="orderable" value=" name" />
 											<option type="fullScreen" value="true" />
@@ -65,8 +64,7 @@
 										</component>
 									</layoutElement>
 									<layoutElement column="4" row="1">
-										<component type="input" name="quantityUNIT"
-											defaultEnabled="false" hasLabel="false" reference="quantityUNIT" />
+										<component type="input" name="unit" field="unit" defaultEnabled="false" hasLabel="false" />
 									</layoutElement>
 								</component>
 							</components>

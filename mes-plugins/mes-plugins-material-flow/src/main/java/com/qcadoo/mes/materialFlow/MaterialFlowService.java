@@ -476,22 +476,18 @@ public class MaterialFlowService {
 
         for (FormComponent formComponent : formComponents) {
             Entity productQuantity = formComponent.getEntity();
+            Entity product = productQuantity.getBelongsToField("product");
+            if (product != null) {
+                productQuantity.setField("unit", product.getStringField("unit"));
+            }
             formComponent.setEntity(productQuantity);
         }
-
-        // if (productId == null) {
-        // return;
-        // }
-        // Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
-        // FieldComponent unitField = null;
-        // String unit = product.getField("unit").toString();
-        // for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
-        // unitField = (FieldComponent) view.getComponentByReference(referenceName);
-        // if (unitField == null) {
-        // continue;
-        // }
-        // unitField.setFieldValue(unit);
-        // unitField.requestComponentUpdateState();
-        // }
     }
+    // private String getProductUnit(final Long productId) {
+    // if (productId == null) {
+    // return "";
+    // }
+    // Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+    // return product.getField("unit").toString();
+    // }
 }

@@ -31,6 +31,7 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="quantity" required="true" />
+		<string name="unit" />
 	</fields>
 	<hooks>
 	</hooks>
