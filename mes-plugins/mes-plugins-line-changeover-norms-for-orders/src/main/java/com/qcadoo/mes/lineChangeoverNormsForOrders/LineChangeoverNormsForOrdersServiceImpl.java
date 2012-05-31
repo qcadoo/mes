@@ -38,7 +38,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void fillOrderForm(ViewDefinitionState view, List<String> orderFields) {
+    public void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields) {
         FieldComponent orderField = (FieldComponent) view.getComponentByReference(orderFields.get(0));
 
         Long orderId = (Long) orderField.getFieldValue();

@@ -15,6 +15,6 @@ public interface StateChangeService {
      * @param stateChangeEntity
      *            entity which persist state change flow
      */
-    public void changeState(final Entity stateChangeEntity);
+    void changeState(final Entity stateChangeEntity);
 
 }

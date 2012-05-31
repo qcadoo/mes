@@ -61,7 +61,7 @@ public class TechnologyTreeValidationServiceImpl implements TechnologyTreeValida
     }
 
     @Override
-    public Map<String, Set<Entity>> checkConsumingTheSameProductFromManySubOperations(EntityTree technologyTree) {
+    public Map<String, Set<Entity>> checkConsumingTheSameProductFromManySubOperations(final EntityTree technologyTree) {
         Map<String, Set<Entity>> parentToProductsMap = Maps.newHashMap();
 
         if (technologyTree != null && !technologyTree.isEmpty()) {
