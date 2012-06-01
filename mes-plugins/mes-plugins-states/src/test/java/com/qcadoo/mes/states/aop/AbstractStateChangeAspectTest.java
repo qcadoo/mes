@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.Before;
@@ -13,9 +15,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.internal.DefaultEntity;
 
 public class AbstractStateChangeAspectTest {
@@ -103,12 +105,17 @@ public class AbstractStateChangeAspectTest {
     private Entity entity;
 
     @Mock
+    private Entity stateChangeEntity;
+
+    @Mock
     private DataDefinition dataDefinition;
 
     @Before
     public final void init() {
         MockitoAnnotations.initMocks(this);
         entity = new DefaultEntity(dataDefinition);
+        EntityList emptyEntityList = mockEmptyEntityList();
+        given(stateChangeEntity.getHasManyField("messages")).willReturn(emptyEntityList);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -160,7 +167,6 @@ public class AbstractStateChangeAspectTest {
     public final void shouldFireListenersAndChangeState() {
         // given
         TestStateChangeService testStateChangeService = new TestStateChangeService();
-        Entity stateChangeEntity = mock(Entity.class);
         given(stateChangeEntity.getBelongsToField(TARGET_ENTITY_FIELD)).willReturn(entity);
         stubStringField(stateChangeEntity, "targetState", STATE_FIELD_VALUE);
         stubEntityMock("", "");
@@ -177,7 +183,6 @@ public class AbstractStateChangeAspectTest {
     public final void shouldNotFireListenersForOtherStateChangeService() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        Entity stateChangeEntity = mock(Entity.class);
         given(stateChangeEntity.getBelongsToField(TARGET_ENTITY_FIELD)).willReturn(entity);
         stubStringField(stateChangeEntity, "targetState", STATE_FIELD_VALUE);
         stubEntityMock("", "");
@@ -188,6 +193,14 @@ public class AbstractStateChangeAspectTest {
         // then
         verify(stateChangeEntity, never()).setField("marked", true);
         assertEquals(STATE_FIELD_VALUE, entity.getField(STATE_FIELD_NAME));
+    }
+
+    @SuppressWarnings("unchecked")
+    private EntityList mockEmptyEntityList() {
+        EntityList entityList = mock(EntityList.class);
+        given(entityList.isEmpty()).willReturn(true);
+        given(entityList.iterator()).willReturn(Collections.EMPTY_LIST.iterator());
+        return entityList;
     }
 
     private void stubStringField(final Entity entity, final String fieldName, final String fieldValue) {
