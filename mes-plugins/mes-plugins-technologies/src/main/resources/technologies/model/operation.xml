@@ -44,6 +44,12 @@
 		<file name="attachment" />
 		<boolean name="areProductQuantitiesDivisible" default="false" />
 		<boolean name="isTjDivisible" default="false"/>
+		
+		<hasMany name="productInComponents" model="productComponent"
+			joinField="operationIn" cascade="nullify" />
+			
+		<hasMany name="productOutComponents" model="productComponent"
+			joinField="operationOut" cascade="nullify" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
