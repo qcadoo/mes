@@ -160,3 +160,23 @@ CREATE TABLE materialflow_transfertemplate
 );
 
 -- end
+
+
+-- Table: materialflow_resource
+-- changed: 01.06.2012
+
+CREATE TABLE materialflow_resource
+(
+  id bigint NOT NULL,
+  stockareas_id bigint,
+  product_id bigint,
+  quantity numeric(10,3),
+  "time" timestamp without time zone,
+  CONSTRAINT materialflow_resource_pkey PRIMARY KEY (id ),
+  CONSTRAINT resource_stockareas_fkey FOREIGN KEY (stockareas_id)
+      REFERENCES materialflow_stockareas (id) DEFERRABLE,
+  CONSTRAINT resource_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+
+-- end
