@@ -60,8 +60,10 @@
 	<modules>
 		<localization:translation path="locales" />
 
+		<model:model model="productQuantity" resource="model/productQuantity.xml" />
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
 		<model:model model="transfer" resource="model/transfer.xml" />
+		<model:model model="transferTemplate" resource="model/transferTemplate.xml" />
 		<model:model model="stockAreas" resource="model/stockAreas.xml" />
 		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
 		<model:model model="materialsInStockAreasComponent"
@@ -83,6 +85,12 @@
 				model="materialsInStockAreasComponent" joinField="stockAreas" />
 		</model:model-field>
 
+		<!--  just for multitransfer's sake. To attach some model to ADL  -->
+		<model:model-field plugin="materialFlow" model="transfer">
+			<model:hasMany persistent="false" name="products" plugin="materialFlow"
+				model="productQuantity" joinField="transfer" />
+		</model:model-field>
+		
 		<menu:menu-category name="materialFlow" />
 
 		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail"
@@ -96,6 +104,8 @@
 			view="stockCorrectionList" />
 		<menu:menu-item name="transfers" category="materialFlow"
 			view="transferList" />
+		<menu:menu-item name="transferTemplates" category="materialFlow"
+			view="transferTemplateList" />
 		<menu:menu-item name="stockAreass" category="materialFlow"
 			view="stockAreasList" />
 		<menu:menu-item name="materialsInStockAreas" category="materialFlow"
@@ -108,6 +118,8 @@
 		<view:view resource="view/multitransfer.xml" />
 		<view:view resource="view/transferList.xml" />
 		<view:view resource="view/transferDetail.xml" />
+		<view:view resource="view/transferTemplateList.xml" />
+		<view:view resource="view/transferTemplateDetail.xml" />
 		<view:view resource="view/stockCorrectionList.xml" />
 		<view:view resource="view/stockCorrectionDetail.xml" />
 		<view:view resource="view/stockAreasList.xml" />

@@ -30,7 +30,7 @@ ALTER TABLE basic_parameter ALTER COLUMN earliedEffectiveDateTo TYPE integer;
 -- end
 
 
--- table: orders_order
+-- Table: orders_order
 -- changed: 17.05.2012
 
 ALTER TABLE orders_order ADD COLUMN correcteddatefrom timestamp without time zone;
@@ -43,7 +43,7 @@ ALTER TABLE orders_order ADD COLUMN commentreasontypecorrectiondateto character 
 -- end
 
 
--- table: orders_logging
+-- Table: orders_logging
 -- changed: 21.05.2012
 
 ALTER TABLE orders_logging ADD COLUMN reasontype character varying(255);
@@ -52,7 +52,7 @@ ALTER TABLE orders_logging ADD COLUMN "comment" character varying(255);
 -- end
 
 
--- table: linechangeovernorms_linechangeovernorms
+-- Table: linechangeovernorms_linechangeovernorms
 -- changed: 25.05.2012
 
 CREATE TABLE linechangeovernorms_linechangeovernorms
@@ -84,7 +84,7 @@ ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
 ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
 ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
--- table: orders_order
+-- Table: orders_order
 -- changed: 25.05.2012
 
 ALTER TABLE orders_order ALTER COLUMN ownlinechangeover  TYPE boolean;
@@ -94,9 +94,8 @@ ALTER TABLE orders_order ALTER COLUMN ownlinechangeoverduration TYPE integer;
 
 -- end
 
--- Table: productionpershift_productionpershift
 
--- DROP TABLE productionpershift_productionpershift;
+-- table: productionpershift_productionpershift
 
 CREATE TABLE productionpershift_productionpershift
 (
@@ -112,9 +111,8 @@ CREATE TABLE productionpershift_productionpershift
       REFERENCES orders_order (id) DEFERRABLE
 );
 
--- Table: productionpershift_progressforday
 
--- DROP TABLE productionpershift_progressforday;
+-- Table: productionpershift_progressforday
 
 CREATE TABLE productionpershift_progressforday
 (
@@ -126,9 +124,8 @@ CREATE TABLE productionpershift_progressforday
       REFERENCES technologies_technologyinstanceoperationcomponent (id) DEFERRABLE
 );
 
--- Table: productionpershift_dailyprogress
 
--- DROP TABLE productionpershift_dailyprogress;
+-- Table: productionpershift_dailyprogress
 
 CREATE TABLE productionpershift_dailyprogress
 (
@@ -142,3 +139,24 @@ CREATE TABLE productionpershift_dailyprogress
   CONSTRAINT dailyprogress_progressforday_fkey FOREIGN KEY (progressforday_id)
       REFERENCES productionpershift_progressforday (id) DEFERRABLE
 );
+
+
+-- Table: materialflow_transfertemplate
+-- changed: 31.05.2012
+
+CREATE TABLE materialflow_transfertemplate
+(
+  id bigint NOT NULL,
+  stockareasfrom_id bigint,
+  stockareasto_id bigint,
+  product_id bigint,
+  CONSTRAINT materialflow_transfertemplate_pkey PRIMARY KEY (id ),
+  CONSTRAINT transfertemplate_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT transfertemplate_stockareasto_fkey FOREIGN KEY (stockareasto_id)
+      REFERENCES materialflow_stockareas (id) DEFERRABLE,
+  CONSTRAINT transfertemplate_stockareasfrom_fkey FOREIGN KEY (stockareasfrom_id)
+      REFERENCES materialflow_stockareas (id) DEFERRABLE
+);
+
+-- end

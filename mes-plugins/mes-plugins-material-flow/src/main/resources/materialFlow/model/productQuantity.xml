@@ -24,32 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="transfer" 
+<model name="productQuantity" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<enum name="type" values="Transport,Consumption,Production" />
-		<datetime name="time" />
-		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="quantity" required="true" />
-		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="transformationsConsumption" plugin="materialFlow"
-			model="transformations" />
-		<belongsTo name="transformationsProduction" plugin="materialFlow"
-			model="transformations" />
+		<string name="unit" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="validateTransfer" />
-		<onSave
-			class="com.qcadoo.mes.materialFlow.hooks.MaterialFlowTransferModelHooks"
-			method="copyProductionOrConsumptionDataFromBelongingTransformation" />
 	</hooks>
-	<identifier expression="#number" />
+	<identifier expression="#product['number']" />
 </model>

@@ -1,29 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.6
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="multitransfer" modelName="transfer" menuAccessible="true">
@@ -31,78 +6,76 @@
 		<ribbon>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="grid" reference="grid" hasBorders="false"
-				columns="15" rows="7">
-				<layoutElement column="1" row="1" width="5">
-					<component type="input" name="number" field="number" reference="number" 
-						hasDescription="true">
-						<option type="alignment" value="right" />
+			<component type="gridLayout" name="grid" reference="grid"
+				hasBorders="false" columns="2" rows="7">
+				<layoutElement column="1" row="1">
+					<component type="select" name="type" field="type"
+						reference="type">
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="disableStockAreaFieldForParticularTransferType" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2" width="5">
-					<component type="select" name="type" field="type" reference="type">
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
-							method="disableStockAreaFieldForParticularTransferType" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3" width="5">
-					<component type="calendar" name="time" field="time" reference="time">
+				<layoutElement column="1" row="2">
+					<component type="calendar" name="time" field="time"
+						reference="time">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4" width="5">
-					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom" reference="stockAreasFrom">
+				<layoutElement column="1" row="3">
+					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom"
+						reference="stockAreasFrom">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="5" width="5">
-					<component type="lookup" name="stockAreasTo" field="stockAreasTo" reference="stockAreasTo">
+				<layoutElement column="1" row="4">
+					<component type="lookup" name="stockAreasTo" field="stockAreasTo"
+						reference="stockAreasTo">
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="6" width="5">
-					<component type="lookup" name="product" field="product" reference="product">
-						<option type="searchable" value="name" />
-						<option type="orderable" value=" name" />
-						<option type="fullScreen" value="true" />
-						<option type="expression" value="#name" />
-						<option type="fieldCode" value="name" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="generateNumberForTransfer" />
+				<layoutElement column="1" row="5">
+					<component type="borderLayout" name="plannedProgress">
+						<component type="awesomeDynamicList" name="products"
+							source="#{form}.products" reference="products">
+							<option type="hasBorder" value="false" />
+							<option type="hasButtons" value="true" />
+							<components>
+								<component type="gridLayout" name="product" columns="4"
+									rows="1">
+									<layoutElement column="1" width="2" row="1">
+										<component type="lookup" name="product" field="product">
+											<option type="searchable" value="name" />
+											<option type="orderable" value=" name" />
+											<option type="fullScreen" value="true" />
+											<option type="expression" value="#name" />
+											<option type="fieldCode" value="name" />
+											<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitsInADL" />
+										</component>
+									</layoutElement>
+									<layoutElement column="3" row="1">
+										<component type="input" name="quantity" field="quantity">
+											<option type="alignment" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="4" row="1">
+										<component type="input" name="unit" field="unit" defaultEnabled="false" hasLabel="false" />
+									</layoutElement>
+								</component>
+							</components>
+						</component>
+						<option type="label" value="products" />
 					</component>
-				</layoutElement>
-				<layoutElement column="1" row="7" width="5">
-					<component type="input" name="quantity" field="quantity">
-						<option type="alignment" value="right" />
-					</component>
-					<component type="lookup" name="staff" field="staff" reference="staff">
-						<option type="searchable" value="name" />
-						<option type="orderable" value=" name" />
-						<option type="fullScreen" value="true" />
-						<option type="expression" value="#name" />
-						<option type="fieldCode" value="name" />
-					</component>
-				</layoutElement>
-				<layoutElement column="6" row="7" width="1">
-					<component type="input" name="quantityUNIT"
-						defaultEnabled="false" hasLabel="false" reference="quantityUNIT" />
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="checkIfTransferHasTransformation" />
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="fillUnitFieldValue" />
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="disableStockAreaFieldForParticularTransferType" />
 	</hooks>
 </view>
