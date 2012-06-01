@@ -49,9 +49,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
@@ -226,15 +224,20 @@ public class MaterialFlowService {
         }
         if (productState.getFieldValue() != null) {
             Entity product = getAreaById((Long) productState.getFieldValue());
-            if (product != null) {
-                String numberValue = product.getField(L_NUMBER)
-                        + "-"
-                        + numberGeneratorService
-                                .generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, tableToGenerateNumber, 3);
-                number.setFieldValue(numberValue);
-            }
+            number.setFieldValue(generateNumberFromProduct(product, tableToGenerateNumber));
         }
         number.requestComponentUpdateState();
+    }
+
+    public String generateNumberFromProduct(final Entity product, String model) {
+        String number = "";
+
+        if (product != null) {
+            number = product.getField(L_NUMBER) + "-"
+                    + numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+        }
+
+        return number;
     }
 
     private Entity getAreaById(final Long productId) {
@@ -383,19 +386,24 @@ public class MaterialFlowService {
         FieldComponent fromStockArea = (FieldComponent) state.getComponentByReference(L_STOCK_AREAS_FROM);
 
         if (type.compareTo("Consumption") == 0) {
+            fromStockArea.setEnabled(true);
+            fromStockArea.setRequired(true);
+            toStockArea.setRequired(false);
             toStockArea.setEnabled(false);
             toStockArea.setFieldValue("");
-            fromStockArea.setEnabled(true);
-            toStockArea.setRequired(false);
         } else if (type.compareTo("Production") == 0) {
-            fromStockArea.setEnabled(false);
-            fromStockArea.setFieldValue("");
             toStockArea.setEnabled(true);
             toStockArea.setRequired(true);
+            fromStockArea.setRequired(false);
+            fromStockArea.setEnabled(false);
+            fromStockArea.setFieldValue("");
         } else {
             toStockArea.setEnabled(true);
+            toStockArea.setRequired(true);
+            fromStockArea.setRequired(true);
             fromStockArea.setEnabled(true);
         }
+
         toStockArea.requestComponentUpdateState();
         fromStockArea.requestComponentUpdateState();
     }
@@ -469,25 +477,4 @@ public class MaterialFlowService {
             staff.setEnabled(false);
         }
     }
-
-    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference("products");
-        List<FormComponent> formComponents = adlc.getFormComponents();
-
-        for (FormComponent formComponent : formComponents) {
-            Entity productQuantity = formComponent.getEntity();
-            Entity product = productQuantity.getBelongsToField("product");
-            if (product != null) {
-                productQuantity.setField("unit", product.getStringField("unit"));
-            }
-            formComponent.setEntity(productQuantity);
-        }
-    }
-    // private String getProductUnit(final Long productId) {
-    // if (productId == null) {
-    // return "";
-    // }
-    // Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
-    // return product.getField("unit").toString();
-    // }
 }
