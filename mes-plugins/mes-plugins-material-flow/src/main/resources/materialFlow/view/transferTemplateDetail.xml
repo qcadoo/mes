@@ -35,10 +35,10 @@
 			<template name="standardFormTemplate" />
 		</ribbon>
 		
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="grid" reference="grid"
-				hasBorders="false" columns="3" rows="3">
-				<layoutElement column="1" row="1">
+		<component type="form" name="transferTemplateForm" reference="form">
+			<component type="gridLayout" name="transferTemplateGridLayout"
+				hasBorders="false" columns="15" rows="3">
+				<layoutElement column="1" row="1" width="5">
 					<component type="lookup" name="stockAreasFrom" field="stockAreasFrom"
 						reference="stockAreasFrom">
 						<option type="searchable" value="name" />
@@ -48,7 +48,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
+				<layoutElement column="1" row="2" width="5">
 					<component type="lookup" name="stockAreasTo" field="stockAreasTo"
 						reference="stockAreasTo">
 						<option type="searchable" value="name" />
@@ -58,7 +58,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="3" width="5">
 					<component type="lookup" name="product" field="product"
 						reference="product">
 						<option type="searchable" value="name" />
