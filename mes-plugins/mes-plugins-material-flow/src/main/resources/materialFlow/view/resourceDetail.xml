@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="resourceDetail" 
+	modelName="resource">
+	
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+
+		<component type="form" name="resourceForm" reference="form">
+			<component type="gridLayout" name="resourceGridLayout"
+				hasBorders="false" columns="15" rows="4">
+				<layoutElement column="1" row="1" width="5">
+					<component type="lookup" name="stockAreas" field="stockAreas"
+						reference="stockAreas">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" width="5">
+					<component type="lookup" name="product" field="product"
+						reference="product">
+						<option type="searchable" value="name" />
+						<option type="orderable" value=" name" />
+						<option type="fullScreen" value="true" />
+						<option type="expression" value="#name" />
+						<option type="fieldCode" value="name" />
+						
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3" width="5">
+					<component type="input" name="quantity" field="quantity"
+						reference="quantity">
+						<option type="alignment" value="right" />
+					</component>
+				</layoutElement>
+				<layoutElement column="6" row="3" width="1">
+					<component type="input" name="quantityUNIT" reference="quantityUNIT"
+						defaultEnabled="false" hasLabel="false" />
+				</layoutElement>
+				<layoutElement column="1" row="4" width="5">
+					<component type="calendar" name="time" field="time"
+						reference="time">
+						<option type="withTimePicker" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+
+			<option type="header" value="true" />
+		</component>
+
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="fillUnitFieldValue" />
+	</hooks>
+</view>
