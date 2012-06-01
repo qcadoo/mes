@@ -78,14 +78,15 @@ CREATE TABLE linechangeovernorms_linechangeovernorms
   CONSTRAINT linechangeovernorms_totechnologygroup_fkey FOREIGN KEY (totechnologygroup_id)
       REFERENCES technologies_technologygroup (id) DEFERRABLE
 );
-ALTER TABLE linechangeovernorms_linechangeovernorms OWNER TO postgres;
 
+-- end
 
-ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
-ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
 -- Table: orders_order
 -- changed: 25.05.2012
+
+ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
+ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
 ALTER TABLE orders_order ALTER COLUMN ownlinechangeover  TYPE boolean;
 ALTER TABLE orders_order ALTER COLUMN ownlinechangeover SET DEFAULT false;
@@ -95,7 +96,7 @@ ALTER TABLE orders_order ALTER COLUMN ownlinechangeoverduration TYPE integer;
 -- end
 
 
--- table: productionpershift_productionpershift
+-- Table: productionpershift_productionpershift
 
 CREATE TABLE productionpershift_productionpershift
 (
@@ -150,7 +151,7 @@ CREATE TABLE materialflow_transfertemplate
   stockareasfrom_id bigint,
   stockareasto_id bigint,
   product_id bigint,
-  CONSTRAINT materialflow_transfertemplate_pkey PRIMARY KEY (id ),
+  CONSTRAINT materialflow_transfertemplate_pkey PRIMARY KEY (id),
   CONSTRAINT transfertemplate_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT transfertemplate_stockareasto_fkey FOREIGN KEY (stockareasto_id)
@@ -172,10 +173,32 @@ CREATE TABLE materialflow_resource
   product_id bigint,
   quantity numeric(10,3),
   "time" timestamp without time zone,
-  CONSTRAINT materialflow_resource_pkey PRIMARY KEY (id ),
+  CONSTRAINT materialflow_resource_pkey PRIMARY KEY (id),
   CONSTRAINT resource_stockareas_fkey FOREIGN KEY (stockareas_id)
       REFERENCES materialflow_stockareas (id) DEFERRABLE,
   CONSTRAINT resource_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: technologies_productcomponent
+-- changed: 01.06.2012
+
+CREATE TABLE technologies_productcomponent
+(
+  id bigint NOT NULL,
+  product_id bigint,
+  operationin_id bigint,
+  operationout_id bigint,
+  active boolean DEFAULT true,
+  CONSTRAINT technologies_productcomponent_pkey PRIMARY KEY (id ),
+  CONSTRAINT productcomponent_operationin_fkey FOREIGN KEY (operationin_id)
+      REFERENCES technologies_operation (id) DEFERRABLE,
+  CONSTRAINT productcomponent_operationout_fkey FOREIGN KEY (operationout_id)
+      REFERENCES technologies_operation (id) DEFERRABLE,
+  CONSTRAINT productcomponent_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
 
