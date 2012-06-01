@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -15,6 +16,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -23,7 +25,7 @@ public class ProductionPerShiftListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TechnologyService technologyService;
+    private ProductionPerShiftDetailsHooks detailsHooks;
 
     public void redirectToProductionPerShift(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
@@ -42,7 +44,7 @@ public class ProductionPerShiftListeners {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
-        String url = "../page/productionPerShift/productionPerShiftView.html";
+        String url = "../page/productionPerShift/productionPerShiftDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 
@@ -68,23 +70,7 @@ public class ProductionPerShiftListeners {
     }
 
     public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        fillProducedField(viewState);
-    }
-
-    private void fillProducedField(final ViewDefinitionState viewState) {
-        Entity tioc = getTiocFromOperationLookup(viewState);
-        String producedProduct = null;
-
-        if (tioc != null) {
-            Entity toc = tioc.getBelongsToField("technologyOperationComponent");
-
-            Entity prodComp = technologyService.getMainOutputProductComponent(toc);
-            Entity prod = prodComp.getBelongsToField("product");
-            producedProduct = prod.getStringField("name");
-        }
-
-        ComponentState producesInput = viewState.getComponentByReference("produces");
-        producesInput.setFieldValue(producedProduct);
+        detailsHooks.fillProducedField(viewState);
     }
 
     /**
@@ -101,7 +87,7 @@ public class ProductionPerShiftListeners {
     private void fillProgressForDays(final ViewDefinitionState viewState) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
-        Entity tioc = getTiocFromOperationLookup(viewState);
+        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
 
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
@@ -125,7 +111,7 @@ public class ProductionPerShiftListeners {
                 .getComponentByReference("progressForDaysADL");
         @SuppressWarnings("unchecked")
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
-        Entity tioc = getTiocFromOperationLookup(viewState);
+        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
         if (tioc != null) {
             tioc.setField("progressForDay", progressForDays);
             tioc.getDataDefinition().save(tioc);
@@ -139,17 +125,36 @@ public class ProductionPerShiftListeners {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
         progressForDaysADL.setFieldValue(null);
-        fillProducedField(viewState);
+        detailsHooks.fillProducedField(viewState);
         fillProgressForDays(viewState);
     }
 
-    private Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
-        ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");
-        Long id = (Long) operationLookup.getFieldValue();
-        Entity tioc = null;
-        if (id != null) {
-            tioc = dataDefinitionService.get("technologies", "technologyInstanceOperationComponent").get(id);
-        }
-        return tioc;
+    public void addPlannedProgresTypeForTechInstOperComp(final ViewDefinitionState viewState,
+            final ComponentState componentState, final String[] args) {
+        Entity operation = getOperationFromLookup(viewState);
+        String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType")).getFieldValue()
+                .toString();
+        operation.setField("plannedProgressType", plannedProgressType);
+        operation.getDataDefinition().save(operation);
     }
+
+    public void changeView(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        detailsHooks.disablePlannedProgressTypeForPendingOrder(viewState);
+        detailsHooks.disableReasonOfCorrection(viewState);
+    }
+
+    public void fillADL(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        DataDefinition ppsDD = dataDefinitionService.get("productionPerShift", "productionPerShift");
+        Entity pps = getPps(detailsHooks.getOrderFromLookup(viewState), ppsDD);
+    }
+
+    private Entity getOperationFromLookup(final ViewDefinitionState view) {
+        ComponentState lookup = view.getComponentByReference("productionPerShiftOperation");
+        if (!(lookup.getFieldValue() instanceof Long)) {
+            return null;
+        }
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).get(
+                (Long) lookup.getFieldValue());
+    }
+
 }

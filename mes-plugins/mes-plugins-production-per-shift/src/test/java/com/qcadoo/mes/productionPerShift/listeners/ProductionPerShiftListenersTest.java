@@ -12,10 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -27,19 +24,10 @@ public class ProductionPerShiftListenersTest {
     private ViewDefinitionState viewState;
 
     @Mock
-    private ComponentState componentState, lookup, producesInput;
+    private ComponentState componentState;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private DataDefinition ddTIOC;
-
-    @Mock
-    private Entity tioc, toc, prodComp, prod;
-
-    @Mock
-    private TechnologyService technologyService;
 
     @Before
     public void init() {
@@ -48,7 +36,6 @@ public class ProductionPerShiftListenersTest {
         productionPerShiftListeners = new ProductionPerShiftListeners();
 
         ReflectionTestUtils.setField(productionPerShiftListeners, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(productionPerShiftListeners, "technologyService", technologyService);
     }
 
     @Test
@@ -56,7 +43,7 @@ public class ProductionPerShiftListenersTest {
         // given
         Long id = 5L;
         given(componentState.getFieldValue()).willReturn(id);
-        String url = "../page/productionPerShift/productionPerShiftView.html";
+        String url = "../page/productionPerShift/productionPerShiftDetails.html";
 
         // when
         productionPerShiftListeners.redirect(viewState, id);
@@ -68,28 +55,4 @@ public class ProductionPerShiftListenersTest {
         verify(viewState).redirectTo(url, false, true, parameters);
     }
 
-    @Test
-    public void shouldFillProducesFieldAfterSelection() {
-        // given
-        Long id = 3L;
-        String prodName = "asdf";
-
-        given(viewState.getComponentByReference("productionPerShiftOperation")).willReturn(lookup);
-        given(viewState.getComponentByReference("produces")).willReturn(producesInput);
-
-        given(lookup.getFieldValue()).willReturn(id);
-        given(dataDefinitionService.get("technologies", "technologyInstanceOperationComponent")).willReturn(ddTIOC);
-        given(ddTIOC.get(id)).willReturn(tioc);
-
-        given(tioc.getBelongsToField("technologyOperationComponent")).willReturn(toc);
-        given(technologyService.getMainOutputProductComponent(toc)).willReturn(prodComp);
-        given(prodComp.getBelongsToField("product")).willReturn(prod);
-        given(prod.getStringField("name")).willReturn(prodName);
-
-        // when
-        productionPerShiftListeners.fillProducedField(viewState, componentState, null);
-
-        // then
-        verify(producesInput).setFieldValue(prodName);
-    }
 }

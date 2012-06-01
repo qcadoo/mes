@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productionPerShiftView" modelPlugin="productionPerShift"
+	name="productionPerShiftDetails" modelPlugin="productionPerShift"
 	modelName="productionPerShift">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group name="navigation">
-				<bigButton name="back" action="#{window}.performBack;"
-					icon="backIcon24.png" />
-			</group>
-			<group name="action">
-				<bigButton name="save" icon="saveIcon24.png" state="enabled"
-					action="#{progressForDaysADL}.fireEvent(save); #{form}.performSave;" />
-			</group>
+			<template name="standardFormTemplate"
+				includeItems="navigation.back,actions.save,actions.refresh" />
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
 			<component type="lookup" name="order" field="#{form}.order"
@@ -43,12 +37,27 @@
 								<layoutElement column="1" row="1">
 									<component type="select" name="plannedProgressType"
 										field="#{form}.plannedProgressType" reference="plannedProgressType">
+										<listener event="onChange" method="changeView" class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
-									<component type="calendar" name="orderStartDate"
-										reference="orderStartDate" defaultEnabled="false">
-										<option type="withTimePicker" value="true" />
+									<component type="borderLayout" name="orderStartDate">
+										<component type="gridLayout" name="orderStartDateGridLayout"
+											columns="1" rows="2">
+											<layoutElement column="1" row="1">
+												<component type="calendar" name="orderPlannedStartDate"
+													reference="orderPlannedStartDate" defaultEnabled="false">
+													<option type="withTimePicker" value="true" />
+												</component>
+											</layoutElement>
+											<layoutElement column="1" row="2">
+												<component type="calendar" name="orderCorrectedStartDate"
+													reference="orderCorrectedStartDate" defaultEnabled="false">
+													<option type="withTimePicker" value="true" />
+												</component>
+											</layoutElement>
+										</component>
+										<option type="label" value="orderStartDateLabel" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
@@ -59,7 +68,7 @@
 							</component>
 							<option type="label" value="plannedProgressLabel" />
 						</component>
-						<component type="borderLayout" name="reasonOfCorrection">
+						<component type="borderLayout" name="reasonOfCorrection" reference="reasonOfCorrection">
 							<component type="gridLayout" name="plannedProgressGridLayout"
 								columns="1" rows="3">
 								<layoutElement column="1" row="1">
@@ -116,7 +125,7 @@
 										<components>
 											<component type="gridLayout" name="plannedDayProgressGridLayout"
 												columns="3" rows="1">
-												<layoutElement column="1" row="1">
+												<layoutElement column="1" row="1" >
 													<component type="input" name="day" field="day"
 														reference="day" />
 												</layoutElement>
@@ -127,17 +136,24 @@
 														<option type="hasButtons" value="true" />
 														<components>
 															<component type="gridLayout" name="dailyProgressGridLayout"
-																columns="2" rows="1">
-																<layoutElement column="1" row="1">
+																columns="5" rows="1">
+																<layoutElement column="1" row="1" width="2">
 																	<component type="lookup" name="shift" field="shift"
 																		reference="shift">
 																		<option type="expression" value="#name" />
 																		<option type="fieldCode" value="name" />
 																	</component>
 																</layoutElement>
-																<layoutElement column="2" row="1">
+																<layoutElement column="3" row="1" width="2">
 																	<component type="input" name="quantity"
 																		field="quantity" reference="quantity" />
+																</layoutElement>
+																<layoutElement column="5" row="1" >
+																	<component type="input" name="unit"
+																		 reference="unit"
+																		hasLabel="false"  >
+																		 <option type="textRepresentationOnDisabled" value="true" />
+																	</component>
 																</layoutElement>
 															</component>
 														</components>
@@ -156,4 +172,21 @@
 		</windowTab>
 		<option type="header" value="false" />
 	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="addRootForOperation" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="disablePlannedProgressTypeForPendingOrder" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="fillProducedField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="setOrderStartDate" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="disableReasonOfCorrection" />
+	</hooks>
 </view>
