@@ -72,7 +72,7 @@
 				<layoutElement column="1" row="1">
 					<component type="borderLayout" name="productInComponentBorderLayout">
 						<component type="awesomeDynamicList" name="productInComponents"
-							source="productInComponents" reference="productInComponents">
+							source="#{form}.productInComponents" reference="productInComponents">
 							<components>
 								<component type="gridLayout" name="productInComponentGridLayout" 
 									columns="4" rows="1">
@@ -99,7 +99,7 @@
 				<layoutElement column="2" row="1">
 					<component type="borderLayout" name="productOutComponentsBorderLayout">
 						<component type="awesomeDynamicList" name="productOutComponents"
-							source="productOutComponents" reference="productOutComponents">
+							source="#{form}.productOutComponents" reference="productOutComponents">
 							<components>
 								<component type="gridLayout" name="productOutComponentGridLayout" 
 									columns="4" rows="1">
