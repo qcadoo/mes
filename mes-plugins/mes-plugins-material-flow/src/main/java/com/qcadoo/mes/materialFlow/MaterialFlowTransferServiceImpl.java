@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferService {
@@ -39,5 +41,12 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
         transfer.setField("time", time);
 
         checkArgument(dd.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
+    }
+
+    @Override
+    public List<Entity> getTransferTemplates(final Entity stockAreaFrom, final Entity stockAreaTo) {
+        return dataDefinitionService.get("materialFlow", "transferTemplate").find()
+                .add(SearchRestrictions.belongsTo("stockAreasFrom", stockAreaFrom))
+                .add(SearchRestrictions.belongsTo("stockAreasTo", stockAreaTo)).list().getEntities();
     }
 }
