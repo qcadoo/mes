@@ -24,13 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="message" 
+<model name="resource" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<enum name="type" values="01success,02info,03failure" required="true"/>
-		<string name="translationKey" required="true" />
-		<string name="translationArgs" />
+		<belongsTo name="stockAreas" model="stockAreas" plugin="materialFlow"
+			required="true" />
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
+		<decimal name="quantity" required="true" />
+		<datetime name="time" required="true" />
 	</fields>
 	<hooks />
 </model>

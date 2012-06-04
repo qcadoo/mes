@@ -61,6 +61,7 @@
 	<modules>
 		<localization:translation path="locales" />
 
+		<model:model model="productComponent" resource="model/productComponent.xml" />
 		<model:model model="operation" resource="model/operation.xml" />
 		<model:model model="operationProductOutComponent"
 			resource="model/operationProductOutComponent.xml" />
@@ -87,7 +88,7 @@
 				plugin="technologies" model="operationProductOutComponent"
 				joinField="product" cascade="nullify" />
 		</model:model-field>
-
+		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="technologies" plugin="technologies"
 				model="technology" joinField="product" cascade="delete" />

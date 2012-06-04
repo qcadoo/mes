@@ -34,7 +34,8 @@
 			required="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.TransferTemplateModelHooks"
+		<validatesWith
+			class="com.qcadoo.mes.materialFlow.hooks.TransferTemplateModelHooks"
 			method="checkIfOneOfStockAreasIsNotNull" />
 	</hooks>
 </model>

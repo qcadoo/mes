@@ -26,36 +26,36 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="transferTemplateList" 
-	modelName="transferTemplate"
+	name="resourceList" 
+	modelName="resource" 
 	menuAccessible="true">
-	
+
 	<component type="window" name="window">
-	
+
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
-		
-		<component type="grid" name="transferTemplateGrid" reference="grid">
-			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom == null) ? 'N/A' : #stockAreasFrom['name']" link="true" />
-			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo == null) ? 'N/A' : #stockAreasTo['name']" link="true" />
+
+		<component type="grid" name="resourceGrid" reference="grid">
+			<option type="column" name="stockAreas" fields="stockAreas"
+				expression="(#stockAreas == null) ? 'N/A' : #stockAreas['name']" link="true" />
 			<option type="column" name="product" fields="product"
 				expression="(#product == null) ? 'N/A' : #product['name']" link="true" />
-				
+			<option type="column" name="quantity" fields="quantity" />
+			<option type="column" name="time" fields="time" />
+
 			<option type="order" column="product" direction="asc" />
-			
-			<option type="searchable" value="stockAreasFrom,stockAreasTo,product" />
-			<option type="orderable" value="stockAreasFrom,stockAreasTo,product" />
-			
-			<option type="correspondingView" value="materialFlow/transferTemplateDetail" />
+
+			<option type="searchable" value="stockAreas,product,quantity,time" />
+			<option type="orderable" value="stockAreas,product,quantity,time" />
+
+			<option type="correspondingView" value="materialFlow/resourceDetail" />
 			<option type="correspondingComponent" value="form" />
-			
+
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
-		
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>

@@ -24,13 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="message" 
+<model name="productComponent" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<enum name="type" values="01success,02info,03failure" required="true"/>
-		<string name="translationKey" required="true" />
-		<string name="translationArgs" />
+		<belongsTo name="product" plugin="basic" model="product" />
+		
+		<belongsTo name="operationIn" model="operation" />
+		<belongsTo name="operationOut" model="operation" />
 	</fields>
 	<hooks />
 </model>
