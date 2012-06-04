@@ -10,6 +10,13 @@ import com.qcadoo.model.api.Entity;
 public interface StateChangeService {
 
     /**
+     * create new state change entity
+     * 
+     * @return stateChangeEntity
+     */
+    Entity createStateChangeEntity();
+
+    /**
      * Perform state change.
      * 
      * @param stateChangeEntity

@@ -74,7 +74,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
      *         {@link #getModelName()}
      */
     private boolean entityMatchModel(final Entity entity, final String fieldName) {
-        if (!fieldName.equals(getStateFieldName())) {
+        if (!getStateFieldName().equals(fieldName)) {
             return false;
         }
         DataDefinition dataDefinition = entity.getDataDefinition();

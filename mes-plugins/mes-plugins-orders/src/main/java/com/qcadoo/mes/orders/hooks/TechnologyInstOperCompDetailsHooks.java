@@ -28,7 +28,7 @@ import static com.qcadoo.plugin.api.PluginUtils.isEnabled;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -45,7 +45,7 @@ public class TechnologyInstOperCompDetailsHooks {
         Entity order = techInstOperComp.getBelongsToField("order");
         WindowComponent windowComponent = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         RibbonGroup standardFormTemplate = windowComponent.getRibbon().getGroupByName("actions");
-        if (!order.getStringField(OrderFields.STATE).equals(OrderStates.PENDING.getStringValue())) {
+        if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
             form.setFormEnabled(false);
             for (RibbonActionItem item : standardFormTemplate.getItems()) {
                 if (!item.getName().equals("refresh")) {

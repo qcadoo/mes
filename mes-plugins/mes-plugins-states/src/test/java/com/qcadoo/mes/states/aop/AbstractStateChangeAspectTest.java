@@ -70,6 +70,11 @@ public class AbstractStateChangeAspectTest {
             targetEntity.setField(getStateFieldName(), stateChangeEntity.getField("targetState"));
         }
 
+        @Override
+        public Entity createStateChangeEntity() {
+            return null;
+        }
+
     }
 
     @Aspect
@@ -98,6 +103,11 @@ public class AbstractStateChangeAspectTest {
         public void changeState(final Entity stateChangeEntity) {
             Entity targetEntity = stateChangeEntity.getBelongsToField(TARGET_ENTITY_FIELD);
             targetEntity.setField(getStateFieldName(), stateChangeEntity.getField("targetState"));
+        }
+
+        @Override
+        public Entity createStateChangeEntity() {
+            return null;
         }
 
     }
