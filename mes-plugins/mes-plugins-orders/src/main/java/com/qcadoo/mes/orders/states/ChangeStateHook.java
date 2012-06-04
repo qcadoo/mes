@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -65,12 +65,12 @@ public class ChangeStateHook {
         if (oldEntity.getStringField(FIELD_STATE).equals(newEntity.getStringField(FIELD_STATE))) {
             String state = oldEntity.getStringField(FIELD_STATE);
             List<ChangeOrderStateMessage> errors = Lists.newArrayList();
-            if (state.equals(OrderStates.ACCEPTED.getStringValue())) {
+            if (state.equals(OrderState.ACCEPTED.getStringValue())) {
                 errors.addAll(orderStateValidationService.validationAccepted(newEntity));
-            } else if (state.equals(OrderStates.IN_PROGRESS.getStringValue())
-                    || state.equals(OrderStates.INTERRUPTED.getStringValue())) {
+            } else if (state.equals(OrderState.IN_PROGRESS.getStringValue())
+                    || state.equals(OrderState.INTERRUPTED.getStringValue())) {
                 errors.addAll(orderStateValidationService.validationInProgress(newEntity));
-            } else if (state.equals(OrderStates.COMPLETED.getStringValue())) {
+            } else if (state.equals(OrderState.COMPLETED.getStringValue())) {
                 errors.addAll(orderStateValidationService.validationCompleted(newEntity));
             }
             if (!errors.isEmpty()) {

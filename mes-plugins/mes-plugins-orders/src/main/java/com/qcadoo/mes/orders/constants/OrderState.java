@@ -23,19 +23,39 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public enum OrderStates {
+public enum OrderState {
 
     PENDING("01pending"), ACCEPTED("02accepted"), IN_PROGRESS("03inProgress"), COMPLETED("04completed"), DECLINED("05declined"), INTERRUPTED(
             "06interrupted"), ABANDONED("07abandoned");
 
     private final String state;
 
-    private OrderStates(final String state) {
+    private OrderState(final String state) {
         this.state = state;
     }
 
     public String getStringValue() {
         return state;
+    }
+
+    public static OrderState parseString(final String string) {
+        if ("01pending".equalsIgnoreCase(string)) {
+            return PENDING;
+        } else if ("02accepted".equalsIgnoreCase(string)) {
+            return ACCEPTED;
+        } else if ("03inProgress".equalsIgnoreCase(string)) {
+            return IN_PROGRESS;
+        } else if ("04completed".equalsIgnoreCase(string)) {
+            return COMPLETED;
+        } else if ("05declined".equalsIgnoreCase(string)) {
+            return DECLINED;
+        } else if ("06interrupted".equalsIgnoreCase(string)) {
+            return INTERRUPTED;
+        } else if ("07abandoned".equalsIgnoreCase(string)) {
+            return ABANDONED;
+        } else {
+            throw new IllegalArgumentException("Couldn't parse OrderState from string '" + string + "'");
+        }
     }
 
 }

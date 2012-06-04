@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,7 +53,7 @@ public class OrderStatesService {
     private TranslationService translationService;
 
     private void changeOrderStateTo(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final OrderStates oldState, final OrderStates newState) {
+            final OrderState oldState, final OrderState newState) {
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FIELD_FORM);
         Entity order = form.getEntity();
@@ -70,33 +70,33 @@ public class OrderStatesService {
 
     public void changeOrderStateToAccepted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        changeOrderStateTo(viewDefinitionState, state, OrderStates.PENDING, OrderStates.ACCEPTED);
+        changeOrderStateTo(viewDefinitionState, state, OrderState.PENDING, OrderState.ACCEPTED);
     }
 
     public void changeOrderStateToInProgress(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FIELD_FORM);
         Entity order = form.getEntity();
-        if (OrderStates.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.IN_PROGRESS);
-        } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.INTERRUPTED, OrderStates.IN_PROGRESS);
+        if (OrderState.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.ACCEPTED, OrderState.IN_PROGRESS);
+        } else if (OrderState.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.INTERRUPTED, OrderState.IN_PROGRESS);
         }
     }
 
     public void changeOrderStateToCompleted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        changeOrderStateTo(viewDefinitionState, state, OrderStates.IN_PROGRESS, OrderStates.COMPLETED);
+        changeOrderStateTo(viewDefinitionState, state, OrderState.IN_PROGRESS, OrderState.COMPLETED);
     }
 
     public void changeOrderStateToDeclined(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FIELD_FORM);
         Entity order = form.getEntity();
-        if (OrderStates.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.ACCEPTED, OrderStates.DECLINED);
-        } else if (OrderStates.PENDING.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.PENDING, OrderStates.DECLINED);
+        if (OrderState.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.ACCEPTED, OrderState.DECLINED);
+        } else if (OrderState.PENDING.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.PENDING, OrderState.DECLINED);
         }
     }
 
@@ -104,19 +104,19 @@ public class OrderStatesService {
             final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(FIELD_FORM);
         Entity order = form.getEntity();
-        if (OrderStates.IN_PROGRESS.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.IN_PROGRESS, OrderStates.ABANDONED);
-        } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-            changeOrderStateTo(viewDefinitionState, state, OrderStates.INTERRUPTED, OrderStates.ABANDONED);
+        if (OrderState.IN_PROGRESS.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.IN_PROGRESS, OrderState.ABANDONED);
+        } else if (OrderState.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+            changeOrderStateTo(viewDefinitionState, state, OrderState.INTERRUPTED, OrderState.ABANDONED);
         }
     }
 
     public void changeOrderStateToInterrupted(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        changeOrderStateTo(viewDefinitionState, state, OrderStates.IN_PROGRESS, OrderStates.INTERRUPTED);
+        changeOrderStateTo(viewDefinitionState, state, OrderState.IN_PROGRESS, OrderState.INTERRUPTED);
     }
 
-    private void changeOrderStateToForGrid(final ComponentState state, final Long id, final OrderStates newState) {
+    private void changeOrderStateToForGrid(final ComponentState state, final Long id, final OrderState newState) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
         order.setField(FIELD_STATE, newState.getStringValue());
 
@@ -139,7 +139,7 @@ public class OrderStatesService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.ACCEPTED);
+            changeOrderStateToForGrid(state, id, OrderState.ACCEPTED);
         }
     }
 
@@ -148,10 +148,10 @@ public class OrderStatesService {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            if (OrderStates.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.IN_PROGRESS);
-            } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.IN_PROGRESS);
+            if (OrderState.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.IN_PROGRESS);
+            } else if (OrderState.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.IN_PROGRESS);
             }
         }
     }
@@ -160,7 +160,7 @@ public class OrderStatesService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.COMPLETED);
+            changeOrderStateToForGrid(state, id, OrderState.COMPLETED);
         }
     }
 
@@ -169,10 +169,10 @@ public class OrderStatesService {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            if (OrderStates.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.DECLINED);
-            } else if (OrderStates.PENDING.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.DECLINED);
+            if (OrderState.ACCEPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.DECLINED);
+            } else if (OrderState.PENDING.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.DECLINED);
             }
         }
     }
@@ -182,10 +182,10 @@ public class OrderStatesService {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            if (OrderStates.IN_PROGRESS.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.ABANDONED);
-            } else if (OrderStates.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
-                changeOrderStateToForGrid(state, id, OrderStates.ABANDONED);
+            if (OrderState.IN_PROGRESS.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.ABANDONED);
+            } else if (OrderState.INTERRUPTED.getStringValue().equals(order.getStringField(FIELD_STATE))) {
+                changeOrderStateToForGrid(state, id, OrderState.ABANDONED);
             }
         }
     }
@@ -194,7 +194,7 @@ public class OrderStatesService {
             final String[] args) {
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(FIELD_GRID);
         for (Long id : grid.getSelectedEntitiesIds()) {
-            changeOrderStateToForGrid(state, id, OrderStates.INTERRUPTED);
+            changeOrderStateToForGrid(state, id, OrderState.INTERRUPTED);
         }
     }
 

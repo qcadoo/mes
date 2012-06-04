@@ -10,6 +10,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.orders.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.constants.OrderState.DECLINED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.orders.constants.OrderStates;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -444,7 +445,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
     @Test
     public void shouldReturnTrueWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderIsCorrectAndPrevious() {
         // given
-        given(previousOrder.getStringField(STATE)).willReturn(OrderStates.ACCEPTED.getStringValue());
+        given(previousOrder.getStringField(STATE)).willReturn(ACCEPTED.getStringValue());
 
         given(previousOrder.getField(DATE_TO)).willReturn(dateTo);
         given(order.getField(DATE_FROM)).willReturn(dateFrom);
@@ -462,7 +463,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
     @Test
     public void shouldReturnFalseWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderIsntCorrectAndPrevious() {
         // given
-        given(previousOrder.getStringField(STATE)).willReturn(OrderStates.DECLINED.getStringValue());
+        given(previousOrder.getStringField(STATE)).willReturn(DECLINED.getStringValue());
 
         given(previousOrder.getField(DATE_TO)).willReturn(dateTo);
         given(order.getField(DATE_FROM)).willReturn(dateFrom);

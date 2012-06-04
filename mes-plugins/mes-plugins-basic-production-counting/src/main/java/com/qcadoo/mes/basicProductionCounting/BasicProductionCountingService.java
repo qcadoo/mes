@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
@@ -112,7 +112,7 @@ public class BasicProductionCountingService {
                 .getItemByName(BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME);
         Entity order = form.getEntity();
         String state = order.getStringField("state");
-        if (OrderStates.DECLINED.getStringValue().equals(state) || OrderStates.PENDING.getStringValue().equals(state)) {
+        if (OrderState.DECLINED.getStringValue().equals(state) || OrderState.PENDING.getStringValue().equals(state)) {
             productionCounting.setEnabled(false);
             productionCounting.requestUpdate(true);
         }
