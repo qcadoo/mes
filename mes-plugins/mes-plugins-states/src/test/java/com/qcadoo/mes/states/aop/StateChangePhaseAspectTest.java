@@ -33,8 +33,6 @@ public class StateChangePhaseAspectTest {
 
     private static final String TOUCHED_FIELD = "touched";
 
-    private static final String MESSAGES_FIELD = "messages";
-
     @Mock
     private Entity stateChange;
 
@@ -66,6 +64,11 @@ public class StateChangePhaseAspectTest {
         @StateChangePhase
         public void changeState(final Entity stateChangeEntity) {
             stateChangeEntity.setField(TOUCHED_FIELD, true);
+        }
+
+        @Override
+        public Entity createStateChangeEntity() {
+            return null;
         }
 
     }
