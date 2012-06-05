@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -86,6 +87,37 @@ public class MultitransferListeners {
         }
 
         view.getComponentByReference("form").addMessage("materialFlow.multitransfer.generate.success", MessageType.SUCCESS);
+    }
+
+    public void getFromTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
+        FieldComponent stockAreaToComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
+        FieldComponent stockAreaFromComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
+        Entity stockAreaFrom = getAreaById((Long) stockAreaFromComponent.getFieldValue());
+        Entity stockAreaTo = getAreaById((Long) stockAreaToComponent.getFieldValue());
+
+        List<Entity> templates = materialFlowTransferService.getTransferTemplates(stockAreaFrom, stockAreaTo);
+
+        if (templates.isEmpty()) {
+            view.getComponentByReference("form").addMessage("materialFlow.multitransfer.template.failure", MessageType.FAILURE);
+            return;
+        }
+
+        List<Entity> productQuantities = Lists.newArrayList();
+
+        DataDefinition productQuantityDD = dataDefinitionService.get("materialFlow", "productQuantity");
+
+        for (Entity template : templates) {
+            Entity productQuantity = productQuantityDD.create();
+            Entity product = template.getBelongsToField("product");
+            productQuantity.setField("product", product);
+            productQuantity.setField("unit", product.getStringField("unit"));
+            productQuantities.add(productQuantity);
+        }
+
+        adlc.setFieldValue(productQuantities);
+
+        view.getComponentByReference("form").addMessage("materialFlow.multitransfer.template.success", MessageType.SUCCESS);
     }
 
     private Entity getAreaById(final Long id) {

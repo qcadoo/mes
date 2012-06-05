@@ -3,7 +3,7 @@ package com.qcadoo.mes.orders.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -20,12 +20,12 @@ public class OrderLogginsDetailsHooks {
 
     public void fillReasonTypeDeviationsOfEffectiveStart(final ViewDefinitionState view) {
         fillReasonTypeDeviations(view, "reasonTypeDeviationsOfEffectiveStart", "commentReasonTypeDeviationsOfEffectiveStart",
-                OrderStates.ACCEPTED.getStringValue(), OrderStates.IN_PROGRESS.getStringValue());
+                OrderState.ACCEPTED.getStringValue(), OrderState.IN_PROGRESS.getStringValue());
     }
 
     public void fillReasonTypeDeviationsOfEffectiveEnd(final ViewDefinitionState view) {
         fillReasonTypeDeviations(view, "reasonTypeDeviationsOfEffectiveEnd", "commentReasonTypeDeviationsOfEffectiveEnd",
-                OrderStates.IN_PROGRESS.getStringValue(), OrderStates.COMPLETED.getStringValue());
+                OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue());
     }
 
     private void fillReasonTypeDeviations(final ViewDefinitionState view, final String typeReasonReference,

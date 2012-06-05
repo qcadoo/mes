@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -53,26 +53,26 @@ public class OrderStatesChangingService {
     }
 
     List<ChangeOrderStateMessage> performChangeState(final Entity newEntity, final Entity oldEntity) {
-        if (oldEntity == null && !newEntity.getStringField(FIELD_STATE).equals(OrderStates.PENDING.getStringValue())) {
+        if (oldEntity == null && !newEntity.getStringField(FIELD_STATE).equals(OrderState.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
-        if (oldEntity != null && newEntity.getStringField(FIELD_STATE).equals(OrderStates.ACCEPTED.getStringValue())
-                && !oldEntity.getStringField(FIELD_STATE).equals(OrderStates.PENDING.getStringValue())) {
+        if (oldEntity != null && newEntity.getStringField(FIELD_STATE).equals(OrderState.ACCEPTED.getStringValue())
+                && !oldEntity.getStringField(FIELD_STATE).equals(OrderState.PENDING.getStringValue())) {
             throw new IllegalStateException();
         }
 
         String newState = newEntity.getStringField(FIELD_STATE);
-        if (newState.equals(OrderStates.ACCEPTED.getStringValue())) {
+        if (newState.equals(OrderState.ACCEPTED.getStringValue())) {
             return performAccepted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.IN_PROGRESS.getStringValue())) {
+        } else if (newState.equals(OrderState.IN_PROGRESS.getStringValue())) {
             return performInProgress(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.COMPLETED.getStringValue())) {
+        } else if (newState.equals(OrderState.COMPLETED.getStringValue())) {
             return performCompleted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.INTERRUPTED.getStringValue())) {
+        } else if (newState.equals(OrderState.INTERRUPTED.getStringValue())) {
             return performInterrupted(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.DECLINED.getStringValue())) {
+        } else if (newState.equals(OrderState.DECLINED.getStringValue())) {
             return performDeclined(newEntity, oldEntity);
-        } else if (newState.equals(OrderStates.ABANDONED.getStringValue())) {
+        } else if (newState.equals(OrderState.ABANDONED.getStringValue())) {
             return performAbandoned(newEntity, oldEntity);
         }
 

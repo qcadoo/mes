@@ -33,7 +33,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderStates.DECLINED;
+import static com.qcadoo.mes.orders.constants.OrderState.DECLINED;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_BATCH_REQUIRED;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
@@ -70,7 +70,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
@@ -161,7 +161,7 @@ public class OrderService {
     }
 
     public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(STATE, OrderStates.PENDING.getStringValue());
+        entity.setField(STATE, OrderState.PENDING.getStringValue());
         entity.setField(EFFECTIVE_DATE_TO, null);
         entity.setField(EFFECTIVE_DATE_FROM, null);
         entity.setField("doneQuantity", null);
@@ -606,9 +606,9 @@ public class OrderService {
             @Override
             public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
                 searchBuilder.add(SearchRestrictions.or(
-                        SearchRestrictions.eq(OrderFields.STATE, OrderStates.PENDING.getStringValue()),
-                        SearchRestrictions.eq(OrderFields.STATE, OrderStates.IN_PROGRESS.getStringValue()),
-                        SearchRestrictions.eq(OrderFields.STATE, OrderStates.ACCEPTED.getStringValue())));
+                        SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue()),
+                        SearchRestrictions.eq(OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue()),
+                        SearchRestrictions.eq(OrderFields.STATE, OrderState.ACCEPTED.getStringValue())));
             }
 
         });

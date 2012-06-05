@@ -70,7 +70,7 @@ public final class MessagesUtil {
         for (Entity message : messages) {
             String messageStringType = message.getStringField(MessageFields.TYPE);
             MessageType messageType = MessageType.parseString(messageStringType);
-            if (messageType == typeLookingFor) {
+            if (messageType.equals(typeLookingFor)) {
                 return true;
             }
         }

@@ -19,6 +19,20 @@
 					</script>
 				</bigButton>
 			</group>
+			<group name="template">
+				<bigButton name="template" icon="downloadIcon24.png"
+					state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('getFromTemplate', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
@@ -102,6 +116,7 @@
 			</component>
 			<option type="header" value="true" />
 			<listener event="createMultitransfer" class="com.qcadoo.mes.materialFlow.listeners.MultitransferListeners" method="createMultitransfer" />
+			<listener event="getFromTemplate" class="com.qcadoo.mes.materialFlow.listeners.MultitransferListeners" method="getFromTemplate" />
 		</component>
 	</component>
 	<hooks>

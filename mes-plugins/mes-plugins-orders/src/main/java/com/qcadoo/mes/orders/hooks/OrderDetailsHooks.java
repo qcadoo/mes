@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.mes.orders.constants.OrderStates;
+import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -48,13 +48,13 @@ public class OrderDetailsHooks {
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
-        if (order.getStringField(STATE).equals(OrderStates.ACCEPTED.getStringValue())) {
+        if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPE_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
             enabledFields(view, references);
         }
-        if (order.getStringField(STATE).equals(OrderStates.IN_PROGRESS.getStringValue())) {
+        if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_TO);
             enabledFields(view, references);

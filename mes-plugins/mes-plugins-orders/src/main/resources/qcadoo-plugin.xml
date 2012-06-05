@@ -58,6 +58,11 @@
 			<plugin>productionLines</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		
+		<dependency>
+			<plugin>states</plugin>
+			<version>[1.1.6</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -65,6 +70,11 @@
 
 		<model:model model="order" resource="model/order.xml" />
 		<model:model model="logging" resource="model/logging.xml" />
+		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
+		
+		<model:model-field plugin="states" model="message">
+		    <model:belongsTo name="orderStateChange" plugin="orders" model="order" />
+		</model:model-field>
 		
 		<model:model-field plugin="basic" model="product">
 			<model:hasMany name="orders" plugin="orders" model="order"
