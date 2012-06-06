@@ -75,6 +75,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTRO
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE2;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_RESOURCE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFTS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STAFF;
@@ -193,6 +194,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
             readDataFromXML(dataset, L_STOCK_AREAS, locale);
+            readDataFromXML(dataset, L_RESOURCE, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
             readDataFromXML(dataset, L_TRANSFER, locale);
             readDataFromXML(dataset, L_STOCK_CORRECTION, locale);
@@ -269,6 +271,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addCostCalculation(values);
         } else if (L_STOCK_AREAS.equals(type)) {
             addStokckArea(values);
+        } else if (L_RESOURCE.equals(type)) {
+            addResource(values);
         } else if (L_TRANSFORMATIONS.equals(type)) {
             addTransformation(values);
         } else if (L_TRANSFER.equals(type)) {
@@ -708,6 +712,17 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         stockArea.setField(L_NAME, values.get(L_NAME));
 
         stockArea.getDataDefinition().save(stockArea);
+    }
+
+    private void addResource(final Map<String, String> values) {
+        Entity resource = dataDefinitionService.get(L_MATERIAL_FLOW, L_RESOURCE).create();
+
+        resource.setField(L_STOCK_AREAS, getStockAreaByNumber(values.get("stock_areas")));
+        resource.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
+        resource.setField(L_QUANTITY, values.get(L_QUANTITY));
+        resource.setField(L_TIME, values.get(L_TIME));
+
+        resource.getDataDefinition().save(resource);
     }
 
     private void addTransformation(final Map<String, String> values) {

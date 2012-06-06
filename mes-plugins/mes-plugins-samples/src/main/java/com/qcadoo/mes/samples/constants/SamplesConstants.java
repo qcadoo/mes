@@ -151,6 +151,8 @@ public interface SamplesConstants {
 
     String L_STOCK_AREAS = "stockAreas";
 
+    String L_RESOURCE = "resource";
+
     String L_TRANSFORMATIONS = "transformations";
 
     String L_STOCK_CORRECTION = "stockCorrection";
