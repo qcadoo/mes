@@ -5,9 +5,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
+import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -15,6 +18,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -23,7 +27,7 @@ public class ProductionPerShiftListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TechnologyService technologyService;
+    private ProductionPerShiftDetailsHooks detailsHooks;
 
     public void redirectToProductionPerShift(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
@@ -42,7 +46,7 @@ public class ProductionPerShiftListeners {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
-        String url = "../page/productionPerShift/productionPerShiftView.html";
+        String url = "../page/productionPerShift/productionPerShiftDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 
@@ -68,23 +72,7 @@ public class ProductionPerShiftListeners {
     }
 
     public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        fillProducedField(viewState);
-    }
-
-    private void fillProducedField(final ViewDefinitionState viewState) {
-        Entity tioc = getTiocFromOperationLookup(viewState);
-        String producedProduct = null;
-
-        if (tioc != null) {
-            Entity toc = tioc.getBelongsToField("technologyOperationComponent");
-
-            Entity prodComp = technologyService.getMainOutputProductComponent(toc);
-            Entity prod = prodComp.getBelongsToField("product");
-            producedProduct = prod.getStringField("name");
-        }
-
-        ComponentState producesInput = viewState.getComponentByReference("produces");
-        producesInput.setFieldValue(producedProduct);
+        detailsHooks.fillProducedField(viewState);
     }
 
     /**
@@ -95,22 +83,7 @@ public class ProductionPerShiftListeners {
      * @param args
      */
     public void fillProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        fillProgressForDays(viewState);
-    }
-
-    private void fillProgressForDays(final ViewDefinitionState viewState) {
-        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
-        Entity tioc = getTiocFromOperationLookup(viewState);
-
-        if (tioc == null) {
-            progressForDaysADL.setFieldValue(null);
-            progressForDaysADL.setEnabled(false);
-        } else {
-            List<Entity> progressForDays = tioc.getHasManyField("progressForDay");
-            progressForDaysADL.setFieldValue(progressForDays);
-            progressForDaysADL.setEnabled(true);
-        }
+        detailsHooks.fillProgressForDays(viewState);
     }
 
     /**
@@ -120,36 +93,51 @@ public class ProductionPerShiftListeners {
      * @param componentState
      * @param args
      */
+    @Transactional
     public void saveProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
         @SuppressWarnings("unchecked")
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
-        Entity tioc = getTiocFromOperationLookup(viewState);
+        String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType")).getFieldValue()
+                .toString();
+        for (Entity progressForDay : progressForDays) {
+            progressForDay.setField("corrected", plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
+        }
+        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
+        boolean hasCorrenctions = detailsHooks.shouldHasCorrections(viewState);
         if (tioc != null) {
-            tioc.setField("progressForDay", progressForDays);
+            tioc.setField("hasCorrections", hasCorrenctions);
+            tioc.setField("progressForDays", prepareProgressForDaysForTIOC(tioc, hasCorrenctions, progressForDays));
             tioc.getDataDefinition().save(tioc);
         }
         resetProgressForDaysComponents(viewState);
     }
 
+    private List<Entity> prepareProgressForDaysForTIOC(final Entity tioc, final boolean hasCorrections,
+            final List<Entity> progressForDays) {
+        Entity techInstOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(tioc.getId());
+        List<Entity> plannedPrograssForDay = progressForDays;
+        if (hasCorrections) {
+            plannedPrograssForDay = techInstOperComp.getHasManyField("progressForDays").find()
+                    .add(SearchRestrictions.eq("corrected", false)).list().getEntities();
+            plannedPrograssForDay.addAll(progressForDays);
+        }
+        return plannedPrograssForDay;
+    }
+
     private void resetProgressForDaysComponents(final ViewDefinitionState viewState) {
-        ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");
-        operationLookup.setFieldValue(null);
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
         progressForDaysADL.setFieldValue(null);
-        fillProducedField(viewState);
-        fillProgressForDays(viewState);
+        detailsHooks.fillProducedField(viewState);
+        detailsHooks.fillProgressForDays(viewState);
     }
 
-    private Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
-        ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");
-        Long id = (Long) operationLookup.getFieldValue();
-        Entity tioc = null;
-        if (id != null) {
-            tioc = dataDefinitionService.get("technologies", "technologyInstanceOperationComponent").get(id);
-        }
-        return tioc;
+    public void changeView(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+        detailsHooks.disablePlannedProgressTypeForPendingOrder(viewState);
+        detailsHooks.disableReasonOfCorrection(viewState);
     }
+
 }

@@ -97,8 +97,6 @@
 		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate"/>
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate"/>
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="fillStartDate"/>
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="fillEndDate"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
