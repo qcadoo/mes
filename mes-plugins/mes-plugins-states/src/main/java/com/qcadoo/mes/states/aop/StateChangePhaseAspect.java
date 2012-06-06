@@ -1,15 +1,14 @@
 package com.qcadoo.mes.states.aop;
 
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
-
-import java.util.List;
+import static org.apache.commons.lang.ArrayUtils.add;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclareError;
 
-import com.google.common.base.Preconditions;
+import com.qcadoo.mes.states.service.StateChangePhaseUtil;
+import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.Entity;
 
 @Aspect
@@ -21,14 +20,12 @@ public class StateChangePhaseAspect {
 
     @Around("(execution(@com.qcadoo.mes.states.annotation.StateChangePhase * *.*(..)) "
             + "|| execution(public void com.qcadoo.mes.states.service.StateChangeService.changeState(..))) "
-            + "&& args(stateChange,..)")
-    public Object omitExecutionIfStateChangeEntityHasErrors(final ProceedingJoinPoint pjp, final Entity stateChange)
-            throws Throwable {
+            + "&& args(stateChange,..) && this(stateChangeService)")
+    public Object omitExecutionIfStateChangeEntityHasErrors(final ProceedingJoinPoint pjp, final Entity stateChange,
+            final StateChangeService stateChangeService) throws Throwable {
         Object result = null;
-        List<Entity> messages = stateChange.getHasManyField("messages");
-        Preconditions.checkNotNull(messages, "entity " + stateChange + " should have messages has many field!");
-        if (!hasFailureMessages(messages)) {
-            result = pjp.proceed(pjp.getArgs());
+        if (StateChangePhaseUtil.canRun(stateChangeService, stateChange)) {
+            result = pjp.proceed(add(pjp.getArgs(), 0, stateChangeService));
         }
         return result;
     }

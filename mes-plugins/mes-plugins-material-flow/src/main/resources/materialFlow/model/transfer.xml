@@ -47,9 +47,12 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="validateTransfer" />
-		<onSave
-			class="com.qcadoo.mes.materialFlow.hooks.MaterialFlowTransferModelHooks"
+		<onCreate
+			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks"
 			method="copyProductionOrConsumptionDataFromBelongingTransformation" />
+		<onSave
+			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks"
+			method="manageResources" />
 	</hooks>
 	<identifier expression="#number" />
 </model>

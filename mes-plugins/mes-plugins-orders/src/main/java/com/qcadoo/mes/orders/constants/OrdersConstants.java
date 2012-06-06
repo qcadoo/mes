@@ -30,6 +30,8 @@ public interface OrdersConstants {
     // MODEL
     String MODEL_ORDER = "order";
 
+    String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
+
     // VIEW
     String VIEW_ORDER_DETAILS = "orderDetails";
 

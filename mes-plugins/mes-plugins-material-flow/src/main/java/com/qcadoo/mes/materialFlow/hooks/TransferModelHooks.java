@@ -23,13 +23,18 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class MaterialFlowTransferModelHooks {
+public class TransferModelHooks {
+
+    @Autowired
+    private MaterialFlowResourceService matersialFlowResourceService;
 
     public void copyProductionOrConsumptionDataFromBelongingTransformation(final DataDefinition dd, final Entity transfer) {
         Entity transformation = transfer.getBelongsToField("transformationsProduction");
@@ -51,5 +56,9 @@ public class MaterialFlowTransferModelHooks {
 
         transfer.setField("time", transformation.getField("time"));
         transfer.setField("staff", transformation.getBelongsToField("staff"));
+    }
+
+    public void manageResources(final DataDefinition transferDD, final Entity transfer) {
+        matersialFlowResourceService.manageResources(transfer);
     }
 }

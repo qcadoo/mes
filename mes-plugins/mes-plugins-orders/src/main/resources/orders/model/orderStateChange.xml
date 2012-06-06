@@ -32,6 +32,7 @@
 		<string name="sourceState" />
 		<string name="targetState" />
 		<boolean name="finished" />
+		<integer name="phase" />
 
 		<string name="worker" />
 		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
