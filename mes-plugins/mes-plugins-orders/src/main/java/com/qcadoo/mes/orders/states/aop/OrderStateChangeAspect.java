@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
+import com.qcadoo.model.api.Entity;
 
 @Aspect
 @Service
@@ -27,6 +28,10 @@ public class OrderStateChangeAspect extends AbstractStateChangeAspect {
 
     @Pointcut("this(OrderStateChangeAspect)")
     public void stateChangeServiceSelector() {
+    }
+
+    @Override
+    protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
     }
 
 }

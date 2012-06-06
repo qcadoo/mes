@@ -13,6 +13,7 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.annotation.StateChangePhase;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.service.StateChangePhaseUtil;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -22,8 +23,10 @@ import com.qcadoo.model.api.Entity;
  */
 @Aspect
 @Configurable
-@DeclarePrecedence("StateChangePhaseAspect, RunInPhaseAspect")
+@DeclarePrecedence("com.qcadoo.mes.states.aop.StateChangePhaseAspect, com.qcadoo.mes.states.aop.RunInPhaseAspect")
 public abstract class AbstractStateChangeAspect implements StateChangeService {
+
+    protected static final int DEFAULT_NUM_OF_PHASES = 8;
 
     @Autowired
     protected MessageService messageService;
@@ -71,10 +74,14 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Override
     @Transactional
     public void changeState(final Entity stateChangeEntity) {
-        for (int phase = getPhaseValue(stateChangeEntity) + 1; phase <= 50; phase++) {
-            changeStatePhase(stateChangeEntity, phase);
+        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
+        for (int phase = getPhaseValue(stateChangeEntity) + 1; phase <= DEFAULT_NUM_OF_PHASES; phase++) {
+            if (StateChangePhaseUtil.canRun(this, stateChangeEntity)) {
+                stateChangeEntity.setField(describer.getPhaseFieldName(), phase);
+                changeStatePhase(stateChangeEntity, phase);
+            }
         }
-        getChangeEntityDescriber().getDataDefinition().save(stateChangeEntity);
+        describer.getDataDefinition().save(stateChangeEntity);
         performChangeEntityState(stateChangeEntity);
     }
 
@@ -83,10 +90,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         return phaseFieldValue == null ? 0 : ((Integer) phaseFieldValue).intValue();
     }
 
-    @StateChangePhase
-    public void changeStatePhase(final Entity stateChangeEntity, final int currentPhase) {
-        stateChangeEntity.setField(getChangeEntityDescriber().getPhaseFieldName(), currentPhase);
-    }
+    protected abstract void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber);
 
     @StateChangePhase
     @Transactional
@@ -116,8 +120,10 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     public void stateChanging(final Entity stateChangeEntity) {
     }
 
-    // @Pointcut("execution(* *(..)) && @annotation(com.qcadoo.mes.states.annotation.StateChangePhase) && args(stateChangeEntity, phase) && stateChangeServiceSelector()")
-    @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeEntity, phase) && stateChangeServiceSelector()")
+    // @Pointcut("execution(* *(..)) && @annotation(com.qcadoo.mes.states.annotation.StateChangePhase) && args(stateChangeEntity, phase)")
+    // && stateChangeServiceSelector()")
+    @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeEntity, phase)")
+    // && stateChangeServiceSelector()")
     public void stateChangingPhase(final Entity stateChangeEntity, final int phase) {
     }
 

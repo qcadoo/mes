@@ -64,6 +64,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
             return new MockStateChangeDescriber();
         }
 
+        @Override
+        protected void changeStatePhase(Entity stateChangeEntity, Integer phaseNumber) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 
     @Aspect
@@ -90,6 +96,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
             return new MockStateChangeDescriber();
         }
 
+        @Override
+        protected void changeStatePhase(Entity stateChangeEntity, Integer phaseNumber) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 
     @Mock
@@ -100,7 +112,6 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
 
     @Before
     public void init() {
-        // super.init();
         MockitoAnnotations.initMocks(this);
         EntityList emptyEntityList = mockEmptyEntityList();
         given(stateChangeEntity.getHasManyField("messages")).willReturn(emptyEntityList);
