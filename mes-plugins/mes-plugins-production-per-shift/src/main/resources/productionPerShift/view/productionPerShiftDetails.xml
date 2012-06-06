@@ -5,8 +5,16 @@
 	modelName="productionPerShift">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate"
-				includeItems="navigation.back,actions.save,actions.refresh" />
+			<group name="navigation">
+				<bigButton name="back" action="#{window}.performBack;"
+					icon="backIcon24.png" />
+			</group>
+			<group name="action">
+				<bigButton name="save" icon="saveIcon24.png" state="enabled"
+					action="#{progressForDaysADL}.fireEvent(save); #{form}.performSave;" />
+				<bigButton name="save" icon="updateIcon24.png" state="enabled"
+					action="#{window}.performRefresh;" />
+			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
 			<component type="lookup" name="order" field="#{form}.order"
@@ -37,7 +45,8 @@
 								<layoutElement column="1" row="1">
 									<component type="select" name="plannedProgressType"
 										field="#{form}.plannedProgressType" reference="plannedProgressType">
-										<listener event="onChange" method="changeView" class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
+										<listener event="onChange" method="changeView"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
@@ -68,7 +77,8 @@
 							</component>
 							<option type="label" value="plannedProgressLabel" />
 						</component>
-						<component type="borderLayout" name="reasonOfCorrection" reference="reasonOfCorrection">
+						<component type="borderLayout" name="reasonOfCorrection"
+							reference="reasonOfCorrection">
 							<component type="gridLayout" name="plannedProgressGridLayout"
 								columns="1" rows="3">
 								<layoutElement column="1" row="1">
@@ -115,7 +125,7 @@
 								</layoutElement>
 								<layoutElement column="1" width="2" row="2">
 									<component type="awesomeDynamicList" name="progressForDay"
-										source="#{productionPerShiftOperation}.progressForDay"
+										source="#{productionPerShiftOperation}.progressForDays"
 										reference="progressForDaysADL">
 										<option type="hasBorder" value="true" />
 										<option type="hasButtons" value="true" />
@@ -125,7 +135,7 @@
 										<components>
 											<component type="gridLayout" name="plannedDayProgressGridLayout"
 												columns="3" rows="1">
-												<layoutElement column="1" row="1" >
+												<layoutElement column="1" row="1">
 													<component type="input" name="day" field="day"
 														reference="day" />
 												</layoutElement>
@@ -148,11 +158,11 @@
 																	<component type="input" name="quantity"
 																		field="quantity" reference="quantity" />
 																</layoutElement>
-																<layoutElement column="5" row="1" >
+																<layoutElement column="5" row="1">
 																	<component type="input" name="unit"
-																		 reference="unit"
-																		hasLabel="false"  >
-																		 <option type="textRepresentationOnDisabled" value="true" />
+																		reference="unit" hasLabel="false">
+																		<option type="textRepresentationOnDisabled"
+																			value="true" />
 																	</component>
 																</layoutElement>
 															</component>

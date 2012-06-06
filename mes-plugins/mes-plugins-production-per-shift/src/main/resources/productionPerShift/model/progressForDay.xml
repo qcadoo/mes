@@ -6,6 +6,7 @@
 		<belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent" plugin="technologies" />
 		<integer name="day" />
 		<hasMany name="dailyProgress" joinField="progressForDay" model="dailyProgress" cascade="delete"/> 
+		<boolean name="corrected" default="false" />
 	</fields>
 	<hooks />
 </model>
