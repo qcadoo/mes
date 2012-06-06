@@ -40,6 +40,7 @@
 		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow"
 			required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
+		<belongsTo persistent="false" name="operation" model="operation" plugin="technologies" />
 		<hasMany name="transfersConsumption" model="transfer"
 			joinField="transformationsConsumption" cascade="delete" />
 		<hasMany name="transfersProduction" model="transfer"
