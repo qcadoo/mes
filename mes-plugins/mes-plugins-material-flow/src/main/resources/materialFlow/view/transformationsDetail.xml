@@ -101,7 +101,7 @@
 								</component>
 							</components>
 						</component>
-							<option type="label" value="consumption" />
+						<option type="label" value="consumption" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
@@ -143,7 +143,8 @@
 						<option type="expression" value="#number" />
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.materialFlow.listeners.TransformationListeners" method="fillProductionAndConsumption" />
+							class="com.qcadoo.mes.materialFlow.listeners.TransformationListeners"
+							method="fillProductionAndConsumption" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="5" width="1" height="5">
@@ -175,7 +176,7 @@
 								</component>
 							</components>
 						</component>
-							<option type="label" value="production" />
+						<option type="label" value="production" />
 					</component>
 				</layoutElement>
 			</component>
@@ -183,7 +184,8 @@
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialFlow.hooks.TransformationViewHooks"
+		<beforeRender
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationViewHooks"
 			method="disableExistingADLelements" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillNumberFieldValue" />

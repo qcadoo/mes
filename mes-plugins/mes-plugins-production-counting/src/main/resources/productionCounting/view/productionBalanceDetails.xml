@@ -166,6 +166,7 @@
 						<component type="input" name="recordsNumber" field="recordsNumber"
 							reference="recordsNumber" defaultEnabled="false">
 							<option type="alignment" value="right" />
+							<option type="textRepresentationOnDisabled" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3">
