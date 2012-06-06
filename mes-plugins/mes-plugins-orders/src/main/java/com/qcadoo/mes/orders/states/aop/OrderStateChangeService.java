@@ -82,7 +82,7 @@ public class OrderStateChangeService extends AbstractStateChangeAspect {
         return "order";
     }
 
-    @Pointcut("this(OrderStateChangeService)")
+    @Pointcut("this(*)")
     public void stateChangeServiceSelector() {
     }
 
