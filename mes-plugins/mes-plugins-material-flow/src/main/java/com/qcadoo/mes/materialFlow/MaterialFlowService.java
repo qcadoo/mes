@@ -24,6 +24,14 @@
 package com.qcadoo.mes.materialFlow;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -95,6 +103,9 @@ public class MaterialFlowService {
 
     @Autowired
     private TimeConverterService timeConverterService;
+
+    @Autowired
+    private MaterialFlowResourceService materialFlowResourceService;
 
     public BigDecimal calculateShouldBeInStockArea(final Long stockAreasId, final Long productId, final Date forDate) {
 
@@ -420,32 +431,38 @@ public class MaterialFlowService {
     }
 
     public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField(L_TRANSFORMATIONS_CONSUMPTION) == null && entity.getField(L_TRANSFORMATIONS_PRODUCTION) == null) {
-            Entity stockAreasFrom = (Entity) (entity.getField(L_STOCK_AREAS_FROM) == null ? null : entity
-                    .getField(L_STOCK_AREAS_FROM));
-            Entity stockAreasTo = (Entity) (entity.getField(L_STOCK_AREAS_TO) == null ? null : entity.getField(L_STOCK_AREAS_TO));
-            Date date = (Date) (entity.getField(L_TIME) == null ? null : entity.getField(L_TIME));
-            String type = (entity.getStringField(L_TYPE) == null ? null : entity.getStringField(L_TYPE));
+        boolean validate = true;
 
-            boolean validate = true;
-            if (stockAreasFrom == null && stockAreasTo == null) {
-                entity.addError(dataDefinition.getField(L_STOCK_AREAS_FROM),
-                        "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
-                entity.addError(dataDefinition.getField(L_STOCK_AREAS_TO),
-                        "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
-                validate = false;
-            }
-            if (type == null) {
-                entity.addError(dataDefinition.getField(L_TYPE), "materialFlow.validate.global.error.fillType");
-                validate = false;
-            }
-            if (date == null) {
-                entity.addError(dataDefinition.getField(L_TIME), "materialFlow.validate.global.error.fillDate");
-                validate = false;
-            }
-            return validate;
+        Entity stockAreasFrom = entity.getBelongsToField(STOCK_AREAS_FROM);
+        Entity stockAreasTo = entity.getBelongsToField(STOCK_AREAS_TO);
+        Entity product = entity.getBelongsToField(PRODUCT);
+        BigDecimal quantity = entity.getDecimalField(QUANTITY);
+        Date date = (Date) entity.getField(TIME);
+        String type = entity.getStringField(TYPE);
+
+        if (stockAreasFrom == null && stockAreasTo == null) {
+            entity.addError(dataDefinition.getField(STOCK_AREAS_FROM),
+                    "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
+            entity.addError(dataDefinition.getField(STOCK_AREAS_TO),
+                    "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
+            validate = false;
         }
-        return true;
+        if (type == null) {
+            entity.addError(dataDefinition.getField(TYPE), "materialFlow.validate.global.error.fillType");
+            validate = false;
+        }
+        if (date == null) {
+            entity.addError(dataDefinition.getField(TIME), "materialFlow.validate.global.error.fillDate");
+            validate = false;
+        }
+        if (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type)) {
+            if (!materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+                entity.addError(dataDefinition.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
+                validate = false;
+            }
+        }
+
+        return validate;
     }
 
     public void checkIfTransferHasTransformation(final ViewDefinitionState state) {

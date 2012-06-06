@@ -39,7 +39,7 @@ import com.qcadoo.model.api.Entity;
 
 public class MaterialFlowTransferModelHooksTest {
 
-    private MaterialFlowTransferModelHooks materialFlowTransferModelHooks;
+    private TransferModelHooks materialFlowTransferModelHooks;
 
     @Mock
     private Entity transfer, transformation;
@@ -54,7 +54,7 @@ public class MaterialFlowTransferModelHooksTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        materialFlowTransferModelHooks = new MaterialFlowTransferModelHooks();
+        materialFlowTransferModelHooks = new TransferModelHooks();
     }
 
     @Test

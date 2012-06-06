@@ -81,6 +81,7 @@ public class MultitransferListeners {
             Entity productQuantity = formComponent.getEntity();
             BigDecimal quantity = productQuantity.getDecimalField("quantity");
             Entity product = productQuantity.getBelongsToField("product");
+
             if (product != null) {
                 materialFlowTransferService.createTransfer(type, stockAreaFrom, stockAreaTo, product, quantity, staff, time);
             }
