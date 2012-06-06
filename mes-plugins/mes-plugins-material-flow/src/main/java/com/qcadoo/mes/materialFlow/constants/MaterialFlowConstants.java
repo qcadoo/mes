@@ -38,6 +38,8 @@ public interface MaterialFlowConstants {
 
     String MODEL_TRANSFER_TEMPLATE = "transferTemplate";
 
+    String MODEL_RESOURCE = "resource";
+
     String MODEL_STOCK_AREAS = "stockAreas";
 
     String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
