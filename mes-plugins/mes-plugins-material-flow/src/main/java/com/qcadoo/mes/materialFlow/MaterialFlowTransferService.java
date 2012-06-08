@@ -8,8 +8,8 @@ import com.qcadoo.model.api.Entity;
 
 public interface MaterialFlowTransferService {
 
-    public void createTransfer(final String type, final Entity stockAreaFrom, final Entity stockAreaTo, final Entity product,
+    void createTransfer(final String type, final Entity stockAreaFrom, final Entity stockAreaTo, final Entity product,
             final BigDecimal quantity, final Entity staff, final Date time);
 
-    public List<Entity> getTransferTemplates(final Entity stockAreaFrom, final Entity stockAreaTo);
+    List<Entity> getTransferTemplates(final Entity stockAreaFrom, final Entity stockAreaTo);
 }

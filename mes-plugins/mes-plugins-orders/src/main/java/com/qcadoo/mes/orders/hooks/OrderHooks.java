@@ -26,7 +26,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderHooks {
 
-    public final static long SECOND_MILLIS = 1000;
+    public static final long SECOND_MILLIS = 1000;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

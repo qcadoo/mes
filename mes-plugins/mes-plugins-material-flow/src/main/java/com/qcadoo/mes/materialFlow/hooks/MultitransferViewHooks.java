@@ -14,7 +14,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Component
 public class MultitransferViewHooks {
 
-    private final List<String> COMPONENTS = Arrays.asList(TYPE, TIME);
+    private static final List<String> COMPONENTS = Arrays.asList(TYPE, TIME);
 
     public void makeAllFieldsRequired(final ViewDefinitionState view) {
         for (String componentRef : COMPONENTS) {

@@ -25,7 +25,7 @@ public class TechInstOperCompHooksPPS {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private final static Long MILLISECONDS_OF_ONE_DAY = 86400000L;
+    private static final Long MILLISECONDS_OF_ONE_DAY = 86400000L;
 
     public boolean checkGrowingNumberOfDays(final DataDefinition dataDefinition, final Entity entity) {
         List<Entity> progressForDays = entity.getHasManyField("progressForDays");
