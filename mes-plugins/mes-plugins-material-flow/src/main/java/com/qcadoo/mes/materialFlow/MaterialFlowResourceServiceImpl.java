@@ -5,6 +5,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.ResourceFields;
-import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -54,7 +54,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
             return;
         }
 
-        String type = transfer.getStringField(TransferFields.TYPE);
+        String type = transfer.getStringField(TYPE);
         Entity stockAreasFrom = transfer.getBelongsToField(STOCK_AREAS_FROM);
         Entity stockAreasTo = transfer.getBelongsToField(STOCK_AREAS_TO);
         Entity product = transfer.getBelongsToField(PRODUCT);
@@ -86,25 +86,27 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
     private void updateResource(final Entity stockAreas, final Entity product, BigDecimal quantity) {
         List<Entity> resources = getResources(stockAreas, product);
 
-        for (Entity resource : resources) {
-            BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
+        if (resources != null) {
+            for (Entity resource : resources) {
+                BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
-            if (quantity.compareTo(resourceQuantity) >= 0) {
-                quantity = (quantity.subtract(resourceQuantity, numberService.getMathContext()));
+                if (quantity.compareTo(resourceQuantity) >= 0) {
+                    quantity = (quantity.subtract(resourceQuantity, numberService.getMathContext()));
 
-                resource.getDataDefinition().delete(resource.getId());
+                    resource.getDataDefinition().delete(resource.getId());
 
-                if (quantity.compareTo(BigDecimal.ZERO) == 0) {
+                    if (BigDecimal.ZERO.equals(quantity)) {
+                        return;
+                    }
+                } else {
+                    resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
+
+                    resource.setField(QUANTITY, resourceQuantity);
+
+                    resource.getDataDefinition().save(resource);
+
                     return;
                 }
-            } else {
-                resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
-
-                resource.setField(QUANTITY, resourceQuantity);
-
-                resource.getDataDefinition().save(resource);
-
-                return;
             }
         }
     }
@@ -114,6 +116,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.STOCK_AREAS, stockAreas))
                 .add(SearchRestrictions.belongsTo(PRODUCT, product)).orderAscBy(TIME).list().getEntities();
+
         return resources;
     }
 

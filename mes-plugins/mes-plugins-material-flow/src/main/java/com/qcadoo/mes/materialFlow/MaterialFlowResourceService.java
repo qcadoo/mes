@@ -9,4 +9,5 @@ public interface MaterialFlowResourceService {
     boolean areResourcesSufficient(final Entity stockAreas, final Entity product, final BigDecimal quantity);
 
     void manageResources(final Entity transfer);
+
 }

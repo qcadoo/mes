@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialFlow;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
@@ -274,7 +275,7 @@ public class MaterialFlowService {
         }
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
         FieldComponent unitField = null;
-        String unit = product.getField("unit").toString();
+        String unit = product.getStringField(UNIT);
         for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
             unitField = (FieldComponent) view.getComponentByReference(referenceName);
             if (unitField == null) {

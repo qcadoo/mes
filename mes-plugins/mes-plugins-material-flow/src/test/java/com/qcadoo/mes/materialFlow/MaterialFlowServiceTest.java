@@ -23,10 +23,15 @@
  */
 package com.qcadoo.mes.materialFlow;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -40,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -49,6 +55,8 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.internal.DefaultEntity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 public class MaterialFlowServiceTest {
 
@@ -70,9 +78,15 @@ public class MaterialFlowServiceTest {
 
     private MathContext mathContext;
 
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_UNIT = "unit";
+
     private static final String STOCKAREAS = "1";
 
     private static final String PRODUCT = "1";
+
+    private static final long L_ID = 1L;
 
     private static final Date FORDATE = new Date();
 
@@ -98,6 +112,81 @@ public class MaterialFlowServiceTest {
         given(dataDefinitionService.get("materialFlow", "transfer")).willReturn(transfer);
         given(dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_STOCK_AREAS))
                 .willReturn(dataDefStockAreas);
+    }
+
+    @Test
+    public void shouldntFillUnitFieldValueWhenProductIdIsNull() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FieldComponent productField = mock(FieldComponent.class);
+        FieldComponent unitField = mock(FieldComponent.class);
+
+        given(view.getComponentByReference(L_PRODUCT)).willReturn(productField);
+        given(productField.getFieldValue()).willReturn(null);
+
+        // when
+        materialFlowService.fillUnitFieldValue(view);
+
+        // then
+        verify(unitField, never()).setFieldValue(Mockito.anyString());
+    }
+
+    @Test
+    public void shouldntFillUnitFieldValueWhenProductIdIsntNullAndUnitFieldsAreNull() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FieldComponent productField = mock(FieldComponent.class);
+        FieldComponent unitField = mock(FieldComponent.class);
+
+        given(view.getComponentByReference(L_PRODUCT)).willReturn(productField);
+        given(productField.getFieldValue()).willReturn(L_ID);
+
+        DataDefinition productDD = mock(DataDefinition.class);
+        Entity product = mock(Entity.class);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT)).willReturn(productDD);
+        given(productDD.get(L_ID)).willReturn(product);
+
+        given(product.getStringField(UNIT)).willReturn(L_UNIT);
+
+        given(view.getComponentByReference("quantityUNIT")).willReturn(null);
+        given(view.getComponentByReference("shouldBeUNIT")).willReturn(null);
+        given(view.getComponentByReference("foundUNIT")).willReturn(null);
+
+        // when
+        materialFlowService.fillUnitFieldValue(view);
+
+        // then
+        verify(unitField, never()).setFieldValue(Mockito.anyString());
+    }
+
+    @Test
+    public void shouldFillUnitFieldValueWhenProductIdIsntNullAndUnitFieldsArentNull() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FieldComponent productField = mock(FieldComponent.class);
+        FieldComponent unitField = mock(FieldComponent.class);
+
+        given(view.getComponentByReference(L_PRODUCT)).willReturn(productField);
+        given(productField.getFieldValue()).willReturn(L_ID);
+
+        DataDefinition productDD = mock(DataDefinition.class);
+        Entity product = mock(Entity.class);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT)).willReturn(productDD);
+        given(productDD.get(L_ID)).willReturn(product);
+
+        given(product.getStringField(UNIT)).willReturn(L_UNIT);
+
+        given(view.getComponentByReference("quantityUNIT")).willReturn(unitField);
+        given(view.getComponentByReference("shouldBeUNIT")).willReturn(unitField);
+        given(view.getComponentByReference("foundUNIT")).willReturn(unitField);
+
+        // when
+        materialFlowService.fillUnitFieldValue(view);
+
+        // then
+        verify(unitField, times(3)).setFieldValue(Mockito.anyString());
     }
 
     @Test
