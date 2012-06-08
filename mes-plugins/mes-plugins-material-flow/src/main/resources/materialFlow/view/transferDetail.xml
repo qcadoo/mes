@@ -97,6 +97,7 @@
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />
+			<option type="expression" value="#number" />
 		</component>
 	</component>
 	<hooks>

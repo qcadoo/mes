@@ -41,4 +41,5 @@
 		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>
 	<hooks />
+	<identifier expression="#number" />
 </model>
