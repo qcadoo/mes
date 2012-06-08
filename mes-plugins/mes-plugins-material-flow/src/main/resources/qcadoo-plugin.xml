@@ -134,8 +134,6 @@
 		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
 		<view:view resource="view/transformationsList.xml" />
 		<view:view resource="view/transformationsDetail.xml" />
-		<view:view resource="view/transformationsConsumptionDetails.xml" />
-		<view:view resource="view/transformationsProductionDetails.xml" />
 
 		<view:resource uri="public/**/*" />
 	</modules>
