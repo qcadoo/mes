@@ -9,33 +9,29 @@
 				<bigButton name="back" action="#{window}.performBack;"
 					icon="backIcon24.png" />
 			</group>
-			<group name="action">
+			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
 					action="#{progressForDaysADL}.fireEvent(save); #{form}.performSave;" />
-				<bigButton name="save" icon="updateIcon24.png" state="enabled"
+				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
 					action="#{window}.performRefresh;" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
-			<component type="lookup" name="order" field="#{form}.order"
-				reference="order" defaultVisible="false">
-				<option type="column" name="name" fields="name" link="true" />
-				<option type="column" name="state" fields="state" />
-				<option type="column" name="typeOfProductionRecording"
-					fields="typeOfProductionRecording" />
-
-				<option type="required" value="true" />
-
-				<option type="searchable" value="name,number" />
-				<option type="orderable" value="name,number" />
-
-				<option type="order" column="number" direction="desc" />
-
-				<option type="expression"
-					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-				<option type="fieldCode" value="number" />
-			</component>
 			<component type="form" name="form" reference="form">
+				<component type="lookup" name="order" field="order"
+					reference="order" defaultVisible="false">
+					<option type="column" name="name" fields="name" link="true" />
+					<option type="column" name="state" fields="state" />
+					<option type="column" name="typeOfProductionRecording"
+						fields="typeOfProductionRecording" />
+					<option type="required" value="true" />
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+					<option type="order" column="number" direction="desc" />
+					<option type="expression"
+						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+				</component>
 				<component type="gridLayout" name="mainGridLayout"
 					columns="3" rows="1">
 					<layoutElement column="1" row="1">
@@ -186,9 +182,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="addRootForOperation" />
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="disablePlannedProgressTypeForPendingOrder" />
+<!-- 		<beforeRender -->
+<!-- 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks" -->
+<!-- 			method="disablePlannedProgressTypeForPendingOrder" /> -->
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="fillProducedField" />

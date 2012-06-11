@@ -59,14 +59,14 @@
 
 		<model:model-hook model="technologyInstanceOperationComponent"
 			plugin="technologies">
-			<model:onSave
-				class="com.qcadoo.mes.productionPerShift.hooks.TechInstOperCompHooksPPS"
+			<model:validatesWith
+				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
 				method="checkGrowingNumberOfDays" />
 		</model:model-hook>
 		<model:model-hook model="technologyInstanceOperationComponent"
 			plugin="technologies">
-			<model:onSave
-				class="com.qcadoo.mes.productionPerShift.hooks.TechInstOperCompHooksPPS"
+			<model:validatesWith
+				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
 				method="checkShiftIfWorks" />
 		</model:model-hook>
 

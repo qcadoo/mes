@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionPerShift.hooks;
+package com.qcadoo.mes.productionPerShift.validators;
 
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.ORDER;
@@ -25,7 +25,7 @@ public class TechInstOperCompHooksPPS {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final Long MILLISECONDS_OF_ONE_DAY = 86400000L;
+    private final static Long MILLISECONDS_OF_ONE_DAY = 86400000L;
 
     public boolean checkGrowingNumberOfDays(final DataDefinition dataDefinition, final Entity entity) {
         List<Entity> progressForDays = entity.getHasManyField("progressForDays");
@@ -46,8 +46,7 @@ public class TechInstOperCompHooksPPS {
                         .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_PER_SHIFT).find()
                         .add(SearchRestrictions.belongsTo(ORDER, order)).uniqueResult();
                 entity.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder");
-
-                // productionPerShift.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder");
+                productionPerShift.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder");
                 return false;
             }
         }
@@ -61,22 +60,26 @@ public class TechInstOperCompHooksPPS {
         }
         Entity order = entity.getBelongsToField("order");
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
+            if (!entity.getBooleanField("hasCorrections")
+                    || progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
                 continue;
             }
             Integer day = ((Long) progressForDay.getField("day")).intValue();
-            Entity shift = progressForDay.getBelongsToField("shift");
-            if (shift == null) {
-                continue;
-            }
-            Date startOrder = getPlannedOrCorrectedDate(order);
-            Date dayOfProduction = new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
-            Entity shiftFromDay = shiftsService.getShiftFromDate(dayOfProduction);
-
-            if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
-                entity.addError(dataDefinition.getField("progressForDays"), "productionPerShift.progressForDay.shiftDoesNotWork",
-                        shift.getStringField("name"), dayOfProduction.toString());
-                return false;
+            List<Entity> dailyProgressList = progressForDay.getHasManyField("dailyProgress");
+            for (Entity dailyProgress : dailyProgressList) {
+                Entity shift = dailyProgress.getBelongsToField("shift");
+                if (shift == null) {
+                    continue;
+                }
+                Date startOrder = getPlannedOrCorrectedDate(order);
+                Date dayOfProduction = new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
+                Entity shiftFromDay = shiftsService.getShiftFromDate(dayOfProduction);
+                if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
+                    entity.addError(dataDefinition.getField("progressForDays"),
+                            "productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
+                            dayOfProduction.toString());
+                    return false;
+                }
             }
         }
         return true;
