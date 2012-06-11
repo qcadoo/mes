@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.ResourceFields;
@@ -49,6 +50,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         }
     }
 
+    @Transactional
     public void manageResources(final Entity transfer) {
         if (transfer == null) {
             return;
