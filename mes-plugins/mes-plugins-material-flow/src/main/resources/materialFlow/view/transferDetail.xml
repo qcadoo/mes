@@ -69,14 +69,17 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6" width="5">
-					<component type="lookup" name="product" field="product" reference="product">
+					<component type="lookup" name="product" field="product"
+						reference="product">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="generateNumberForTransfer" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="generateNumberForTransfer" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="7" width="5">
