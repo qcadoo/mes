@@ -6,6 +6,9 @@ import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.
 import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TIME;
 import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.UNIT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -17,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -31,6 +36,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Component
 public class MultitransferListeners {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -47,9 +54,9 @@ public class MultitransferListeners {
 
         for (FormComponent formComponent : formComponents) {
             Entity productQuantity = formComponent.getEntity();
-            Entity product = productQuantity.getBelongsToField("product");
+            Entity product = productQuantity.getBelongsToField(PRODUCT);
             if (product != null) {
-                productQuantity.setField("unit", product.getStringField("unit"));
+                productQuantity.setField(UNIT, product.getStringField(UNIT));
             }
             formComponent.setEntity(productQuantity);
         }
@@ -79,15 +86,15 @@ public class MultitransferListeners {
 
         for (FormComponent formComponent : formComponents) {
             Entity productQuantity = formComponent.getEntity();
-            BigDecimal quantity = productQuantity.getDecimalField("quantity");
-            Entity product = productQuantity.getBelongsToField("product");
+            BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
+            Entity product = productQuantity.getBelongsToField(PRODUCT);
 
             if (product != null) {
                 materialFlowTransferService.createTransfer(type, stockAreaFrom, stockAreaTo, product, quantity, staff, time);
             }
         }
 
-        view.getComponentByReference("form").addMessage("materialFlow.multitransfer.generate.success", MessageType.SUCCESS);
+        view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.generate.success", MessageType.SUCCESS);
     }
 
     public void getFromTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -100,32 +107,34 @@ public class MultitransferListeners {
         List<Entity> templates = materialFlowTransferService.getTransferTemplates(stockAreaFrom, stockAreaTo);
 
         if (templates.isEmpty()) {
-            view.getComponentByReference("form").addMessage("materialFlow.multitransfer.template.failure", MessageType.FAILURE);
+            view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.template.failure", MessageType.FAILURE);
             return;
         }
 
         List<Entity> productQuantities = Lists.newArrayList();
 
-        DataDefinition productQuantityDD = dataDefinitionService.get("materialFlow", "productQuantity");
+        DataDefinition productQuantityDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_PRODUCT_QUANTITY);
 
         for (Entity template : templates) {
             Entity productQuantity = productQuantityDD.create();
-            Entity product = template.getBelongsToField("product");
-            productQuantity.setField("product", product);
-            productQuantity.setField("unit", product.getStringField("unit"));
+            Entity product = template.getBelongsToField(PRODUCT);
+            productQuantity.setField(PRODUCT, product);
+            productQuantity.setField(UNIT, product.getStringField(UNIT));
             productQuantities.add(productQuantity);
         }
 
         adlc.setFieldValue(productQuantities);
 
-        view.getComponentByReference("form").addMessage("materialFlow.multitransfer.template.success", MessageType.SUCCESS);
+        view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.template.success", MessageType.SUCCESS);
     }
 
     private Entity getAreaById(final Long id) {
         if (id == null) {
             return null;
         }
-        DataDefinition dd = dataDefinitionService.get("materialFlow", "stockAreas");
+        DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_STOCK_AREAS);
         return dd.get(id);
     }
 
@@ -133,7 +142,7 @@ public class MultitransferListeners {
         if (id == null) {
             return null;
         }
-        DataDefinition dd = dataDefinitionService.get("basic", "staff");
+        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF);
         return dd.get(id);
     }
 
@@ -157,21 +166,21 @@ public class MultitransferListeners {
 
         if (formComponents.isEmpty()) {
             isValid = false;
-            view.getComponentByReference("form").addMessage("materialFlow.multitransfer.validation.productsAreRequired",
+            view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.validation.productsAreRequired",
                     MessageType.FAILURE);
         }
 
         for (FormComponent formComponent : formComponents) {
             Entity productQuantity = formComponent.getEntity();
-            BigDecimal quantity = productQuantity.getDecimalField("quantity");
-            Entity product = productQuantity.getBelongsToField("product");
+            BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
+            Entity product = productQuantity.getBelongsToField(PRODUCT);
             if (product == null) {
-                formComponent.findFieldComponentByName("product").addMessage(
-                        "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+                formComponent.findFieldComponentByName(PRODUCT).addMessage("materialFlow.multitransfer.validation.fieldRequired",
+                        MessageType.FAILURE);
                 isValid = false;
             }
             if (quantity == null) {
-                formComponent.findFieldComponentByName("quantity").addMessage(
+                formComponent.findFieldComponentByName(QUANTITY).addMessage(
                         "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
                 isValid = false;
             }

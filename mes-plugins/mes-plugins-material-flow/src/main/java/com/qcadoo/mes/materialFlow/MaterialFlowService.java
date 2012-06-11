@@ -241,7 +241,7 @@ public class MaterialFlowService {
         number.requestComponentUpdateState();
     }
 
-    public String generateNumberFromProduct(final Entity product, String model) {
+    public String generateNumberFromProduct(final Entity product, final String model) {
         String number = "";
 
         if (product != null) {
@@ -456,11 +456,10 @@ public class MaterialFlowService {
             entity.addError(dataDefinition.getField(TIME), "materialFlow.validate.global.error.fillDate");
             validate = false;
         }
-        if (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type)) {
-            if (!materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
-                entity.addError(dataDefinition.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
-                validate = false;
-            }
+        if ((CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
+                && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+            entity.addError(dataDefinition.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
+            validate = false;
         }
 
         return validate;

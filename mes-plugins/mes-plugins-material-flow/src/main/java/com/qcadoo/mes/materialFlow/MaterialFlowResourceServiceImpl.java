@@ -91,7 +91,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
                 BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
                 if (quantity.compareTo(resourceQuantity) >= 0) {
-                    quantity = (quantity.subtract(resourceQuantity, numberService.getMathContext()));
+                    quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
                     resource.getDataDefinition().delete(resource.getId());
 

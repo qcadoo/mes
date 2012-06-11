@@ -48,6 +48,8 @@ public interface MaterialFlowConstants {
 
     String MODEL_TRANSFORMATIONS = "transformations";
 
+    String MODEL_PRODUCT_QUANTITY = "productQuantity";
+
     // VIEW
     String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
 
