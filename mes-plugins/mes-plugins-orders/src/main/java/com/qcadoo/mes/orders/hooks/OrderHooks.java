@@ -104,7 +104,7 @@ public class OrderHooks {
         }
     }
 
-    private Date choppingOffMiliseconds(Object date) {
+    private Date choppingOffMiliseconds(final Object date) {
         return new Date(((Date) date).getTime() / SECOND_MILLIS);
     }
 

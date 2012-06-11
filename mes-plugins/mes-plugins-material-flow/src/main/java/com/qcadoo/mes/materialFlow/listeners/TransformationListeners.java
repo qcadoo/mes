@@ -64,7 +64,7 @@ public class TransformationListeners {
         return dataDefinitionService.get("technologies", "operation").get(id);
     }
 
-    private List<Entity> getProductQuantityComponents(List<Entity> productComponents) {
+    private List<Entity> getProductQuantityComponents(final List<Entity> productComponents) {
         List<Entity> productQuantityComponents = Lists.newArrayList();
 
         DataDefinition dd = dataDefinitionService.get("materialFlow", "transfer");

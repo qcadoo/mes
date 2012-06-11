@@ -158,7 +158,7 @@ public class ProductionPerShiftDetailsHooks {
         progressForDaysADL.requestComponentUpdateState();
     }
 
-    private void disabledComponent(List<FormComponent> components, final boolean shouldDisabled) {
+    private void disabledComponent(final List<FormComponent> components, final boolean shouldDisabled) {
         for (FormComponent form : components) {
             form.setFormEnabled(shouldDisabled);
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
