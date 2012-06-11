@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionPerShift.hooks;
+package com.qcadoo.mes.productionPerShift.validators;
 
 import org.springframework.stereotype.Service;
 

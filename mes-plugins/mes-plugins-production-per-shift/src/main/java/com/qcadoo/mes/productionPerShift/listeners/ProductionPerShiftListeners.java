@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
@@ -15,10 +14,12 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -93,25 +94,30 @@ public class ProductionPerShiftListeners {
      * @param componentState
      * @param args
      */
-    @Transactional
     public void saveProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
+        FormComponent form = (FormComponent) viewState.getComponentByReference("form");
         @SuppressWarnings("unchecked")
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
-        String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType")).getFieldValue()
-                .toString();
+        String plannedProgressType = viewState.getComponentByReference("plannedProgressType").getFieldValue().toString();
         for (Entity progressForDay : progressForDays) {
             progressForDay.setField("corrected", plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
         Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
-        boolean hasCorrenctions = detailsHooks.shouldHasCorrections(viewState);
+        boolean hasCorrections = detailsHooks.shouldHasCorrections(viewState);
         if (tioc != null) {
-            tioc.setField("hasCorrections", hasCorrenctions);
-            tioc.setField("progressForDays", prepareProgressForDaysForTIOC(tioc, hasCorrenctions, progressForDays));
-            tioc.getDataDefinition().save(tioc);
+            tioc.setField("hasCorrections", hasCorrections);
+            tioc.setField("progressForDays", prepareProgressForDaysForTIOC(tioc, hasCorrections, progressForDays));
+            tioc = tioc.getDataDefinition().save(tioc);
+            if (!tioc.isValid()) {
+                List<ErrorMessage> errors = tioc.getGlobalErrors();
+                for (ErrorMessage error : errors) {
+                    componentState.addMessage(error.getMessage(), MessageType.FAILURE, error.getVars());
+                }
+            }
         }
-        resetProgressForDaysComponents(viewState);
+        // resetProgressForDaysComponents(viewState);
     }
 
     private List<Entity> prepareProgressForDaysForTIOC(final Entity tioc, final boolean hasCorrections,

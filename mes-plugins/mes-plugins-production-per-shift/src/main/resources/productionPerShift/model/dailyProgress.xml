@@ -7,5 +7,6 @@
 		<belongsTo name="shift" model="shift" plugin="basic"/>
 		<decimal name="quantity" />
 	</fields>
-	<hooks />
+	<hooks/>
+	
 </model>

@@ -73,7 +73,6 @@ public class ProductionPerShiftDetailsHooks {
 
         if (tioc != null) {
             Entity toc = tioc.getBelongsToField("technologyOperationComponent");
-
             Entity prodComp = technologyService.getMainOutputProductComponent(toc);
             Entity prod = prodComp.getBelongsToField("product");
             producedProduct = prod.getStringField("name");
