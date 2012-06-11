@@ -9,6 +9,7 @@ import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -50,6 +53,9 @@ public class MultitransferListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private MaterialFlowService materialFlowService;
+
+    @Autowired
     private MaterialFlowTransferService materialFlowTransferService;
 
     @Autowired
@@ -61,17 +67,44 @@ public class MultitransferListeners {
     @Autowired
     private TimeConverterService timeConverterService;
 
-    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
+    public void fillTransferNumbersInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        fillTransferNumbersInADL(view, "consumption");
+        fillTransferNumbersInADL(view, "production");
+    }
+
+    private void fillTransferNumbersInADL(final ViewDefinitionState view, final String adlName) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         for (FormComponent formComponent : formComponents) {
-            Entity productQuantity = formComponent.getEntity();
-            Entity product = productQuantity.getBelongsToField(PRODUCT);
-            if (product != null) {
-                productQuantity.setField(UNIT, product.getStringField(UNIT));
+            Entity entity = formComponent.getEntity();
+            String number = entity.getStringField(NUMBER);
+            Entity product = entity.getBelongsToField(PRODUCT);
+
+            if ((product != null) && StringUtils.isEmpty(number)) {
+                number = materialFlowService.generateNumberFromProduct(product, "transfer");
+
+                entity.setField(NUMBER, number);
             }
-            formComponent.setEntity(productQuantity);
+            formComponent.setEntity(entity);
+        }
+    }
+
+    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        fillUnitsInADL(view, PRODUCTS);
+    }
+
+    private void fillUnitsInADL(final ViewDefinitionState view, final String adlName) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
+        List<FormComponent> formComponents = adlc.getFormComponents();
+
+        for (FormComponent formComponent : formComponents) {
+            Entity entity = formComponent.getEntity();
+            Entity product = entity.getBelongsToField(PRODUCT);
+            if (product != null) {
+                entity.setField(UNIT, product.getStringField(UNIT));
+            }
+            formComponent.setEntity(entity);
         }
     }
 
