@@ -43,6 +43,9 @@
 			model="transformations" />
 		<belongsTo name="transformationsProduction" plugin="materialFlow"
 			model="transformations" />
+		<!--  just for multitransfer's sake. To attach some model to ADL  -->
+		<hasMany persistent="false" name="products" plugin="materialFlow"
+			model="productQuantity" joinField="transfer" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.MaterialFlowService"

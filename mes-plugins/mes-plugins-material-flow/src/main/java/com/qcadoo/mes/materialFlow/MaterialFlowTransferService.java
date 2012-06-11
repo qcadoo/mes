@@ -12,4 +12,5 @@ public interface MaterialFlowTransferService {
             final BigDecimal quantity, final Entity staff, final Date time);
 
     List<Entity> getTransferTemplates(final Entity stockAreaFrom, final Entity stockAreaTo);
+
 }

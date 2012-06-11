@@ -9,23 +9,30 @@ import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -44,6 +51,12 @@ public class MultitransferListeners {
 
     @Autowired
     private MaterialFlowTransferService materialFlowTransferService;
+
+    @Autowired
+    private MaterialFlowResourceService materialFlowResourceService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -155,6 +168,7 @@ public class MultitransferListeners {
                 Object fieldValue = component.getFieldValue();
                 if (fieldValue == null || fieldValue.toString().isEmpty()) {
                     component.addMessage("materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+
                     isValid = false;
                 }
             }
@@ -165,24 +179,74 @@ public class MultitransferListeners {
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         if (formComponents.isEmpty()) {
-            isValid = false;
             view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.validation.productsAreRequired",
                     MessageType.FAILURE);
-        }
 
-        for (FormComponent formComponent : formComponents) {
-            Entity productQuantity = formComponent.getEntity();
-            BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
-            Entity product = productQuantity.getBelongsToField(PRODUCT);
-            if (product == null) {
-                formComponent.findFieldComponentByName(PRODUCT).addMessage("materialFlow.multitransfer.validation.fieldRequired",
-                        MessageType.FAILURE);
-                isValid = false;
+            isValid = false;
+        } else {
+            FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
+            FieldComponent stockAreasFromField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
+
+            String type = null;
+            Entity stockAreasFrom = null;
+
+            if ((typeField != null) && (stockAreasFromField != null)) {
+                type = (String) typeField.getFieldValue();
+                stockAreasFrom = getAreaById((Long) stockAreasFromField.getFieldValue());
             }
-            if (quantity == null) {
-                formComponent.findFieldComponentByName(QUANTITY).addMessage(
-                        "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
-                isValid = false;
+
+            Map<Entity, BigDecimal> productAndQuantities = Maps.newHashMap();
+
+            for (FormComponent formComponent : formComponents) {
+                Entity productQuantity = formComponent.getEntity();
+                BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
+                Entity product = productQuantity.getBelongsToField(PRODUCT);
+
+                if (product == null) {
+                    formComponent.findFieldComponentByName(PRODUCT).addMessage(
+                            "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+
+                    isValid = false;
+                }
+                if (quantity == null) {
+                    formComponent.findFieldComponentByName(QUANTITY).addMessage(
+                            "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+
+                    isValid = false;
+                }
+
+                if ((product != null) && (quantity != null)) {
+                    if (productAndQuantities.containsKey(product)) {
+                        productAndQuantities.put(product,
+                                productAndQuantities.get(product).add(quantity, numberService.getMathContext()));
+                    } else {
+                        productAndQuantities.put(product, quantity);
+                    }
+
+                    if ((type != null) && (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
+                            && (stockAreasFrom != null)
+                            && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+                        formComponent.findFieldComponentByName(QUANTITY).addMessage(
+                                "materialFlow.multitransfer.validation.resourcesArentSufficient", MessageType.FAILURE);
+
+                        isValid = false;
+                    }
+                }
+            }
+
+            for (Map.Entry<Entity, BigDecimal> productAndQuantity : productAndQuantities.entrySet()) {
+                Entity product = productAndQuantity.getKey();
+                BigDecimal quantity = productAndQuantity.getValue();
+
+                if ((type != null) && (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
+                        && (stockAreasFrom != null)
+                        && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+                    view.getComponentByReference(L_FORM).addMessage(
+                            "materialFlow.multitransfer.validation.resourcesArentSufficientForProduct", MessageType.FAILURE,
+                            product.getStringField(ProductFields.NAME));
+
+                    isValid = false;
+                }
             }
         }
 

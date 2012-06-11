@@ -32,8 +32,9 @@
 			required="true" />
 		<decimal name="quantity" required="true" />
 		<string name="unit" />
+		<belongsTo name="transfer" model="transfer" plugin="materialFlow" 
+			required="true" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks />
 	<identifier expression="#product['number']" />
 </model>

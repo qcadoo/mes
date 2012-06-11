@@ -31,8 +31,9 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true">
-		</string>
+		<string name="name" required="true" />
+		<hasMany name="materialsInStockAreas" plugin="materialFlow"
+			model="materialsInStockAreasComponent" joinField="stockAreas" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
