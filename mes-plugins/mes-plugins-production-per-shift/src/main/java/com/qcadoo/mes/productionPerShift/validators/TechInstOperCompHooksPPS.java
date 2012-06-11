@@ -25,7 +25,7 @@ public class TechInstOperCompHooksPPS {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private final static Long MILLISECONDS_OF_ONE_DAY = 86400000L;
+    private static final Long MILLISECONDS_OF_ONE_DAY = 86400000L;
 
     public boolean checkGrowingNumberOfDays(final DataDefinition dataDefinition, final Entity entity) {
         List<Entity> progressForDays = entity.getHasManyField("progressForDays");
@@ -37,8 +37,8 @@ public class TechInstOperCompHooksPPS {
             if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
                 continue;
             }
-            Integer day = ((Long) progressForDay.getField("day")).intValue();
-            if (dayNumber.compareTo(day) == -1) {
+            Integer day = Integer.valueOf(progressForDay.getField("day").toString());
+            if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
             } else {
                 Entity order = entity.getBelongsToField("order");
@@ -60,11 +60,10 @@ public class TechInstOperCompHooksPPS {
         }
         Entity order = entity.getBelongsToField("order");
         for (Entity progressForDay : progressForDays) {
-            if (!entity.getBooleanField("hasCorrections")
-                    || progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
+            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
                 continue;
             }
-            Integer day = ((Long) progressForDay.getField("day")).intValue();
+            Integer day = Integer.valueOf(progressForDay.getField("day").toString());
             List<Entity> dailyProgressList = progressForDay.getHasManyField("dailyProgress");
             for (Entity dailyProgress : dailyProgressList) {
                 Entity shift = dailyProgress.getBelongsToField("shift");
@@ -75,8 +74,7 @@ public class TechInstOperCompHooksPPS {
                 Date dayOfProduction = new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
                 Entity shiftFromDay = shiftsService.getShiftFromDate(dayOfProduction);
                 if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
-                    entity.addError(dataDefinition.getField("progressForDays"),
-                            "productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
+                    entity.addGlobalError("productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
                             dayOfProduction.toString());
                     return false;
                 }

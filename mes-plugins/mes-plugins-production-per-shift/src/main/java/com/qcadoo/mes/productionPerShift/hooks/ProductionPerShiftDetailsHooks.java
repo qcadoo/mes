@@ -22,6 +22,9 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -59,8 +62,13 @@ public class ProductionPerShiftDetailsHooks {
     public void disablePlannedProgressTypeForPendingOrder(final ViewDefinitionState view) {
         Entity order = getOrderFromLookup(view);
         FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference("plannedProgressType");
-        if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+        if (plannedProgressType.getFieldValue().equals("")
+                || plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
             plannedProgressType.setFieldValue(PlannedProgressType.PLANNED.getStringValue());
+        } else {
+            plannedProgressType.setFieldValue(PlannedProgressType.CORRECTED.getStringValue());
+        }
+        if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
             plannedProgressType.setEnabled(false);
         } else {
             plannedProgressType.setEnabled(true);
@@ -170,6 +178,23 @@ public class ProductionPerShiftDetailsHooks {
     public boolean shouldHasCorrections(final ViewDefinitionState viewState) {
         return ((FieldComponent) viewState.getComponentByReference("plannedProgressType")).getFieldValue().equals(
                 PlannedProgressType.CORRECTED.getStringValue());
+    }
+
+    public void changedButtonState(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonGroup progressSelectedOperation = (RibbonGroup) window.getRibbon().getGroupByName("progress");
+        RibbonActionItem clearButton = (RibbonActionItem) progressSelectedOperation.getItemByName("clear");
+        RibbonActionItem copyButton = (RibbonActionItem) progressSelectedOperation.getItemByName("copyFromPlanned");
+        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference("plannedProgressType");
+        if (plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
+            clearButton.setEnabled(false);
+            copyButton.setEnabled(false);
+        } else {
+            clearButton.setEnabled(true);
+            copyButton.setEnabled(true);
+        }
+        clearButton.requestUpdate(true);
+        copyButton.requestUpdate(true);
     }
 
 }

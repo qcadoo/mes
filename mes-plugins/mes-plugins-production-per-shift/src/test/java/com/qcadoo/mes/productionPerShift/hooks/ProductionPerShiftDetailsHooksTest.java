@@ -181,10 +181,11 @@ public class ProductionPerShiftDetailsHooksTest {
     @Test
     public void shouldDisabledPlannedProgressTypeForPendingOrder() throws Exception {
         // given
-
+        String empty = "";
         when(orderDD.get(orderId)).thenReturn(order);
         when(order.getStringField("state")).thenReturn("01pending");
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
+        when(plannedProgressType.getFieldValue()).thenReturn(empty);
         // when
         hooks.disablePlannedProgressTypeForPendingOrder(view);
         // then
@@ -196,11 +197,13 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldEnabledPlannedProgressTypeForInProgressOrder() throws Exception {
         // given
         Long orderId = 1L;
+        String empty = "";
         when(view.getComponentByReference("order")).thenReturn(lookup);
         when(lookup.getFieldValue()).thenReturn(orderId);
         when(orderDD.get(orderId)).thenReturn(order);
         when(order.getStringField("state")).thenReturn("03inProgress");
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
+        when(plannedProgressType.getFieldValue()).thenReturn(empty);
         // when
         hooks.disablePlannedProgressTypeForPendingOrder(view);
         // then

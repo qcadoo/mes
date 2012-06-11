@@ -15,6 +15,12 @@
 				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
 					action="#{window}.performRefresh;" />
 			</group>
+			<group name="progress">
+				<bigButton name="clear" icon="deleteIcon24.png" state="enabled"
+					action="#{form}.fireEvent(deleteProgressForDays)" />
+				<bigButton name="copyFromPlanned" icon="copyIcon24.png"
+					state="enabled" action="#{form}.fireEvent(copyFromPlanned)" />
+			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="productionPerShiftTab">
 			<component type="form" name="form" reference="form">
@@ -40,7 +46,8 @@
 								columns="1" rows="3">
 								<layoutElement column="1" row="1">
 									<component type="select" name="plannedProgressType"
-										field="#{form}.plannedProgressType" reference="plannedProgressType">
+										field="#{form}.plannedProgressType" reference="plannedProgressType"
+										defaultValue="01planned">
 										<listener event="onChange" method="changeView"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
 									</component>
@@ -67,7 +74,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="checkbox" name="wasItCorrected"
-										reference="wasItCorrected" defaultEnabled="false">
+										reference="wasItCorrected" defaultEnabled="false"
+										hasDescription="true">
 									</component>
 								</layoutElement>
 							</component>
@@ -133,7 +141,7 @@
 												columns="3" rows="1">
 												<layoutElement column="1" row="1">
 													<component type="input" name="day" field="day"
-														reference="day" />
+														reference="day" hasDescription="true" />
 												</layoutElement>
 												<layoutElement column="2" row="1" width="2">
 													<component type="awesomeDynamicList" name="dailyProgressADL"
@@ -174,6 +182,12 @@
 						</component>
 					</layoutElement>
 				</component>
+				<listener event="deleteProgressForDays"
+					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+					method="deleteProgressForDays" />
+				<listener event="copyFromPlanned"
+					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+					method="copyFromPlanned" />
 			</component>
 		</windowTab>
 		<option type="header" value="false" />
@@ -182,9 +196,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="addRootForOperation" />
-<!-- 		<beforeRender -->
-<!-- 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks" -->
-<!-- 			method="disablePlannedProgressTypeForPendingOrder" /> -->
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="disablePlannedProgressTypeForPendingOrder" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="fillProducedField" />
@@ -194,5 +208,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="disableReasonOfCorrection" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="changedButtonState" />
 	</hooks>
 </view>
