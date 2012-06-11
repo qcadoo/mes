@@ -40,7 +40,7 @@ public interface StateChangeEntityDescriber {
     /**
      * @return name of boolean field containing finished flag.
      */
-    String getFinishedFieldName();
+    String getStatusFieldName();
 
     /**
      * @return name of hasMany field containing collection of related messages.
@@ -51,4 +51,12 @@ public interface StateChangeEntityDescriber {
      * @return name of Integer field containing number of phase.
      */
     String getPhaseFieldName();
+
+    /**
+     * Check if any field using in this describer is missing.
+     * 
+     * @throws IllegalStateException
+     *             if at least one field is missing.
+     */
+    void checkFields() throws IllegalStateException;
 }

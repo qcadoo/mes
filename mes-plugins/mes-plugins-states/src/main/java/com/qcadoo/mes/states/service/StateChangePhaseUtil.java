@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 
 public final class StateChangePhaseUtil {
@@ -15,10 +16,12 @@ public final class StateChangePhaseUtil {
 
     public static boolean canRun(final StateChangeService stateChangeService, final Entity stateChangeEntity) {
         final StateChangeEntityDescriber describer = stateChangeService.getChangeEntityDescriber();
-        boolean isFinished = stateChangeEntity.getBooleanField(describer.getFinishedFieldName());
+        final String statusStringValue = stateChangeEntity.getStringField(describer.getStatusFieldName());
+        final StateChangeStatus status = StateChangeStatus.parseString(statusStringValue);
+
         List<Entity> messages = stateChangeEntity.getHasManyField(describer.getMessagesFieldName());
 
         Preconditions.checkNotNull(messages, "entity " + stateChangeEntity + " should have messages has many field!");
-        return !isFinished && !hasFailureMessages(messages);
+        return status.canContinue() && !hasFailureMessages(messages);
     }
 }

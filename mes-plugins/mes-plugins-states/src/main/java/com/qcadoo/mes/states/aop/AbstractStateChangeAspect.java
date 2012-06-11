@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,23 +19,23 @@ import com.qcadoo.model.api.Entity;
 
 /**
  * Abstract service for changing entity state which provides default implementation.
+ * 
+ * @since 1.1.7
  */
 @Aspect
 @Configurable
 @DeclarePrecedence("com.qcadoo.mes.states.aop.StateChangePhaseAspect, com.qcadoo.mes.states.aop.RunInPhaseAspect")
 public abstract class AbstractStateChangeAspect implements StateChangeService {
 
-    protected static final int DEFAULT_NUM_OF_PHASES = 8;
+    protected static final int DEFAULT_NUM_OF_PHASES = 1;
 
     @Autowired
     protected MessageService messageService;
 
     /**
-     * @return name of field representing entity state
+     * @return name of field representing entity's state
      */
     protected abstract String getStateFieldName();
-
-    public abstract StateChangeEntityDescriber getChangeEntityDescriber();
 
     @Override
     public Entity createNewStateChangeEntity(final Entity owner, final String targetStateString) {
@@ -75,7 +74,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Transactional
     public void changeState(final Entity stateChangeEntity) {
         final StateChangeEntityDescriber describer = getChangeEntityDescriber();
-        for (int phase = getPhaseValue(stateChangeEntity) + 1; phase <= DEFAULT_NUM_OF_PHASES; phase++) {
+        describer.checkFields();
+        for (int phase = getPhaseValue(stateChangeEntity) + 1; phase <= getNumOfPhases(); phase++) {
             if (StateChangePhaseUtil.canRun(this, stateChangeEntity)) {
                 stateChangeEntity.setField(describer.getPhaseFieldName(), phase);
                 changeStatePhase(stateChangeEntity, phase);
@@ -85,11 +85,26 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         performChangeEntityState(stateChangeEntity);
     }
 
+    /**
+     * Get number of state change phases. Default is 1.
+     * 
+     * @return number of phases
+     */
+    protected int getNumOfPhases() {
+        return DEFAULT_NUM_OF_PHASES;
+    }
+
     private int getPhaseValue(final Entity stateChangeEntity) {
         final Object phaseFieldValue = stateChangeEntity.getField(getChangeEntityDescriber().getPhaseFieldName());
         return phaseFieldValue == null ? 0 : ((Integer) phaseFieldValue).intValue();
     }
 
+    /**
+     * Single state change phase join point.
+     * 
+     * @param stateChangeEntity
+     * @param phaseNumber
+     */
     protected abstract void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber);
 
     @StateChangePhase
@@ -103,34 +118,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         owner.setField(getStateFieldName(), targetState);
 
         owner.getDataDefinition().save(owner);
-        stateChangeEntity.setField(describer.getFinishedFieldName(), true);
+        stateChangeEntity.setField(describer.getStatusFieldName(), true);
         stateChangeEntity.getDataDefinition().save(stateChangeEntity);
     }
-
-    /**
-     * Determine pointcut for changing state join points ({@link StateChangeService#changeState(Entity)}) using additional
-     * restrictions from {@link AbstractStateChangeAspect#stateChangeServiceSelector()} pointcut.
-     * 
-     * @param stateChangeEntity
-     *            entity which represent state change flow
-     * @param annotation
-     */
-    @Pointcut("execution(public void com.qcadoo.mes.states.service.StateChangeService.changeState(..)) "
-            + "&& args(stateChangeEntity,..) && stateChangeServiceSelector()")
-    public void stateChanging(final Entity stateChangeEntity) {
-    }
-
-    // @Pointcut("execution(* *(..)) && @annotation(com.qcadoo.mes.states.annotation.StateChangePhase) && args(stateChangeEntity, phase)")
-    // && stateChangeServiceSelector()")
-    @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeEntity, phase)")
-    // && stateChangeServiceSelector()")
-    public void stateChangingPhase(final Entity stateChangeEntity, final int phase) {
-    }
-
-    /**
-     * Definie stateChanging pointcut's aditional restriction. Usually pointcut expression looks like "this(TypeName)"
-     */
-    @Pointcut
-    public abstract void stateChangeServiceSelector();
 
 }

@@ -19,6 +19,8 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.MockStateChangeDescriber;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
+import com.qcadoo.mes.states.annotation.RunInPhase;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.MessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -31,11 +33,16 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     private static final String STATE_FIELD_VALUE = "someState";
 
     @Aspect
-    public static class TestStateChangeAspect {
+    public static class TestStateChangeAspect extends AbstractStateListenerAspect {
 
-        @org.aspectj.lang.annotation.Before("TestStateChangeService.stateChanging(stateChange)")
+        @RunInPhase(1)
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
         public void markEntityBefore(final Entity stateChange) {
             stateChange.setField("marked", true);
+        }
+
+        @Pointcut("this(TestStateChangeService)")
+        protected void targetServicePointcut() {
         }
 
     }
@@ -48,10 +55,6 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
             return STATE_FIELD_NAME;
         }
 
-        @Pointcut("this(TestStateChangeService)")
-        public void stateChangeServiceSelector() {
-        }
-
         @Override
         public void changeState(final Entity stateChangeEntity) {
             Entity targetEntity = stateChangeEntity.getBelongsToField(getChangeEntityDescriber().getOwnerFieldName());
@@ -65,9 +68,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(Entity stateChangeEntity, Integer phaseNumber) {
-            // TODO Auto-generated method stub
-
+        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
         }
 
     }
@@ -80,10 +81,6 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
             return STATE_FIELD_NAME;
         }
 
-        @Pointcut("this(AnotherStateChangeService)")
-        public void stateChangeServiceSelector() {
-        }
-
         @Override
         public void changeState(final Entity stateChangeEntity) {
             Entity targetEntity = stateChangeEntity.getBelongsToField(getChangeEntityDescriber().getOwnerFieldName());
@@ -97,9 +94,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(Entity stateChangeEntity, Integer phaseNumber) {
-            // TODO Auto-generated method stub
-
+        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
         }
 
     }
@@ -113,6 +108,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
+        stubStateChangeEntity(DESCRIBER);
         EntityList emptyEntityList = mockEmptyEntityList();
         given(stateChangeEntity.getHasManyField("messages")).willReturn(emptyEntityList);
     }
@@ -121,8 +117,8 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public final void shouldFireListenersAndChangeState() {
         // given
         TestStateChangeService testStateChangeService = new TestStateChangeService();
-        given(stateChangeEntity.getBelongsToField(describer.getOwnerFieldName())).willReturn(ownerEntity);
-        stubStringField(stateChangeEntity, describer.getTargetStateFieldName(), STATE_FIELD_VALUE);
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        stubStringField(stateChangeEntity, DESCRIBER.getTargetStateFieldName(), STATE_FIELD_VALUE);
         stubEntityMock("", "");
 
         // when
@@ -137,8 +133,8 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public final void shouldNotFireListenersForOtherStateChangeService() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        given(stateChangeEntity.getBelongsToField(describer.getOwnerFieldName())).willReturn(ownerEntity);
-        stubStringField(stateChangeEntity, describer.getTargetStateFieldName(), STATE_FIELD_VALUE);
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        stubStringField(stateChangeEntity, DESCRIBER.getTargetStateFieldName(), STATE_FIELD_VALUE);
         stubEntityMock("", "");
 
         // when
@@ -150,11 +146,45 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     }
 
     @Test
-    public final void shouldNotFireChangeStateIfStateChangeWasAlreadyFinished() {
+    public final void shouldNotFireChangeStateIfStateChangeWasSuccessfulFinished() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        given(stateChangeEntity.getBooleanField(describer.getFinishedFieldName())).willReturn(true);
-        given(stateChangeEntity.getField(describer.getFinishedFieldName())).willReturn(true);
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        given(stateChangeEntity.getStringField(DESCRIBER.getStatusFieldName())).willReturn(
+                StateChangeStatus.SUCCESSFUL.getStringValue());
+        mockStateChangeStatus(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
+
+        // when
+        anotherStateChangeService.changeState(stateChangeEntity);
+
+        // then
+        verify(ownerEntity, never()).setField(Mockito.eq(STATE_FIELD_NAME), Mockito.any());
+    }
+
+    @Test
+    public final void shouldNotFireChangeStateIfStateChangeWasFailureFinished() {
+        // given
+        AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        given(stateChangeEntity.getStringField(DESCRIBER.getStatusFieldName())).willReturn(
+                StateChangeStatus.SUCCESSFUL.getStringValue());
+        mockStateChangeStatus(stateChangeEntity, StateChangeStatus.FAILURE);
+
+        // when
+        anotherStateChangeService.changeState(stateChangeEntity);
+
+        // then
+        verify(ownerEntity, never()).setField(Mockito.eq(STATE_FIELD_NAME), Mockito.any());
+    }
+
+    @Test
+    public final void shouldNotFireChangeStateIfStateChangeWasPaused() {
+        // given
+        AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        given(stateChangeEntity.getStringField(DESCRIBER.getStatusFieldName())).willReturn(
+                StateChangeStatus.SUCCESSFUL.getStringValue());
+        mockStateChangeStatus(stateChangeEntity, StateChangeStatus.PAUSED);
 
         // when
         anotherStateChangeService.changeState(stateChangeEntity);
@@ -167,8 +197,9 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public final void shouldNotFireListenersIfStateChangeWasAlreadyFinished() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        given(stateChangeEntity.getBooleanField(describer.getFinishedFieldName())).willReturn(true);
-        given(stateChangeEntity.getField(describer.getFinishedFieldName())).willReturn(true);
+        given(stateChangeEntity.getBelongsToField(DESCRIBER.getOwnerFieldName())).willReturn(ownerEntity);
+        given(stateChangeEntity.getBooleanField(DESCRIBER.getStatusFieldName())).willReturn(true);
+        given(stateChangeEntity.getField(DESCRIBER.getStatusFieldName())).willReturn(true);
 
         // when
         anotherStateChangeService.changeState(stateChangeEntity);
@@ -182,8 +213,8 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
         EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(MessageType.FAILURE, "fail")));
-        given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(messagesEntityList);
-        given(stateChangeEntity.getField(describer.getMessagesFieldName())).willReturn(messagesEntityList);
+        given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
+        given(stateChangeEntity.getField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 
         // when
         anotherStateChangeService.changeState(stateChangeEntity);
@@ -197,8 +228,8 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
         EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(MessageType.FAILURE, "fail")));
-        given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(messagesEntityList);
-        given(stateChangeEntity.getField(describer.getMessagesFieldName())).willReturn(messagesEntityList);
+        given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
+        given(stateChangeEntity.getField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 
         // when
         anotherStateChangeService.changeState(stateChangeEntity);

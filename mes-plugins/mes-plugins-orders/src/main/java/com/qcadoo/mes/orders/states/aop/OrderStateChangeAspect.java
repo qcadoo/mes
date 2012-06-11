@@ -1,11 +1,10 @@
 package com.qcadoo.mes.orders.states.aop;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
 import com.qcadoo.model.api.Entity;
@@ -14,20 +13,17 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OrderStateChangeAspect extends AbstractStateChangeAspect {
 
-    private static final OrderStateChangeDescriber DESCRIBER = new OrderStateChangeDescriber();
+    @Autowired
+    private OrderStateChangeDescriber describer;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
-        return DESCRIBER;
+        return describer;
     }
 
     @Override
     protected String getStateFieldName() {
-        return STATE;
-    }
-
-    @Pointcut("this(OrderStateChangeAspect)")
-    public void stateChangeServiceSelector() {
+        return OrderFields.STATE;
     }
 
     @Override

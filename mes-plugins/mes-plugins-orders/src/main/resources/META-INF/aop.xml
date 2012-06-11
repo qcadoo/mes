@@ -27,6 +27,6 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
-		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeService" />
+		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
 	</aspects>
 </aspectj>

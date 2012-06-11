@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.mockito.Mock;
 
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.messages.constants.MessageType;
 import com.qcadoo.model.api.DataDefinition;
@@ -23,12 +24,13 @@ public abstract class StateChangeTest {
     @Mock
     protected DataDefinition stateChangeDD;
 
-    protected final StateChangeEntityDescriber describer = new MockStateChangeDescriber();
+    protected static final StateChangeEntityDescriber DESCRIBER = new MockStateChangeDescriber();
 
     protected void stubStateChangeEntity(final StateChangeEntityDescriber describer) {
         given(stateChangeEntity.getDataDefinition()).willReturn(stateChangeDD);
         final EntityList emptyEntityList = mockEntityList(Collections.<Entity> emptyList());
         given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(emptyEntityList);
+        mockEntityField(stateChangeEntity, describer.getStatusFieldName(), StateChangeStatus.IN_PROGRESS.getStringValue());
     }
 
     protected EntityList mockEntityList(final List<Entity> entities) {
@@ -46,7 +48,11 @@ public abstract class StateChangeTest {
         return message;
     }
 
-    protected void mockEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
+    protected static void mockStateChangeStatus(final Entity entity, final StateChangeStatus status) {
+        mockEntityField(entity, DESCRIBER.getStatusFieldName(), status.getStringValue());
+    }
+
+    protected static void mockEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
         given(entity.getField(fieldName)).willReturn(fieldValue);
         given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
     }

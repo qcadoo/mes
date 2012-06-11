@@ -4,7 +4,7 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER_STATE_
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLUGIN_IDENTIFIER;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrderStateChangeFields;
@@ -12,7 +12,7 @@ import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
-@Configurable
+@Service
 public final class OrderStateChangeDescriber extends AbstractStateChangeDescriber {
 
     @Autowired

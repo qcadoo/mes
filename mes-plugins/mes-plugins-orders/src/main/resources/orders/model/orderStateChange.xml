@@ -26,22 +26,22 @@
 -->
 <model name="orderStateChange" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
+		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
+		<string name="comment" />
+		<belongsTo name="shift" model="shift" plugin="basic" />
+	
+		<!-- generic state change fields -->
 		<datetime name="dateAndTime" />
 		<string name="sourceState" />
 		<string name="targetState" />
-		<boolean name="finished" />
+		<string name="status" />
 		<integer name="phase" />
-
 		<string name="worker" />
-		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
-		<string name="comment" />
-
-		<belongsTo name="order" model="order" />
-		<belongsTo name="shift" model="shift" plugin="basic" />
+		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states"/> <!-- messages -->
+		<belongsTo name="order" model="order" /> <!-- owner -->
 		
-		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states"/>
 	</fields>
 	<hooks />
 </model>

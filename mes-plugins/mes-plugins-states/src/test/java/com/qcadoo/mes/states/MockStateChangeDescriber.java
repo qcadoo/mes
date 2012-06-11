@@ -16,4 +16,8 @@ public final class MockStateChangeDescriber extends AbstractStateChangeDescriber
         return stringValue;
     }
 
+    @Override
+    public void checkFields() throws IllegalStateException {
+    }
+
 }

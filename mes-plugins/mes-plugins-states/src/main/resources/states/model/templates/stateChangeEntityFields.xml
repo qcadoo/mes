@@ -1,0 +1,8 @@
+<datetime name="dateAndTime" />
+<string name="sourceState" />
+<string name="targetState" />
+<enum name="status" values="01inProgres,02paused,03successful,04failure" />
+<integer name="phase" />
+<string name="worker" />
+
+<!-- <hasMany name="messages" joinField="#####" model="message" plugin="states"/> -->

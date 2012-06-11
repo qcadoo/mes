@@ -23,39 +23,33 @@
  */
 package com.qcadoo.mes.orders.constants;
 
+import com.google.common.base.Preconditions;
+
 public enum OrderState {
 
     PENDING("01pending"), ACCEPTED("02accepted"), IN_PROGRESS("03inProgress"), COMPLETED("04completed"), DECLINED("05declined"), INTERRUPTED(
             "06interrupted"), ABANDONED("07abandoned");
 
-    private final String state;
+    private final String stringValue;
 
     private OrderState(final String state) {
-        this.state = state;
+        this.stringValue = state;
     }
 
     public String getStringValue() {
-        return state;
+        return stringValue;
     }
 
     public static OrderState parseString(final String string) {
-        if ("01pending".equalsIgnoreCase(string)) {
-            return PENDING;
-        } else if ("02accepted".equalsIgnoreCase(string)) {
-            return ACCEPTED;
-        } else if ("03inProgress".equalsIgnoreCase(string)) {
-            return IN_PROGRESS;
-        } else if ("04completed".equalsIgnoreCase(string)) {
-            return COMPLETED;
-        } else if ("05declined".equalsIgnoreCase(string)) {
-            return DECLINED;
-        } else if ("06interrupted".equalsIgnoreCase(string)) {
-            return INTERRUPTED;
-        } else if ("07abandoned".equalsIgnoreCase(string)) {
-            return ABANDONED;
-        } else {
-            throw new IllegalArgumentException("Couldn't parse OrderState from string '" + string + "'");
+        OrderState parsedStatus = null;
+        for (OrderState status : OrderState.values()) {
+            if (status.getStringValue().equals(string)) {
+                parsedStatus = status;
+                break;
+            }
         }
+        Preconditions.checkArgument(parsedStatus != null, "Couldn't parse OrderState from string '" + string + "'");
+        return parsedStatus;
     }
 
 }

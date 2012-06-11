@@ -27,8 +27,8 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
     }
 
     @Override
-    public String getFinishedFieldName() {
-        return "finished";
+    public String getStatusFieldName() {
+        return "status";
     }
 
     @Override
@@ -46,16 +46,11 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
         return "phase";
     }
 
-    /**
-     * Check if any field using in this describer is missing.
-     * 
-     * @throws IllegalStateException
-     *             if at least one field is missing.
-     */
+    @Override
     public void checkFields() throws IllegalStateException {
         DataDefinition dataDefinition = getDataDefinition();
         List<String> fieldNames = Lists.newArrayList(getOwnerFieldName(), getSourceStateFieldName(), getTargetStateFieldName(),
-                getFinishedFieldName(), getMessagesFieldName(), getPhaseFieldName());
+                getStatusFieldName(), getMessagesFieldName(), getPhaseFieldName());
         Set<String> uniqueFieldNames = Sets.newHashSet(fieldNames);
         checkState(fieldNames.size() == uniqueFieldNames.size(), "Describer methods should return unique field names.");
 

@@ -40,7 +40,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
         }
 
         @Pointcut("this(TestStateChangeService)")
-        public void stateChangeServiceSelector() {
+        public void selectorPointcut() {
         }
 
         @Override
@@ -54,17 +54,15 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(Entity stateChangeEntity, Integer phaseNumber) {
-            // TODO Auto-generated method stub
-
+        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
         }
     }
 
     @Before
     public void init() {
-        // super.init();
         MockitoAnnotations.initMocks(this);
         stateChangeService = new TestStateChangeService();
+        stubStateChangeEntity(describer);
     }
 
     @Test
