@@ -1,6 +1,11 @@
 package com.qcadoo.mes.productionPerShift.listeners;
 
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.PROGRESS_FOR_DAYS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +32,8 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class ProductionPerShiftListeners {
+
+    private static final String PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -59,7 +66,7 @@ public class ProductionPerShiftListeners {
         DataDefinition orderDD = dataDefinitionService.get("orders", "order");
         Entity order = orderDD.get(orderId);
 
-        DataDefinition ppsDD = dataDefinitionService.get("productionPerShift", "productionPerShift");
+        DataDefinition ppsDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_PRODUCTION_PER_SHIFT);
 
         Entity pps = getPps(order, ppsDD);
 
@@ -100,18 +107,18 @@ public class ProductionPerShiftListeners {
      */
     public void saveProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(PROGRESS_FOR_DAYS_ADL);
         @SuppressWarnings("unchecked")
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
-        String plannedProgressType = viewState.getComponentByReference("plannedProgressType").getFieldValue().toString();
+        String plannedProgressType = viewState.getComponentByReference(PLANNED_PROGRESS_TYPE).getFieldValue().toString();
         for (Entity progressForDay : progressForDays) {
-            progressForDay.setField("corrected", plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
+            progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
         Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
         boolean hasCorrections = detailsHooks.shouldHasCorrections(viewState);
         if (tioc != null) {
-            tioc.setField("hasCorrections", hasCorrections);
-            tioc.setField("progressForDays", prepareProgressForDaysForTIOC(tioc, hasCorrections, progressForDays));
+            tioc.setField(HAS_CORRECTIONS, hasCorrections);
+            tioc.setField(PROGRESS_FOR_DAYS, prepareProgressForDaysForTIOC(tioc, hasCorrections, progressForDays));
             tioc = tioc.getDataDefinition().save(tioc);
             if (!tioc.isValid()) {
                 List<ErrorMessage> errors = tioc.getGlobalErrors();
@@ -126,9 +133,8 @@ public class ProductionPerShiftListeners {
             final List<Entity> progressForDays) {
         Entity techInstOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(tioc.getId());
-        List<Entity> plannedPrograssForDay = new ArrayList<Entity>();
-        plannedPrograssForDay = techInstOperComp.getHasManyField("progressForDays").find()
-                .add(SearchRestrictions.eq("corrected", !hasCorrections)).list().getEntities();
+        List<Entity> plannedPrograssForDay = techInstOperComp.getHasManyField(PROGRESS_FOR_DAYS).find()
+                .add(SearchRestrictions.eq(CORRECTED, !hasCorrections)).list().getEntities();
         plannedPrograssForDay.addAll(progressForDays);
         return plannedPrograssForDay;
     }
@@ -136,7 +142,7 @@ public class ProductionPerShiftListeners {
     private List<Entity> addCorrectedToPlannedProgressForDay(final Entity tioc, final List<Entity> progressForDays) {
         Entity techInstOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(tioc.getId());
-        List<Entity> plannedPrograssForDay = techInstOperComp.getHasManyField("progressForDays").find().list().getEntities();
+        List<Entity> plannedPrograssForDay = techInstOperComp.getHasManyField(PROGRESS_FOR_DAYS).find().list().getEntities();
         plannedPrograssForDay.addAll(progressForDays);
         return plannedPrograssForDay;
     }
@@ -153,23 +159,23 @@ public class ProductionPerShiftListeners {
         if (tioc == null) {
             return;
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType"))
+            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
                     .getFieldValue().toString();
             List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
                     plannedProgressType.equals(PlannedProgressType.PLANNED.getStringValue()));
             List<Entity> copiedProgressForDays = new ArrayList<Entity>();
             for (Entity progressForDay : progressForDays) {
                 Entity copyProgressForDay = progressForDayDD.copy(progressForDay.getId()).get(0);
-                copyProgressForDay.setField("corrected", true);
+                copyProgressForDay.setField(CORRECTED, true);
                 copiedProgressForDays.add(copyProgressForDay);
             }
             boolean hasCorrection = detailsHooks.shouldHasCorrections(viewState);
-            tioc.setField("hasCorrections", hasCorrection);
+            tioc.setField(HAS_CORRECTIONS, hasCorrection);
             tioc.setField(
-                    "progressForDays",
+                    PROGRESS_FOR_DAYS,
                     addCorrectedToPlannedProgressForDay(tioc,
                             prepareProgressForDaysForTIOC(tioc, hasCorrection, copiedProgressForDays)));
-            tioc = tioc.getDataDefinition().save(tioc);
+            tioc.getDataDefinition().save(tioc);
         }
     }
 
@@ -181,19 +187,19 @@ public class ProductionPerShiftListeners {
         if (tioc == null) {
             return;
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType"))
+            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
                     .getFieldValue().toString();
             List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
                     plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
             for (Entity progressForDay : progressForDays) {
                 progressForDayDD.delete(progressForDay.getId());
             }
-            tioc = tioc.getDataDefinition().save(tioc);
+            tioc.getDataDefinition().save(tioc);
         }
     }
 
     private List<Entity> getProgressForDayFromTIOC(final Entity tioc, final boolean corrected) {
-        return tioc.getHasManyField("progressForDays").find().add(SearchRestrictions.eq("corrected", corrected)).list()
+        return tioc.getHasManyField(PROGRESS_FOR_DAYS).find().add(SearchRestrictions.eq(CORRECTED, corrected)).list()
                 .getEntities();
     }
 }

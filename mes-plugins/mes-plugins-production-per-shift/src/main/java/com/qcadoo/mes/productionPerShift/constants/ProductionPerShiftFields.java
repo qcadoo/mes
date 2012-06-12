@@ -12,4 +12,6 @@ public class ProductionPerShiftFields {
 
     public static final String PLANNED_PROGRESS_CORRECTION_COMMENT = "plannedProgressCorrectionComment";
 
+    public static final String PLANNED_PROGRESS_TYPE = "plannedProgressType";
+
 }
