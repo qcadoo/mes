@@ -1,7 +1,13 @@
 package com.qcadoo.mes.productionPerShift.validators;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.ORDER;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAILY_PROGRESS;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
 
 import java.util.Date;
 import java.util.List;
@@ -60,11 +66,11 @@ public class TechInstOperCompHooksPPS {
         }
         Entity order = entity.getBelongsToField("order");
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
+            if (progressForDay.getBooleanField(CORRECTED) != entity.getBooleanField(HAS_CORRECTIONS)) {
                 continue;
             }
-            Integer day = Integer.valueOf(progressForDay.getField("day").toString());
-            List<Entity> dailyProgressList = progressForDay.getHasManyField("dailyProgress");
+            Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+            List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
             for (Entity dailyProgress : dailyProgressList) {
                 Entity shift = dailyProgress.getBelongsToField("shift");
                 if (shift == null) {
@@ -84,10 +90,10 @@ public class TechInstOperCompHooksPPS {
     }
 
     private Date getPlannedOrCorrectedDate(final Entity order) {
-        if (order.getField("correctedDateFrom") != null) {
-            return (Date) order.getField("correctedDateFrom");
+        if (order.getField(CORRECTED_DATE_FROM) != null) {
+            return (Date) order.getField(CORRECTED_DATE_FROM);
         } else {
-            return (Date) order.getField("dateFrom");
+            return (Date) order.getField(DATE_FROM);
         }
     }
 }

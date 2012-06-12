@@ -1,6 +1,12 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPE;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.PROGRESS_FOR_DAYS;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
 
 import java.util.Date;
 import java.util.List;
@@ -13,6 +19,7 @@ import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -61,7 +68,7 @@ public class ProductionPerShiftDetailsHooks {
 
     public void disablePlannedProgressTypeForPendingOrder(final ViewDefinitionState view) {
         Entity order = getOrderFromLookup(view);
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference("plannedProgressType");
+        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
         if (plannedProgressType.getFieldValue().equals("")
                 || plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
             plannedProgressType.setFieldValue(PlannedProgressType.PLANNED.getStringValue());
@@ -80,7 +87,7 @@ public class ProductionPerShiftDetailsHooks {
         String producedProduct = null;
 
         if (tioc != null) {
-            Entity toc = tioc.getBelongsToField("technologyOperationComponent");
+            Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
             Entity prodComp = technologyService.getMainOutputProductComponent(toc);
             Entity prod = prodComp.getBelongsToField("product");
             producedProduct = prod.getStringField("name");
@@ -95,7 +102,8 @@ public class ProductionPerShiftDetailsHooks {
         Long id = (Long) operationLookup.getFieldValue();
         Entity tioc = null;
         if (id != null) {
-            tioc = dataDefinitionService.get("technologies", "technologyInstanceOperationComponent").get(id);
+            tioc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(id);
         }
         return tioc;
     }
@@ -117,11 +125,11 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference("plannedProgressType");
+        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
         FieldComponent plannedProgressCorrectionType = (FieldComponent) view
-                .getComponentByReference("plannedProgressCorrectionType");
+                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPE);
         FieldComponent plannedProgressCorrectionComment = (FieldComponent) view
-                .getComponentByReference("plannedProgressCorrectionComment");
+                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_COMMENT);
         if (plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
             plannedProgressCorrectionType.setEnabled(false);
             plannedProgressCorrectionComment.setEnabled(false);
@@ -149,12 +157,12 @@ public class ProductionPerShiftDetailsHooks {
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference("plannedProgressType"))
+            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
                     .getFieldValue().toString();
             List<Entity> progressForDays = tioc
-                    .getHasManyField("progressForDays")
+                    .getHasManyField(PROGRESS_FOR_DAYS)
                     .find()
-                    .add(SearchRestrictions.eq("corrected",
+                    .add(SearchRestrictions.eq(CORRECTED,
                             plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()))).list().getEntities();
             progressForDaysADL.setFieldValue(progressForDays);
         }
@@ -176,7 +184,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public boolean shouldHasCorrections(final ViewDefinitionState viewState) {
-        return ((FieldComponent) viewState.getComponentByReference("plannedProgressType")).getFieldValue().equals(
+        return ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue().equals(
                 PlannedProgressType.CORRECTED.getStringValue());
     }
 
@@ -185,7 +193,7 @@ public class ProductionPerShiftDetailsHooks {
         RibbonGroup progressSelectedOperation = (RibbonGroup) window.getRibbon().getGroupByName("progress");
         RibbonActionItem clearButton = (RibbonActionItem) progressSelectedOperation.getItemByName("clear");
         RibbonActionItem copyButton = (RibbonActionItem) progressSelectedOperation.getItemByName("copyFromPlanned");
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference("plannedProgressType");
+        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
         if (plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
             clearButton.setEnabled(false);
             copyButton.setEnabled(false);
