@@ -193,7 +193,7 @@
 	</component>
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.materialFlow.hooks.TransformationViewHooks"
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationsDetailsViewHooks"
 			method="disableExistingADLelements" />
 		<beforeRender 
 			class="com.qcadoo.mes.materialFlow.MaterialFlowService"

@@ -46,6 +46,13 @@
 		<hasMany name="transfersProduction" model="transfer"
 			joinField="transformationsProduction" cascade="delete" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
+			method="checkIfProductsInTransfersConsumptionAreDistinct" />
+		<validatesWith
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
+			method="checkIfProductsInTransfersProductionAreDistinct" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

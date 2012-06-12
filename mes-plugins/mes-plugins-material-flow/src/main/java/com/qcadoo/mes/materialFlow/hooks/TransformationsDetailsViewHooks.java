@@ -7,7 +7,7 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Component
-public class TransformationViewHooks {
+public class TransformationsDetailsViewHooks {
 
     public void disableExistingADLelements(final ViewDefinitionState view) {
         disableADL(view, "production");
@@ -15,15 +15,19 @@ public class TransformationViewHooks {
     }
 
     private void disableADL(final ViewDefinitionState view, final String name) {
-        AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(name);
+        FormComponent transformationsForm = (FormComponent) view.getComponentByReference("form");
 
-        for (FormComponent form : adl.getFormComponents()) {
-            disableFormIfQuantityIsntSet(form);
+        if (transformationsForm.getEntityId() != null) {
+            AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(name);
+
+            for (FormComponent form : adl.getFormComponents()) {
+                disableFormIfIsValid(form);
+            }
         }
     }
 
-    private void disableFormIfQuantityIsntSet(final FormComponent form) {
-        if (form.getEntity().getDecimalField("quantity") != null) {
+    private void disableFormIfIsValid(final FormComponent form) {
+        if (form.getEntity().isValid()) {
             form.setFormEnabled(false);
         }
     }
