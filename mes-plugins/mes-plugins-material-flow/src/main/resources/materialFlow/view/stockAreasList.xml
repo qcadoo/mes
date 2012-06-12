@@ -34,8 +34,8 @@
 				<group template="gridNewCopyAndRemoveAction" />
 			</ribbon>
 			<component type="grid" name="grid" reference="grid">
-				<option type="column" name="number" fields="number" link="true" width="150" />
-				<option type="column" name="name" fields="name" link="true"/>
+				<option type="column" name="number" fields="number" link="true" width="30" />
+				<option type="column" name="name" fields="name" link="true" width="70" />
 				<option type="order" column="number" direction="asc" />
  				<option type="searchable" value="number,name" /> 
  				<option type="orderable" value="number,name" /> 
