@@ -38,19 +38,19 @@ import com.qcadoo.model.api.FieldDefinition;
 @Service
 public class OperationModelValidators {
 
-    public boolean checkIfProductInComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
+    public boolean checkIfProductsInProductInComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
         List<Entity> productInComponents = operation.getHasManyField(PRODUCT_IN_COMPONENTS);
 
-        return checkIfProductComponentsAreDistinct(productInComponents);
+        return checkIfProductsInProductComponentsAreDistinct(productInComponents);
     }
 
-    public boolean checkIfProductOutComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
+    public boolean checkIfProductsInProductOutComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
         List<Entity> productOutComponents = operation.getHasManyField(PRODUCT_OUT_COMPONENTS);
 
-        return checkIfProductComponentsAreDistinct(productOutComponents);
+        return checkIfProductsInProductComponentsAreDistinct(productOutComponents);
     }
 
-    private boolean checkIfProductComponentsAreDistinct(final List<Entity> productInComponents) {
+    private boolean checkIfProductsInProductComponentsAreDistinct(final List<Entity> productInComponents) {
         boolean isValid = true;
         for (Entity productInComponent : productInComponents) {
             Entity product = productInComponent.getBelongsToField(PRODUCT);
