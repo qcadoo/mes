@@ -248,7 +248,7 @@
 
 		<model:model-hook plugin="technologies" model="operation">
 			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.OperationModelValidators"
+				class="com.qcadoo.mes.workPlans.hooks.OperationModelValidatorsWP"
 				method="checkIfAttachmentExtensionIsValid" />
 		</model:model-hook>
 
