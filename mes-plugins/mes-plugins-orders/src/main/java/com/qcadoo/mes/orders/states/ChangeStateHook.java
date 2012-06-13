@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -102,7 +102,7 @@ public class ChangeStateHook {
             return;
         }
 
-        orderStateValidationService.saveLogging(newEntity, oldEntity.getStringField(FIELD_STATE),
-                newEntity.getStringField(FIELD_STATE));
+        // orderStateValidationService.saveLogging(newEntity, oldEntity.getStringField(FIELD_STATE),
+        // newEntity.getStringField(FIELD_STATE));
     }
 }

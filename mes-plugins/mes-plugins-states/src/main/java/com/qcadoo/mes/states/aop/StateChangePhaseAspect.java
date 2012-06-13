@@ -19,7 +19,8 @@ public class StateChangePhaseAspect {
     public static final String ERROR = "Only methods with state change entity as a first argument can be annotated using @StateChangePhase";
 
     @Around("(execution(@com.qcadoo.mes.states.annotation.StateChangePhase * *.*(..)) "
-            + "|| execution(public void com.qcadoo.mes.states.service.StateChangeService.changeState(..))) "
+            + "|| execution(public void com.qcadoo.mes.states.service.StateChangeService.changeState(..)) "
+            + "|| execution(public void com.qcadoo.mes.states.service.StateChangeService.changeStatePhase(..))) "
             + "&& args(stateChange,..) && this(stateChangeService)")
     public Object omitExecutionIfStateChangeEntityHasErrors(final ProceedingJoinPoint pjp, final Entity stateChange,
             final StateChangeService stateChangeService) throws Throwable {

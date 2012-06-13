@@ -30,8 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

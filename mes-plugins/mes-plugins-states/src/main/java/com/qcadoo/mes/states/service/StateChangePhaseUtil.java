@@ -1,6 +1,7 @@
 package com.qcadoo.mes.states.service;
 
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasValidationErrorMessages;
 
 import java.util.List;
 
@@ -22,6 +23,6 @@ public final class StateChangePhaseUtil {
         List<Entity> messages = stateChangeEntity.getHasManyField(describer.getMessagesFieldName());
 
         Preconditions.checkNotNull(messages, "entity " + stateChangeEntity + " should have messages has many field!");
-        return status.canContinue() && !hasFailureMessages(messages);
+        return status.canContinue() && !hasFailureMessages(messages) && !hasValidationErrorMessages(messages);
     }
 }

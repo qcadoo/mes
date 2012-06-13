@@ -28,5 +28,6 @@
 <aspectj>
 	<aspects>
 		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
+		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateListenerAspect" />
 	</aspects>
 </aspectj>

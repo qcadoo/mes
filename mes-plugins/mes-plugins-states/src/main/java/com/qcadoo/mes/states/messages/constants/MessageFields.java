@@ -8,6 +8,8 @@ public final class MessageFields {
 
     public static final String TRANSLATION_ARGS = "translationArgs";
 
+    public static final String CORRESPOND_FIELD_NAME = "correspondFieldName";
+
     private MessageFields() {
     }
 

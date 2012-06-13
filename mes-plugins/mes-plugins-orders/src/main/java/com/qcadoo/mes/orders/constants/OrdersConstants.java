@@ -23,35 +23,38 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public interface OrdersConstants {
+public final class OrdersConstants {
 
-    String PLUGIN_IDENTIFIER = "orders";
+    private OrdersConstants() {
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "orders";
 
     // MODEL
-    String MODEL_ORDER = "order";
+    public static final String MODEL_ORDER = "order";
 
-    String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
+    public static final String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
 
-    String MODEL_LOGGING = "logging";
+    public static final String MODEL_LOGGING = "logging";
 
     // VIEW
-    String VIEW_ORDER_DETAILS = "orderDetails";
+    public static final String VIEW_ORDER_DETAILS = "orderDetails";
 
-    String VIEW_ORDERS_LIST = "ordersList";
+    public static final String VIEW_ORDERS_LIST = "ordersList";
 
-    String BASIC_MODEL_PRODUCT = "product";
+    public static final String BASIC_MODEL_PRODUCT = "product";
 
-    String TECHNOLOGIES_MODEL_TECHNOLOGY = "technology";
+    public static final String TECHNOLOGIES_MODEL_TECHNOLOGY = "technology";
 
-    String FIELD_STATE = "state";
+    public static final String FIELD_STATE = "state";
 
-    String FIELD_NUMBER = "number";
+    public static final String FIELD_NUMBER = "number";
 
-    String FIELD_FORM = "form";
+    public static final String FIELD_FORM = "form";
 
-    String FIELD_GRID = "grid";
+    public static final String FIELD_GRID = "grid";
 
-    String PLANNED_QUANTITY = "plannedQuantity";
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    String FIELD_BATCH_REQUIRED = "batchRequired";
+    public static final String FIELD_BATCH_REQUIRED = "batchRequired";
 }

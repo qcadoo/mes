@@ -23,12 +23,8 @@
  */
 package com.qcadoo.mes.orders.states;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -36,72 +32,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.security.api.SecurityService;
 
 public class OrderStateValidationServiceTest {
 
     private OrderStateValidationService orderStateValidationService;
 
-    private DataDefinitionService dataDefinitionService;
-
-    private DataDefinition dataDefinition;
-
-    private SecurityService securityService;
-
-    private ShiftsServiceImpl shiftsServiceImpl;
-
-    private Entity entity;
-
     private Entity order;
-
-    private Entity shift;
-
-    private String previousState;
-
-    private String currentState;
 
     @Before
     public void init() {
         orderStateValidationService = new OrderStateValidationService();
-
-        dataDefinitionService = mock(DataDefinitionService.class);
-        securityService = mock(SecurityService.class);
-        shiftsServiceImpl = mock(ShiftsServiceImpl.class);
-        entity = mock(Entity.class);
         order = mock(Entity.class);
-        dataDefinition = mock(DataDefinition.class);
-        shift = mock(Entity.class);
-
-        setField(orderStateValidationService, "dataDefinitionService", dataDefinitionService);
-        setField(orderStateValidationService, "securityService", securityService);
-        setField(orderStateValidationService, "shiftsServiceImpl", shiftsServiceImpl);
-    }
-
-    @Test
-    public void shouldSetValueToEntity() throws Exception {
-        // given
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING)).willReturn(
-                dataDefinition);
-        given(dataDefinition.create()).willReturn(entity);
-        given(shiftsServiceImpl.getShiftFromDate(Mockito.any(Date.class))).willReturn(shift);
-        given(securityService.getCurrentUserName()).willReturn("userName");
-        given(entity.getDataDefinition()).willReturn(dataDefinition);
-
-        orderStateValidationService.saveLogging(order, previousState, currentState);
-        // then
-        verify(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_LOGGING)).create();
-        verify(entity).setField("order", order);
-        verify(entity).setField("previousState", previousState);
-        verify(entity).setField("currentState", currentState);
-        verify(entity).setField("shift", shift);
-        verify(entity).setField("worker", "userName");
-        verify(dataDefinition).save(entity);
     }
 
     @Test(expected = IllegalArgumentException.class)

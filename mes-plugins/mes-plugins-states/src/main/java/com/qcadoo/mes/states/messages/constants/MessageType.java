@@ -1,8 +1,10 @@
 package com.qcadoo.mes.states.messages.constants;
 
+import com.google.common.base.Preconditions;
+
 public enum MessageType {
 
-    SUCCESS("01success"), INFO("02info"), FAILURE("03failure");
+    SUCCESS("01success"), INFO("02info"), FAILURE("03failure"), VALIDATION_ERROR("04validationError");
 
     private final String stringValue;
 
@@ -15,15 +17,15 @@ public enum MessageType {
     }
 
     public static MessageType parseString(final String string) {
-        if ("01success".equalsIgnoreCase(string)) {
-            return SUCCESS;
-        } else if ("02info".equalsIgnoreCase(string)) {
-            return INFO;
-        } else if ("03failure".equalsIgnoreCase(string)) {
-            return FAILURE;
-        } else {
-            throw new IllegalArgumentException("Couldn't parse MessageType from string '" + string + "'");
+        MessageType parsedValue = null;
+        for (MessageType status : MessageType.values()) {
+            if (status.getStringValue().equals(string)) {
+                parsedValue = status;
+                break;
+            }
         }
+        Preconditions.checkArgument(parsedValue != null, "Couldn't parse string '" + string + "'");
+        return parsedValue;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
+        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
             stateChangeEntity.setField("executedPhase", phaseNumber);
         }
 
@@ -77,7 +77,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
+        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
         }
 
         @Override
@@ -105,7 +105,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
+        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
         }
 
         @Override

@@ -65,7 +65,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
+        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
         }
 
     }

@@ -28,9 +28,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<enum name="type" values="01success,02info,03failure" required="true"/>
+		<enum name="type" values="01success,02info,03failure,04validationError" required="true"/>
 		<string name="translationKey" required="true" />
 		<string name="translationArgs" />
+		<string name="correspondFieldName" />
 	</fields>
 	<hooks />
 </model>

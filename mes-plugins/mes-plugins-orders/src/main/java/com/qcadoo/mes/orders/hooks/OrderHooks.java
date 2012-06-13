@@ -9,9 +9,9 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderState.ABANDONED;
-import static com.qcadoo.mes.orders.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.constants.OrderState.PENDING;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 
 import java.util.Date;
 

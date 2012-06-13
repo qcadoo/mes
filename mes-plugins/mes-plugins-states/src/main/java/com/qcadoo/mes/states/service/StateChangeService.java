@@ -54,4 +54,10 @@ public interface StateChangeService {
     void addMessage(final Entity stateChangeEntity, final MessageType type, final String translationKey,
             final String... translationArgs);
 
+    void addMessage(final Entity stateChangeEntity, final MessageType type, final String correspondFieldName,
+            final String translationKey, final String... translationArgs);
+
+    void addValidationError(final Entity stateChangeEntity, final String correspondField, final String translationKey,
+            final String... translationArgs);
+
 }

@@ -28,7 +28,7 @@ import static com.qcadoo.plugin.api.PluginUtils.isEnabled;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;

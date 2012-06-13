@@ -1,5 +1,8 @@
 package com.qcadoo.mes.states.messages.util;
 
+import static com.qcadoo.mes.states.messages.constants.MessageFields.TRANSLATION_ARGS;
+import static com.qcadoo.mes.states.messages.constants.MessageFields.TRANSLATION_KEY;
+
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -63,17 +66,66 @@ public final class MessagesUtil {
         return hasMessagesOfType(messages, MessageType.FAILURE);
     }
 
+    /**
+     * Check if given list of message entity contains at least one message with type set to {@link MessageType#VALIDATION_ERROR}
+     * 
+     * @param messages
+     *            list of message entities
+     * @return true if given list contain at least one message with type set to {@link MessageType#VALIDATION_ERROR} or false
+     *         otherwise.
+     */
+    public static boolean hasValidationErrorMessages(final List<Entity> messages) {
+        return hasMessagesOfType(messages, MessageType.VALIDATION_ERROR);
+    }
+
     private static boolean hasMessagesOfType(final List<Entity> messages, final MessageType typeLookingFor) {
         if (messages == null) {
             return false;
         }
         for (Entity message : messages) {
-            String messageStringType = message.getStringField(MessageFields.TYPE);
-            MessageType messageType = MessageType.parseString(messageStringType);
-            if (messageType.equals(typeLookingFor)) {
+            if (messageIsTypeOf(message, typeLookingFor)) {
                 return true;
             }
         }
         return false;
     }
+
+    public static boolean messageIsTypeOf(final Entity message, final MessageType typeLookingFor) {
+        final String messageStringType = message.getStringField(MessageFields.TYPE);
+        final MessageType messageType = MessageType.parseString(messageStringType);
+        return messageType.equals(typeLookingFor);
+    }
+
+    public static boolean hasCorrespondField(final Entity message) {
+        return StringUtils.isNotBlank(message.getStringField(MessageFields.CORRESPOND_FIELD_NAME));
+    }
+
+    /**
+     * Convert {@link MessageType} to appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
+     * 
+     * @param type
+     *            {@link MessageType}
+     * @return appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
+     */
+    public static com.qcadoo.view.api.ComponentState.MessageType convertViewMessageType(final MessageType type) {
+        switch (type) {
+            case SUCCESS:
+                return com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
+            case FAILURE:
+            case VALIDATION_ERROR:
+                return com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+            case INFO:
+            default:
+                return com.qcadoo.view.api.ComponentState.MessageType.INFO;
+        }
+    }
+
+    public static String getKey(final Entity message) {
+        return message.getStringField(TRANSLATION_KEY);
+    }
+
+    public static String[] getArgs(final Entity message) {
+        return splitArgs(message.getStringField(TRANSLATION_ARGS));
+    }
+
 }

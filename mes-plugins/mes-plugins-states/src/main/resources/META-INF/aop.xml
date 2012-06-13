@@ -29,5 +29,6 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.states.aop.StateChangePhaseAspect" />
 		<aspect name="com.qcadoo.mes.states.aop.RunForStateTransitionAspect" />
+		<aspect name="com.qcadoo.mes.states.aop.RunInPhaseAspect" />
 	</aspects>
 </aspectj>

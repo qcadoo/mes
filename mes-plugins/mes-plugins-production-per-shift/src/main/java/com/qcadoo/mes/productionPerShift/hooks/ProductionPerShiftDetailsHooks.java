@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.technologies.TechnologyService;

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.orders.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 
 @Service

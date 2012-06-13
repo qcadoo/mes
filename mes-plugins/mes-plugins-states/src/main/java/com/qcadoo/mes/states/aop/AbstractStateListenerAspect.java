@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Pointcut;
 
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.service.StateChangeService;
+import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 
 /**
@@ -33,9 +34,13 @@ public abstract class AbstractStateListenerAspect {
      *            entity which represent state change flow
      * @param annotation
      */
-    @Pointcut("execution(public void com.qcadoo.mes.states.service.StateChangeService.changeState(..)) "
-            + "&& args(stateChangeEntity,..) && targetServicePointcut()")
+    @Pointcut("execution(public void com.qcadoo.mes.states.service.StateChangeService+.changeState(..)) "
+            + "&& args(stateChangeEntity) && targetServicePointcut()")
     public void changeStateExecution(final Entity stateChangeEntity) {
+    }
+
+    @Pointcut("execution(public void com.qcadoo.mes.states.service.client.StateChangeViewClient.changeState(..)) && args(viewContext,..)")
+    public void viewClientExecution(final ViewContextHolder viewContext) {
     }
 
     /**

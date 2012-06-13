@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Lists;
@@ -26,6 +27,8 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
     private static final String STATE_FIELD_NAME = "state";
 
     private static final String TOUCHED_FIELD = "touched";
+
+    private static final String TOUCHED_PHASE = "touchedPhase";
 
     private TestStateChangeService stateChangeService;
 
@@ -54,7 +57,8 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber) {
+        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
+            stateChangeEntity.setField(TOUCHED_PHASE, phaseNumber);
         }
     }
 
@@ -110,6 +114,23 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
 
         // then
         assertTrue(exceptionWasThrown);
+    }
+
+    @Test
+    public final void shouldNotExecutePhaseMethodIfValidationErrorOccured() {
+        // given
+        List<Entity> messages = Lists.newArrayList();
+        Entity validationErrorMessage = mockMessage(MessageType.VALIDATION_ERROR, "test");
+        messages.add(validationErrorMessage);
+        EntityList messagesEntityList = mockEntityList(messages);
+        given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(messagesEntityList);
+
+        // when
+        stateChangeService.changeState(stateChangeEntity);
+
+        // then
+        verify(stateChangeEntity, never()).setField(TOUCHED_FIELD, true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq(TOUCHED_PHASE), Mockito.anyInt());
     }
 
 }

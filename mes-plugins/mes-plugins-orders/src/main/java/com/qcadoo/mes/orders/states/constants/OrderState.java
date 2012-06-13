@@ -21,15 +21,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.orders.states.constants;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateEnum;
 
 public enum OrderState implements StateEnum {
 
-    PENDING("01pending"), ACCEPTED("02accepted"), IN_PROGRESS("03inProgress"), COMPLETED("04completed"), DECLINED("05declined"), INTERRUPTED(
-            "06interrupted"), ABANDONED("07abandoned");
+    PENDING(OrderStateStringValues.PENDING), ACCEPTED(OrderStateStringValues.ACCEPTED), IN_PROGRESS(
+            OrderStateStringValues.IN_PROGRESS), COMPLETED(OrderStateStringValues.COMPLETED), DECLINED(
+            OrderStateStringValues.DECLINED), INTERRUPTED(OrderStateStringValues.INTERRUPTED), ABANDONED(
+            OrderStateStringValues.ABANDONED);
 
     private final String stringValue;
 

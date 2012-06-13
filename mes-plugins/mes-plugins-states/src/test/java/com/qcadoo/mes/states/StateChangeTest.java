@@ -5,10 +5,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.ImmutableList;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.messages.constants.MessageType;
@@ -34,14 +38,20 @@ public abstract class StateChangeTest {
     }
 
     protected EntityList mockEntityList(final List<Entity> entities) {
-        EntityList entityList = mock(EntityList.class);
-        given(entityList.iterator()).willReturn(entities.iterator());
+        final EntityList entityList = mock(EntityList.class);
+        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return ImmutableList.copyOf(entities).iterator();
+            }
+        });
         given(entityList.isEmpty()).willReturn(entities.isEmpty());
         return entityList;
     }
 
     protected Entity mockMessage(final MessageType type, final String translationKey, final String... translationArgs) {
-        Entity message = mock(Entity.class);
+        final Entity message = mock(Entity.class);
         stubEntityField(message, MessageFields.TYPE, type);
         stubEntityField(message, MessageFields.TRANSLATION_KEY, translationKey);
         stubEntityField(message, MessageFields.TRANSLATION_ARGS, joinArgs(translationArgs));

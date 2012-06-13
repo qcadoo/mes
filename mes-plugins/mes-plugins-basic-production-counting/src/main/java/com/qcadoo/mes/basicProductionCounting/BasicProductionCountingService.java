@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;

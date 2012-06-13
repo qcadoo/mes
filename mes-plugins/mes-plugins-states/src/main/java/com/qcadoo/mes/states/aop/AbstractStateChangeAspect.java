@@ -3,6 +3,7 @@ package com.qcadoo.mes.states.aop;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 import static com.qcadoo.mes.states.messages.constants.MessageType.FAILURE;
+import static com.qcadoo.mes.states.messages.constants.MessageType.VALIDATION_ERROR;
 
 import java.util.Date;
 import java.util.List;
@@ -14,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateEnum;
-import com.qcadoo.mes.states.annotation.StateChangePhase;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
 import com.qcadoo.mes.states.messages.MessageService;
@@ -121,14 +122,27 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Override
     public final void addMessage(final Entity stateChangeEntity, final MessageType type, final String translationKey,
             final String... translationArgs) {
-        final Entity message = messageService.createMessage(type, translationKey, translationArgs);
+        addMessage(stateChangeEntity, type, null, translationKey, translationArgs);
+    }
+
+    @Override
+    public final void addMessage(final Entity stateChangeEntity, final MessageType type, final String correspondFieldName,
+            final String translationKey, final String... translationArgs) {
+        final Entity message = messageService.createMessage(type, correspondFieldName, translationKey, translationArgs);
         addMessage(stateChangeEntity, message);
+    }
+
+    @Override
+    public final void addValidationError(final Entity stateChangeEntity, final String correspondField,
+            final String translationKey, final String... translationArgs) {
+        addMessage(stateChangeEntity, VALIDATION_ERROR, correspondField, translationKey, translationArgs);
     }
 
     @Override
     public final void addMessage(final Entity stateChangeEntity, final Entity message) {
         final String messagesFieldName = getChangeEntityDescriber().getMessagesFieldName();
-        final List<Entity> messages = stateChangeEntity.getHasManyField(messagesFieldName);
+        final List<Entity> messages = Lists.newArrayList();
+        messages.addAll(stateChangeEntity.getHasManyField(messagesFieldName));
         messages.add(message);
         stateChangeEntity.setField(messagesFieldName, messages);
         getChangeEntityDescriber().getDataDefinition().save(stateChangeEntity);
@@ -173,25 +187,47 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
      * @param stateChangeEntity
      * @param phaseNumber
      */
-    protected abstract void changeStatePhase(final Entity stateChangeEntity, final Integer phaseNumber);
+    protected abstract void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber);
 
-    @StateChangePhase
     @Transactional
     protected void performChangeEntityState(final Entity stateChangeEntity) {
         final StateChangeEntityDescriber describer = getChangeEntityDescriber();
         final Entity owner = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
         final StateEnum targetState = getStateEnum(stateChangeEntity, describer.getTargetStateFieldName());
 
-        owner.setField(getStateFieldName(), targetState.getStringValue());
-        if (owner.getDataDefinition().save(owner).isValid()) {
-            stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.SUCCESSFUL);
-            stateChangeEntity.setField(describer.getDateTimeFieldName(), new Date());
+        boolean ownerIsValid = owner.isValid();
+        if (StateChangePhaseUtil.canRun(this, stateChangeEntity)) {
+            if (ownerIsValid) {
+                owner.setField(getStateFieldName(), targetState.getStringValue());
+                ownerIsValid = owner.getDataDefinition().save(owner).isValid();
+            }
+
+            if (ownerIsValid) {
+                markAsSuccessful(stateChangeEntity);
+            } else {
+                markAsInvalid(stateChangeEntity);
+            }
         } else {
-            stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.FAILURE);
-            addMessage(stateChangeEntity, FAILURE, "states.messages.change.failure.invalidEntity.");
+            markAsFailure(stateChangeEntity);
         }
 
         stateChangeEntity.getDataDefinition().save(stateChangeEntity);
+    }
+
+    private void markAsSuccessful(final Entity stateChangeEntity) {
+        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
+        stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.SUCCESSFUL.getStringValue());
+        stateChangeEntity.setField(describer.getDateTimeFieldName(), new Date());
+    }
+
+    private void markAsInvalid(final Entity stateChangeEntity) {
+        markAsFailure(stateChangeEntity);
+        addMessage(stateChangeEntity, FAILURE, "states.messages.change.failure.invalidEntity.");
+    }
+
+    private void markAsFailure(final Entity stateChangeEntity) {
+        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
+        stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.FAILURE.getStringValue());
     }
 
     private StateEnum getStateEnum(final Entity entity, final String fieldName) {

@@ -25,10 +25,10 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.orders.constants.OrderState.INTERRUPTED;
-import static com.qcadoo.mes.orders.constants.OrderState.IN_PROGRESS;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.INTERRUPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
