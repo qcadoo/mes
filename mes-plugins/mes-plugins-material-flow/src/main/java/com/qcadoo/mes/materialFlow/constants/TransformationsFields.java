@@ -41,6 +41,8 @@ public final class TransformationsFields {
 
     public static final String STAFF = "staff";
 
+    public static final String OPERATION = "operation";
+
     public static final String TRANSFERS_CONSUMPTION = "transfersConsumption";
 
     public static final String TRANSFERS_PRODUCTION = "transfersProduction";

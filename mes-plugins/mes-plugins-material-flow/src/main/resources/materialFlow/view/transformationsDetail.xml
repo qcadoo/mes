@@ -4,58 +4,9 @@
 	name="transformationsDetail" modelName="transformations">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<script>
-				<![CDATA[
-					var containsAtLeastOneConsumption = false;
-					var containsArLeastOneProduction = false;
-					var entityExists = false;
-					var time = #{time};
-					var staff = #{staff};
-					var stockAreasFrom = #{stockAreasFrom};
-					var stockAreasTo = #{stockAreasTo};
-					
-					#{transformationsConsumption}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (value.content.totalEntities > 0) {
-								containsAtLeastOneConsumption = true;
-							} else {
-								containsAtLeastOneConsumption = false;
-							}
-							updateFieldsState();
-						}
-					});
-					
-					#{transformationsProduction}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (value.content.totalEntities > 0) {
-								containsAtLeastOneProduction = true;
-							} else {
-								containsAtLeastOneProduction = false;
-							}
-							updateFieldsState();
-						}
-					});
-					
-					
-					function updateFieldsState() {
-						if (containsAtLeastOneConsumption || containsAtLeastOneProduction) {
-							time.setEnabled(false);
-							staff.setEnabled(false);
-							stockAreasFrom.setEnabled(false);
-							stockAreasTo.setEnabled(false);
-						} else {
-							time.setEnabled(true);
-							staff.setEnabled(true);
-							stockAreasFrom.setEnabled(true);
-							stockAreasTo.setEnabled(true);
-						}
-					}
-				]]>
-			</script>
 			<component type="gridLayout" name="gridLayout" columns="2"
 				rows="9">
 				<layoutElement column="1" row="1">

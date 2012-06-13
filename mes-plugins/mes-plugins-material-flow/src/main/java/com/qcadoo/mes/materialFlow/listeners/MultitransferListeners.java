@@ -32,7 +32,6 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -57,9 +56,6 @@ public class MultitransferListeners {
 
     @Autowired
     private MaterialFlowResourceService materialFlowResourceService;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private TimeConverterService timeConverterService;
