@@ -13,6 +13,5 @@
 			model="technologyInstanceOperationComponent" plugin="technologies" />
 		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected" default="01planned" />
 	</fields>
-	<hooks>
-	</hooks>
+	<hooks/>
 </model>

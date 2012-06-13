@@ -11,7 +11,7 @@
 			</group>
 			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
-					action="#{progressForDaysADL}.fireEvent(save); #{form}.performSave;" />
+					action="#{progressForDaysADL}.fireEvent(saveProgressForDays);" />
 				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
 					action="#{window}.performRefresh;" />
 			</group>
@@ -38,6 +38,7 @@
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 					<option type="fieldCode" value="number" />
 				</component>
+				<component type="checkbox" name="setRoot" reference="setRoot" defaultVisible="false" />
 				<component type="gridLayout" name="mainGridLayout"
 					columns="3" rows="1">
 					<layoutElement column="1" row="1">
@@ -48,7 +49,7 @@
 									<component type="select" name="plannedProgressType"
 										field="#{form}.plannedProgressType" reference="plannedProgressType"
 										defaultValue="01planned">
-										<listener event="onChange" method="changeView"
+										<listener event="onSelectedEntityChange" method="changeView"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
 									</component>
 								</layoutElement>
@@ -106,13 +107,12 @@
 								<layoutElement column="1" row="1">
 									<component type="lookup" name="productionPerShiftOperation"
 										field="#{form}.technologyInstanceOperationComponent" source="#{order}.technologyInstanceOperationComponents"
-										reference="productionPerShiftOperation">
+										reference="productionPerShiftOperation" >
 										<option type="column" name="name" fields="operation"
 											expression="#operation['name']" link="true" />
-
+										<option type="column" name="hasCorrections" fields="hasCorrections" />
 										<option type="searchable" value="name,nodeNumber" />
 										<option type="orderable" value="name,nodeNumber" />
-
 										<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 										<option type="fieldCode" value="nodeNumber" />
 										<listener event="onSelectedEntityChange"
@@ -133,7 +133,7 @@
 										reference="progressForDaysADL">
 										<option type="hasBorder" value="true" />
 										<option type="hasButtons" value="true" />
-										<listener event="save"
+										<listener event="saveProgressForDays"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="saveProgressForDays" />
 										<components>
@@ -193,9 +193,6 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="addRootForOperation" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="disablePlannedProgressTypeForPendingOrder" />

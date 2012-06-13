@@ -1,14 +1,15 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,7 +35,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductionPerShiftDetailsHooksTest {
 
@@ -42,7 +49,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private ViewDefinitionState view;
 
     @Mock
-    private ComponentState componentState, lookup, producesInput;
+    private ComponentState lookup, producesInput;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
@@ -51,7 +58,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private DataDefinition ddTIOC, orderDD;
 
     @Mock
-    private Entity tioc, toc, prodComp, prod, order, progressFroDay;
+    private Entity tioc, toc, prodComp, prod, order;
 
     @Mock
     private EntityTreeNode root;
@@ -63,11 +70,11 @@ public class ProductionPerShiftDetailsHooksTest {
     private EntityList progressForDays;
 
     @Mock
-    private FormComponent form;
+    private FormComponent form, form1;
 
     @Mock
     private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionType,
-            plannedProgressCorrectionComment;
+            plannedProgressCorrectionComment, unitField, setRoot;
 
     @Mock
     private SearchResult result;
@@ -82,7 +89,16 @@ public class ProductionPerShiftDetailsHooksTest {
     private TimeConverterService timeConverterService;
 
     @Mock
-    AwesomeDynamicListComponent adl;
+    private List<FormComponent> forms, forms1;
+
+    @Mock
+    Iterator<FormComponent> iteratorForm, iteratorForm1;
+
+    @Mock
+    AwesomeDynamicListComponent adl, dprogress;
+
+    @Mock
+    private PPSHelper helper;
 
     private Long orderId;
 
@@ -91,38 +107,47 @@ public class ProductionPerShiftDetailsHooksTest {
         hooks = new ProductionPerShiftDetailsHooks();
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(hooks, "technologyService", technologyService);
-        ReflectionTestUtils.setField(hooks, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(hooks, "helper", helper);
         ReflectionTestUtils.setField(hooks, "timeConverterService", timeConverterService);
 
         when(dataDefinitionService.get("orders", "order")).thenReturn(orderDD);
         when(dataDefinitionService.get("technologies", "technologyInstanceOperationComponent")).thenReturn(ddTIOC);
-        orderId = 1L;
-        when(view.getComponentByReference("order")).thenReturn(lookup);
-        when(lookup.getFieldValue()).thenReturn(orderId);
+        when(helper.getOrderFromLookup(view)).thenReturn(order);
     }
 
     @Test
     public void shouldFillProducesFieldAfterSelection() {
         // given
-        Long id = 3L;
         String prodName = "asdf";
+        String unit = "PLN";
 
-        given(view.getComponentByReference("productionPerShiftOperation")).willReturn(lookup);
-        given(view.getComponentByReference("produces")).willReturn(producesInput);
+        when(helper.getTiocFromOperationLookup(view)).thenReturn(tioc);
+        when(view.getComponentByReference("produces")).thenReturn(producesInput);
+        when(producesInput.getFieldValue()).thenReturn("");
 
-        given(lookup.getFieldValue()).willReturn(id);
-        given(ddTIOC.get(id)).willReturn(tioc);
+        when(tioc.getBelongsToField("technologyOperationComponent")).thenReturn(toc);
+        when(technologyService.getMainOutputProductComponent(toc)).thenReturn(prodComp);
+        when(prodComp.getBelongsToField("product")).thenReturn(prod);
+        when(prod.getStringField("name")).thenReturn(prodName);
+        when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
+        when(adl.getFormComponents()).thenReturn(forms);
+        when(forms.iterator()).thenReturn(iteratorForm);
+        when(iteratorForm.next()).thenReturn(form);
+        when(iteratorForm.hasNext()).thenReturn(true, false);
 
-        given(tioc.getBelongsToField("technologyOperationComponent")).willReturn(toc);
-        given(technologyService.getMainOutputProductComponent(toc)).willReturn(prodComp);
-        given(prodComp.getBelongsToField("product")).willReturn(prod);
-        given(prod.getStringField("name")).willReturn(prodName);
+        when(form.findFieldComponentByName("dailyProgressADL")).thenReturn(dprogress);
+        when(dprogress.getFormComponents()).thenReturn(forms1);
+        when(forms1.iterator()).thenReturn(iteratorForm1);
+        when(iteratorForm1.next()).thenReturn(form1);
+        when(iteratorForm1.hasNext()).thenReturn(true, false);
 
+        when(prod.getStringField("unit")).thenReturn(unit);
+        when(form1.findFieldComponentByName("unit")).thenReturn(unitField);
         // when
         hooks.fillProducedField(view);
 
         // then
-        verify(producesInput).setFieldValue(prodName);
+        Mockito.verify(unitField).setFieldValue(unit);
     }
 
     @Test
@@ -131,9 +156,11 @@ public class ProductionPerShiftDetailsHooksTest {
         Long entityId = 1L;
         Long operationId = 2L;
         Long rootId = 2L;
+        when(view.getComponentByReference("setRoot")).thenReturn(setRoot);
+        when(setRoot.getFieldValue()).thenReturn("");
         when(view.getComponentByReference("form")).thenReturn(form);
         when(form.getEntityId()).thenReturn(entityId);
-        when(orderDD.get(entityId)).thenReturn(order);
+
         when(order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).thenReturn(techInstOperComps);
         when(techInstOperComps.isEmpty()).thenReturn(false);
         when(techInstOperComps.getRoot()).thenReturn(root);
@@ -143,39 +170,13 @@ public class ProductionPerShiftDetailsHooksTest {
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
         when(plannedProgressType.getFieldValue()).thenReturn("01planned");
         when(order.getStringField("state")).thenReturn("01pending");
-        when(operation.getFieldValue()).thenReturn(operationId);
+        when(operation.getFieldValue()).thenReturn(null);
         when(root.getId()).thenReturn(rootId);
         // when
         hooks.addRootForOperation(view);
         // then
 
         Assert.assertEquals(rootId, operationId);
-    }
-
-    @Test
-    public void shouldReturnNullWhenEntityIdIsNull() throws Exception {
-        // given
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(null);
-
-        // when
-        hooks.addRootForOperation(view);
-        // then
-    }
-
-    @Test
-    public void shouldReturnWhenTechOperCompsIsEmpty() throws Exception {
-        // given
-        Long entityId = 1L;
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(entityId);
-        when(orderDD.get(entityId)).thenReturn(order);
-        when(order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).thenReturn(techInstOperComps);
-        when(techInstOperComps.isEmpty()).thenReturn(true);
-
-        // when
-        hooks.addRootForOperation(view);
-        // then
     }
 
     @Test
@@ -208,32 +209,6 @@ public class ProductionPerShiftDetailsHooksTest {
         hooks.disablePlannedProgressTypeForPendingOrder(view);
         // then
         verify(plannedProgressType).setEnabled(true);
-    }
-
-    @Test
-    public void shouldReturnTIOCFromDB() throws Exception {
-        // given
-        Long operationId = 1L;
-        when(view.getComponentByReference("productionPerShiftOperation")).thenReturn(componentState);
-        when(componentState.getFieldValue()).thenReturn(operationId);
-        when(ddTIOC.get(operationId)).thenReturn(tioc);
-
-        // when
-        Entity techInstOperComp = hooks.getTiocFromOperationLookup(view);
-        // then
-        Assert.assertEquals(tioc, techInstOperComp);
-    }
-
-    @Test
-    public void shouldReturnNullWhenTiocIdIsNull() throws Exception {
-        // given
-        when(view.getComponentByReference("productionPerShiftOperation")).thenReturn(componentState);
-        when(componentState.getFieldValue()).thenReturn(null);
-
-        // when
-        Entity techInstOperComp = hooks.getTiocFromOperationLookup(view);
-        // then
-        Assert.assertEquals(null, techInstOperComp);
     }
 
     @Test
@@ -299,22 +274,19 @@ public class ProductionPerShiftDetailsHooksTest {
     }
 
     @Test
-    @Ignore
     public void shouldFillProgressForDaysSelectedOperation() throws Exception {
         // given
-        Long operationId = 1L;
         String corrected = "02corrected";
         when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
-        when(view.getComponentByReference("productionPerShiftOperation")).thenReturn(operation);
-        when(operation.getFieldValue()).thenReturn(operationId);
-        when(ddTIOC.get(operationId)).thenReturn(tioc);
+        when(helper.getTiocFromOperationLookup(view)).thenReturn(tioc);
+
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
-        when(plannedProgressType.getFieldValue()).thenReturn("02corrected");
         when(tioc.getHasManyField("progressForDays")).thenReturn(progressForDays);
-
+        //
         when(plannedProgressType.getFieldValue()).thenReturn(corrected);
-        SearchCriterion criterion = SearchRestrictions.eq("corrected", corrected);
-
+        SearchCriterion criterion = SearchRestrictions.eq("corrected",
+                corrected.equals(PlannedProgressType.CORRECTED.getStringValue()));
+        //
         when(progressForDays.find()).thenReturn(builder);
         when(builder.add(criterion)).thenReturn(builder);
         when(builder.list()).thenReturn(result);
@@ -322,6 +294,57 @@ public class ProductionPerShiftDetailsHooksTest {
         // when
         hooks.fillProgressForDays(view);
         // then
+        Mockito.verify(adl).setFieldValue(progressForDays);
+    }
+
+    @Test
+    public void shouldDisabledButtonWhenProgressTypeIsPlanne() throws Exception {
+        // given
+        WindowComponentState windowComponent = mock(WindowComponentState.class);
+        Ribbon ribbon = mock(Ribbon.class);
+        RibbonGroup progressSelectedOperation = mock(RibbonGroup.class);
+        RibbonActionItem clearButton = mock(RibbonActionItem.class);
+        RibbonActionItem copyButton = mock(RibbonActionItem.class);
+
+        when(view.getComponentByReference("window")).thenReturn(windowComponent);
+        when(windowComponent.getRibbon()).thenReturn(ribbon);
+        when(ribbon.getGroupByName("progress")).thenReturn(progressSelectedOperation);
+        when(progressSelectedOperation.getItemByName("clear")).thenReturn(clearButton);
+        when(progressSelectedOperation.getItemByName("copyFromPlanned")).thenReturn(copyButton);
+        when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
+        when(plannedProgressType.getFieldValue()).thenReturn("01planned");
+
+        // when
+        hooks.changedButtonState(view);
+
+        // then
+        Mockito.verify(clearButton).setEnabled(false);
+        Mockito.verify(copyButton).setEnabled(false);
+    }
+
+    @Test
+    public void shouldEnabledButtonWhenProgressTypeIsCorrected() throws Exception {
+        // given
+        WindowComponentState windowComponent = mock(WindowComponentState.class);
+        Ribbon ribbon = mock(Ribbon.class);
+        RibbonGroup progressSelectedOperation = mock(RibbonGroup.class);
+        RibbonActionItem clearButton = mock(RibbonActionItem.class);
+        RibbonActionItem copyButton = mock(RibbonActionItem.class);
+
+        when(view.getComponentByReference("window")).thenReturn(windowComponent);
+        when(windowComponent.getRibbon()).thenReturn(ribbon);
+        when(ribbon.getGroupByName("progress")).thenReturn(progressSelectedOperation);
+        when(progressSelectedOperation.getItemByName("clear")).thenReturn(clearButton);
+        when(progressSelectedOperation.getItemByName("copyFromPlanned")).thenReturn(copyButton);
+        when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
+        when(plannedProgressType.getFieldValue()).thenReturn("02corrected");
+
+        // when
+        hooks.changedButtonState(view);
+
+        // then
+        Mockito.verify(clearButton).setEnabled(true);
+        Mockito.verify(copyButton).setEnabled(true);
     }
 
 }

@@ -17,7 +17,7 @@
        http://schema.qcadoo.org/modules/report
        http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd" >
 
 	<information>
 		<name>MES - Production per shift</name>

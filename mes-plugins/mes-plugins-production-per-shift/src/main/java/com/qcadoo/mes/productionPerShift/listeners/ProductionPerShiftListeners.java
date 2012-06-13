@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
@@ -37,6 +38,9 @@ public class ProductionPerShiftListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private PPSHelper helper;
 
     @Autowired
     private ProductionPerShiftDetailsHooks detailsHooks;
@@ -114,7 +118,7 @@ public class ProductionPerShiftListeners {
         for (Entity progressForDay : progressForDays) {
             progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
-        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
+        Entity tioc = helper.getTiocFromOperationLookup(viewState);
         boolean hasCorrections = detailsHooks.shouldHasCorrections(viewState);
         if (tioc != null) {
             tioc.setField(HAS_CORRECTIONS, hasCorrections);
@@ -126,6 +130,7 @@ public class ProductionPerShiftListeners {
                     componentState.addMessage(error.getMessage(), MessageType.FAILURE, error.getVars());
                 }
             }
+            componentState.performEvent(viewState, "save");
         }
     }
 
@@ -150,12 +155,13 @@ public class ProductionPerShiftListeners {
     public void changeView(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         detailsHooks.disablePlannedProgressTypeForPendingOrder(viewState);
         detailsHooks.disableReasonOfCorrection(viewState);
+        detailsHooks.fillProgressForDays(viewState);
     }
 
     public void copyFromPlanned(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
+        Entity tioc = helper.getTiocFromOperationLookup(viewState);
         if (tioc == null) {
             return;
         } else {
@@ -183,7 +189,7 @@ public class ProductionPerShiftListeners {
             final String[] args) {
         DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Entity tioc = detailsHooks.getTiocFromOperationLookup(viewState);
+        Entity tioc = helper.getTiocFromOperationLookup(viewState);
         if (tioc == null) {
             return;
         } else {
