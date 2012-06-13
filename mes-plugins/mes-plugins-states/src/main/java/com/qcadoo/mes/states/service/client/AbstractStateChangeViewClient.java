@@ -6,7 +6,6 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
@@ -21,7 +20,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
-@Configurable
 public abstract class AbstractStateChangeViewClient implements StateChangeViewClient {
 
     @Autowired
