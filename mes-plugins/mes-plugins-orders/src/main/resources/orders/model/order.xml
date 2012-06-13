@@ -61,6 +61,10 @@
 		<datetime name="effectiveDateTo" readonly="true" />
 		<string name="externalNumber" />
 		<boolean name="externalSynchronized" default="true" />
+		
+		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
+			cascade="delete" />
+		
 		<hasMany name="loggings" joinField="order" model="logging"
 			cascade="delete" />
 		<tree name="technologyInstanceOperationComponents" copyable="true" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" />
@@ -92,8 +96,8 @@
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
-		<onSave class="com.qcadoo.mes.orders.states.ChangeStateHook"
-			method="changedState" />
+<!-- 		<onSave class="com.qcadoo.mes.orders.states.ChangeStateHook" -->
+<!-- 			method="changedState" /> -->
 		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate"/>
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate"/>

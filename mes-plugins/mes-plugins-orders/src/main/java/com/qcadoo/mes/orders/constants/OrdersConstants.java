@@ -32,12 +32,12 @@ public interface OrdersConstants {
 
     String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
 
+    String MODEL_LOGGING = "logging";
+
     // VIEW
     String VIEW_ORDER_DETAILS = "orderDetails";
 
     String VIEW_ORDERS_LIST = "ordersList";
-
-    String MODEL_LOGGING = "logging";
 
     String BASIC_MODEL_PRODUCT = "product";
 

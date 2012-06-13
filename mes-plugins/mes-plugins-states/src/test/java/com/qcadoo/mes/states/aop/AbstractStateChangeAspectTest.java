@@ -45,6 +45,11 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         protected void targetServicePointcut() {
         }
 
+        @Override
+        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
+        }
+
     }
 
     @Aspect

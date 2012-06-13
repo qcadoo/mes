@@ -1,6 +1,6 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="loggingDetails" modelName="logging">
+	name="orderStateChangeDetails" modelName="orderStateChange">
 
 	<component type="window" name="window" reference="window">
 
@@ -20,11 +20,11 @@
 							reference="worker" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="select" name="previousState" field="#{form}.previousState"
+						<component type="select" name="previousState" field="#{form}.sourceState"
 							reference="previousState" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="select" name="currentState" field="#{form}.currentState"
+						<component type="select" name="currentState" field="#{form}.targetState"
 							reference="currentState" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="1" row="5">

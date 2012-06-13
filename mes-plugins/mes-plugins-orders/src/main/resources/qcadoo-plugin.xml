@@ -152,7 +152,7 @@
 
 		<view:view resource="view/ordersParameters.xml" />
 
-		<view:view resource="view/loggingDetails.xml" />
+		<view:view resource="view/orderStateChangeDetails.xml" />
 
 		<view:view resource="view/technologyInstanceOperationComponentList.xml" />
 		

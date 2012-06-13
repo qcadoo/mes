@@ -30,17 +30,21 @@
 	<fields>
 		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
 		<string name="comment" />
-		<belongsTo name="shift" model="shift" plugin="basic" />
 	
 		<!-- generic state change fields -->
 		<datetime name="dateAndTime" />
-		<string name="sourceState" />
-		<string name="targetState" />
-		<string name="status" />
+		<enum name="sourceState"
+			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
+			required="true" />
+		<enum name="targetState"
+			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
+			required="true" />
+		<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
 		<integer name="phase" />
 		<string name="worker" />
 		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states"/> <!-- messages -->
 		<belongsTo name="order" model="order" /> <!-- owner -->
+		<belongsTo name="shift" model="shift" plugin="basic" />
 		
 	</fields>
 	<hooks />

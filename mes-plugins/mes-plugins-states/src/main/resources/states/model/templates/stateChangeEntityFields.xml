@@ -1,8 +1,13 @@
 <datetime name="dateAndTime" />
-<string name="sourceState" />
-<string name="targetState" />
-<enum name="status" values="01inProgres,02paused,03successful,04failure" />
-<integer name="phase" />
+<enum name="sourceState"
+	values="#####"
+	required="true" />
+<enum name="targetState"
+	values="#####"
+	required="true" />
+<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
 <string name="worker" />
-
-<!-- <hasMany name="messages" joinField="#####" model="message" plugin="states"/> -->
+<belongsTo name="shift" model="shift" plugin="basic" />
+<integer name="phase" />
+<hasMany name="messages" joinField="#####" model="message" plugin="states"/> <!-- messages -->
+<belongsTo name="order" model="order" /> <!-- owner -->
