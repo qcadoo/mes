@@ -1,7 +1,6 @@
 package com.qcadoo.mes.materialFlow.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STOCK_AREAS_FROM;
@@ -51,11 +50,11 @@ public class TransformationsDetailsViewHooks {
             List<FormComponent> formComponents = adl.getFormComponents();
 
             for (FormComponent form : formComponents) {
+
                 Entity transfer = form.getEntity();
                 Entity product = transfer.getBelongsToField(PRODUCT);
 
-                if (form.getEntity().isValid() && (form.getEntity().getDecimalField(QUANTITY) != null)
-                        && !multitransferListeners.isProductAlreadyAdded(formComponents, product)) {
+                if ((form.getEntityId() != null) && form.getEntity().isValid()) {
                     form.setFormEnabled(false);
                 } else {
                     form.setFormEnabled(true);

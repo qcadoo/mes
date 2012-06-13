@@ -261,7 +261,7 @@ public class MultitransferListeners {
         return isValid;
     }
 
-    public boolean isProductAlreadyAdded(final List<FormComponent> formComponents, final Entity product) {
+    private boolean isProductAlreadyAdded(final List<FormComponent> formComponents, final Entity product) {
         if (product == null) {
             return false;
         }
