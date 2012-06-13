@@ -218,9 +218,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 translationService.translate("costCalculation.costCalculation.product.label", locale) + ":", costCalculation
                         .getBelongsToField("product").getStringField(NAME));
         pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
-                translationService.translate("costCalculation.costCalculation.defaultTechnology.label", locale) + ":",
-                costCalculation.getBelongsToField("defaultTechnology").getStringField(NAME));
-        pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
                 translationService.translate("costCalculation.costCalculation.technology.label", locale) + ":", costCalculation
                         .getBelongsToField(TECHNOLOGY).getStringField(NAME));
         pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,

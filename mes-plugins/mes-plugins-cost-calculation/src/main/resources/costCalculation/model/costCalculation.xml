@@ -37,7 +37,7 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<belongsTo name="defaultTechnology" model="technology"
-			plugin="technologies" />
+			plugin="technologies" /> 
 		<belongsTo name="technology" model="technology" plugin="technologies"
 			required="true" />
 		<belongsTo name="productionLine" model="productionLine" plugin="productionLines" required="true" />

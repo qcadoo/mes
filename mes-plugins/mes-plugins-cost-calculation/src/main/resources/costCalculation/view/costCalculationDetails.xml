@@ -183,17 +183,17 @@
 								method="fillCostPerUnitUnitField" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="lookup" name="defaultTechnology" field="defaultTechnology"
+					 <layoutElement column="2" row="3">
+						<component type="lookup" name="defaultTechnology" field="defaultTechnology" 
 							reference="defaultTechnology" defaultEnabled="false">
-							<option type="column" name="name" fields="name" />
-							<option type="required" value="true" />
+							<option type="column" name="name" fields="name"/>
+							<option type="required" value="false" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="number" />
 						</component>
-					</layoutElement>
+					</layoutElement> 
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="technology" field="technology"
 							reference="technology">

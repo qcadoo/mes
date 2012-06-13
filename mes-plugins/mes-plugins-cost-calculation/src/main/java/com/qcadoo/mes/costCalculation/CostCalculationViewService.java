@@ -277,8 +277,8 @@ public class CostCalculationViewService {
     }
 
     public void setFieldEnable(final ViewDefinitionState viewDefinitionState) {
-        Set<String> referenceNames = new HashSet<String>(Arrays.asList(DEFAULT_TECHNOLOGY, PRODUCT, ORDER, QUANTITY, TECHNOLOGY,
-                "number", "productionLine", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode",
+        Set<String> referenceNames = new HashSet<String>(Arrays.asList(PRODUCT, ORDER, QUANTITY, TECHNOLOGY, "number",
+                "productionLine", "description", "calculateMaterialCostsMode", "calculateOperationCostsMode",
                 "productionCostMargin", "productionCostMarginProc", "materialCostMargin", "materialCostMarginProc",
                 "additionalOverhead", "additionalOverheadCurrency", "printCostNormsOfMaterials", "printOperationNorms",
                 "includeTPZ", "includeAdditionalTime", "sourceOfMaterialCosts"));
