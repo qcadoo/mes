@@ -68,10 +68,12 @@ public class StateChangeViewClientValidationUtil {
             }
         }
 
-        final StringBuilder sb = new StringBuilder();
-        sb.append(translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
-                join(errorMessages, ' ')));
-        component.addTranslatedMessage(sb.toString(), convertViewMessageType(VALIDATION_ERROR));
+        if (!errorMessages.isEmpty()) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
+                    join(errorMessages, ' ')));
+            component.addTranslatedMessage(sb.toString(), convertViewMessageType(VALIDATION_ERROR));
+        }
     }
 
     private String composeTranslatedGlobalValidationMessage(final Entity globalMessage) {
