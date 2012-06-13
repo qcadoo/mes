@@ -47,7 +47,22 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
     }
 
     @Override
-    public void checkFields() throws IllegalStateException {
+    public String getDateTimeFieldName() {
+        return "dateAndTime";
+    }
+
+    @Override
+    public String getShiftFieldName() {
+        return "shift";
+    }
+
+    @Override
+    public String getWorkerFieldName() {
+        return "worker";
+    }
+
+    @Override
+    public void checkFields() {
         DataDefinition dataDefinition = getDataDefinition();
         List<String> fieldNames = Lists.newArrayList(getOwnerFieldName(), getSourceStateFieldName(), getTargetStateFieldName(),
                 getStatusFieldName(), getMessagesFieldName(), getPhaseFieldName());

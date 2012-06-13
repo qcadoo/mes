@@ -145,6 +145,11 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         protected void targetServicePointcut() {
         }
 
+        @Override
+        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
+        }
+
     }
 
     @Aspect
@@ -158,6 +163,11 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @Pointcut("this(AnotherStateChangeAspect)")
         protected void targetServicePointcut() {
+        }
+
+        @Override
+        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
         }
     }
 
@@ -178,6 +188,11 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @Pointcut("this(TestStateChangeAspect)")
         protected void targetServicePointcut() {
+        }
+
+        @Override
+        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
         }
 
     }
@@ -210,6 +225,11 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @Pointcut("this(BreakStateChangeAspect)")
         protected void targetServicePointcut() {
+        }
+
+        @Override
+        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
         }
     }
 

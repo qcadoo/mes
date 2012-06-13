@@ -20,7 +20,7 @@ public interface StateChangeEntityDescriber {
      * @param stringValue
      * @return
      */
-    Object parseStateEnum(final String stringValue);
+    StateEnum parseStateEnum(final String stringValue);
 
     /**
      * @return name of belongsTo field pointing to owner entity.
@@ -53,10 +53,25 @@ public interface StateChangeEntityDescriber {
     String getPhaseFieldName();
 
     /**
+     * @return name of DateTime field containing date & time of state change.
+     */
+    String getDateTimeFieldName();
+
+    /**
+     * @return name of belongsTo field pointing to shift entity.
+     */
+    String getShiftFieldName();
+
+    /**
+     * @return name of String field containing name of worker whose perform state change.
+     */
+    String getWorkerFieldName();
+
+    /**
      * Check if any field using in this describer is missing.
      * 
      * @throws IllegalStateException
      *             if at least one field is missing.
      */
-    void checkFields() throws IllegalStateException;
+    void checkFields();
 }

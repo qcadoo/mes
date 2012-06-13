@@ -5,6 +5,10 @@ public final class OrderStateChangeFields {
     private OrderStateChangeFields() {
     }
 
+    public static final String SHIFT = "shift";
+
+    public static final String WORKER = "worker";
+
     public static final String STATUS = "status";
 
     public static final String ORDER = "order";

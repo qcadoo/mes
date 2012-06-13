@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.states.service.StateChangeService;
-import com.qcadoo.mes.states.service.client.AbstractViewStateChangeClient;
+import com.qcadoo.mes.states.service.client.AbstractStateChangeViewClient;
 
 @Service
-public class OrderViewStateChangeService extends AbstractViewStateChangeClient {
+public class OrderStateChangeViewClient extends AbstractStateChangeViewClient {
 
     @Autowired
     private OrderStateChangeAspect orderStateChangeService;

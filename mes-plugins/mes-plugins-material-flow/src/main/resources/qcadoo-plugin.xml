@@ -55,6 +55,9 @@
 		<dependency>
 			<plugin>basic</plugin>
 		</dependency>
+		<dependency>
+			<plugin>technologies</plugin>
+		</dependency>
 	</dependencies>
 
 	<modules>

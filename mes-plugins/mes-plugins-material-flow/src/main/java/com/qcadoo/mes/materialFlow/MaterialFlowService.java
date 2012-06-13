@@ -431,34 +431,34 @@ public class MaterialFlowService {
         stockAreaTo.requestComponentUpdateState();
     }
 
-    public boolean validateTransfer(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
         boolean validate = true;
 
-        Entity stockAreasFrom = entity.getBelongsToField(STOCK_AREAS_FROM);
-        Entity stockAreasTo = entity.getBelongsToField(STOCK_AREAS_TO);
-        Entity product = entity.getBelongsToField(PRODUCT);
-        BigDecimal quantity = entity.getDecimalField(QUANTITY);
-        Date date = (Date) entity.getField(TIME);
-        String type = entity.getStringField(TYPE);
+        Entity stockAreasFrom = transfer.getBelongsToField(STOCK_AREAS_FROM);
+        Entity stockAreasTo = transfer.getBelongsToField(STOCK_AREAS_TO);
+        Entity product = transfer.getBelongsToField(PRODUCT);
+        BigDecimal quantity = transfer.getDecimalField(QUANTITY);
+        Date date = (Date) transfer.getField(TIME);
+        String type = transfer.getStringField(TYPE);
 
         if (stockAreasFrom == null && stockAreasTo == null) {
-            entity.addError(dataDefinition.getField(STOCK_AREAS_FROM),
+            transfer.addError(transferDD.getField(STOCK_AREAS_FROM),
                     "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
-            entity.addError(dataDefinition.getField(STOCK_AREAS_TO),
+            transfer.addError(transferDD.getField(STOCK_AREAS_TO),
                     "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
             validate = false;
         }
         if (type == null) {
-            entity.addError(dataDefinition.getField(TYPE), "materialFlow.validate.global.error.fillType");
+            transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
             validate = false;
         }
         if (date == null) {
-            entity.addError(dataDefinition.getField(TIME), "materialFlow.validate.global.error.fillDate");
+            transfer.addError(transferDD.getField(TIME), "materialFlow.validate.global.error.fillDate");
             validate = false;
         }
         if ((CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
                 && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
-            entity.addError(dataDefinition.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
+            transfer.addError(transferDD.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
             validate = false;
         }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.orders.constants.OrderState;
 import com.qcadoo.mes.orders.constants.OrderStateChangeFields;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
+import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
@@ -24,7 +25,7 @@ public final class OrderStateChangeDescriber extends AbstractStateChangeDescribe
     }
 
     @Override
-    public Object parseStateEnum(final String stringValue) {
+    public StateEnum parseStateEnum(final String stringValue) {
         return OrderState.parseString(stringValue);
     }
 

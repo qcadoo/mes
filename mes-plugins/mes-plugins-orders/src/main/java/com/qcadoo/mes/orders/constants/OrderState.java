@@ -24,8 +24,9 @@
 package com.qcadoo.mes.orders.constants;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.states.StateEnum;
 
-public enum OrderState {
+public enum OrderState implements StateEnum {
 
     PENDING("01pending"), ACCEPTED("02accepted"), IN_PROGRESS("03inProgress"), COMPLETED("04completed"), DECLINED("05declined"), INTERRUPTED(
             "06interrupted"), ABANDONED("07abandoned");
@@ -36,6 +37,7 @@ public enum OrderState {
         this.stringValue = state;
     }
 
+    @Override
     public String getStringValue() {
         return stringValue;
     }

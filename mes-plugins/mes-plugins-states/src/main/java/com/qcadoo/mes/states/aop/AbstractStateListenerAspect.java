@@ -3,6 +3,7 @@ package com.qcadoo.mes.states.aop;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.Entity;
 
@@ -42,5 +43,7 @@ public abstract class AbstractStateListenerAspect {
      */
     @Pointcut
     protected abstract void targetServicePointcut();
+
+    public abstract StateChangeEntityDescriber getStateChangeEntityDescriber();
 
 }

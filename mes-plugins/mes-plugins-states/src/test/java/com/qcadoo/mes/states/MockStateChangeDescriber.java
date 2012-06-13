@@ -12,12 +12,12 @@ public final class MockStateChangeDescriber extends AbstractStateChangeDescriber
     }
 
     @Override
-    public Object parseStateEnum(final String stringValue) {
-        return stringValue;
+    public StateEnum parseStateEnum(final String stringValue) {
+        return Mockito.mock(StateEnum.class);
     }
 
     @Override
-    public void checkFields() throws IllegalStateException {
+    public void checkFields() {
     }
 
 }

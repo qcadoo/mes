@@ -26,6 +26,9 @@ public class AbstractStateChangeDescriberTest {
     @Mock
     private Map<String, FieldDefinition> fieldsMap;
 
+    @Mock
+    private StateEnum stateEnum;
+
     private Set<String> dataDefFieldsSet;
 
     private class TestStateChangeDescriber extends AbstractStateChangeDescriber {
@@ -36,8 +39,8 @@ public class AbstractStateChangeDescriberTest {
         }
 
         @Override
-        public Object parseStateEnum(final String stringValue) {
-            return stringValue;
+        public StateEnum parseStateEnum(final String stringValue) {
+            return stateEnum;
         }
 
     }
@@ -50,8 +53,8 @@ public class AbstractStateChangeDescriberTest {
         }
 
         @Override
-        public Object parseStateEnum(final String stringValue) {
-            return stringValue;
+        public StateEnum parseStateEnum(final String stringValue) {
+            return stateEnum;
         }
 
         @Override

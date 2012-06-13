@@ -135,6 +135,7 @@
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="generated" field="generated"
 							reference="generated" defaultEnabled="false" />
+							
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="date" field="date"
@@ -182,17 +183,17 @@
 								method="fillCostPerUnitUnitField" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="lookup" name="defaultTechnology" field="defaultTechnology"
+					 <layoutElement column="2" row="3">
+						<component type="lookup" name="defaultTechnology" field="defaultTechnology" 
 							reference="defaultTechnology" defaultEnabled="false">
-							<option type="column" name="name" fields="name" />
-							<option type="required" value="true" />
+							<option type="column" name="name" fields="name"/>
+							<option type="required" value="false" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="#name" />
 							<option type="fieldCode" value="number" />
 						</component>
-					</layoutElement>
+					</layoutElement> 
 					<layoutElement column="2" row="4">
 						<component type="lookup" name="technology" field="technology"
 							reference="technology">
@@ -354,20 +355,20 @@
 							reference="borderLayoutTechnicalProductionCost">
 							<option type="label" value="technicalProductionCost" />
 							<component type="gridLayout" name="gridTechnicalProductionCost"
-								columns="3" rows="6" hasBorders="false">
+								columns="3" rows="4" hasBorders="false">
 								<layoutElement column="1" row="1" width="2">
 									<component type="input" name="totalMaterialCosts"
 										field="#{form}.totalMaterialCosts" reference="totalMaterialCosts"
 										defaultEnabled="false">
 										<option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" /> 
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="1">
 									<component type="input" name="totalMaterialCostsCurrency"
 										defaultEnabled="false" hasLabel="false" reference="totalMaterialCostsCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="2">
@@ -375,15 +376,15 @@
 										reference="totalMachineHourlyCosts" field="#{form}.totalMachineHourlyCosts"
 										defaultEnabled="false">
 										  <option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" />
+										  <option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="2">
 									<component type="input" name="totalMachineHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
 										reference="totalMachineHourlyCostsCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="2">
@@ -391,15 +392,15 @@
 										field="#{form}.totalLaborHourlyCosts" reference="totalLaborHourlyCosts"
 										defaultEnabled="false">
 										<option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="3">
 									<component type="input" name="totalLaborHourlyCostsCurrency"
 										defaultEnabled="false" hasLabel="false"
 										reference="totalLaborHourlyCostsCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="4" width="2">
@@ -407,36 +408,39 @@
 										field="#{form}.totalPieceworkCosts" reference="totalPieceworkCosts"
 										defaultEnabled="false" defaultVisible="false">
 										<option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="4">
 									<component type="input" name="totalPieceworkCostsCurrency"
 										defaultEnabled="false" hasLabel="false" reference="totalPieceworkCostsCurrency" defaultVisible="false">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
-								<layoutElement column="1" row="5">
-									<component type="label" name="totalTechnicalProductionCostsLabel">
-										<option type="labelStyle" value="text" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="6" width="2">
-									<component type="input" name="totalTechnicalProductionCosts"
-										reference="totalTechnicalProductionCosts" field="#{form}.totalTechnicalProductionCosts"
-										defaultEnabled="false" hasLabel="false">
-										<option type="textRepresentationOnDisabled" value="true" />
-										<option type="alignment" value="right" />
-									</component>
-								</layoutElement>
-								<layoutElement column="3" row="6">
-									<component type="input"
-										name="totalTechnicalProductionCostsCurrency" defaultEnabled="false"
-										hasLabel="false" reference="totalTechnicalProductionCostsCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
+							</component>
+							<component type="borderLayout" name="borderLayoutTotalTechnicalProductionCosts"
+								reference="borderLayoutTotalTechnicalProductionCosts">
+								<option type="label" value="totalTechnicalProductionCost" />
+								<component type="gridLayout" name="gridTechnicalProductionCost"
+								columns="3" rows="1" hasBorders="false">
+									<layoutElement column="2" row="1">
+										<component type="input" name="totalTechnicalProductionCosts"
+											reference="totalTechnicalProductionCosts" field="#{form}.totalTechnicalProductionCosts"
+											defaultEnabled="false" hasLabel="false" width="80">
+											<option type="alignment" value="right" />
+											<option type="boldTextRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+									<layoutElement column="3" row="1">
+										<component type="input"
+											name="totalTechnicalProductionCostsCurrency" defaultEnabled="false"
+											hasLabel="false" reference="totalTechnicalProductionCostsCurrency">
+											<option type="boldTextRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+								</component>
+								
 							</component>
 						</component>
 					</layoutElement>
@@ -445,21 +449,21 @@
 							reference="borderLayoutOverheadsValue">
 							<option type="label" value="overheadsValue" />
 							<component type="gridLayout" name="gridProductionCostMargin"
-								columns="3" rows="5" hasBorders="false">
+								columns="3" rows="4" hasBorders="false">
 								<layoutElement column="1" row="1" width="2">
 									<component type="input" name="productionCostMarginValue"
 										field="#{form}.productionCostMarginValue" defaultEnabled="false"
 										reference="productionCostMarginValue">
 										<option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="1">
 									<component type="input" name="productionCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
 										reference="productionCostMarginValueCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="2">
@@ -467,15 +471,15 @@
 										field="#{form}.materialCostMarginValue" defaultEnabled="false"
 										reference="materialCostMarginValue">
 										<option type="labelWidth" value="40"/>
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+-										<option type="alignment" value="right" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="2">
 									<component type="input" name="materialCostMarginValueCurrency"
 										defaultEnabled="false" hasLabel="false"
 										reference="materialCostMarginValueCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="2">
@@ -484,81 +488,78 @@
 										reference="additionalOverheadValue">
 										<option type="labelWidth" value="40"/>
 										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="3" row="3">
 									<component type="input" name="additionalOverheadValueCurrency"
 										defaultEnabled="false" hasLabel="false"
 										reference="additionalOverheadValueCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
-								<layoutElement column="1" row="4">
-									<component type="label" name="totalOverheadLabel"
-										hasLabel="false">
-									  <option type="labelWidth" value="40"/>
-										<option type="labelStyle" value="text" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="5" width="2">
-									<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
-										defaultEnabled="false" reference="totalOverhead" hasLabel="false">
-										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
-								<layoutElement column="3" row="5">
-									<component type="input" name="totalOverheadCurrency"
-										defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
+							</component>
+							<component type="borderLayout" name="borderLayoutTotalOverhead"
+								reference="borderLayoutTotalOverhead">
+								<option type="label" value="totalOverheadLabel" />
+								<component type="gridLayout" name="gridTechnicalTotalOverhead"
+									columns="3" rows="1" hasBorders="false">
+									<layoutElement column="2" row="1" >
+										<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
+											defaultEnabled="false" reference="totalOverhead" hasLabel="false">
+											<option type="alignment" value="right" />
+											<option type="boldTextRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+									<layoutElement column="3" row="1">
+										<component type="input" name="totalOverheadCurrency"
+											defaultEnabled="false" hasLabel="false" reference="totalOverheadCurrency">
+											<option type="boldTextRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+								</component>
+								
 							</component>
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="1" height="6">
-						<component type="borderLayout" name="totalCost"
-							reference="totalCost">
-							<option type="label" value="totalCost" />
-							<component type="gridLayout" name="gridProductionCostMargin"
-								columns="3" rows="4" hasBorders="false">
-								<layoutElement column="1" row="1" width="2">
-									<component type="label" name="totalCostsLabel"
-										hasLabel="false">
-										<option type="labelStyle" value="text" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2" width="2">
+						<component type="borderLayout" name="borderLayoutTotalCost"
+							reference="borderLayoutTotalCost">
+							<option type="label" value="totalCostLabel" />
+							<component type="gridLayout" name="gridLayoutTotalCost"
+								columns="3" rows="1" hasBorders="false">
+								<layoutElement column="2" row="1" >
 									<component type="input" name="totalCosts" field="#{form}.totalCosts"
 										defaultEnabled="false" reference="totalCosts" hasLabel="false">
 										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
-								<layoutElement column="3" row="2">
+								<layoutElement column="3" row="1">
 									<component type="input" name="totalCostsCurrency"
 										defaultEnabled="false" hasLabel="false" reference="totalCostsCurrency">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
-								<layoutElement column="1" row="3">
-									<component type="label" name="totalCostPerUnitLabel"
-										hasLabel="false">
-										<option type="labelStyle" value="text" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="4" width="2">
+							</component>
+						</component>
+						
+						<component type="borderLayout" name="borderLayoutTotalCostPerUnit"
+							reference="borderLayoutTotalCostPerUnit">
+							<option type="label" value="totalCostPerUnitLabel" />
+							<component type="gridLayout" name="gridLayoutTotalCostPerUnit"
+								columns="3" rows="1" hasBorders="false">
+								<layoutElement column="2" row="1" >
 									<component type="input" name="totalCostPerUnit" field="#{form}.totalCostPerUnit"
 										defaultEnabled="false" reference="totalCostPerUnit" hasLabel="false">
 										<option type="alignment" value="right" />
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
-								<layoutElement column="3" row="4">
+								<layoutElement column="3" row="1">
 									<component type="input" name="totalCostPerUnitUnit"
 										defaultEnabled="false" hasLabel="false" reference="totalCostPerUnitUnit">
-										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="boldTextRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 							</component>

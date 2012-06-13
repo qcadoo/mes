@@ -48,19 +48,19 @@
 								onClick: function() {
 									if (this.state == "accept") {
 										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.acceptOrder.confirm)}")) {
-												#{grid}.performEvent('changeOrderStateToAcceptedForGrid', []);
+												#{grid}.performEvent('changeState', ['02accepted']);
 										};
 									} else if (this.state == "begin") {
 										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.activateOrder.confirm)}")) {
-												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+												#{grid}.performEvent('changeState', ['03inProgress']);
 										};
 									} else if (this.state == "finish") {
 										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.finishOrder.confirm)}")) {
-												#{grid}.performEvent('changeOrderStateToCompletedForGrid', []);
+												#{grid}.performEvent('changeState', ['04completed']);
 										};
 									} else if (this.state == "restart") {
 										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.restartOrder.confirm)}")) {
-												#{grid}.performEvent('changeOrderStateToInProgressForGrid', []);
+												#{grid}.performEvent('changeState', ['03inProgress']);
 										};
 									}
 								}
@@ -75,11 +75,11 @@
 									onClick: function() {
 										if (this.state == "decline") {
 											if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.declineOrder.confirm)}")) {
-													#{grid}.performEvent('changeOrderStateToDeclinedForGrid', []);
+													#{grid}.performEvent('changeState', ['05declined']);
 											};
 										} else if (this.state == "abandon") {
 											if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.abandonOrder.confirm)}")) {
-													#{grid}.performEvent('changeOrderStateToAbandonedForGrid', []);
+													#{grid}.performEvent('changeState', ['07abandoned']);
 											};
 										}
 									}
@@ -93,7 +93,7 @@
 								this.addOnChangeListener({
 									onClick: function() {
 										if (window.confirm("#{translate(orders.ordersPlanningList.window.ribbon.status.interruptOrder.confirm)}")) {
-												#{grid}.performEvent('changeOrderStateToInterruptedForGrid', []);
+												#{grid}.performEvent('changeState', ['06interrupted']);
 										};
 									}
 								});
@@ -270,18 +270,10 @@
 					<filterRestriction column="dateFrom" value="@{tomorrow}" />
 				</predefinedFilter>
 			</predefinedFilters>
-			<listener event="changeOrderStateToAcceptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToAcceptedForGrid" />
-			<listener event="changeOrderStateToInProgressForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToInProgressForGrid" />
-			<listener event="changeOrderStateToCompletedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToCompletedForGrid" />
-			<listener event="changeOrderStateToDeclinedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToDeclinedForGrid" />
-			<listener event="changeOrderStateToAbandonedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToAbandonedForGrid" />
-			<listener event="changeOrderStateToInterruptedForGrid" class="com.qcadoo.mes.orders.states.OrderStatesService"
-				method="changeOrderStateToInterruptedForGrid" />
+			
+			<listener event="changeState"
+					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState" />
+					
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

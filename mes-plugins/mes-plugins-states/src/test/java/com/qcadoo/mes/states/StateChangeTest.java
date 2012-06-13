@@ -30,7 +30,7 @@ public abstract class StateChangeTest {
         given(stateChangeEntity.getDataDefinition()).willReturn(stateChangeDD);
         final EntityList emptyEntityList = mockEntityList(Collections.<Entity> emptyList());
         given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(emptyEntityList);
-        mockEntityField(stateChangeEntity, describer.getStatusFieldName(), StateChangeStatus.IN_PROGRESS.getStringValue());
+        stubEntityField(stateChangeEntity, describer.getStatusFieldName(), StateChangeStatus.IN_PROGRESS.getStringValue());
     }
 
     protected EntityList mockEntityList(final List<Entity> entities) {
@@ -42,17 +42,17 @@ public abstract class StateChangeTest {
 
     protected Entity mockMessage(final MessageType type, final String translationKey, final String... translationArgs) {
         Entity message = mock(Entity.class);
-        mockEntityField(message, MessageFields.TYPE, type);
-        mockEntityField(message, MessageFields.TRANSLATION_KEY, translationKey);
-        mockEntityField(message, MessageFields.TRANSLATION_ARGS, joinArgs(translationArgs));
+        stubEntityField(message, MessageFields.TYPE, type);
+        stubEntityField(message, MessageFields.TRANSLATION_KEY, translationKey);
+        stubEntityField(message, MessageFields.TRANSLATION_ARGS, joinArgs(translationArgs));
         return message;
     }
 
     protected static void mockStateChangeStatus(final Entity entity, final StateChangeStatus status) {
-        mockEntityField(entity, DESCRIBER.getStatusFieldName(), status.getStringValue());
+        stubEntityField(entity, DESCRIBER.getStatusFieldName(), status.getStringValue());
     }
 
-    protected static void mockEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
+    protected static void stubEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
         given(entity.getField(fieldName)).willReturn(fieldValue);
         given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
     }
