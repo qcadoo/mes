@@ -119,7 +119,7 @@ public class ProductionPerShiftListeners {
             progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
         Entity tioc = helper.getTiocFromOperationLookup(viewState);
-        boolean hasCorrections = detailsHooks.shouldHasCorrections(viewState);
+        boolean hasCorrections = helper.shouldHasCorrections(viewState);
         if (tioc != null) {
             tioc.setField(HAS_CORRECTIONS, hasCorrections);
             tioc.setField(PROGRESS_FOR_DAYS, prepareProgressForDaysForTIOC(tioc, hasCorrections, progressForDays));
@@ -130,9 +130,10 @@ public class ProductionPerShiftListeners {
                     componentState.addMessage(error.getMessage(), MessageType.FAILURE, error.getVars());
                 }
             }
-            componentState.performEvent(viewState, "save");
-            if (!componentState.isHasError()) {
-                componentState.addMessage("qcadooView.message.saveMessage", MessageType.SUCCESS);
+            if (componentState.isHasError()) {
+                componentState.performEvent(viewState, "reset", new String[0]);
+            } else {
+                componentState.performEvent(viewState, "save");
             }
         }
     }
@@ -179,10 +180,11 @@ public class ProductionPerShiftListeners {
                 copiedProgressForDays.add(copyProgressForDay);
             }
             tioc.setField(HAS_CORRECTIONS, true);
-            tioc.setField(PROGRESS_FOR_DAYS,
-                    addCorrectedToPlannedProgressForDay(tioc, prepareProgressForDaysForTIOC(tioc, true, copiedProgressForDays)));
+            deleteProgressForDays(viewState, tioc);
+            tioc.setField(PROGRESS_FOR_DAYS, addCorrectedToPlannedProgressForDay(tioc, copiedProgressForDays));
             tioc.getDataDefinition().save(tioc);
         }
+        detailsHooks.fillProgressForDays(viewState);
     }
 
     public void deleteProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState,
@@ -193,15 +195,20 @@ public class ProductionPerShiftListeners {
         if (tioc == null) {
             return;
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
-                    .getFieldValue().toString();
-            List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
-                    plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
-            for (Entity progressForDay : progressForDays) {
-                progressForDayDD.delete(progressForDay.getId());
-            }
-            tioc.getDataDefinition().save(tioc);
+            deleteProgressForDays(viewState, tioc);
         }
+        detailsHooks.fillProgressForDays(viewState);
+    }
+
+    private void deleteProgressForDays(final ViewDefinitionState viewState, final Entity tioc) {
+        String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
+                .toString();
+        List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
+                plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
+        for (Entity progressForDay : progressForDays) {
+            progressForDay.getDataDefinition().delete(progressForDay.getId());
+        }
+        tioc.getDataDefinition().save(tioc);
     }
 
     private List<Entity> getProgressForDayFromTIOC(final Entity tioc, final boolean corrected) {

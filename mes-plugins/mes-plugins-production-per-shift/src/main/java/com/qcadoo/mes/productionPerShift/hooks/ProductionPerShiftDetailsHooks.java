@@ -100,11 +100,15 @@ public class ProductionPerShiftDetailsHooks {
         Entity prod = prodComp.getBelongsToField("product");
         producedProduct = prod.getStringField("name");
         producesInput.setFieldValue(producedProduct);
-        fillUnitFields(viewState, prod);
+        fillUnitFields(viewState);
 
     }
 
-    private void fillUnitFields(final ViewDefinitionState viewState, final Entity product) {
+    private void fillUnitFields(final ViewDefinitionState viewState) {
+        Entity tioc = helper.getTiocFromOperationLookup(viewState);
+        Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
+        Entity prodComp = technologyService.getMainOutputProductComponent(toc);
+        Entity prod = prodComp.getBelongsToField("product");
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
@@ -112,7 +116,7 @@ public class ProductionPerShiftDetailsHooks {
                     .findFieldComponentByName("dailyProgressADL");
             for (FormComponent formComponent : dailyProgressADL.getFormComponents()) {
                 FieldComponent unit = formComponent.findFieldComponentByName("unit");
-                unit.setFieldValue(product.getStringField("unit"));
+                unit.setFieldValue(prod.getStringField("unit"));
             }
         }
     }
@@ -146,6 +150,8 @@ public class ProductionPerShiftDetailsHooks {
             plannedProgressCorrectionType.setEnabled(true);
             plannedProgressCorrectionComment.setEnabled(true);
         }
+        plannedProgressCorrectionType.requestComponentUpdateState();
+        plannedProgressCorrectionComment.requestComponentUpdateState();
     }
 
     public void fillProgressForDays(final ViewDefinitionState viewState) {
@@ -162,11 +168,12 @@ public class ProductionPerShiftDetailsHooks {
                     .add(SearchRestrictions.eq(CORRECTED, !isPlanned(plannedProgressType.getFieldValue()))).list().getEntities();
             progressForDaysADL.setFieldValue(progressForDays);
         }
-        if (shouldHasCorrections(viewState) || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
+        if (helper.shouldHasCorrections(viewState) || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
             disabledComponent(progressForDaysADL.getFormComponents(), true);
         } else {
             disabledComponent(progressForDaysADL.getFormComponents(), false);
         }
+        fillUnitFields(viewState);
         progressForDaysADL.requestComponentUpdateState();
     }
 
@@ -219,11 +226,6 @@ public class ProductionPerShiftDetailsHooks {
                     .findFieldComponentByName("dailyProgressADL");
             dailyProgressADL.setEnabled(shouldDisabled);
         }
-    }
-
-    public boolean shouldHasCorrections(final ViewDefinitionState viewState) {
-        return ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue().equals(
-                PlannedProgressType.CORRECTED.getStringValue());
     }
 
     public void changedButtonState(final ViewDefinitionState view) {

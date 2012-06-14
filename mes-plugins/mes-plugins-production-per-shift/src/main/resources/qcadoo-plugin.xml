@@ -67,7 +67,7 @@
 			plugin="technologies">
 			<model:validatesWith
 				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
-				method="checkShiftIfWorks" />
+				method="checkShiftsIfWorks" />
 		</model:model-hook>
 
 		<view:view-listener plugin="orders" view="orderDetails"
