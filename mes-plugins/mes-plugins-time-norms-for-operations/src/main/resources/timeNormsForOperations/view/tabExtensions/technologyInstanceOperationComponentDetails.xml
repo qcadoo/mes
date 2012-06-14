@@ -88,14 +88,23 @@
 				 <option type="label" value="divisibleCostNormsBorderLabel" />
 			</component>
 			</layoutElement>
-			<layoutElement column="3" row="1">
-				<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
-					reference="machineUtilization" defaultEnabled="true" />
-			</layoutElement>
-			<layoutElement column="3" row="2">
-				<component type="input" name="laborUtilization" field="#{form}.laborUtilization"
-					reference="laborUtilization" defaultEnabled="true" />
-			</layoutElement>
+			<layoutElement column="3" row="1" height="2">
+				<component type="borderLayout" name="borderLayoutUtilizationRatioInTime"
+					reference="borderLayoutUtilizationRatioInTime">
+					<option type="label" value="utilizationRatioInTimeLabel" />
+					<component type="gridLayout" name="gridUtilizationRatioInTime"
+						columns="1" rows="2" hasBorders="false">
+						<layoutElement column="1" row="1">
+							<component type="input" name="machineUtilization" field="#{form}.machineUtilization"
+								reference="machineUtilization" defaultEnabled="true" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="input" name="laborUtilization" field="#{form}.laborUtilization"
+								reference="laborUtilization" defaultEnabled="true" />
+						</layoutElement>
+					</component>
+				</component>
+			</layoutElement> 
 			<layoutElement column="3" row="3">
 				<component type="select" name="countRealized" field="#{form}.countRealized"
 					reference="countRealized" hasDescription="true" defaultEnabled="true">
