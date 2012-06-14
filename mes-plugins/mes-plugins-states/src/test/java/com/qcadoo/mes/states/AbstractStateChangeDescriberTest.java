@@ -78,7 +78,8 @@ public class AbstractStateChangeDescriberTest {
     public final void init() {
         MockitoAnnotations.initMocks(this);
         testStateChangeDescriber = new TestStateChangeDescriber();
-        dataDefFieldsSet = Sets.newHashSet("sourceState", "targetState", "status", "messages", "owner", "phase");
+        dataDefFieldsSet = Sets.newHashSet("sourceState", "targetState", "status", "messages", "owner", "phase", "shift",
+                "worker", "dateAndTime");
 
         given(dataDefinition.getFields()).willReturn(fieldsMap);
         given(fieldsMap.keySet()).willReturn(dataDefFieldsSet);

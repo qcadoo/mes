@@ -22,6 +22,7 @@ import com.qcadoo.mes.states.messages.util.ValidationMessagePredicate;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -53,6 +54,11 @@ public class StateChangeViewClientValidationUtil {
                 entity.addGlobalError(getKey(message), getArgs(message));
             }
         }
+
+        if (!entity.isValid()) {
+            form.addMessage("qcadooView.message.saveFailedMessage", MessageType.FAILURE);
+        }
+
         form.setEntity(entity);
     }
 

@@ -3,7 +3,7 @@ package com.qcadoo.mes.states.aop;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
@@ -22,8 +22,8 @@ public abstract class AbstractStateListenerAspect {
      * @param stateChangeEntity
      * @param phase
      */
-    @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeEntity, phase, ..) && targetServicePointcut()")
-    public void phaseExecution(final Entity stateChangeEntity, final int phase) {
+    @Pointcut("execution(* *.changeStatePhase(..)) && args(stateChangeContext, phase, ..) && targetServicePointcut()")
+    public void phaseExecution(final StateChangeContext stateChangeContext, final int phase) {
     }
 
     /**
@@ -35,8 +35,8 @@ public abstract class AbstractStateListenerAspect {
      * @param annotation
      */
     @Pointcut("execution(public void com.qcadoo.mes.states.service.StateChangeService+.changeState(..)) "
-            + "&& args(stateChangeEntity) && targetServicePointcut()")
-    public void changeStateExecution(final Entity stateChangeEntity) {
+            + "&& args(stateChangeContext) && targetServicePointcut()")
+    public void changeStateExecution(final StateChangeContext stateChangeContext) {
     }
 
     @Pointcut("execution(public void com.qcadoo.mes.states.service.client.StateChangeViewClient.changeState(..)) && args(viewContext,..)")
@@ -48,7 +48,5 @@ public abstract class AbstractStateListenerAspect {
      */
     @Pointcut
     protected abstract void targetServicePointcut();
-
-    public abstract StateChangeEntityDescriber getStateChangeEntityDescriber();
 
 }

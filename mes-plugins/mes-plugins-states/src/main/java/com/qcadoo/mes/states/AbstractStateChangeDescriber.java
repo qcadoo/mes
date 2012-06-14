@@ -65,7 +65,8 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
     public void checkFields() {
         DataDefinition dataDefinition = getDataDefinition();
         List<String> fieldNames = Lists.newArrayList(getOwnerFieldName(), getSourceStateFieldName(), getTargetStateFieldName(),
-                getStatusFieldName(), getMessagesFieldName(), getPhaseFieldName());
+                getStatusFieldName(), getMessagesFieldName(), getPhaseFieldName(), getDateTimeFieldName(), getShiftFieldName(),
+                getWorkerFieldName());
         Set<String> uniqueFieldNames = Sets.newHashSet(fieldNames);
         checkState(fieldNames.size() == uniqueFieldNames.size(), "Describer methods should return unique field names.");
 

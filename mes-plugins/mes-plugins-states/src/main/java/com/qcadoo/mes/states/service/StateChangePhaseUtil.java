@@ -6,8 +6,7 @@ import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasValidationErro
 import java.util.List;
 
 import com.google.common.base.Preconditions;
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
 
 public final class StateChangePhaseUtil {
@@ -15,14 +14,12 @@ public final class StateChangePhaseUtil {
     private StateChangePhaseUtil() {
     }
 
-    public static boolean canRun(final StateChangeService stateChangeService, final Entity stateChangeEntity) {
-        final StateChangeEntityDescriber describer = stateChangeService.getChangeEntityDescriber();
-        final String statusStringValue = stateChangeEntity.getStringField(describer.getStatusFieldName());
-        final StateChangeStatus status = StateChangeStatus.parseString(statusStringValue);
+    public static boolean canRun(final StateChangeContext stateChangeContext) {
+        List<Entity> messages = stateChangeContext.getAllMessages();
 
-        List<Entity> messages = stateChangeEntity.getHasManyField(describer.getMessagesFieldName());
-
-        Preconditions.checkNotNull(messages, "entity " + stateChangeEntity + " should have messages has many field!");
-        return status.canContinue() && !hasFailureMessages(messages) && !hasValidationErrorMessages(messages);
+        Preconditions
+                .checkNotNull(messages, "entity " + stateChangeContext.getEntity() + " should have messages has many field!");
+        return stateChangeContext.getStatus().canContinue() && !hasFailureMessages(messages)
+                && !hasValidationErrorMessages(messages);
     }
 }
