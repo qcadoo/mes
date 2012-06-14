@@ -1,15 +1,14 @@
 package com.qcadoo.mes.materialFlow.listeners;
 
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.PRODUCTS;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.STOCK_AREAS_FROM;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.STOCK_AREAS_TO;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TIME;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.UNIT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCTS;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
-import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -49,9 +46,6 @@ public class MultitransferListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private MaterialFlowService materialFlowService;
-
-    @Autowired
     private MaterialFlowTransferService materialFlowTransferService;
 
     @Autowired
@@ -59,29 +53,6 @@ public class MultitransferListeners {
 
     @Autowired
     private TimeConverterService timeConverterService;
-
-    public void fillTransferNumbersInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        fillTransferNumbersInADL(view, "consumption");
-        fillTransferNumbersInADL(view, "production");
-    }
-
-    private void fillTransferNumbersInADL(final ViewDefinitionState view, final String adlName) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
-        List<FormComponent> formComponents = adlc.getFormComponents();
-
-        for (FormComponent formComponent : formComponents) {
-            Entity entity = formComponent.getEntity();
-            String number = entity.getStringField(NUMBER);
-            Entity product = entity.getBelongsToField(PRODUCT);
-
-            if ((product != null) && StringUtils.isEmpty(number)) {
-                number = materialFlowService.generateNumberFromProduct(product, "transfer");
-
-                entity.setField(NUMBER, number);
-            }
-            formComponent.setEntity(entity);
-        }
-    }
 
     public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         fillUnitsInADL(view, PRODUCTS);
@@ -107,11 +78,17 @@ public class MultitransferListeners {
             return;
         }
 
-        FieldComponent stockAreaToComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
-        FieldComponent stockAreaFromComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
         FieldComponent typeComponent = (FieldComponent) view.getComponentByReference(TYPE);
         FieldComponent timeComponent = (FieldComponent) view.getComponentByReference(TIME);
+        FieldComponent stockAreaToComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
+        FieldComponent stockAreaFromComponent = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
         FieldComponent staffComponent = (FieldComponent) view.getComponentByReference(STAFF);
+
+        typeComponent.requestComponentUpdateState();
+        timeComponent.requestComponentUpdateState();
+        stockAreaToComponent.requestComponentUpdateState();
+        stockAreaFromComponent.requestComponentUpdateState();
+        staffComponent.requestComponentUpdateState();
 
         String type = typeComponent.getFieldValue().toString();
 
@@ -120,6 +97,8 @@ public class MultitransferListeners {
         Entity staff = getStaffById((Long) staffComponent.getFieldValue());
         Date time = timeConverterService.getDateFromField(timeComponent.getFieldValue());
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
+
+        adlc.requestComponentUpdateState();
 
         List<FormComponent> formComponents = adlc.getFormComponents();
 

@@ -104,7 +104,7 @@
 		</component>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+		<beforeRender class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
 			method="checkIfTransferHasTransformation" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillUnitFieldValue" />

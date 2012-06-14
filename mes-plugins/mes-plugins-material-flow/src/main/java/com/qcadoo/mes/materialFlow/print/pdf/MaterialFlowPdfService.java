@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.materialFlow.print.pdf;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.MATERIAL_FLOW_FOR_DATE;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.STOCK_AREAS;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.WORKER;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,22 +76,22 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
 
         String documenTitle = translationService.translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField("time"),
-                materialsInStockAreas.getStringField("worker"));
+        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField(TIME),
+                materialsInStockAreas.getStringField(WORKER));
 
         PdfPTable panelTable = pdfHelper.createPanelTable(2);
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
-                ((Date) materialsInStockAreas.getField("materialFlowForDate")).toString());
+                ((Date) materialsInStockAreas.getField(MATERIAL_FLOW_FOR_DATE)).toString());
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.time", locale),
-                ((Date) materialsInStockAreas.getField("time")).toString());
+                ((Date) materialsInStockAreas.getField(TIME)).toString());
 
-        List<Entity> stockAreas = materialsInStockAreas.getHasManyField("stockAreas");
+        List<Entity> stockAreas = materialsInStockAreas.getHasManyField(STOCK_AREAS);
         List<String> names = new ArrayList<String>();
         for (Entity component : stockAreas) {
-            Entity stockArea = (Entity) component.getField("stockAreas");
-            names.add(stockArea.getField("number").toString());
+            Entity stockArea = (Entity) component.getField(STOCK_AREAS);
+            names.add(stockArea.getField(NUMBER).toString());
         }
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names);
@@ -101,12 +109,12 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(4, tableHeader, false);
 
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
-            table.addCell(new Phrase(data.getKey().getStringField("number"), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(data.getKey().getStringField("name"), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(NAME), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(data.getValue()), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            table.addCell(new Phrase(data.getKey().getStringField("unit"), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(data.getKey().getStringField(UNIT), FontUtils.getDejavuRegular9Dark()));
         }
         document.add(table);
     }

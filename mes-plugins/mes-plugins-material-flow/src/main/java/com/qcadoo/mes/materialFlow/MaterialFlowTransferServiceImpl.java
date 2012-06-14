@@ -1,6 +1,14 @@
 package com.qcadoo.mes.materialFlow;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -9,6 +17,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -26,27 +35,28 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
     @Override
     public void createTransfer(final String type, final Entity stockAreaFrom, final Entity stockAreaTo, final Entity product,
             final BigDecimal quantity, final Entity staff, final Date time) {
-        DataDefinition dd = dataDefinitionService.get("materialFlow", "transfer");
+        DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_TRANSFER);
 
         Entity transfer = dd.create();
-        String number = materialFlowService.generateNumberFromProduct(product, "transfer");
+        String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
 
-        transfer.setField("number", number);
-        transfer.setField("type", type);
-        transfer.setField("stockAreasFrom", stockAreaFrom);
-        transfer.setField("stockAreasTo", stockAreaTo);
-        transfer.setField("product", product);
-        transfer.setField("quantity", quantity);
-        transfer.setField("staff", staff);
-        transfer.setField("time", time);
+        transfer.setField(NUMBER, number);
+        transfer.setField(TYPE, type);
+        transfer.setField(STOCK_AREAS_FROM, stockAreaFrom);
+        transfer.setField(STOCK_AREAS_TO, stockAreaTo);
+        transfer.setField(PRODUCT, product);
+        transfer.setField(QUANTITY, quantity);
+        transfer.setField(STAFF, staff);
+        transfer.setField(TIME, time);
 
         checkArgument(dd.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }
 
     @Override
     public List<Entity> getTransferTemplates(final Entity stockAreaFrom, final Entity stockAreaTo) {
-        return dataDefinitionService.get("materialFlow", "transferTemplate").find()
-                .add(SearchRestrictions.belongsTo("stockAreasFrom", stockAreaFrom))
-                .add(SearchRestrictions.belongsTo("stockAreasTo", stockAreaTo)).list().getEntities();
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER_TEMPLATE)
+                .find().add(SearchRestrictions.belongsTo(STOCK_AREAS_FROM, stockAreaFrom))
+                .add(SearchRestrictions.belongsTo(STOCK_AREAS_TO, stockAreaTo)).list().getEntities();
     }
 }

@@ -27,8 +27,6 @@ public interface MaterialFlowConstants {
 
     String PLUGIN_IDENTIFIER = "materialFlow";
 
-    String PLUGIN_IDENTIFIER_BASIC = "basic";
-
     // MODEL
     String MODEL_STOCK_CORRECTION = "stockCorrection";
 
@@ -43,8 +41,6 @@ public interface MaterialFlowConstants {
     String MODEL_STOCK_AREAS = "stockAreas";
 
     String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
-
-    String MODEL_PRODUCT = "product";
 
     String MODEL_TRANSFORMATIONS = "transformations";
 

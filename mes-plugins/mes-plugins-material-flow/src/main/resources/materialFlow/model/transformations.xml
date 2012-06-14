@@ -42,9 +42,9 @@
 		<belongsTo name="staff" model="staff" plugin="basic" />
 		<belongsTo name="operation" model="operation" plugin="technologies" persistent="false" />
 		<hasMany name="transfersConsumption" model="transfer"
-			joinField="transformationsConsumption" cascade="delete" />
+			joinField="transformationsConsumption" cascade="delete" copyable="true" />
 		<hasMany name="transfersProduction" model="transfer"
-			joinField="transformationsProduction" cascade="delete" />
+			joinField="transformationsProduction" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
 		<validatesWith

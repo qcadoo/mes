@@ -23,21 +23,24 @@
  */
 package com.qcadoo.mes.materialFlow.constants;
 
-public final class MultitransferViewComponents {
+public final class StockCorrectionFields {
 
-    private MultitransferViewComponents() {
+    private StockCorrectionFields() {
 
     }
 
-    public static final String STOCK_AREAS_FROM = "stockAreasFrom";
+    public static final String NUMBER = "number";
 
-    public static final String STOCK_AREAS_TO = "stockAreasTo";
+    public static final String STOCK_CORRECTION_DATE = "stockCorrectionDate";
 
-    public static final String TIME = "time";
+    public static final String STOCK_AREAS = "stockAreas";
 
-    public static final String TYPE = "type";
+    public static final String PRODUCT = "product";
+
+    public static final String SHOULD_BE = "shouldBe";
+
+    public static final String FOUND = "found";
 
     public static final String STAFF = "staff";
 
-    public static final String PRODUCTS = "products";
 }

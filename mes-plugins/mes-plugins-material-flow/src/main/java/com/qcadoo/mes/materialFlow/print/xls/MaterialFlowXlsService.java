@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.materialFlow.print.xls;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
@@ -79,10 +83,10 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
         int rowNum = 1;
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(data.getKey().getStringField("number"));
-            row.createCell(1).setCellValue(data.getKey().getStringField("name"));
+            row.createCell(0).setCellValue(data.getKey().getStringField(NUMBER));
+            row.createCell(1).setCellValue(data.getKey().getStringField(NAME));
             row.createCell(2).setCellValue(numberService.format(data.getValue()));
-            row.createCell(3).setCellValue(data.getKey().getStringField("unit"));
+            row.createCell(3).setCellValue(data.getKey().getStringField(UNIT));
         }
         sheet.autoSizeColumn((short) 0);
         sheet.autoSizeColumn((short) 1);

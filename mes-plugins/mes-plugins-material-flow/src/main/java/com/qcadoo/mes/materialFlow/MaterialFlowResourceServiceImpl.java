@@ -1,8 +1,9 @@
 package com.qcadoo.mes.materialFlow;
 
+import static com.qcadoo.mes.materialFlow.constants.ResourceFields.PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.ResourceFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.ResourceFields.STOCK_AREAS;
 import static com.qcadoo.mes.materialFlow.constants.ResourceFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlow.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -77,10 +77,10 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         Entity resource = dataDefinitionService
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).create();
 
-        resource.setField(ResourceFields.STOCK_AREAS, stockAreas);
-        resource.setField(ResourceFields.PRODUCT, product);
-        resource.setField(ResourceFields.QUANTITY, quantity);
-        resource.setField(ResourceFields.TIME, time);
+        resource.setField(STOCK_AREAS, stockAreas);
+        resource.setField(PRODUCT, product);
+        resource.setField(QUANTITY, quantity);
+        resource.setField(TIME, time);
 
         resource.getDataDefinition().save(resource);
     }
@@ -116,8 +116,8 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
     private List<Entity> getResources(final Entity stockAreas, final Entity product) {
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
-                .add(SearchRestrictions.belongsTo(ResourceFields.STOCK_AREAS, stockAreas))
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).orderAscBy(TIME).list().getEntities();
+                .add(SearchRestrictions.belongsTo(STOCK_AREAS, stockAreas)).add(SearchRestrictions.belongsTo(PRODUCT, product))
+                .orderAscBy(TIME).list().getEntities();
 
         return resources;
     }

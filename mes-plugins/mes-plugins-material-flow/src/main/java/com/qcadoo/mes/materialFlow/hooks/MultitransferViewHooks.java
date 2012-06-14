@@ -1,7 +1,7 @@
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TIME;
-import static com.qcadoo.mes.materialFlow.constants.MultitransferViewComponents.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +20,7 @@ public class MultitransferViewHooks {
         for (String componentRef : COMPONENTS) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(componentRef);
             component.setRequired(true);
+            component.requestComponentUpdateState();
         }
     }
 }

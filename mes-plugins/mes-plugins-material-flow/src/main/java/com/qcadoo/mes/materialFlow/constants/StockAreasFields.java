@@ -23,32 +23,16 @@
  */
 package com.qcadoo.mes.materialFlow.constants;
 
-public final class TransferFields {
+public final class StockAreasFields {
 
-    private TransferFields() {
+    private StockAreasFields() {
 
     }
 
     public static final String NUMBER = "number";
 
-    public static final String TYPE = "type";
+    public static final String NAME = "name";
 
-    public static final String TIME = "time";
-
-    public static final String STOCK_AREAS_FROM = "stockAreasFrom";
-
-    public static final String STOCK_AREAS_TO = "stockAreasTo";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String STAFF = "staff";
-
-    public static final String TRANSFORMATIONS_CONSUMPTION = "transformationsConsumption";
-
-    public static final String TRANSFORMATIONS_PRODUCTION = "transformationsProduction";
-
-    public static final String PRODUCTS = "products";
+    public static final String MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
 
 }
