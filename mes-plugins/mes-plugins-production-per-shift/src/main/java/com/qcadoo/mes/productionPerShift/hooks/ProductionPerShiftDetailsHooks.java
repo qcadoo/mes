@@ -1,6 +1,8 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
+import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
@@ -18,6 +20,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -70,13 +73,12 @@ public class ProductionPerShiftDetailsHooks {
     public void disablePlannedProgressTypeForPendingOrder(final ViewDefinitionState view) {
         Entity order = helper.getOrderFromLookup(view);
         FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
-        if (plannedProgressType.getFieldValue().equals("")
-                || plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
+        if (plannedProgressType.getFieldValue().equals("") || isPlanned(plannedProgressType.getFieldValue())) {
             plannedProgressType.setFieldValue(PlannedProgressType.PLANNED.getStringValue());
         } else {
             plannedProgressType.setFieldValue(PlannedProgressType.CORRECTED.getStringValue());
         }
-        if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+        if (order.getStringField(OrderFields.STATE).equals(PENDING.getStringValue())) {
             plannedProgressType.setEnabled(false);
         } else {
             plannedProgressType.setEnabled(true);
@@ -132,12 +134,12 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {
-        FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
+        FieldComponent progressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
         FieldComponent plannedProgressCorrectionType = (FieldComponent) view
                 .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPE);
         FieldComponent plannedProgressCorrectionComment = (FieldComponent) view
                 .getComponentByReference(PLANNED_PROGRESS_CORRECTION_COMMENT);
-        if (plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
+        if (isPlanned(progressType.getFieldValue())) {
             plannedProgressCorrectionType.setEnabled(false);
             plannedProgressCorrectionComment.setEnabled(false);
         } else {
@@ -155,13 +157,9 @@ public class ProductionPerShiftDetailsHooks {
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
-                    .getFieldValue().toString();
-            List<Entity> progressForDays = tioc
-                    .getHasManyField(PROGRESS_FOR_DAYS)
-                    .find()
-                    .add(SearchRestrictions.eq(CORRECTED,
-                            plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()))).list().getEntities();
+            FieldComponent plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE));
+            List<Entity> progressForDays = tioc.getHasManyField(PROGRESS_FOR_DAYS).find()
+                    .add(SearchRestrictions.eq(CORRECTED, !isPlanned(plannedProgressType.getFieldValue()))).list().getEntities();
             progressForDaysADL.setFieldValue(progressForDays);
         }
         if (shouldHasCorrections(viewState) || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
@@ -170,6 +168,48 @@ public class ProductionPerShiftDetailsHooks {
             disabledComponent(progressForDaysADL.getFormComponents(), false);
         }
         progressForDaysADL.requestComponentUpdateState();
+    }
+
+    public void refreshProgressForDaysADL(final ViewDefinitionState viewState) {
+        if (!progressTypeWasChange(viewState) || !tiocWasChanged(viewState)) {
+            return;
+        }
+        fillProgressForDays(viewState);
+    }
+
+    private boolean tiocWasChanged(final ViewDefinitionState viewState) {
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
+                .getComponentByReference("progressForDaysADL");
+        List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
+        if (progressForDays.isEmpty()) {
+            return true;
+        }
+        Entity tioc = helper.getTiocFromOperationLookup(viewState);
+        Entity tiocFromPfdays = progressForDays.get(0).getDataDefinition().get(progressForDays.get(0).getId())
+                .getBelongsToField(ProgressForDayFields.TECH_INST_OPER_COMP);
+        if (!tioc.getId().equals(tiocFromPfdays.getId())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean progressTypeWasChange(final ViewDefinitionState viewState) {
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
+                .getComponentByReference("progressForDaysADL");
+        List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
+        if (progressForDays.isEmpty()) {
+            return true;
+        }
+        FieldComponent progressType = (FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE);
+        boolean corrected = progressForDays.get(0).getBooleanField(CORRECTED);
+        if ((isPlanned(progressType.getFieldValue()) && !corrected)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isPlanned(final Object progressType) {
+        return PLANNED.getStringValue().equals(progressType);
     }
 
     private void disabledComponent(final List<FormComponent> components, final boolean shouldDisabled) {
@@ -192,7 +232,7 @@ public class ProductionPerShiftDetailsHooks {
         RibbonActionItem clearButton = (RibbonActionItem) progressSelectedOperation.getItemByName("clear");
         RibbonActionItem copyButton = (RibbonActionItem) progressSelectedOperation.getItemByName("copyFromPlanned");
         FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
-        if (plannedProgressType.getFieldValue().equals(PlannedProgressType.PLANNED.getStringValue())) {
+        if (isPlanned(plannedProgressType.getFieldValue())) {
             clearButton.setEnabled(false);
             copyButton.setEnabled(false);
         } else {

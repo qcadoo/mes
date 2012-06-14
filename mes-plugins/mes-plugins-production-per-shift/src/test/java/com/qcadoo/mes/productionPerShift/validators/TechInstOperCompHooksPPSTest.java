@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -92,6 +93,7 @@ public class TechInstOperCompHooksPPSTest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnTrueWhenEntityHasCorrentionAndPfdIsCorrected() throws Exception {
         // given
         Entity pdf1 = mock(Entity.class);

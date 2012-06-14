@@ -131,6 +131,9 @@ public class ProductionPerShiftListeners {
                 }
             }
             componentState.performEvent(viewState, "save");
+            if (!componentState.isHasError()) {
+                componentState.addMessage("qcadooView.message.saveMessage", MessageType.SUCCESS);
+            }
         }
     }
 
@@ -175,12 +178,9 @@ public class ProductionPerShiftListeners {
                 copyProgressForDay.setField(CORRECTED, true);
                 copiedProgressForDays.add(copyProgressForDay);
             }
-            boolean hasCorrection = detailsHooks.shouldHasCorrections(viewState);
-            tioc.setField(HAS_CORRECTIONS, hasCorrection);
-            tioc.setField(
-                    PROGRESS_FOR_DAYS,
-                    addCorrectedToPlannedProgressForDay(tioc,
-                            prepareProgressForDaysForTIOC(tioc, hasCorrection, copiedProgressForDays)));
+            tioc.setField(HAS_CORRECTIONS, true);
+            tioc.setField(PROGRESS_FOR_DAYS,
+                    addCorrectedToPlannedProgressForDay(tioc, prepareProgressForDaysForTIOC(tioc, true, copiedProgressForDays)));
             tioc.getDataDefinition().save(tioc);
         }
     }
