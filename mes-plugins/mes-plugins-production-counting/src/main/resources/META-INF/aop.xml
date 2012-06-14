@@ -27,7 +27,6 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
-		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
-		<aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
+		<aspect name="com.qcadoo.mes.productionCounting.aop.PcOrderStatesListenerAspect" />
 	</aspects>
 </aspectj>

@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.internal.orderStates;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
@@ -34,70 +33,58 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
-import com.qcadoo.mes.orders.states.OrderStateListener;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
-public class ProductionCountingOrderStatesListener extends OrderStateListener {
+public class PcOrderStatesListenerService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Override
-    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-        checkArgument(newEntity != null, "entity is null");
-        List<ChangeOrderStateMessage> listOfMessage = Lists.newArrayList();
-
-        Entity order = newEntity.getDataDefinition().get(newEntity.getId());
-        ChangeOrderStateMessage message = null;
+    public void onCompleted(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
-            message = checkFinalProductionCountingForOrderCumulated(order);
+            checkFinalProductionCountingForOrderCumulated(stateChangeContext);
         } else if (FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            message = checkFinalProductionCountingForOrderForEach(order);
+            checkFinalProductionCountingForOrderForEach(stateChangeContext);
         }
-        if (message != null) {
-            listOfMessage.add(message);
-        }
-        return listOfMessage;
     }
 
-    private ChangeOrderStateMessage checkFinalProductionCountingForOrderCumulated(final Entity order) {
-        Boolean allowToClose = (Boolean) order.getField("allowToClose");
-        List<Entity> productionRecordings = dataDefinitionService
+    private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        final SearchResult productionRecordingsResult = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list()
-                .getEntities();
+                .add(SearchRestrictions.belongsTo("order", order)).add(SearchRestrictions.eq("lastRecord", true)).list();
 
-        if (allowToClose != null && allowToClose && productionRecordings.isEmpty()) {
-            return ChangeOrderStateMessage.error("orders.order.state.allowToClose.failure");
+        if (order.getBooleanField("allowToClose") && productionRecordingsResult.getTotalNumberOfEntities() == 0) {
+            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
         }
-        return null;
     }
 
-    private ChangeOrderStateMessage checkFinalProductionCountingForOrderForEach(final Entity order) {
-        Boolean allowToClose = (Boolean) order.getField("allowToClose");
-        List<Entity> operations = order.getTreeField("technologyInstanceOperationComponents");
-        Integer numberOfRecord = 0;
+    private void checkFinalProductionCountingForOrderForEach(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        final List<Entity> operations = order.getTreeField("technologyInstanceOperationComponents");
+        int numberOfRecord = 0;
         for (Entity operation : operations) {
-            List<Entity> productionRecordings = dataDefinitionService
+            final SearchResult productionRecordingsResult = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD).find()
                     .add(SearchRestrictions.belongsTo("order", order))
                     .add(SearchRestrictions.belongsTo("technologyInstanceOperationComponent", operation))
-                    .add(SearchRestrictions.eq("lastRecord", true)).list().getEntities();
-            if (!productionRecordings.isEmpty()) {
+                    .add(SearchRestrictions.eq("lastRecord", true)).list();
+            if (productionRecordingsResult.getTotalNumberOfEntities() > 0) {
                 numberOfRecord++;
             }
         }
-        if (allowToClose != null && allowToClose && operations.size() != numberOfRecord) {
-            return ChangeOrderStateMessage.error("orders.order.state.allowToClose.failure");
+        if (order.getBooleanField("allowToClose") && operations.size() != numberOfRecord) {
+            stateChangeContext.addMessage("orders.order.state.allowToClose.failure", StateMessageType.FAILURE);
         }
-        return null;
     }
 
 }

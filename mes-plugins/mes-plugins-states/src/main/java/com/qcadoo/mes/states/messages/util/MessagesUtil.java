@@ -9,11 +9,12 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.qcadoo.mes.states.messages.constants.MessageFields;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState.MessageType;
 
 /**
- * Util class for {@link MessageType}
+ * Util class for {@link StateMessageType}
  * 
  * @since 1.1.7
  */
@@ -56,29 +57,31 @@ public final class MessagesUtil {
     }
 
     /**
-     * Check if given list of message entity contains at least one message with type set to {@link MessageType#FAILURE}
+     * Check if given list of message entity contains at least one message with type set to {@link StateMessageType#FAILURE}
      * 
      * @param messages
      *            list of message entities
-     * @return true if given list contain at least one message with type set to {@link MessageType#FAILURE} or false otherwise.
+     * @return true if given list contain at least one message with type set to {@link StateMessageType#FAILURE} or false
+     *         otherwise.
      */
     public static boolean hasFailureMessages(final List<Entity> messages) {
-        return hasMessagesOfType(messages, MessageType.FAILURE);
+        return hasMessagesOfType(messages, StateMessageType.FAILURE);
     }
 
     /**
-     * Check if given list of message entity contains at least one message with type set to {@link MessageType#VALIDATION_ERROR}
+     * Check if given list of message entity contains at least one message with type set to
+     * {@link StateMessageType#VALIDATION_ERROR}
      * 
      * @param messages
      *            list of message entities
-     * @return true if given list contain at least one message with type set to {@link MessageType#VALIDATION_ERROR} or false
+     * @return true if given list contain at least one message with type set to {@link StateMessageType#VALIDATION_ERROR} or false
      *         otherwise.
      */
     public static boolean hasValidationErrorMessages(final List<Entity> messages) {
-        return hasMessagesOfType(messages, MessageType.VALIDATION_ERROR);
+        return hasMessagesOfType(messages, StateMessageType.VALIDATION_ERROR);
     }
 
-    private static boolean hasMessagesOfType(final List<Entity> messages, final MessageType typeLookingFor) {
+    private static boolean hasMessagesOfType(final List<Entity> messages, final StateMessageType typeLookingFor) {
         if (messages == null) {
             return false;
         }
@@ -90,9 +93,9 @@ public final class MessagesUtil {
         return false;
     }
 
-    public static boolean messageIsTypeOf(final Entity message, final MessageType typeLookingFor) {
+    public static boolean messageIsTypeOf(final Entity message, final StateMessageType typeLookingFor) {
         final String messageStringType = message.getStringField(MessageFields.TYPE);
-        final MessageType messageType = MessageType.parseString(messageStringType);
+        final StateMessageType messageType = StateMessageType.parseString(messageStringType);
         return messageType.equals(typeLookingFor);
     }
 
@@ -101,25 +104,25 @@ public final class MessagesUtil {
     }
 
     /**
-     * Convert {@link MessageType} to appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
+     * Convert {@link StateMessageType} to appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
      * 
      * @param type
-     *            {@link MessageType}
+     *            {@link StateMessageType}
      * @return appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
      */
-    public static com.qcadoo.view.api.ComponentState.MessageType convertViewMessageType(final MessageType type) {
-        com.qcadoo.view.api.ComponentState.MessageType convertedType = null;
+    public static MessageType convertViewMessageType(final StateMessageType type) {
+        MessageType convertedType = null;
         switch (type) {
             case SUCCESS:
-                convertedType = com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
+                convertedType = MessageType.SUCCESS;
                 break;
             case FAILURE:
             case VALIDATION_ERROR:
-                convertedType = com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+                convertedType = MessageType.FAILURE;
                 break;
             case INFO:
             default:
-                convertedType = com.qcadoo.view.api.ComponentState.MessageType.INFO;
+                convertedType = MessageType.INFO;
                 break;
         }
         return convertedType;

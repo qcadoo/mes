@@ -35,8 +35,6 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
 
-    public static final String MODEL_LOGGING = "logging";
-
     // VIEW
     public static final String VIEW_ORDER_DETAILS = "orderDetails";
 

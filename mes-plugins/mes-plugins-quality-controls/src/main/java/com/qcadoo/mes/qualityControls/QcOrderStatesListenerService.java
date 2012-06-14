@@ -23,17 +23,12 @@
  */
 package com.qcadoo.mes.qualityControls;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
-import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,7 +36,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 @Service
-public class QualityControlOrderStatesListener extends OrderStateListener {
+public class QcOrderStatesListenerService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -49,16 +44,11 @@ public class QualityControlOrderStatesListener extends OrderStateListener {
     @Autowired
     private ParameterService parameterService;
 
-    @Override
-    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-        checkArgument(newEntity != null, "entity is null");
-
-        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
-        if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(newEntity)) {
-            listOfMessage.add(ChangeOrderStateMessage.error("qualityControls.qualityControls.not.closed"));
+    public void onCompleted(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        if (isQualityControlAutoCheckEnabled() && !checkIfAllQualityControlsAreClosed(order)) {
+            stateChangeContext.addMessage("qualityControls.qualityControls.not.closed", StateMessageType.FAILURE);
         }
-
-        return listOfMessage;
     }
 
     private boolean isQualityControlAutoCheckEnabled() {

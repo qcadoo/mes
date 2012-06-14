@@ -1,9 +1,13 @@
 package com.qcadoo.mes.orders.states.constants;
 
+import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
+
 public final class OrderStateStringValues {
 
     private OrderStateStringValues() {
     }
+
+    public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
 
     public static final String PENDING = "01pending";
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
@@ -109,7 +109,7 @@ public class MessagesUtilTest {
     public final void shouldHasFailureMessagesReturnTrue() {
         // given
         List<Entity> messages = Lists.newArrayList();
-        messages.add(mockMessage(MessageType.FAILURE, "test"));
+        messages.add(mockMessage(StateMessageType.FAILURE, "test"));
         EntityList messagesEntityList = mockEntityList(messages);
 
         // when
@@ -123,7 +123,7 @@ public class MessagesUtilTest {
     public final void shouldHasFailureMessagesReturnFalse() {
         // given
         List<Entity> messages = Lists.newArrayList();
-        messages.add(mockMessage(MessageType.SUCCESS, "test"));
+        messages.add(mockMessage(StateMessageType.SUCCESS, "test"));
         EntityList messagesEntityList = mockEntityList(messages);
 
         // when
@@ -153,7 +153,7 @@ public class MessagesUtilTest {
         return entityList;
     }
 
-    private Entity mockMessage(final MessageType type, final String translationKey, final String... translationArgs) {
+    private Entity mockMessage(final StateMessageType type, final String translationKey, final String... translationArgs) {
         Entity message = mock(Entity.class);
         mockEntityField(message, MessageFields.TYPE, type);
         mockEntityField(message, MessageFields.TRANSLATION_KEY, translationKey);

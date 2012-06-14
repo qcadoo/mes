@@ -78,7 +78,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = TARGET_STATE_1)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntity1(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_1, true);
         }
 
@@ -86,7 +86,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = WILDCARD_STATE)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntity2(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_2, true);
         }
 
@@ -94,7 +94,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = TARGET_STATE_1)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntity3(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_3, true);
         }
 
@@ -102,7 +102,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = WILDCARD_STATE)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntity4(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_4, true);
         }
 
@@ -110,7 +110,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransitions({ @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = TARGET_STATE_2) })
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntity5(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_5, true);
         }
 
@@ -119,7 +119,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
                 @RunForStateTransition(sourceState = SOURCE_STATE_2, targetState = TARGET_STATE_2) })
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntityMany1(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_MANY_1, true);
         }
 
@@ -129,7 +129,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = WILDCARD_STATE)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntityMany2(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField(MARKED_MANY_2, true);
         }
 

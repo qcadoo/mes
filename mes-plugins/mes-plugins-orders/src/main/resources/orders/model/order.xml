@@ -65,8 +65,6 @@
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
 			cascade="delete" />
 		
-		<hasMany name="loggings" joinField="order" model="logging"
-			cascade="delete" />
 		<tree name="technologyInstanceOperationComponents" copyable="true" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" />
 		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" required="true" />	
 		<datetime name="deadline" />

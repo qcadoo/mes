@@ -1,6 +1,6 @@
 package com.qcadoo.mes.states.messages.util;
 
-import static com.qcadoo.mes.states.messages.constants.MessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 import org.apache.commons.collections.Predicate;
 

@@ -84,8 +84,6 @@
 
 		<view:resource uri="public/**/*" />
 		
-		<custom:custom
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingOnStartupModule" />
 	</modules>
 
 </plugin>

@@ -23,75 +23,190 @@
  */
 package com.qcadoo.mes.orders.states;
 
-import static org.mockito.Mockito.mock;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-import java.util.List;
+import java.util.Arrays;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.model.api.Entity;
 
 public class OrderStateValidationServiceTest {
 
+    private static final String MISSING_MESSAGE = "orders.order.orderStates.fieldRequired";
+
+    private static final String TECHNOLOGY_WRONG_STATE = "orders.validate.technology.error.wrongState.accepted";
+
     private OrderStateValidationService orderStateValidationService;
 
+    @Mock
     private Entity order;
 
+    @Mock
+    private Entity technology;
+
+    @Mock
+    private StateChangeContext stateChangeContext;
+
     @Before
-    public void init() {
+    public final void init() {
+        MockitoAnnotations.initMocks(this);
         orderStateValidationService = new OrderStateValidationService();
-        order = mock(Entity.class);
+        given(stateChangeContext.getOwner()).willReturn(order);
+        stubTechnologyField(technology);
+        stubTechnologyState(TechnologyState.ACCEPTED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationAccepted() throws Exception {
         // when
-        orderStateValidationService.validationAccepted(null);
+        orderStateValidationService.validationOnAccepted(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationInProgress() throws Exception {
         // when
-        orderStateValidationService.validationInProgress(null);
+        orderStateValidationService.validationOnInProgress(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenEntityIsNullValidationCompleted() throws Exception {
         // when
-        orderStateValidationService.validationCompleted(null);
+        orderStateValidationService.validationOnCompleted(null);
     }
 
     @Test
     public void shouldPerformValidationAccepted() throws Exception {
         // given
-        Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+
         // when
-        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationAccepted(order);
+        orderStateValidationService.validationOnAccepted(stateChangeContext);
+
         // then
-        Assert.assertTrue(errors.isEmpty());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
     }
 
     @Test
     public void shouldPerformValidationInProgress() throws Exception {
         // given
-        Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+
         // when
-        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationInProgress(order);
+        orderStateValidationService.validationOnInProgress(stateChangeContext);
+
         // then
-        Assert.assertTrue(errors.isEmpty());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
     }
 
     @Test
     public void shouldPerformValidationCompleted() throws Exception {
         // given
-        Mockito.when(order.getField(Mockito.anyString())).thenReturn("fieldValue");
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+
         // when
-        List<ChangeOrderStateMessage> errors = orderStateValidationService.validationCompleted(order);
+        orderStateValidationService.validationOnCompleted(stateChangeContext);
+
         // then
-        Assert.assertTrue(errors.isEmpty());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
     }
 
+    @Test
+    public void shouldPerformValidationAcceptedFail() throws Exception {
+        // given
+        stubTechnologyField(null);
+
+        // when
+        orderStateValidationService.validationOnAccepted(stateChangeContext);
+
+        // then
+        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
+            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+        }
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+    }
+
+    @Test
+    public void shouldPerformValidationAcceptedFailOnTechnologyState() throws Exception {
+        // given
+        stubTechnologyState(TechnologyState.DRAFT);
+
+        // when
+        orderStateValidationService.validationOnAccepted(stateChangeContext);
+
+        // then
+        for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
+            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+        }
+        verify(stateChangeContext, never()).addFieldValidationError(MISSING_MESSAGE, TECHNOLOGY);
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+    }
+
+    @Test
+    public void shouldPerformValidationInProgressFail() throws Exception {
+        // given
+        given(order.getField(Mockito.anyString())).willReturn(null);
+
+        // when
+        orderStateValidationService.validationOnInProgress(stateChangeContext);
+
+        // then
+        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
+            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+        }
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+    }
+
+    @Test
+    public void shouldPerformValidationInProgresFailOnTechnologyState() throws Exception {
+        // given
+        stubTechnologyState(TechnologyState.DRAFT);
+
+        // when
+        orderStateValidationService.validationOnInProgress(stateChangeContext);
+
+        // then
+        for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
+            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+        }
+        verify(stateChangeContext, never()).addFieldValidationError(MISSING_MESSAGE, TECHNOLOGY);
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+    }
+
+    @Test
+    public void shouldPerformValidationCompletedFail() throws Exception {
+        // given
+        stubTechnologyField(null);
+
+        // when
+        orderStateValidationService.validationOnCompleted(stateChangeContext);
+
+        // then
+        for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY)) {
+            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+        }
+    }
+
+    private void stubTechnologyField(final Entity value) {
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(value);
+        given(order.getField(TECHNOLOGY)).willReturn(value);
+    }
+
+    private void stubTechnologyState(final TechnologyState technologyState) {
+        given(technology.getStringField(TechnologyFields.STATE)).willReturn(technologyState.getStringValue());
+        given(technology.getField(TechnologyFields.STATE)).willReturn(technologyState.getStringValue());
+    }
 }

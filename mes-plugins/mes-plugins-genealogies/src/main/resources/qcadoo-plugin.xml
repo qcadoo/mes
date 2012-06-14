@@ -151,7 +151,6 @@
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="newGenealogy" class="com.qcadoo.mes.genealogies.GenealogyService"
 			method="newGenealogy" />
-		<custom:custom class="com.qcadoo.mes.genealogies.GenealogyOnStartupService" />
 	</modules>
 
 </plugin>

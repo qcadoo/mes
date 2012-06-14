@@ -19,7 +19,7 @@ import com.qcadoo.mes.states.MockStateChangeDescriber;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
@@ -47,7 +47,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
 
         @Override
         public void changeState(final StateChangeContext stateChangeContext) {
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             stateChangeEntity.setField(TOUCHED_FIELD, true);
         }
 
@@ -58,7 +58,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
 
         @Override
         protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             stateChangeEntity.setField(TOUCHED_PHASE, phaseNumber);
         }
     }
@@ -75,7 +75,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
     public final void shouldExecutePhaseMethod() {
         // given
         List<Entity> messages = Lists.newArrayList();
-        messages.add(mockMessage(MessageType.SUCCESS, "test"));
+        messages.add(mockMessage(StateMessageType.SUCCESS, "test"));
         EntityList messagesEntityList = mockEntityList(messages);
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 
@@ -90,7 +90,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
     public final void shouldNotExecutePhaseMethod() {
         // given
         List<Entity> messages = Lists.newArrayList();
-        messages.add(mockMessage(MessageType.FAILURE, "test"));
+        messages.add(mockMessage(StateMessageType.FAILURE, "test"));
         EntityList messagesEntityList = mockEntityList(messages);
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 
@@ -122,7 +122,7 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
     public final void shouldNotExecutePhaseMethodIfValidationErrorOccured() {
         // given
         List<Entity> messages = Lists.newArrayList();
-        Entity validationErrorMessage = mockMessage(MessageType.VALIDATION_ERROR, "test");
+        Entity validationErrorMessage = mockMessage(StateMessageType.VALIDATION_ERROR, "test");
         messages.add(validationErrorMessage);
         EntityList messagesEntityList = mockEntityList(messages);
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);

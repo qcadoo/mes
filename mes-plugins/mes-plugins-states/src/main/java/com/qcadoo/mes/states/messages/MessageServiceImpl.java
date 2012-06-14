@@ -2,7 +2,7 @@ package com.qcadoo.mes.states.messages;
 
 import static com.qcadoo.mes.states.constants.StatesConstants.MODEL_MESSAGE;
 import static com.qcadoo.mes.states.constants.StatesConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.states.messages.constants.MessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.messages.util.MessagesUtil;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -28,7 +28,7 @@ public class MessageServiceImpl implements MessageService {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public final Entity createMessage(final MessageType type, final String correspondField, final String translationKey,
+    public final Entity createMessage(final String translationKey, final StateMessageType type, final String correspondField,
             final String... translationArgs) {
         Entity message = getDataDefinition().create();
         message.setField(MessageFields.TYPE, type.getStringValue());
@@ -51,32 +51,24 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public final void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
-            final MessageType type, final String translationKey, final String... translationArgs) {
-        addMessage(stateChangeEntity, describer, type, null, translationKey, translationArgs);
+    public final void addMessage(final StateChangeContext stateChangeContext, final StateMessageType type,
+            final String correspondFieldName, final String translationKey, final String... translationArgs) {
+        final Entity message = createMessage(translationKey, type, correspondFieldName, translationArgs);
+        addMessage(stateChangeContext, message);
     }
 
     @Override
-    public final void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
-            final MessageType type, final String correspondFieldName, final String translationKey,
-            final String... translationArgs) {
-        final Entity message = createMessage(type, correspondFieldName, translationKey, translationArgs);
-        addMessage(stateChangeEntity, describer, message);
+    public final void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
+            final String translationKey, final String... translationArgs) {
+        addMessage(stateChangeContext, VALIDATION_ERROR, correspondField, translationKey, translationArgs);
     }
 
     @Override
-    public final void addValidationError(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
-            final String correspondField, final String translationKey, final String... translationArgs) {
-        addMessage(stateChangeEntity, describer, VALIDATION_ERROR, correspondField, translationKey, translationArgs);
-    }
-
-    @Override
-    public final void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer, final Entity message) {
-        final String messagesFieldName = describer.getMessagesFieldName();
-        final List<Entity> messages = Lists.newArrayList();
-        messages.addAll(stateChangeEntity.getHasManyField(messagesFieldName));
+    public final void addMessage(final StateChangeContext stateChangeContext, final Entity message) {
+        final List<Entity> messages = Lists.newArrayList(stateChangeContext.getAllMessages());
         messages.add(message);
-        stateChangeEntity.setField(messagesFieldName, messages);
-        stateChangeEntity.getDataDefinition().save(stateChangeEntity);
+        final String messagesFieldName = stateChangeContext.getDescriber().getMessagesFieldName();
+        stateChangeContext.setField(messagesFieldName, messages);
+        stateChangeContext.save();
     }
 }

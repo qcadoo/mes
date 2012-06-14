@@ -25,7 +25,6 @@ package com.qcadoo.mes.genealogies;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +32,13 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
-import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class GenealogyOrderStatesListener extends OrderStateListener {
+public class GenealogyOrderStateListenerService {
 
     private static final String PRODUCT_IN_COMPONENT_FIELD = "productInComponent";
 
@@ -80,21 +79,17 @@ public class GenealogyOrderStatesListener extends OrderStateListener {
     @Autowired
     private AutoGenealogyService autoGenealogyService;
 
-    @Override
-    public List<ChangeOrderStateMessage> onCompleted(final Entity newEntity) {
-        checkArgument(newEntity != null, "entity is null");
-        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
+    public void onCompleted(final StateChangeContext stateChangeContext) {
         Entity parameter = parameterService.getParameter();
 
         if ("02active".equals(parameter.getStringField(BATCH_FOR_DONE_ORDER_FIELD))) {
-            listOfMessage = autoGenealogyService.createGenealogy(newEntity, false);
+            autoGenealogyService.createGenealogy(stateChangeContext.getOwner(), stateChangeContext, false);
         } else if ("03lastUsed".equals(parameter.getStringField(BATCH_FOR_DONE_ORDER_FIELD))) {
-            listOfMessage = autoGenealogyService.createGenealogy(newEntity, true);
+            autoGenealogyService.createGenealogy(stateChangeContext.getOwner(), stateChangeContext, true);
         }
-        if (checkAutogenealogyRequired() && !checkRequiredBatch(newEntity)) {
-            listOfMessage.add(ChangeOrderStateMessage.error("genealogies.message.batchNotFound"));
+        if (checkAutogenealogyRequired() && !checkRequiredBatch(stateChangeContext.getOwner())) {
+            stateChangeContext.addMessage("genealogies.message.batchNotFound", StateMessageType.FAILURE);
         }
-        return listOfMessage;
     }
 
     private boolean checkAutogenealogyRequired() {

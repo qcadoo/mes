@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -24,18 +23,10 @@
     ***************************************************************************
 
 -->
-<model name="logging" activable="true" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="order" model="order" />
-		<datetime name="dateAndTime" />
-		<enum name="previousState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
-		<enum name="currentState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
-		<belongsTo name="shift" model="shift" plugin="basic" />
-		<string name="worker" />
-		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" />
-		<string name="comment" />
-	</fields>
-	<hooks />
-</model>
+<!DOCTYPE aspectj PUBLIC
+        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+	<aspects>
+		<aspect name="com.qcadoo.mes.basicProductionCounting.aop.BpcOrderStateListenerAspect" />
+	</aspects>
+</aspectj>

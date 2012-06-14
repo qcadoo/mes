@@ -40,8 +40,8 @@ public class RunForStateTransitionAspect {
     private boolean stateChangeMatchAnyTransition(final StateChangeContext stateChangeContext,
             final RunForStateTransition[] transitions) {
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        final String givenSource = stateChangeContext.getEntity().getStringField(describer.getSourceStateFieldName());
-        final String givenTarget = stateChangeContext.getEntity().getStringField(describer.getTargetStateFieldName());
+        final String givenSource = stateChangeContext.getStateChangeEntity().getStringField(describer.getSourceStateFieldName());
+        final String givenTarget = stateChangeContext.getStateChangeEntity().getStringField(describer.getTargetStateFieldName());
         for (RunForStateTransition transition : transitions) {
             final String expectedSource = transition.sourceState();
             final String expectedTarget = transition.targetState();

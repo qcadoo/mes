@@ -3,7 +3,7 @@ package com.qcadoo.mes.states.aop;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-import static com.qcadoo.mes.states.messages.constants.MessageType.FAILURE;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.FAILURE;
 
 import java.util.Date;
 import java.util.Set;
@@ -63,11 +63,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     @Override
     @Transactional
-    public StateChangeContext createNewStateChangeContext(final Entity owner, final String targetStateString) {
+    public StateChangeContext buildStateChangeContext(final Entity owner, final String targetStateString) {
         final Entity persistedOwner = owner.getDataDefinition().save(owner);
-
-        checkForUnfinishedStateChange(persistedOwner);
-
         final StateChangeEntityDescriber describer = getChangeEntityDescriber();
         final DataDefinition stateChangeDataDefinition = describer.getDataDefinition();
         final StateEnum sourceState = describer.parseStateEnum(owner.getStringField(getStateFieldName()));
@@ -78,6 +75,13 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
         checkForUnfinishedStateChange(persistedOwner);
         return new StateChangeContextImpl(stateChangeDataDefinition.save(stateChangeEntity), describer, messageService);
+    }
+
+    @Override
+    @Transactional
+    public StateChangeContext buildStateChangeContext(final Entity stateChangeEntity) {
+        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
+        return new StateChangeContextImpl(describer.getDataDefinition().save(stateChangeEntity), describer, messageService);
     }
 
     protected void onCreate(final Entity stateChangeEntity, final Entity owner, final StateEnum sourceState,
@@ -123,7 +127,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Override
     @Transactional
     public void changeState(final StateChangeContext stateChangeContext) {
-        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
+        stateChangeContext.save();
+        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         describer.checkFields();
         for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
             if (StateChangePhaseUtil.canRun(stateChangeContext)) {

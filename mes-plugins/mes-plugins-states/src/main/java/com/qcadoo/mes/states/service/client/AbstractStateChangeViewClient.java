@@ -16,6 +16,7 @@ import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -50,23 +51,21 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
             final StateChangeContext stateChangeContext = getStateChangeService()
-                    .createNewStateChangeContext(entity, targetState);
+                    .buildStateChangeContext(entity, targetState);
             getStateChangeService().changeState(stateChangeContext);
             viewClientUtil.refreshComponent(viewContext);
             showMessages(viewContext, stateChangeContext);
         } catch (AnotherChangeInProgressException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.anotherChangeInProgress",
-                    com.qcadoo.view.api.ComponentState.MessageType.FAILURE);
+                    MessageType.FAILURE);
         } catch (Exception e) {
             throw new StateChangeException(e);
         }
     }
 
     private void showMessages(final ViewContextHolder viewContext, final StateChangeContext stateChangeContext) {
-        viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeContext.getEntity());
-        final String ownerFieldName = getStateChangeService().getChangeEntityDescriber().getOwnerFieldName();
-        viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(), stateChangeContext.getEntity()
-                .getBelongsToField(ownerFieldName), stateChangeContext.getAllMessages());
+        viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeContext);
+        viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(), stateChangeContext);
         addFinalMessage(viewContext.getMessagesConsumer(), stateChangeContext);
     }
 
@@ -97,14 +96,12 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     }
 
     private void addFinalMessage(final ComponentState component, final StateChangeContext stateChangeContext) {
-        final Entity stateChangeEntity = stateChangeContext.getEntity();
-        final String statusFieldName = stateChangeContext.getDescriber().getStatusFieldName();
-        final StateChangeStatus status = StateChangeStatus.parseString(stateChangeEntity.getStringField(statusFieldName));
+        final StateChangeStatus status = stateChangeContext.getStatus();
 
         if (SUCCESSFUL.equals(status)) {
-            component.addMessage("states.messages.change.successful", com.qcadoo.view.api.ComponentState.MessageType.SUCCESS);
+            component.addMessage("states.messages.change.successful", MessageType.SUCCESS);
         } else if (PAUSED.equals(status)) {
-            component.addMessage("states.messages.change.paused", com.qcadoo.view.api.ComponentState.MessageType.INFO);
+            component.addMessage("states.messages.change.paused", MessageType.INFO);
         }
     }
 

@@ -16,7 +16,7 @@ import org.mockito.stubbing.Answer;
 import com.google.common.collect.ImmutableList;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -54,7 +54,7 @@ public abstract class StateChangeTest {
         return entityList;
     }
 
-    protected Entity mockMessage(final MessageType type, final String translationKey, final String... translationArgs) {
+    protected Entity mockMessage(final StateMessageType type, final String translationKey, final String... translationArgs) {
         final Entity message = mock(Entity.class);
         stubEntityField(message, MessageFields.TYPE, type);
         stubEntityField(message, MessageFields.TRANSLATION_KEY, translationKey);
@@ -72,7 +72,7 @@ public abstract class StateChangeTest {
     }
 
     protected void stubStateChangeContext() {
-        given(stateChangeContext.getEntity()).willReturn(stateChangeEntity);
+        given(stateChangeContext.getStateChangeEntity()).willReturn(stateChangeEntity);
         given(stateChangeContext.getDescriber()).willReturn(DESCRIBER);
 
         Mockito.doAnswer(new Answer<Void>() {

@@ -17,6 +17,8 @@ public class OrderStateChangeAspect extends AbstractStateChangeAspect {
     @Autowired
     private OrderStateChangeDescriber describer;
 
+    public static final String SELECTOR_POINTCUT = "this(com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect)";
+
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
         return describer;

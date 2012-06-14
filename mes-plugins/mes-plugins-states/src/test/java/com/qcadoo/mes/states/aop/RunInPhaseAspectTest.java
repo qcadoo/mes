@@ -49,13 +49,13 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @Override
         protected void performChangeEntityState(final StateChangeContext stateChangeContext) {
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             stateChangeEntity.setField("finished", true);
         }
 
         @Override
         protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             stateChangeEntity.setField("executedPhase", phaseNumber);
         }
 
@@ -128,7 +128,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         @RunInPhase(TEST_PHASE)
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdvice(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("onceChecked", true);
             stateEntity.setField("checkedPhase", phase);
         }
@@ -136,14 +136,14 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         @RunInPhase({ FIRST_PHASE, TEST_PHASE, LAST_PHASE })
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdvice2(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("multiChecked", true);
             stateEntity.setField("anotherCheckedPhase", phase);
         }
 
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdvice3(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("withoutAtPhase", true);
         }
 
@@ -158,7 +158,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdvice(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("yetAnotherOnceChecked", true);
             stateEntity.setField("yetAnotherCheckedPhase", phase);
         }
@@ -174,14 +174,14 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void classAnnotationAdvice(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("classAnnotationCheckedPhase", phase);
         }
 
         @RunInPhase(TEST_PHASE)
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void methodAnnotationAdvice(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("methodAnnotationCheckedPhase", phase);
         }
 
@@ -197,21 +197,21 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         @RunInPhase(TEST_PHASE)
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdviceBeforeTest(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("beforeTest", true);
         }
 
         @RunInPhase(LAST_PHASE)
         @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
         public void testAdviceBeforeLast(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("beforeLast", true);
         }
 
         @RunInPhase(TEST_PHASE)
         @org.aspectj.lang.annotation.After("phaseExecution(stateChangeContext, phase)")
         public void testAdviceAfterTest(final StateChangeContext stateChangeContext, final int phase) {
-            final Entity stateEntity = stateChangeContext.getEntity();
+            final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             stateEntity.setField("afterTest", true);
             stateEntity.setField(describer.getStatusFieldName(), PAUSED.getStringValue());

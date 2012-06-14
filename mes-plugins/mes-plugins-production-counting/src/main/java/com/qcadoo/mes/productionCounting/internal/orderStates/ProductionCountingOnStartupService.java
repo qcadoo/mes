@@ -26,19 +26,12 @@ package com.qcadoo.mes.productionCounting.internal.orderStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.orders.states.OrderStatesChangingService;
 import com.qcadoo.mes.productionCounting.internal.BasicProductionRecordChangeListener;
 import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStatesChangingService;
 import com.qcadoo.plugin.api.Module;
 
 @Component
 public class ProductionCountingOnStartupService extends Module {
-
-    @Autowired
-    private OrderStatesChangingService orderStatesChangingService;
-
-    @Autowired
-    private ProductionCountingOrderStatesListener productionCountingOrderStatesListener;
 
     @Autowired
     private BasicProductionRecordChangeListener changeListener;
@@ -57,13 +50,11 @@ public class ProductionCountingOnStartupService extends Module {
     }
 
     private void registerListeners() {
-        orderStatesChangingService.addOrderStateListener(productionCountingOrderStatesListener);
         changingService.addRecordStateListener(changeListener);
     }
 
     @Override
     public void disable() {
-        orderStatesChangingService.removeOrderStateListener(productionCountingOrderStatesListener);
         changingService.removeRecordStateListener(changeListener);
     }
 }

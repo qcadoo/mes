@@ -134,9 +134,6 @@
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="generateQualityControl"
 			class="com.qcadoo.mes.qualityControls.QualityControlService" method="generateQualityControl" />
-			
-		<custom:custom
-			class="com.qcadoo.mes.qualityControls.QualityControlOnStartupService" />
 	</modules>
 
 </plugin>

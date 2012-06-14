@@ -1,5 +1,6 @@
 package com.qcadoo.mes.states.annotation;
 
+import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -10,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface RunForStateTransition {
 
-    String sourceState();
+    String sourceState() default WILDCARD_STATE;
 
-    String targetState();
+    String targetState() default WILDCARD_STATE;
 }

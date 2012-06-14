@@ -5,10 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 
 /**
- * Execute annotated method only if given state change entity does not have any messages of type {@link MessageType#FAILURE}.
+ * Execute annotated method only if given state change entity does not have any messages of type {@link StateMessageType#FAILURE}.
  * 
  * @since 1.1.7
  */

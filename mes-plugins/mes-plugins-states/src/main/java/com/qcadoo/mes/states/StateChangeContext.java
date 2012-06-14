@@ -1,6 +1,7 @@
 package com.qcadoo.mes.states;
 
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.messages.MessagesHolder;
 import com.qcadoo.model.api.Entity;
 
 /**
@@ -8,7 +9,7 @@ import com.qcadoo.model.api.Entity;
  * 
  * @since 1.1.7
  */
-public interface StateChangeContext extends StateChangeMessagesHolder {
+public interface StateChangeContext extends MessagesHolder {
 
     /**
      * Save inner state change entity
@@ -72,7 +73,7 @@ public interface StateChangeContext extends StateChangeMessagesHolder {
      * 
      * @return inner state change entity
      */
-    public Entity getEntity();
+    public Entity getStateChangeEntity();
 
     /**
      * Returns inner state change entity's owner

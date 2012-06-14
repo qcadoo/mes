@@ -12,13 +12,21 @@ import com.qcadoo.model.api.Entity;
 public interface StateChangeService {
 
     /**
-     * Create new state change context.
+     * Create new state change context. This method already create and persist state change entity.
      * 
      * @param entity
      *            entity which state you want to be changed
-     * @return stateChangeEntity
+     * @return state change context object
      */
-    StateChangeContext createNewStateChangeContext(final Entity owner, final String targetStateString);
+    StateChangeContext buildStateChangeContext(final Entity owner, final String targetStateString);
+
+    /**
+     * Build state change context from given state change entity.
+     * 
+     * @param stateChangeEntity
+     * @return state change context object
+     */
+    StateChangeContext buildStateChangeContext(final Entity stateChangeEntity);
 
     /**
      * Perform state change.

@@ -1,7 +1,7 @@
 package com.qcadoo.mes.states.messages;
 
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
 
 /**
@@ -21,7 +21,7 @@ public interface MessageService {
      * @param translationArgs
      * @return newly created message entity (not persisted yet!)
      */
-    Entity createMessage(final MessageType type, final String correspondField, final String translationKey,
+    Entity createMessage(final String translationKey, final StateMessageType type, final String correspondField,
             final String... translationArgs);
 
     /**
@@ -39,18 +39,7 @@ public interface MessageService {
      * @param stateChangeEntity
      * @param message
      */
-    void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer, final Entity message);
-
-    /**
-     * Create & add message to state change entity
-     * 
-     * @param stateChangeEntity
-     * @param type
-     * @param translationKey
-     * @param translationArgs
-     */
-    void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer, final MessageType type,
-            final String translationKey, final String... translationArgs);
+    void addMessage(final StateChangeContext stateChangeContext, final Entity message);
 
     /**
      * Create & add message to state change entity
@@ -62,8 +51,8 @@ public interface MessageService {
      * @param translationKey
      * @param translationArgs
      */
-    void addMessage(final Entity stateChangeEntity, final StateChangeEntityDescriber describer, final MessageType type,
-            final String correspondFieldName, final String translationKey, final String... translationArgs);
+    void addMessage(final StateChangeContext stateChangeContext, final StateMessageType type, final String correspondFieldName,
+            final String translationKey, final String... translationArgs);
 
     /**
      * Create & add validation error message to state change entity
@@ -74,6 +63,6 @@ public interface MessageService {
      * @param translationKey
      * @param translationArgs
      */
-    void addValidationError(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
-            final String correspondField, final String translationKey, final String... translationArgs);
+    void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
+            final String translationKey, final String... translationArgs);
 }

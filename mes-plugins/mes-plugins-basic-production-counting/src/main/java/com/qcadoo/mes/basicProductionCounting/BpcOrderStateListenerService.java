@@ -24,7 +24,6 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,9 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
-import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,7 +42,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class BasicProductionCountingOrderStatesListener extends OrderStateListener {
+public class BpcOrderStateListenerService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -56,16 +53,18 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
     @Autowired
     private NumberService numberService;
 
-    @Override
-    public List<ChangeOrderStateMessage> onAccepted(final Entity newEntity) {
-        List<ChangeOrderStateMessage> errors = new ArrayList<ChangeOrderStateMessage>();
-        Preconditions.checkArgument(newEntity != null, "Order is null");
-        final Entity order = newEntity.getDataDefinition().get(newEntity.getId());
+    public void onAccept(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
         final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology == null) {
-            errors.add(ChangeOrderStateMessage.error("orders.order.technology.isEmpty"));
-            return errors;
+            stateChangeContext.addValidationError("orders.order.technology.isEmpty");
+        } else {
+            createBasicProductionCountings(stateChangeContext);
         }
+    }
+
+    private void createBasicProductionCountings(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
         final List<Entity> prodCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
@@ -82,8 +81,6 @@ public class BasicProductionCountingOrderStatesListener extends OrderStateListen
             createBasicProductionCounting(order, order.getBelongsToField("product"),
                     (BigDecimal) order.getField("plannedQuantity"));
         }
-
-        return errors;
     }
 
     private void createBasicProductionCounting(final Entity order, final Entity product, final BigDecimal plannedQuantity) {

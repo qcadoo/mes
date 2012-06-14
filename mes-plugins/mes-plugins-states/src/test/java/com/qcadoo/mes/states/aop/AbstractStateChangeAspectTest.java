@@ -22,7 +22,7 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.messages.constants.MessageType;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -39,7 +39,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         @RunInPhase(1)
         @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
         public void markEntityBefore(final StateChangeContext stateChangeContext) {
-            final Entity stateChange = stateChangeContext.getEntity();
+            final Entity stateChange = stateChangeContext.getStateChangeEntity();
             stateChange.setField("marked", true);
         }
 
@@ -60,7 +60,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
             targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
@@ -87,7 +87,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-            final Entity stateChangeEntity = stateChangeContext.getEntity();
+            final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
             targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
@@ -217,7 +217,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public final void shouldNotFireChangeStateIfStateChangeHaveErrorMessages() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(MessageType.FAILURE, "fail")));
+        EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(StateMessageType.FAILURE, "fail")));
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
         given(stateChangeEntity.getField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 
@@ -232,7 +232,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public final void shouldNotFireListenersIfStateChangeHaveErrorMessages() {
         // given
         AnotherStateChangeService anotherStateChangeService = new AnotherStateChangeService();
-        EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(MessageType.FAILURE, "fail")));
+        EntityList messagesEntityList = mockEntityList(Lists.newArrayList(mockMessage(StateMessageType.FAILURE, "fail")));
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
         given(stateChangeEntity.getField(DESCRIBER.getMessagesFieldName())).willReturn(messagesEntityList);
 

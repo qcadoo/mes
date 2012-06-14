@@ -1,7 +1,7 @@
 package com.qcadoo.mes.states.service.client;
 
 import static com.qcadoo.mes.states.messages.constants.MessageFields.CORRESPOND_FIELD_NAME;
-import static com.qcadoo.mes.states.messages.constants.MessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.MessagesHolder;
 import com.qcadoo.mes.states.messages.util.MessagesUtil;
 import com.qcadoo.mes.states.messages.util.ValidationMessagePredicate;
 import com.qcadoo.model.api.DataDefinition;
@@ -33,11 +35,16 @@ public class StateChangeViewClientValidationUtil {
 
     private static final Predicate VALIDATION_MESSAGES_PREDICATE = new ValidationMessagePredicate();
 
-    public void addValidationErrorMessages(final ComponentState component, final Entity entity, final List<Entity> messages) {
+    public void addValidationErrorMessages(final ComponentState component, final StateChangeContext stateChangeContext) {
+        addValidationErrorMessages(component, stateChangeContext.getOwner(), stateChangeContext);
+    }
+
+    public void addValidationErrorMessages(final ComponentState component, final Entity entity,
+            final MessagesHolder messagesHolder) {
         if (component instanceof FormComponent) {
-            addValidationErrorsToForm((FormComponent) component, messages);
+            addValidationErrorsToForm((FormComponent) component, messagesHolder.getAllMessages());
         } else {
-            addValidationErrors(component, entity, messages);
+            addValidationErrors(component, entity, messagesHolder.getAllMessages());
         }
     }
 

@@ -36,8 +36,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.ChangeOrderStateMessage;
-import com.qcadoo.mes.orders.states.OrderStateListener;
+import com.qcadoo.mes.states.messages.MessageService;
+import com.qcadoo.mes.states.messages.MessagesHolder;
+import com.qcadoo.mes.states.messages.MessagesHolderImpl;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.states.service.client.StateChangeViewClientUtil;
+import com.qcadoo.mes.states.service.client.StateChangeViewClientValidationUtil;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -53,7 +57,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class AutoGenealogyService extends OrderStateListener {
+public class AutoGenealogyService {
 
     private static final String BATCH_MODEL = "batch";
 
@@ -129,6 +133,15 @@ public class AutoGenealogyService extends OrderStateListener {
     @Autowired
     private PluginManager pluginManager;
 
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private StateChangeViewClientValidationUtil viewValidationUtil;
+
+    @Autowired
+    private StateChangeViewClientUtil viewUtil;
+
     public void fillLastUsedBatchForProduct(final DataDefinition dataDefinition, final Entity entity) {
         fillUserAndDate(entity);
         Entity product = entity.getBelongsToField(PRODUCT_IN_COMPONENT_FIELD).getBelongsToField(PRODUCT_IN_COMPONENT_FIELD)
@@ -162,10 +175,10 @@ public class AutoGenealogyService extends OrderStateListener {
             if (order == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
             } else {
-                List<ChangeOrderStateMessage> listOfMessage = createGenealogy(order, Boolean.parseBoolean(args[0]));
-                for (ChangeOrderStateMessage message : listOfMessage) {
-                    state.addMessage(message.getMessage(), message.getType(), message.getVars());
-                }
+                final MessagesHolder messagesHolder = new MessagesHolderImpl(messageService);
+                createGenealogy(order, messagesHolder, Boolean.parseBoolean(args[0]));
+                viewValidationUtil.addValidationErrorMessages(state, order, messagesHolder);
+                viewUtil.addStateMessagesToView(state, messagesHolder);
             }
         } else {
             if (state instanceof FormComponent) {
@@ -221,13 +234,12 @@ public class AutoGenealogyService extends OrderStateListener {
         }
     }
 
-    List<ChangeOrderStateMessage> createGenealogy(final Entity order, final boolean lastUsedMode) {
+    public void createGenealogy(final Entity order, final MessagesHolder messagesHolder, final boolean lastUsedMode) {
         Entity mainProduct = order.getBelongsToField(PRODUCT_MODEL);
         Entity technology = order.getBelongsToField(TECHNOLOGY_FIELD);
-        List<ChangeOrderStateMessage> listOfMessage = new ArrayList<ChangeOrderStateMessage>();
         if (mainProduct == null || technology == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure.product"));
-            return listOfMessage;
+            messagesHolder.addMessage("genealogies.message.autoGenealogy.failure.product", StateMessageType.INFO);
+            return;
         }
         Object mainBatch = null;
         if (lastUsedMode) {
@@ -236,12 +248,12 @@ public class AutoGenealogyService extends OrderStateListener {
             mainBatch = mainProduct.getField(BATCH_MODEL);
         }
         if (mainBatch == null) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.missingMainBatch"));
-            return listOfMessage;
+            messagesHolder.addMessage("genealogies.message.autoGenealogy.missingMainBatch", StateMessageType.INFO);
+            return;
         }
         if (checkIfExistGenealogyWithBatch(order, mainBatch.toString())) {
-            listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.genealogyExist"));
-            return listOfMessage;
+            messagesHolder.addMessage("genealogies.message.autoGenealogy.genealogyExist", StateMessageType.INFO);
+            return;
         }
         DataDefinition genealogyDef = dataDefinitionService.get(GenealogiesConstants.PLUGIN_IDENTIFIER,
                 GenealogiesConstants.MODEL_GENEALOGY);
@@ -258,19 +270,17 @@ public class AutoGenealogyService extends OrderStateListener {
         }
 
         if (genealogy.isValid()) {
-            listOfMessage.add(ChangeOrderStateMessage.success("genealogies.message.autoGenealogy.success"));
+            messagesHolder.addMessage("genealogies.message.autoGenealogy.success", StateMessageType.SUCCESS);
         } else {
             if (genealogy.getGlobalErrors().isEmpty()) {
-                listOfMessage.add(ChangeOrderStateMessage.info("genealogies.message.autoGenealogy.failure"));
+                messagesHolder.addMessage("genealogies.message.autoGenealogy.failure", StateMessageType.INFO);
             } else {
                 for (ErrorMessage error : genealogy.getGlobalErrors()) {
-                    listOfMessage.add(ChangeOrderStateMessage.error(error.getMessage(), error.getVars()));
+                    messagesHolder.addMessage(error.getMessage(), StateMessageType.FAILURE, error.getVars());
                 }
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-
-        return listOfMessage;
     }
 
     private boolean checkIfExistGenealogyWithBatch(final Entity order, final String batch) {

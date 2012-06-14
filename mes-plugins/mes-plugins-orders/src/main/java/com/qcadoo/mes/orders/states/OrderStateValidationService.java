@@ -34,7 +34,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
@@ -45,44 +45,38 @@ public class OrderStateValidationService {
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
-    public List<ChangeOrderStateMessage> validationAccepted(final Entity entity) {
-        checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
-        List<ChangeOrderStateMessage> message = checkValidation(references, entity);
+    public void validationOnAccepted(final StateChangeContext stateChangeContext) {
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        checkRequired(references, stateChangeContext);
 
-        Entity technology = entity.getBelongsToField(TECHNOLOGY);
+        final Entity order = stateChangeContext.getOwner();
+        final Entity technology = order.getBelongsToField(TECHNOLOGY);
         if (technology == null) {
-            return message;
+            return;
         }
-        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology
+        final TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology
                 .getStringField(TechnologyFields.STATE));
-
-        if (TechnologyState.ACCEPTED != technologyState) {
-            message.add(ChangeOrderStateMessage.errorForComponent("orders.validate.technology.error.wrongState.accepted",
-                    TECHNOLOGY));
+        if (!TechnologyState.ACCEPTED.equals(technologyState)) {
+            stateChangeContext.addFieldValidationError("orders.validate.technology.error.wrongState.accepted", TECHNOLOGY);
         }
-        return message;
     }
 
-    public List<ChangeOrderStateMessage> validationInProgress(final Entity entity) {
-        checkArgument(entity != null, ENTITY_IS_NULL);
-        return validationAccepted(entity);
+    public void validationOnInProgress(final StateChangeContext stateChangeContext) {
+        validationOnAccepted(stateChangeContext);
     }
 
-    public List<ChangeOrderStateMessage> validationCompleted(final Entity entity) {
-        checkArgument(entity != null, ENTITY_IS_NULL);
-        List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
-        return checkValidation(references, entity);
+    public void validationOnCompleted(final StateChangeContext stateChangeContext) {
+        final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
+        checkRequired(fieldNames, stateChangeContext);
     }
 
-    private List<ChangeOrderStateMessage> checkValidation(final List<String> references, final Entity entity) {
-        checkArgument(entity != null, ENTITY_IS_NULL);
-        List<ChangeOrderStateMessage> errors = Lists.newArrayList();
-        for (String reference : references) {
-            if (entity.getField(reference) == null) {
-                errors.add(ChangeOrderStateMessage.errorForComponent("orders.order.orderStates.fieldRequired", reference));
+    public void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
+        checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        for (String fieldName : fieldNames) {
+            if (stateChangeEntity.getField(fieldName) == null) {
+                stateChangeContext.addFieldValidationError("orders.order.orderStates.fieldRequired", fieldName);
             }
         }
-        return errors;
     }
 }
