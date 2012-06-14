@@ -7,12 +7,15 @@ import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.D
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -32,7 +35,8 @@ public class TechInstOperCompHooksPPS {
         }
         Integer dayNumber = Integer.valueOf(0);
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")) {
+            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")
+                    || progressForDay.getField("day") == null) {
                 continue;
             }
             Integer day = Integer.valueOf(progressForDay.getField("day").toString());
@@ -46,17 +50,17 @@ public class TechInstOperCompHooksPPS {
         return true;
     }
 
-    public boolean checkShiftIfWorks(final DataDefinition dataDefinition, final Entity entity) {
-        List<Entity> progressForDays = entity.getHasManyField("progressForDays");
+    public boolean checkShiftIfWorks(final DataDefinition dataDefinition, final Entity tioc) {
+        List<Entity> progressForDays = tioc.getHasManyField("progressForDays");
         if (progressForDays.isEmpty()) {
             return true;
         }
-        Entity order = entity.getBelongsToField("order");
         for (Entity progressForDay : progressForDays) {
-            if ((progressForDay.getBooleanField(CORRECTED) && !entity.getBooleanField(HAS_CORRECTIONS))
+            if ((progressForDay.getBooleanField(CORRECTED) && !tioc.getBooleanField(HAS_CORRECTIONS))
                     || progressForDay.getField(DAY) == null) {
                 continue;
             }
+            Entity order = tioc.getBelongsToField("order");
             Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
             List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
             for (Entity dailyProgress : dailyProgressList) {
@@ -66,10 +70,20 @@ public class TechInstOperCompHooksPPS {
                 }
                 Date startOrder = getPlannedOrCorrectedDate(order);
                 Date dayOfProduction = new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
-                Entity shiftFromDay = shiftsService.getShiftFromDate(dayOfProduction);
-                if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
-                    entity.addGlobalError("productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
-                            dayOfProduction.toString());
+                boolean works = true;
+                if (progressForDay.equals(progressForDays.get(0))) {
+                    Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(dayOfProduction);
+                    if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
+                        works = false;
+                    }
+                } else {
+                    works = shiftsService.checkIfShiftWorkAtDate(dayOfProduction, shift);
+                }
+
+                if (!works) {
+                    tioc.addGlobalError("productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
+                            new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(dayOfProduction)
+                                    .toString());
                     return false;
                 }
             }

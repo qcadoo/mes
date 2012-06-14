@@ -498,7 +498,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     @Override
-    public Entity getShiftFromDate(final Date date) {
+    public Entity getShiftFromDateWithTime(final Date date) {
         Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
         dayOfWeek.put(Calendar.MONDAY, "monday");
         dayOfWeek.put(Calendar.TUESDAY, "tuesday");
@@ -532,5 +532,29 @@ public class ShiftsServiceImpl implements ShiftsService {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
+        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
+        dayOfWeek.put(Calendar.MONDAY, "monday");
+        dayOfWeek.put(Calendar.TUESDAY, "tuesday");
+        dayOfWeek.put(Calendar.WEDNESDAY, "wensday");
+        dayOfWeek.put(Calendar.THURSDAY, "thursday");
+        dayOfWeek.put(Calendar.FRIDAY, "friday");
+        dayOfWeek.put(Calendar.SATURDAY, "saturday");
+        dayOfWeek.put(Calendar.SUNDAY, "sunday");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_SHIFT).find();
+        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + WORKING_LITERAL, true));
+        List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
+        if (shifts.contains(shift)) {
+            return true;
+        }
+        return false;
     }
 }

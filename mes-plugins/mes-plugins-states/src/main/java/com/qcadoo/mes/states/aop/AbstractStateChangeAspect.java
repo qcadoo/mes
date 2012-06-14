@@ -83,7 +83,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     protected void onCreate(final Entity stateChangeEntity, final Entity owner, final StateEnum sourceState,
             final StateEnum targetState) {
         final StateChangeEntityDescriber describer = getChangeEntityDescriber();
-        final Entity shift = shiftsService.getShiftFromDate(new Date());
+        final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
 
         stateChangeEntity.setField(describer.getOwnerFieldName(), owner);
         stateChangeEntity.setField(describer.getPhaseFieldName(), 0);

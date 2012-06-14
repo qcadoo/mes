@@ -55,7 +55,7 @@ public class TechnologyLoggingService {
         logEntity.setField("previousState", oldState.getStringValue());
         logEntity.setField("currentState", newState.getStringValue());
         logEntity.setField("worker", securityService.getCurrentUserName());
-        logEntity.setField("shift", shiftService.getShiftFromDate(logDate));
+        logEntity.setField("shift", shiftService.getShiftFromDateWithTime(logDate));
         logEntity.setField("dateAndTime", logDate);
         
         saveStateLog(technology, logEntity);

@@ -117,9 +117,6 @@
 										<option type="fieldCode" value="nodeNumber" />
 										<listener event="onSelectedEntityChange"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
-											method="fillProducedField" />
-										<listener event="onSelectedEntityChange"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="fillProgressForDays" />
 									</component>
 								</layoutElement>
@@ -195,10 +192,16 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="addRootForOperation" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="disablePlannedProgressTypeForPendingOrder" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="fillProducedField" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="refreshProgressForDaysADL" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="setOrderStartDate" />
