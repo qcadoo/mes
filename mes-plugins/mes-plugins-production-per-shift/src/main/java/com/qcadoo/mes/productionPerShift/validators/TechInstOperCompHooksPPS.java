@@ -50,7 +50,7 @@ public class TechInstOperCompHooksPPS {
         return true;
     }
 
-    public boolean checkShiftIfWorks(final DataDefinition dataDefinition, final Entity tioc) {
+    public boolean checkShiftsIfWorks(final DataDefinition dataDefinition, final Entity tioc) {
         List<Entity> progressForDays = tioc.getHasManyField("progressForDays");
         if (progressForDays.isEmpty()) {
             return true;
@@ -60,35 +60,47 @@ public class TechInstOperCompHooksPPS {
                     || progressForDay.getField(DAY) == null) {
                 continue;
             }
-            Entity order = tioc.getBelongsToField("order");
-            Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+
             List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
             for (Entity dailyProgress : dailyProgressList) {
                 Entity shift = dailyProgress.getBelongsToField("shift");
                 if (shift == null) {
                     continue;
                 }
-                Date startOrder = getPlannedOrCorrectedDate(order);
-                Date dayOfProduction = new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
-                boolean works = true;
-                if (progressForDay.equals(progressForDays.get(0))) {
-                    Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(dayOfProduction);
-                    if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
-                        works = false;
-                    }
-                } else {
-                    works = shiftsService.checkIfShiftWorkAtDate(dayOfProduction, shift);
-                }
-
-                if (!works) {
-                    tioc.addGlobalError("productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
-                            new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(dayOfProduction)
+                if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift)) {
+                    tioc.addGlobalError(
+                            "productionPerShift.progressForDay.shiftDoesNotWork",
+                            shift.getStringField("name"),
+                            new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(
+                                    getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay))
                                     .toString());
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity tioc,
+            final Entity shift) {
+        boolean works = true;
+        if (progressForDay.equals(progressForDays.get(0))) {
+            Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(getDateAfterStartOrderForProgress(
+                    tioc.getBelongsToField("order"), progressForDay));
+            if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
+                works = false;
+            }
+        } else {
+            works = shiftsService.checkIfShiftWorkAtDate(
+                    getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay), shift);
+        }
+        return works;
+    }
+
+    private Date getDateAfterStartOrderForProgress(final Entity order, final Entity progressForDay) {
+        Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+        Date startOrder = getPlannedOrCorrectedDate(order);
+        return new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
     }
 
     private Date getPlannedOrCorrectedDate(final Entity order) {

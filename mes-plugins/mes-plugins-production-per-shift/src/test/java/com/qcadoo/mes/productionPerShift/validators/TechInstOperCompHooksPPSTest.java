@@ -4,11 +4,11 @@ import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -35,6 +35,9 @@ public class TechInstOperCompHooksPPSTest {
 
     @Mock
     private EntityList progressForDays;
+
+    @Mock
+    private Entity shift, order;
 
     @Before
     public void init() {
@@ -82,18 +85,37 @@ public class TechInstOperCompHooksPPSTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenPFDIsEmpty() throws Exception {
+    public void shouldReturnTrueWhenDaysAreOrderDesc() throws Exception {
         // given
+        Entity pdf1 = mock(Entity.class);
+        Entity pfd2 = mock(Entity.class);
+        List<Entity> pfds = asList(pdf1, pfd2);
+        EntityList progressForDays = mockEntityList(pfds);
+        Integer day1 = 10;
+        Integer day2 = 11;
         when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
-        when(progressForDays.isEmpty()).thenReturn(true);
+        when(progressForDays.get(0)).thenReturn(pdf1);
+        when(progressForDays.get(1)).thenReturn(pfd2);
+        when(pdf1.getField("day")).thenReturn(day1);
+        when(pfd2.getField("day")).thenReturn(day2);
         // when
-        boolean result = hooksPPS.checkShiftIfWorks(dataDefinition, entity);
+        boolean result = hooksPPS.checkGrowingNumberOfDays(dataDefinition, entity);
         // then
         Assert.assertTrue(result);
     }
 
     @Test
-    @Ignore
+    public void shouldReturnTrueWhenPFDIsEmpty() throws Exception {
+        // given
+        when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
+        when(progressForDays.isEmpty()).thenReturn(true);
+        // when
+        boolean result = hooksPPS.checkShiftsIfWorks(dataDefinition, entity);
+        // then
+        Assert.assertTrue(result);
+    }
+
+    @Test
     public void shouldReturnTrueWhenEntityHasCorrentionAndPfdIsCorrected() throws Exception {
         // given
         Entity pdf1 = mock(Entity.class);
@@ -103,9 +125,40 @@ public class TechInstOperCompHooksPPSTest {
         when(progressForDays.get(0)).thenReturn(pdf1);
         when(pdf1.getField("day")).thenReturn(null);
         // when
-        boolean result = hooksPPS.checkShiftIfWorks(dataDefinition, entity);
+        boolean result = hooksPPS.checkShiftsIfWorks(dataDefinition, entity);
         // then
         Assert.assertTrue(result);
     }
 
+    @Test
+    public void returnFalseWhenFirstProgressDoesnotWorkAtDateTime() throws Exception {
+        // given
+        Entity pfd1 = mock(Entity.class);
+        List<Entity> pfds = asList(pfd1);
+        Integer day = Integer.valueOf(1);
+        EntityList progressForDays = mockEntityList(pfds);
+        Entity dp1 = mock(Entity.class);
+        List<Entity> dps = asList(dp1);
+        EntityList dailyProgress = mockEntityList(dps);
+        Date correctedDate = new Date();
+
+        when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
+        when(progressForDays.get(0)).thenReturn(pfd1);
+        when(pfd1.getField("day")).thenReturn(day);
+        when(pfd1.getBooleanField("corrected")).thenReturn(false);
+        when(entity.getBooleanField("hasCorrections")).thenReturn(true);
+
+        when(pfd1.getHasManyField("dailyProgress")).thenReturn(dailyProgress);
+        when(dailyProgress.get(0)).thenReturn(dp1);
+        when(dp1.getBelongsToField("shift")).thenReturn(shift);
+
+        when(entity.getBelongsToField("order")).thenReturn(order);
+        when(order.getField("correctedDateFrom")).thenReturn(correctedDate);
+
+        // when
+        boolean result = hooksPPS.checkShiftsIfWorks(dataDefinition, entity);
+        // then
+        Assert.assertFalse(result);
+
+    }
 }
