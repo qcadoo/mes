@@ -108,16 +108,21 @@ public final class MessagesUtil {
      * @return appropriate {@link com.qcadoo.view.api.ComponentState.MessageType}
      */
     public static com.qcadoo.view.api.ComponentState.MessageType convertViewMessageType(final MessageType type) {
+        com.qcadoo.view.api.ComponentState.MessageType convertedType = null;
         switch (type) {
             case SUCCESS:
-                return com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
+                convertedType = com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
+                break;
             case FAILURE:
             case VALIDATION_ERROR:
-                return com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+                convertedType = com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
+                break;
             case INFO:
             default:
-                return com.qcadoo.view.api.ComponentState.MessageType.INFO;
+                convertedType = com.qcadoo.view.api.ComponentState.MessageType.INFO;
+                break;
         }
+        return convertedType;
     }
 
     public static String getKey(final Entity message) {

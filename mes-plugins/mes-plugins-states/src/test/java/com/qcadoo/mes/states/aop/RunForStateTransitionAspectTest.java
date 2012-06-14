@@ -1,6 +1,6 @@
 package com.qcadoo.mes.states.aop;
 
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.STATE_WILDCARD;
+import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.states.MockStateChangeDescriber;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
@@ -55,7 +56,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         }
 
         @Override
-        public void changeState(final Entity stateChangeEntity) {
+        public void changeState(final StateChangeContext stateChangeContext) {
             // Do nothing
         }
 
@@ -65,7 +66,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         }
 
         @Override
-        protected void changeStatePhase(final Entity stateChangeEntity, final int phaseNumber) {
+        protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
         }
 
     }
@@ -75,63 +76,65 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
 
         @RunInPhase(1)
         @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = TARGET_STATE_1)
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntity1(final Entity stateChange) {
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntity1(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_1, true);
         }
 
         @RunInPhase(1)
-        @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = STATE_WILDCARD)
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntity2(final Entity stateChange) {
+        @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = WILDCARD_STATE)
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntity2(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_2, true);
         }
 
         @RunInPhase(1)
-        @RunForStateTransition(sourceState = STATE_WILDCARD, targetState = TARGET_STATE_1)
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntity3(final Entity stateChange) {
+        @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = TARGET_STATE_1)
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntity3(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_3, true);
         }
 
         @RunInPhase(1)
-        @RunForStateTransition(sourceState = STATE_WILDCARD, targetState = STATE_WILDCARD)
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntity4(final Entity stateChange) {
+        @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = WILDCARD_STATE)
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntity4(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_4, true);
         }
 
         @RunInPhase(1)
-        @RunForStateTransitions({ @RunForStateTransition(sourceState = STATE_WILDCARD, targetState = TARGET_STATE_2) })
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntity5(final Entity stateChange) {
+        @RunForStateTransitions({ @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = TARGET_STATE_2) })
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntity5(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_5, true);
         }
 
         @RunInPhase(1)
         @RunForStateTransitions({ @RunForStateTransition(sourceState = SOURCE_STATE_1, targetState = TARGET_STATE_1),
                 @RunForStateTransition(sourceState = SOURCE_STATE_2, targetState = TARGET_STATE_2) })
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntityMany1(final Entity stateChange) {
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntityMany1(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_MANY_1, true);
         }
 
         @RunInPhase(1)
         @RunForStateTransitions({ @RunForStateTransition(sourceState = "undefinedSource1", targetState = "undefinedTarget1"),
                 @RunForStateTransition(sourceState = "undefinedSource2", targetState = "undefinedTarget2") })
-        @RunForStateTransition(sourceState = STATE_WILDCARD, targetState = STATE_WILDCARD)
-        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChange)")
-        public void markEntityMany2(final Entity stateChange) {
+        @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = WILDCARD_STATE)
+        @org.aspectj.lang.annotation.Before("changeStateExecution(stateChangeContext)")
+        public void markEntityMany2(final StateChangeContext stateChangeContext) {
+            final Entity stateChange = stateChangeContext.getEntity();
             stateChange.setField(MARKED_MANY_2, true);
         }
 
         @Pointcut("this(TestStateChangeServiceAspect)")
         protected void targetServicePointcut() {
-        }
-
-        @Override
-        public StateChangeEntityDescriber getStateChangeEntityDescriber() {
-            return new MockStateChangeDescriber();
         }
 
     }
@@ -141,6 +144,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         MockitoAnnotations.initMocks(this);
         testService = new TestStateChangeServiceAspect();
         stubStateChangeEntity(DESCRIBER);
+        stubStateChangeContext();
     }
 
     protected void stubStateChangeEntityStates(final String sourceState, final String targetState) {
@@ -154,7 +158,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         stubStateChangeEntityStates(SOURCE_STATE_1, TARGET_STATE_1);
 
         // when
-        testService.changeState(stateChangeEntity);
+        testService.changeState(stateChangeContext);
 
         // then
         verify(stateChangeEntity).setField(MARKED_1, true);
@@ -172,7 +176,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         stubStateChangeEntityStates(SOURCE_STATE_2, TARGET_STATE_2);
 
         // when
-        testService.changeState(stateChangeEntity);
+        testService.changeState(stateChangeContext);
 
         // then
         verify(stateChangeEntity, never()).setField(MARKED_1, true);
@@ -190,7 +194,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         stubStateChangeEntityStates(SOURCE_STATE_2, TARGET_STATE_1);
 
         // when
-        testService.changeState(stateChangeEntity);
+        testService.changeState(stateChangeContext);
 
         // then
         verify(stateChangeEntity, never()).setField(MARKED_1, true);
@@ -208,7 +212,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         stubStateChangeEntityStates("unsupported", "unsupported");
 
         // when
-        testService.changeState(stateChangeEntity);
+        testService.changeState(stateChangeContext);
 
         // then
         verify(stateChangeEntity, never()).setField(MARKED_1, true);
@@ -226,7 +230,7 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
         stubStateChangeEntityStates(SOURCE_STATE_1, TARGET_STATE_2);
 
         // when
-        testService.changeState(stateChangeEntity);
+        testService.changeState(stateChangeContext);
 
         // then
         verify(stateChangeEntity, never()).setField(MARKED_1, true);

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -24,6 +25,9 @@ public abstract class StateChangeTest {
 
     @Mock
     protected Entity stateChangeEntity;
+
+    @Mock
+    protected StateChangeContext stateChangeContext;
 
     @Mock
     protected DataDefinition stateChangeDD;
@@ -65,6 +69,53 @@ public abstract class StateChangeTest {
     protected static void stubEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
         given(entity.getField(fieldName)).willReturn(fieldValue);
         given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
+    }
+
+    protected void stubStateChangeContext() {
+        given(stateChangeContext.getEntity()).willReturn(stateChangeEntity);
+        given(stateChangeContext.getDescriber()).willReturn(DESCRIBER);
+
+        Mockito.doAnswer(new Answer<Void>() {
+
+            @Override
+            public Void answer(final InvocationOnMock invocation) throws Throwable {
+                stateChangeEntity.setField(DESCRIBER.getStatusFieldName(), invocation.getArguments()[0]);
+                return null;
+            }
+        }).when(stateChangeContext).setStatus(Mockito.any(StateChangeStatus.class));
+
+        given(stateChangeContext.getStatus()).willAnswer(new Answer<StateChangeStatus>() {
+
+            @Override
+            public StateChangeStatus answer(final InvocationOnMock invocation) throws Throwable {
+                return StateChangeStatus.parseString(stateChangeEntity.getStringField(DESCRIBER.getStatusFieldName()));
+            }
+        });
+
+        given(stateChangeContext.getAllMessages()).willAnswer(new Answer<List<Entity>>() {
+
+            @Override
+            public List<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName());
+            }
+        });
+
+        Mockito.doAnswer(new Answer<Void>() {
+
+            @Override
+            public Void answer(final InvocationOnMock invocation) throws Throwable {
+                stateChangeEntity.setField(DESCRIBER.getPhaseFieldName(), invocation.getArguments()[0]);
+                return null;
+            }
+        }).when(stateChangeContext).setPhase(Mockito.anyInt());
+
+        given(stateChangeContext.getPhase()).willAnswer(new Answer<Integer>() {
+
+            @Override
+            public Integer answer(final InvocationOnMock invocation) throws Throwable {
+                return (Integer) stateChangeEntity.getField(DESCRIBER.getPhaseFieldName());
+            }
+        });
     }
 
 }

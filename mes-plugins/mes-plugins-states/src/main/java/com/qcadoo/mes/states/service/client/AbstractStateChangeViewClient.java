@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
 import com.qcadoo.mes.states.exception.StateChangeException;
@@ -49,10 +49,11 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     @Override
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
-            final Entity stateChangeEntity = getStateChangeService().createNewStateChangeEntity(entity, targetState);
-            getStateChangeService().changeState(stateChangeEntity);
+            final StateChangeContext stateChangeContext = getStateChangeService()
+                    .createNewStateChangeContext(entity, targetState);
+            getStateChangeService().changeState(stateChangeContext);
             viewClientUtil.refreshComponent(viewContext);
-            showMessages(viewContext, stateChangeEntity);
+            showMessages(viewContext, stateChangeContext);
         } catch (AnotherChangeInProgressException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.anotherChangeInProgress",
                     com.qcadoo.view.api.ComponentState.MessageType.FAILURE);
@@ -61,13 +62,12 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         }
     }
 
-    private void showMessages(final ViewContextHolder viewContext, final Entity stateChangeEntity) {
-        viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeEntity);
-        final String messagesFieldName = getStateChangeService().getChangeEntityDescriber().getMessagesFieldName();
+    private void showMessages(final ViewContextHolder viewContext, final StateChangeContext stateChangeContext) {
+        viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeContext.getEntity());
         final String ownerFieldName = getStateChangeService().getChangeEntityDescriber().getOwnerFieldName();
-        viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(),
-                stateChangeEntity.getBelongsToField(ownerFieldName), stateChangeEntity.getHasManyField(messagesFieldName));
-        addFinalMessage(viewContext.getMessagesConsumer(), stateChangeEntity);
+        viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(), stateChangeContext.getEntity()
+                .getBelongsToField(ownerFieldName), stateChangeContext.getAllMessages());
+        addFinalMessage(viewContext.getMessagesConsumer(), stateChangeContext);
     }
 
     private ViewContextHolder buildViewContext(final ViewDefinitionState view, final ComponentState component) {
@@ -96,10 +96,11 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         return getStateChangeService().getChangeEntityDescriber().parseStateEnum(stateString);
     }
 
-    private void addFinalMessage(final ComponentState component, final Entity stateChange) {
-        final StateChangeEntityDescriber describer = getStateChangeService().getChangeEntityDescriber();
-        final String statusStringValue = stateChange.getStringField(describer.getStatusFieldName());
-        final StateChangeStatus status = StateChangeStatus.parseString(statusStringValue);
+    private void addFinalMessage(final ComponentState component, final StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getEntity();
+        final String statusFieldName = stateChangeContext.getDescriber().getStatusFieldName();
+        final StateChangeStatus status = StateChangeStatus.parseString(stateChangeEntity.getStringField(statusFieldName));
+
         if (SUCCESSFUL.equals(status)) {
             component.addMessage("states.messages.change.successful", com.qcadoo.view.api.ComponentState.MessageType.SUCCESS);
         } else if (PAUSED.equals(status)) {
