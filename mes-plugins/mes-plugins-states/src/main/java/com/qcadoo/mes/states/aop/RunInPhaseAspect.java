@@ -14,13 +14,13 @@ public class RunInPhaseAspect {
     @DeclareWarning("adviceexecution() && within(com.qcadoo.mes.states.aop.AbstractStateListenerAspect+) && (!@annotation(com.qcadoo.mes.states.annotation.RunInPhase) && !@within(com.qcadoo.mes.states.annotation.RunInPhase))")
     protected static final String LISTENER_WITHOUT_PHASE_WARNING = "State change listener method should be annotated with @RunInPhase annotation.";
 
-    @Around("StatesXpi.listenerExecution() && @annotation(annotation) && args(*, currentPhase,..)")
+    @Around("StatesXpiAspect.listenerExecution() && @annotation(annotation) && args(*, currentPhase,..)")
     public Object runInPhaseMethodLevelAnnotated(final ProceedingJoinPoint pjp, final int currentPhase,
             final RunInPhase annotation) throws Throwable {
         return runInPhase(pjp, currentPhase, annotation);
     }
 
-    @Around("StatesXpi.listenerExecution() && @within(annotation) && !@annotation(com.qcadoo.mes.states.annotation.RunInPhase) && args(*, currentPhase,..)")
+    @Around("StatesXpiAspect.listenerExecution() && @within(annotation) && !@annotation(com.qcadoo.mes.states.annotation.RunInPhase) && args(*, currentPhase,..)")
     public Object runInPhaseClassLevelAnnotated(final ProceedingJoinPoint pjp, final int currentPhase, final RunInPhase annotation)
             throws Throwable {
         return runInPhase(pjp, currentPhase, annotation);

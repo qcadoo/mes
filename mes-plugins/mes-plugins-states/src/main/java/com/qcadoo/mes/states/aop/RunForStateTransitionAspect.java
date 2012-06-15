@@ -15,14 +15,14 @@ public class RunForStateTransitionAspect {
 
     public static final String WILDCARD_STATE = "*";
 
-    @Around("StatesXpi.listenerExecutionWithContext(stateChangeContext) && @annotation(annotation) "
+    @Around("StatesXpiAspect.listenerExecutionWithContext(stateChangeContext) && @annotation(annotation) "
             + "&& !@annotation(com.qcadoo.mes.states.annotation.RunForStateTransitions)")
     public Object runOnlyIfMatchSpecifiedTransition(final ProceedingJoinPoint pjp, final StateChangeContext stateChangeContext,
             final RunForStateTransition annotation) throws Throwable {
         return runOnlyIfMatchAtLeastOneSpecifiedTransitions(pjp, stateChangeContext, new RunForStateTransition[] { annotation });
     }
 
-    @Around("StatesXpi.listenerExecutionWithContext(stateChangeContext) && @annotation(annotation)")
+    @Around("StatesXpiAspect.listenerExecutionWithContext(stateChangeContext) && @annotation(annotation)")
     public Object runOnlyIfMatchSpecifiedTransitions(final ProceedingJoinPoint pjp, final StateChangeContext stateChangeContext,
             final RunForStateTransitions annotation) throws Throwable {
         return runOnlyIfMatchAtLeastOneSpecifiedTransitions(pjp, stateChangeContext, annotation.value());

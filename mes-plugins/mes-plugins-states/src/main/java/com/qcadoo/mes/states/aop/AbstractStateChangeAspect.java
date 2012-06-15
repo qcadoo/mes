@@ -23,6 +23,7 @@ import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
 import com.qcadoo.mes.states.messages.MessageService;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangePhaseUtil;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.DataDefinition;
@@ -128,16 +129,21 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Transactional
     public void changeState(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        describer.checkFields();
-        for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
-            if (StateChangePhaseUtil.canRun(stateChangeContext)) {
-                stateChangeContext.setPhase(phase);
-                changeStatePhase(stateChangeContext, phase);
+        try {
+            final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
+            describer.checkFields();
+            for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
+                if (StateChangePhaseUtil.canRun(stateChangeContext)) {
+                    stateChangeContext.setPhase(phase);
+                    changeStatePhase(stateChangeContext, phase);
+                }
             }
+            stateChangeContext.save();
+            performChangeEntityState(stateChangeContext);
+        } catch (Exception e) {
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            stateChangeContext.addMessage("", StateMessageType.FAILURE);
         }
-        stateChangeContext.save();
-        performChangeEntityState(stateChangeContext);
     }
 
     /**
