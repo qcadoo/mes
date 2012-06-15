@@ -7,16 +7,16 @@ import com.qcadoo.model.api.Entity;
 
 public interface MessagesHolder {
 
-    public void addFieldMessage(final String translationKey, final StateMessageType type, final String fieldName,
+    void addFieldMessage(final String translationKey, final StateMessageType type, final String fieldName,
             final String... translationArgs);
 
-    public void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs);
+    void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs);
 
-    public void addFieldValidationError(final String translationKey, final String fieldName, final String... translationArgs);
+    void addFieldValidationError(final String translationKey, final String fieldName, final String... translationArgs);
 
-    public void addValidationError(final String translationKey, final String... translationArgs);
+    void addValidationError(final String translationKey, final String... translationArgs);
 
-    public List<Entity> getAllMessages();
+    List<Entity> getAllMessages();
 
-    public MessageService getMessageService();
+    MessageService getMessageService();
 }

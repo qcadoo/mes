@@ -14,7 +14,7 @@ public interface StateChangeContext extends MessagesHolder {
     /**
      * Save inner state change entity
      */
-    public void save();
+    void save();
 
     /**
      * Set inner state change entity's field
@@ -22,7 +22,7 @@ public interface StateChangeContext extends MessagesHolder {
      * @param fieldName
      * @param fieldValue
      */
-    public void setField(final String fieldName, final Object fieldValue);
+    void setField(final String fieldName, final Object fieldValue);
 
     /**
      * Returns state enum value from field with given name
@@ -30,28 +30,28 @@ public interface StateChangeContext extends MessagesHolder {
      * @param fieldName
      * @return
      */
-    public StateEnum getStateEnumValue(final String fieldName);
+    StateEnum getStateEnumValue(final String fieldName);
 
     /**
      * Returns current phase number
      * 
      * @return current phase number
      */
-    public int getPhase();
+    int getPhase();
 
     /**
      * Set current phase number
      * 
      * @param phase
      */
-    public void setPhase(final int phase);
+    void setPhase(final int phase);
 
     /**
      * Returns state change entity's status
      * 
      * @return state change entity's status
      */
-    public StateChangeStatus getStatus();
+    StateChangeStatus getStatus();
 
     /**
      * Set state change entity's status
@@ -59,27 +59,27 @@ public interface StateChangeContext extends MessagesHolder {
      * @param status
      *            state change entity's status
      */
-    public void setStatus(final StateChangeStatus status);
+    void setStatus(final StateChangeStatus status);
 
     /**
      * Returns state change entity's describer
      * 
      * @return state change entity's describer
      */
-    public StateChangeEntityDescriber getDescriber();
+    StateChangeEntityDescriber getDescriber();
 
     /**
      * Returns inner state change entity
      * 
      * @return inner state change entity
      */
-    public Entity getStateChangeEntity();
+    Entity getStateChangeEntity();
 
     /**
      * Returns inner state change entity's owner
      * 
      * @return inner state change entity's owner
      */
-    public Entity getOwner();
+    Entity getOwner();
 
 }

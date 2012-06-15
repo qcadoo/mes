@@ -68,12 +68,9 @@ public class TechInstOperCompHooksPPS {
                     continue;
                 }
                 if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift)) {
-                    tioc.addGlobalError(
-                            "productionPerShift.progressForDay.shiftDoesNotWork",
-                            shift.getStringField("name"),
-                            new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(
-                                    getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay))
-                                    .toString());
+                    tioc.addGlobalError("productionPerShift.progressForDay.shiftDoesNotWork", shift.getStringField("name"),
+                            new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
+                                    .format(getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay)));
                     return false;
                 }
             }
