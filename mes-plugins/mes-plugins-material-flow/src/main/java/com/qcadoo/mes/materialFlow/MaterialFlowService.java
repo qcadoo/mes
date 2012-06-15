@@ -254,6 +254,11 @@ public class MaterialFlowService {
         return number;
     }
 
+    public List<Entity> getStockAreasFromDB() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_STOCK_AREAS).find()
+                .list().getEntities();
+    }
+
     private Entity getAreaById(final Long productId) {
         DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 

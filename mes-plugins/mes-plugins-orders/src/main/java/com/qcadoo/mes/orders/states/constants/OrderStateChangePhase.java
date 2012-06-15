@@ -13,7 +13,7 @@ public final class OrderStateChangePhase {
     private OrderStateChangePhase() {
     }
 
-    public static final int getNumOfPhases() {
+    public static int getNumOfPhases() {
         return 7;
     }
 

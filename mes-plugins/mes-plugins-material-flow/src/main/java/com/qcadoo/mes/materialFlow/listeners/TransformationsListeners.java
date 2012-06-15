@@ -47,11 +47,10 @@ public class TransformationsListeners {
 
         for (FormComponent formComponent : formComponents) {
             Entity transfer = formComponent.getEntity();
-            String number = transfer.getStringField(NUMBER);
             Entity product = transfer.getBelongsToField(PRODUCT);
 
             if (product != null) {
-                number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
+                String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
 
                 transfer.setField(NUMBER, number);
             }
@@ -77,11 +76,8 @@ public class TransformationsListeners {
         AwesomeDynamicListComponent transfersProduction = (AwesomeDynamicListComponent) view
                 .getComponentByReference(TRANSFERS_PRODUCTION);
 
-        List<Entity> consumptionComponents = Lists.newArrayList();
-        List<Entity> productionComponents = Lists.newArrayList();
-
-        consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS));
-        productionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_OUT_COMPONENTS));
+        List<Entity> consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS));
+        List<Entity> productionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_OUT_COMPONENTS));
 
         if (!consumptionComponents.isEmpty()) {
             transfersConsumption.setFieldValue(consumptionComponents);

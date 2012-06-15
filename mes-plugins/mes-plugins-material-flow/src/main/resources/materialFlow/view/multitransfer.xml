@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="multitransfer" modelName="transfer" menuAccessible="true">
+	name="multitransfer" 
+	modelName="transfer" 
+	menuAccessible="true">
+	
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group name="create">
@@ -33,6 +36,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
 				hasBorders="false" columns="2" rows="6">
@@ -117,6 +121,7 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<listener event="createMultitransfer"
 				class="com.qcadoo.mes.materialFlow.listeners.MultitransferListeners"
@@ -126,6 +131,7 @@
 				method="getFromTemplate" />
 		</component>
 	</component>
+	
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.materialFlow.hooks.MultitransferViewHooks"

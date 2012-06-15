@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlow;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import com.qcadoo.model.api.Entity;
 
@@ -10,4 +11,5 @@ public interface MaterialFlowResourceService {
 
     void manageResources(final Entity transfer);
 
+    Map<Entity, BigDecimal> groupResourcesByProduct(final Entity stockAreas);
 }

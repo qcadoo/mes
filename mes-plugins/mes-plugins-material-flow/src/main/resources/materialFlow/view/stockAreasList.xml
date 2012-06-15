@@ -29,22 +29,28 @@
 	name="stockAreasList" 
 	modelName="stockAreas" 
 	menuAccessible="true">
-		<component type="window" name="window">
-			<ribbon>
-				<group template="gridNewCopyAndRemoveAction" />
-			</ribbon>
-			<component type="grid" name="grid" reference="grid">
-				<option type="column" name="number" fields="number" link="true" width="30" />
-				<option type="column" name="name" fields="name" link="true" width="70" />
-				<option type="order" column="number" direction="asc" />
- 				<option type="searchable" value="number,name" /> 
- 				<option type="orderable" value="number,name" /> 
-				<option type="correspondingView" value="materialFlow/stockAreasDetail" /> 
- 				<option type="correspondingComponent" value="form" /> 
- 				<option type="multiselect" value="true" /> 
-			</component>
-			<option type="header" value="false" />
- 			<option type="fixedHeight" value="true" /> 
+	
+	<component type="window" name="window">
+		<ribbon>
+			<group template="gridNewCopyAndRemoveAction" />
+		</ribbon>
+		
+		<component type="grid" name="grid" reference="grid">
+			<option type="column" name="number" fields="number" link="true" width="30" />
+			<option type="column" name="name" fields="name" link="true" width="70" />
+			
+			<option type="order" column="number" direction="asc" />
+			
+			<option type="searchable" value="number,name" />
+			<option type="orderable" value="number,name" /> 
+			
+			<option type="correspondingView" value="materialFlow/stockAreasDetail" /> 
+			<option type="correspondingComponent" value="form" /> 
+			
+			<option type="multiselect" value="true" /> 
 		</component>
+		
+		<option type="header" value="false" />
+		<option type="fixedHeight" value="true" /> 
+	</component>
 </view>
-

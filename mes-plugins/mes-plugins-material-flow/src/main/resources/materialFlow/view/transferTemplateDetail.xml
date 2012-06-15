@@ -30,7 +30,6 @@
 	modelName="transferTemplate">
 	
 	<component type="window" name="window" reference="window">
-	
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>

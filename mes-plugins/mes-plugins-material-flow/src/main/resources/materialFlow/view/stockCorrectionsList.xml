@@ -24,39 +24,38 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="transferTemplateList" 
-	modelName="transferTemplate"
+	name="stockCorrectionsList" 
+	modelName="stockCorrection" 
 	menuAccessible="true">
 	
 	<component type="window" name="window">
-	
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
 		
-		<component type="grid" name="transferTemplateGrid" reference="grid">
-			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom == null) ? 'N/A' : #stockAreasFrom['name']" link="true" />
-			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo == null) ? 'N/A' : #stockAreasTo['name']" link="true" />
+		<component type="grid" name="grid" reference="grid">
+			<option type="column" name="number" fields="number" link="true" width="150" />
+			<option type="column" name="stockCorrectionDate" fields="stockCorrectionDate" />
+			<option type="column" name="stockAreas" fields="stockAreas" 
+				expression="(#stockAreas == null) ? 'N/A' : #stockAreas['name']"/>
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? 'N/A' : #product['name']" link="true" />
+				expression="(#product == null) ? 'N/A' : #product['name']" />
+			<option type="column" name="found" fields="found" />
+			<option type="column" name="staff" fields="staff"
+				expression="(#staff == null) ? 'N/A' : #staff['name']" />
 				
-			<option type="order" column="product" direction="asc" />
+			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="stockAreasFrom,stockAreasTo,product" />
-			<option type="orderable" value="stockAreasFrom,stockAreasTo,product" />
+			<option type="searchable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
+			<option type="orderable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
 			
-			<option type="correspondingView" value="materialFlow/transferTemplateDetail" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+			<option type="correspondingView" value="materialFlow/stockCorrectionDetail" /> 
+			<option type="correspondingComponent" value="form" /> 
 		</component>
 		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-</view> 
+</view>
