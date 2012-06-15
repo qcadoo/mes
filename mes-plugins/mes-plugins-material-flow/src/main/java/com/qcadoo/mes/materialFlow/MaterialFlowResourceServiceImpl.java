@@ -13,7 +13,9 @@ import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,9 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
     @Autowired
     private NumberService numberService;
 
+    @Override
     public boolean areResourcesSufficient(final Entity stockAreas, final Entity product, final BigDecimal quantity) {
-        List<Entity> resources = getResources(stockAreas, product);
+        List<Entity> resources = getResourcesForStockAreasAndProduct(stockAreas, product);
 
         if (resources == null) {
             return false;
@@ -51,6 +54,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
     }
 
     @Transactional
+    @Override
     public void manageResources(final Entity transfer) {
         if (transfer == null) {
             return;
@@ -86,7 +90,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
     }
 
     private void updateResource(final Entity stockAreas, final Entity product, BigDecimal quantity) {
-        List<Entity> resources = getResources(stockAreas, product);
+        List<Entity> resources = getResourcesForStockAreasAndProduct(stockAreas, product);
 
         if (resources != null) {
             for (Entity resource : resources) {
@@ -113,7 +117,7 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         }
     }
 
-    private List<Entity> getResources(final Entity stockAreas, final Entity product) {
+    private List<Entity> getResourcesForStockAreasAndProduct(final Entity stockAreas, final Entity product) {
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(STOCK_AREAS, stockAreas)).add(SearchRestrictions.belongsTo(PRODUCT, product))
@@ -122,4 +126,34 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         return resources;
     }
 
+    private List<Entity> getResourcesForStockAreas(final Entity stockAreas) {
+        List<Entity> resources = dataDefinitionService
+                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
+                .add(SearchRestrictions.belongsTo(STOCK_AREAS, stockAreas)).list().getEntities();
+
+        return resources;
+    }
+
+    @Override
+    public Map<Entity, BigDecimal> groupResourcesByProduct(final Entity stockAreas) {
+        Map<Entity, BigDecimal> productsAndQuantities = new HashMap<Entity, BigDecimal>();
+
+        List<Entity> resources = getResourcesForStockAreas(stockAreas);
+
+        if (resources != null) {
+            for (Entity resource : resources) {
+                Entity product = resource.getBelongsToField(PRODUCT);
+                BigDecimal quantity = resource.getDecimalField(QUANTITY);
+
+                if (productsAndQuantities.containsKey(product)) {
+                    productsAndQuantities.put(product,
+                            productsAndQuantities.get(product).add(quantity, numberService.getMathContext()));
+                } else {
+                    productsAndQuantities.put(product, quantity);
+                }
+            }
+        }
+
+        return productsAndQuantities;
+    }
 }
