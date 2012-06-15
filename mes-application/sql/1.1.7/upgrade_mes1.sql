@@ -1,31 +1,31 @@
 -- Table: basic_parameter
 -- changed: 21.05.2012
 
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateFrom TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateFrom boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrecringDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateTo TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateTo boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateTo SET DEFAULT false;
 
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToDeclined TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToDeclined boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToDeclined SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToInterrupted TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToInterrupted boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToInterrupted SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToAbandoned TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToAbandoned boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToAbandoned SET DEFAULT false;
 
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateFrom TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenDelayedEffectiveDateFrom boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarliedEffectiveDateFrom  TYPE boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarliedEffectiveDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateTo TYPE boolean;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenEarlierEffectiveDateFrom boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarlierEffectiveDateFrom SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenDelayedEffectiveDateTo boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateTo SET DEFAULT false;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarliedEffectiveDateTo  TYPE boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarliedEffectiveDateTo SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenEarlierEffectiveDateTo boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarlierEffectiveDateTo SET DEFAULT false;
 
-ALTER TABLE basic_parameter ALTER COLUMN delayedEffectiveDateFrom  TYPE integer;
-ALTER TABLE basic_parameter ALTER COLUMN earliedEffectiveDateFrom TYPE integer;
-ALTER TABLE basic_parameter ALTER COLUMN delayedEffectiveDateTo TYPE integer;
-ALTER TABLE basic_parameter ALTER COLUMN earliedEffectiveDateTo TYPE integer;
+ALTER TABLE basic_parameter ADD COLUMN delayedEffectiveDateFrom integer;
+ALTER TABLE basic_parameter ADD COLUMN earliedEffectiveDateFrom integer;
+ALTER TABLE basic_parameter ADD COLUMN delayedEffectiveDateTo integer;
+ALTER TABLE basic_parameter ADD COLUMN earliedEffectiveDateTo integer;
 
 -- end
 
@@ -88,7 +88,7 @@ CREATE TABLE linechangeovernorms_linechangeovernorms
 ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
 ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
-ALTER TABLE orders_order ALTER COLUMN ownlinechangeover  TYPE boolean;
+ALTER TABLE orders_order ALTER COLUMN ownlinechangeover TYPE boolean;
 ALTER TABLE orders_order ALTER COLUMN ownlinechangeover SET DEFAULT false;
 
 ALTER TABLE orders_order ALTER COLUMN ownlinechangeoverduration TYPE integer;
@@ -201,5 +201,59 @@ CREATE TABLE technologies_productcomponent
   CONSTRAINT productcomponent_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
+-- end
+
+
+-- Table: states_message
+-- changed: 15.06.2012
+
+ALTER TABLE orders_logging RENAME TO orders_orderstatechange;
+
+ALTER TABLE orders_orderstatechange DROP COLUMN active;
+
+ALTER TABLE orders_orderstatechange RENAME COLUMN previousstate TO sourcestate;
+ALTER TABLE orders_orderstatechange RENAME COLUMN currentstate TO targetstate;
+
+ALTER TABLE orders_orderstatechange ADD COLUMN status character varying(255);
+ALTER TABLE orders_orderstatechange ALTER COLUMN status SET DEFAULT '01inProgress'::character varying;
+
+ALTER TABLE orders_orderstatechange ADD COLUMN phase integer;
+
+UPDATE orders_orderstatechange SET status = '03successful';
+UPDATE orders_orderstatechange SET status = '02paused' WHERE order_id IN(SELECT id FROM orders_order WHERE externalsynchronized = false);
+
+UPDATE orders_orderstatechange SET phase = 7;
+
+-- end
+
+
+-- Table: states_message
+-- changed: 15.06.2012
+
+CREATE TABLE states_message
+(
+  id bigint NOT NULL,
+  type character varying(255),
+  translationkey character varying(255),
+  translationargs character varying(255),
+  correspondfieldname character varying(255),
+  orderstatechange_id bigint,
+  CONSTRAINT states_message_pkey PRIMARY KEY (id ),
+  CONSTRAINT message_order_fkey FOREIGN KEY (orderstatechange_id)
+      REFERENCES orders_order (id) DEFERRABLE,
+  CONSTRAINT message_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
+      REFERENCES orders_orderstatechange (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: materialflow_transfer
+-- changed: 15.06.2012
+
+UPDATE materialflow_transfer SET type = '01transfer' WHERE type = 'Transfer';
+UPDATE materialflow_transfer SET type = '02consumption' WHERE type = 'Consumption';
+UPDATE materialflow_transfer SET type = '03production' WHERE type = 'Production';
 
 -- end
