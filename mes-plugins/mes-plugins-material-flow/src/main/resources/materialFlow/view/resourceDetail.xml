@@ -30,7 +30,6 @@
 	modelName="resource">
 	
 	<component type="window" name="window" reference="window">
-
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
@@ -80,8 +79,8 @@
 
 			<option type="header" value="true" />
 		</component>
-
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillUnitFieldValue" />

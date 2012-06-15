@@ -70,7 +70,7 @@ public class MaterialFlowTransferModelHooksTest {
         materialFlowTransferModelHooks.copyProductionOrConsumptionDataFromBelongingTransformation(dd, transfer);
 
         // then
-        verify(transfer).setField("type", "Production");
+        verify(transfer).setField("type", "03production");
         verify(transfer).setField("time", "1234");
         verify(transfer).setField("stockAreasTo", stockAreasTo);
         verify(transfer).setField("staff", staff);
@@ -89,7 +89,7 @@ public class MaterialFlowTransferModelHooksTest {
         materialFlowTransferModelHooks.copyProductionOrConsumptionDataFromBelongingTransformation(dd, transfer);
 
         // then
-        verify(transfer).setField("type", "Consumption");
+        verify(transfer).setField("type", "02consumption");
         verify(transfer).setField("time", "1234");
         verify(transfer).setField("stockAreasFrom", stockAreasFrom);
         verify(transfer).setField("staff", staff);

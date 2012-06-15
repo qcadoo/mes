@@ -47,6 +47,7 @@
 					action="#{form}.fireEvent(printMaterialsInStockAreasDocuments,xls);" state="disabled" />
 			</group>
 		</ribbon>
+		
 		<component type="form" name="materialsInStockAreas" reference="form">
 			<script>
 				<![CDATA[
@@ -154,14 +155,18 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 			<listener event="printMaterialsInStockAreasDocuments"
-				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="printMaterialsInStockAreasDocuments" />
+				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" 
+				method="printMaterialsInStockAreasDocuments" />
 			<listener event="generateDataForMaterialsInStockAreasReport"
-				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" method="generateDataForMaterialsInStockAreasReport" />
+				class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService" 
+				method="generateDataForMaterialsInStockAreasReport" />
 		</component>
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialsInStockAreasService"
 			method="disableFormForExistingMaterialsInStockAreas" />

@@ -25,7 +25,7 @@ package com.qcadoo.mes.materialFlow.constants;
 
 public enum TransferType {
 
-    TRANSPORT("Transport"), CONSUMPTION("Consumption"), PRODUCTION("Production");
+    TRANSPORT("01transport"), CONSUMPTION("02consumption"), PRODUCTION("03production");
 
     private final String type;
 
@@ -38,11 +38,11 @@ public enum TransferType {
     }
 
     public static TransferType parseString(final String type) {
-        if ("Transport".equalsIgnoreCase(type)) {
+        if ("01transport".equalsIgnoreCase(type)) {
             return TRANSPORT;
-        } else if ("Consumption".equalsIgnoreCase(type)) {
+        } else if ("02consumption".equalsIgnoreCase(type)) {
             return CONSUMPTION;
-        } else if ("Production".equalsIgnoreCase(type)) {
+        } else if ("03production".equalsIgnoreCase(type)) {
             return PRODUCTION;
         } else {
             throw new IllegalArgumentException("Couldn't parse TransportType from string '" + type + "'");
