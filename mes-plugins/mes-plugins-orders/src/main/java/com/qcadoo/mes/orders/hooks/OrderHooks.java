@@ -53,8 +53,10 @@ public class OrderHooks {
                 entity.getId());
         String state = entity.getStringField(STATE);
         Date startDate = choppingOffMiliseconds(entity.getField(START_DATE));
-        Date startDateDB = choppingOffMiliseconds(order.getField(START_DATE));
-
+        Date startDateDB = new Date();
+        if (order.getField(START_DATE) != null) {
+            startDateDB = choppingOffMiliseconds(order.getField(START_DATE));
+        }
         if (state.equals(PENDING.getStringValue()) && !startDate.equals(startDateDB)) {
             entity.setField(DATE_FROM, entity.getField(START_DATE));
         }
@@ -74,7 +76,10 @@ public class OrderHooks {
                 entity.getId());
         String state = entity.getStringField(STATE);
         Date finishDate = choppingOffMiliseconds(entity.getField(FINISH_DATE));
-        Date finishDateDB = choppingOffMiliseconds(order.getField(FINISH_DATE));
+        Date finishDateDB = new Date();
+        if (order.getField(FINISH_DATE) != null) {
+            finishDateDB = choppingOffMiliseconds(order.getField(FINISH_DATE));
+        }
         if (state.equals(PENDING.getStringValue()) && !finishDateDB.equals(finishDate)) {
             entity.setField(DATE_TO, entity.getField(FINISH_DATE));
         }

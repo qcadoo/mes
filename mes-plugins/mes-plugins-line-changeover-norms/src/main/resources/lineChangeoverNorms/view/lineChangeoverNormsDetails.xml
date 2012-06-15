@@ -53,7 +53,7 @@
 						</component>
 					</layoutElement>	
 					<layoutElement column="2" row="3">
-						<component type="lookup" name="fromTechnologyGroup" field="fromTechnologyGroup" reference="fromTechnologyGroup" >
+						<component type="lookup" name="fromTechnologyGroup" field="fromTechnologyGroup" reference="fromTechnologyGroup"  >
 						    <option type="column" name="name" fields="name" link="true" width="200" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
@@ -62,7 +62,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="lookup" name="toTechnologyGroup" field="toTechnologyGroup" reference="toTechnologyGroup" >
+						<component type="lookup" name="toTechnologyGroup" field="toTechnologyGroup" reference="toTechnologyGroup"  >
 						    <option type="column" name="name" fields="name" link="true" width="200" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />

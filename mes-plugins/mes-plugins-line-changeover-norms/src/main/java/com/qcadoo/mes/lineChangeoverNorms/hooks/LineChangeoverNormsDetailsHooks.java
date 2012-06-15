@@ -26,7 +26,6 @@ public class LineChangeoverNormsDetailsHooks {
     public void invisibleField(final ViewDefinitionState viewDefinitionState) {
         FieldComponent changeoverType = (FieldComponent) viewDefinitionState.getComponentByReference(CHANGEOVER_TYPE);
         boolean selectForTechnology = changeoverType.getFieldValue().equals(ChangeoverType.FOR_TECHNOLOGY.getStringValue());
-
         for (String reference : Arrays.asList(FROM_TECHNOLOGY, TO_TECHNOLOGY)) {
             FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
             field.setVisible(selectForTechnology);

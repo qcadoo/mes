@@ -56,11 +56,13 @@ public class TechInstOperCompHooksPPS {
             return true;
         }
         for (Entity progressForDay : progressForDays) {
-            if ((progressForDay.getBooleanField(CORRECTED) && !tioc.getBooleanField(HAS_CORRECTIONS))
-                    || progressForDay.getField(DAY) == null) {
+            if (progressForDay.getField(DAY) == null) {
+                tioc.addGlobalError("productionPerShift.progressForDay.dayIsNull");
+                return false;
+            }
+            if ((progressForDay.getBooleanField(CORRECTED) && !tioc.getBooleanField(HAS_CORRECTIONS))) {
                 continue;
             }
-
             List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
             for (Entity dailyProgress : dailyProgressList) {
                 Entity shift = dailyProgress.getBelongsToField("shift");

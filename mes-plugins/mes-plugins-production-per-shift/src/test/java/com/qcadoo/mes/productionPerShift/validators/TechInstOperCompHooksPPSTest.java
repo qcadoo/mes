@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionPerShift.validators;
 
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -120,10 +121,13 @@ public class TechInstOperCompHooksPPSTest {
         // given
         Entity pdf1 = mock(Entity.class);
         List<Entity> pfds = asList(pdf1);
+        Integer day = Integer.valueOf(1);
         EntityList progressForDays = mockEntityList(pfds);
         when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
         when(progressForDays.get(0)).thenReturn(pdf1);
-        when(pdf1.getField("day")).thenReturn(null);
+        when(pdf1.getField("day")).thenReturn(day);
+        when(pdf1.getBooleanField("corrected")).thenReturn(true);
+        when(entity.getBooleanField(HAS_CORRECTIONS)).thenReturn(false);
         // when
         boolean result = hooksPPS.checkShiftsIfWorks(dataDefinition, entity);
         // then

@@ -80,15 +80,14 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
 
             if (order != null) {
                 orderField.setFieldValue(order.getId());
-
+                orderField.requestComponentUpdateState();
                 lineChangeoverNormsForOrdersService.fillOrderForm(view, ORDER_FIELDS);
 
                 if (previousOrderField.getFieldValue() == null) {
                     Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
-
                     if (previousOrder != null) {
-                        previousOrderField.setFieldValue(order.getId());
-
+                        previousOrderField.setFieldValue(previousOrder.getId());
+                        previousOrderField.requestComponentUpdateState();
                         lineChangeoverNormsForOrdersService.fillOrderForm(view, PREVIOUS_ORDER_FIELDS);
                     }
                 }

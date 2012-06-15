@@ -53,6 +53,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 FieldComponent dateToField = (FieldComponent) view.getComponentByReference(orderFields.get(4));
 
                 orderField.setFieldValue(order.getId());
+                orderField.requestComponentUpdateState();
 
                 Entity technology = order.getBelongsToField(TECHNOLOGY);
 
@@ -69,6 +70,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                         technologyGroupNumberField.setFieldValue(technologyGroupNumber);
                     }
                 }
+                technologyGroupNumberField.requestComponentUpdateState();
+                technologyNumberField.requestComponentUpdateState();
 
                 Date dateFrom = (Date) order.getField(DATE_FROM);
                 Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
@@ -152,7 +155,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 .find()
                 .add(SearchRestrictions.or(SearchRestrictions.ne(STATE, DECLINED.getStringValue()),
                         SearchRestrictions.ne(STATE, ABANDONED.getStringValue())))
-                .add(SearchRestrictions.le(DATE_TO, (Date) order.getField(DATE_FROM))).orderDescBy(DATE_TO).setMaxResults(1)
+                .add(SearchRestrictions.lt(DATE_TO, (Date) order.getField(DATE_FROM))).orderDescBy(DATE_TO).setMaxResults(1)
                 .uniqueResult();
     }
 

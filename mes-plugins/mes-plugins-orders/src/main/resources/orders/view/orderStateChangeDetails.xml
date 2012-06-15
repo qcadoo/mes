@@ -41,6 +41,7 @@
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
+				<option type="expression" value="" />
 			</component>
 		</windowTab>
 	</component>
