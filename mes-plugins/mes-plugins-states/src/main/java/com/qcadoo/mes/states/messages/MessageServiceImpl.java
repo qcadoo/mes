@@ -2,6 +2,7 @@ package com.qcadoo.mes.states.messages;
 
 import static com.qcadoo.mes.states.constants.StatesConstants.MODEL_MESSAGE;
 import static com.qcadoo.mes.states.constants.StatesConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.FAILURE;
 import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.messages.util.MessagesUtil;
@@ -69,6 +71,10 @@ public class MessageServiceImpl implements MessageService {
         messages.add(message);
         final String messagesFieldName = stateChangeContext.getDescriber().getMessagesFieldName();
         stateChangeContext.setField(messagesFieldName, messages);
+        final StateMessageType type = StateMessageType.parseString(message.getStringField(MessageFields.TYPE));
+        if (VALIDATION_ERROR.equals(type) || FAILURE.equals(type)) {
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+        }
         stateChangeContext.save();
     }
 }

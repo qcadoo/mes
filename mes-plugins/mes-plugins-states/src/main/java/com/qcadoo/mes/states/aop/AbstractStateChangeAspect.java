@@ -22,6 +22,7 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
+import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangePhaseUtil;
@@ -143,6 +144,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         } catch (Exception e) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.addMessage("", StateMessageType.FAILURE);
+            stateChangeContext.save();
+            throw new StateChangeException(e);
         }
     }
 
@@ -165,24 +168,23 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     @Transactional
     protected void performChangeEntityState(final StateChangeContext stateChangeContext) {
+        if (!StateChangePhaseUtil.canRun(stateChangeContext)) {
+            return;
+        }
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         final Entity owner = stateChangeContext.getOwner();
         final StateEnum targetState = stateChangeContext.getStateEnumValue(describer.getTargetStateFieldName());
 
         boolean ownerIsValid = owner.isValid();
-        if (StateChangePhaseUtil.canRun(stateChangeContext)) {
-            if (ownerIsValid) {
-                owner.setField(getStateFieldName(), targetState.getStringValue());
-                ownerIsValid = owner.getDataDefinition().save(owner).isValid();
-            }
+        if (ownerIsValid) {
+            owner.setField(getStateFieldName(), targetState.getStringValue());
+            ownerIsValid = owner.getDataDefinition().save(owner).isValid();
+        }
 
-            if (ownerIsValid) {
-                markAsSuccessful(stateChangeContext);
-            } else {
-                markAsInvalid(stateChangeContext);
-            }
+        if (ownerIsValid) {
+            markAsSuccessful(stateChangeContext);
         } else {
-            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            markAsInvalid(stateChangeContext);
         }
 
         stateChangeContext.save();

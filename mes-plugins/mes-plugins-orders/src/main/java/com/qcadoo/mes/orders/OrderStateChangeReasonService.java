@@ -40,15 +40,15 @@ public class OrderStateChangeReasonService {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO);
     }
 
-    public boolean isReasonNeededWhenChangingStateToDeclined() {
+    public boolean neededForDecline() {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED);
     }
 
-    public boolean isReasonNeededWhenChangingStateToInterrupted() {
+    public boolean neededForInterrupt() {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED);
     }
 
-    public boolean isReasonNeededWhenChangingStateToAbandoned() {
+    public boolean neededForAbandon() {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED);
     }
 

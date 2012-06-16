@@ -123,7 +123,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED)).willReturn(true);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToDeclined();
+        boolean result = orderStateChangeReasonService.neededForDecline();
 
         // then
         assertTrue(result);
@@ -139,7 +139,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED)).willReturn(false);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToDeclined();
+        boolean result = orderStateChangeReasonService.neededForDecline();
 
         // then
         assertFalse(result);
@@ -155,7 +155,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED)).willReturn(true);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToInterrupted();
+        boolean result = orderStateChangeReasonService.neededForInterrupt();
 
         // then
         assertTrue(result);
@@ -171,7 +171,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED)).willReturn(false);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToInterrupted();
+        boolean result = orderStateChangeReasonService.neededForInterrupt();
 
         // then
         assertFalse(result);
@@ -187,7 +187,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED)).willReturn(true);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToAbandoned();
+        boolean result = orderStateChangeReasonService.neededForAbandon();
 
         // then
         assertTrue(result);
@@ -203,7 +203,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED)).willReturn(false);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenChangingStateToAbandoned();
+        boolean result = orderStateChangeReasonService.neededForAbandon();
 
         // then
         assertFalse(result);

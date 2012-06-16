@@ -42,7 +42,7 @@
 		<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
 		<integer name="phase" />
 		<string name="worker" />
-		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states"/> <!-- messages -->
+		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states" cascade="delete" /> <!-- messages -->
 		<belongsTo name="order" model="order" /> <!-- owner -->
 		<belongsTo name="shift" model="shift" plugin="basic" />
 		

@@ -1,0 +1,51 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="orderStateChangeReasonDialog" modelName="orderStateChange">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<group name="navigation">
+				<bigButton name="back" icon="backIcon24.png" state="enabled" action="#{form}.fireEvent(cancel); #{window}.performBack" />
+			</group>
+			<group name="actions">
+				<bigButton name="continue" icon="startIcon24.png" action="#{form}.fireEvent(continue); #{window}.performBack" />
+			</group>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="logging" reference="form">
+				<component type="gridLayout" name="gridsLayout" columns="2"
+					rows="4" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
+							reference="dateAndTime" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="worker" field="#{form}.worker"
+							reference="worker" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="select" name="previousState" field="#{form}.sourceState"
+							reference="previousState" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="select" name="currentState" field="#{form}.targetState"
+							reference="currentState" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="select" name="reasonType" field="#{form}.reasonType"
+							reference="reasonType" />
+					</layoutElement>
+					<layoutElement column="2" row="2" height="2">
+						<component type="textarea" name="comment" field="#{form}.comment"
+							reference="comment" />
+					</layoutElement>
+				</component>
+				<listener event="continue"
+					class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="continueStateChange" />
+				<listener event="cancel"
+					class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="cancelStateChange" />
+			</component>
+		</windowTab>
+	</component>
+</view>

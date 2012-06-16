@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;

@@ -36,8 +36,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.Entity;
 
 @Service

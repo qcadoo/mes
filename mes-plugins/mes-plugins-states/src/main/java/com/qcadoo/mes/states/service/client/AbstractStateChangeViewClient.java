@@ -1,7 +1,9 @@
 package com.qcadoo.mes.states.service.client;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
 
 import java.util.List;
 
@@ -50,8 +52,7 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     @Override
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
-            final StateChangeContext stateChangeContext = getStateChangeService()
-                    .buildStateChangeContext(entity, targetState);
+            final StateChangeContext stateChangeContext = getStateChangeService().buildStateChangeContext(entity, targetState);
             getStateChangeService().changeState(stateChangeContext);
             viewClientUtil.refreshComponent(viewContext);
             showMessages(viewContext, stateChangeContext);
@@ -63,7 +64,7 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         }
     }
 
-    private void showMessages(final ViewContextHolder viewContext, final StateChangeContext stateChangeContext) {
+    public void showMessages(final ViewContextHolder viewContext, final StateChangeContext stateChangeContext) {
         viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeContext);
         viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(), stateChangeContext);
         addFinalMessage(viewContext.getMessagesConsumer(), stateChangeContext);
@@ -102,6 +103,8 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
             component.addMessage("states.messages.change.successful", MessageType.SUCCESS);
         } else if (PAUSED.equals(status)) {
             component.addMessage("states.messages.change.paused", MessageType.INFO);
+        } else if (FAILURE.equals(status) && !hasFailureMessages(stateChangeContext.getAllMessages())) {
+            component.addMessage("states.messages.change.failure", MessageType.FAILURE);
         }
     }
 

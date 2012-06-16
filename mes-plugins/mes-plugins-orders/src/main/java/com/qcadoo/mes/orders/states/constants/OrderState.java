@@ -28,10 +28,55 @@ import com.qcadoo.mes.states.StateEnum;
 
 public enum OrderState implements StateEnum {
 
-    PENDING(OrderStateStringValues.PENDING), ACCEPTED(OrderStateStringValues.ACCEPTED), IN_PROGRESS(
-            OrderStateStringValues.IN_PROGRESS), COMPLETED(OrderStateStringValues.COMPLETED), DECLINED(
-            OrderStateStringValues.DECLINED), INTERRUPTED(OrderStateStringValues.INTERRUPTED), ABANDONED(
-            OrderStateStringValues.ABANDONED);
+    PENDING(OrderStateStringValues.PENDING) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState);
+        }
+    },
+    ACCEPTED(OrderStateStringValues.ACCEPTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return IN_PROGRESS.equals(targetState) || DECLINED.equals(targetState);
+        }
+    },
+    IN_PROGRESS(OrderStateStringValues.IN_PROGRESS) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return COMPLETED.equals(targetState) || ABANDONED.equals(targetState) || DECLINED.equals(targetState);
+        }
+    },
+    COMPLETED(OrderStateStringValues.COMPLETED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return false;
+        }
+    },
+    DECLINED(OrderStateStringValues.DECLINED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return false;
+        }
+    },
+    INTERRUPTED(OrderStateStringValues.INTERRUPTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return false;
+        }
+    },
+    ABANDONED(OrderStateStringValues.ABANDONED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return DECLINED.equals(targetState) || IN_PROGRESS.equals(targetState);
+        }
+    };
 
     private final String stringValue;
 
@@ -55,5 +100,7 @@ public enum OrderState implements StateEnum {
         Preconditions.checkArgument(parsedStatus != null, "Couldn't parse OrderState from string '" + string + "'");
         return parsedStatus;
     }
+
+    public abstract boolean canChangeTo(final StateEnum targetState);
 
 }

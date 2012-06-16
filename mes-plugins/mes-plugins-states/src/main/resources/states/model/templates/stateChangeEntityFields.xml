@@ -9,5 +9,5 @@
 <string name="worker" />
 <belongsTo name="shift" model="shift" plugin="basic" />
 <integer name="phase" />
-<hasMany name="messages" joinField="#####" model="message" plugin="states"/> <!-- messages -->
+<hasMany name="messages" joinField="#####" model="message" plugin="states" cascade="delete" /> <!-- messages -->
 <belongsTo name="order" model="order" /> <!-- owner -->
