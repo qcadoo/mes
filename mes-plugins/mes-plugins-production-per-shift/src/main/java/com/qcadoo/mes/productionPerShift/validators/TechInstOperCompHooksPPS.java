@@ -43,7 +43,7 @@ public class TechInstOperCompHooksPPS {
             if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
             } else {
-                entity.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder");
+                entity.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder", day.toString());
                 return false;
             }
         }

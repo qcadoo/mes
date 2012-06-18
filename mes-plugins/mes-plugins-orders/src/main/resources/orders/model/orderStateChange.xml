@@ -45,7 +45,7 @@
 		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states" cascade="delete" /> <!-- messages -->
 		<belongsTo name="order" model="order" /> <!-- owner -->
 		<belongsTo name="shift" model="shift" plugin="basic" />
-		
+		<string name="additionalInformation" />
 	</fields>
 	<hooks />
 </model>

@@ -83,6 +83,7 @@ public class ProductionPerShiftDetailsHooks {
         } else {
             plannedProgressType.setEnabled(true);
         }
+        plannedProgressType.requestComponentUpdateState();
     }
 
     public void fillProducedField(final ViewDefinitionState viewState) {
@@ -117,6 +118,7 @@ public class ProductionPerShiftDetailsHooks {
             for (FormComponent formComponent : dailyProgressADL.getFormComponents()) {
                 FieldComponent unit = formComponent.findFieldComponentByName("unit");
                 unit.setFieldValue(prod.getStringField("unit"));
+                unit.requestComponentUpdateState();
             }
         }
     }
@@ -158,8 +160,6 @@ public class ProductionPerShiftDetailsHooks {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference("progressForDaysADL");
         Entity tioc = helper.getTiocFromOperationLookup(viewState);
-        Entity order = helper.getOrderFromLookup(viewState);
-
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
         } else {
@@ -168,16 +168,13 @@ public class ProductionPerShiftDetailsHooks {
                     .add(SearchRestrictions.eq(CORRECTED, !isPlanned(plannedProgressType.getFieldValue()))).list().getEntities();
             progressForDaysADL.setFieldValue(progressForDays);
         }
-        if (helper.shouldHasCorrections(viewState) || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-            disabledComponent(progressForDaysADL.getFormComponents(), true);
-        } else {
-            disabledComponent(progressForDaysADL.getFormComponents(), false);
-        }
-        fillUnitFields(viewState);
+
         progressForDaysADL.requestComponentUpdateState();
     }
 
     public void refreshProgressForDaysADL(final ViewDefinitionState viewState) {
+        fillUnitFields(viewState);
+        disabledComponents(viewState);
         if (!progressTypeWasChange(viewState) || !tiocWasChanged(viewState)) {
             return;
         }
@@ -219,12 +216,30 @@ public class ProductionPerShiftDetailsHooks {
         return PLANNED.getStringValue().equals(progressType);
     }
 
-    private void disabledComponent(final List<FormComponent> components, final boolean shouldDisabled) {
-        for (FormComponent form : components) {
-            form.setFormEnabled(shouldDisabled);
+    private void disabledComponents(final ViewDefinitionState viewState) {
+        Entity order = helper.getOrderFromLookup(viewState);
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
+                .getComponentByReference("progressForDaysADL");
+        boolean shouldDisabled = helper.shouldHasCorrections(viewState)
+                || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue());
+        for (FormComponent form : progressForDaysADL.getFormComponents()) {
+            form.setEnabled(shouldDisabled);
+            ((FieldComponent) form.findFieldComponentByName("day")).setEnabled(shouldDisabled);
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
                     .findFieldComponentByName("dailyProgressADL");
             dailyProgressADL.setEnabled(shouldDisabled);
+            dailyProgressADL.requestComponentUpdateState();
+            for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
+                FieldComponent shift = (FieldComponent) dailyProgressForm.findFieldComponentByName("shift");
+                FieldComponent quantity = (FieldComponent) dailyProgressForm.findFieldComponentByName("quantity");
+                FieldComponent unit = (FieldComponent) dailyProgressForm.findFieldComponentByName("unit");
+                shift.setEnabled(shouldDisabled);
+                shift.requestComponentUpdateState();
+                quantity.setEnabled(shouldDisabled);
+                quantity.requestComponentUpdateState();
+                unit.setEnabled(shouldDisabled);
+                unit.requestComponentUpdateState();
+            }
         }
     }
 

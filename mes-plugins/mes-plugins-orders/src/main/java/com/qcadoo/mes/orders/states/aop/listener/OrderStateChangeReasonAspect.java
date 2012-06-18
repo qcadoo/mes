@@ -38,9 +38,9 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForAbandonReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
-        // if (stateChangeReasonService.neededForAbandon()) {
-        showReasonForm(stateChangeContext, viewContext);
-        // }
+        if (stateChangeReasonService.neededForAbandon()) {
+            showReasonForm(stateChangeContext, viewContext);
+        }
     }
 
     @RunForStateTransition(targetState = OrderStateStringValues.INTERRUPTED)
@@ -48,9 +48,9 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForInterruptReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
-        // if (stateChangeReasonService.neededForInterrupt()) {
-        showReasonForm(stateChangeContext, viewContext);
-        // }
+        if (stateChangeReasonService.neededForInterrupt()) {
+            showReasonForm(stateChangeContext, viewContext);
+        }
     }
 
     @RunForStateTransition(targetState = OrderStateStringValues.DECLINED)
@@ -58,9 +58,9 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForDeclineReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
-        // if (stateChangeReasonService.neededForDecline()) {
-        showReasonForm(stateChangeContext, viewContext);
-        // }
+        if (stateChangeReasonService.neededForDecline()) {
+            showReasonForm(stateChangeContext, viewContext);
+        }
     }
 
     private void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {

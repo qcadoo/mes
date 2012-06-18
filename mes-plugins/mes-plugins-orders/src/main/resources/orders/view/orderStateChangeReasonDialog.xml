@@ -3,7 +3,6 @@
 	name="orderStateChangeReasonDialog" modelName="orderStateChange">
 
 	<component type="window" name="window" reference="window">
-
 		<ribbon>
 			<group name="navigation">
 				<bigButton name="back" icon="backIcon24.png" state="enabled" action="#{form}.fireEvent(cancel); #{window}.performBack" />
@@ -15,7 +14,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
 				<component type="gridLayout" name="gridsLayout" columns="2"
-					rows="4" hasBorders="false">
+					rows="6" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
 							reference="dateAndTime" defaultEnabled="false" />
@@ -31,6 +30,10 @@
 					<layoutElement column="1" row="4">
 						<component type="select" name="currentState" field="#{form}.targetState"
 							reference="currentState" defaultEnabled="false" />
+					</layoutElement>
+					<layoutElement column="1" row="5" height="2">
+						<component type="textarea" name="additionalInformation"
+							field="additionalInformation" reference="additionalInformation" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="select" name="reasonType" field="#{form}.reasonType"

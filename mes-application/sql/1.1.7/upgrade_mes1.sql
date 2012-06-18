@@ -205,7 +205,7 @@ CREATE TABLE technologies_productcomponent
 -- end
 
 
--- Table: states_message
+-- Table: orders_orderstatechange
 -- changed: 15.06.2012
 
 ALTER TABLE orders_logging RENAME TO orders_orderstatechange;
@@ -214,6 +214,7 @@ ALTER TABLE orders_orderstatechange DROP COLUMN active;
 
 ALTER TABLE orders_orderstatechange RENAME COLUMN previousstate TO sourcestate;
 ALTER TABLE orders_orderstatechange RENAME COLUMN currentstate TO targetstate;
+ALTER TABLE orders_orderstatechange ADD COLUMN additionalinformation character varying(255);
 
 ALTER TABLE orders_orderstatechange ADD COLUMN status character varying(255);
 ALTER TABLE orders_orderstatechange ALTER COLUMN status SET DEFAULT '01inProgress'::character varying;
@@ -264,3 +265,4 @@ ALTER TABLE basic_parameter ADD COLUMN typeofproductionrecording character varyi
 ALTER TABLE basic_parameter ALTER COLUMN typeofproductionrecording SET DEFAULT '02cumulated'::character varying;
 
 -- end
+

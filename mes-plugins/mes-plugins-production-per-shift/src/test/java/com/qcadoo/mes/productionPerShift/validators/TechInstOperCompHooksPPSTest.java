@@ -82,7 +82,7 @@ public class TechInstOperCompHooksPPSTest {
         boolean result = hooksPPS.checkGrowingNumberOfDays(dataDefinition, entity);
         // then
         Assert.assertFalse(result);
-        Mockito.verify(entity).addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder");
+        Mockito.verify(entity).addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder", day2.toString());
     }
 
     @Test
