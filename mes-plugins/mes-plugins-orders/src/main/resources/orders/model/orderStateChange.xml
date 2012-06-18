@@ -39,7 +39,7 @@
 		<enum name="targetState"
 			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
 			required="true" />
-		<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
+		<enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
 		<integer name="phase" />
 		<string name="worker" />
 		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states" cascade="delete" /> <!-- messages -->

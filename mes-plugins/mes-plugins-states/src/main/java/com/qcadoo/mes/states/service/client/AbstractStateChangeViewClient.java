@@ -1,5 +1,6 @@
 package com.qcadoo.mes.states.service.client;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.CANCELED;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
@@ -64,6 +65,7 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         }
     }
 
+    @Override
     public void showMessages(final ViewContextHolder viewContext, final StateChangeContext stateChangeContext) {
         viewClientUtil.addStateMessagesToView(viewContext.getMessagesConsumer(), stateChangeContext);
         viewClientValidationUtil.addValidationErrorMessages(viewContext.getMessagesConsumer(), stateChangeContext);
@@ -105,6 +107,8 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
             component.addMessage("states.messages.change.paused", MessageType.INFO);
         } else if (FAILURE.equals(status) && !hasFailureMessages(stateChangeContext.getAllMessages())) {
             component.addMessage("states.messages.change.failure", MessageType.FAILURE);
+        } else if (CANCELED.equals(status)) {
+            component.addMessage("states.messages.change.canceled", MessageType.INFO);
         }
     }
 

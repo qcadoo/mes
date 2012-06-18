@@ -17,7 +17,6 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
@@ -39,7 +38,7 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     public void askForAbandonReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
         if (stateChangeReasonService.neededForAbandon()) {
-            showReasonForm(stateChangeContext, viewContext);
+            stateChangeReasonService.showReasonForm(stateChangeContext, viewContext);
         }
     }
 
@@ -49,7 +48,7 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     public void askForInterruptReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
         if (stateChangeReasonService.neededForInterrupt()) {
-            showReasonForm(stateChangeContext, viewContext);
+            stateChangeReasonService.showReasonForm(stateChangeContext, viewContext);
         }
     }
 
@@ -59,16 +58,24 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
     public void askForDeclineReason(final StateChangeContext stateChangeContext, final int phase,
             final ViewContextHolder viewContext) {
         if (stateChangeReasonService.neededForDecline()) {
-            showReasonForm(stateChangeContext, viewContext);
+            stateChangeReasonService.showReasonForm(stateChangeContext, viewContext);
         }
     }
 
-    private void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
-        stateChangeContext.setStatus(StateChangeStatus.PAUSED);
-        stateChangeContext.save();
-        viewContext.getViewDefinitionState().openModal(
-                "../page/orders/orderStateChangeReasonDialog.html?context={\"form.id\": "
-                        + stateChangeContext.getStateChangeEntity().getId() + "}");
+    @RunForStateTransition(targetState = OrderStateStringValues.COMPLETED)
+    @RunInPhase(OrderStateChangePhase.FILL_REASON)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void askForCompletionTimeDifferenceReason(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        stateChangeReasonService.onComplete(stateChangeContext, viewContext);
+    }
+
+    @RunForStateTransition(targetState = OrderStateStringValues.IN_PROGRESS)
+    @RunInPhase(OrderStateChangePhase.FILL_REASON)
+    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
+    public void askForStartProgressTimeDifferenceReason(final StateChangeContext stateChangeContext, final int phase,
+            final ViewContextHolder viewContext) {
+        stateChangeReasonService.onStart(stateChangeContext, viewContext);
     }
 
 }

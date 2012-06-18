@@ -32,6 +32,12 @@ public abstract class StateChangeTest {
     @Mock
     protected DataDefinition stateChangeDD;
 
+    @Mock
+    protected DataDefinition ownerDD;
+
+    @Mock
+    protected Entity owner;
+
     protected static final StateChangeEntityDescriber DESCRIBER = new MockStateChangeDescriber();
 
     protected void stubStateChangeEntity(final StateChangeEntityDescriber describer) {
@@ -71,7 +77,19 @@ public abstract class StateChangeTest {
         given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
     }
 
+    protected void stubOwner() {
+        given(owner.getDataDefinition()).willReturn(ownerDD);
+        given(ownerDD.save(Mockito.any(Entity.class))).willAnswer(new Answer<Entity>() {
+
+            @Override
+            public Entity answer(final InvocationOnMock invocation) throws Throwable {
+                return (Entity) invocation.getArguments()[0];
+            }
+        });
+    }
+
     protected void stubStateChangeContext() {
+        given(stateChangeContext.getOwner()).willReturn(owner);
         given(stateChangeContext.getStateChangeEntity()).willReturn(stateChangeEntity);
         given(stateChangeContext.getDescriber()).willReturn(DESCRIBER);
 

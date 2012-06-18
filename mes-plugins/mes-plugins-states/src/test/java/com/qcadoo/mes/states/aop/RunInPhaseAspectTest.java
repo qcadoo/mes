@@ -232,6 +232,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         final EntityList emptyEntityList = mockEntityList(Collections.<Entity> emptyList());
         stubStateChangeEntity(DESCRIBER);
         stubStateChangeContext();
+        stubOwner();
         given(stateChangeEntity.getHasManyField(DESCRIBER.getMessagesFieldName())).willReturn(emptyEntityList);
     }
 

@@ -48,10 +48,11 @@ public class StateChangeViewClientValidationUtil {
         }
     }
 
-    private void addValidationErrorsToForm(final FormComponent form, final List<Entity> messages) {
+    private void addValidationErrorsToForm(final FormComponent form, final List<Entity> messagesList) {
         final Entity entity = form.getEntity();
         final DataDefinition dataDefinition = entity.getDataDefinition();
 
+        final List<Entity> messages = Lists.newArrayList(messagesList);
         CollectionUtils.filter(messages, VALIDATION_MESSAGES_PREDICATE);
         for (Entity message : messages) {
             if (MessagesUtil.hasCorrespondField(message)) {

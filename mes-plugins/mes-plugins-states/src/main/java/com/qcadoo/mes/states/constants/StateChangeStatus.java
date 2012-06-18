@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 
 public enum StateChangeStatus {
 
-    IN_PROGRESS("01inProgress"), PAUSED("02paused"), SUCCESSFUL("03successful"), FAILURE("04failure");
+    IN_PROGRESS("01inProgress"), PAUSED("02paused"), SUCCESSFUL("03successful"), FAILURE("04failure"), CANCELED("05canceled");
 
     private final String stringValue;
 
