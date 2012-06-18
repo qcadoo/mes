@@ -105,6 +105,10 @@
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
 
 		<model:model-field model="parameter" plugin="basic">
+			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
+				default="02cumulated" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
@@ -126,8 +130,7 @@
 			<model:boolean name="registerPiecework" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
-			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
-				default="02cumulated" />
+			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="registerQuantityInProduct" />

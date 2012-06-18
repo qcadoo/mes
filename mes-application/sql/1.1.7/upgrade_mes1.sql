@@ -257,3 +257,10 @@ UPDATE materialflow_transfer SET type = '02consumption' WHERE type = 'Consumptio
 UPDATE materialflow_transfer SET type = '03production' WHERE type = 'Production';
 
 -- end
+
+-- Table: basic_parameter
+-- changed: 18.06.2012
+ALTER TABLE basic_parameter ADD COLUMN typeofproductionrecording character varying(255);
+ALTER TABLE basic_parameter ALTER COLUMN typeofproductionrecording SET DEFAULT '02cumulated'::character varying;
+
+-- end
