@@ -5,7 +5,7 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.states.aop.OrderStateChangeDescriber;
+import com.qcadoo.mes.orders.states.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
