@@ -23,48 +23,54 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-import com.google.common.base.Preconditions;
-import com.qcadoo.mes.states.StateEnum;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+public enum TechnologyState {
 
-public enum TechnologyState implements StateEnum {
-
-    DRAFT(TechnologyStateStringValues.DRAFT) {
+    DRAFT("01draft") {
 
         @Override
-        public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState) || CHECKED.equals(targetState);
+        public TechnologyState changeState(final String targetState) {
+            if (targetState != null && "02accepted".equalsIgnoreCase(targetState.trim())) {
+                return ACCEPTED;
+            } else if (targetState != null && "03declined".equalsIgnoreCase(targetState.trim())) {
+                return DECLINED;
+            } else {
+                return CHECKED;
+            }
         }
     },
-    ACCEPTED(TechnologyStateStringValues.ACCEPTED) {
+    ACCEPTED("02accepted") {
 
         @Override
-        public boolean canChangeTo(final StateEnum targetState) {
-            return OUTDATED.equals(targetState);
+        public TechnologyState changeState(final String targetState) {
+            if (targetState.trim().isEmpty() || "04outdated".equalsIgnoreCase(targetState.trim())) {
+                return OUTDATED;
+            }
+            return this;
         }
     },
-    DECLINED(TechnologyStateStringValues.DECLINED) {
+    DECLINED("03declined") {
 
         @Override
-        public boolean canChangeTo(final StateEnum targetState) {
-            return false;
-        }
-
-    },
-    OUTDATED(TechnologyStateStringValues.OUTDATED) {
-
-        @Override
-        public boolean canChangeTo(final StateEnum targetState) {
-            return false;
+        public TechnologyState changeState(final String targetState) {
+            return this;
         }
     },
-    CHECKED(TechnologyStateStringValues.CHECKED) {
+    OUTDATED("04outdated") {
 
         @Override
-        public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState) || DRAFT.equals(targetState);
+        public TechnologyState changeState(final String targetState) {
+            return this;
         }
+    },
+    CHECKED("05checked") {
 
+        @Override
+        public TechnologyState changeState(final String targetState) {
+            if (targetState.trim().isEmpty() || "02accepted".equalsIgnoreCase(targetState.trim())) {
+                return ACCEPTED;
+            }
+            return DRAFT;
+        }
     };
 
     private String stringValue;
@@ -73,22 +79,9 @@ public enum TechnologyState implements StateEnum {
         this.stringValue = stringValue;
     }
 
-    public abstract boolean canChangeTo(final StateEnum targetState);
-
     public String getStringValue() {
         return stringValue;
     }
 
-    public static TechnologyState parseString(final String string) {
-        TechnologyState parsedStatus = null;
-        for (TechnologyState status : TechnologyState.values()) {
-            if (status.getStringValue().equals(string)) {
-                parsedStatus = status;
-                break;
-            }
-        }
-        Preconditions.checkArgument(parsedStatus != null, "Couldn't parse '" + string + "'");
-        return parsedStatus;
-    }
-
+    public abstract TechnologyState changeState(final String targetState);
 }

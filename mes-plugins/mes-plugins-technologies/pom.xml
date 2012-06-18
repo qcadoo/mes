@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-basic</artifactId>
+			<artifactId>mes-plugins-states</artifactId>
 			<version>1.1.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
