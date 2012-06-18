@@ -21,11 +21,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.technologies.states.constants;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateEnum;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 
 public enum TechnologyState implements StateEnum {
 
