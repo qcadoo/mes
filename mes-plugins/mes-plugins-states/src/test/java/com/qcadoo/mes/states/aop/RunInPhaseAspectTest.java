@@ -35,7 +35,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     private StateChangeService stateChangeService;
 
     @Aspect
-    public final static class TestStateChangeAspect extends AbstractStateChangeAspect {
+    public static final class TestStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
         protected String getStateFieldName() {
@@ -67,7 +67,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     }
 
     @Aspect
-    public final static class AnotherStateChangeAspect extends AbstractStateChangeAspect {
+    public static final class AnotherStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
         protected String getStateFieldName() {
@@ -95,7 +95,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     }
 
     @Aspect
-    public final static class BreakStateChangeAspect extends AbstractStateChangeAspect {
+    public static final class BreakStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
         protected String getStateFieldName() {
