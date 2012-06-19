@@ -47,13 +47,16 @@ public class OperationModelValidators {
 
     private boolean checkIfProductsInProductComponentsAreDistinct(final List<Entity> productInComponents) {
         boolean isValid = true;
+
         for (Entity productInComponent : productInComponents) {
             Entity product = productInComponent.getBelongsToField(PRODUCT);
             if (isProductAlreadyAdded(productInComponents, product)) {
                 appendErrorToModelField(productInComponent, PRODUCT, "technologies.productComponent.error.productAlreadyAdded");
+
                 isValid = false;
             }
         }
+
         return isValid;
     }
 
@@ -61,16 +64,20 @@ public class OperationModelValidators {
         if (product == null) {
             return false;
         }
+
         int count = 0;
+
         for (Entity productInComponent : productInComponents) {
             Entity productAlreadyAdded = productInComponent.getBelongsToField(PRODUCT);
             if (product.equals(productAlreadyAdded)) {
                 count++;
+
                 if (count > 1) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
