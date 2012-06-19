@@ -29,7 +29,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="5" height="2">
 						<component type="textarea" name="additionalInformation"
-							field="additionalInformation" reference="additionalInformation" />
+							field="additionalInformation" reference="additionalInformation" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="select" name="reasonType" field="#{form}.reasonType"
