@@ -21,4 +21,6 @@ public final class OrderStateChangeFields {
 
     public static final String MESSAGES = "messages";
 
+    public static final String ADDITIONAL_INFO = "additionalInformation";
+
 }

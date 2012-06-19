@@ -5,7 +5,7 @@
 <enum name="targetState"
 	values="#####"
 	required="true" />
-<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
+<enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
 <string name="worker" />
 <belongsTo name="shift" model="shift" plugin="basic" />
 <integer name="phase" />

@@ -10,11 +10,13 @@ public final class OrderStateChangePhase {
 
     public static final int EXT_SYNC = 7;
 
+    public static final int LAST = 7;
+
     private OrderStateChangePhase() {
     }
 
     public static int getNumOfPhases() {
-        return 7;
+        return LAST;
     }
 
 }

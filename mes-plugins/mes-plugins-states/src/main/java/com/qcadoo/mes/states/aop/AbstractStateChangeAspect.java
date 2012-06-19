@@ -130,8 +130,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Transactional
     public void changeState(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
+        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         try {
-            final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             describer.checkFields();
             for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
                 if (StateChangePhaseUtil.canRun(stateChangeContext)) {
@@ -139,11 +139,13 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
                     changeStatePhase(stateChangeContext, phase);
                 }
             }
+            final Entity owner = stateChangeContext.getOwner();
+            stateChangeContext.setField(describer.getOwnerFieldName(), owner.getDataDefinition().save(owner));
             stateChangeContext.save();
             performChangeEntityState(stateChangeContext);
         } catch (Exception e) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            stateChangeContext.addMessage("", StateMessageType.FAILURE);
+            stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
             stateChangeContext.save();
             throw new StateChangeException(e);
         }
