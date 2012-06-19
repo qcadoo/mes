@@ -23,4 +23,6 @@ public final class OrderStateChangeFields {
 
     public static final String ADDITIONAL_INFO = "additionalInformation";
 
+    public static final String REASON_REQUIRED = "reasonRequired";
+
 }

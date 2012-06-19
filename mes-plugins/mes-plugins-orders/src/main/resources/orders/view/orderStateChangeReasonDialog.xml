@@ -12,7 +12,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
 				<component type="gridLayout" name="gridsLayout" columns="2"
-					rows="6" hasBorders="false">
+					rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="input" name="worker" field="#{form}.worker"
 							reference="worker" defaultEnabled="false" />
@@ -36,6 +36,8 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="comment" field="#{form}.comment"
 							reference="comment" />
+						<component type="checkbox" name="reasonRequired" reference="reasonRequired" 
+							field="#{form}.reasonRequired" defaultEnabled="false" defaultVisible="false" />
 					</layoutElement>
 				</component>
 				<listener event="continue"
@@ -46,4 +48,7 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="beforeRenderDialog" />
+	</hooks>
 </view>
