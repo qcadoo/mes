@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.6
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.6 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="orderDetails" modelName="order" defaultAuthorizationRole="ROLE_SUPERVISOR">
@@ -100,7 +87,8 @@
 					action="#{form}.generateReportForEntity('orders','order','pdf')" />
 			</group>
 			<group name="orderParameters">
-				<bigButton name="orderParameters" icon="settingsIcon24.png" state="disabled">
+				<bigButton name="orderParameters" icon="settingsIcon24.png"
+					state="disabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -123,7 +111,7 @@
 								}
 							});					
 						]]>
-					</script>	
+					</script>
 				</bigButton>
 			</group>
 		</ribbon>
@@ -244,7 +232,7 @@
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name" 
+						<component type="textarea" name="name" field="name"
 							reference="name" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
@@ -322,8 +310,8 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="lookup" name="productionLine" reference="productionLine"
-							field="productionLine">
+						<component type="lookup" name="productionLine"
+							reference="productionLine" field="productionLine">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
 							<option type="searchable" value="name,number" />
@@ -331,7 +319,7 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="checkIfProductionLineSupportsTechnology" />
 						</component>
@@ -363,20 +351,22 @@
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
-				<option type="expression" value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
-				
+				<option type="expression"
+					value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
 				<listener event="changeState"
-					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState" />
-				
-				<listener event="showOrderParameters" method="showOrderParameters" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
-				<listener event="save"	class="com.qcadoo.mes.orders.OrderService" 	method="compareDeadlineAndDateTo" />
+					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
+					method="changeState" />
+				<listener event="showOrderParameters" method="showOrderParameters"
+					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+				<listener event="save" class="com.qcadoo.mes.orders.OrderService"
+					method="compareDeadlineAndDateTo" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
-		    <component type="gridLayout" name="detailsTablayout"
+			<component type="gridLayout" name="detailsTablayout"
 				columns="3" rows="1">
 				<layoutElement column="1" row="1">
-			   		 <component type="borderLayout" name="startDates">
+					<component type="borderLayout" name="startDates">
 						<component type="gridLayout" name="startDatesGridLayout"
 							columns="1" rows="3" reference="startDatesGridLayout">
 							<layoutElement column="1" row="1">
@@ -384,32 +374,35 @@
 									field="#{form}.dateFrom" reference="plannedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyStartDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
-									<component type="calendar" name="correctedDateFrom"
+								<component type="calendar" name="correctedDateFrom"
 									field="#{form}.correctedDateFrom" reference="correctedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyStartDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="3">
-									<component type="calendar" name="effectiveDateFrom"
+								<component type="calendar" name="effectiveDateFrom"
 									field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
 								</component>
 							</layoutElement>
 						</component>
-							<option type="label" value="startDatesLabel" />
+						<option type="label" value="startDatesLabel" />
 					</component>
-					 <component type="borderLayout" name="causeOfPlannedDateFromCorrection">
-						<component type="gridLayout" name="causeOfPlannedDateFromCorrectionGridLayout"
-							columns="1" rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
+					<component type="borderLayout" name="causeOfPlannedDateFromCorrection">
+						<component type="gridLayout"
+							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
+							rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeCorrectionDateFrom"
 									field="#{form}.reasonTypeCorrectionDateFrom" reference="reasonTypeCorrectionDateFrom"
@@ -417,17 +410,18 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-									<component type="textarea" name="commentReasonTypeCorrectionDateFrom"
+								<component type="textarea" name="commentReasonTypeCorrectionDateFrom"
 									field="#{form}.commentReasonTypeCorrectionDateFrom" reference="commentReasonTypeCorrectionDateFrom"
 									defaultEnabled="false">
 								</component>
 							</layoutElement>
 						</component>
 						<option type="label" value="causeOfPlannedDateFromCorrectionLabel" />
-					</component>	
-					 <component type="borderLayout" name="causeDeviationsOfEffectiveStart">
-						<component type="gridLayout" name="causeDeviationsOfEffectiveStartGridLayout"
-							columns="1" rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
+					</component>
+					<component type="borderLayout" name="causeDeviationsOfEffectiveStart">
+						<component type="gridLayout"
+							name="causeDeviationsOfEffectiveStartGridLayout" columns="1"
+							rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeDeviationsOfEffectiveStart"
 									reference="reasonTypeDeviationsOfEffectiveStart" field="#{form}.reasonTypeDeviationsOfEffectiveStart"
@@ -435,49 +429,52 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-									<component type="textarea" name="commentReasonTypeDeviationsOfEffectiveStart"
-								 	 reference="commentReasonTypeDeviationsOfEffectiveStart"
+								<component type="textarea"
+									name="commentReasonTypeDeviationsOfEffectiveStart" reference="commentReasonTypeDeviationsOfEffectiveStart"
 									defaultEnabled="false">
 								</component>
 							</layoutElement>
 						</component>
 						<option type="label" value="causeDeviationsOfEffectiveStartLabel" />
-					</component>	
-					</layoutElement>
-					<layoutElement column="2" row="1">	
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
 					<component type="borderLayout" name="endDates">
 						<component type="gridLayout" name="endDatesGridLayout"
 							columns="1" rows="3" reference="endDatesGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="calendar" name="plannedDateTo"
-									field="#{form}.dateTo" reference="plannedDateTo"
-									defaultEnabled="false">
+								<component type="calendar" name="plannedDateTo" field="#{form}.dateTo"
+									reference="plannedDateTo" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyEndDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
-									<component type="calendar" name="correctedDateTo"
+								<component type="calendar" name="correctedDateTo"
 									field="#{form}.correctedDateTo" reference="correctedDateTo"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
-									<listener event="onChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyEndDate" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="calendar" name="effectiveDateTo" field="#{form}.effectiveDateTo"
-									reference="effectiveDateTo" defaultEnabled="false">
+								<component type="calendar" name="effectiveDateTo"
+									field="#{form}.effectiveDateTo" reference="effectiveDateTo"
+									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
 								</component>
 							</layoutElement>
 						</component>
 						<option type="label" value="endDatesLabel" />
 					</component>
-					 <component type="borderLayout" name="causeOfPlannedDateToCorrection">
-						<component type="gridLayout" name="causeOfPlannedDateToCorrectionGridLayout"
-							columns="1" rows="3" reference="causeOfPlannedDateToCorrectionGridLayout">
+					<component type="borderLayout" name="causeOfPlannedDateToCorrection">
+						<component type="gridLayout"
+							name="causeOfPlannedDateToCorrectionGridLayout" columns="1" rows="3"
+							reference="causeOfPlannedDateToCorrectionGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeCorrectionDateTo"
 									field="#{form}.reasonTypeCorrectionDateTo" reference="reasonTypeCorrectionDateTo"
@@ -485,7 +482,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-									<component type="textarea" name="commentReasonTypeCorrectionDateTo"
+								<component type="textarea" name="commentReasonTypeCorrectionDateTo"
 									field="#{form}.commentReasonTypeCorrectionDateTo" reference="commentReasonTypeCorrectionDateTo"
 									defaultEnabled="false">
 								</component>
@@ -493,9 +490,10 @@
 						</component>
 						<option type="label" value="causeOfPlannedDateToCorrectionLabel" />
 					</component>
-					 <component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
-						<component type="gridLayout" name="causeDeviationsOfEffectiveEndGridLayout"
-							columns="1" rows="3" reference="causeDeviationsOfEffectiveEndGridLayout">
+					<component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
+						<component type="gridLayout"
+							name="causeDeviationsOfEffectiveEndGridLayout" columns="1" rows="3"
+							reference="causeDeviationsOfEffectiveEndGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeDeviationsOfEffectiveEnd"
 									reference="reasonTypeDeviationsOfEffectiveEnd" field="#{form}.reasonTypeDeviationsOfEffectiveEnd"
@@ -503,23 +501,24 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-									<component type="textarea" name="commentReasonTypeDeviationsOfEffectiveEnd"
-								 	 reference="commentReasonTypeDeviationsOfEffectiveEnd"
+								<component type="textarea"
+									name="commentReasonTypeDeviationsOfEffectiveEnd" reference="commentReasonTypeDeviationsOfEffectiveEnd"
 									defaultEnabled="false">
 								</component>
 							</layoutElement>
 						</component>
 						<option type="label" value="causeDeviationsOfEffectiveEndLabel" />
-					</component>	
+					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
 		<windowTab name="history">
 			<component type="grid" name="loggings" reference="grid"
 				source="#{form}.stateChanges">
-				<option type="column" name="dateAndTime" fields="dateAndTime" link="true"/>
-				<option type="column" name="previousState" fields="sourceState"  />
-				<option type="column" name="currentState" fields="targetState"  />
+				<option type="column" name="dateAndTime" fields="dateAndTime"
+					link="true" />
+				<option type="column" name="previousState" fields="sourceState" />
+				<option type="column" name="currentState" fields="targetState" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="column" name="reasonType" fields="reasonType" />
 				<option type="column" name="comment" fields="comment" />
@@ -548,15 +547,17 @@
 			method="fillProductUnitBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="disableOrderFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
+		<beforeRender
+			class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveStart" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
+		<beforeRender
+			class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-		    method="enabledFieldForSpecificOrderState"/>
+			method="enabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-		    method="enabledFieldForSpecificOrderState"/>
+			method="enabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-		    method="filterStateChangeHistory"/>
+			method="filterStateChangeHistory" />
 	</hooks>
 </view>
