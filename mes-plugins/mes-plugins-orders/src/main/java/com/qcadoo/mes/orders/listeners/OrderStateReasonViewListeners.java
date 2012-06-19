@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.mes.orders.constants.OrderStateChangeFields.REASON_REQUIRED;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -22,13 +25,18 @@ public class OrderStateReasonViewListeners {
     @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
 
-    public void continueStateChange(final ViewDefinitionState view, final ComponentState form, final String[] args) {
-        final StateChangeContext stateContext = getStateChangeContext((FormComponent) form);
+    public void continueStateChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        final FormComponent form = (FormComponent) component;
+        form.performEvent(view, "save");
+        if (!form.isValid()) {
+            return;
+        }
+
+        final StateChangeContext stateContext = getStateChangeContext(form);
         stateContext.setStatus(StateChangeStatus.IN_PROGRESS);
         orderStateChangeService.changeState(stateContext);
 
-        final ViewContextHolder viewContext = new ViewContextHolder(view, form);
-        orderStateChangeViewClient.showMessages(viewContext, stateContext);
+        orderStateChangeViewClient.showMessages(new ViewContextHolder(view, form), stateContext);
     }
 
     public void cancelStateChange(final ViewDefinitionState view, final ComponentState form, final String[] args) {
@@ -36,13 +44,25 @@ public class OrderStateReasonViewListeners {
         stateContext.setStatus(StateChangeStatus.CANCELED);
         stateContext.save();
 
-        final ViewContextHolder viewContext = new ViewContextHolder(view, form);
-        orderStateChangeViewClient.showMessages(viewContext, stateContext);
+        orderStateChangeViewClient.showMessages(new ViewContextHolder(view, form), stateContext);
     }
 
     private StateChangeContext getStateChangeContext(final FormComponent form) {
         final Entity stateChangeEntity = ((FormComponent) form).getEntity();
         return orderStateChangeService.buildStateChangeContext(stateChangeEntity);
+    }
+
+    public void beforeRenderDialog(final ViewDefinitionState view) {
+        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference("reasonType");
+        final FieldComponent reasonRequiredField = (FieldComponent) view.getComponentByReference("reasonRequired");
+        reasonRequiredField.setFieldValue(true);
+        reasonTypeField.setRequired(true);
+    }
+
+    public void beforeRenderDetails(final ViewDefinitionState view) {
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference("reasonType");
+        reasonTypeField.setRequired(form.getEntity().getBooleanField(REASON_REQUIRED));
     }
 
 }

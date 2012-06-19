@@ -221,6 +221,9 @@ ALTER TABLE orders_orderstatechange ALTER COLUMN status SET DEFAULT '01inProgres
 
 ALTER TABLE orders_orderstatechange ADD COLUMN phase integer;
 
+ALTER TABLE orders_orderstatechange ADD COLUMN reasonRequired boolean;
+ALTER TABLE orders_orderstatechange ALTER COLUMN reasonRequired SET DEFAULT false;
+
 UPDATE orders_orderstatechange SET status = '03successful';
 UPDATE orders_orderstatechange SET status = '02paused' WHERE order_id IN(SELECT id FROM orders_order WHERE externalsynchronized = false);
 

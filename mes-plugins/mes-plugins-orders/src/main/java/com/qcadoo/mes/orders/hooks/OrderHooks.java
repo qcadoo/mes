@@ -11,6 +11,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 
 import java.util.Date;
@@ -83,8 +84,8 @@ public class OrderHooks {
         if (state.equals(PENDING.getStringValue()) && !finishDateDB.equals(finishDate)) {
             entity.setField(DATE_TO, entity.getField(FINISH_DATE));
         }
-        if ((state.equals(ACCEPTED.getStringValue()) || state.equals(ABANDONED.getStringValue()))
-                && !finishDateDB.equals(finishDate)) {
+        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
+                .equals(state)) && !finishDateDB.equals(finishDate)) {
             entity.setField(CORRECTED_DATE_TO, entity.getField(FINISH_DATE));
         }
     }
