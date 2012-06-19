@@ -14,22 +14,18 @@
 				<component type="gridLayout" name="gridsLayout" columns="2"
 					rows="6" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
-							reference="dateAndTime" defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="1" row="2">
 						<component type="input" name="worker" field="#{form}.worker"
 							reference="worker" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="2">
 						<component type="select" name="previousState" field="#{form}.sourceState"
 							reference="previousState" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="3">
 						<component type="select" name="currentState" field="#{form}.targetState"
 							reference="currentState" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="additionalInformation"
 							field="additionalInformation" reference="additionalInformation" defaultEnabled="false" />
 					</layoutElement>

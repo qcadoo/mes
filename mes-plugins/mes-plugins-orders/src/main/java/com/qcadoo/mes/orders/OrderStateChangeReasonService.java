@@ -6,6 +6,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -22,6 +24,8 @@ import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHE
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,11 +50,11 @@ public class OrderStateChangeReasonService {
     @Autowired
     private TranslationService translationService;
 
-    public boolean isReasonNeededWhenCorrectingDateFrom() {
+    public boolean neededWhenCorrectingDateFrom() {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM);
     }
 
-    public boolean isReasonNeededWhenCorrectingDateTo() {
+    public boolean neededWhenCorrectingDateTo() {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO);
     }
 
@@ -67,36 +71,48 @@ public class OrderStateChangeReasonService {
     }
 
     public boolean neededWhenChangingEffectiveDateFrom() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
-                || parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM);
+        return needForDelayedDateFrom() || needForEarlierDateFrom();
     }
 
     public boolean neededWhenChangingEffectiveDateTo() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
-                || parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO);
+        return needForDelayedDateTo() || needForEarlierDateTo();
+    }
+
+    private boolean needForEarlierDateFrom() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM);
+    }
+
+    private boolean needForDelayedDateFrom() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM);
+    }
+
+    private boolean needForEarlierDateTo() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO);
+    }
+
+    private boolean needForDelayedDateTo() {
+        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO);
     }
 
     public long getEffectiveDateFromDifference(final Entity order) {
         if (!neededWhenChangingEffectiveDateFrom()) {
             return 0L;
         }
-        final long dateFrom = getTimestampFromOrder(order, DATE_FROM, CORRECTED_DATE_FROM, EFFECTIVE_DATE_FROM);
-        if (dateFrom == 0L) {
+        final long dateFromTimestamp = getTimestampFromOrder(order, DATE_FROM, CORRECTED_DATE_FROM);
+        if (dateFromTimestamp == 0L) {
             return 0L;
         }
-
-        final Date effectiveDateFrom = getEffectiveDate(order, EFFECTIVE_DATE_FROM);
-        final long maxTime = effectiveDateFrom.getTime()
-                + ((Integer) parameterService.getParameter().getField(DELAYED_EFFECTIVE_DATE_FROM_TIME)).longValue();
-        final long minTime = effectiveDateFrom.getTime()
-                - ((Integer) parameterService.getParameter().getField(EARLIER_EFFECTIVE_DATE_FROM_TIME)).longValue();
+        final DateTime dateFrom = new DateTime(dateFromTimestamp);
+        final DateTime effectiveDateFrom = new DateTime(getEffectiveDate(order, EFFECTIVE_DATE_FROM));
+        final DateTime maxTime = new DateTime(dateFromTimestamp
+                + getAllowedDelayFromParametersAsMiliseconds(DELAYED_EFFECTIVE_DATE_FROM_TIME));
+        final DateTime minTime = new DateTime(dateFromTimestamp
+                - getAllowedDelayFromParametersAsMiliseconds(EARLIER_EFFECTIVE_DATE_FROM_TIME));
 
         long difference = 0L;
-        if (dateFrom > maxTime && parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)) {
-            difference = dateFrom - maxTime;
-        } else if (dateFrom < minTime
-                && parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)) {
-            difference = dateFrom - maxTime;
+        if ((effectiveDateFrom.isAfter(maxTime) && needForDelayedDateFrom())
+                || (effectiveDateFrom.isBefore(minTime) && needForEarlierDateFrom())) {
+            difference = Seconds.secondsBetween(dateFrom, effectiveDateFrom).getSeconds();
         }
         return difference;
     }
@@ -105,25 +121,32 @@ public class OrderStateChangeReasonService {
         if (!neededWhenChangingEffectiveDateTo()) {
             return 0L;
         }
-        final long dateTime = getTimestampFromOrder(order, DATE_TO, CORRECTED_DATE_TO, EFFECTIVE_DATE_TO);
-        if (dateTime == 0) {
+        final long dateToTimestamp = getTimestampFromOrder(order, DATE_TO, CORRECTED_DATE_TO);
+        if (dateToTimestamp == 0L) {
             return 0L;
         }
-
-        final Date effectiveDateTo = getEffectiveDate(order, EFFECTIVE_DATE_TO);
-        final long maxTime = effectiveDateTo.getTime()
-                + ((Integer) parameterService.getParameter().getField(DELAYED_EFFECTIVE_DATE_TO_TIME)).longValue();
-        final long minTime = effectiveDateTo.getTime()
-                - ((Integer) parameterService.getParameter().getField(EARLIER_EFFECTIVE_DATE_TO_TIME)).longValue();
+        final DateTime dateTo = new DateTime(dateToTimestamp);
+        final DateTime effectiveDateTo = new DateTime(getEffectiveDate(order, EFFECTIVE_DATE_TO));
+        final DateTime maxTime = new DateTime(dateToTimestamp
+                + getAllowedDelayFromParametersAsMiliseconds(DELAYED_EFFECTIVE_DATE_TO_TIME));
+        final DateTime minTime = new DateTime(dateToTimestamp
+                - getAllowedDelayFromParametersAsMiliseconds(EARLIER_EFFECTIVE_DATE_TO_TIME));
 
         long difference = 0L;
-        if (dateTime > maxTime && parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)) {
-            difference = maxTime - dateTime;
-        } else if (dateTime < minTime
-                && parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)) {
-            difference = minTime - dateTime;
+        if ((effectiveDateTo.isAfter(maxTime) && needForDelayedDateTo())
+                || (effectiveDateTo.isBefore(minTime) && needForEarlierDateTo())) {
+            difference = Seconds.secondsBetween(dateTo, effectiveDateTo).getSeconds();
         }
         return difference;
+    }
+
+    private int getAllowedDelayFromParametersAsMiliseconds(final String parameterName) {
+        final Integer parameterValue = (Integer) parameterService.getParameter().getField(parameterName);
+        int miliseconds = 0;
+        if (parameterValue != null) {
+            miliseconds = parameterValue.intValue() * 1000;
+        }
+        return miliseconds;
     }
 
     private Date getEffectiveDate(final Entity order, final String effectiveField) {
@@ -134,8 +157,7 @@ public class OrderStateChangeReasonService {
         return effectiveDate;
     }
 
-    private long getTimestampFromOrder(final Entity order, final String dateField, final String correctedField,
-            final String effectiveField) {
+    private long getTimestampFromOrder(final Entity order, final String dateField, final String correctedField) {
         final Date date = (Date) order.getField(dateField);
         final Date correctedDate = (Date) order.getField(correctedField);
 
@@ -152,6 +174,13 @@ public class OrderStateChangeReasonService {
 
     public void onComplete(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
+        if (neededWhenCorrectingDateTo() && !hasRequiredCorrectionDateToReasonField(order)) {
+            stateChangeContext.addFieldValidationError("orders.order.stateChange.missingEndCorrectionReason",
+                    REASON_TYPE_CORRECTION_DATE_TO);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            stateChangeContext.save();
+            return;
+        }
         final long difference = getEffectiveDateToDifference(order);
         if (difference == 0L) {
             return;
@@ -162,12 +191,29 @@ public class OrderStateChangeReasonService {
 
     public void onStart(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
+        if (neededWhenCorrectingDateFrom() && !hasRequiredCorrectionDateFromReasonField(order)) {
+            stateChangeContext.addFieldValidationError("orders.order.stateChange.missingStartCorrectionReason",
+                    REASON_TYPE_CORRECTION_DATE_FROM);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            stateChangeContext.save();
+            return;
+        }
         final long difference = getEffectiveDateFromDifference(order);
         if (difference == 0L) {
             return;
         }
         setAdditionalInfo(stateChangeContext, difference);
         showReasonForm(stateChangeContext, viewContext);
+    }
+
+    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_FROM) == null
+                || (order.getField(REASON_TYPE_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
+    }
+
+    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_TO) == null
+                || (order.getField(REASON_TYPE_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
     }
 
     private void setAdditionalInfo(final StateChangeContext stateChangeContext, final long difference) {
@@ -195,7 +241,7 @@ public class OrderStateChangeReasonService {
             return;
         }
 
-        final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(difference));
+        final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math.abs(difference)));
         final String additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(),
                 differenceAsString);
         stateChangeEntity.setField(OrderStateChangeFields.ADDITIONAL_INFO, additionalInfo);
