@@ -28,29 +28,31 @@ public class TransferModelValidators {
     public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
         boolean validate = true;
 
+        String type = transfer.getStringField(TYPE);
+        Date time = (Date) transfer.getField(TIME);
         Entity stockAreasFrom = transfer.getBelongsToField(STOCK_AREAS_FROM);
         Entity stockAreasTo = transfer.getBelongsToField(STOCK_AREAS_TO);
         Entity product = transfer.getBelongsToField(PRODUCT);
         BigDecimal quantity = transfer.getDecimalField(QUANTITY);
-        Date date = (Date) transfer.getField(TIME);
-        String type = transfer.getStringField(TYPE);
 
+        if (type == null) {
+            transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
+            validate = false;
+        }
+        if (time == null) {
+            transfer.addError(transferDD.getField(TIME), "materialFlow.validate.global.error.fillDate");
+            validate = false;
+        }
         if (stockAreasFrom == null && stockAreasTo == null) {
             transfer.addError(transferDD.getField(STOCK_AREAS_FROM),
                     "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
             transfer.addError(transferDD.getField(STOCK_AREAS_TO), "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
             validate = false;
         }
-        if (type == null) {
-            transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
-            validate = false;
-        }
-        if (date == null) {
-            transfer.addError(transferDD.getField(TIME), "materialFlow.validate.global.error.fillDate");
-            validate = false;
-        }
         if ((CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
-                && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+                && ((stockAreasFrom != null) && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product,
+                        quantity))) {
+
             transfer.addError(transferDD.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
             validate = false;
         }

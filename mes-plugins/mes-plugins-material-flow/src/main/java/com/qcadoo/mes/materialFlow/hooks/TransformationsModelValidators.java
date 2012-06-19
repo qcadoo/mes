@@ -23,14 +23,22 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlow.constants.TransformationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -38,29 +46,86 @@ import com.qcadoo.model.api.FieldDefinition;
 @Service
 public class TransformationsModelValidators {
 
-    public boolean checkIfProductsInTransfersConsumptionAreDistinct(final DataDefinition transformationsDD,
-            final Entity transformations) {
+    @Autowired
+    private MaterialFlowService materialFlowService;
+
+    @Autowired
+    private MaterialFlowResourceService materialFlowResourceService;
+
+    public boolean checkIfTransfersAreValid(final DataDefinition transformationsDD, final Entity transformations) {
+        Entity stockAreasFrom = transformations.getBelongsToField(TransformationsFields.STOCK_AREAS_FROM);
+
         List<Entity> transfersConsumption = transformations.getHasManyField(TRANSFERS_CONSUMPTION);
-
-        return checkIfProductInTransfersAreDistinct(transfersConsumption);
-    }
-
-    public boolean checkIfProductsInTransfersProductionAreDistinct(final DataDefinition transformationsDD,
-            final Entity transformations) {
         List<Entity> transfersProduction = transformations.getHasManyField(TRANSFERS_PRODUCTION);
 
-        return checkIfProductInTransfersAreDistinct(transfersProduction);
+        return (checkIfTransfersAreValid(transfersConsumption, TRANSFERS_CONSUMPTION, stockAreasFrom) && checkIfTransfersAreValid(
+                transfersProduction, TRANSFERS_PRODUCTION, null))
+                && (checkIfTransfersNumbersAreDistinct(transfersConsumption, transfersProduction) && checkIfTransfersNumbersAreDistinct(
+                        transfersProduction, transfersConsumption));
     }
 
-    private boolean checkIfProductInTransfersAreDistinct(final List<Entity> transfers) {
+    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String transfersName, final Entity stockAreasFrom) {
         boolean isValid = true;
+
         for (Entity transfer : transfers) {
+            String number = transfer.getStringField(NUMBER);
             Entity product = transfer.getBelongsToField(PRODUCT);
-            if (isProductAlreadyAdded(transfers, product)) {
-                appendErrorToModelField(transfer, PRODUCT, "technologies.productComponent.error.productAlreadyAdded");
+            BigDecimal quantity = transfer.getDecimalField(QUANTITY);
+
+            if ((number == null) || number.isEmpty()) {
+                appendErrorToModelField(transfer, NUMBER, "materialFlow.multitransfer.validation.fieldRequired");
+
+                isValid = false;
+            }
+
+            if (product == null) {
+                appendErrorToModelField(transfer, PRODUCT, "materialFlow.multitransfer.validation.fieldRequired");
+
+                isValid = false;
+            } else {
+                if (isProductAlreadyAdded(transfers, product)) {
+                    appendErrorToModelField(transfer, PRODUCT, "materialFlow.multitransfer.validation.productAlreadyAdded");
+
+                    isValid = false;
+                }
+            }
+
+            if (quantity == null) {
+                appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.fieldRequired");
+
+                isValid = false;
+            }
+
+            if ((stockAreasFrom != null) && (product != null) && (quantity != null)
+                    && (!materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity))) {
+                appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.resourcesArentSufficient");
+
                 isValid = false;
             }
         }
+
+        return isValid;
+    }
+
+    private boolean checkIfTransfersNumbersAreDistinct(final List<Entity> transfersConsumption,
+            final List<Entity> transfersProduction) {
+        boolean isValid = true;
+
+        for (Entity transfer : transfersConsumption) {
+            if (transfer.getId() == null) {
+                String number = transfer.getStringField(NUMBER);
+
+                if (number != null) {
+                    if (((isNumberAlreadyUsed(transfersConsumption, number) + isNumberAlreadyUsed(transfersProduction, number)) > 1)
+                            || materialFlowService.numberAlreadyExist(MaterialFlowConstants.MODEL_TRANSFER, number)) {
+                        appendErrorToModelField(transfer, NUMBER, "materialFlow.multitransfer.validation.numberAlreadyUsed");
+
+                        isValid = false;
+                    }
+                }
+            }
+        }
+
         return isValid;
     }
 
@@ -68,17 +133,44 @@ public class TransformationsModelValidators {
         if (product == null) {
             return false;
         }
+
         int count = 0;
-        for (Entity productInComponent : transfers) {
-            Entity productAlreadyAdded = productInComponent.getBelongsToField(PRODUCT);
+
+        for (Entity transfer : transfers) {
+            Entity productAlreadyAdded = transfer.getBelongsToField(PRODUCT);
+
             if (product.equals(productAlreadyAdded)) {
                 count++;
+
                 if (count > 1) {
                     return true;
                 }
             }
         }
+
         return false;
+    }
+
+    private int isNumberAlreadyUsed(final List<Entity> transfers, final String number) {
+        if (number == null) {
+            return 0;
+        }
+
+        int count = 0;
+
+        for (Entity transfer : transfers) {
+            String numberAlreadyUsed = transfer.getStringField(NUMBER);
+
+            if (number.equals(numberAlreadyUsed)) {
+                count++;
+
+                if (count > 1) {
+                    return count;
+                }
+            }
+        }
+
+        return count;
     }
 
     private void appendErrorToModelField(final Entity entity, final String fieldName, final String messageKey) {

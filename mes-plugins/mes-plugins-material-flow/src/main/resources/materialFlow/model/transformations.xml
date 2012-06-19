@@ -49,10 +49,7 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
-			method="checkIfProductsInTransfersConsumptionAreDistinct" />
-		<validatesWith
-			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
-			method="checkIfProductsInTransfersProductionAreDistinct" />
+			method="checkIfTransfersAreValid" />	
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

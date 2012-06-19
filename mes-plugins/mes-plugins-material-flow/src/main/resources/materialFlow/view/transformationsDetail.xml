@@ -47,7 +47,7 @@
 											<option type="fieldCode" value="name" />
 											<listener event="onSelectedEntityChange"
 												class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
-												method="fillTransferNumbersInADL" />
+												method="fillTransferNumbersInTransfersConsumption" />
 										</component>
 									</layoutElement>
 									<layoutElement column="4" row="1">
@@ -95,11 +95,11 @@
 				<layoutElement column="2" row="4">
 					<component type="lookup" name="operation" field="operation"
 						reference="operation">
+						<option type="column" fields="number" name="number" link="true" />
 						<option type="searchable" value="name,number" />
-						<option type="column" fields="name" name="name" link="true" />
 						<option type="orderable" value="name,number" />
 						<option type="expression" value="#number" />
-						<option type="fieldCode" value="number" />
+						<option type="fieldCode" value="name" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
 							method="fillProductionAndConsumption" />
@@ -126,7 +126,7 @@
 											<option type="fieldCode" value="name" />
 											<listener event="onSelectedEntityChange"
 												class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
-												method="fillTransferNumbersInADL" />
+												method="fillTransferNumbersInTransfersProduction" />
 										</component>
 									</layoutElement>
 									<layoutElement column="4" row="1">

@@ -25,7 +25,7 @@ public class TransferDetailsViewHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void checkIfTransferHasTransformation(final ViewDefinitionState state) {
+    public void checkIfTransferHasTransformations(final ViewDefinitionState state) {
         String number = (String) state.getComponentByReference(NUMBER).getFieldValue();
 
         if (number == null) {
@@ -47,6 +47,7 @@ public class TransferDetailsViewHooks {
             FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference(STOCK_AREAS_TO);
             FieldComponent stockAreasFrom = (FieldComponent) state.getComponentByReference(STOCK_AREAS_FROM);
             FieldComponent staff = (FieldComponent) state.getComponentByReference(STAFF);
+
             type.setEnabled(false);
             date.setEnabled(false);
             stockAreasTo.setEnabled(false);

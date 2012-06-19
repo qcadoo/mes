@@ -26,6 +26,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
 public class TransformationsListeners {
@@ -36,25 +37,50 @@ public class TransformationsListeners {
     @Autowired
     private MaterialFlowService materialFlowService;
 
-    public void fillTransferNumbersInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    public void fillTransferNumbersInTransfersConsumption(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         fillTransferNumbersInADL(view, TRANSFERS_CONSUMPTION);
+    }
+
+    public void fillTransferNumbersInTransfersProduction(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         fillTransferNumbersInADL(view, TRANSFERS_PRODUCTION);
     }
 
-    private void fillTransferNumbersInADL(final ViewDefinitionState view, final String adlName) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
-        List<FormComponent> formComponents = adlc.getFormComponents();
+    private void fillTransferNumbersInADL(final ViewDefinitionState view, final String transfersName) {
+        AwesomeDynamicListComponent transfersConsumption = (AwesomeDynamicListComponent) view
+                .getComponentByReference(TRANSFERS_CONSUMPTION);
+        AwesomeDynamicListComponent transfersProduction = (AwesomeDynamicListComponent) view
+                .getComponentByReference(TRANSFERS_PRODUCTION);
 
-        for (FormComponent formComponent : formComponents) {
-            Entity transfer = formComponent.getEntity();
-            Entity product = transfer.getBelongsToField(PRODUCT);
+        List<FormComponent> consumptionComponents = transfersConsumption.getFormComponents();
+        List<FormComponent> productionComponents = transfersProduction.getFormComponents();
 
-            if (product != null) {
-                String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
+        List<FormComponent> formComponents = null;
 
-                transfer.setField(NUMBER, number);
+        if (TRANSFERS_CONSUMPTION.equals(transfersName)) {
+            formComponents = consumptionComponents;
+        } else if (TRANSFERS_PRODUCTION.equals(transfersName)) {
+            formComponents = productionComponents;
+        }
+
+        if (formComponents != null) {
+            for (FormComponent formComponent : formComponents) {
+                Entity transfer = formComponent.getEntity();
+                Entity product = transfer.getBelongsToField(PRODUCT);
+                String number = transfer.getStringField(NUMBER);
+
+                if ((product != null) && ((number == null) || !number.contains(product.getStringField(NUMBER)))) {
+                    number = generateNumberForTransfer(product, MaterialFlowConstants.MODEL_TRANSFER, consumptionComponents,
+                            productionComponents);
+
+                    transfer.setField(NUMBER, number);
+                }
+                formComponent.setEntity(transfer);
             }
-            formComponent.setEntity(transfer);
         }
     }
 
@@ -76,8 +102,11 @@ public class TransformationsListeners {
         AwesomeDynamicListComponent transfersProduction = (AwesomeDynamicListComponent) view
                 .getComponentByReference(TRANSFERS_PRODUCTION);
 
-        List<Entity> consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS));
-        List<Entity> productionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_OUT_COMPONENTS));
+        List<Entity> consumptionComponents = Lists.newArrayList();
+        List<Entity> productionComponents = Lists.newArrayList();
+
+        consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS), productionComponents);
+        productionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_OUT_COMPONENTS), consumptionComponents);
 
         if (!consumptionComponents.isEmpty()) {
             transfersConsumption.setFieldValue(consumptionComponents);
@@ -98,7 +127,7 @@ public class TransformationsListeners {
 
     }
 
-    private List<Entity> getTransfersFromProducts(final List<Entity> productComponents) {
+    private List<Entity> getTransfersFromProducts(final List<Entity> productComponents, final List<Entity> transfers) {
         List<Entity> transfersFromProducts = Lists.newArrayList();
 
         DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
@@ -107,7 +136,7 @@ public class TransformationsListeners {
         for (Entity productComponent : productComponents) {
             Entity product = productComponent.getBelongsToField(PRODUCT);
 
-            String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
+            String number = generateNumberForTransfer(product, MaterialFlowConstants.MODEL_TRANSFER, transfers);
 
             Entity transfer = dd.create();
 
@@ -119,6 +148,83 @@ public class TransformationsListeners {
         }
 
         return transfersFromProducts;
+    }
+
+    private String generateNumberForTransfer(final Entity product, final String model, final List<Entity> transfers) {
+        String number = "";
+
+        if ((product != null) && (transfers != null)) {
+            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+
+            String prefix = product.getStringField(NUMBER);
+
+            number = prefix + "-" + generatedNumber;
+
+            Long parsedNumber = Long.parseLong(generatedNumber);
+
+            while (numberAlreadyExistsOnList(transfers, number) || materialFlowService.numberAlreadyExist(model, number)) {
+                parsedNumber++;
+
+                number = prefix + "-" + String.format("%03d", parsedNumber);
+            }
+        }
+
+        return number;
+    }
+
+    private String generateNumberForTransfer(final Entity product, final String model,
+            final List<FormComponent> consumptionComponents, final List<FormComponent> productionComponents) {
+        String number = "";
+
+        if ((product != null) && (consumptionComponents != null) && (productionComponents != null)) {
+            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+
+            String prefix = product.getStringField(NUMBER);
+
+            number = prefix + "-" + generatedNumber;
+
+            Long parsedNumber = Long.parseLong(generatedNumber);
+
+            while (numberAlreadyExistsOnADL(consumptionComponents, number)
+                    || numberAlreadyExistsOnADL(productionComponents, number)
+                    || materialFlowService.numberAlreadyExist(model, number)) {
+                parsedNumber++;
+
+                number = prefix + "-" + String.format("%03d", parsedNumber);
+            }
+        }
+
+        return number;
+    }
+
+    private boolean numberAlreadyExistsOnList(final List<Entity> transfers, String number) {
+        if (transfers == null) {
+            return false;
+        }
+
+        for (Entity transfer : transfers) {
+            if (transfer.getStringField(NUMBER).equals(number)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean numberAlreadyExistsOnADL(final List<FormComponent> formComponents, String number) {
+        if (formComponents == null) {
+            return false;
+        }
+
+        for (FormComponent formComponent : formComponents) {
+            Entity transfer = formComponent.getEntity();
+
+            if ((transfer != null) && transfer.getStringField(NUMBER).equals(number)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Entity getOperationFromId(final long id) {

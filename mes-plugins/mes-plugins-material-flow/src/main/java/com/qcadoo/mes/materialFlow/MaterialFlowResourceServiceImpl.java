@@ -72,8 +72,12 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         } else if (CONSUMPTION.getStringValue().equals(type)) {
             updateResource(stockAreasFrom, product, quantity);
         } else if (TRANSPORT.getStringValue().equals(type)) {
-            updateResource(stockAreasFrom, product, quantity);
-            addResource(stockAreasTo, product, quantity, time);
+            if (stockAreasFrom != null) {
+                updateResource(stockAreasFrom, product, quantity);
+            }
+            if (stockAreasTo != null) {
+                addResource(stockAreasTo, product, quantity, time);
+            }
         }
     }
 
@@ -126,14 +130,6 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         return resources;
     }
 
-    private List<Entity> getResourcesForStockAreas(final Entity stockAreas) {
-        List<Entity> resources = dataDefinitionService
-                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
-                .add(SearchRestrictions.belongsTo(STOCK_AREAS, stockAreas)).list().getEntities();
-
-        return resources;
-    }
-
     @Override
     public Map<Entity, BigDecimal> groupResourcesByProduct(final Entity stockAreas) {
         Map<Entity, BigDecimal> productsAndQuantities = new HashMap<Entity, BigDecimal>();
@@ -155,5 +151,13 @@ public class MaterialFlowResourceServiceImpl implements MaterialFlowResourceServ
         }
 
         return productsAndQuantities;
+    }
+
+    private List<Entity> getResourcesForStockAreas(final Entity stockAreas) {
+        List<Entity> resources = dataDefinitionService
+                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_RESOURCE).find()
+                .add(SearchRestrictions.belongsTo(STOCK_AREAS, stockAreas)).list().getEntities();
+
+        return resources;
     }
 }
