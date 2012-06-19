@@ -555,8 +555,6 @@
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 		    method="enabledFieldForSpecificOrderState"/>
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-		    method="enabledFieldForSpecificOrderState"/>
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 		    method="filterStateChangeHistory"/>
 	</hooks>
 </view>
