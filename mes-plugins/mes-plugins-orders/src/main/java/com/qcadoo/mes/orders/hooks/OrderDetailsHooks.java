@@ -51,11 +51,11 @@ public class OrderDetailsHooks {
     private StateChangeHistoryService stateChangeHistoryService;
 
     public void enabledFieldForSpecificOrderState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
             return;
         }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
         if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,

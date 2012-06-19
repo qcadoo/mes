@@ -42,6 +42,7 @@ public class OrderStateReasonViewListeners {
     public void cancelStateChange(final ViewDefinitionState view, final ComponentState form, final String[] args) {
         final StateChangeContext stateContext = getStateChangeContext((FormComponent) form);
         stateContext.setStatus(StateChangeStatus.CANCELED);
+        stateContext.setField(REASON_REQUIRED, false);
         stateContext.save();
 
         orderStateChangeViewClient.showMessages(new ViewContextHolder(view, form), stateContext);

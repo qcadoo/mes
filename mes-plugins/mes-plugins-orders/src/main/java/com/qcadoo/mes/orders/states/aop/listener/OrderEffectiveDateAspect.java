@@ -22,7 +22,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class OrderEffectiveDateAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(OrderStateChangePhase.LAST)
-    @RunForStateTransition(targetState = OrderStateStringValues.IN_PROGRESS)
+    @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
     @After("phaseExecution(stateContext, phase)")
     public void afterStartProgress(final StateChangeContext stateContext, final int phase) {
         stateContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
