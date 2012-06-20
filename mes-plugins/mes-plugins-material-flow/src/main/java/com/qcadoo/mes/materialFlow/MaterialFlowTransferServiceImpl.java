@@ -32,8 +32,11 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
     @Autowired
     private MaterialFlowService materialFlowService;
 
+    @Autowired
+    private MaterialFlowResourceService materialFlowResourceService;
+
     @Override
-    public void createTransfer(final String type, final Entity stockAreaFrom, final Entity stockAreaTo, final Entity product,
+    public void createTransfer(final String type, final Entity stockAreasFrom, final Entity stockAreasTo, final Entity product,
             final BigDecimal quantity, final Entity staff, final Date time) {
         DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
@@ -43,8 +46,8 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
 
         transfer.setField(NUMBER, number);
         transfer.setField(TYPE, type);
-        transfer.setField(STOCK_AREAS_FROM, stockAreaFrom);
-        transfer.setField(STOCK_AREAS_TO, stockAreaTo);
+        transfer.setField(STOCK_AREAS_FROM, stockAreasFrom);
+        transfer.setField(STOCK_AREAS_TO, stockAreasTo);
         transfer.setField(PRODUCT, product);
         transfer.setField(QUANTITY, quantity);
         transfer.setField(STAFF, staff);
@@ -58,5 +61,12 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER_TEMPLATE)
                 .find().add(SearchRestrictions.belongsTo(STOCK_AREAS_FROM, stockAreaFrom))
                 .add(SearchRestrictions.belongsTo(STOCK_AREAS_TO, stockAreaTo)).list().getEntities();
+    }
+
+    @Override
+    public boolean isTransferValidAndAreResourcesSufficient(final Entity stockAreasFrom, final Entity product,
+            final BigDecimal quantity) {
+        return ((stockAreasFrom != null) && (product != null) && (quantity != null) && !materialFlowResourceService
+                .areResourcesSufficient(stockAreasFrom, product, quantity));
     }
 }

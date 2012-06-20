@@ -102,7 +102,7 @@ public class TransformationsListeners {
         AwesomeDynamicListComponent transfersProduction = (AwesomeDynamicListComponent) view
                 .getComponentByReference(TRANSFERS_PRODUCTION);
 
-        List<Entity> consumptionComponents = Lists.newArrayList();
+        List<Entity> consumptionComponents = null;
         List<Entity> productionComponents = Lists.newArrayList();
 
         consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS), productionComponents);
@@ -197,7 +197,7 @@ public class TransformationsListeners {
         return number;
     }
 
-    private boolean numberAlreadyExistsOnList(final List<Entity> transfers, String number) {
+    private boolean numberAlreadyExistsOnList(final List<Entity> transfers, final String number) {
         if (transfers == null) {
             return false;
         }
@@ -211,7 +211,7 @@ public class TransformationsListeners {
         return false;
     }
 
-    private boolean numberAlreadyExistsOnADL(final List<FormComponent> formComponents, String number) {
+    private boolean numberAlreadyExistsOnADL(final List<FormComponent> formComponents, final String number) {
         if (formComponents == null) {
             return false;
         }

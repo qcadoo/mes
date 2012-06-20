@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
@@ -37,6 +38,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
+
+    private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
 
     private static final String PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
 
@@ -111,13 +114,13 @@ public class ProductionPerShiftDetailsHooks {
         Entity prodComp = technologyService.getMainOutputProductComponent(toc);
         Entity prod = prodComp.getBelongsToField("product");
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
                     .findFieldComponentByName("dailyProgressADL");
             for (FormComponent formComponent : dailyProgressADL.getFormComponents()) {
-                FieldComponent unit = formComponent.findFieldComponentByName("unit");
-                unit.setFieldValue(prod.getStringField("unit"));
+                FieldComponent unit = formComponent.findFieldComponentByName(UNIT);
+                unit.setFieldValue(prod.getStringField(UNIT));
                 unit.requestComponentUpdateState();
             }
         }
@@ -158,7 +161,7 @@ public class ProductionPerShiftDetailsHooks {
 
     public void fillProgressForDays(final ViewDefinitionState viewState) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         Entity tioc = helper.getTiocFromOperationLookup(viewState);
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
@@ -183,7 +186,7 @@ public class ProductionPerShiftDetailsHooks {
 
     private boolean tiocWasChanged(final ViewDefinitionState viewState) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
         if (progressForDays.isEmpty()) {
             return true;
@@ -199,7 +202,7 @@ public class ProductionPerShiftDetailsHooks {
 
     private boolean progressTypeWasChange(final ViewDefinitionState viewState) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
         if (progressForDays.isEmpty()) {
             return true;
@@ -219,7 +222,7 @@ public class ProductionPerShiftDetailsHooks {
     private void disabledComponents(final ViewDefinitionState viewState) {
         Entity order = helper.getOrderFromLookup(viewState);
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference("progressForDaysADL");
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         boolean shouldDisabled = helper.shouldHasCorrections(viewState)
                 || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue());
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
@@ -232,7 +235,7 @@ public class ProductionPerShiftDetailsHooks {
             for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
                 FieldComponent shift = (FieldComponent) dailyProgressForm.findFieldComponentByName("shift");
                 FieldComponent quantity = (FieldComponent) dailyProgressForm.findFieldComponentByName("quantity");
-                FieldComponent unit = (FieldComponent) dailyProgressForm.findFieldComponentByName("unit");
+                FieldComponent unit = (FieldComponent) dailyProgressForm.findFieldComponentByName(UNIT);
                 shift.setEnabled(shouldDisabled);
                 shift.requestComponentUpdateState();
                 quantity.setEnabled(shouldDisabled);

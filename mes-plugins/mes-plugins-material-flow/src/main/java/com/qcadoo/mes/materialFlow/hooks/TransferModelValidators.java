@@ -6,8 +6,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_F
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,7 +13,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
+import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -23,7 +21,7 @@ import com.qcadoo.model.api.Entity;
 public class TransferModelValidators {
 
     @Autowired
-    private MaterialFlowResourceService materialFlowResourceService;
+    private MaterialFlowTransferService materialFlowTransferService;
 
     public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
         boolean validate = true;
@@ -49,10 +47,7 @@ public class TransferModelValidators {
             transfer.addError(transferDD.getField(STOCK_AREAS_TO), "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
             validate = false;
         }
-        if ((CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
-                && ((stockAreasFrom != null) && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product,
-                        quantity))) {
-
+        if (!materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
             transfer.addError(transferDD.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
             validate = false;
         }

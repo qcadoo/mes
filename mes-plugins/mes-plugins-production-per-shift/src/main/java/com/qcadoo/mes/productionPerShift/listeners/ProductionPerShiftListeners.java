@@ -189,8 +189,6 @@ public class ProductionPerShiftListeners {
 
     public void deleteProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
-        DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
-                ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
         Entity tioc = helper.getTiocFromOperationLookup(viewState);
         if (tioc == null) {
             return;

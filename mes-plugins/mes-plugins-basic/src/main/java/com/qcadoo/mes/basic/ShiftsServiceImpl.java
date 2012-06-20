@@ -54,6 +54,20 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
 
+    private static final String L_SUNDAY = "sunday";
+
+    private static final String L_SATURDAY = "saturday";
+
+    private static final String L_FRIDAY = "friday";
+
+    private static final String L_THURSDAY = "thursday";
+
+    private static final String L_WENSDAY = "wensday";
+
+    private static final String L_TUESDAY = "tuesday";
+
+    private static final String L_MONDAY = "monday";
+
     private static final String TYPE_FIELD = "type";
 
     private static final String TIMETABLE_EXCEPTIONS_FIELD = "timetableExceptions";
@@ -69,7 +83,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final String[] WEEK_DAYS = { "monday", "tuesday", "wensday", "thursday", "friday", "saturday", "sunday" };
+    private static final String[] WEEK_DAYS = { L_MONDAY, L_TUESDAY, L_WENSDAY, L_THURSDAY, L_FRIDAY, L_SATURDAY, L_SUNDAY };
 
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField(FROM_DATE_FIELD);
@@ -216,13 +230,13 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Override
     public List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo) {
         List<ShiftHour> hours = new ArrayList<ShiftHour>();
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "monday", 1));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "tuesday", 2));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "wensday", 3));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "thursday", 4));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "friday", 5));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "saturday", 6));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, "sunday", 7));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_MONDAY, 1));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_TUESDAY, 2));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_WENSDAY, 3));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_THURSDAY, 4));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_FRIDAY, 5));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_SATURDAY, 6));
+        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_SUNDAY, 7));
 
         List<Entity> exceptions = shift.getHasManyField(TIMETABLE_EXCEPTIONS_FIELD);
 
@@ -500,13 +514,13 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Override
     public Entity getShiftFromDateWithTime(final Date date) {
         Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
-        dayOfWeek.put(Calendar.MONDAY, "monday");
-        dayOfWeek.put(Calendar.TUESDAY, "tuesday");
-        dayOfWeek.put(Calendar.WEDNESDAY, "wensday");
-        dayOfWeek.put(Calendar.THURSDAY, "thursday");
-        dayOfWeek.put(Calendar.FRIDAY, "friday");
-        dayOfWeek.put(Calendar.SATURDAY, "saturday");
-        dayOfWeek.put(Calendar.SUNDAY, "sunday");
+        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
+        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
+        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
+        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
+        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
+        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
+        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -537,13 +551,13 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Override
     public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
         Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
-        dayOfWeek.put(Calendar.MONDAY, "monday");
-        dayOfWeek.put(Calendar.TUESDAY, "tuesday");
-        dayOfWeek.put(Calendar.WEDNESDAY, "wensday");
-        dayOfWeek.put(Calendar.THURSDAY, "thursday");
-        dayOfWeek.put(Calendar.FRIDAY, "friday");
-        dayOfWeek.put(Calendar.SATURDAY, "saturday");
-        dayOfWeek.put(Calendar.SUNDAY, "sunday");
+        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
+        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
+        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
+        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
+        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
+        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
+        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);

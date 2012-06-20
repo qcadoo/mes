@@ -9,8 +9,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_F
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -46,9 +43,6 @@ public class MultitransferListeners {
 
     @Autowired
     private MaterialFlowTransferService materialFlowTransferService;
-
-    @Autowired
-    private MaterialFlowResourceService materialFlowResourceService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -174,18 +168,18 @@ public class MultitransferListeners {
         FieldComponent stockAreasFromField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
         FieldComponent stockAreasToField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
 
-        if (typeField.getFieldValue().toString().isEmpty()) {
+        if (typeField.getFieldValue() == null) {
             typeField.addMessage("materialFlow.validate.global.error.fillType", MessageType.FAILURE);
 
             isValid = false;
         }
-        if (timeField.getFieldValue().toString().isEmpty()) {
+        if (timeField.getFieldValue() == null) {
             timeField.addMessage("materialFlow.validate.global.error.fillDate", MessageType.FAILURE);
 
             isValid = false;
         }
 
-        if (stockAreasFromField.getFieldValue() == null && stockAreasToField.getFieldValue() == null) {
+        if ((stockAreasFromField.getFieldValue() == null) && (stockAreasToField.getFieldValue() == null)) {
             stockAreasFromField.addMessage("materialFlow.validate.global.error.fillAtLeastOneStockAreas", MessageType.FAILURE);
             stockAreasToField.addMessage("materialFlow.validate.global.error.fillAtLeastOneStockAreas", MessageType.FAILURE);
 
@@ -202,7 +196,6 @@ public class MultitransferListeners {
 
             isValid = false;
         } else {
-            String type = (String) typeField.getFieldValue();
             Entity stockAreasFrom = getAreaById((Long) stockAreasFromField.getFieldValue());
 
             for (FormComponent formComponent : formComponents) {
@@ -232,13 +225,7 @@ public class MultitransferListeners {
                     isValid = false;
                 }
 
-                if ((type != null)
-                        && (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
-                        && (stockAreasFrom != null)
-                        && (product != null)
-                        && (quantity != null)
-                        && ((stockAreasFrom != null) && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom,
-                                product, quantity))) {
+                if (!materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
                     formComponent.findFieldComponentByName(QUANTITY).addMessage(
                             "materialFlow.multitransfer.validation.resourcesArentSufficient", MessageType.FAILURE);
 
