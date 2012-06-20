@@ -2,7 +2,7 @@
 -- changed: 21.05.2012
 
 ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateFrom boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrecringDateFrom SET DEFAULT false;
+ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateFrom SET DEFAULT false;
 ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateTo boolean;
 ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateTo SET DEFAULT false;
 
@@ -88,10 +88,10 @@ CREATE TABLE linechangeovernorms_linechangeovernorms
 ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
 ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
-ALTER TABLE orders_order ALTER COLUMN ownlinechangeover TYPE boolean;
-ALTER TABLE orders_order ALTER COLUMN ownlinechangeover SET DEFAULT false;
+ALTER TABLE orders_order ADD COLUMN ownlinechangeover TYPE boolean;
+ALTER TABLE orders_order ADD COLUMN ownlinechangeover SET DEFAULT false;
 
-ALTER TABLE orders_order ALTER COLUMN ownlinechangeoverduration TYPE integer;
+ALTER TABLE orders_order ADD COLUMN ownlinechangeoverduration TYPE integer;
 
 -- end
 
