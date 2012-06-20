@@ -14,7 +14,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -22,7 +22,7 @@ import com.qcadoo.model.api.Entity;
 public class TransferModelValidators {
 
     @Autowired
-    private MaterialFlowTransferService materialFlowTransferService;
+    private MaterialFlowResourceService materialFlowResourceService;
 
     public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
         boolean validate = true;
@@ -48,8 +48,8 @@ public class TransferModelValidators {
             transfer.addError(transferDD.getField(STOCK_AREAS_TO), "materialFlow.validate.global.error.fillAtLeastOneStockAreas");
             validate = false;
         }
-        if ((type != null) && !PRODUCTION.getStringValue().equals(type)
-                && !materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
+        if ((type != null) && !PRODUCTION.getStringValue().equals(type) && (stockAreasFrom != null) && (product != null)
+                && (quantity != null) && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
             transfer.addError(transferDD.getField(QUANTITY), "materialFlow.validate.global.error.resourcesArentSufficient");
             validate = false;
         }

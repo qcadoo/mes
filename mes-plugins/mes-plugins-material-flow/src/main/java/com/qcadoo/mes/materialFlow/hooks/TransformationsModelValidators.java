@@ -37,8 +37,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
-import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransformationsFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -52,7 +52,7 @@ public class TransformationsModelValidators {
     private MaterialFlowService materialFlowService;
 
     @Autowired
-    private MaterialFlowTransferService materialFlowTransferService;
+    private MaterialFlowResourceService materialFlowResourceService;
 
     public boolean checkIfTransfersAreValid(final DataDefinition transformationsDD, final Entity transformations) {
         Entity stockAreasFrom = transformations.getBelongsToField(TransformationsFields.STOCK_AREAS_FROM);
@@ -98,8 +98,8 @@ public class TransformationsModelValidators {
                 isValid = false;
             }
 
-            if (CONSUMPTION.getStringValue().equals(type)
-                    && !materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
+            if (CONSUMPTION.getStringValue().equals(type) && (stockAreasFrom != null) && (product != null) && (quantity != null)
+                    && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
                 appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.resourcesArentSufficient");
 
                 isValid = false;
