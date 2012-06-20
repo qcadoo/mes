@@ -82,8 +82,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Override
     @Transactional
     public StateChangeContext buildStateChangeContext(final Entity stateChangeEntity) {
-        final StateChangeEntityDescriber describer = getChangeEntityDescriber();
-        return new StateChangeContextImpl(describer.getDataDefinition().save(stateChangeEntity), describer, messageService);
+        return new StateChangeContextImpl(stateChangeEntity, getChangeEntityDescriber(), messageService);
     }
 
     protected void onCreate(final Entity stateChangeEntity, final Entity owner, final StateEnum sourceState,

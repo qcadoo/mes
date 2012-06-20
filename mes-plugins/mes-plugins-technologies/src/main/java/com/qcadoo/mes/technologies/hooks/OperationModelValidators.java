@@ -38,27 +38,25 @@ import com.qcadoo.model.api.FieldDefinition;
 @Service
 public class OperationModelValidators {
 
-    public boolean checkIfProductsInProductInComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
+    public boolean checkIfProductsInProductComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
         List<Entity> productInComponents = operation.getHasManyField(PRODUCT_IN_COMPONENTS);
-
-        return checkIfProductsInProductComponentsAreDistinct(productInComponents);
-    }
-
-    public boolean checkIfProductsInProductOutComponentsAreDistinct(final DataDefinition operationDD, final Entity operation) {
         List<Entity> productOutComponents = operation.getHasManyField(PRODUCT_OUT_COMPONENTS);
 
-        return checkIfProductsInProductComponentsAreDistinct(productOutComponents);
+        return (checkIfProductsInProductComponentsAreDistinct(productInComponents) && checkIfProductsInProductComponentsAreDistinct(productOutComponents));
     }
 
     private boolean checkIfProductsInProductComponentsAreDistinct(final List<Entity> productInComponents) {
         boolean isValid = true;
+
         for (Entity productInComponent : productInComponents) {
             Entity product = productInComponent.getBelongsToField(PRODUCT);
             if (isProductAlreadyAdded(productInComponents, product)) {
                 appendErrorToModelField(productInComponent, PRODUCT, "technologies.productComponent.error.productAlreadyAdded");
+
                 isValid = false;
             }
         }
+
         return isValid;
     }
 
@@ -66,16 +64,20 @@ public class OperationModelValidators {
         if (product == null) {
             return false;
         }
+
         int count = 0;
+
         for (Entity productInComponent : productInComponents) {
             Entity productAlreadyAdded = productInComponent.getBelongsToField(PRODUCT);
             if (product.equals(productAlreadyAdded)) {
                 count++;
+
                 if (count > 1) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 

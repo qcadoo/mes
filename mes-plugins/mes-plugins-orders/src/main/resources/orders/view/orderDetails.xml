@@ -556,8 +556,12 @@
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="enabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+<<<<<<< HEAD
 			method="enabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="filterStateChangeHistory" />
+=======
+		    method="filterStateChangeHistory"/>
+>>>>>>> 7a7dedc5903fb216b9ef182bc9c33a4b376606aa
 	</hooks>
 </view>

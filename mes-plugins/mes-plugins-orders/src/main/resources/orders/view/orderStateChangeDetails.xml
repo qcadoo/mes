@@ -29,7 +29,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="5" height="2">
 						<component type="textarea" name="additionalInformation"
-							field="additionalInformation" reference="additionalInformation" />
+							field="additionalInformation" reference="additionalInformation" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="select" name="reasonType" field="#{form}.reasonType"
@@ -38,6 +38,8 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="comment" field="#{form}.comment"
 							reference="comment" />
+						<component type="checkbox" name="reasonRequired" reference="reasonRequired"
+							field="#{form}.reasonRequired" defaultEnabled="false" defaultVisible="false" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
@@ -45,4 +47,7 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="beforeRenderDetails" />
+	</hooks>
 </view>

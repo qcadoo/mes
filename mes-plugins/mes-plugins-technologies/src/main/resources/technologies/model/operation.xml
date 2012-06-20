@@ -53,9 +53,7 @@
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
-			method="checkIfProductsInProductInComponentsAreDistinct" />
-		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
-			method="checkIfProductsInProductOutComponentsAreDistinct" />
+			method="checkIfProductsInProductComponentsAreDistinct" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

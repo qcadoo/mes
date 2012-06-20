@@ -12,24 +12,20 @@
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
 				<component type="gridLayout" name="gridsLayout" columns="2"
-					rows="6" hasBorders="false">
+					rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="input" name="dateAndTime" field="#{form}.dateAndTime"
-							reference="dateAndTime" defaultEnabled="false" />
-					</layoutElement>
-					<layoutElement column="1" row="2">
 						<component type="input" name="worker" field="#{form}.worker"
 							reference="worker" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="3">
+					<layoutElement column="1" row="2">
 						<component type="select" name="previousState" field="#{form}.sourceState"
 							reference="previousState" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="4">
+					<layoutElement column="1" row="3">
 						<component type="select" name="currentState" field="#{form}.targetState"
 							reference="currentState" defaultEnabled="false" />
 					</layoutElement>
-					<layoutElement column="1" row="5" height="2">
+					<layoutElement column="1" row="4" height="2">
 						<component type="textarea" name="additionalInformation"
 							field="additionalInformation" reference="additionalInformation" defaultEnabled="false" />
 					</layoutElement>
@@ -40,6 +36,8 @@
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="comment" field="#{form}.comment"
 							reference="comment" />
+						<component type="checkbox" name="reasonRequired" reference="reasonRequired" 
+							field="#{form}.reasonRequired" defaultEnabled="false" defaultVisible="false" />
 					</layoutElement>
 				</component>
 				<listener event="continue"
@@ -50,4 +48,7 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.orders.listeners.OrderStateReasonViewListeners" method="beforeRenderDialog" />
+	</hooks>
 </view>

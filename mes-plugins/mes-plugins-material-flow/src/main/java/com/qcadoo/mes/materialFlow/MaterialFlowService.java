@@ -52,6 +52,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -392,6 +393,11 @@ public class MaterialFlowService {
             stockAreaTo.setFieldValue(stockAreaFrom.getFieldValue());
         }
         stockAreaTo.requestComponentUpdateState();
+    }
+
+    public boolean numberAlreadyExist(final String model, final String number) {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
+                .add(SearchRestrictions.eq(TransferFields.NUMBER, number)).setMaxResults(1).uniqueResult() != null;
     }
 
 }

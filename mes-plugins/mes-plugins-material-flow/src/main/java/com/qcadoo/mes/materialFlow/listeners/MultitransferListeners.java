@@ -13,7 +13,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -135,10 +134,13 @@ public class MultitransferListeners {
                 MaterialFlowConstants.MODEL_PRODUCT_QUANTITY);
 
         for (Entity template : templates) {
-            Entity productQuantity = productQuantityDD.create();
             Entity product = template.getBelongsToField(PRODUCT);
+
+            Entity productQuantity = productQuantityDD.create();
+
             productQuantity.setField(PRODUCT, product);
             productQuantity.setField(UNIT, product.getStringField(UNIT));
+
             productQuantities.add(productQuantity);
         }
 
@@ -167,16 +169,27 @@ public class MultitransferListeners {
     private boolean validateMultitransferForm(final ViewDefinitionState view) {
         boolean isValid = true;
 
-        for (String componentRef : Arrays.asList(STOCK_AREAS_TO, STOCK_AREAS_FROM, TYPE, TIME)) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(componentRef);
-            if (component.isRequired()) {
-                Object fieldValue = component.getFieldValue();
-                if (fieldValue == null || fieldValue.toString().isEmpty()) {
-                    component.addMessage("materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
+        FieldComponent timeField = (FieldComponent) view.getComponentByReference(TIME);
+        FieldComponent stockAreasFromField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
+        FieldComponent stockAreasToField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
 
-                    isValid = false;
-                }
-            }
+        if (typeField.getFieldValue().toString().isEmpty()) {
+            typeField.addMessage("materialFlow.validate.global.error.fillType", MessageType.FAILURE);
+
+            isValid = false;
+        }
+        if (timeField.getFieldValue().toString().isEmpty()) {
+            timeField.addMessage("materialFlow.validate.global.error.fillDate", MessageType.FAILURE);
+
+            isValid = false;
+        }
+
+        if (stockAreasFromField.getFieldValue() == null && stockAreasToField.getFieldValue() == null) {
+            stockAreasFromField.addMessage("materialFlow.validate.global.error.fillAtLeastOneStockAreas", MessageType.FAILURE);
+            stockAreasToField.addMessage("materialFlow.validate.global.error.fillAtLeastOneStockAreas", MessageType.FAILURE);
+
+            isValid = false;
         }
 
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
@@ -189,19 +202,12 @@ public class MultitransferListeners {
 
             isValid = false;
         } else {
-            FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
-            FieldComponent stockAreasFromField = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
-
-            String type = null;
-            Entity stockAreasFrom = null;
-
-            if ((typeField != null) && (stockAreasFromField != null)) {
-                type = (String) typeField.getFieldValue();
-                stockAreasFrom = getAreaById((Long) stockAreasFromField.getFieldValue());
-            }
+            String type = (String) typeField.getFieldValue();
+            Entity stockAreasFrom = getAreaById((Long) stockAreasFromField.getFieldValue());
 
             for (FormComponent formComponent : formComponents) {
                 Entity productQuantity = formComponent.getEntity();
+
                 BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
                 Entity product = productQuantity.getBelongsToField(PRODUCT);
 
@@ -226,9 +232,13 @@ public class MultitransferListeners {
                     isValid = false;
                 }
 
-                if ((type != null) && (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
-                        && (stockAreasFrom != null) && (product != null) && (quantity != null)
-                        && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
+                if ((type != null)
+                        && (CONSUMPTION.getStringValue().equals(type) || TRANSPORT.getStringValue().equals(type))
+                        && (stockAreasFrom != null)
+                        && (product != null)
+                        && (quantity != null)
+                        && ((stockAreasFrom != null) && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom,
+                                product, quantity))) {
                     formComponent.findFieldComponentByName(QUANTITY).addMessage(
                             "materialFlow.multitransfer.validation.resourcesArentSufficient", MessageType.FAILURE);
 

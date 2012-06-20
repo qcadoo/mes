@@ -19,6 +19,7 @@ import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHE
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -59,7 +60,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)).willReturn(true);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenCorrectingDateFrom();
+        boolean result = orderStateChangeReasonService.neededWhenCorrectingDateFrom();
 
         // then
         assertTrue(result);
@@ -75,7 +76,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)).willReturn(false);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenCorrectingDateFrom();
+        boolean result = orderStateChangeReasonService.neededWhenCorrectingDateFrom();
 
         // then
         assertFalse(result);
@@ -91,7 +92,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO)).willReturn(true);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenCorrectingDateTo();
+        boolean result = orderStateChangeReasonService.neededWhenCorrectingDateTo();
 
         // then
         assertTrue(result);
@@ -107,7 +108,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO)).willReturn(false);
 
         // when
-        boolean result = orderStateChangeReasonService.isReasonNeededWhenCorrectingDateTo();
+        boolean result = orderStateChangeReasonService.neededWhenCorrectingDateTo();
 
         // then
         assertFalse(result);
@@ -210,7 +211,7 @@ public class OrderStateChangeReasonServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueIfIsReasonNeededWhenChangingEffectiveDateFrom() {
+    public void shouldReturnNonZeroIfIsReasonNeededWhenChangingEffectiveDateFrom() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -222,8 +223,8 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateFrom = null;
         Date effectiveDateFrom = mock(Date.class);
 
-        long dateFromTime = 10L;
-        long effectiveDateFromTime = 15L;
+        long dateFromTime = 10000L;
+        long effectiveDateFromTime = 15000L;
 
         Integer delayedDateFromTime = 2;
         Integer earlierDateFromTime = 2;
@@ -245,11 +246,11 @@ public class OrderStateChangeReasonServiceTest {
         long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
 
         // then
-        assertFalse(result == 0L);
+        assertEquals(5L, result);
     }
 
     @Test
-    public void shouldReturnTrueIfIsReasonNeededWhenChangingEffectiveDateFromAndCorrectedDateFromIsntNull() {
+    public void shouldReturnNonZeroIfIsReasonNeededWhenChangingEffectiveDateFromAndCorrectedDateFromIsntNull() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -261,8 +262,8 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateFrom = mock(Date.class);
         Date effectiveDateFrom = mock(Date.class);
 
-        long dateFromTime = 10L;
-        long effectiveDateFromTime = 15L;
+        long dateFromTime = 10000L;
+        long effectiveDateFromTime = 15000L;
 
         Integer delayedDateFromTime = 2;
         Integer earlierDateFromTime = 2;
@@ -284,11 +285,11 @@ public class OrderStateChangeReasonServiceTest {
         long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
 
         // then
-        assertFalse(result == 0L);
+        assertEquals(5L, result);
     }
 
     @Test
-    public void shouldReturnFalseIfIsReasonNeededWhenChangingEffectiveDateFromAndDateFromAndEffectiveDateFromIsNull() {
+    public void shouldReturnZeroIfIsReasonNeededWhenChangingEffectiveDateFromAndDateFromAndEffectiveDateFromIsNull() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -304,11 +305,11 @@ public class OrderStateChangeReasonServiceTest {
         long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
 
         // then
-        assertTrue(result == 0L);
+        assertTrue(result == 0);
     }
 
     @Test
-    public void shouldReturnFalseIfIsReasonNeededWhenChangingEffectiveDateFromAndReasonsAreFalse() {
+    public void shouldReturnZeroIfIsReasonNeededWhenChangingEffectiveDateFromAndReasonsAreFalse() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -320,11 +321,11 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateFrom = null;
         Date effectiveDateFrom = mock(Date.class);
 
-        Long dateFromTime = 10L;
-        Long effectiveDateFromTime = 15L;
+        long dateFromTime = 10000L;
+        long effectiveDateFromTime = 15000L;
 
-        Long delayedDateFromTime = 2L;
-        Long earlierDateFromTime = 2L;
+        Integer delayedDateFromTime = 2;
+        Integer earlierDateFromTime = 2;
 
         given(order.getField(DATE_FROM)).willReturn(dateFrom);
         given(order.getField(CORRECTED_DATE_FROM)).willReturn(correctedDateFrom);
@@ -347,7 +348,7 @@ public class OrderStateChangeReasonServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueIfIsReasonNeededWhenChangingEffectiveDateTo() {
+    public void shouldReturnNonZeroIfIsReasonNeededWhenChangingEffectiveDateTo() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -359,8 +360,8 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateTo = null;
         Date effectiveDateTo = mock(Date.class);
 
-        long dateToTime = 10L;
-        long effectiveDateToTime = 15L;
+        long dateToTime = 10000L;
+        long effectiveDateToTime = 15000L;
 
         Integer delayedDateToTime = 2;
         Integer earlierDateToTime = 2;
@@ -382,11 +383,11 @@ public class OrderStateChangeReasonServiceTest {
         long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
 
         // then
-        assertFalse(result == 0L);
+        assertEquals(5L, result);
     }
 
     @Test
-    public void shouldReturnTrueIfIsReasonNeededWhenChangingEffectiveDateToAndCorrectedDateToIsntNull() {
+    public void shouldReturnNonZeroIfIsReasonNeededWhenChangingEffectiveDateToAndCorrectedDateToIsntNull() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -398,8 +399,8 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateTo = mock(Date.class);
         Date effectiveDateTo = mock(Date.class);
 
-        long dateToTime = 10L;
-        long effectiveDateToTime = 15L;
+        long dateToTime = 10000L;
+        long effectiveDateToTime = 15000L;
 
         Integer delayedDateToTime = 2;
         Integer earlierDateToTime = 2;
@@ -421,11 +422,11 @@ public class OrderStateChangeReasonServiceTest {
         long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
 
         // then
-        assertFalse(result == 0L);
+        assertEquals(5L, result);
     }
 
     @Test
-    public void shouldReturnFalseIfIsReasonNeededWhenChangingEffectiveDateToAndDateToAndEffectiveDateToIsNull() {
+    public void shouldReturnZeroIfIsReasonNeededWhenChangingEffectiveDateToAndDateToAndEffectiveDateToIsNull() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -445,7 +446,7 @@ public class OrderStateChangeReasonServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseIfIsReasonNeededWhenChangingEffectiveDateToAndReasonsAreFalse() {
+    public void shouldReturnZeroIfIsReasonNeededWhenChangingEffectiveDateToAndReasonsAreFalse() {
         // given
         Entity parameter = mock(Entity.class);
 
@@ -457,11 +458,11 @@ public class OrderStateChangeReasonServiceTest {
         Date correctedDateTo = null;
         Date effectiveDateTo = mock(Date.class);
 
-        Long dateToTime = 10L;
-        Long effectiveDateToTime = 15L;
+        long dateToTime = 10000L;
+        long effectiveDateToTime = 15000L;
 
-        Long delayedDateToTime = 2L;
-        Long earlierDateToTime = 2L;
+        Integer delayedDateToTime = 2;
+        Integer earlierDateToTime = 2;
 
         given(order.getField(DATE_TO)).willReturn(dateTo);
         given(order.getField(CORRECTED_DATE_TO)).willReturn(correctedDateTo);
