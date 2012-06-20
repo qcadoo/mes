@@ -97,7 +97,7 @@ public class OrderStateValidationServiceTest {
         orderStateValidationService.validationOnAccepted(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class OrderStateValidationServiceTest {
         orderStateValidationService.validationOnInProgress(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class OrderStateValidationServiceTest {
         orderStateValidationService.validationOnCompleted(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.eq(MISSING_MESSAGE), Mockito.anyString());
+        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
     }
 
     @Test
@@ -134,9 +134,9 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
@@ -149,10 +149,10 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
-            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(MISSING_MESSAGE, TECHNOLOGY);
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, MISSING_MESSAGE);
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
@@ -165,9 +165,9 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
@@ -180,10 +180,10 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
-            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(MISSING_MESSAGE, TECHNOLOGY);
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY_WRONG_STATE, TECHNOLOGY);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, MISSING_MESSAGE);
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
@@ -196,7 +196,7 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY)) {
-            verify(stateChangeContext).addFieldValidationError(MISSING_MESSAGE, field);
+            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
         }
     }
 

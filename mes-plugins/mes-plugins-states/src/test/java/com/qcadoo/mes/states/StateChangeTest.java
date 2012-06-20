@@ -45,6 +45,14 @@ public abstract class StateChangeTest {
         final EntityList emptyEntityList = mockEntityList(Collections.<Entity> emptyList());
         given(stateChangeEntity.getHasManyField(describer.getMessagesFieldName())).willReturn(emptyEntityList);
         stubEntityField(stateChangeEntity, describer.getStatusFieldName(), StateChangeStatus.IN_PROGRESS.getStringValue());
+        given(stateChangeEntity.isValid()).willReturn(true);
+        given(stateChangeDD.save(Mockito.any(Entity.class))).willAnswer(new Answer<Entity>() {
+
+            @Override
+            public Entity answer(final InvocationOnMock invocation) throws Throwable {
+                return (Entity) invocation.getArguments()[0];
+            }
+        });
     }
 
     protected EntityList mockEntityList(final List<Entity> entities) {
@@ -70,11 +78,6 @@ public abstract class StateChangeTest {
 
     protected static void mockStateChangeStatus(final Entity entity, final StateChangeStatus status) {
         stubEntityField(entity, DESCRIBER.getStatusFieldName(), status.getStringValue());
-    }
-
-    protected static void stubEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
-        given(entity.getField(fieldName)).willReturn(fieldValue);
-        given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
     }
 
     protected void stubOwner() {
@@ -134,6 +137,21 @@ public abstract class StateChangeTest {
                 return (Integer) stateChangeEntity.getField(DESCRIBER.getPhaseFieldName());
             }
         });
+    }
+
+    protected static void stubEntityField(final Entity entity, final String fieldName, final Object fieldValue) {
+        given(entity.getField(fieldName)).willReturn(fieldValue);
+        given(entity.getStringField(fieldName)).willReturn(fieldValue == null ? null : fieldValue.toString());
+    }
+
+    protected void stubStringField(final Entity entity, final String fieldName, final String fieldValue) {
+        given(entity.getField(fieldName)).willReturn(fieldValue);
+        given(entity.getStringField(fieldName)).willReturn(fieldValue);
+    }
+
+    protected void stubBelongsToField(final Entity entity, final String fieldName, final Entity fieldValue) {
+        given(entity.getField(fieldName)).willReturn(fieldValue);
+        given(entity.getBelongsToField(fieldName)).willReturn(fieldValue);
     }
 
 }

@@ -57,7 +57,7 @@ public class OrderStateValidationService {
         final TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology
                 .getStringField(TechnologyFields.STATE));
         if (!TechnologyState.ACCEPTED.equals(technologyState)) {
-            stateChangeContext.addFieldValidationError("orders.validate.technology.error.wrongState.accepted", TECHNOLOGY);
+            stateChangeContext.addFieldValidationError(TECHNOLOGY, "orders.validate.technology.error.wrongState.accepted");
         }
     }
 
@@ -75,7 +75,7 @@ public class OrderStateValidationService {
         final Entity stateChangeEntity = stateChangeContext.getOwner();
         for (String fieldName : fieldNames) {
             if (stateChangeEntity.getField(fieldName) == null) {
-                stateChangeContext.addFieldValidationError("orders.order.orderStates.fieldRequired", fieldName);
+                stateChangeContext.addFieldValidationError(fieldName, "orders.order.orderStates.fieldRequired");
             }
         }
     }

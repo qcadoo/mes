@@ -139,8 +139,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
                 }
             }
             final Entity owner = stateChangeContext.getOwner();
-            stateChangeContext.setField(describer.getOwnerFieldName(), owner.getDataDefinition().save(owner));
-            stateChangeContext.save();
+            stateChangeContext.setOwner(owner);
             performChangeEntityState(stateChangeContext);
         } catch (Exception e) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);

@@ -175,8 +175,8 @@ public class OrderStateChangeReasonService {
     public void onComplete(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         if (neededWhenCorrectingDateTo() && !hasRequiredCorrectionDateToReasonField(order)) {
-            stateChangeContext.addFieldValidationError("orders.order.stateChange.missingEndCorrectionReason",
-                    REASON_TYPE_CORRECTION_DATE_TO);
+            stateChangeContext.addFieldValidationError(REASON_TYPE_CORRECTION_DATE_TO,
+                    "orders.order.stateChange.missingEndCorrectionReason");
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.save();
             return;
@@ -192,8 +192,8 @@ public class OrderStateChangeReasonService {
     public void onStart(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         if (neededWhenCorrectingDateFrom() && !hasRequiredCorrectionDateFromReasonField(order)) {
-            stateChangeContext.addFieldValidationError("orders.order.stateChange.missingStartCorrectionReason",
-                    REASON_TYPE_CORRECTION_DATE_FROM);
+            stateChangeContext.addFieldValidationError(REASON_TYPE_CORRECTION_DATE_FROM,
+                    "orders.order.stateChange.missingStartCorrectionReason");
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.save();
             return;

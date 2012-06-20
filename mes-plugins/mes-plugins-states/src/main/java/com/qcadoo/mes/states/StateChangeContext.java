@@ -76,6 +76,11 @@ public interface StateChangeContext extends MessagesHolder {
     Entity getStateChangeEntity();
 
     /**
+     * Save in database and set (if there is no validation errors) inner state change's owner entity
+     */
+    void setOwner(final Entity owner);
+
+    /**
      * Returns inner state change entity's owner
      * 
      * @return inner state change entity's owner

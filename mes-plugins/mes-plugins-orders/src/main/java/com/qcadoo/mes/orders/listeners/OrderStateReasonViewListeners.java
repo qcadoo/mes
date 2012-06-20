@@ -32,7 +32,9 @@ public class OrderStateReasonViewListeners {
             return;
         }
 
-        final StateChangeContext stateContext = getStateChangeContext(form);
+        final Entity stateChangeEntity = ((FormComponent) form).getEntity();
+        final StateChangeContext stateContext = orderStateChangeService.buildStateChangeContext(stateChangeEntity);
+        ;
         stateContext.setStatus(StateChangeStatus.IN_PROGRESS);
         orderStateChangeService.changeState(stateContext);
 
@@ -40,17 +42,14 @@ public class OrderStateReasonViewListeners {
     }
 
     public void cancelStateChange(final ViewDefinitionState view, final ComponentState form, final String[] args) {
-        final StateChangeContext stateContext = getStateChangeContext((FormComponent) form);
+        final Entity stateChangeEntity = ((FormComponent) form).getEntity();
+        stateChangeEntity.setField(REASON_REQUIRED, false);
+
+        final StateChangeContext stateContext = orderStateChangeService.buildStateChangeContext(stateChangeEntity);
         stateContext.setStatus(StateChangeStatus.CANCELED);
-        stateContext.setField(REASON_REQUIRED, false);
         stateContext.save();
 
         orderStateChangeViewClient.showMessages(new ViewContextHolder(view, form), stateContext);
-    }
-
-    private StateChangeContext getStateChangeContext(final FormComponent form) {
-        final Entity stateChangeEntity = ((FormComponent) form).getEntity();
-        return orderStateChangeService.buildStateChangeContext(stateChangeEntity);
     }
 
     public void beforeRenderDialog(final ViewDefinitionState view) {

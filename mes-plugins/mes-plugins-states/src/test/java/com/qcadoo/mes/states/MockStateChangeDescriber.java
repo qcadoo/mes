@@ -1,14 +1,26 @@
 package com.qcadoo.mes.states;
 
+import static org.mockito.Mockito.mock;
+
 import org.mockito.Mockito;
 
 import com.qcadoo.model.api.DataDefinition;
 
 public final class MockStateChangeDescriber extends AbstractStateChangeDescriber {
 
+    private final DataDefinition dataDefinition;
+
+    public MockStateChangeDescriber() {
+        this.dataDefinition = mock(DataDefinition.class);
+    }
+
+    public MockStateChangeDescriber(final DataDefinition dataDefinition) {
+        this.dataDefinition = dataDefinition;
+    }
+
     @Override
     public DataDefinition getDataDefinition() {
-        return Mockito.mock(DataDefinition.class);
+        return dataDefinition;
     }
 
     @Override

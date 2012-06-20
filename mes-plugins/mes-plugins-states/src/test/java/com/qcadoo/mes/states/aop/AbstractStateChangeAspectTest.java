@@ -251,11 +251,6 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         return entityList;
     }
 
-    private void stubStringField(final Entity entity, final String fieldName, final String fieldValue) {
-        given(entity.getStringField(fieldName)).willReturn(fieldValue);
-        given(entity.getField(fieldName)).willReturn(fieldValue);
-    }
-
     private void stubEntityMock(final String pluginIdentifier, final String modelName) {
         given(dataDefinition.getPluginIdentifier()).willReturn(pluginIdentifier);
         given(dataDefinition.getName()).willReturn(modelName);

@@ -1,12 +1,16 @@
 package com.qcadoo.mes.states;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
+
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 public final class StateChangeContextImpl implements StateChangeContext {
 
@@ -16,18 +20,20 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     private Entity entity;
 
+    private boolean ownerIsValid = true;
+
     public StateChangeContextImpl(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
             final MessageService messageService) {
         Preconditions.checkNotNull(describer);
         Preconditions.checkNotNull(messageService);
-        setEntity(stateChangeEntity);
         this.describer = describer;
         this.messageService = messageService;
+        setStateChangeEntity(stateChangeEntity);
     }
 
     @Override
     public void save() {
-        setEntity(describer.getDataDefinition().save(entity));
+        setStateChangeEntity(describer.getDataDefinition().save(entity));
     }
 
     @Override
@@ -70,9 +76,32 @@ public final class StateChangeContextImpl implements StateChangeContext {
         return describer;
     }
 
-    private void setEntity(final Entity entity) {
-        Preconditions.checkNotNull(entity);
-        this.entity = entity;
+    private void setStateChangeEntity(final Entity stateChange) {
+        Preconditions.checkNotNull(stateChange);
+        if (stateChange.isValid()) {
+            final Entity savedStateChange = describer.getDataDefinition().save(stateChange);
+            if (savedStateChange.isValid()) {
+                this.entity = savedStateChange;
+                return;
+            }
+        }
+        markAsFailureByValidation(stateChange);
+    }
+
+    private void markAsFailureByValidation(final Entity stateChange) {
+        Entity entityToBeMarkAsFailure = this.entity;
+        final Long stateChangeEntityId = stateChange.getId();
+        if (entityToBeMarkAsFailure == null && stateChangeEntityId != null) {
+            entityToBeMarkAsFailure = describer.getDataDefinition().get(stateChangeEntityId);
+        }
+        if (entityToBeMarkAsFailure != null) {
+            this.entity = entityToBeMarkAsFailure;
+            assignErrorsFromEntity(stateChange);
+            setStatus(FAILURE);
+            describer.getDataDefinition().save(entityToBeMarkAsFailure);
+        } else {
+            throw new IllegalArgumentException("Given state change entity have validation errors!");
+        }
     }
 
     @Override
@@ -97,13 +126,13 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
-    public void addFieldValidationError(final String translationKey, final String fieldName, final String... translationArgs) {
+    public void addFieldValidationError(final String fieldName, final String translationKey, final String... translationArgs) {
         messageService.addValidationError(this, fieldName, translationKey, translationArgs);
     }
 
     @Override
     public void addValidationError(final String translationKey, final String... translationArgs) {
-        addFieldValidationError(translationKey, null, translationArgs);
+        addFieldValidationError(null, translationKey, translationArgs);
     }
 
     @Override
@@ -116,4 +145,44 @@ public final class StateChangeContextImpl implements StateChangeContext {
         return entity.getHasManyField(describer.getMessagesFieldName());
     }
 
+    @Override
+    public void setOwner(final Entity owner) {
+        if (!ownerIsValid) {
+            return;
+        }
+        boolean isValid = isEntityValid(owner);
+        if (isValid) {
+            final Entity savedOwner = owner.getDataDefinition().save(owner);
+            isValid = isEntityValid(savedOwner);
+            if (isValid) {
+                entity.setField(describer.getOwnerFieldName(), savedOwner);
+            }
+        }
+        ownerIsValid = isValid;
+        save();
+    }
+
+    private boolean isEntityValid(final Entity entity) {
+        boolean isValid = entity.isValid();
+        if (!isValid) {
+            assignErrorsFromEntity(entity);
+            setStatus(StateChangeStatus.FAILURE);
+        }
+        return isValid;
+    }
+
+    private void assignErrorsFromEntity(final Entity entity) {
+        assignErrorsFromEntity(this, entity);
+    }
+
+    private void assignErrorsFromEntity(final StateChangeContext stateContext, final Entity entity) {
+        for (ErrorMessage globalError : entity.getGlobalErrors()) {
+            addValidationError(globalError.getMessage(), globalError.getVars());
+        }
+
+        for (Entry<String, ErrorMessage> fieldErrorMessageEntry : entity.getErrors().entrySet()) {
+            final ErrorMessage fieldErrorMessage = fieldErrorMessageEntry.getValue();
+            addFieldValidationError(fieldErrorMessageEntry.getKey(), fieldErrorMessage.getMessage(), fieldErrorMessage.getVars());
+        }
+    }
 }
