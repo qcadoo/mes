@@ -49,12 +49,12 @@
 				<layoutElement column="1" row="2" width="5">
 					<component type="lookup" name="product" field="product"
 						reference="product">
-						<option type="searchable" value="name" />
-						<option type="orderable" value=" name" />
+						<option type="column" fields="name" name="name" link="true" />
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
 						<option type="fullScreen" value="true" />
-						<option type="expression" value="#name" />
-						<option type="fieldCode" value="name" />
-						
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
 					</component>

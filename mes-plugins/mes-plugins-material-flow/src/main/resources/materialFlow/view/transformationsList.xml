@@ -41,11 +41,11 @@
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="time" fields="time" />
 			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom == null) ? 'N/A' : #stockAreasFrom['name']" />
+				expression="(#stockAreasFrom == null) ? '' : #stockAreasFrom['name']" />
 			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo == null) ? 'N/A' : #stockAreasTo['name']" />
+				expression="(#stockAreasTo == null) ? '' : #stockAreasTo['name']" />
 			<option type="column" name="staff" fields="staff"
-				expression="(#staff == null) ? 'N/A' : #staff['name']" />
+				expression="(#staff == null) ? '' : #staff['name']" />
 				
 			<option type="order" column="number" direction="asc" />
 			

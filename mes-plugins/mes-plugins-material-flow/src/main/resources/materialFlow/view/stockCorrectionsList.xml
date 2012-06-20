@@ -39,12 +39,12 @@
 			<option type="column" name="number" fields="number" link="true" width="150" />
 			<option type="column" name="stockCorrectionDate" fields="stockCorrectionDate" />
 			<option type="column" name="stockAreas" fields="stockAreas" 
-				expression="(#stockAreas == null) ? 'N/A' : #stockAreas['name']"/>
+				expression="(#stockAreas == null) ? '' : #stockAreas['name']"/>
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? 'N/A' : #product['name']" />
+				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="found" fields="found" />
 			<option type="column" name="staff" fields="staff"
-				expression="(#staff == null) ? 'N/A' : #staff['name']" />
+				expression="(#staff == null) ? '' : #staff['name']" />
 				
 			<option type="order" column="number" direction="asc" />
 			

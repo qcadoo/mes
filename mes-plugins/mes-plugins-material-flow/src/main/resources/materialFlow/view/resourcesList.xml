@@ -37,9 +37,9 @@
 
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="stockAreas" fields="stockAreas"
-				expression="(#stockAreas == null) ? 'N/A' : #stockAreas['name']" link="true" />
+				expression="(#stockAreas == null) ? '' : #stockAreas['name']" link="true" />
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? 'N/A' : #product['name']" link="true" />
+				expression="(#product == null) ? '' : #product['name']" link="true" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="time" fields="time" />
 
