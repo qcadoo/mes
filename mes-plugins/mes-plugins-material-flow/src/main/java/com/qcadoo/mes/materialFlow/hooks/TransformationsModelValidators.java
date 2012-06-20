@@ -26,6 +26,8 @@ package com.qcadoo.mes.materialFlow.hooks;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 
@@ -58,13 +60,13 @@ public class TransformationsModelValidators {
         List<Entity> transfersConsumption = transformations.getHasManyField(TRANSFERS_CONSUMPTION);
         List<Entity> transfersProduction = transformations.getHasManyField(TRANSFERS_PRODUCTION);
 
-        return (checkIfTransfersAreValid(transfersConsumption, stockAreasFrom) && checkIfTransfersAreValid(transfersProduction,
-                null))
+        return (checkIfTransfersAreValid(transfersConsumption, CONSUMPTION.getStringValue(), stockAreasFrom) && checkIfTransfersAreValid(
+                transfersProduction, PRODUCTION.getStringValue(), null))
                 && (checkIfTransfersNumbersAreDistinct(transfersConsumption, transfersProduction) && checkIfTransfersNumbersAreDistinct(
                         transfersProduction, transfersConsumption));
     }
 
-    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final Entity stockAreasFrom) {
+    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String type, final Entity stockAreasFrom) {
         boolean isValid = true;
 
         for (Entity transfer : transfers) {
@@ -96,7 +98,8 @@ public class TransformationsModelValidators {
                 isValid = false;
             }
 
-            if (!materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
+            if (CONSUMPTION.getStringValue().equals(type)
+                    && !materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
                 appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.resourcesArentSufficient");
 
                 isValid = false;

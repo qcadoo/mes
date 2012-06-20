@@ -9,6 +9,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_F
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -196,6 +197,7 @@ public class MultitransferListeners {
 
             isValid = false;
         } else {
+            String type = (String) typeField.getFieldValue();
             Entity stockAreasFrom = getAreaById((Long) stockAreasFromField.getFieldValue());
 
             for (FormComponent formComponent : formComponents) {
@@ -225,7 +227,10 @@ public class MultitransferListeners {
                     isValid = false;
                 }
 
-                if (!materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product, quantity)) {
+                if ((type != null)
+                        && !PRODUCTION.getStringValue().equals(type)
+                        && !materialFlowTransferService.isTransferValidAndAreResourcesSufficient(stockAreasFrom, product,
+                                quantity)) {
                     formComponent.findFieldComponentByName(QUANTITY).addMessage(
                             "materialFlow.multitransfer.validation.resourcesArentSufficient", MessageType.FAILURE);
 
