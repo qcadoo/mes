@@ -115,7 +115,6 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                 if ((fromTechnologyId != null) && (toTechnologyId != null)) {
                     Entity fromTechnology = lineChangeoverNormsForOrdersService.getTechnologyFromDB(fromTechnologyId);
                     Entity toTechnology = lineChangeoverNormsForOrdersService.getTechnologyFromDB(toTechnologyId);
-
                     Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
 
                     Entity lineChangeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
@@ -124,9 +123,12 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                     if (lineChangeoverNorm != null) {
                         lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
                         lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
-                        lineChangeoverNormField.requestComponentUpdateState();
-                        lineChangeoverNormDurationField.requestComponentUpdateState();
+                    } else {
+                        lineChangeoverNormField.setFieldValue(null);
+                        lineChangeoverNormDurationField.setFieldValue(null);
                     }
+                    lineChangeoverNormField.requestComponentUpdateState();
+                    lineChangeoverNormDurationField.requestComponentUpdateState();
                 }
             }
         }

@@ -56,7 +56,7 @@ public class OrderHooks {
                 && entity.getField(OrderFields.CORRECTED_DATE_FROM) != null
                 && entity.getStringField(REASON_TYPE_CORRECTION_DATE_FROM) == null) {
             entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_FROM),
-                    "orders.order.commentReasonTypeCorrectionDate.isRequired");
+                    "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
             return false;
         }
         return true;
@@ -69,7 +69,7 @@ public class OrderHooks {
                 && entity.getField(OrderFields.CORRECTED_DATE_TO) != null
                 && entity.getStringField(REASON_TYPE_CORRECTION_DATE_TO) == null) {
             entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_TO),
-                    "orders.order.commentReasonTypeCorrectionDate.isRequired");
+                    "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
             return false;
         }
         return true;

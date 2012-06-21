@@ -345,8 +345,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
 
         // then
-        verify(lineChangeoverNormField, never()).setFieldValue(Mockito.any());
-        verify(lineChangeoverNormDurationField, never()).setFieldValue(Mockito.any());
+        verify(lineChangeoverNormField).setFieldValue(null);
+        verify(lineChangeoverNormDurationField).setFieldValue(null);
     }
 
     @Test
