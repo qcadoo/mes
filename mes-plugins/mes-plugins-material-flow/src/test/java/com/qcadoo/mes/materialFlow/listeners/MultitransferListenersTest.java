@@ -9,12 +9,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.mes.materialFlow.MaterialFlowTransferService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,6 +32,12 @@ public class MultitransferListenersTest {
     private MultitransferListeners multitransferListeners;
 
     @Mock
+    private MaterialFlowTransferService materialFlowTransferService;
+
+    @Mock
+    private MaterialFlowResourceService materialFlowResourceService;
+
+    @Mock
     private DataDefinitionService dataDefinitionService;
 
     @Mock
@@ -39,9 +45,6 @@ public class MultitransferListenersTest {
 
     @Mock
     private DataDefinition staffDD, areasDD;
-
-    @Mock
-    private MaterialFlowTransferService materialFlowTransferService;
 
     @Mock
     private ViewDefinitionState view;
@@ -56,7 +59,7 @@ public class MultitransferListenersTest {
     private FormComponent formComponent;
 
     @Mock
-    private Entity productQuantity, product, staff, stockAreaFrom, stockAreaTo;
+    private Entity productQuantity, product, staff, stockAreasFrom, stockAreasTo;
 
     @Mock
     private FieldComponent timeComp, stockAreasFromComp, stockAreasToComp, typeComp, staffComp;
@@ -84,10 +87,19 @@ public class MultitransferListenersTest {
         multitransferListeners = new MultitransferListeners();
 
         ReflectionTestUtils.setField(multitransferListeners, "materialFlowTransferService", materialFlowTransferService);
+        ReflectionTestUtils.setField(multitransferListeners, "materialFlowResourceService", materialFlowResourceService);
         ReflectionTestUtils.setField(multitransferListeners, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(multitransferListeners, "timeConverterService", timeConverterService);
 
+        given(view.getComponentByReference("form")).willReturn(form);
+
         given(view.getComponentByReference("products")).willReturn(adlc);
+        given(view.getComponentByReference("time")).willReturn(timeComp);
+        given(view.getComponentByReference("stockAreasTo")).willReturn(stockAreasToComp);
+        given(view.getComponentByReference("stockAreasFrom")).willReturn(stockAreasFromComp);
+        given(view.getComponentByReference("type")).willReturn(typeComp);
+        given(view.getComponentByReference("staff")).willReturn(staffComp);
+
         List<FormComponent> formComponents = Arrays.asList(formComponent);
         given(adlc.getFormComponents()).willReturn(formComponents);
 
@@ -96,30 +108,25 @@ public class MultitransferListenersTest {
         given(productQuantity.getDecimalField("quantity")).willReturn(BigDecimal.TEN);
         given(product.getStringField("unit")).willReturn(unit);
 
-        given(view.getComponentByReference("time")).willReturn(timeComp);
-        given(view.getComponentByReference("stockAreasTo")).willReturn(stockAreasToComp);
-        given(view.getComponentByReference("stockAreasFrom")).willReturn(stockAreasFromComp);
-        given(view.getComponentByReference("type")).willReturn(typeComp);
-        given(view.getComponentByReference("staff")).willReturn(staffComp);
-
-        given(timeComp.isRequired()).willReturn(false);
-        given(stockAreasToComp.isRequired()).willReturn(false);
-        given(stockAreasFromComp.isRequired()).willReturn(false);
-        given(typeComp.isRequired()).willReturn(false);
-
         given(typeComp.getFieldValue()).willReturn(type);
         given(staffComp.getFieldValue()).willReturn(1L);
+
         given(dataDefinitionService.get("basic", "staff")).willReturn(staffDD);
         given(staffDD.get(1L)).willReturn(staff);
+
         Long dateFieldValue = 123L;
+
         given(timeComp.getFieldValue()).willReturn(dateFieldValue);
         given(timeConverterService.getDateFromField(dateFieldValue)).willReturn(time);
-        given(view.getComponentByReference("form")).willReturn(form);
+
         given(stockAreasFromComp.getFieldValue()).willReturn(0L);
         given(stockAreasToComp.getFieldValue()).willReturn(1L);
+
         given(dataDefinitionService.get("materialFlow", "stockAreas")).willReturn(areasDD);
-        given(areasDD.get(0L)).willReturn(stockAreaFrom);
-        given(areasDD.get(1L)).willReturn(stockAreaTo);
+        given(areasDD.get(0L)).willReturn(stockAreasFrom);
+        given(areasDD.get(1L)).willReturn(stockAreasTo);
+
+        given(materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, BigDecimal.TEN)).willReturn(true);
     }
 
     @Test
@@ -134,8 +141,6 @@ public class MultitransferListenersTest {
         verify(formComponent).setEntity(productQuantity);
     }
 
-    // TODO lupo fix problem with test
-    @Ignore
     @Test
     public void shouldCreateMultitransfer() {
         // given
@@ -144,8 +149,8 @@ public class MultitransferListenersTest {
         multitransferListeners.createMultitransfer(view, state, null);
 
         // then
-        verify(materialFlowTransferService)
-                .createTransfer(type, stockAreaFrom, stockAreaTo, product, BigDecimal.TEN, staff, time);
+        verify(materialFlowTransferService).createTransfer(type, stockAreasFrom, stockAreasTo, product, BigDecimal.TEN, staff,
+                time);
         verify(form).addMessage("materialFlow.multitransfer.generate.success", MessageType.SUCCESS);
     }
 
@@ -153,9 +158,10 @@ public class MultitransferListenersTest {
     public void shouldDownloadProductsFromTemplates() {
         // given
         List<Entity> templates = Arrays.asList(template);
+
         given(template.getBelongsToField("product")).willReturn(product);
         given(dataDefinitionService.get("materialFlow", "productQuantity")).willReturn(productQuantityDD);
-        given(materialFlowTransferService.getTransferTemplates(stockAreaFrom, stockAreaTo)).willReturn(templates);
+        given(materialFlowTransferService.getTransferTemplates(stockAreasFrom, stockAreasTo)).willReturn(templates);
         given(productQuantityDD.create()).willReturn(productQuantity);
 
         // when
