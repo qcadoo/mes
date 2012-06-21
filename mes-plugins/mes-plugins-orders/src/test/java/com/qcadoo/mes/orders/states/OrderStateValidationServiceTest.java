@@ -41,7 +41,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.Entity;
 
 public class OrderStateValidationServiceTest {

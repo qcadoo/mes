@@ -21,8 +21,8 @@ public interface MessageService {
      * @param translationArgs
      * @return newly created message entity (not persisted yet!)
      */
-    Entity createMessage(final String translationKey, final StateMessageType type, final String correspondField,
-            final String... translationArgs);
+    Entity createMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String correspondField, final String... translationArgs);
 
     /**
      * Check if given message entity already exists
@@ -51,8 +51,8 @@ public interface MessageService {
      * @param translationKey
      * @param translationArgs
      */
-    void addMessage(final StateChangeContext stateChangeContext, final StateMessageType type, final String correspondFieldName,
-            final String translationKey, final String... translationArgs);
+    void addMessage(final StateChangeContext stateChangeContext, final StateMessageType type, final boolean autoClose,
+            final String correspondFieldName, final String translationKey, final String... translationArgs);
 
     /**
      * Create & add validation error message to state change entity

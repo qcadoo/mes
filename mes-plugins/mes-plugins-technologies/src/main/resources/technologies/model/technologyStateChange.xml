@@ -24,16 +24,26 @@
     ***************************************************************************
 
 -->
-<model name="logging" activable="true"
+<model name="technologyStateChange" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
-		<belongsTo name="technology" model="technology" />
+	
+		<!-- generic state change fields -->
 		<datetime name="dateAndTime" />
-		<string name="previousState" />
-		<string name="currentState" />
-		<belongsTo name="shift" model="shift" plugin="basic" />
+		<enum name="sourceState"
+			values="01draft,02accepted,03declined,04outdated,05checked"
+			required="true" />
+		<enum name="targetState"
+			values="01draft,02accepted,03declined,04outdated,05checked"
+			required="true" />
+		<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
+		<integer name="phase" />
 		<string name="worker" />
+		<hasMany name="messages" joinField="technologyStateChange" model="message" plugin="states" cascade="delete"/> <!-- messages -->
+		<belongsTo name="technology" model="technology" /> <!-- owner -->
+		<belongsTo name="shift" model="shift" plugin="basic" />
+		
 	</fields>
 	<hooks />
 </model>

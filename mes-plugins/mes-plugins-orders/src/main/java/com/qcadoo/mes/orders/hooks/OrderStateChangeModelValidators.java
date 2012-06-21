@@ -2,7 +2,7 @@ package com.qcadoo.mes.orders.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderStateChangeFields;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;

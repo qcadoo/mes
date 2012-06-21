@@ -72,7 +72,7 @@
 		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
 		
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="orderStateChange" plugin="orders" model="order" />
+		    <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>
 		
 		<model:model-field plugin="basic" model="product">
@@ -170,7 +170,6 @@
 		<report:report-template name="order"
 			resource="report/order.jrxml" />
 			
-		<custom:custom class="com.qcadoo.mes.orders.TechnologyOnStartupModule" />
 		<view:resource uri="public/**/*" />
 	</modules>
 

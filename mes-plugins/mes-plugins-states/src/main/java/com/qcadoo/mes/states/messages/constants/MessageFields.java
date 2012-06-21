@@ -10,6 +10,8 @@ public final class MessageFields {
 
     public static final String CORRESPOND_FIELD_NAME = "correspondFieldName";
 
+    public static final String AUTO_CLOSE = "autoClose";
+
     private MessageFields() {
     }
 

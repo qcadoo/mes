@@ -33,7 +33,7 @@ public class PcOrderStatesListenerAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
-    @Before("phaseExecution(stateChangeContext, phase)")
+    @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompleted(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.onCompleted(stateChangeContext);
     }

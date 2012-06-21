@@ -1,6 +1,6 @@
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.mes.orders.constants.OrderStateChangeFields.REASON_REQUIRED;
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_REQUIRED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class OrderStateReasonViewListeners {
 
         final Entity stateChangeEntity = ((FormComponent) form).getEntity();
         final StateChangeContext stateContext = orderStateChangeService.buildStateChangeContext(stateChangeEntity);
-        ;
+
         stateContext.setStatus(StateChangeStatus.IN_PROGRESS);
         orderStateChangeService.changeState(stateContext);
 

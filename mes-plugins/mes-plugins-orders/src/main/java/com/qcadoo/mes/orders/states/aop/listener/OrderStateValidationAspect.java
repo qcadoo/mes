@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OrderStateValidationService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
@@ -22,7 +23,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
-@RunIfEnabled("orders")
+@RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
 public class OrderStateValidationAspect extends AbstractStateListenerAspect {
 
     @Autowired
@@ -34,21 +35,21 @@ public class OrderStateValidationAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
-    @Before("phaseExecution(stateChangeContext, phase)")
+    @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnAccepted(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = IN_PROGRESS)
-    @Before("phaseExecution(stateChangeContext, phase)")
+    @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnInProgress(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnInProgress(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
-    @Before("phaseExecution(stateChangeContext, phase)")
+    @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnCompleted(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnCompleted(stateChangeContext);
     }

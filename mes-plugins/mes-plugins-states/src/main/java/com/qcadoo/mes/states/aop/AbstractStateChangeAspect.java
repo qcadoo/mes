@@ -43,7 +43,7 @@ import com.qcadoo.security.api.SecurityService;
 @DeclarePrecedence("com.qcadoo.mes.states.aop.StateChangePhaseAspect, com.qcadoo.mes.states.aop.RunInPhaseAspect")
 public abstract class AbstractStateChangeAspect implements StateChangeService {
 
-    protected static final int DEFAULT_NUM_OF_PHASES = 1;
+    protected static final int DEFAULT_NUM_OF_PHASES = 2;
 
     @Autowired
     private MessageService messageService;

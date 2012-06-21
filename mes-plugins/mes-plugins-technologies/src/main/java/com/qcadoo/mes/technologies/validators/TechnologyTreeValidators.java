@@ -1,8 +1,8 @@
 package com.qcadoo.mes.technologies.validators;
 
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 
 import java.util.Map;
 import java.util.Map.Entry;

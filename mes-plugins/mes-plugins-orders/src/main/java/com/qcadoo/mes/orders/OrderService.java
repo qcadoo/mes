@@ -61,8 +61,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -576,7 +575,7 @@ public class OrderService {
             if (technology == null) {
                 return true;
             }
-            TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE));
+            TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
 
             if (TechnologyState.CHECKED != technologyState && TechnologyState.ACCEPTED != technologyState) {
                 order.addError(orderDD.getField(TECHNOLOGY), "orders.validate.technology.error.wrongState.checked");

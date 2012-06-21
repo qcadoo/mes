@@ -94,13 +94,13 @@ public final class StateChangeContextImpl implements StateChangeContext {
         if (entityToBeMarkAsFailure == null && stateChangeEntityId != null) {
             entityToBeMarkAsFailure = describer.getDataDefinition().get(stateChangeEntityId);
         }
-        if (entityToBeMarkAsFailure != null) {
+        if (entityToBeMarkAsFailure == null) {
+            throw new IllegalArgumentException("Given state change entity have validation errors!");
+        } else {
             this.entity = entityToBeMarkAsFailure;
             assignErrorsFromEntity(stateChange);
             setStatus(FAILURE);
             describer.getDataDefinition().save(entityToBeMarkAsFailure);
-        } else {
-            throw new IllegalArgumentException("Given state change entity have validation errors!");
         }
     }
 
@@ -117,12 +117,18 @@ public final class StateChangeContextImpl implements StateChangeContext {
     @Override
     public void addFieldMessage(final String translationKey, final StateMessageType type, final String fieldName,
             final String... translationArgs) {
-        messageService.addMessage(this, type, null, translationKey, translationArgs);
+        messageService.addMessage(this, type, true, fieldName, translationKey, translationArgs);
     }
 
     @Override
     public void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs) {
-        addFieldMessage(translationKey, type, null, translationArgs);
+        addMessage(translationKey, type, true, translationArgs);
+    }
+
+    @Override
+    public void addMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String... translationArgs) {
+        messageService.addMessage(this, type, autoClose, null, translationKey, translationArgs);
     }
 
     @Override
@@ -172,10 +178,6 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     private void assignErrorsFromEntity(final Entity entity) {
-        assignErrorsFromEntity(this, entity);
-    }
-
-    private void assignErrorsFromEntity(final StateChangeContext stateContext, final Entity entity) {
         for (ErrorMessage globalError : entity.getGlobalErrors()) {
             addValidationError(globalError.getMessage(), globalError.getVars());
         }
@@ -185,4 +187,5 @@ public final class StateChangeContextImpl implements StateChangeContext {
             addFieldValidationError(fieldErrorMessageEntry.getKey(), fieldErrorMessage.getMessage(), fieldErrorMessage.getVars());
         }
     }
+
 }

@@ -16,6 +16,10 @@ import com.qcadoo.model.api.Entity;
 @Aspect
 public abstract class AbstractStateListenerAspect {
 
+    protected static final String PHASE_EXECUTION_POINTCUT = "phaseExecution(stateChangeContext, phase)";
+
+    protected static final String CHANGE_STATE_EXECUTION_POINTCUT = "phaseExecution(stateChangeContext)";
+
     /**
      * Pointcut for execution state change phase
      * 

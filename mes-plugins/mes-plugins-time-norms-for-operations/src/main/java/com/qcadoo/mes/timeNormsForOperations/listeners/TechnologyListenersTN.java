@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.technologies.constants.TechnologyState;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
