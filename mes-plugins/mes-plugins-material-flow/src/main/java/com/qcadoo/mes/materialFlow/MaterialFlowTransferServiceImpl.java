@@ -62,11 +62,4 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
                 .find().add(SearchRestrictions.belongsTo(STOCK_AREAS_FROM, stockAreaFrom))
                 .add(SearchRestrictions.belongsTo(STOCK_AREAS_TO, stockAreaTo)).list().getEntities();
     }
-
-    @Override
-    public boolean isTransferValidAndAreResourcesSufficient(final Entity stockAreasFrom, final Entity product,
-            final BigDecimal quantity) {
-        return ((stockAreasFrom != null) && (product != null) && (quantity != null) && !materialFlowResourceService
-                .areResourcesSufficient(stockAreasFrom, product, quantity));
-    }
 }

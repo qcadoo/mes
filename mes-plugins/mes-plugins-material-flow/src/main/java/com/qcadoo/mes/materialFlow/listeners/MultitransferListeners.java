@@ -44,10 +44,10 @@ public class MultitransferListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private MaterialFlowResourceService materialFlowResourceService;
+    private MaterialFlowTransferService materialFlowTransferService;
 
     @Autowired
-    private MaterialFlowTransferService materialFlowTransferService;
+    private MaterialFlowResourceService materialFlowResourceService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -223,13 +223,6 @@ public class MultitransferListeners {
                         isValid = false;
                     }
                 }
-
-                // if (quantity == null) {
-                // formComponent.findFieldComponentByName(QUANTITY).addMessage(
-                // "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
-                //
-                // isValid = false;
-                // }
 
                 if ((type != null) && !PRODUCTION.getStringValue().equals(type) && (stockAreasFrom != null) && (product != null)
                         && (quantity != null)

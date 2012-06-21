@@ -13,5 +13,4 @@ public interface MaterialFlowTransferService {
 
     List<Entity> getTransferTemplates(final Entity stockAreasFrom, final Entity stockAreasTo);
 
-    boolean isTransferValidAndAreResourcesSufficient(final Entity stockAreasFrom, final Entity product, final BigDecimal quantity);
 }
