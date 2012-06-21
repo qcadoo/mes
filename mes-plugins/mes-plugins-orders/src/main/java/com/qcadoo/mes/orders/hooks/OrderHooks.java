@@ -7,6 +7,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
@@ -19,6 +21,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -28,6 +32,9 @@ import com.qcadoo.model.api.Entity;
 public class OrderHooks {
 
     public static final long SECOND_MILLIS = 1000;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -40,6 +47,32 @@ public class OrderHooks {
     public void copyEndDate(final DataDefinition dataDefinition, final Entity entity) {
         setEndDate(entity);
         fillEndDate(entity);
+    }
+
+    public boolean checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired(final DataDefinition dataDefinition,
+            final Entity entity) {
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField("reasonNeededWhenCorrectingDateFrom")
+                && entity.getField(OrderFields.CORRECTED_DATE_FROM) != null
+                && entity.getStringField(REASON_TYPE_CORRECTION_DATE_FROM) == null) {
+            entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_FROM),
+                    "orders.order.commentReasonTypeCorrectionDate.isRequired");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired(final DataDefinition dataDefinition,
+            final Entity entity) {
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField("reasonNeededWhenCorrectingDateTo")
+                && entity.getField(OrderFields.CORRECTED_DATE_TO) != null
+                && entity.getStringField(REASON_TYPE_CORRECTION_DATE_TO) == null) {
+            entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_TO),
+                    "orders.order.commentReasonTypeCorrectionDate.isRequired");
+            return false;
+        }
+        return true;
     }
 
     private void setStartDate(final Entity entity) {

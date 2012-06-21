@@ -124,6 +124,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                     if (lineChangeoverNorm != null) {
                         lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
                         lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
+                        lineChangeoverNormField.requestComponentUpdateState();
+                        lineChangeoverNormDurationField.requestComponentUpdateState();
                     }
                 }
             }

@@ -478,7 +478,7 @@
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeCorrectionDateTo"
 									field="#{form}.reasonTypeCorrectionDateTo" reference="reasonTypeCorrectionDateTo"
-									defaultEnabled="false">
+									defaultEnabled="false" >
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
