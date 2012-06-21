@@ -29,7 +29,7 @@ public class BpcOrderStateListenerAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(DEFAULT)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
-    @Before("phaseExecution(stateChangeContext, phase)")
+    @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.onAccept(stateChangeContext);
     }

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.states.messages.util;
 
+import static com.qcadoo.mes.states.messages.constants.MessageFields.AUTO_CLOSE;
 import static com.qcadoo.mes.states.messages.constants.MessageFields.TRANSLATION_ARGS;
 import static com.qcadoo.mes.states.messages.constants.MessageFields.TRANSLATION_KEY;
 
@@ -134,6 +135,10 @@ public final class MessagesUtil {
 
     public static String[] getArgs(final Entity message) {
         return splitArgs(message.getStringField(TRANSLATION_ARGS));
+    }
+
+    public static boolean isAutoClosed(final Entity message) {
+        return message.getField(AUTO_CLOSE) == null || message.getBooleanField(AUTO_CLOSE);
     }
 
 }

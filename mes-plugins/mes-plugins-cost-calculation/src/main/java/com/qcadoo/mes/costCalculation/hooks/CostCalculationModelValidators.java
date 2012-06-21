@@ -27,8 +27,8 @@ import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.CAL
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.SOURCE_OF_MATERIAL_COSTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.DECLINED;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.DRAFT;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.DECLINED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.DRAFT;
 
 import org.springframework.stereotype.Service;
 

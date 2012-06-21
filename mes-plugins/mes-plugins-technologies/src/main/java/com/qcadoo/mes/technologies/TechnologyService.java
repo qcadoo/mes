@@ -26,8 +26,8 @@ package com.qcadoo.mes.technologies;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,8 +48,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyState;
-import com.qcadoo.mes.technologies.states.TechnologyStateUtils;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -703,9 +702,8 @@ public class TechnologyService {
         if (technology == null || existingTechnology == null) {
             return false;
         }
-        TechnologyState technologyState = TechnologyStateUtils.getStateFromField(technology.getStringField(STATE));
-        TechnologyState existingTechnologyState = TechnologyStateUtils
-                .getStateFromField(existingTechnology.getStringField(STATE));
+        TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
+        TechnologyState existingTechnologyState = TechnologyState.parseString(existingTechnology.getStringField(STATE));
 
         return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
     }

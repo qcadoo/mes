@@ -33,9 +33,9 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
-				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(acceptTechnology);" />
-				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{state}.changeTechnologyState(cancelTechnology);" />
-				<smallButton name="checkTechnology" icon="startIcon16.png" state="disabled" action="#{state}.changeTechnologyState(checkTechnology);" />
+				<smallButton name="acceptTechnology" icon="startIcon16.png" state="disabled" action="#{form}.changeState(acceptTechnology);" />
+				<smallButton name="cancelTechnology" icon="deleteIcon16.png" state="disabled" action="#{form}.changeState(cancelTechnology);" />
+				<smallButton name="checkTechnology" icon="startIcon16.png" state="disabled" action="#{form}.changeState(checkTechnology);" />
 			</group>
 			<group name="reports">
 				<smallButton name="pdf" icon="pdfIcon16.png" action="#{form}.fireEvent(printTechnologyDetailsReport,pdf);" state="enabled" />
@@ -45,8 +45,17 @@
 		
 		<windowTab name="mainTab">
 			<component type="form" name="technology" reference="form">
+				<listener event="changeState" class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient" method="changeState" />
 				<script>
 					<![CDATA[
+						this.changeState = function(eventPerformer, ribbonItemName) {
+							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+							var newState = ribbonItem.forState;
+							if (window.confirm(ribbonItem.confirmMessage)) {
+								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
+							}
+						}
+					
 						#{form}.addOnChangeListener({
 							onSetValue: function() {
 								var itemNames = ["reports.pdf", "reports.xls", "status.acceptTechnology", "status.cancelTechnology", "status.checkTechnology"]; 
@@ -134,21 +143,13 @@
  							#{technologyTree}.addOnChangeListener({  
  								select: function(newValue){ 
  									#{outProducts}.setEnabled(true, true); 
- 									#{outProducts}.setEnabled(true, true); 
+ 									#{inProducts}.setEnabled(true, true); 
  								} 
  							}); 
 							
 							#{technologyTree}.addOnChangeListener(onSetValueListener); 
    							#{outProducts}.addOnChangeListener(onSetValueListener);    
 							#{inProducts}.addOnChangeListener(onSetValueListener);    
-							
-							this.changeTechnologyState = function(eventPerformer, ribbonItemName) {
-								var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-								var newState = ribbonItem.forState;
-								if (window.confirm(ribbonItem.confirmMessage)) {
-									#{form}.fireEvent(eventPerformer, 'changeTechnologyState', [newState]);
-								}
-							}
 							
 							function toggleEditable(state) {
 								var isDraft = state == "01draft";
@@ -233,7 +234,6 @@
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				
-				<listener event="changeTechnologyState" class="com.qcadoo.mes.technologies.states.TechnologyStateService" method="changeTechnologyState" />
 				<listener event="printTechnologyDetailsReport" class="com.qcadoo.mes.technologies.print.TechnologiesReportService" method="printTechnologyDetailsReport" />
 			</component>
 		</windowTab>
@@ -318,19 +318,21 @@
 			</component>
 		</windowTab>
 		<windowTab name="history">
-			<component type="grid" name="loggings" reference="grid" source="#{form}.loggings">
+			<component type="grid" name="loggings" reference="grid" source="#{form}.stateChanges">
 				<option type="column" name="dateAndTime" fields="dateAndTime" />
-				<option type="column" name="previousState" fields="previousState" expression="'@technologies.technology.state.value.' + #previousState" />
-				<option type="column" name="currentState" fields="currentState" expression="'@technologies.technology.state.value.' + #currentState" />
+				<option type="column" name="previousState" fields="sourceState" expression="'@technologies.technology.state.value.' + #sourceState" />
+				<option type="column" name="currentState" fields="targetState" expression="'@technologies.technology.state.value.' + #targetState" />
 				<option type="column" name="shift" fields="shift" expression="#shift != null ? #shift['name'] : ''" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="desc" />
-				<option type="searchable" value="dateAndTime,previousState,currentState" />
-				<option type="orderable" value="dateAndTime,previousState,currentState" />
+				<option type="searchable" value="dateAndTime,sourceState,targetState" />
+				<option type="orderable" value="dateAndTime,sourceState,targetState" />
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" method="rebuildTreeNumbering" />
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="filterStateChangeHistory" />
 	</hooks>
 </view>

@@ -6,8 +6,8 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.PLUGIN_IDENTIFIER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;

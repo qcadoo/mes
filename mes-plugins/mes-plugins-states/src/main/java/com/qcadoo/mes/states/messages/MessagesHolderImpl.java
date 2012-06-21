@@ -22,22 +22,28 @@ public class MessagesHolderImpl implements MessagesHolder {
     @Override
     public void addFieldMessage(final String translationKey, final StateMessageType type, final String fieldName,
             final String... translationArgs) {
-        messagesList.add(messageService.createMessage(translationKey, type, fieldName, translationArgs));
+        messagesList.add(messageService.createMessage(translationKey, type, true, fieldName, translationArgs));
     }
 
     @Override
     public void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs) {
-        messagesList.add(messageService.createMessage(translationKey, type, null, translationArgs));
+        addMessage(translationKey, type, true, translationArgs);
+    }
+
+    @Override
+    public void addMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String... translationArgs) {
+        messagesList.add(messageService.createMessage(translationKey, type, autoClose, null, translationArgs));
     }
 
     @Override
     public void addFieldValidationError(final String translationKey, final String fieldName, final String... translationArgs) {
-        messagesList.add(messageService.createMessage(translationKey, VALIDATION_ERROR, fieldName, translationArgs));
+        messagesList.add(messageService.createMessage(translationKey, VALIDATION_ERROR, true, fieldName, translationArgs));
     }
 
     @Override
     public void addValidationError(final String translationKey, final String... translationArgs) {
-        messagesList.add(messageService.createMessage(translationKey, VALIDATION_ERROR, null, translationArgs));
+        messagesList.add(messageService.createMessage(translationKey, VALIDATION_ERROR, true, null, translationArgs));
     }
 
     @Override

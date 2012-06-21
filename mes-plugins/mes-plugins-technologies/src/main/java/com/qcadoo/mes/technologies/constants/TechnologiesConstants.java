@@ -23,59 +23,62 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public interface TechnologiesConstants {
+public final class TechnologiesConstants {
 
-    String PLUGIN_IDENTIFIER = "technologies";
+    private TechnologiesConstants() {
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "technologies";
 
     // MODEL
-    String MODEL_OPERATION = "operation";
+    public static final String MODEL_OPERATION = "operation";
 
-    String MODEL_OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
+    public static final String MODEL_OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
 
-    String MODEL_OPERATION_PRODUCT_OUT_COMPONENT = "operationProductOutComponent";
+    public static final String MODEL_OPERATION_PRODUCT_OUT_COMPONENT = "operationProductOutComponent";
 
-    String MODEL_TECHNOLOGY = "technology";
+    public static final String MODEL_TECHNOLOGY = "technology";
 
-    String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+    public static final String MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
-    String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
+    public static final String MODEL_OPERATION_NUMBER_FIELD_NAME = "number";
 
-    String MODEL_LOGGING = "logging";
+    public static final String MODEL_TECHNOLOGY_STATE_CHANGE = "technologyStateChange";
 
-    String MODEL_TECHNOLOGY_GROUP = "technologyGroup";
+    public static final String MODEL_TECHNOLOGY_GROUP = "technologyGroup";
 
-    String OPERATION_COMPONENTS = "operationComponents";
+    public static final String OPERATION_COMPONENTS = "operationComponents";
 
-    String FIELD_ENTITY_TYPE = "entityType";
+    public static final String FIELD_ENTITY_TYPE = "entityType";
 
-    String FIELD_NAME = "name";
+    public static final String FIELD_NAME = "name";
 
     // VIEW
-    String VIEW_OPERATION_DETAILS = "operationDetails";
+    public static final String VIEW_OPERATION_DETAILS = "operationDetails";
 
-    String VIEW_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "operationProductInComponentDetails";
+    public static final String VIEW_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "operationProductInComponentDetails";
 
-    String VIEW_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "operationProductOutComponentDetails";
+    public static final String VIEW_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "operationProductOutComponentDetails";
 
-    String VIEW_OPERATIONS_LIST = "operationsList";
+    public static final String VIEW_OPERATIONS_LIST = "operationsList";
 
-    String VIEW_TECHNOLOGIES_LIST = "technologiesList";
+    public static final String VIEW_TECHNOLOGIES_LIST = "technologiesList";
 
-    String VIEW_TECHNOLOGY_DETAILS = "technologyDetails";
+    public static final String VIEW_TECHNOLOGY_DETAILS = "technologyDetails";
 
-    String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
+    public static final String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
 
-    String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
+    public static final String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
 
-    String MODEL_BASIC_PRODUCT = "product";
+    public static final String MODEL_BASIC_PRODUCT = "product";
 
-    String MODEL_BASIC_MACHINE = "machine";
+    public static final String MODEL_BASIC_MACHINE = "machine";
 
-    String REFERENCE_TECHNOLOGY = "referenceTechnology";
+    public static final String REFERENCE_TECHNOLOGY = "referenceTechnology";
 
-    String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
 
-    String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
+    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 }
