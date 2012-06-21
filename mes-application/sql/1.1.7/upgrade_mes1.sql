@@ -1,34 +1,36 @@
 -- Table: basic_parameter
 -- changed: 21.05.2012
 
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateFrom boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenCorrectingDateTo boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenCorrectingDateTo SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhencorrectingdatefrom boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhencorrectingdatefrom SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhencorrectingdateto boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhencorrectingdateto SET DEFAULT false;
 
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToDeclined boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToDeclined SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToInterrupted boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToInterrupted SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenChangingStateToAbandoned boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenChangingStateToAbandoned SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhenchangingstatetodeclined boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhenchangingstatetodeclined SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhenchangingstatetointerrupted boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhenchangingstatetointerrupted SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhenchangingstatetoabandoned boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhenchangingstatetoabandoned SET DEFAULT false;
 
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenDelayedEffectiveDateFrom boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenEarlierEffectiveDateFrom boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarlierEffectiveDateFrom SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenDelayedEffectiveDateTo boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenDelayedEffectiveDateTo SET DEFAULT false;
-ALTER TABLE basic_parameter ADD COLUMN reasonNeededWhenEarlierEffectiveDateTo boolean;
-ALTER TABLE basic_parameter ALTER COLUMN reasonNeededWhenEarlierEffectiveDateTo SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhendelayedeffectivedatefrom boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhendelayedeffectivedatefrom SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhenearliereffectivedatefrom boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhenearliereffectivedatefrom SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhendelayedeffectivedateto boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhendelayedeffectivedateto SET DEFAULT false;
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhenearliereffectivedateto boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhenearliereffectivedateto SET DEFAULT false;
 
-ALTER TABLE basic_parameter ADD COLUMN delayedEffectiveDateFrom integer;
-ALTER TABLE basic_parameter ADD COLUMN earliedEffectiveDateFrom integer;
-ALTER TABLE basic_parameter ADD COLUMN delayedEffectiveDateTo integer;
-ALTER TABLE basic_parameter ADD COLUMN earliedEffectiveDateTo integer;
-
+ALTER TABLE basic_parameter ADD COLUMN delayedeffectivedatefromtime integer;
+ALTER TABLE basic_parameter ADD COLUMN earlierEffectivedatefromtime integer;
+ALTER TABLE basic_parameter ADD COLUMN delayedeffectivedatetoTime integer;
+ALTER TABLE basic_parameter ADD COLUMN earlierEffectivedatetoTime integer;
+ALTER TABLE basic_parameter ALTER COLUMN delayedeffectivedatefromtime SET DEFAULT 900;
+ALTER TABLE basic_parameter ALTER COLUMN earlierEffectivedatefromtime SET DEFAULT 900;
+ALTER TABLE basic_parameter ALTER COLUMN delayedeffectivedatetoTime SET DEFAULT 900;
+ALTER TABLE basic_parameter ALTER COLUMN earlierEffectivedatetoTime SET DEFAULT 900;
 -- end
-
 
 -- Table: orders_order
 -- changed: 17.05.2012
@@ -88,10 +90,10 @@ CREATE TABLE linechangeovernorms_linechangeovernorms
 ALTER TABLE orders_order ADD COLUMN startdate timestamp without time zone;
 ALTER TABLE orders_order ADD COLUMN finishdate timestamp without time zone;
 
-ALTER TABLE orders_order ADD COLUMN ownlinechangeover TYPE boolean;
-ALTER TABLE orders_order ADD COLUMN ownlinechangeover SET DEFAULT false;
+ALTER TABLE orders_order ADD COLUMN ownlinechangeover boolean;
+ALTER TABLE orders_order ALTER COLUMN ownlinechangeover SET DEFAULT false;
 
-ALTER TABLE orders_order ADD COLUMN ownlinechangeoverduration TYPE integer;
+ALTER TABLE orders_order ADD COLUMN ownlinechangeoverduration integer;
 
 -- end
 
@@ -120,6 +122,7 @@ CREATE TABLE productionpershift_progressforday
   id bigint NOT NULL,
   technologyinstanceoperationcomponent_id bigint,
   "day" integer,
+  corrected boolean  DEFAULT false,
   CONSTRAINT productionpershift_progressforday_pkey PRIMARY KEY (id),
   CONSTRAINT progressforday_tioc_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
       REFERENCES technologies_technologyinstanceoperationcomponent (id) DEFERRABLE
@@ -269,3 +272,26 @@ ALTER TABLE basic_parameter ALTER COLUMN typeofproductionrecording SET DEFAULT '
 
 -- end
 
+-- Table: materialflow_productquantity
+-- changed: 20.06.2012
+CREATE TABLE materialflow_productquantity
+(
+  id bigint NOT NULL,
+  product_id bigint,
+  quantity numeric(10,3),
+  unit character varying(255),
+  transfer_id bigint,
+  CONSTRAINT materialflow_productquantity_pkey PRIMARY KEY (id),
+  CONSTRAINT materialflow_transfer_pkey FOREIGN KEY (transfer_id)
+      REFERENCES materialflow_transfer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT basic_product_pkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+--end
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- changed: 20.06.2012
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN hascorrections boolean;
+--end
