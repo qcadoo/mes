@@ -9,6 +9,7 @@ import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -23,6 +24,9 @@ public class OrderStateReasonViewListeners {
     private OrderStateChangeAspect orderStateChangeService;
 
     @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
+
+    @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
 
     public void continueStateChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
@@ -33,7 +37,8 @@ public class OrderStateReasonViewListeners {
         }
 
         final Entity stateChangeEntity = ((FormComponent) form).getEntity();
-        final StateChangeContext stateContext = orderStateChangeService.buildStateChangeContext(stateChangeEntity);
+        final StateChangeContext stateContext = stateChangeContextBuilder.build(
+                orderStateChangeService.getChangeEntityDescriber(), stateChangeEntity);
 
         stateContext.setStatus(StateChangeStatus.IN_PROGRESS);
         orderStateChangeService.changeState(stateContext);
@@ -45,7 +50,8 @@ public class OrderStateReasonViewListeners {
         final Entity stateChangeEntity = ((FormComponent) form).getEntity();
         stateChangeEntity.setField(REASON_REQUIRED, false);
 
-        final StateChangeContext stateContext = orderStateChangeService.buildStateChangeContext(stateChangeEntity);
+        final StateChangeContext stateContext = stateChangeContextBuilder.build(
+                orderStateChangeService.getChangeEntityDescriber(), stateChangeEntity);
         stateContext.setStatus(StateChangeStatus.CANCELED);
         stateContext.save();
 

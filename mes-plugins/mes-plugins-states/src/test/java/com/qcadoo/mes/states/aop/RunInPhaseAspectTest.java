@@ -38,11 +38,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static final class TestStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
-
-        @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
             return new MockStateChangeDescriber();
         }
@@ -70,11 +65,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static final class AnotherStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
-
-        @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
             return new MockStateChangeDescriber();
         }
@@ -96,11 +86,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
     @Aspect
     public static final class BreakStateChangeAspect extends AbstractStateChangeAspect {
-
-        @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
 
         @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {

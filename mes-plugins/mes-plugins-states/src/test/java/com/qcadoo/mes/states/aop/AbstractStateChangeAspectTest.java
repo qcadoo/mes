@@ -53,16 +53,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public static class TestStateChangeService extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
-
-        @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
-            targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
+            targetEntity.setField(describer.getOwnerStateFieldName(),
+                    stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
 
         @Override
@@ -80,16 +76,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public static class AnotherStateChangeService extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
-
-        @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
-            targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
+            targetEntity.setField(describer.getOwnerStateFieldName(),
+                    stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
 
         @Override

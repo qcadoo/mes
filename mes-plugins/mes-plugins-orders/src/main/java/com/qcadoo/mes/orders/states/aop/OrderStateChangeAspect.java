@@ -4,7 +4,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -26,12 +25,7 @@ public class OrderStateChangeAspect extends AbstractStateChangeAspect {
     }
 
     @Override
-    protected String getStateFieldName() {
-        return OrderFields.STATE;
-    }
-
-    @Override
-    protected void changeStatePhase(StateChangeContext stateChangeContext, int phaseNumber) {
+    protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
     }
 
     @Override

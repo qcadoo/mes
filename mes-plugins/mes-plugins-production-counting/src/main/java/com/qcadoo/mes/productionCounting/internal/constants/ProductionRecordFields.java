@@ -65,6 +65,6 @@ public final class ProductionRecordFields {
 
     public static final String DIVISION = "division";
 
-    public static final String PRODUCTION_RECORD_LOGGING = "productionRecordLogging";
+    public static final String STATE_CHANGES = "stateChanges";
 
 }

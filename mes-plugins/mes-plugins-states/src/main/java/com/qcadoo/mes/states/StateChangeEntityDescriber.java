@@ -68,6 +68,11 @@ public interface StateChangeEntityDescriber {
     String getWorkerFieldName();
 
     /**
+     * @return name of String field containing owner entity state.
+     */
+    String getOwnerStateFieldName();
+
+    /**
      * Check if any field using in this describer is missing.
      * 
      * @throws IllegalStateException

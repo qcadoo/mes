@@ -61,22 +61,16 @@
 			plugin="basic" />
 		<belongsTo name="division" model="division" plugin="basic" />
 
-		<hasMany name="loggings" model="productionRecordLogging"
+		<hasMany name="stateChanges" model="productionRecordStateChange"
 			joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
-		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.states.ProductionCountingChangeStateHook"
-			method="changedState" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="generateData" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="copyProductsFromOrderOperation" />
-		<onCreate
-			class="com.qcadoo.mes.productionCounting.internal.logging.ProductionRecordLoggingService"
-			method="logCreateEvent" />
 		<onCopy
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="changeStateToDefault" />

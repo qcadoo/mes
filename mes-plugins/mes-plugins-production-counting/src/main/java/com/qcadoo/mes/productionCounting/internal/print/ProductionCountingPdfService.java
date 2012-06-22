@@ -24,6 +24,8 @@
 package com.qcadoo.mes.productionCounting.internal.print;
 
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
+import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -46,11 +48,18 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingFields;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
+import com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.internal.print.utils.EntityProductionRecordComparator;
-import com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -73,12 +82,6 @@ public class ProductionCountingPdfService extends PdfDocumentService {
     private static final String QCADOO_VIEW_FALSE = "qcadooView.false";
 
     private static final String QCADOO_VIEW_TRUE = "qcadooView.true";
-
-    private static final String FIELD_PRODUCT = "product";
-
-    private static final String FIELD_NAME = "name";
-
-    private static final String FIELD_ORDER = "order";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -120,10 +123,11 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
         final List<Entity> productionRecordsList = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD).find()
-                .add(SearchRestrictions.eq("state", ProductionCountingStates.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.belongsTo(FIELD_ORDER, productionCounting.getBelongsToField(FIELD_ORDER))).list()
-                .getEntities();
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
+                .find()
+                .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.belongsTo(ProductionRecordFields.ORDER,
+                        productionCounting.getBelongsToField(ProductionCountingFields.ORDER))).list().getEntities();
         Collections.sort(productionRecordsList, new EntityProductionRecordComparator());
         for (Entity productionRecord : productionRecordsList) {
             addProductionRecord(document, productionRecord, locale);
@@ -156,16 +160,18 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                 FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.order", locale),
-                productionCounting.getBelongsToField(FIELD_ORDER).getStringField(FIELD_NAME), null,
+                productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getStringField(OrderFields.NAME), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.product", locale),
-                productionCounting.getBelongsToField(FIELD_PRODUCT).getStringField(FIELD_NAME), null,
+                productionCounting.getBelongsToField(ProductionCountingFields.PRODUCT).getStringField(ProductFields.NAME), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
-        addTableCellAsTable(leftPanel,
+        addTableCellAsTable(
+                leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
-                String.valueOf(productionCounting.getBelongsToField(FIELD_ORDER).getHasManyField("productionRecords").size()),
-                null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
+                String.valueOf(productionCounting.getBelongsToField(ProductionCountingFields.ORDER)
+                        .getHasManyField("productionRecords").size()), null, FontUtils.getDejavuBold9Dark(),
+                FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.description.label", locale) + ":",
                 productionCounting.getStringField("description"), null, FontUtils.getDejavuBold9Dark(),
@@ -180,53 +186,51 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         rightPanel.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.parameters", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
+        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
+                + translationService.translate("productionCounting.productionBalance.report.panel.registerQuantityOutProduct",
+                        locale)
+                + " "
+                + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getField(
+                        "registerQuantityInProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
+                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
+                + translationService.translate("productionCounting.productionBalance.report.panel.registerQuantityInProduct",
+                        locale)
+                + " "
+                + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getField(
+                        "registerQuantityOutProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
+                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
+                + translationService
+                        .translate("productionCounting.productionBalance.report.panel.registerProductionTime", locale)
+                + " "
+                + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getField(
+                        "registerProductionTime") ? translationService.translate(QCADOO_VIEW_TRUE, locale) : translationService
+                        .translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
         rightPanel
                 .addCell(new Phrase(
                         TAB_SPACE_LITERAL
-                                + translationService.translate(
-                                        "productionCounting.productionBalance.report.panel.registerQuantityOutProduct", locale)
+                                + translationService.translate("productionCounting.productionBalance.report.panel.justOne",
+                                        locale)
                                 + " "
-                                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField(
-                                        "registerQuantityInProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
-                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
-                                .getDejavuBold9Dark()));
-        rightPanel
-                .addCell(new Phrase(
-                        TAB_SPACE_LITERAL
-                                + translationService.translate(
-                                        "productionCounting.productionBalance.report.panel.registerQuantityInProduct", locale)
-                                + " "
-                                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField(
-                                        "registerQuantityOutProduct") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
-                                        : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils
-                                .getDejavuBold9Dark()));
-        rightPanel
-                .addCell(new Phrase(
-                        TAB_SPACE_LITERAL
-                                + translationService.translate(
-                                        "productionCounting.productionBalance.report.panel.registerProductionTime", locale)
-                                + " "
-                                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("registerProductionTime") ? translationService
-                                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE,
-                                        locale)), FontUtils.getDejavuBold9Dark()));
-        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
-                + translationService.translate("productionCounting.productionBalance.report.panel.justOne", locale)
-                + " "
-                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("justOne") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
-                FontUtils.getDejavuBold9Dark()));
-        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
-                + translationService.translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
-                + " "
-                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("allowToClose") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
-                FontUtils.getDejavuBold9Dark()));
-        rightPanel.addCell(new Phrase(TAB_SPACE_LITERAL
-                + translationService.translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
-                + " "
-                + ((Boolean) productionCounting.getBelongsToField(FIELD_ORDER).getField("autoCloseOrder") ? translationService
-                        .translate(QCADOO_VIEW_TRUE, locale) : translationService.translate(QCADOO_VIEW_FALSE, locale)),
-                FontUtils.getDejavuBold9Dark()));
+                                + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getField(
+                                        "justOne") ? translationService.translate(QCADOO_VIEW_TRUE, locale) : translationService
+                                        .translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+        rightPanel.addCell(new Phrase(
+                TAB_SPACE_LITERAL
+                        + translationService.translate("productionCounting.productionBalance.report.panel.allowToClose", locale)
+                        + " "
+                        + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER)
+                                .getField("allowToClose") ? translationService.translate(QCADOO_VIEW_TRUE, locale)
+                                : translationService.translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
+        rightPanel.addCell(new Phrase(
+                TAB_SPACE_LITERAL
+                        + translationService
+                                .translate("productionCounting.productionBalance.report.panel.autoCloseOrder", locale)
+                        + " "
+                        + ((Boolean) productionCounting.getBelongsToField(ProductionCountingFields.ORDER).getField(
+                                "autoCloseOrder") ? translationService.translate(QCADOO_VIEW_TRUE, locale) : translationService
+                                .translate(QCADOO_VIEW_FALSE, locale)), FontUtils.getDejavuBold9Dark()));
 
         return rightPanel;
     }
@@ -244,7 +248,8 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                         "productionCounting.productionCounting.report.panel.recordType.final", locale) : translationService
                         .translate("productionCounting.productionCounting.report.panel.recordType.partial", locale), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
-        if (productionRecord.getBelongsToField(FIELD_ORDER).getStringField(TYPE_OF_PRODUCTION_RECORDING).equals("02cumulated")) {
+        if (productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getStringField(TYPE_OF_PRODUCTION_RECORDING)
+                .equals("02cumulated")) {
             addTableCellAsTable(panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
                     NOT_AVAILABLE, null, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
@@ -252,18 +257,20 @@ public class ProductionCountingPdfService extends PdfDocumentService {
             addTableCellAsTable(
                     panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.operationAndLevel", locale),
-                    productionRecord.getBelongsToField("technologyInstanceOperationComponent").getStringField("nodeNumber")
+                    productionRecord.getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                            .getStringField(TechnologyInstanceOperCompFields.NODE_NUMBER)
                             + " "
-                            + productionRecord.getBelongsToField("technologyInstanceOperationComponent")
-                                    .getBelongsToField("operation").getStringField(FIELD_NAME), null,
-                    FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
+                            + productionRecord.getBelongsToField(ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
+                                    .getBelongsToField(TechnologyInstanceOperCompFields.OPERATION)
+                                    .getStringField(OperationFields.NAME), null, FontUtils.getDejavuBold9Dark(),
+                    FontUtils.getDejavuBold9Dark(), null);
             addTableCellAsTable(
                     panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.dateAndTime", locale),
                     new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) productionRecord
-                            .getHasManyField("loggings").get(0).getField("dateAndTime")), null, FontUtils.getDejavuBold9Dark(),
-                    FontUtils.getDejavuBold9Dark(), null);
-            if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerProductionTime")) {
+                            .getHasManyField(ProductionRecordFields.STATE_CHANGES).get(0).getField("dateAndTime")), null,
+                    FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
+            if ((Boolean) productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getField("registerProductionTime")) {
                 addTableCellAsTable(panelTable, translationService.translate(
                         "productionCounting.productionCounting.report.panel.machineOperationTime", locale),
                         timeConverterService.convertTimeToString((Integer) productionRecord.getField("machineTime")), null,
@@ -276,9 +283,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         }
         addTableCellAsTable(panelTable,
                 translationService.translate("productionCounting.productionCounting.report.panel.worker", locale),
-                productionRecord.getHasManyField("loggings").get(0).getStringField("worker"), null,
+                productionRecord.getHasManyField(ProductionRecordFields.STATE_CHANGES).get(0).getStringField("worker"), null,
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
-        if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerProductionTime")) {
+        if ((Boolean) productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getField("registerProductionTime")) {
             addTableCellAsTable(
                     panelTable,
                     translationService.translate("productionCounting.productionCounting.report.panel.laborOperationTime", locale),
@@ -293,13 +300,13 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         panelTable.setSpacingBefore(10);
         document.add(panelTable);
 
-        Entity technology = productionRecord.getBelongsToField(FIELD_ORDER).getBelongsToField("technology");
+        Entity technology = productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getBelongsToField("technology");
 
-        if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerQuantityInProduct")) {
+        if ((Boolean) productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getField("registerQuantityInProduct")) {
             addInputProducts(document, productionRecord, technology, locale);
         }
 
-        if ((Boolean) productionRecord.getBelongsToField(FIELD_ORDER).getField("registerQuantityOutProduct")) {
+        if ((Boolean) productionRecord.getBelongsToField(ProductionRecordFields.ORDER).getField("registerQuantityOutProduct")) {
             addOutputProducts(document, productionRecord, technology, locale);
         }
     }
@@ -324,15 +331,18 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
         if (productionRecord.getHasManyField("recordOperationProductInComponents") != null) {
             List<Entity> productsInList = new ArrayList<Entity>(
-                    productionRecord.getHasManyField("recordOperationProductInComponents"));
+                    productionRecord.getHasManyField(ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS));
             Collections.sort(productsInList, new EntityProductInOutComparator());
             for (Entity productIn : productsInList) {
-                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField("number"),
+                inputProductsTable.addCell(new Phrase(productIn
+                        .getBelongsToField(RecordOperationProductInComponentFields.PRODUCT).getStringField(ProductFields.NUMBER),
                         FontUtils.getDejavuRegular9Dark()));
-                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField(FIELD_NAME),
+                inputProductsTable.addCell(new Phrase(productIn
+                        .getBelongsToField(RecordOperationProductInComponentFields.PRODUCT).getStringField(ProductFields.NAME),
                         FontUtils.getDejavuRegular9Dark()));
 
-                String type = technologyService.getProductType(productIn.getBelongsToField(FIELD_PRODUCT), technology);
+                String type = technologyService.getProductType(
+                        productIn.getBelongsToField(RecordOperationProductInComponentFields.PRODUCT), technology);
                 inputProductsTable.addCell(new Phrase(translationService.translate("basic.product.globalTypeOfMaterial.value."
                         + type, locale), FontUtils.getDejavuRegular9Dark()));
 
@@ -344,8 +354,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                             FontUtils.getDejavuRegular9Dark()));
                 }
                 inputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                inputProductsTable.addCell(new Phrase(productIn.getBelongsToField(FIELD_PRODUCT).getStringField("unit"),
-                        FontUtils.getDejavuRegular9Dark()));
+                inputProductsTable.addCell(new Phrase(productIn
+                        .getBelongsToField(RecordOperationProductInComponentFields.PRODUCT).getStringField("unit"), FontUtils
+                        .getDejavuRegular9Dark()));
             }
         }
 
@@ -375,12 +386,15 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                     productionRecord.getHasManyField("recordOperationProductOutComponents"));
             Collections.sort(productsOutList, new EntityProductInOutComparator());
             for (Entity productOut : productsOutList) {
-                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(FIELD_PRODUCT).getStringField("number"),
-                        FontUtils.getDejavuRegular9Dark()));
-                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(FIELD_PRODUCT).getStringField(FIELD_NAME),
-                        FontUtils.getDejavuRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(
+                        RecordOperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.NUMBER), FontUtils
+                        .getDejavuRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(
+                        RecordOperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.NAME), FontUtils
+                        .getDejavuRegular9Dark()));
 
-                String type = technologyService.getProductType(productOut.getBelongsToField(FIELD_PRODUCT), technology);
+                String type = technologyService.getProductType(
+                        productOut.getBelongsToField(RecordOperationProductOutComponentFields.PRODUCT), technology);
                 outputProductsTable.addCell(new Phrase(translationService.translate("basic.product.globalTypeOfMaterial.value."
                         + type, locale), FontUtils.getDejavuRegular9Dark()));
 
@@ -392,8 +406,9 @@ public class ProductionCountingPdfService extends PdfDocumentService {
                             FontUtils.getDejavuRegular9Dark()));
                 }
                 outputProductsTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(FIELD_PRODUCT).getStringField("unit"),
-                        FontUtils.getDejavuRegular9Dark()));
+                outputProductsTable.addCell(new Phrase(productOut.getBelongsToField(
+                        RecordOperationProductOutComponentFields.PRODUCT).getStringField("unit"), FontUtils
+                        .getDejavuRegular9Dark()));
             }
         }
 

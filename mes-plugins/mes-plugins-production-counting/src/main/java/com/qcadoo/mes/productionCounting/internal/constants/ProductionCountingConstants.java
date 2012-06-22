@@ -23,45 +23,48 @@
  */
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public interface ProductionCountingConstants {
+public final class ProductionCountingConstants {
 
-    String PLUGIN_IDENTIFIER = "productionCounting";
+    private ProductionCountingConstants() {
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "productionCounting";
 
     // MODEL
-    String MODEL_PRODUCTION_RECORD = "productionRecord";
+    public static final String MODEL_PRODUCTION_RECORD = "productionRecord";
 
-    String MODEL_PRODUCTION_RECORD_LOGGING = "productionRecordLogging";
+    public static final String MODEL_PRODUCTION_RECORD_STATE_CHANGE = "productionRecordStateChange";
 
-    String MODEL_PRODUCTION_BALANCE = "productionBalance";
+    public static final String MODEL_PRODUCTION_BALANCE = "productionBalance";
 
-    String MODEL_PRODUCTION_COUNTING = "productionCounting";
+    public static final String MODEL_PRODUCTION_COUNTING = "productionCounting";
 
-    String MODEL_OPERATION_TIME_COMPONENT = "operationTimeComponent";
+    public static final String MODEL_OPERATION_TIME_COMPONENT = "operationTimeComponent";
 
-    String MODEL_OPERATION_PIECEWORK_COMPONENT = "operationPieceworkComponent";
+    public static final String MODEL_OPERATION_PIECEWORK_COMPONENT = "operationPieceworkComponent";
 
-    String MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT = "recordOperationProductInComponent";
+    public static final String MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT = "recordOperationProductInComponent";
 
-    String MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";
+    public static final String MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";
 
-    String MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT = "balanceOperationProductInComponent";
+    public static final String MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT = "balanceOperationProductInComponent";
 
-    String MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT = "balanceOperationProductOutComponent";
+    public static final String MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT = "balanceOperationProductOutComponent";
 
     // VIEW
-    String VIEW_PRODUCTION_RECORDS_LIST = "productionRecordsList";
+    public static final String VIEW_PRODUCTION_RECORDS_LIST = "productionRecordsList";
 
-    String VIEW_PRODUCTION_RECORD_DETAILS = "productionRecordDetails";
+    public static final String VIEW_PRODUCTION_RECORD_DETAILS = "productionRecordDetails";
 
-    String VIEW_PRODUCTION_BALANCES_LIST = "productionBalancesList";
+    public static final String VIEW_PRODUCTION_BALANCES_LIST = "productionBalancesList";
 
-    String VIEW_PRODUCTION_BALANCE_DETAILS = "productionBalanceDetails";
+    public static final String VIEW_PRODUCTION_BALANCE_DETAILS = "productionBalanceDetails";
 
-    String VIEW_PRODUCTION_COUNTINGS_LIST = "productionCountingsList";
+    public static final String VIEW_PRODUCTION_COUNTINGS_LIST = "productionCountingsList";
 
-    String VIEW_PRODUCTION_COUNTING_DETAILS = "productionCountingDetails";
+    public static final String VIEW_PRODUCTION_COUNTING_DETAILS = "productionCountingDetails";
 
-    String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
+    public static final String VIEW_RECORD_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "recordOperationProductInComponentDetails";
 
-    String VIEW_RECORD_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "recordOperationProductOutComponentDetails";
+    public static final String VIEW_RECORD_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "recordOperationProductOutComponentDetails";
 }

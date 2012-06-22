@@ -21,8 +21,6 @@ import com.qcadoo.model.api.Entity;
 
 public class RunForStateTransitionAspectTest extends StateChangeTest {
 
-    private static final String STATE_FIELD_NAME = "state";
-
     private static final String SOURCE_STATE_1 = "sourceState01";
 
     private static final String SOURCE_STATE_2 = "sourceState02";
@@ -49,11 +47,6 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
 
     @Aspect
     public static class TestStateChangeServiceAspect extends AbstractStateChangeAspect {
-
-        @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
 
         @Override
         public void changeState(final StateChangeContext stateChangeContext) {

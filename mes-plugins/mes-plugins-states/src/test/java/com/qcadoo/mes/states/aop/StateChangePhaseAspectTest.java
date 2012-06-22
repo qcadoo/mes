@@ -36,11 +36,6 @@ public class StateChangePhaseAspectTest extends StateChangeTest {
     @Aspect
     public static class TestStateChangeService extends AbstractStateChangeAspect {
 
-        @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
-
         @Pointcut("this(TestStateChangeService)")
         public void selectorPointcut() {
         }
