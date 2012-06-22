@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="transferTemplateDetail" 
+	name="transferTemplateDetails" 
 	modelName="transferTemplate">
 	
 	<component type="window" name="window" reference="window">

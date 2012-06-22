@@ -51,7 +51,7 @@
 			<option type="searchable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
 			<option type="orderable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
 			
-			<option type="correspondingView" value="materialFlow/stockCorrectionDetail" /> 
+			<option type="correspondingView" value="materialFlow/stockCorrectionDetails" /> 
 			<option type="correspondingComponent" value="form" /> 
 		</component>
 		

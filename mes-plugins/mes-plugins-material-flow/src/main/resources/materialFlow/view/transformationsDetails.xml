@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="transformationsDetail" 
+	name="transformationsDetails" 
 	modelName="transformations">
 	
 	<component type="window" name="window" reference="window">
