@@ -32,9 +32,6 @@ public class MaterialFlowTransferServiceImpl implements MaterialFlowTransferServ
     @Autowired
     private MaterialFlowService materialFlowService;
 
-    @Autowired
-    private MaterialFlowResourceService materialFlowResourceService;
-
     @Override
     public void createTransfer(final String type, final Entity stockAreasFrom, final Entity stockAreasTo, final Entity product,
             final BigDecimal quantity, final Entity staff, final Date time) {

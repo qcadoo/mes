@@ -11,7 +11,7 @@ public final class TechnologyStateChangePhase {
     private TechnologyStateChangePhase() {
     }
 
-    public static final int getNumOfPhases() {
+    public static int getNumOfPhases() {
         return LAST;
     }
 

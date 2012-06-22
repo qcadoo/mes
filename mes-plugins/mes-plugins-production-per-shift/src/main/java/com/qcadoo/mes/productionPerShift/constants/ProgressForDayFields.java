@@ -1,8 +1,9 @@
 package com.qcadoo.mes.productionPerShift.constants;
 
-public class ProgressForDayFields {
+public final class ProgressForDayFields {
 
     private ProgressForDayFields() {
+
     }
 
     public static final String TECH_INST_OPER_COMP = "technologyInstanceOperationComponent";

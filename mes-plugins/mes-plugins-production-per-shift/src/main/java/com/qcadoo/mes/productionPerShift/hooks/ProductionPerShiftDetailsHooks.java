@@ -269,7 +269,7 @@ public class ProductionPerShiftDetailsHooks {
         List<Entity> tiocWithCorrectedPlan = order.getHasManyField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).find()
                 .add(SearchRestrictions.eq(TechInstOperCompFields.HAS_CORRECTIONS, true)).list().getEntities();
         FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
-        if (tiocWithCorrectedPlan != null && tiocWithCorrectedPlan.size() > 0) {
+        if (tiocWithCorrectedPlan != null && !tiocWithCorrectedPlan.isEmpty()) {
             wasItCorrected.setFieldValue(true);
         } else {
             wasItCorrected.setFieldValue(false);
