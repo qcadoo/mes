@@ -94,6 +94,9 @@
 		<onCreate 
 			class="com.qcadoo.mes.orders.hooks.OrderHooks" 
 			method="setInitialState" />
+		<onCopy 
+			class="com.qcadoo.mes.orders.hooks.OrderHooks" 
+			method="setInitialState" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />

@@ -246,6 +246,33 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     }
 
     @Test
+    public final void shouldNotFireListenersIfOwnerIsInvalid() {
+        // given
+        given(stateChangeContext.isOwnerValid()).willReturn(false);
+
+        // when
+        stateChangeService.changeState(stateChangeContext);
+
+        // then
+        verify(stateChangeEntity, never()).setField("onceChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("checkedPhase"), Mockito.anyInt());
+        verify(stateChangeEntity, never()).setField("checkedPhase", TEST_PHASE);
+
+        verify(stateChangeEntity, never()).setField("multiChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("anotherCheckedPhase"), Mockito.anyInt());
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", FIRST_PHASE);
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", TEST_PHASE);
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", LAST_PHASE);
+
+        verify(stateChangeEntity, never()).setField("withoutAtPhase", true);
+
+        verify(stateChangeEntity, never()).setField("yetAnotherOnceChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("yetAnotherCheckedPhase"), Mockito.anyInt());
+
+        verify(stateChangeEntity, never()).setField("finished", true);
+    }
+
+    @Test
     public final void shouldContinueFromLastPhaseChain() {
         // given
         given(stateChangeEntity.getField(DESCRIBER.getPhaseFieldName())).willReturn(TEST_PHASE);
@@ -289,4 +316,5 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         verify(stateChangeEntity).setField("methodAnnotationCheckedPhase", TEST_PHASE);
 
     }
+
 }

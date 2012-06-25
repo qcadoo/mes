@@ -72,6 +72,8 @@
 			method="checkConsumingTheSameProductFromManySubOperations" />
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
 			method="setInitialState" />
+		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"

@@ -13,8 +13,10 @@ public interface StateChangeContext extends MessagesHolder {
 
     /**
      * Save inner state change entity
+     * 
+     * @return false if occur any validation errors, true if valid.
      */
-    void save();
+    boolean save();
 
     /**
      * Set inner state change entity's field
@@ -77,8 +79,12 @@ public interface StateChangeContext extends MessagesHolder {
 
     /**
      * Save in database and set (if there is no validation errors) inner state change's owner entity
+     * 
+     * @param owner
+     *            state change's owner entity
+     * @return false if occur any validation errors, true if valid.
      */
-    void setOwner(final Entity owner);
+    boolean setOwner(final Entity owner);
 
     /**
      * Returns inner state change entity's owner
@@ -86,5 +92,7 @@ public interface StateChangeContext extends MessagesHolder {
      * @return inner state change entity's owner
      */
     Entity getOwner();
+
+    boolean isOwnerValid();
 
 }

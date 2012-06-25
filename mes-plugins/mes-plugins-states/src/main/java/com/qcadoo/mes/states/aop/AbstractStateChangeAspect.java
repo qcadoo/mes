@@ -1,7 +1,6 @@
 package com.qcadoo.mes.states.aop;
 
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.FAILURE;
 
 import java.util.Date;
 
@@ -17,6 +16,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.exception.StateTransitionNotAlloweException;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.states.messages.util.ValidationMessageHelper;
 import com.qcadoo.mes.states.service.StateChangePhaseUtil;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.Entity;
@@ -37,6 +37,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     @Transactional
     public void changeState(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
+        performPreValidation(stateChangeContext);
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         try {
             describer.checkFields();
@@ -55,6 +56,16 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
             stateChangeContext.save();
             throw new StateChangeException(e);
         }
+    }
+
+    private boolean performPreValidation(final StateChangeContext stateChangeContext) {
+        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
+        final Entity owner = stateChangeContext.getOwner();
+        owner.setField(describer.getOwnerStateFieldName(),
+                stateChangeContext.getStateChangeEntity().getStringField(describer.getTargetStateFieldName()));
+        owner.getDataDefinition().callValidators(owner);
+        ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, owner);
+        return owner.isValid();
     }
 
     /**
@@ -76,10 +87,14 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     @Transactional
     protected void performChangeEntityState(final StateChangeContext stateChangeContext) {
+        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         if (!StateChangePhaseUtil.canRun(stateChangeContext)) {
+            if (!stateChangeContext.isOwnerValid()) {
+                stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+                stateChangeContext.setField(describer.getDateTimeFieldName(), new Date());
+            }
             return;
         }
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         final Entity owner = stateChangeContext.getOwner();
         final StateEnum sourceState = stateChangeContext.getStateEnumValue(describer.getSourceStateFieldName());
         final StateEnum targetState = stateChangeContext.getStateEnumValue(describer.getTargetStateFieldName());
@@ -88,30 +103,20 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
             throw new StateTransitionNotAlloweException(sourceState, targetState);
         }
 
-        boolean ownerIsValid = owner.isValid();
+        boolean ownerIsValid = stateChangeContext.isOwnerValid();
         if (ownerIsValid) {
             owner.setField(describer.getOwnerStateFieldName(), targetState.getStringValue());
             ownerIsValid = owner.getDataDefinition().save(owner).isValid();
         }
 
         if (ownerIsValid) {
-            markAsSuccessful(stateChangeContext);
+            stateChangeContext.setStatus(SUCCESSFUL);
         } else {
-            markAsInvalid(stateChangeContext);
+            ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, owner);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
         }
-
-        stateChangeContext.save();
-    }
-
-    private void markAsSuccessful(final StateChangeContext stateChangeContext) {
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        stateChangeContext.setStatus(SUCCESSFUL);
         stateChangeContext.setField(describer.getDateTimeFieldName(), new Date());
-    }
-
-    private void markAsInvalid(final StateChangeContext stateChangeContext) {
-        stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-        stateChangeContext.addMessage("states.messages.change.failure.invalidEntity.", FAILURE);
+        stateChangeContext.save();
     }
 
 }
