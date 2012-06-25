@@ -24,6 +24,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
+import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,6 +41,16 @@ public class OrderHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private StateChangeEntityBuilder stateChangeEntityBuilder;
+
+    @Autowired
+    private OrderStateChangeDescriber describer;
+
+    public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
+        stateChangeEntityBuilder.buildInitial(describer, order, OrderState.PENDING);
+    }
 
     public void copyStartDate(final DataDefinition dataDefinition, final Entity entity) {
         setStartDate(entity);

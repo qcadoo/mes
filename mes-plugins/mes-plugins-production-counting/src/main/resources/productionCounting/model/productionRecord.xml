@@ -65,6 +65,9 @@
 			joinField="productionRecord" cascade="delete" />
 	</fields>
 	<hooks>
+		<onCreate 
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
+			method="setInitialState" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="generateData" />

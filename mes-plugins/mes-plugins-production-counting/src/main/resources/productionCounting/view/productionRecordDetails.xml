@@ -390,8 +390,7 @@
 				<layoutElement column="1" row="1">
 					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.stateChanges">
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
-						<option type="column" name="currentState" fields="targetState" 
-							expression="'@productionCounting.productionRecord.state.value.' + #currentState" />
+						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
 						
 						<option type="order" column="dateAndTime" direction="asc" />

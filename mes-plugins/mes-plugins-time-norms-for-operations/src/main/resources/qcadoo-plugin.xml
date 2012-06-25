@@ -230,7 +230,7 @@
 		
 		<model:model-hook model="technology" plugin="technologies">
 			<model:onSave
-				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooks"
+				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooksTNFO"
 				method="setDefaultValuesIfEmpty" />
 		</model:model-hook>
 		

@@ -39,8 +39,7 @@
 		<!-- generic state change fields -->
 		<datetime name="dateAndTime" />
 		<enum name="sourceState"
-			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
-			required="true" />
+			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
 		<enum name="targetState"
 			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
 			required="true" />

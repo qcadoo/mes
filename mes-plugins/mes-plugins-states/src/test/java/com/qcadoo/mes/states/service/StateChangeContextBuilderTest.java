@@ -11,11 +11,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.MockStateChangeDescriber;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -30,7 +30,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
-import com.qcadoo.security.api.SecurityService;
 
 public class StateChangeContextBuilderTest extends StateChangeTest {
 
@@ -39,10 +38,7 @@ public class StateChangeContextBuilderTest extends StateChangeTest {
     private StateChangeEntityDescriber describer;
 
     @Mock
-    private ShiftsService shiftsService;
-
-    @Mock
-    private SecurityService securityService;
+    private StateChangeEntityBuilder stateChangeEntityBuilder;
 
     @Mock
     private SearchResult searchResult;
@@ -67,6 +63,11 @@ public class StateChangeContextBuilderTest extends StateChangeTest {
             return TestState.parseString(stringValue);
         }
 
+        @Override
+        public DataDefinition getOwnerDataDefinition() {
+            return ownerDD;
+        }
+
     }
 
     @Before
@@ -74,13 +75,18 @@ public class StateChangeContextBuilderTest extends StateChangeTest {
         MockitoAnnotations.initMocks(this);
 
         stateChangeContextBuilder = new StateChangeContextBuilderImpl();
-        ReflectionTestUtils.setField(stateChangeContextBuilder, "shiftsService", shiftsService);
-        ReflectionTestUtils.setField(stateChangeContextBuilder, "securityService", securityService);
+        ReflectionTestUtils.setField(stateChangeContextBuilder, "stateChangeEntityBuilder", stateChangeEntityBuilder);
         ReflectionTestUtils.setField(stateChangeContextBuilder, "messageService", messageService);
 
         describer = new TestDescriber();
         stubStateChangeEntity(describer);
         stubOwner();
+
+        given(
+                stateChangeEntityBuilder.buildInitial(Mockito.eq(describer), Mockito.any(Entity.class),
+                        Mockito.any(StateEnum.class))).willReturn(stateChangeEntity);
+        given(stateChangeEntityBuilder.build(Mockito.eq(describer), Mockito.eq(owner), Mockito.any(StateEnum.class))).willReturn(
+                stateChangeEntity);
 
         stubBelongsToField(stateChangeEntity, describer.getOwnerFieldName(), owner);
         stubStringField(owner, describer.getOwnerStateFieldName(), TestState.DRAFT.getStringValue());

@@ -50,8 +50,6 @@ import com.qcadoo.security.api.SecurityRolesService;
 @Transactional
 public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
-    protected static final String STATE_ACCEPTED = "02accepted";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 

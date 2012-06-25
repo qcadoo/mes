@@ -67,6 +67,11 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
     }
 
     @Override
+    public String getOwnerStateChangesFieldName() {
+        return "stateChanges";
+    }
+
+    @Override
     public void checkFields() {
         DataDefinition dataDefinition = getDataDefinition();
         List<String> fieldNames = Lists.newArrayList(getOwnerFieldName(), getSourceStateFieldName(), getTargetStateFieldName(),

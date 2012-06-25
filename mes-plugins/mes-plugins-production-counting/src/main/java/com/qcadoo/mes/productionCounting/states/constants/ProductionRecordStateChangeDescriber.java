@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.states.constants;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_PRODUCTION_RECORD_STATE_CHANGE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.PLUGIN_IDENTIFIER;
 
@@ -12,7 +13,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 
 @Service
-public class ProductionRecordStateChangeDescriber extends AbstractStateChangeDescriber {
+public final class ProductionRecordStateChangeDescriber extends AbstractStateChangeDescriber {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -30,6 +31,11 @@ public class ProductionRecordStateChangeDescriber extends AbstractStateChangeDes
     @Override
     public StateEnum parseStateEnum(final String stringValue) {
         return ProductionRecordState.parseString(stringValue);
+    }
+
+    @Override
+    public DataDefinition getOwnerDataDefinition() {
+        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_PRODUCTION_RECORD);
     }
 
 }

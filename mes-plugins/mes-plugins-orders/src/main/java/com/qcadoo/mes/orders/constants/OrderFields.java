@@ -63,7 +63,7 @@ public final class OrderFields {
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
-    public static final String LOGGINGS = "loggings";
+    public static final String STATE_CHANGES = "stateChanges";
 
     public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS = "technologyInstanceOperationComponents";
 

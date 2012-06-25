@@ -43,6 +43,11 @@ public class AbstractStateChangeDescriberTest {
             return stateEnum;
         }
 
+        @Override
+        public DataDefinition getOwnerDataDefinition() {
+            return mock(DataDefinition.class);
+        }
+
     }
 
     private class BrokenTestStateChangeDescriber extends AbstractStateChangeDescriber {
@@ -65,6 +70,11 @@ public class AbstractStateChangeDescriberTest {
         @Override
         public String getTargetStateFieldName() {
             return "state";
+        }
+
+        @Override
+        public DataDefinition getOwnerDataDefinition() {
+            return mock(DataDefinition.class);
         }
 
     }

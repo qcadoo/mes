@@ -172,7 +172,7 @@
 		</model:model-field>
 		
 		<model:model-hook model="parameter" plugin="basic">
-		    <model:onCreate class="com.qcadoo.mes.productionCounting.internal.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
+		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
@@ -194,6 +194,8 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="changeProducedQuantityFieldState" />
+			
+		<custom:custom class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
 	</modules>
 	
 </plugin>

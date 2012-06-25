@@ -1,13 +1,12 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.orders.states.constants;
 
+import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER_STATE_CHANGE;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLUGIN_IDENTIFIER;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;
@@ -32,6 +31,11 @@ public final class OrderStateChangeDescriber extends AbstractStateChangeDescribe
     @Override
     public String getOwnerFieldName() {
         return OrderStateChangeFields.ORDER;
+    }
+
+    @Override
+    public DataDefinition getOwnerDataDefinition() {
+        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_ORDER);
     }
 
 }

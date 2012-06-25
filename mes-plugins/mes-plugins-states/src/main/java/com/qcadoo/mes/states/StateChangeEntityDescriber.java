@@ -73,6 +73,16 @@ public interface StateChangeEntityDescriber {
     String getOwnerStateFieldName();
 
     /**
+     * @return data definition of owner entity.
+     */
+    DataDefinition getOwnerDataDefinition();
+
+    /**
+     * @return name of hasMany field containing state change entities.
+     */
+    String getOwnerStateChangesFieldName();
+
+    /**
      * Check if any field using in this describer is missing.
      * 
      * @throws IllegalStateException

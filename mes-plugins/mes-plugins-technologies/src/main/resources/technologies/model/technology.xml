@@ -70,14 +70,16 @@
 			method="checkIfOperationsUsesSubOperationsProds" />
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
 			method="checkConsumingTheSameProductFromManySubOperations" />
+		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
+		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
+			method="switchStateToDraftOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setFirstTechnologyAsDefault" />
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
-		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
-			method="switchStateToDraftOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

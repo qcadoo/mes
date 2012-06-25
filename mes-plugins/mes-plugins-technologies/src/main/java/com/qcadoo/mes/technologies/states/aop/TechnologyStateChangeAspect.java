@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
-import com.qcadoo.mes.technologies.states.TechnologyStateChangeDescriber;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeDescriber;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 
 @Aspect

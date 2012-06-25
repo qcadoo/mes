@@ -58,7 +58,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     }
 
     /**
-     * Get number of state change phases. Default is 1.
+     * Get number of state change phases. Default value is {@link AbstractStateChangeAspect#DEFAULT_NUM_OF_PHASES}.
      * 
      * @return number of phases
      */

@@ -1,11 +1,10 @@
 <datetime name="dateAndTime" />
 <enum name="sourceState"
-	values="#####"
-	required="true" />
+	values="#####" />
 <enum name="targetState"
 	values="#####"
 	required="true" />
-<enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
+<enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true" />
 <string name="worker" />
 <belongsTo name="shift" model="shift" plugin="basic" />
 <integer name="phase" />

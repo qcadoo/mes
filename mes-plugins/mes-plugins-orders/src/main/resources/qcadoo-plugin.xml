@@ -171,6 +171,8 @@
 			resource="report/order.jrxml" />
 			
 		<view:resource uri="public/**/*" />
+		
+		<custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule" />
 	</modules>
 
 </plugin>

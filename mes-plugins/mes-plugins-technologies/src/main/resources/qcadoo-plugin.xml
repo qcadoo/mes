@@ -161,6 +161,7 @@
 			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
 			method="updateRibbonState" />
 		
+		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
 	</modules>
 
 </plugin>

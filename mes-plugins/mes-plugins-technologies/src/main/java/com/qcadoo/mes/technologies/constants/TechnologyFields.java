@@ -43,7 +43,7 @@ public final class TechnologyFields {
 
     public static final String STATE = "state";
 
-    public static final String LOGGINGS = "loggings";
+    public static final String STATE_CHANGES = "stateChanges";
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 

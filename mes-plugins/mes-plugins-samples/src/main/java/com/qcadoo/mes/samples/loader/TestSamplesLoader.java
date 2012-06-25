@@ -28,6 +28,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAF
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BATCH_STATE_TRACKED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BALANCE;
@@ -96,13 +97,19 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TY
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORK_PLANS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_ACCEPTED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_IN_PROGRESS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_PENDING;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_RECORD_STATE_ACCEPTED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTS_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_STATE_ACCEPTED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.TRACKING_RECORD_STATE_DRAFT;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -459,12 +466,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
-        Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        if (STATE_ACCEPTED.equals(technology.getStringField(L_ORDER_STATE))) {
+        final Entity technology = getTechnologyByNumber(values.get("tech_nr"));
+        if (TECHNOLOGY_STATE_ACCEPTED.equals(technology.getStringField(L_STATE))) {
             return;
         }
-        technology.setField(L_ORDER_STATE, STATE_ACCEPTED);
-        technology.getDataDefinition().save(technology);
+        getStateChangeSamplesClient().changeState(technology, TECHNOLOGY_STATE_ACCEPTED);
     }
 
     private void addOrderGroup(final Map<String, String> values) {
@@ -531,14 +537,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         Entity technology = getTechnologyByNumber(values.get("tech_nr"));
         order.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
-        order.setField(L_STATE, "01pending");
         order.setField(L_NAME,
                 (values.get(L_NAME).isEmpty() || values.get(L_NAME) == null) ? values.get(L_ORDER_NR) : values.get(L_NAME));
         order.setField(L_NUMBER, values.get(L_ORDER_NR));
         order.setField(L_PLANNED_QUANTITY, values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
-
-        order.setField(L_ORDER_STATE, "01pending");
 
         order.setField(L_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
 
@@ -592,14 +595,15 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void changedOrderState(final Map<String, String> values) {
         String state = values.get(L_STATE);
+        if (ORDER_STATE_PENDING.equals(state)) {
+            return;
+        }
         Entity order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_ORDER_NR))).uniqueResult();
-        if ("03inProgress".equals(state)) {
-            order.setField(L_STATE, "02accepted");
-            order.getDataDefinition().save(order);
+        if (ORDER_STATE_IN_PROGRESS.equals(state)) {
+            order = getStateChangeSamplesClient().changeState(order, ORDER_STATE_ACCEPTED);
         }
-        order.setField(L_STATE, state);
-        order.getDataDefinition().save(order);
+        getStateChangeSamplesClient().changeState(order, state);
     }
 
     private void addBatches(final Map<String, String> values) {
@@ -608,7 +612,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         batch.setField(L_NUMBER, values.get(L_NUMBER));
         batch.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
         batch.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
-        batch.setField(L_STATE, "01tracked");
+        batch.setField(L_STATE, BATCH_STATE_TRACKED);
 
         batch.getDataDefinition().save(batch);
     }
@@ -619,7 +623,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         trackingRecord.setField(L_NUMBER, values.get(L_NUMBER));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
-        trackingRecord.setField(L_STATE, "01draft");
+        trackingRecord.setField(L_STATE, TRACKING_RECORD_STATE_DRAFT);
         trackingRecord.getDataDefinition().save(trackingRecord);
     }
 
@@ -775,7 +779,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (product != null) {
             Entity defaultTechnology = getDefaultTechnologyForProduct(product);
 
-            Entity technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).create();
+            final DataDefinition technologyDD = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER,
+                    TECHNOLOGY_MODEL_TECHNOLOGY);
+            final Entity technology = technologyDD.create();
             if (!values.get(L_DESCRIPTION).isEmpty()) {
                 technology.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
             }
@@ -783,7 +789,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             technology.setField(L_NAME, values.get(L_NAME));
             technology.setField(L_NUMBER, values.get("bom_nr"));
             technology.setField(BASIC_MODEL_PRODUCT, product);
-            technology.setField(L_STATE, values.get(L_STATE));
             technology.setField(L_DESCRIPTION, values.get("DESCRIPTION"));
             technology.setField("batchRequired", true);
             technology.setField("postFeatureRequired", false);
@@ -818,9 +823,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                         + technology.getField(L_DESCRIPTION) + ", master=" + technology.getField("master") + "}");
             }
 
-            technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
-            technology.setField(L_STATE, "01draft");
-            dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
+            technologyDD.save(technology);
         }
     }
 
@@ -879,7 +882,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
                     + ((Entity) component.getField(TECHNOLOGY_MODEL_TECHNOLOGY)).getField(L_NUMBER) + ", parent="
-                    + (parent == null ? 0 : parent.getId()) + ", operation="
+                    + (parent == null || parent.getId() == null ? 0 : parent.getId()) + ", operation="
                     + ((Entity) component.getField(TECHNOLOGY_MODEL_OPERATION)).getField(L_NUMBER) + "}");
         }
         operationComponents.put(values.get(L_BOM_ID), component);
@@ -888,7 +891,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addProductInComponent(final Map<String, String> values) {
         Entity productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent")
                 .create();
-        productComponent.setField(L_OPERATION_COMPONENT, operationComponents.get(values.get("operation_comp_id")));
+        final Entity operationComponent = operationComponents.get(values.get("operation_comp_id"));
+        productComponent.setField(L_OPERATION_COMPONENT, operationComponent);
         productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
         productComponent.setField(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
         productComponent.setField("batchRequired", true);
@@ -975,7 +979,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionRecord.setField(L_STATE, values.get(L_STATE));
         productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
         productionRecord.setField(L_MACHINE_TIME, values.get("machinetime"));
         productionRecord.setField(L_LABOR_TIME, values.get("labortime"));
@@ -989,8 +992,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
         for (Entity productionRecord : order.getHasManyField("productionRecords")) {
-            productionRecord.setField(L_STATE, STATE_ACCEPTED);
-            productionRecord.getDataDefinition().save(productionRecord);
+            getStateChangeSamplesClient().changeState(productionRecord, PRODUCTION_RECORD_STATE_ACCEPTED);
         }
     }
 

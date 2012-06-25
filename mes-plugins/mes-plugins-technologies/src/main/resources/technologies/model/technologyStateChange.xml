@@ -32,8 +32,7 @@
 		<!-- generic state change fields -->
 		<datetime name="dateAndTime" />
 		<enum name="sourceState"
-			values="01draft,02accepted,03declined,04outdated,05checked"
-			required="true" />
+			values="01draft,02accepted,03declined,04outdated,05checked" />
 		<enum name="targetState"
 			values="01draft,02accepted,03declined,04outdated,05checked"
 			required="true" />

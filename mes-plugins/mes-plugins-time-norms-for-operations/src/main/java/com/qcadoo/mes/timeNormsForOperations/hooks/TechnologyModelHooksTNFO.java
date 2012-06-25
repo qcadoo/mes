@@ -32,7 +32,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 
 @Service
-public class TechnologyModelHooks {
+public class TechnologyModelHooksTNFO {
 
     public void setDefaultValuesIfEmpty(final DataDefinition dataDefinition, final Entity technology) {
         if (technology.getId() == null) {
