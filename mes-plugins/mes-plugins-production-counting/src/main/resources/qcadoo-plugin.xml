@@ -107,7 +107,7 @@
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
 
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="productionRecordStateChange" plugin="orders" model="orderStateChange" />
+		    <model:belongsTo name="productionRecordStateChange" plugin="productionCounting" model="productionRecordStateChange" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
