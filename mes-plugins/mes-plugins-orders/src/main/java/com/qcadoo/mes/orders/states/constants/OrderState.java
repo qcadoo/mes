@@ -46,7 +46,7 @@ public enum OrderState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return COMPLETED.equals(targetState) || ABANDONED.equals(targetState) || DECLINED.equals(targetState);
+            return COMPLETED.equals(targetState) || INTERRUPTED.equals(targetState) || ABANDONED.equals(targetState);
         }
     },
     COMPLETED(OrderStateStringValues.COMPLETED) {
@@ -67,14 +67,14 @@ public enum OrderState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return false;
+            return DECLINED.equals(targetState) || IN_PROGRESS.equals(targetState);
         }
     },
     ABANDONED(OrderStateStringValues.ABANDONED) {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return DECLINED.equals(targetState) || IN_PROGRESS.equals(targetState);
+            return false;
         }
     };
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.messages.util.ValidationMessageHelper;
@@ -32,7 +33,11 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     @Override
     public boolean save() {
-        return setStateChangeEntity(entity.getDataDefinition().save(entity));
+        try {
+            return setStateChangeEntity(entity.getDataDefinition().save(entity));
+        } catch (Exception e) {
+            throw new StateChangeException(e);
+        }
     }
 
     @Override
