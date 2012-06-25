@@ -48,6 +48,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -630,6 +631,9 @@ public class TechnologyService {
     }
 
     public final void performTreeNumbering(final DataDefinition dd, final Entity technology) {
+        if (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
+            return;
+        }
         DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 MODEL_TECHNOLOGY_OPERATION_COMPONENT);
         treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, L_TECHNOLOGY, technology.getId());

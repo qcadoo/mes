@@ -95,7 +95,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
             }
             return;
         }
-        final Entity owner = stateChangeContext.getOwner();
+        final Entity owner = describer.getOwnerDataDefinition().save(stateChangeContext.getOwner());
         final StateEnum sourceState = stateChangeContext.getStateEnumValue(describer.getSourceStateFieldName());
         final StateEnum targetState = stateChangeContext.getStateEnumValue(describer.getTargetStateFieldName());
 
