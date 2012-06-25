@@ -61,7 +61,7 @@ public enum TechnologyState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState) || DRAFT.equals(targetState);
+            return ACCEPTED.equals(targetState) || DRAFT.equals(targetState) || DECLINED.equals(targetState);
         }
 
     };
