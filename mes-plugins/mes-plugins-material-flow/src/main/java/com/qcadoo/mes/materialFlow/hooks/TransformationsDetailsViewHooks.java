@@ -2,8 +2,8 @@ package com.qcadoo.mes.materialFlow.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STOCK_AREAS_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
@@ -23,7 +23,7 @@ public class TransformationsDetailsViewHooks {
 
     private static final String L_FORM = "form";
 
-    private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, STOCK_AREAS_FROM, STOCK_AREAS_TO, OPERATION);
+    private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, LOCATION_FROM, LOCATION_TO, OPERATION);
 
     public void disableExistingADLelements(final ViewDefinitionState view) {
         disableADL(view, TRANSFERS_CONSUMPTION);

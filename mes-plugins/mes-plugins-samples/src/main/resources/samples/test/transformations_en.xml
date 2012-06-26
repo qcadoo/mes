@@ -25,7 +25,7 @@
 
 -->
 <transformations>
-	<row NUMBER="1" NAME="Wydanie stołków do pakowania" TIME="2012-01-04 08:00:00" STOCK_AREAS_FROM="5" STOCK_AREAS_TO="5" STAFF="" />
-	<row NUMBER="2" NAME="Nogi stołowe przed skręcaniem" TIME="2012-01-04 08:00:00" STOCK_AREAS_FROM="1" STOCK_AREAS_TO="7" STAFF="" />
-	<row NUMBER="3" NAME="Wydanie surowych desek" TIME="2012-01-02 10:30:00" STOCK_AREAS_FROM="4" STOCK_AREAS_TO="4" STAFF="03" />
+	<row NUMBER="1" NAME="Wydanie stołków do pakowania" TIME="2012-01-04 08:00:00" LOCATION_FROM="5" LOCATION_TO="5" STAFF="" />
+	<row NUMBER="2" NAME="Nogi stołowe przed skręcaniem" TIME="2012-01-04 08:00:00" LOCATION_FROM="1" LOCATION_TO="7" STAFF="" />
+	<row NUMBER="3" NAME="Wydanie surowych desek" TIME="2012-01-02 10:30:00" LOCATION_FROM="4" LOCATION_TO="4" STAFF="03" />
 </transformations>

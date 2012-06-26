@@ -37,7 +37,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransformationsFields;
@@ -51,22 +50,19 @@ public class TransformationsModelValidators {
     @Autowired
     private MaterialFlowService materialFlowService;
 
-    @Autowired
-    private MaterialFlowResourceService materialFlowResourceService;
-
     public boolean checkIfTransfersAreValid(final DataDefinition transformationsDD, final Entity transformations) {
-        Entity stockAreasFrom = transformations.getBelongsToField(TransformationsFields.STOCK_AREAS_FROM);
+        Entity locationFrom = transformations.getBelongsToField(TransformationsFields.LOCATION_FROM);
 
         List<Entity> transfersConsumption = transformations.getHasManyField(TRANSFERS_CONSUMPTION);
         List<Entity> transfersProduction = transformations.getHasManyField(TRANSFERS_PRODUCTION);
 
-        return (checkIfTransfersAreValid(transfersConsumption, CONSUMPTION.getStringValue(), stockAreasFrom) && checkIfTransfersAreValid(
+        return (checkIfTransfersAreValid(transfersConsumption, CONSUMPTION.getStringValue(), locationFrom) && checkIfTransfersAreValid(
                 transfersProduction, PRODUCTION.getStringValue(), null))
                 && (checkIfTransfersNumbersAreDistinct(transfersConsumption, transfersProduction) && checkIfTransfersNumbersAreDistinct(
                         transfersProduction, transfersConsumption));
     }
 
-    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String type, final Entity stockAreasFrom) {
+    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String type, final Entity locationFrom) {
         boolean isValid = true;
 
         for (Entity transfer : transfers) {
@@ -94,13 +90,6 @@ public class TransformationsModelValidators {
 
             if (quantity == null) {
                 appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.fieldRequired");
-
-                isValid = false;
-            }
-
-            if (CONSUMPTION.getStringValue().equals(type) && (stockAreasFrom != null) && (product != null) && (quantity != null)
-                    && !materialFlowResourceService.areResourcesSufficient(stockAreasFrom, product, quantity)) {
-                appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.resourcesArentSufficient");
 
                 isValid = false;
             }

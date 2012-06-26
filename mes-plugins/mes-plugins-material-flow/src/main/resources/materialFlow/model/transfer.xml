@@ -33,19 +33,16 @@
 		</string>
 		<enum name="type" values="01transport,02consumption,03production" />
 		<datetime name="time" />
-		<belongsTo name="stockAreasFrom" model="stockAreas" plugin="materialFlow" />
-		<belongsTo name="stockAreasTo" model="stockAreas" plugin="materialFlow" />
+		<belongsTo name="locationFrom" model="location" plugin="materialFlow" />
+		<belongsTo name="locationTo" model="location" plugin="materialFlow" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="quantity" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
-		<belongsTo name="transformationsConsumption" plugin="materialFlow"
-			model="transformations" />
-		<belongsTo name="transformationsProduction" plugin="materialFlow"
-			model="transformations" />
-		<!--  just for multitransfer's sake. To attach some model to ADL  -->
-		<hasMany persistent="false" name="products" plugin="materialFlow"
-			model="productQuantity" joinField="transfer" />
+		<belongsTo name="transformationsConsumption" model="transformations"
+			plugin="materialFlow" />
+		<belongsTo name="transformationsProduction" model="transformations"
+			plugin="materialFlow" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.TransferModelValidators"
@@ -53,9 +50,9 @@
 		<onCreate
 			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks"
 			method="copyProductionOrConsumptionDataFromBelongingTransformation" />
-		<onSave
-			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks"
-			method="manageResources" />
+<!-- 		<onSave -->
+<!-- 			class="com.qcadoo.mes.materialFlow.hooks.TransferModelHooks" -->
+<!-- 			method="manageResources" /> -->
 	</hooks>
 	<identifier expression="#number" />
 </model>

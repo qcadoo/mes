@@ -33,7 +33,7 @@ public final class StockCorrectionFields {
 
     public static final String STOCK_CORRECTION_DATE = "stockCorrectionDate";
 
-    public static final String STOCK_AREAS = "stockAreas";
+    public static final String LOCATION = "location";
 
     public static final String PRODUCT = "product";
 

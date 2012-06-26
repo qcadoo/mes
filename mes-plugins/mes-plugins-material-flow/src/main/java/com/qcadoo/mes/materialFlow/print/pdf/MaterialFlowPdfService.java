@@ -26,10 +26,11 @@ package com.qcadoo.mes.materialFlow.print.pdf;
 import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.MATERIAL_FLOW_FOR_DATE;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.STOCK_AREAS;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInStockAreasFields.WORKER;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationComponentFields.LOCATION;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIALS_IN_LOCATION_COMPONENTS;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIAL_FLOW_FOR_DATE;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.TIME;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.WORKER;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -70,31 +71,31 @@ public final class MaterialFlowPdfService extends PdfDocumentService {
     private PdfHelper pdfHelper;
 
     @Override
-    protected void buildPdfContent(final Document document, final Entity materialsInStockAreas, final Locale locale)
+    protected void buildPdfContent(final Document document, final Entity materialsInLocation, final Locale locale)
             throws DocumentException {
-        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
+        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInLocation(materialsInLocation);
 
         String documenTitle = translationService.translate("materialFlow.materialFlow.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInStockAreas.getField(TIME),
-                materialsInStockAreas.getStringField(WORKER));
+        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) materialsInLocation.getField(TIME),
+                materialsInLocation.getStringField(WORKER));
 
         PdfPTable panelTable = pdfHelper.createPanelTable(2);
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.materialFlowForDate", locale),
-                ((Date) materialsInStockAreas.getField(MATERIAL_FLOW_FOR_DATE)).toString());
+                ((Date) materialsInLocation.getField(MATERIAL_FLOW_FOR_DATE)).toString());
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialFlow.materialFlow.report.panel.time", locale),
-                ((Date) materialsInStockAreas.getField(TIME)).toString());
+                ((Date) materialsInLocation.getField(TIME)).toString());
 
-        List<Entity> stockAreas = materialsInStockAreas.getHasManyField(STOCK_AREAS);
+        List<Entity> materialsInLocationComponents = materialsInLocation.getHasManyField(MATERIALS_IN_LOCATION_COMPONENTS);
         List<String> names = new ArrayList<String>();
-        for (Entity component : stockAreas) {
-            Entity stockArea = (Entity) component.getField(STOCK_AREAS);
-            names.add(stockArea.getField(NUMBER).toString());
+        for (Entity materialsInLocationComponent : materialsInLocationComponents) {
+            Entity location = (Entity) materialsInLocationComponent.getField(LOCATION);
+            names.add(location.getField(NUMBER).toString());
         }
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("materialFlow.materialFlow.report.panel.stockAreas", locale), names);
+                translationService.translate("materialFlow.materialFlow.report.panel.locations", locale), names);
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
 
         panelTable.setSpacingBefore(20);

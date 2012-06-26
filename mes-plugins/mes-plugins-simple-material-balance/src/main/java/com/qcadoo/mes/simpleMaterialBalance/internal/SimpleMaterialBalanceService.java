@@ -58,13 +58,17 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class SimpleMaterialBalanceService {
 
-    private static final String DATE_FIELD = "date";
+    private static final String L_DATE = "date";
 
-    private static final String WORKER_FIELD = "worker";
+    private static final String L_WORKER = "worker";
 
-    private static final String FILE_NAME_FIELD = "fileName";
+    private static final String L_FILE_NAME = "fileName";
 
-    private static final String GENERATED_FIELD = "generated";
+    private static final String L_GENERATED = "generated";
+
+    private static final String L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS = "simpleMaterialBalanceOrdersComponents";
+
+    private static final String L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS = "simpleMaterialBalanceLocationsComponents";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -85,10 +89,10 @@ public class SimpleMaterialBalanceService {
     private ReportService reportService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(DATE_FIELD, null);
-        entity.setField(GENERATED_FIELD, false);
-        entity.setField(FILE_NAME_FIELD, null);
-        entity.setField(WORKER_FIELD, null);
+        entity.setField(L_DATE, null);
+        entity.setField(L_GENERATED, false);
+        entity.setField(L_FILE_NAME, null);
+        entity.setField(L_WORKER, null);
         return true;
     }
 
@@ -118,11 +122,11 @@ public class SimpleMaterialBalanceService {
 
             Entity simpleMaterialBalanceEntity = dataDefinitionService.get(plugin, entityName).get(form.getEntityId());
 
-            if (simpleMaterialBalanceEntity.getField(GENERATED_FIELD) == null) {
-                simpleMaterialBalanceEntity.setField(GENERATED_FIELD, "0");
+            if (simpleMaterialBalanceEntity.getField(L_GENERATED) == null) {
+                simpleMaterialBalanceEntity.setField(L_GENERATED, "0");
             }
 
-            if ("1".equals(simpleMaterialBalanceEntity.getField(GENERATED_FIELD))) {
+            if ("1".equals(simpleMaterialBalanceEntity.getField(L_GENERATED))) {
                 generateButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
                 generateButton.setEnabled(false);
                 deleteButton.setMessage("orders.ribbon.message.recordAlreadyGenerated");
@@ -154,7 +158,7 @@ public class SimpleMaterialBalanceService {
             for (Long entityId : grid.getSelectedEntitiesIds()) {
                 Entity simpleMaterialBalanceEntity = dataDefinitionService.get(plugin, entityName).get(entityId);
 
-                if ((Boolean) simpleMaterialBalanceEntity.getField(GENERATED_FIELD)) {
+                if ((Boolean) simpleMaterialBalanceEntity.getField(L_GENERATED)) {
                     canDelete = false;
                     break;
                 }
@@ -176,9 +180,9 @@ public class SimpleMaterialBalanceService {
     public void generateSimpleMaterialBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         if (state instanceof FormComponent) {
-            ComponentState generated = viewDefinitionState.getComponentByReference(GENERATED_FIELD);
-            ComponentState date = viewDefinitionState.getComponentByReference(DATE_FIELD);
-            ComponentState worker = viewDefinitionState.getComponentByReference(WORKER_FIELD);
+            ComponentState generated = viewDefinitionState.getComponentByReference(L_GENERATED);
+            ComponentState date = viewDefinitionState.getComponentByReference(L_DATE);
+            ComponentState worker = viewDefinitionState.getComponentByReference(L_WORKER);
 
             Entity simpleMaterialBalance = dataDefinitionService.get(SimpleMaterialBalanceConstants.PLUGIN_IDENTIFIER,
                     SimpleMaterialBalanceConstants.MODEL_SIMPLE_MATERIAL_BALANCE).get((Long) state.getFieldValue());
@@ -186,19 +190,19 @@ public class SimpleMaterialBalanceService {
             if (simpleMaterialBalance == null) {
                 state.addMessage("qcadooView.message.entityNotFound", MessageType.FAILURE);
                 return;
-            } else if (StringUtils.hasText(simpleMaterialBalance.getStringField(FILE_NAME_FIELD))) {
+            } else if (StringUtils.hasText(simpleMaterialBalance.getStringField(L_FILE_NAME))) {
                 state.addMessage(
                         "simpleMaterialBalance.simpleMaterialBalanceDetails.window.simpleMaterialBalance.documentsWasGenerated",
                         MessageType.FAILURE);
                 return;
-            } else if (simpleMaterialBalance.getHasManyField("orders").isEmpty()) {
+            } else if (simpleMaterialBalance.getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS).isEmpty()) {
                 state.addMessage(
                         "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedOrders",
                         MessageType.FAILURE);
                 return;
-            } else if (simpleMaterialBalance.getHasManyField("stockAreas").isEmpty()) {
+            } else if (simpleMaterialBalance.getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS).isEmpty()) {
                 state.addMessage(
-                        "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedStockAreas",
+                        "simpleMaterialBalance.simpleMaterialBalance.window.simpleMaterialBalance.missingAssosiatedLocations",
                         MessageType.FAILURE);
                 return;
             }

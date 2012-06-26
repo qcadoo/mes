@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.1.6
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="materialsInLocationDetails"
+	modelName="materialsInLocation">
+	
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="generate">
+				<bigButton name="generate" icon="generateIcon24.png"
+					action="#{form}.fireEvent(generateDataForMaterialsInLocationReport);" state="enabled" />
+			</group>
+			<group name="export">
+				<smallButton name="pdf" icon="pdfIcon16.png"
+					action="#{form}.fireEvent(printMaterialsInLocationDocuments,pdf);" state="disabled" />
+				<smallButton name="xls" icon="xlsIcon16.png"
+					action="#{form}.fireEvent(printMaterialsInLocationDocuments,xls);" state="disabled" />
+			</group>
+		</ribbon>
+		
+		<component type="form" name="materialsInLocation" reference="form">
+			<script>
+				<![CDATA[
+					var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
+					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
+					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					
+					var containsAtLeastOneLocation = false;
+					var entityExists = false;
+					
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (value.content.entityId) {
+								entityExists = true;
+							} else {
+								entityExists = false;
+							}
+							updateRibbon();
+						}
+					});
+					
+					#{materialsInLocationComponents}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (value.content.totalEntities > 0) {
+								containsAtLeastOneLocation = true;
+							} else {
+								containsAtLeastOneLocation = false;
+							}
+							updateRibbon();
+						}
+					});
+					
+					
+					function updateRibbon() {
+						if (entityExists) {
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							copyRibbonItem.enable();
+							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								xlsRibbonItem.enable();
+								pdfRibbonItem.enable();
+								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+							} else {
+								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+								saveRibbonItem.enable();
+							}
+						} else {
+							copyRibbonItem.disable("#{translate(recordNotCreated)}");
+							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
+							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+							saveRibbonItem.enable();
+						}
+					}
+				]]>
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+				<layoutElement column="1" row="1">
+					<component type="checkbox" name="generated" reference="generated"
+						field="generated" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="time" field="time" reference="time" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="input" name="worker" reference="worker"
+						field="worker" defaultEnabled="false">
+						<option type="textRepresentationOnDisabled" value="false" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="calendar" name="materialFlowForDate" field="materialFlowForDate" 
+						reference="materialFlowForDate">
+						<option type="withTimePicker" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="5" >
+					<component type="textarea" name="name" reference="name"
+						field="name" />
+				</layoutElement>
+				<layoutElement column="2" row="1" width="2" height="6">
+					<component type="grid" name="materialsInLocationComponents"
+						reference="materialsInLocationComponents" source="#{form}.materialsInLocationComponents">
+						<option type="column" name="number" fields="location"
+							expression="#location['number']" width="50" />
+						<option type="column" name="name" fields="location"
+							expression="#location['name']" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="materialFlow/materialsInLocationComponentDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="height" value="200" />
+						<option type="width" value="350" />
+					</component>
+				</layoutElement>
+			</component>
+			
+			<option type="header" value="true" />
+			<option type="expression" value="#name" />
+			<listener event="printMaterialsInLocationDocuments"
+				class="com.qcadoo.mes.materialFlow.MaterialsInLocationService" 
+				method="printMaterialsInLocationDocuments" />
+			<listener event="generateDataForMaterialsInLocationReport"
+				class="com.qcadoo.mes.materialFlow.MaterialsInLocationService" 
+				method="generateDataForMaterialsInLocationReport" />
+		</component>
+	</component>
+	
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialsInLocationService"
+			method="disableFormForExistingMaterialsInLocation" />
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialsInLocationService"
+ 			method="setGenerateButtonState" /> 
+	</hooks>
+</view>

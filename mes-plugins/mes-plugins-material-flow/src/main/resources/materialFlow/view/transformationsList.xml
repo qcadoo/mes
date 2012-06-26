@@ -40,19 +40,19 @@
 				width="70" />
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="time" fields="time" />
-			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom == null) ? '' : #stockAreasFrom['name']" />
-			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo == null) ? '' : #stockAreasTo['name']" />
+			<option type="column" name="locationFrom" fields="locationFrom"
+				expression="(#locationFrom == null) ? '' : #locationFrom['name']" />
+			<option type="column" name="locationTo" fields="locationTo"
+				expression="(#locationTo == null) ? '' : #locationTo['name']" />
 			<option type="column" name="staff" fields="staff"
 				expression="(#staff == null) ? '' : #staff['name']" />
 				
 			<option type="order" column="number" direction="asc" />
 			
 			<option type="searchable"
-				value="number,name,time,stockAreasFrom,stockAreasTo,staff" />
+				value="number,name,time,locationFrom,locationTo,staff" />
 			<option type="orderable"
-				value="number,name,time,stockAreasFrom,stockAreasTo,staff" />
+				value="number,name,time,locationFrom,locationTo,staff" />
 				
 			<option type="correspondingView" value="materialFlow/transformationsDetails" />
 			<option type="correspondingComponent" value="form" />

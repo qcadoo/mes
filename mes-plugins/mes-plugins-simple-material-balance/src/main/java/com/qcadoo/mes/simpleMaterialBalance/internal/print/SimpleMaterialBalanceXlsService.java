@@ -49,19 +49,21 @@ import com.qcadoo.report.api.xls.XlsHelper;
 @Service
 public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
 
-    private static final String ORDERS_FIELD = "orders";
+    private static final String L_NUMBER = "number";
 
-    private static final String ONLY_COMPONENTS_FIELD = "onlyComponents";
+    private static final String L_NAME = "name";
 
-    private static final String DATE_FIELD = "date";
+    private static final String L_DATE = "date";
 
-    private static final String STOCK_AREAS_FIELD = "stockAreas";
+    private static final String L_ONLY_COMPONENTS = "onlyComponents";
 
-    private static final String UNIT_FIELD = "unit";
+    private static final String L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS = "simpleMaterialBalanceOrdersComponents";
 
-    private static final String NAME_FIELD = "name";
+    private static final String L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS = "simpleMaterialBalanceLocationsComponents";
 
-    private static final String NUMBER_FIELD = "number";
+    private static final String L_LOCATION = "location";
+
+    private static final String L_UNIT = "unit";
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -98,7 +100,7 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         xlsHelper.setCellStyle(sheet, cell3);
         HSSFCell cell4 = header.createCell(4);
         cell4.setCellValue(translationService.translate(
-                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inStoch", locale));
+                "simpleMaterialBalance.simpleMaterialBalance.report.columnHeader.inLocation", locale));
         xlsHelper.setCellStyle(sheet, cell4);
         HSSFCell cell5 = header.createCell(5);
         cell5.setCellValue(translationService.translate(
@@ -109,25 +111,27 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity simpleMaterialBalance) {
         int rowNum = 1;
-        List<Entity> orders = simpleMaterialBalance.getHasManyField(ORDERS_FIELD);
-        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(ONLY_COMPONENTS_FIELD);
+        List<Entity> simpleMaterialBalanceOrdersComponents = simpleMaterialBalance
+                .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
+        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(L_ONLY_COMPONENTS);
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(orders,
-                onlyComponents);
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
+                simpleMaterialBalanceOrdersComponents, onlyComponents);
 
-        List<Entity> stockAreass = simpleMaterialBalance.getHasManyField(STOCK_AREAS_FIELD);
+        List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
+                .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> product : products.entrySet()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(product.getKey().getField(NUMBER_FIELD).toString());
-            row.createCell(1).setCellValue(product.getKey().getField(NAME_FIELD).toString());
-            row.createCell(2).setCellValue(product.getKey().getField(UNIT_FIELD).toString());
+            row.createCell(0).setCellValue(product.getKey().getField(L_NUMBER).toString());
+            row.createCell(1).setCellValue(product.getKey().getField(L_NAME).toString());
+            row.createCell(2).setCellValue(product.getKey().getField(L_UNIT).toString());
             row.createCell(3).setCellValue(numberService.format(product.getValue()));
             BigDecimal available = BigDecimal.ZERO;
-            for (Entity stockAreas : stockAreass) {
-                available = available.add(materialFlowService.calculateShouldBeInStockArea(
-                        stockAreas.getBelongsToField(STOCK_AREAS_FIELD).getId(), product.getKey().getId(),
-                        (Date) simpleMaterialBalance.getField(DATE_FIELD)), numberService.getMathContext());
+            for (Entity simpleMaterialBalanceLocationComponent : simpleMaterialBalanceLocationComponents) {
+                available = available.add(materialFlowService.calculateShouldBeInLocation(simpleMaterialBalanceLocationComponent
+                        .getBelongsToField(L_LOCATION).getId(), product.getKey().getId(), (Date) simpleMaterialBalance
+                        .getField(L_DATE)), numberService.getMathContext());
             }
             row.createCell(4).setCellValue(numberService.format(available));
             row.createCell(5).setCellValue(

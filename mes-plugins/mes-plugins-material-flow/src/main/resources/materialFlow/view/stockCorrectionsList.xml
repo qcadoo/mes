@@ -38,8 +38,8 @@
 		<component type="grid" name="grid" reference="grid">
 			<option type="column" name="number" fields="number" link="true" width="150" />
 			<option type="column" name="stockCorrectionDate" fields="stockCorrectionDate" />
-			<option type="column" name="stockAreas" fields="stockAreas" 
-				expression="(#stockAreas == null) ? '' : #stockAreas['name']"/>
+			<option type="column" name="location" fields="location" 
+				expression="(#location == null) ? '' : #location['name']"/>
 			<option type="column" name="product" fields="product"
 				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="found" fields="found" />
@@ -48,8 +48,8 @@
 				
 			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
-			<option type="orderable" value="number,stockCorrectionDate,stockAreas,product,found,staff" />
+			<option type="searchable" value="number,stockCorrectionDate,location,product,found,staff" />
+			<option type="orderable" value="number,stockCorrectionDate,location,product,found,staff" />
 			
 			<option type="correspondingView" value="materialFlow/stockCorrectionDetails" /> 
 			<option type="correspondingComponent" value="form" /> 

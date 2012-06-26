@@ -31,8 +31,7 @@
 	
 	<component type="window" name="window">
 		<ribbon>
-			<group template="navigation" />
-			<group template="formSaveCopyAndRemoveActions" />
+			<template name="standardFormTemplate" />
 		</ribbon>
 		
 		<component type="form" name="form" reference="form">
@@ -51,7 +50,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
-					<component type="lookup" name="stockAreas" field="stockAreas"  reference ="stockAreas">
+					<component type="lookup" name="location" field="location"  reference ="location">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						<option type="fullScreen" value="true" />

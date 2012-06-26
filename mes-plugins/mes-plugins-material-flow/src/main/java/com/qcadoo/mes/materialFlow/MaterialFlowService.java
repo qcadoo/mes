@@ -25,15 +25,17 @@ package com.qcadoo.mes.materialFlow;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIALS_IN_LOCATION_COMPONENTS;
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIAL_FLOW_FOR_DATE;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.FOUND;
+import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.SHOULD_BE;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.STOCK_AREAS;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.STOCK_CORRECTION_DATE;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
@@ -51,13 +53,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -75,27 +77,27 @@ public class MaterialFlowService {
 
     private static final String L_ID = "id";
 
-    private static final String L_T = "t";
+    private static final String L_TRANS = "trans";
 
-    private static final String L_T_PRODUCT = "t.product";
+    private static final String L_TRANS_PRODUCT = "trans.product";
 
-    private static final String L_T_PRODUCT_ID = "t.product.id";
+    private static final String L_TRANS_PRODUCT_ID = "trans.product.id";
 
-    private static final String L_T_STOCK_AREAS_TO_ID = "t.stockAreasTo.id";
+    private static final String L_TRANS_LOCATION_TO_ID = "trans.locationTo.id";
 
-    private static final String L_SC = "sc";
+    private static final String L_LOC = "loc";
 
-    private static final String L_SC_PRODUCT = "sc.product";
+    private static final String L_LOC_PRODUCT = "loc.product";
 
-    private static final String L_SC_PRODUCT_ID = "sc.product.id";
+    private static final String L_LOC_PRODUCT_ID = "loc.product.id";
 
-    private static final String L_SC_STOCK_AREAS_ID = "sc.stockAreas.id";
+    private static final String L_LOC_LOCATION_ID = "loc.location.id";
 
-    private static final String L_STOCK_AREAS_ID = "stockAreas.id";
+    private static final String L_LOCATION_ID = "location.id";
 
-    private static final String L_STOCK_AREAS_TO_ID = "stockAreasTo.id";
+    private static final String L_LOCATION_FROM_ID = "locationFrom.id";
 
-    private static final String L_STOCK_AREAS_FROM_ID = "stockAreasFrom.id";
+    private static final String L_LOCATION_TO_ID = "locationTo.id";
 
     private static final String L_PRODUCT_ID = "product.id";
 
@@ -111,7 +113,7 @@ public class MaterialFlowService {
     @Autowired
     private TimeConverterService timeConverterService;
 
-    public BigDecimal calculateShouldBeInStockArea(final Long stockAreasId, final Long productId, final Date forDate) {
+    public BigDecimal calculateShouldBeInLocation(final Long locationId, final Long productId, final Date forDate) {
 
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
@@ -124,7 +126,7 @@ public class MaterialFlowService {
         DataDefinition transferFrom = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
-        Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq(L_STOCK_AREAS_ID, stockAreasId))
+        Entity resultDataCorrection = transferDataCorrection.find().add(SearchRestrictions.eq(L_LOCATION_ID, locationId))
                 .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).addOrder(SearchOrders.desc(STOCK_CORRECTION_DATE))
                 .setMaxResults(1).uniqueResult();
 
@@ -138,18 +140,18 @@ public class MaterialFlowService {
 
         if (lastCorrectionDate == null) {
 
-            resultTo = transferTo.find().add(SearchRestrictions.eq(L_STOCK_AREAS_TO_ID, stockAreasId))
+            resultTo = transferTo.find().add(SearchRestrictions.eq(L_LOCATION_TO_ID, locationId))
                     .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).add(SearchRestrictions.le(TIME, forDate)).list();
 
-            resultFrom = transferFrom.find().add(SearchRestrictions.eq(L_STOCK_AREAS_FROM_ID, stockAreasId))
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq(L_LOCATION_FROM_ID, locationId))
                     .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).add(SearchRestrictions.le(TIME, forDate)).list();
 
         } else {
-            resultTo = transferTo.find().add(SearchRestrictions.eq(L_STOCK_AREAS_TO_ID, stockAreasId))
+            resultTo = transferTo.find().add(SearchRestrictions.eq(L_LOCATION_TO_ID, locationId))
                     .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).add(SearchRestrictions.le(TIME, forDate))
                     .add(SearchRestrictions.gt(TIME, lastCorrectionDate)).list();
 
-            resultFrom = transferFrom.find().add(SearchRestrictions.eq(L_STOCK_AREAS_FROM_ID, stockAreasId))
+            resultFrom = transferFrom.find().add(SearchRestrictions.eq(L_LOCATION_FROM_ID, locationId))
                     .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).add(SearchRestrictions.le(TIME, forDate))
                     .add(SearchRestrictions.gt(TIME, lastCorrectionDate)).list();
         }
@@ -184,19 +186,19 @@ public class MaterialFlowService {
     }
 
     public void refreshShouldBeInStockCorrectionDetails(final ViewDefinitionState state) {
-        FieldComponent stockAreas = (FieldComponent) state.getComponentByReference(STOCK_AREAS);
+        FieldComponent location = (FieldComponent) state.getComponentByReference(LOCATION);
         FieldComponent product = (FieldComponent) state.getComponentByReference(PRODUCT);
         FieldComponent date = (FieldComponent) state.getComponentByReference(STOCK_CORRECTION_DATE);
         FieldComponent should = (FieldComponent) state.getComponentByReference(SHOULD_BE);
 
-        if ((stockAreas != null) && (product != null) && (date != null) && (stockAreas.getFieldValue() != null)
+        if ((location != null) && (product != null) && (date != null) && (location.getFieldValue() != null)
                 && (product.getFieldValue() != null) && !date.getFieldValue().toString().equals("")) {
-            Long stockAreasNumber = (Long) stockAreas.getFieldValue();
+            Long locationNumber = (Long) location.getFieldValue();
             Long productNumber = (Long) product.getFieldValue();
 
             Date forDate = timeConverterService.getDateFromField(date.getFieldValue());
 
-            BigDecimal shouldBe = calculateShouldBeInStockArea(stockAreasNumber, productNumber, forDate);
+            BigDecimal shouldBe = calculateShouldBeInLocation(locationNumber, productNumber, forDate);
 
             if (shouldBe == null || shouldBe == BigDecimal.ZERO) {
                 should.setFieldValue(BigDecimal.ZERO);
@@ -238,7 +240,7 @@ public class MaterialFlowService {
             return;
         }
         if (productState.getFieldValue() != null) {
-            Entity product = getAreaById((Long) productState.getFieldValue());
+            Entity product = getProductById((Long) productState.getFieldValue());
             number.setFieldValue(generateNumberFromProduct(product, tableToGenerateNumber));
         }
         number.requestComponentUpdateState();
@@ -253,23 +255,6 @@ public class MaterialFlowService {
         }
 
         return number;
-    }
-
-    public List<Entity> getStockAreasFromDB() {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_STOCK_AREAS).find()
-                .list().getEntities();
-    }
-
-    private Entity getAreaById(final Long productId) {
-        DataDefinition instructionDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().add(SearchRestrictions.eq(L_ID, productId)).setMaxResults(1);
-
-        SearchResult searchResult = searchCriteria.list();
-        if (searchResult.getTotalNumberOfEntities() == 1) {
-            return searchResult.getEntities().get(0);
-        }
-        return null;
     }
 
     public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -294,19 +279,20 @@ public class MaterialFlowService {
         }
     }
 
-    public Map<Entity, BigDecimal> calculateMaterialQuantitiesInStockArea(final Entity materialsInStockAreas) {
-        List<Entity> stockAreas = new ArrayList<Entity>(materialsInStockAreas.getHasManyField(STOCK_AREAS));
+    public Map<Entity, BigDecimal> calculateMaterialQuantitiesInLocation(final Entity materialsInLocation) {
+        List<Entity> materialsInLocationComponents = new ArrayList<Entity>(
+                materialsInLocation.getHasManyField(MATERIALS_IN_LOCATION_COMPONENTS));
         Map<Entity, BigDecimal> reportData = new HashMap<Entity, BigDecimal>();
 
-        for (Entity component : stockAreas) {
-            Entity stockArea = component.getBelongsToField(STOCK_AREAS);
+        for (Entity materialsInLocationComponent : materialsInLocationComponents) {
+            Entity location = materialsInLocationComponent.getBelongsToField(LOCATION);
 
-            List<Entity> products = getProductsSeenInStockArea(stockArea.getStringField(NUMBER));
+            List<Entity> products = getProductsSeenInLocation(location.getStringField(NUMBER));
 
-            Date forDate = ((Date) materialsInStockAreas.getField("materialFlowForDate"));
+            Date forDate = ((Date) materialsInLocation.getField(MATERIAL_FLOW_FOR_DATE));
 
             for (Entity product : products) {
-                BigDecimal quantity = calculateShouldBeInStockArea(stockArea.getId(), product.getId(), forDate);
+                BigDecimal quantity = calculateShouldBeInLocation(location.getId(), product.getId(), forDate);
 
                 if (reportData.containsKey(product)) {
                     reportData.put(product, reportData.get(product).add(quantity, numberService.getMathContext()));
@@ -318,25 +304,25 @@ public class MaterialFlowService {
         return reportData;
     }
 
-    public List<Entity> getProductsSeenInStockArea(final String stockAreaNumber) {
-        DataDefinition dataDefStockAreas = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_STOCK_AREAS);
+    public List<Entity> getProductsSeenInLocation(final String locationNumber) {
+        DataDefinition dataDefLocation = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_LOCATION);
 
-        Long id = dataDefStockAreas.find().add(SearchRestrictions.eq(NUMBER, stockAreaNumber)).uniqueResult().getId();
+        Long id = dataDefLocation.find().add(SearchRestrictions.eq(NUMBER, locationNumber)).uniqueResult().getId();
 
         DataDefinition dataDefProduct = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
-        List<Entity> productsFromTransfers = dataDefProduct.find().createAlias(MaterialFlowConstants.MODEL_TRANSFER, L_T)
-                .addOrder(SearchOrders.asc(L_T_PRODUCT_ID))
-                .setProjection(SearchProjections.distinct(SearchProjections.field(L_T_PRODUCT)))
-                .add(SearchRestrictions.eqField(L_T_PRODUCT_ID, L_ID)).add(SearchRestrictions.eq(L_T_STOCK_AREAS_TO_ID, id))
+        List<Entity> productsFromTransfers = dataDefProduct.find().createAlias(MaterialFlowConstants.MODEL_TRANSFER, L_TRANS)
+                .addOrder(SearchOrders.asc(L_TRANS_PRODUCT_ID))
+                .setProjection(SearchProjections.distinct(SearchProjections.field(L_TRANS_PRODUCT)))
+                .add(SearchRestrictions.eqField(L_TRANS_PRODUCT_ID, L_ID)).add(SearchRestrictions.eq(L_TRANS_LOCATION_TO_ID, id))
                 .list().getEntities();
 
         List<Entity> productsFromStockCorrections = dataDefProduct.find()
-                .createAlias(MaterialFlowConstants.MODEL_STOCK_CORRECTION, L_SC).addOrder(SearchOrders.asc(L_SC_PRODUCT_ID))
-                .setProjection(SearchProjections.distinct(SearchProjections.field(L_SC_PRODUCT)))
-                .add(SearchRestrictions.eqField(L_SC_PRODUCT_ID, L_ID)).add(SearchRestrictions.eq(L_SC_STOCK_AREAS_ID, id))
-                .list().getEntities();
+                .createAlias(MaterialFlowConstants.MODEL_STOCK_CORRECTION, L_LOC).addOrder(SearchOrders.asc(L_LOC_PRODUCT_ID))
+                .setProjection(SearchProjections.distinct(SearchProjections.field(L_LOC_PRODUCT)))
+                .add(SearchRestrictions.eqField(L_LOC_PRODUCT_ID, L_ID)).add(SearchRestrictions.eq(L_LOC_LOCATION_ID, id)).list()
+                .getEntities();
 
         for (Entity product : productsFromStockCorrections) {
             if (!productsFromTransfers.contains(product)) {
@@ -347,57 +333,95 @@ public class MaterialFlowService {
         return productsFromTransfers;
     }
 
-    public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState view,
+    public void disableLocationFieldForParticularTransferType(final ViewDefinitionState view,
             final ComponentState componentState, final String[] args) {
-        disableStockAreaFieldForParticularTransferType(view);
+        disableLocationFieldForParticularTransferType(view);
     }
 
-    public void disableStockAreaFieldForParticularTransferType(final ViewDefinitionState view) {
+    public void disableLocationFieldForParticularTransferType(final ViewDefinitionState view) {
         if (view.getComponentByReference(TYPE).getFieldValue() == null) {
             return;
         }
 
         String type = view.getComponentByReference(TYPE).getFieldValue().toString();
-        FieldComponent toStockArea = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
-        FieldComponent fromStockArea = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
+        FieldComponent locationTo = (FieldComponent) view.getComponentByReference(LOCATION_TO);
+        FieldComponent locationFrom = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
 
         if (CONSUMPTION.getStringValue().equals(type)) {
-            fromStockArea.setEnabled(true);
-            fromStockArea.setRequired(true);
-            toStockArea.setRequired(false);
-            toStockArea.setEnabled(false);
-            toStockArea.setFieldValue("");
+            locationFrom.setEnabled(true);
+            locationFrom.setRequired(true);
+            locationTo.setRequired(false);
+            locationTo.setEnabled(false);
+            locationTo.setFieldValue("");
         } else if (PRODUCTION.getStringValue().equals(type)) {
-            toStockArea.setEnabled(true);
-            toStockArea.setRequired(true);
-            fromStockArea.setRequired(false);
-            fromStockArea.setEnabled(false);
-            fromStockArea.setFieldValue("");
+            locationTo.setEnabled(true);
+            locationTo.setRequired(true);
+            locationFrom.setRequired(false);
+            locationFrom.setEnabled(false);
+            locationFrom.setFieldValue("");
         } else {
-            toStockArea.setEnabled(true);
-            toStockArea.setRequired(true);
-            fromStockArea.setRequired(true);
-            fromStockArea.setEnabled(true);
+            locationTo.setEnabled(true);
+            locationTo.setRequired(true);
+            locationFrom.setRequired(true);
+            locationFrom.setEnabled(true);
         }
 
-        toStockArea.requestComponentUpdateState();
-        fromStockArea.requestComponentUpdateState();
+        locationTo.requestComponentUpdateState();
+        locationFrom.requestComponentUpdateState();
     }
 
-    public void fillDefaultStockAreaToFieldInTransformations(final ViewDefinitionState view, final ComponentState componentState,
+    public void fillDefaultLocationToFieldInTransformations(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FieldComponent stockAreaTo = (FieldComponent) view.getComponentByReference(STOCK_AREAS_TO);
+        FieldComponent locationTo = (FieldComponent) view.getComponentByReference(LOCATION_TO);
 
-        if (stockAreaTo.getFieldValue() == null) {
-            FieldComponent stockAreaFrom = (FieldComponent) view.getComponentByReference(STOCK_AREAS_FROM);
-            stockAreaTo.setFieldValue(stockAreaFrom.getFieldValue());
+        if (locationTo.getFieldValue() == null) {
+            FieldComponent locationFrom = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
+            locationTo.setFieldValue(locationFrom.getFieldValue());
         }
-        stockAreaTo.requestComponentUpdateState();
+        locationTo.requestComponentUpdateState();
     }
 
     public boolean numberAlreadyExist(final String model, final String number) {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
                 .add(SearchRestrictions.eq(TransferFields.NUMBER, number)).setMaxResults(1).uniqueResult() != null;
+    }
+
+    public List<Entity> getLocationsFromDB() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION).find()
+                .list().getEntities();
+    }
+
+    private Entity getProductById(final Long productId) {
+        if (productId == null) {
+            return null;
+        }
+
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+    }
+
+    public Entity getLocationById(final Long locationId) {
+        if (locationId == null) {
+            return null;
+        }
+
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION).get(
+                locationId);
+    }
+
+    public Entity getLocationByName(final String name) {
+        if (name == null) {
+            return null;
+        }
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION).find()
+                .add(SearchRestrictions.eq(LocationFields.NAME, name)).setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getStaffById(final Long staffId) {
+        if (staffId == null) {
+            return null;
+        }
+
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF).get(staffId);
     }
 
 }

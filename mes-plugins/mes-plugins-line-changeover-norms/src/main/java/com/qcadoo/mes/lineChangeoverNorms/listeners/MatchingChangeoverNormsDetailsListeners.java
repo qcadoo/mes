@@ -77,10 +77,12 @@ public class MatchingChangeoverNormsDetailsListeners {
         for (String reference : Arrays.asList(NUMBER, CHANGEOVER_TYPE, DURATION)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(null);
+            field.requestComponentUpdateState();
         }
         for (String reference : LineChangeoverNormsConstants.FIELDS_ENTITY) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(null);
+            field.requestComponentUpdateState();
         }
     }
 
@@ -88,10 +90,12 @@ public class MatchingChangeoverNormsDetailsListeners {
         for (String reference : Arrays.asList(NUMBER, CHANGEOVER_TYPE, DURATION)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(entity.getField(reference));
+            field.requestComponentUpdateState();
         }
         for (String reference : LineChangeoverNormsConstants.FIELDS_ENTITY) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(entity.getBelongsToField(reference) == null ? null : entity.getBelongsToField(reference).getId());
+            field.requestComponentUpdateState();
         }
     }
 

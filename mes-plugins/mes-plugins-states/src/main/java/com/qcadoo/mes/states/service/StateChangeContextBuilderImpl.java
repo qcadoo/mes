@@ -66,7 +66,7 @@ public final class StateChangeContextBuilderImpl implements StateChangeContextBu
      * @throws AnotherChangeInProgressException
      *             if at least one unfinished state change request for given owner entity is found.
      */
-    protected final void checkForUnfinishedStateChange(final StateChangeEntityDescriber describer, final Entity owner) {
+    protected void checkForUnfinishedStateChange(final StateChangeEntityDescriber describer, final Entity owner) {
         final String ownerFieldName = describer.getOwnerFieldName();
         final String statusFieldName = describer.getStatusFieldName();
         final Set<String> unfinishedStatuses = Sets.newHashSet(IN_PROGRESS.getStringValue(), PAUSED.getStringValue());
