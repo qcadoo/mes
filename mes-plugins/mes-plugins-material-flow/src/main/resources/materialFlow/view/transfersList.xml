@@ -40,10 +40,10 @@
 				width="150" />
 			<option type="column" name="type" fields="type" />
 			<option type="column" name="time" fields="time" />
-			<option type="column" name="stockAreasFrom" fields="stockAreasFrom"
-				expression="(#stockAreasFrom == null) ? '' : #stockAreasFrom['name']" />
-			<option type="column" name="stockAreasTo" fields="stockAreasTo"
-				expression="(#stockAreasTo == null) ? '' : #stockAreasTo['name']" />
+			<option type="column" name="locationFrom" fields="locationFrom"
+				expression="(#locationFrom == null) ? '' : #locationFrom['name']" />
+			<option type="column" name="locationTo" fields="locationTo"
+				expression="(#locationTo == null) ? '' : #locationTo['name']" />
 			<option type="column" name="product" fields="product"
 				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
@@ -53,9 +53,9 @@
 			<option type="order" column="number" direction="asc" />
 			
 			<option type="searchable"
-				value="number,type,time,stockAreasFrom,stockAreasTo,product,quantity,staff" />
+				value="number,type,time,locationFrom,locationTo,product,quantity,staff" />
 			<option type="orderable"
-				value="number,type,time,stockAreasFrom,stockAreasTo,product,quantity,staff" />
+				value="number,type,time,locationFrom,locationTo,product,quantity,staff" />
 				
 			<option type="correspondingView" value="materialFlow/transferDetails" />
 			<option type="correspondingComponent" value="form" />

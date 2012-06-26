@@ -77,8 +77,8 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     }
 
     @Override
-    protected void addSeries(final HSSFSheet sheet, final Entity materialsInStockAreas) {
-        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInStockArea(materialsInStockAreas);
+    protected void addSeries(final HSSFSheet sheet, final Entity materialsInLocation) {
+        Map<Entity, BigDecimal> reportData = materialFlowService.calculateMaterialQuantitiesInLocation(materialsInLocation);
 
         int rowNum = 1;
         for (Map.Entry<Entity, BigDecimal> data : reportData.entrySet()) {

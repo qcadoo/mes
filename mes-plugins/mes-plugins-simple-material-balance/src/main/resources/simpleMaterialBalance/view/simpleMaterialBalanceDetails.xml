@@ -114,8 +114,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4" width="2" height="6">
-					<component type="grid" name="simpleMaterialBalanceOrdersComponent"
-						reference="simpleMaterialBalanceOrdersComponent" source="#{form}.orders">
+					<component type="grid" name="simpleMaterialBalanceOrdersComponents"
+						reference="simpleMaterialBalanceOrdersComponents" source="#{form}.simpleMaterialBalanceOrdersComponents">
 						<option type="column" name="number" fields="order"
 							expression="#order['number']" width="50" />
 						<option type="column" name="name" fields="order"
@@ -135,16 +135,16 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="3" row="4" width="2" height="6">
-					<component type="grid" name="simpleMaterialBalanceStockAreasComponent"
-						reference="simpleMaterialBalancestockAreasComponent" source="#{form}.stockAreas">
-						<option type="column" name="number" fields="stockAreas"
-							expression="#stockAreas['number']" width="50" />
-						<option type="column" name="name" fields="stockAreas"
-							expression="#stockAreas['name']" width="50" />
+					<component type="grid" name="simpleMaterialBalanceLocationsComponents"
+						reference="simpleMaterialBalanceLocationsComponents" source="#{form}.simpleMaterialBalanceLocationsComponents">
+						<option type="column" name="number" fields="location"
+							expression="#location['number']" width="50" />
+						<option type="column" name="name" fields="location"
+							expression="#location['name']" width="50" />
 						<option type="order" column="number" direction="desc" />
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
-						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceStockAreasComponentDetails" />
+						<option type="correspondingView" value="simpleMaterialBalance/simpleMaterialBalanceLocationsComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 						<option type="paginable" value="false" />

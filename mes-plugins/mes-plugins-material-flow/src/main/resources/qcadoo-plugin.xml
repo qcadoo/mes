@@ -62,65 +62,49 @@
 
 	<modules>
 		<localization:translation path="locales" />
-
-		<model:model model="productQuantity" resource="model/productQuantity.xml" />
-		<model:model model="transfer" resource="model/transfer.xml" />
-		<model:model model="transferTemplate" resource="model/transferTemplate.xml" />
-		<model:model model="transformations" resource="model/transformations.xml" />
-		<model:model model="resource" resource="model/resource.xml" />
-		<model:model model="stockAreas" resource="model/stockAreas.xml" />
+	
+		<model:model model="location" resource="model/location.xml" />
+		<model:model model="materialsInLocation" resource="model/materialsInLocation.xml" />
+		<model:model model="materialsInLocationComponent" resource="model/materialsInLocationComponent.xml" />
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
-		<model:model model="materialsInStockAreas" resource="model/materialsInStockAreas.xml" />
-		<model:model model="materialsInStockAreasComponent"
-			resource="model/materialsInStockAreasComponent.xml" />
-		
+		<model:model model="transfer" resource="model/transfer.xml" />
+		<model:model model="transformations" resource="model/transformations.xml" />
+	
 		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="transfer" plugin="materialFlow"
-				model="transfer" joinField="product" />
+			<model:hasMany name="transfer" model="transfer" plugin="materialFlow"
+				joinField="product" />
 		</model:model-field>
-
+	
 		<model:model-field plugin="basic" model="product">
-			<model:hasMany name="stockCorrection" plugin="materialFlow"
-				model="stockCorrection" joinField="product" />
+			<model:hasMany name="stockCorrection" model="stockCorrection"
+				plugin="materialFlow" joinField="product" />
 		</model:model-field>
-
+	
 		<menu:menu-category name="materialFlow" />
-
-		<menu:menu-item name="multitransfer" category="materialFlow"
-			view="multitransfer" />
-		<menu:menu-item name="transfers" category="materialFlow"
-			view="transfersList" />
-		<menu:menu-item name="transferTemplates" category="materialFlow"
-			view="transferTemplatesList" />
-		<menu:menu-item name="transformations" category="materialFlow"
-			view="transformationsList" />
-		<menu:menu-item name="resources" category="materialFlow"
-			view="resourcesList" />
-		<menu:menu-item name="stockAreass" category="materialFlow"
-			view="stockAreasList" />
+	
+		<menu:menu-item name="locations" category="materialFlow"
+			view="locationsList" />
+		<menu:menu-item name="materialsInLocations" category="materialFlow"
+			view="materialsInLocationsList" />
 		<menu:menu-item name="stockCorrections" category="materialFlow"
 			view="stockCorrectionsList" />
-		
-		<menu:menu-item name="materialsInStockAreas" category="materialFlow"
-			view="materialsInStockAreasList" />
-
-		<view:view resource="view/multitransfer.xml" />
-		<view:view resource="view/transfersList.xml" />
-		<view:view resource="view/transferDetails.xml" />
-		<view:view resource="view/transferTemplatesList.xml" />
-		<view:view resource="view/transferTemplateDetails.xml" />
-		<view:view resource="view/transformationsList.xml" />
-		<view:view resource="view/transformationsDetails.xml" />
-		<view:view resource="view/resourcesList.xml" />
-		<view:view resource="view/resourceDetails.xml" />
-		<view:view resource="view/stockAreasList.xml" />
-		<view:view resource="view/stockAreasDetails.xml" />
-		<view:view resource="view/stockCorrectionsList.xml" />
+		<menu:menu-item name="transfers" category="materialFlow"
+			view="transfersList" />
+		<menu:menu-item name="transformations" category="materialFlow"
+			view="transformationsList" />
+	
+		<view:view resource="view/locationDetails.xml" />
+		<view:view resource="view/locationsList.xml" />
+		<view:view resource="view/materialsInLocationComponentDetails.xml" />
+		<view:view resource="view/materialsInLocationDetails.xml" />
+		<view:view resource="view/materialsInLocationsList.xml" />
 		<view:view resource="view/stockCorrectionDetails.xml" />
-		<view:view resource="view/materialsInStockAreasList.xml" />
-		<view:view resource="view/materialsInStockAreasDetails.xml" />
-		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
-
+		<view:view resource="view/stockCorrectionsList.xml" />
+		<view:view resource="view/transferDetails.xml" />
+		<view:view resource="view/transfersList.xml" />
+		<view:view resource="view/transformationsDetails.xml" />
+		<view:view resource="view/transformationsList.xml" />
+	
 		<view:resource uri="public/**/*" />
 	</modules>
 	

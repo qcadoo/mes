@@ -168,7 +168,13 @@ public final class SamplesConstants {
 
     public static final String L_MATERIAL_FLOW = "materialFlow";
 
-    public static final String L_STOCK_AREAS = "stockAreas";
+    public static final String L_MATERIAL_FLOW_RESOURCES = "materialFlowResources";
+
+    public static final String L_LOCATION = "location";
+
+    public static final String L_LOCATION_FROM = "locationFrom";
+
+    public static final String L_LOCATION_TO = "locationTo";
 
     public static final String L_RESOURCE = "resource";
 

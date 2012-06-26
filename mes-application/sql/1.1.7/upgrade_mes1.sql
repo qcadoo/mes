@@ -144,23 +144,56 @@ CREATE TABLE productionpershift_dailyprogress
       REFERENCES productionpershift_progressforday (id) DEFERRABLE
 );
 
+-- end
 
--- Table: materialflow_transfertemplate
--- changed: 31.05.2012
 
-CREATE TABLE materialflow_transfertemplate
+-- Table: materialflow_...
+-- changed: 26.06.2012
+
+ALTER TABLE materialflow_stockareas RENAME TO materialflow_locations;
+ALTER TABLE materialflow_materialsinstockareas RENAME TO materialflow_materialsinlocation;
+ALTER TABLE materialflow_materialsinstockareascomponent RENAME TO materialflow_materialsinlocationcomponent;
+
+ALTER TABLE materialflow_materialsinlocationcomponent ALTER COLUMN stockareas_id RENAME TO location_id;
+ALTER TABLE materialflow_materialsinlocationcomponent ALTER COLUMN materialsinstockareas_id RENAME TO materialsinlocation_id;
+
+ALTER TABLE materialflow_stockcorrection ALTER COLUMN stockareas_id RENAME TO location_id;
+
+ALTER TABLE  materialflow_transfer ALTER COLUMN stockareasfrom_id RENAME TO locationfrom_id;
+ALTER TABLE  materialflow_transfer ALTER COLUMN stockareasto_id RENAME TO locationto_id;
+
+ALTER TABLE  materialflow_transformations ALTER COLUMN stockareasfrom_id RENAME TO locationfrom_id;
+ALTER TABLE  materialflow_transformations ALTER COLUMN stockareasto_id RENAME TO locationto_id;
+
+-- end
+
+
+-- Table: simplematerialbalance_...
+-- changed: 26.06.2012
+
+ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent RENAME TO simplematerialbalance_simplematerialbalancelocationscomponent;
+
+ALTER TABLE simplematerialbalance_simplematerialbalancelocationscomponent ALTER COLUMN stockareas_id RENAME TO location_id;
+
+-- end
+
+
+-- Table: materialflowmultitransfers_transfertemplate
+-- changed: 26.06.2012
+
+CREATE TABLE materialflowmultitransfers_transfertemplate
 (
   id bigint NOT NULL,
-  stockareasfrom_id bigint,
-  stockareasto_id bigint,
+  locationfrom_id bigint,
+  locationto_id bigint,
   product_id bigint,
-  CONSTRAINT materialflow_transfertemplate_pkey PRIMARY KEY (id),
-  CONSTRAINT transfertemplate_product_fkey FOREIGN KEY (product_id)
+  CONSTRAINT materialflowmultitransfers_transfertemplate_pkey PRIMARY KEY (id),
+  CONSTRAINT materialflowmultitransfers_transfertemplate_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
-  CONSTRAINT transfertemplate_stockareasto_fkey FOREIGN KEY (stockareasto_id)
-      REFERENCES materialflow_stockareas (id) DEFERRABLE,
-  CONSTRAINT transfertemplate_stockareasfrom_fkey FOREIGN KEY (stockareasfrom_id)
-      REFERENCES materialflow_stockareas (id) DEFERRABLE
+  CONSTRAINT materialflowmultitransfers_transfertemplate_locationto_fkey FOREIGN KEY (locationto_id)
+      REFERENCES materialflow_location (id) DEFERRABLE,
+  CONSTRAINT materialflowmultitransfers_transfertemplate_locationfrom_fkey FOREIGN KEY (locationfrom_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
 );
 
 -- end
@@ -172,13 +205,13 @@ CREATE TABLE materialflow_transfertemplate
 CREATE TABLE materialflow_resource
 (
   id bigint NOT NULL,
-  stockareas_id bigint,
+  location_id bigint,
   product_id bigint,
   quantity numeric(10,3),
   "time" timestamp without time zone,
   CONSTRAINT materialflow_resource_pkey PRIMARY KEY (id),
-  CONSTRAINT resource_stockareas_fkey FOREIGN KEY (stockareas_id)
-      REFERENCES materialflow_stockareas (id) DEFERRABLE,
+  CONSTRAINT resource_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE,
   CONSTRAINT resource_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
@@ -319,33 +352,50 @@ UPDATE materialflow_transfer SET type = '03production' WHERE type = 'Production'
 
 -- end
 
+
 -- Table: basic_parameter
 -- changed: 18.06.2012
+
 ALTER TABLE basic_parameter ADD COLUMN typeofproductionrecording character varying(255);
 ALTER TABLE basic_parameter ALTER COLUMN typeofproductionrecording SET DEFAULT '02cumulated'::character varying;
 
 -- end
 
--- Table: materialflow_productquantity
--- changed: 20.06.2012
-CREATE TABLE materialflow_productquantity
+
+-- Table: materialflowmultitransfers_productquantity
+-- changed: 26.06.2012
+
+CREATE TABLE materialflowmultitransfers_productquantity
 (
   id bigint NOT NULL,
   product_id bigint,
   quantity numeric(10,3),
   unit character varying(255),
   transfer_id bigint,
-  CONSTRAINT materialflow_productquantity_pkey PRIMARY KEY (id),
-  CONSTRAINT materialflow_transfer_pkey FOREIGN KEY (transfer_id)
-      REFERENCES materialflow_transfer (id) MATCH SIMPLE
+  CONSTRAINT materialflowmultitransfers_productquantity_pkey PRIMARY KEY (id),
+  CONSTRAINT materialflowmultitransfers_transfer_pkey FOREIGN KEY (transfer_id)
+      REFERENCES materialflowmultitransfers_transfer (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT basic_product_pkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+
 --end
+
 
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 20.06.2012
+
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN hascorrections boolean;
+
 --end
+
+
+-- Table: materialflow_location
+-- changed: 26.06.2012
+
+ALTER TABLE materialflow_location ADD COLUMN type character varying(255);
+ALTER TABLE materialflow_location ALTER COLUMN type SET DEFAULT '01simpleControlPoint'::character varying;
+
+-- end

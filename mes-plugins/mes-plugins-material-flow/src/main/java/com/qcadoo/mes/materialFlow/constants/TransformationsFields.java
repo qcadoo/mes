@@ -35,9 +35,9 @@ public final class TransformationsFields {
 
     public static final String TIME = "time";
 
-    public static final String STOCK_AREAS_FROM = "stockAreasFrom";
+    public static final String LOCATION_FROM = "locationFrom";
 
-    public static final String STOCK_AREAS_TO = "stockAreasTo";
+    public static final String LOCATION_TO = "locationTo";
 
     public static final String STAFF = "staff";
 

@@ -28,42 +28,17 @@ public interface MaterialFlowConstants {
     String PLUGIN_IDENTIFIER = "materialFlow";
 
     // MODEL
-    String MODEL_STOCK_CORRECTION = "stockCorrection";
 
-    String MODEL_MATERIAL_FLOW = "materialFlow";
+    String MODEL_LOCATION = "location";
+
+    String MODEL_MATERIALS_IN_LOCATION = "materialsInLocation";
+
+    String MODEL_MATERIALS_IN_LOCATION_COMPONENT = "materialsInLocationComponent";
+
+    String MODEL_STOCK_CORRECTION = "stockCorrection";
 
     String MODEL_TRANSFER = "transfer";
 
-    String MODEL_TRANSFER_TEMPLATE = "transferTemplate";
-
-    String MODEL_RESOURCE = "resource";
-
-    String MODEL_STOCK_AREAS = "stockAreas";
-
-    String MODEL_MATERIALS_IN_STOCK_AREAS = "materialsInStockAreas";
-
     String MODEL_TRANSFORMATIONS = "transformations";
 
-    String MODEL_PRODUCT_QUANTITY = "productQuantity";
-
-    // VIEW
-    String VIEW_STOCK_CORRECTION_DETAIL = "stockCorrectionDetail";
-
-    String VIEW_STOCK_CORRECTION_LIST = "stockCorrectionDetail";
-
-    String VIEW_MATERIALS_IN_STOCK_AREAS_DETAILS = "materialsInStockAreasDetails";
-
-    String VIEW_MATERIALS_IN_STOCK_AREAS_LIST = "materialsInStockAreasList";
-
-    String VIEW_MATERIAL_FLOW_DETAIL = "materialFlowDetail";
-
-    String VIEW_MATERIAL_FLOW_LIST = "materialFlowList";
-
-    String VIEW_TRANSFER_DETAIL = "transferDetail";
-
-    String VIEW_TRANSFER_LIST = "transferList";
-
-    String VIEW_STOCK_AREAS_DETAIL = "stockAreasDetail";
-
-    String VIEW_STOCK_AREAS_LIST = "stockAreasList";
 }

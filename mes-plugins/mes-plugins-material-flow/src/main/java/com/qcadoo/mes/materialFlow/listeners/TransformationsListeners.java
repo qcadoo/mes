@@ -1,6 +1,5 @@
 package com.qcadoo.mes.materialFlow.listeners;
 
-import static com.qcadoo.mes.materialFlow.constants.ProductQuantityFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
@@ -8,6 +7,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSF
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.ProductComponentFields.PRODUCT;
 
 import java.util.List;
 
