@@ -38,7 +38,7 @@
 		<component type="grid" name="locationsGrid" reference="grid">
 			<option type="column" name="number" fields="number" link="true"/>
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="type" fields="type" link="true" />
+			<option type="column" name="type" fields="type" />
 			
 			<option type="order" column="number" direction="asc" />
 			
