@@ -180,11 +180,8 @@ public class TechnologyValidators {
                 .getBelongsToField("technologyOperationComponent");
         Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
         String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
-
         if (productionInOneCycleUNIT == null) {
-            technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
-                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
-            return false;
+            return true;
         }
         if (outputProduct != null && productionInOneCycleUNIT != null) {
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
