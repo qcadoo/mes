@@ -19,7 +19,7 @@ import com.qcadoo.model.api.FieldDefinition;
 
 public class TransferTemplateModelHooksTest {
 
-    private TransferTemplateModelHooks transferTemplateModelHooks;
+    private TransferTemplateModelValidators transferTemplateModelHooks;
 
     @Mock
     private DataDefinition transferTemplateDD;
@@ -31,7 +31,7 @@ public class TransferTemplateModelHooksTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        transferTemplateModelHooks = new TransferTemplateModelHooks();
+        transferTemplateModelHooks = new TransferTemplateModelValidators();
 
     }
 
