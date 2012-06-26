@@ -65,17 +65,17 @@
 		<model:model model="simpleMaterialBalance" resource="model/simpleMaterialBalance.xml" />
 		<model:model model="simpleMaterialBalanceOrdersComponent"
 			resource="model/simpleMaterialBalanceOrdersComponent.xml" />
-		<model:model model="simpleMaterialBalanceStockAreasComponent"
-			resource="model/simpleMaterialBalanceStockAreasComponent.xml" />
+		<model:model model="simpleMaterialBalanceLocationsComponent"
+			resource="model/simpleMaterialBalanceLocationsComponent.xml" />
 
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
 				model="simpleMaterialBalanceOrdersComponent" joinField="order"
 				cascade="nullify" />
 		</model:model-field>
-		<model:model-field plugin="materialFlow" model="stockAreas">
+		<model:model-field plugin="materialFlow" model="location">
 			<model:hasMany name="simpleMaterialBalance" plugin="simpleMaterialBalance"
-				model="simpleMaterialBalanceStockAreasComponent" joinField="stockAreas"
+				model="simpleMaterialBalanceLocationsComponent" joinField="location"
 				cascade="nullify" />
 		</model:model-field>
 
@@ -87,7 +87,7 @@
 		<view:view resource="view/simpleMaterialBalanceList.xml" />
 		<view:view resource="view/simpleMaterialBalanceDetails.xml" />
 		<view:view resource="view/simpleMaterialBalanceOrdersComponentDetails.xml" />
-		<view:view resource="view/simpleMaterialBalanceStockAreasComponentDetails.xml" />
+		<view:view resource="view/simpleMaterialBalanceLocationsComponentDetails.xml" />
 
 		<view:resource uri="public/**/*" />
 	</modules>

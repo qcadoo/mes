@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_PRODUCTION;
@@ -33,18 +33,13 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.MaterialFlowResourceService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TransferModelHooks {
-
-    @Autowired
-    private MaterialFlowResourceService matersialFlowResourceService;
 
     public void copyProductionOrConsumptionDataFromBelongingTransformation(final DataDefinition dd, final Entity transfer) {
         Entity transformation = transfer.getBelongsToField(TRANSFORMATIONS_PRODUCTION);
@@ -57,18 +52,15 @@ public class TransferModelHooks {
                 return;
             } else {
                 transfer.setField(TYPE, CONSUMPTION.getStringValue());
-                transfer.setField(STOCK_AREAS_FROM, transformation.getBelongsToField(STOCK_AREAS_FROM));
+                transfer.setField(LOCATION_FROM, transformation.getBelongsToField(LOCATION_FROM));
             }
         } else {
             transfer.setField(TYPE, PRODUCTION.getStringValue());
-            transfer.setField(STOCK_AREAS_TO, transformation.getBelongsToField(STOCK_AREAS_TO));
+            transfer.setField(LOCATION_TO, transformation.getBelongsToField(LOCATION_TO));
         }
 
         transfer.setField(TIME, transformation.getField(TIME));
         transfer.setField(STAFF, transformation.getBelongsToField(STAFF));
     }
 
-    public void manageResources(final DataDefinition transferDD, final Entity transfer) {
-        matersialFlowResourceService.manageResources(transfer);
-    }
 }

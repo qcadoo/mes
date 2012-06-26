@@ -32,10 +32,10 @@
 			<validatesLength max="255" />
 		</string>
 		<datetime name="stockCorrectionDate" required="true" />
-		<belongsTo name="stockAreas" required="true" model="stockAreas"
-			plugin="materialFlow" />
-		<belongsTo name="product" required="true" model="product"
-			plugin="basic" />
+		<belongsTo name="location" model="location" plugin="materialFlow"
+			required="true" />
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
 		<decimal name="shouldBe" readonly="true" persistent="false" />
 		<decimal name="found" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />

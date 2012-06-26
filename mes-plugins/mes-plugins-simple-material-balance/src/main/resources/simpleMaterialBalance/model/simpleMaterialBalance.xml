@@ -36,9 +36,9 @@
 		<boolean name="onlyComponents" default="1" />
 		<boolean name="generated" />
 		<string name="fileName" />
-		<hasMany name="orders" model="simpleMaterialBalanceOrdersComponent"
+		<hasMany name="simpleMaterialBalanceOrdersComponents" model="simpleMaterialBalanceOrdersComponent"
 			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
-		<hasMany name="stockAreas" model="simpleMaterialBalanceStockAreasComponent"
+		<hasMany name="simpleMaterialBalanceLocationsComponents" model="simpleMaterialBalanceLocationsComponent"
 			joinField="simpleMaterialBalance" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>

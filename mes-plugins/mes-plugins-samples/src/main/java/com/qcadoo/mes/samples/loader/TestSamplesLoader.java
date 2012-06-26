@@ -51,8 +51,12 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABL
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENERATED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_TIME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LAST_RECORD;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION_TO;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MACHINE_TIME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW_RESOURCES;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_REQUIREMENTS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
@@ -81,7 +85,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFTS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_AREAS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_CORRECTION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SUPPLIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SURNAME;
@@ -200,7 +203,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         if (isEnabledOrEnabling(L_MATERIAL_FLOW)) {
-            readDataFromXML(dataset, L_STOCK_AREAS, locale);
+            readDataFromXML(dataset, L_LOCATION, locale);
             readDataFromXML(dataset, L_RESOURCE, locale);
             readDataFromXML(dataset, L_TRANSFORMATIONS, locale);
             readDataFromXML(dataset, L_TRANSFER, locale);
@@ -276,8 +279,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addOrderGroup(values);
         } else if (L_COST_CALCULATION.equals(type)) {
             addCostCalculation(values);
-        } else if (L_STOCK_AREAS.equals(type)) {
-            addStokckArea(values);
+        } else if (L_LOCATION.equals(type)) {
+            addLocation(values);
         } else if (L_RESOURCE.equals(type)) {
             addResource(values);
         } else if (L_TRANSFORMATIONS.equals(type)) {
@@ -709,19 +712,20 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         costCalculation.getDataDefinition().save(costCalculation);
     }
 
-    private void addStokckArea(final Map<String, String> values) {
-        Entity stockArea = dataDefinitionService.get(L_MATERIAL_FLOW, L_STOCK_AREAS).create();
+    private void addLocation(final Map<String, String> values) {
+        Entity location = dataDefinitionService.get(L_MATERIAL_FLOW, L_LOCATION).create();
 
-        stockArea.setField(L_NUMBER, values.get(L_NUMBER));
-        stockArea.setField(L_NAME, values.get(L_NAME));
+        location.setField(L_NUMBER, values.get(L_NUMBER));
+        location.setField(L_NAME, values.get(L_NAME));
+        location.setField(L_TYPE, values.get(L_TYPE));
 
-        stockArea.getDataDefinition().save(stockArea);
+        location.getDataDefinition().save(location);
     }
 
     private void addResource(final Map<String, String> values) {
-        Entity resource = dataDefinitionService.get(L_MATERIAL_FLOW, L_RESOURCE).create();
+        Entity resource = dataDefinitionService.get(L_MATERIAL_FLOW_RESOURCES, L_RESOURCE).create();
 
-        resource.setField(L_STOCK_AREAS, getStockAreaByNumber(values.get("stock_areas")));
+        resource.setField(L_LOCATION, getLocationByNumber(values.get(L_LOCATION)));
         resource.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
         resource.setField(L_QUANTITY, values.get(L_QUANTITY));
         resource.setField(L_TIME, values.get(L_TIME));
@@ -735,8 +739,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         transformation.setField(L_NUMBER, values.get(L_NUMBER));
         transformation.setField(L_NAME, values.get(L_NAME));
         transformation.setField(L_TIME, values.get(L_TIME));
-        transformation.setField("stockAreasFrom", getStockAreaByNumber(values.get("stock_areas_from")));
-        transformation.setField("stockAreasTo", getStockAreaByNumber(values.get("stock_areas_to")));
+        transformation.setField(L_LOCATION_FROM, getLocationByNumber(values.get("location_from")));
+        transformation.setField(L_LOCATION_TO, getLocationByNumber(values.get("location_to")));
         transformation.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
 
         transformation.getDataDefinition().save(transformation);
@@ -747,7 +751,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         stockCorrection.setField(L_NUMBER, values.get(L_NUMBER));
         stockCorrection.setField("stockCorrectionDate", values.get("stock_correction_date"));
-        stockCorrection.setField(L_STOCK_AREAS, getStockAreaByNumber(values.get("stock_areas")));
+        stockCorrection.setField(L_LOCATION, getLocationByNumber(values.get(L_LOCATION)));
         stockCorrection.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
         stockCorrection.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
         stockCorrection.setField("found", values.get("found"));
@@ -763,8 +767,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         transfer.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT)));
         transfer.setField(L_QUANTITY, values.get(L_QUANTITY));
         transfer.setField(L_STAFF, getStaffByNumber(values.get(L_STAFF)));
-        transfer.setField("stockAreasFrom", getStockAreaByNumber(values.get("stock_areas_from")));
-        transfer.setField("stockAreasTo", getStockAreaByNumber(values.get("stock_areas_to")));
+        transfer.setField(L_LOCATION_FROM, getLocationByNumber(values.get("location_from")));
+        transfer.setField(L_LOCATION_TO, getLocationByNumber(values.get("location_to")));
         transfer.setField(L_TIME, values.get(L_TIME));
 
         transfer.setField("transformationsConsumption", getTransformationByNumber(values.get("transformations_consumption")));
@@ -1172,8 +1176,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getStockAreaByNumber(final String number) {
-        return dataDefinitionService.get(L_MATERIAL_FLOW, L_STOCK_AREAS).find().add(SearchRestrictions.eq(L_NUMBER, number))
+    private Entity getLocationByNumber(final String number) {
+        return dataDefinitionService.get(L_MATERIAL_FLOW, L_LOCATION).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
     }
 

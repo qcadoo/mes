@@ -2,8 +2,8 @@ package com.qcadoo.mes.materialFlow.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STOCK_AREAS_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
@@ -44,14 +44,14 @@ public class TransferDetailsViewHooks {
                 || transfer.getBelongsToField(TransferFields.TRANSFORMATIONS_PRODUCTION) != null) {
             FieldComponent type = (FieldComponent) state.getComponentByReference(TYPE);
             FieldComponent date = (FieldComponent) state.getComponentByReference(TIME);
-            FieldComponent stockAreasTo = (FieldComponent) state.getComponentByReference(STOCK_AREAS_TO);
-            FieldComponent stockAreasFrom = (FieldComponent) state.getComponentByReference(STOCK_AREAS_FROM);
+            FieldComponent locationTo = (FieldComponent) state.getComponentByReference(LOCATION_TO);
+            FieldComponent locationFrom = (FieldComponent) state.getComponentByReference(LOCATION_FROM);
             FieldComponent staff = (FieldComponent) state.getComponentByReference(STAFF);
 
             type.setEnabled(false);
             date.setEnabled(false);
-            stockAreasTo.setEnabled(false);
-            stockAreasFrom.setEnabled(false);
+            locationTo.setEnabled(false);
+            locationFrom.setEnabled(false);
             staff.setEnabled(false);
         }
     }

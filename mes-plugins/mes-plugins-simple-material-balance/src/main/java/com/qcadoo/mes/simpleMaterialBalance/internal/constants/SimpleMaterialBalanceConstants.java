@@ -32,7 +32,7 @@ public interface SimpleMaterialBalanceConstants {
 
     String MODEL_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENT = "simpleMaterialBalanceOrdersComponent";
 
-    String MODEL_SIMPLE_MATERIAL_BALANCE_WAREHOUSES_COMPONENT = "simpleMaterialBalanceStockAreasComponent";
+    String MODEL_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENT = "simpleMaterialBalanceLocationsComponent";
 
     // VIEW
     String VIEW_SIMPLE_MATERIA_BALANCE_LIST = "simpleMaterialBalanceList";
@@ -41,6 +41,6 @@ public interface SimpleMaterialBalanceConstants {
 
     String VIEW_SIMPLE_MATERIA_BALANCE_ORDERS_COMPONENT_DETAILS = "simpleMaterialBalanceOrdersComponentDetails";
 
-    String VIEW_SIMPLE_MATERIA_BALANCE_STOCK_AREAS_COMPONENT_DETAILS = "simpleMaterialBalanceStockAreasComponentDetails";
+    String VIEW_SIMPLE_MATERIA_BALANCE_LOCATION_COMPONENT_DETAILS = "simpleMaterialBalanceLocationsComponentDetails";
 
 }

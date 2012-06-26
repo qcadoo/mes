@@ -29,7 +29,7 @@ public final class ResourceFields {
 
     }
 
-    public static final String STOCK_AREAS = "stockAreas";
+    public static final String LOCATION = "location";
 
     public static final String PRODUCT = "product";
 
