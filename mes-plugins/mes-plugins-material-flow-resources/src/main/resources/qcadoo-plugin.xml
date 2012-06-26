@@ -62,6 +62,9 @@
 	
 		<model:model model="resource" resource="model/resource.xml" />
 		
+		<model:model-enum-value plugin="materialFlow"
+			model="location" enum="type" value="02warehouse" />
+   
 		<model:model-hook plugin="materialFlow" model="transfer">
 			<model:validatesWith
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"

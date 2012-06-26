@@ -38,12 +38,12 @@
 		<component type="grid" name="locationsGrid" reference="grid">
 			<option type="column" name="number" fields="number" link="true"/>
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="type" fields="type" link="true" />
+			<option type="column" name="type" fields="type" />
 			
 			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="number,name" />
-			<option type="orderable" value="number,name" /> 
+			<option type="searchable" value="number,name,type" />
+			<option type="orderable" value="number,name,type" /> 
 			
 			<option type="correspondingView" value="materialFlow/locationDetails" /> 
 			<option type="correspondingComponent" value="form" /> 

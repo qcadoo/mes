@@ -21,20 +21,34 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlow.constants;
+package com.qcadoo.mes.materialFlowResources.hooks;
 
-public final class ResourceFields {
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
-    private ResourceFields() {
+import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
+@Service
+public class ResourceModelValidators {
+
+    public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
+        Entity location = resource.getBelongsToField(LOCATION);
+
+        if (location != null) {
+            String type = location.getStringField(TYPE);
+
+            if (!"02warehouse".equals(type)) {
+                resource.addError(resourceDD.getField(LOCATION),
+                        "materialFlowResources.validate.global.error.locationIsNotWaregouse");
+
+                return false;
+            }
+        }
+
+        return true;
     }
-
-    public static final String LOCATION = "location";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String TIME = "time";
 
 }

@@ -35,5 +35,9 @@
 		<decimal name="quantity" required="true" />
 		<datetime name="time" required="true" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
+			method="checkIfLocationIsWarehouse" />
+	</hooks>
 </model>

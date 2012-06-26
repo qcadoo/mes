@@ -32,7 +32,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class TransferTemplateModelHooks {
+public class TransferTemplateModelValidators {
 
     public boolean checkIfOneOfLocationsIsNotNull(final DataDefinition transferTemplateDD, final Entity transferTemplate) {
         Entity locationFrom = transferTemplate.getBelongsToField(LOCATION_FROM);

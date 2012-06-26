@@ -48,7 +48,7 @@
 			<option type="searchable" value="locationFrom,locationTo,product" />
 			<option type="orderable" value="locationFrom,locationTo,product" />
 			
-			<option type="correspondingView" value="materialFlow/transferTemplateDetails" />
+			<option type="correspondingView" value="materialFlowMultitransfers/transferTemplateDetails" />
 			<option type="correspondingComponent" value="form" />
 			
 			<option type="fullscreen" value="true" />

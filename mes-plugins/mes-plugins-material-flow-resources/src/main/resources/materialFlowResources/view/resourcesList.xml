@@ -48,7 +48,7 @@
 			<option type="searchable" value="location,product,quantity,time" />
 			<option type="orderable" value="location,product,quantity,time" />
 
-			<option type="correspondingView" value="materialFlow/resourceDetails" />
+			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingComponent" value="form" />
 
 			<option type="fullscreen" value="true" />

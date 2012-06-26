@@ -1,8 +1,8 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
@@ -40,16 +40,22 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
         List<Entity> resources = getResourcesForLocationAndProduct(location, product);
 
-        if (resources == null) {
-            return false;
-        } else {
-            BigDecimal resourcesQuantity = BigDecimal.ZERO;
+        String type = location.getStringField(TYPE);
 
-            for (Entity resource : resources) {
-                resourcesQuantity = resourcesQuantity.add(resource.getDecimalField(QUANTITY), numberService.getMathContext());
+        if ((type != null) && ("02warehouse".equals(type))) {
+            if (resources == null) {
+                return false;
+            } else {
+                BigDecimal resourcesQuantity = BigDecimal.ZERO;
+
+                for (Entity resource : resources) {
+                    resourcesQuantity = resourcesQuantity.add(resource.getDecimalField(QUANTITY), numberService.getMathContext());
+                }
+
+                return (resourcesQuantity.compareTo(quantity) >= 0);
             }
-
-            return (resourcesQuantity.compareTo(quantity) >= 0);
+        } else {
+            return true;
         }
     }
 
@@ -68,15 +74,31 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Date time = (Date) transfer.getField(TIME);
 
         if (PRODUCTION.getStringValue().equals(type)) {
-            addResource(locationTo, product, quantity, time);
+            String locationToType = locationTo.getStringField(TYPE);
+
+            if ((type != null) && ("02warehouse".equals(locationToType))) {
+                addResource(locationTo, product, quantity, time);
+            }
         } else if (CONSUMPTION.getStringValue().equals(type)) {
-            updateResource(locationFrom, product, quantity);
-        } else if (TRANSPORT.getStringValue().equals(type)) {
-            if (locationFrom != null) {
+            String locationFromType = locationFrom.getStringField(TYPE);
+
+            if ((type != null) && ("02warehouse".equals(locationFromType))) {
                 updateResource(locationFrom, product, quantity);
             }
+        } else if (TRANSPORT.getStringValue().equals(type)) {
+            if (locationFrom != null) {
+                String locationFromType = locationFrom.getStringField(TYPE);
+
+                if ((type != null) && ("02warehouse".equals(locationFromType))) {
+                    updateResource(locationFrom, product, quantity);
+                }
+            }
             if (locationTo != null) {
-                addResource(locationTo, product, quantity, time);
+                String locationToType = locationTo.getStringField(TYPE);
+
+                if ((type != null) && ("02warehouse".equals(locationToType))) {
+                    addResource(locationTo, product, quantity, time);
+                }
             }
         }
     }
