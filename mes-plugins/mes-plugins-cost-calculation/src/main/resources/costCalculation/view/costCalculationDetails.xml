@@ -171,9 +171,9 @@
 							reference="product">
 							<option type="column" name="name" fields="name" link="true" />
 							<option type="required" value="true" />
-							<option type="searchable" value="name" />
+							<option type="searchable" value="number" />
 							<option type="orderable" value="name" />
-							<option type="expression" value="#name" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
