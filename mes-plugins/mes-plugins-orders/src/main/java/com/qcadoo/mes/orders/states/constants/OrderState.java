@@ -67,7 +67,7 @@ public enum OrderState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return DECLINED.equals(targetState) || IN_PROGRESS.equals(targetState);
+            return ABANDONED.equals(targetState) || IN_PROGRESS.equals(targetState);
         }
     },
     ABANDONED(OrderStateStringValues.ABANDONED) {
