@@ -58,7 +58,7 @@
 						var newState = ribbonItem.forState;
 						if (window.confirm(ribbonItem.confirmMessage)) {
 							if (window.canClose()) {
-								#{grid}.fireEvent(eventPerformer, 'changeSelectedTechnologyState', [newState]);
+								#{grid}.fireEvent(eventPerformer, 'changeState', [newState]);
 							}
 						}
 					}
@@ -177,7 +177,8 @@
 					}
 				]]>
 			</script>
-			<listener event="changeSelectedTechnologyState" class="com.qcadoo.mes.technologies.states.TechnologyStateService" method="changeSelectedTechnologyState" />
+			
+			<listener event="changeState" class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient" method="changeState" />
 			
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />

@@ -23,16 +23,16 @@ public class OrderEffectiveDateAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
-    @After("phaseExecution(stateContext, phase)")
-    public void afterStartProgress(final StateChangeContext stateContext, final int phase) {
-        stateContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
+    @After(PHASE_EXECUTION_POINTCUT)
+    public void afterStartProgress(final StateChangeContext stateChangeContext, final int phase) {
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(targetState = OrderStateStringValues.COMPLETED)
-    @After("phaseExecution(stateContext, phase)")
-    public void afterComplete(final StateChangeContext stateContext, final int phase) {
-        stateContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
+    @After(PHASE_EXECUTION_POINTCUT)
+    public void afterComplete(final StateChangeContext stateChangeContext, final int phase) {
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
     }
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)

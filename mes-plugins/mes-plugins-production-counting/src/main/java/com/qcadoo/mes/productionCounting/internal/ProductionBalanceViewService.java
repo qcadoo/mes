@@ -44,7 +44,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-import static com.qcadoo.mes.productionCounting.internal.states.ProductionCountingStates.ACCEPTED;
+import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productionPerShift.constants;
 
-public class ProductionPerShiftFields {
+public final class ProductionPerShiftFields {
 
     private ProductionPerShiftFields() {
 

@@ -179,6 +179,9 @@
 						</component>
 					</layoutElement>
 				</component>
+				<option type="header" value="true" />
+				<option type="expression"
+					value="#order.get('name') + ' - ' + #order.get('number')" />
 				<listener event="deleteProgressForDays"
 					class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 					method="deleteProgressForDays" />
@@ -211,5 +214,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="changedButtonState" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="checkIfWasItCorrected" />
+		
 	</hooks>
 </view>

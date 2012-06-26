@@ -5,6 +5,7 @@ import static com.qcadoo.mes.states.messages.constants.StateMessageType.parseStr
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.isAutoClosed;
 
 import java.util.List;
 
@@ -63,7 +64,8 @@ public class StateChangeViewClientUtil {
         if (VALIDATION_ERROR.equals(stateMsgType)) {
             return;
         }
-        component.addMessage(getKey(stateMessage), convertViewMessageType(stateMsgType), getArgs(stateMessage));
+        component.addMessage(getKey(stateMessage), convertViewMessageType(stateMsgType), isAutoClosed(stateMessage),
+                getArgs(stateMessage));
     }
 
 }

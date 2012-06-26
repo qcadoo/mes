@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productionPerShift.constants;
 
-public class TechInstOperCompFields {
+public final class TechInstOperCompFields {
 
     private TechInstOperCompFields() {
 

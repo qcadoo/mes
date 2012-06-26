@@ -3,9 +3,9 @@ package com.qcadoo.mes.states;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
 import static org.apache.commons.lang.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
@@ -37,6 +37,12 @@ public class StateChangeContextTest extends StateChangeTest {
 
     private StateChangeContext stateChangeContext;
 
+    private static final String FIELD_1_NAME = "field_1";
+
+    private static final String FIELD_1_MESSAGE_1 = "field_1_message_1";
+
+    private static final String GLOBAL_MESSAGE_1 = "global_message_1";
+
     @Before
     public final void init() {
         MockitoAnnotations.initMocks(this);
@@ -53,7 +59,7 @@ public class StateChangeContextTest extends StateChangeTest {
         stateChangeContext.save();
 
         // then
-        verify(stateChangeDD, times(3)).save(stateChangeEntity);
+        verify(stateChangeDD, atLeastOnce()).save(stateChangeEntity);
         verify(messageService, never()).addValidationError(Mockito.eq(stateChangeContext), Mockito.anyString(),
                 Mockito.anyString(), Mockito.any(String[].class));
         verify(messageService, never()).addValidationError(Mockito.eq(stateChangeContext), Mockito.eq((String) null),
@@ -83,10 +89,6 @@ public class StateChangeContextTest extends StateChangeTest {
         given(stateChangeDD.get(Mockito.any(Long.class))).willReturn(existingStateChangeEntity);
         given(existingStateChangeEntity.isValid()).willReturn(true);
 
-        final String FIELD_1_NAME = "field_1";
-        final String FIELD_1_MESSAGE_1 = "field_1_message_1";
-        final String GLOBAL_MESSAGE_1 = "global_message_1";
-
         final Map<String, ErrorMessage> fieldErrorsMap = Maps.newHashMap();
         final ErrorMessage fieldErrorMessage = buildErrorMessage(FIELD_1_MESSAGE_1);
         fieldErrorsMap.put(FIELD_1_NAME, fieldErrorMessage);
@@ -112,12 +114,9 @@ public class StateChangeContextTest extends StateChangeTest {
     public final void shouldMarkEntityAsInvalidAndSetStateToFailureIfStateChangeEntityIsInvalidAfterSave() {
         // given
         final Entity savedStateChangeEntity = mock(Entity.class);
+        given(stateChangeEntity.isValid()).willReturn(true);
+        given(savedStateChangeEntity.isValid()).willReturn(true, false);
         given(stateChangeDD.save(stateChangeEntity)).willReturn(savedStateChangeEntity);
-        given(savedStateChangeEntity.isValid()).willReturn(false);
-
-        final String FIELD_1_NAME = "field_1";
-        final String FIELD_1_MESSAGE_1 = "field_1_message_1";
-        final String GLOBAL_MESSAGE_1 = "global_message_1";
 
         final Map<String, ErrorMessage> fieldErrorsMap = Maps.newHashMap();
         final ErrorMessage fieldErrorMessage = buildErrorMessage(FIELD_1_MESSAGE_1);
@@ -162,10 +161,6 @@ public class StateChangeContextTest extends StateChangeTest {
     @Test
     public final void shouldNotSaveAndSetAlreadyInvalidOwnerEntity() {
         // given
-        final String FIELD_1_NAME = "field_1";
-        final String FIELD_1_MESSAGE_1 = "field_1_message_1";
-        final String GLOBAL_MESSAGE_1 = "global_message_1";
-
         given(owner.isValid()).willReturn(false);
         given(ownerDD.save(owner)).willReturn(owner);
 
@@ -194,10 +189,6 @@ public class StateChangeContextTest extends StateChangeTest {
     @Test
     public final void shouldAddMessagesOnlyOnce() {
         // given
-        final String FIELD_1_NAME = "field_1";
-        final String FIELD_1_MESSAGE_1 = "field_1_message_1";
-        final String GLOBAL_MESSAGE_1 = "global_message_1";
-
         given(owner.isValid()).willReturn(false);
         given(ownerDD.save(owner)).willReturn(owner);
 
@@ -227,10 +218,6 @@ public class StateChangeContextTest extends StateChangeTest {
     @Test
     public final void shouldSaveButNotSetJustInvalidateOwnerEntity() {
         // given
-        final String FIELD_1_NAME = "field_1";
-        final String FIELD_1_MESSAGE_1 = "field_1_message_1";
-        final String GLOBAL_MESSAGE_1 = "global_message_1";
-
         given(owner.isValid()).willReturn(true);
         given(ownerDD.save(owner)).willReturn(savedOwner);
         given(savedOwner.isValid()).willReturn(false);
@@ -255,6 +242,30 @@ public class StateChangeContextTest extends StateChangeTest {
         verify(messageService).addValidationError(stateChangeContext, FIELD_1_NAME, FIELD_1_MESSAGE_1, EMPTY_STRING_ARRAY);
         verify(messageService).addValidationError(stateChangeContext, null, GLOBAL_MESSAGE_1, EMPTY_STRING_ARRAY);
         verify(stateChangeEntity).setField(describer.getStatusFieldName(), StateChangeStatus.FAILURE.getStringValue());
+    }
+
+    @Test
+    public final void shouldCopyValidationErrorMessagesFromEntity() {
+        // given
+        given(owner.isValid()).willReturn(false);
+
+        final Map<String, ErrorMessage> fieldErrorsMap = Maps.newHashMap();
+        final ErrorMessage fieldErrorMessage = buildErrorMessage(FIELD_1_MESSAGE_1);
+        fieldErrorsMap.put(FIELD_1_NAME, fieldErrorMessage);
+        given(owner.getErrors()).willReturn(fieldErrorsMap);
+
+        final List<ErrorMessage> globalErrors = Lists.newArrayList();
+        final ErrorMessage globalErrorMessage = buildErrorMessage(GLOBAL_MESSAGE_1);
+        globalErrors.add(globalErrorMessage);
+        given(owner.getGlobalErrors()).willReturn(globalErrors);
+
+        // when
+        stateChangeContext.setOwner(owner);
+
+        // then
+        verify(messageService).addValidationError(stateChangeContext, FIELD_1_NAME, FIELD_1_MESSAGE_1, EMPTY_STRING_ARRAY);
+        verify(messageService).addValidationError(stateChangeContext, null, GLOBAL_MESSAGE_1, EMPTY_STRING_ARRAY);
+
     }
 
     private ErrorMessage buildErrorMessage(final String message) {

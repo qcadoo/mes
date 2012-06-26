@@ -45,8 +45,8 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.0</version>
+			<plugin>states</plugin>
+			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
 

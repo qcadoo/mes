@@ -37,6 +37,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.api.SamplesLoader;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.mes.samples.resolver.SamplesLocaleResolver;
+import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -63,6 +64,9 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     @Autowired
     private SamplesLocaleResolver samplesLocaleResolver;
 
+    @Autowired
+    private StateChangeSamplesClient stateChangeSamplesClient;
+
     @Override
     public void load() {
         if (databaseHasToBePrepared()) {
@@ -81,6 +85,10 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
      *            language code (ISO-639 code). Currently supported language codes are "pl" and "en".
      */
     protected abstract void loadData(final String locale);
+
+    protected StateChangeSamplesClient getStateChangeSamplesClient() {
+        return stateChangeSamplesClient;
+    }
 
     private boolean databaseHasToBePrepared() {
         Entity parameter = parameterService.getParameter();

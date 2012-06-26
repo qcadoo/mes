@@ -29,6 +29,7 @@ import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.INTERRUPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
@@ -37,6 +38,8 @@ import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
+import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.DRAFT;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,9 +55,11 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
@@ -72,8 +77,6 @@ public class ProductionRecordViewService {
     private static final String L_RECORD_OPERATION_PRODUCT_OUT_COMPONENT = "recordOperationProductOutComponent";
 
     private static final String L_FORM = "form";
-
-    private static final String L_TYPE = "type";
 
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUNIT";
 
@@ -114,6 +117,9 @@ public class ProductionRecordViewService {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private StateChangeHistoryService stateChangeHistoryService;
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
 
@@ -409,5 +415,39 @@ public class ProductionRecordViewService {
                 break;
             }
         }
+    }
+
+    public void disabledFieldWhenStateNotDraft(final ViewDefinitionState view) {
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntity() == null) {
+            return;
+        }
+        final Entity productionRecord = form.getEntity();
+        final String state = productionRecord.getStringField(STATE);
+        enabledOrDisabledField(view, DRAFT.getStringValue().equals(state));
+    }
+
+    private void enabledOrDisabledField(final ViewDefinitionState view, final boolean isEnabled) {
+        for (String reference : Arrays.asList("lastRecord", "number", "order", "technologyInstanceOperationComponent", "staff",
+                "shift", "workstationType", "division", "laborTime", "machineTime", "executedOperationCycles")) {
+            final FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setEnabled(isEnabled);
+            field.requestComponentUpdateState();
+        }
+        final GridComponent recordOperationProductInComponent = (GridComponent) view
+                .getComponentByReference("recordOperationProductInComponent");
+        recordOperationProductInComponent.setEditable(isEnabled);
+        final GridComponent recordOperationProductOutComponent = (GridComponent) view
+                .getComponentByReference("recordOperationProductOutComponent");
+        recordOperationProductOutComponent.setEditable(isEnabled);
+        final GridComponent loggingsGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
+        loggingsGrid.setEditable(isEnabled);
+    }
+
+    public void filterStateChangeHistory(final ViewDefinitionState view) {
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
+        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
+                Lists.newArrayList(SUCCESSFUL.getStringValue()));
+        historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 }

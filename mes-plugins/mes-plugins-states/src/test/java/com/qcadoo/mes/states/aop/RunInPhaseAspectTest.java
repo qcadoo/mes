@@ -38,11 +38,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static final class TestStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
-
-        @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
             return new MockStateChangeDescriber();
         }
@@ -70,11 +65,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static final class AnotherStateChangeAspect extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
-
-        @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
             return new MockStateChangeDescriber();
         }
@@ -96,11 +86,6 @@ public class RunInPhaseAspectTest extends StateChangeTest {
 
     @Aspect
     public static final class BreakStateChangeAspect extends AbstractStateChangeAspect {
-
-        @Override
-        protected String getStateFieldName() {
-            return "state";
-        }
 
         @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -126,7 +111,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static class TestListener extends AbstractStateListenerAspect {
 
         @RunInPhase(TEST_PHASE)
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdvice(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("onceChecked", true);
@@ -134,14 +119,14 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         }
 
         @RunInPhase({ FIRST_PHASE, TEST_PHASE, LAST_PHASE })
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdvice2(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("multiChecked", true);
             stateEntity.setField("anotherCheckedPhase", phase);
         }
 
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdvice3(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("withoutAtPhase", true);
@@ -156,7 +141,7 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     @Aspect
     public static class AnotherListener extends AbstractStateListenerAspect {
 
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdvice(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("yetAnotherOnceChecked", true);
@@ -172,14 +157,14 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     @RunInPhase(FIRST_PHASE)
     public static class ClassLevelAnnotatedListener extends AbstractStateListenerAspect {
 
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void classAnnotationAdvice(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("classAnnotationCheckedPhase", phase);
         }
 
         @RunInPhase(TEST_PHASE)
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void methodAnnotationAdvice(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("methodAnnotationCheckedPhase", phase);
@@ -195,21 +180,21 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     public static class BreakingListener extends AbstractStateListenerAspect {
 
         @RunInPhase(TEST_PHASE)
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdviceBeforeTest(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("beforeTest", true);
         }
 
         @RunInPhase(LAST_PHASE)
-        @org.aspectj.lang.annotation.Before("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.Before(PHASE_EXECUTION_POINTCUT)
         public void testAdviceBeforeLast(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             stateEntity.setField("beforeLast", true);
         }
 
         @RunInPhase(TEST_PHASE)
-        @org.aspectj.lang.annotation.After("phaseExecution(stateChangeContext, phase)")
+        @org.aspectj.lang.annotation.After(PHASE_EXECUTION_POINTCUT)
         public void testAdviceAfterTest(final StateChangeContext stateChangeContext, final int phase) {
             final Entity stateEntity = stateChangeContext.getStateChangeEntity();
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
@@ -261,6 +246,33 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     }
 
     @Test
+    public final void shouldNotFireListenersIfOwnerIsInvalid() {
+        // given
+        given(stateChangeContext.isOwnerValid()).willReturn(false);
+
+        // when
+        stateChangeService.changeState(stateChangeContext);
+
+        // then
+        verify(stateChangeEntity, never()).setField("onceChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("checkedPhase"), Mockito.anyInt());
+        verify(stateChangeEntity, never()).setField("checkedPhase", TEST_PHASE);
+
+        verify(stateChangeEntity, never()).setField("multiChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("anotherCheckedPhase"), Mockito.anyInt());
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", FIRST_PHASE);
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", TEST_PHASE);
+        verify(stateChangeEntity, never()).setField("anotherCheckedPhase", LAST_PHASE);
+
+        verify(stateChangeEntity, never()).setField("withoutAtPhase", true);
+
+        verify(stateChangeEntity, never()).setField("yetAnotherOnceChecked", true);
+        verify(stateChangeEntity, never()).setField(Mockito.eq("yetAnotherCheckedPhase"), Mockito.anyInt());
+
+        verify(stateChangeEntity, never()).setField("finished", true);
+    }
+
+    @Test
     public final void shouldContinueFromLastPhaseChain() {
         // given
         given(stateChangeEntity.getField(DESCRIBER.getPhaseFieldName())).willReturn(TEST_PHASE);
@@ -304,4 +316,5 @@ public class RunInPhaseAspectTest extends StateChangeTest {
         verify(stateChangeEntity).setField("methodAnnotationCheckedPhase", TEST_PHASE);
 
     }
+
 }

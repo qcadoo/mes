@@ -32,9 +32,9 @@
 			<template name="standardFormTemplate" />
 			<group name="status">
 				<smallButton name="acceptRecord" icon="startIcon16.png" state="disabled"
-					action="#{state}.changeRecordState(acceptRecord)" />
+					action="#{form}.changeRecordState(acceptRecord)" />
 				<smallButton name="cancelRecord" icon="deleteIcon16.png"
-					state="disabled" action="#{state}.changeRecordState(cancelRecord)" />
+					state="disabled" action="#{form}.changeRecordState(cancelRecord)" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -42,6 +42,14 @@
 				reference="form">
 				<script>
 					<![CDATA[
+						this.changeRecordState = function(eventPerformer, ribbonItemName) {
+							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+							var newState = ribbonItem.forState;
+							if (window.confirm(ribbonItem.confirmMessage)) {
+								#{form}.fireEvent(eventPerformer, 'changeRecordState', [newState]);
+							}
+						}
+					
 						this.addOnChangeListener({
 							onSetValue: function() {
 								var itemNames = ["status.acceptRecord", "status.cancelRecord"];
@@ -202,14 +210,6 @@
 										}
 									};
 									
-									this.changeRecordState = function(eventPerformer, ribbonItemName) {
-										var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-										var newState = ribbonItem.forState;
-										if (window.confirm(ribbonItem.confirmMessage)) {
-											#{form}.fireEvent(eventPerformer, 'changeRecordState', [newState]);
-										}
-									}
-									
 									function toggleEditable(state) {
 										var enabled = state == "01draft";
 									
@@ -281,15 +281,13 @@
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				
+				<listener event="changeRecordState"
+					class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
+					method="changeState" />
+				
 				<listener event="save"
 					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 					method="closeOrder" />
-				<listener event="changeRecordState" 
-					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" 
-					method="changeRecordState"/>
-				<listener event="onSelectedEntityChange" 
-					class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService" 
-					method="changeRecordState"/>
 			</component>
 		</windowTab>
 		<windowTab name="productsTab">
@@ -390,16 +388,15 @@
 		<windowTab name="historyTab">
 			<component type="gridLayout" name="loggingsGridLayout" columns="2" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.loggings">
+					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.stateChanges">
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
-						<option type="column" name="currentState" fields="currentState" 
-							expression="'@productionCounting.productionRecord.state.value.' + #currentState" />
+						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
 						
 						<option type="order" column="dateAndTime" direction="asc" />
 						
-						<option type="searchable" value="dateAndTime,currentState,worker" />
-						<option type="orderable" value="dateAndTime,currentState,worker" />
+						<option type="searchable" value="dateAndTime,targetState,worker" />
+						<option type="orderable" value="dateAndTime,targetState,worker" />
 					</component>
 				</layoutElement>
 			</component>
@@ -410,7 +407,10 @@
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="initializeRecordDetailsView" />
 		<beforeRender
-			class="com.qcadoo.mes.productionCounting.internal.states.ProductionRecordStateService"
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="disabledFieldWhenStateNotDraft" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="filterStateChangeHistory" />
 	</hooks>
 </view>

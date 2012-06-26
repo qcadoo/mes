@@ -26,8 +26,8 @@ package com.qcadoo.mes.timeNormsForOperations.validators;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.ACCEPTED;
-import static com.qcadoo.mes.technologies.constants.TechnologyState.CHECKED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
@@ -121,14 +121,18 @@ public class TechnologyValidators {
         }
     }
 
-    public boolean checkIfUnitMatch(final DataDefinition dataDefinition, final Entity technology) {
-        String productionUnit = technology.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        String machineUnit = technology.getStringField(COUNT_MACHINE_UNIT);
-        String countRealized = (String) technology.getField(COUNT_REALIZED);
+    public boolean checkIfUnitMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
+        String productionUnit = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
+        String machineUnit = technologyOperationComponent.getStringField(COUNT_MACHINE_UNIT);
+        String countRealized = (String) technologyOperationComponent.getField(COUNT_REALIZED);
+
+        if (productionUnit == null) {
+            return true;
+        }
         if (machineUnit == null) {
             if ("02specified".equals(countRealized)) {
                 if (!productionUnit.equals(machineUnit)) {
-                    technology.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
+                    technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
                             "technologies.operationDetails.validate.error.UnitsNotMatch");
                     return false;
                 }
@@ -137,7 +141,7 @@ public class TechnologyValidators {
         if (productionUnit != null && machineUnit != null) {
             if ("02specified".equals(countRealized)) {
                 if (!productionUnit.equals(machineUnit)) {
-                    technology.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
+                    technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
                             "technologies.operationDetails.validate.error.UnitsNotMatch");
                     return false;
                 }
@@ -150,7 +154,6 @@ public class TechnologyValidators {
     public boolean checkIfUnitsInTechnologyMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
         Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
         String productionInOneCycleUNIT = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
 
         if (productionInOneCycleUNIT == null) {
             technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
@@ -158,6 +161,8 @@ public class TechnologyValidators {
             return false;
         }
         if (outputProduct != null && productionInOneCycleUNIT != null) {
+            String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
+
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                         "technologies.operationDetails.validate.error.OutputUnitsNotMatch");

@@ -30,13 +30,14 @@ public class MessageServiceImpl implements MessageService {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public final Entity createMessage(final String translationKey, final StateMessageType type, final String correspondField,
-            final String... translationArgs) {
+    public final Entity createMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String correspondField, final String... translationArgs) {
         Entity message = getDataDefinition().create();
         message.setField(MessageFields.TYPE, type.getStringValue());
         message.setField(MessageFields.TRANSLATION_KEY, translationKey);
         message.setField(MessageFields.TRANSLATION_ARGS, MessagesUtil.joinArgs(translationArgs));
         message.setField(MessageFields.CORRESPOND_FIELD_NAME, correspondField);
+        message.setField(MessageFields.AUTO_CLOSE, autoClose);
         return message;
     }
 
@@ -54,15 +55,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public final void addMessage(final StateChangeContext stateChangeContext, final StateMessageType type,
-            final String correspondFieldName, final String translationKey, final String... translationArgs) {
-        final Entity message = createMessage(translationKey, type, correspondFieldName, translationArgs);
+            final boolean autoClose, final String correspondFieldName, final String translationKey,
+            final String... translationArgs) {
+        final Entity message = createMessage(translationKey, type, autoClose, correspondFieldName, translationArgs);
         addMessage(stateChangeContext, message);
     }
 
     @Override
     public final void addValidationError(final StateChangeContext stateChangeContext, final String correspondField,
             final String translationKey, final String... translationArgs) {
-        addMessage(stateChangeContext, VALIDATION_ERROR, correspondField, translationKey, translationArgs);
+        addMessage(stateChangeContext, VALIDATION_ERROR, true, correspondField, translationKey, translationArgs);
     }
 
     @Override

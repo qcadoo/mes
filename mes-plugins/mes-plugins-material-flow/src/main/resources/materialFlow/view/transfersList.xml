@@ -57,7 +57,7 @@
 			<option type="orderable"
 				value="number,type,time,stockAreasFrom,stockAreasTo,product,quantity,staff" />
 				
-			<option type="correspondingView" value="materialFlow/transferDetail" />
+			<option type="correspondingView" value="materialFlow/transferDetails" />
 			<option type="correspondingComponent" value="form" />
 			
 			<option type="fullscreen" value="true" />

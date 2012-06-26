@@ -15,6 +15,8 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
 import com.qcadoo.mes.states.exception.StateChangeException;
+import com.qcadoo.mes.states.exception.StateTransitionNotAlloweException;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
@@ -25,6 +27,9 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 public abstract class AbstractStateChangeViewClient implements StateChangeViewClient {
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
 
     @Autowired
     private StateChangeViewClientUtil viewClientUtil;
@@ -53,12 +58,16 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     @Override
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
-            final StateChangeContext stateChangeContext = getStateChangeService().buildStateChangeContext(entity, targetState);
+            final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(getStateChangeService()
+                    .getChangeEntityDescriber(), entity, targetState);
             getStateChangeService().changeState(stateChangeContext);
             viewClientUtil.refreshComponent(viewContext);
             showMessages(viewContext, stateChangeContext);
         } catch (AnotherChangeInProgressException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.anotherChangeInProgress",
+                    MessageType.FAILURE);
+        } catch (StateTransitionNotAlloweException e) {
+            viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.transitionNotAllowed",
                     MessageType.FAILURE);
         } catch (Exception e) {
             throw new StateChangeException(e);

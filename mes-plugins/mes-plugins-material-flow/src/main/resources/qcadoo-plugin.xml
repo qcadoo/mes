@@ -106,29 +106,21 @@
 
 		<view:view resource="view/multitransfer.xml" />
 		<view:view resource="view/transfersList.xml" />
-		<view:view resource="view/transferDetail.xml" />
+		<view:view resource="view/transferDetails.xml" />
 		<view:view resource="view/transferTemplatesList.xml" />
-		<view:view resource="view/transferTemplateDetail.xml" />
+		<view:view resource="view/transferTemplateDetails.xml" />
 		<view:view resource="view/transformationsList.xml" />
-		<view:view resource="view/transformationsDetail.xml" />
+		<view:view resource="view/transformationsDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
-		<view:view resource="view/resourceDetail.xml" />
+		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/stockAreasList.xml" />
-		<view:view resource="view/stockAreasDetail.xml" />
+		<view:view resource="view/stockAreasDetails.xml" />
 		<view:view resource="view/stockCorrectionsList.xml" />
-		<view:view resource="view/stockCorrectionDetail.xml" />
+		<view:view resource="view/stockCorrectionDetails.xml" />
 		<view:view resource="view/materialsInStockAreasList.xml" />
 		<view:view resource="view/materialsInStockAreasDetails.xml" />
 		<view:view resource="view/materialsInStockAreasComponentDetails.xml" />
 
-		<view:view-listener plugin="materialFlow" view="stockCorrectionDetail"
-			component="form" event="refreshShouldBeInStockCorrectionDetail"
-			class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="refreshShouldBeInStockCorrectionDetail" />
-
-		<view:view-hook plugin="materialFlow" view="stockCorrectionDetail"
-			type="beforeRender" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="refreshShouldBeInStockCorrectionDetail" />
-			
 		<view:resource uri="public/**/*" />
 	</modules>
 	

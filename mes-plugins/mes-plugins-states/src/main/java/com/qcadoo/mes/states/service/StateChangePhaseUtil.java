@@ -17,9 +17,9 @@ public final class StateChangePhaseUtil {
     public static boolean canRun(final StateChangeContext stateChangeContext) {
         List<Entity> messages = stateChangeContext.getAllMessages();
 
-        Preconditions
-                .checkNotNull(messages, "entity " + stateChangeContext.getStateChangeEntity() + " should have messages has many field!");
-        return stateChangeContext.getStatus().canContinue() && !hasFailureMessages(messages)
+        Preconditions.checkNotNull(messages, "entity " + stateChangeContext.getStateChangeEntity()
+                + " should have messages has many field!");
+        return stateChangeContext.isOwnerValid() && stateChangeContext.getStatus().canContinue() && !hasFailureMessages(messages)
                 && !hasValidationErrorMessages(messages);
     }
 }

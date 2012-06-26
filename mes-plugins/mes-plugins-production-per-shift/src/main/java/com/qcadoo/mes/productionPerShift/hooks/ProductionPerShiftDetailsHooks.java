@@ -22,6 +22,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -225,8 +226,8 @@ public class ProductionPerShiftDetailsHooks {
                 .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         boolean shouldDisabled = helper.shouldHasCorrections(viewState)
                 || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue());
+        progressForDaysADL.setEnabled(shouldDisabled);
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
-            form.setEnabled(shouldDisabled);
             ((FieldComponent) form.findFieldComponentByName("day")).setEnabled(shouldDisabled);
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
                     .findFieldComponentByName("dailyProgressADL");
@@ -261,6 +262,19 @@ public class ProductionPerShiftDetailsHooks {
         }
         clearButton.requestUpdate(true);
         copyButton.requestUpdate(true);
+    }
+
+    public void checkIfWasItCorrected(final ViewDefinitionState view) {
+        Entity order = helper.getOrderFromLookup(view);
+        List<Entity> tiocWithCorrectedPlan = order.getHasManyField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).find()
+                .add(SearchRestrictions.eq(TechInstOperCompFields.HAS_CORRECTIONS, true)).list().getEntities();
+        FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
+        if (tiocWithCorrectedPlan != null && !tiocWithCorrectedPlan.isEmpty()) {
+            wasItCorrected.setFieldValue(true);
+        } else {
+            wasItCorrected.setFieldValue(false);
+        }
+        wasItCorrected.requestComponentUpdateState();
     }
 
 }

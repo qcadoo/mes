@@ -53,16 +53,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public static class TestStateChangeService extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
-
-        @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
-            targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
+            targetEntity.setField(describer.getOwnerStateFieldName(),
+                    stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
 
         @Override
@@ -80,16 +76,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     public static class AnotherStateChangeService extends AbstractStateChangeAspect {
 
         @Override
-        protected String getStateFieldName() {
-            return STATE_FIELD_NAME;
-        }
-
-        @Override
         public void changeState(final StateChangeContext stateChangeContext) {
             final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
             final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
             Entity targetEntity = stateChangeEntity.getBelongsToField(describer.getOwnerFieldName());
-            targetEntity.setField(getStateFieldName(), stateChangeEntity.getField(describer.getTargetStateFieldName()));
+            targetEntity.setField(describer.getOwnerStateFieldName(),
+                    stateChangeEntity.getField(describer.getTargetStateFieldName()));
         }
 
         @Override
@@ -99,6 +91,20 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         @Override
         public StateChangeEntityDescriber getChangeEntityDescriber() {
             return new MockStateChangeDescriber();
+        }
+
+    }
+
+    @Aspect
+    public static class AlmostRealStateChangeService extends AbstractStateChangeAspect {
+
+        @Override
+        public StateChangeEntityDescriber getChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
+        }
+
+        @Override
+        protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
         }
 
     }
@@ -115,6 +121,7 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         stubStateChangeEntity(DESCRIBER);
         EntityList emptyEntityList = mockEmptyEntityList();
         stubStateChangeContext();
+        stubOwner();
         given(stateChangeEntity.getHasManyField("messages")).willReturn(emptyEntityList);
     }
 
@@ -241,6 +248,19 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
 
         // then
         verify(stateChangeEntity, never()).setField("marked", true);
+    }
+
+    @Test
+    public final void shouldNotPerformEntityStateChangeIfOwnerHasValidationErrors() {
+        // given
+        AlmostRealStateChangeService stateChangeService = new AlmostRealStateChangeService();
+        given(stateChangeContext.isOwnerValid()).willReturn(true, false);
+
+        // when
+        stateChangeService.changeState(stateChangeContext);
+
+        // then
+        verify(stateChangeContext).setStatus(StateChangeStatus.FAILURE);
     }
 
     @SuppressWarnings("unchecked")

@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -68,8 +67,6 @@ public class ProductionRecordServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldNotAllowToAddProductionCountingWhenThereAreFinalOnesForNullOperation() {
         // given
         List<Entity> productionCountings = Arrays.asList(counting);
@@ -86,8 +83,6 @@ public class ProductionRecordServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldNotAllowToAddProductionCountingWhenThereAreFinalOnesForGivenOperation() {
         // given
         List<Entity> productionCountings = Arrays.asList(counting);

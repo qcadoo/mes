@@ -53,13 +53,17 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.0</version>
+			<plugin>states</plugin>
+			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
+
+		<model:model-field plugin="states" model="message">
+		    <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange" />
+		</model:model-field>
 
 		<model:model model="productComponent" resource="model/productComponent.xml" />
 		<model:model model="operation" resource="model/operation.xml" />
@@ -73,7 +77,7 @@
 		
 		<model:model model="technologyInstanceOperationComponent" resource="model/technologyInstanceOperationComponent.xml" />
 
-		<model:model model="logging" resource="model/logging.xml" />
+		<model:model model="technologyStateChange" resource="model/technologyStateChange.xml" />
 		
 		<model:model model="technologyGroup" resource="model/technologyGroup.xml" />
 
@@ -157,7 +161,7 @@
 			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
 			method="updateRibbonState" />
 		
-		<custom:custom class="com.qcadoo.mes.technologies.TechnologyStartupModule" />
+		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
 	</modules>
 
 </plugin>

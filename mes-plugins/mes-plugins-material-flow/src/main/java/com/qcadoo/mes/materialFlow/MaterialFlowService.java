@@ -178,12 +178,12 @@ public class MaterialFlowService {
         return countProductIn;
     }
 
-    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state, final ComponentState componentState,
+    public void refreshShouldBeInStockCorrectionDetails(final ViewDefinitionState state, final ComponentState componentState,
             final String[] args) {
-        refreshShouldBeInStockCorrectionDetail(state);
+        refreshShouldBeInStockCorrectionDetails(state);
     }
 
-    public void refreshShouldBeInStockCorrectionDetail(final ViewDefinitionState state) {
+    public void refreshShouldBeInStockCorrectionDetails(final ViewDefinitionState state) {
         FieldComponent stockAreas = (FieldComponent) state.getComponentByReference(STOCK_AREAS);
         FieldComponent product = (FieldComponent) state.getComponentByReference(PRODUCT);
         FieldComponent date = (FieldComponent) state.getComponentByReference(STOCK_CORRECTION_DATE);

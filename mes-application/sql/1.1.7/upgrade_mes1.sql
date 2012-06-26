@@ -230,13 +230,60 @@ ALTER TABLE orders_orderstatechange ALTER COLUMN reasonRequired SET DEFAULT fals
 UPDATE orders_orderstatechange SET status = '03successful';
 UPDATE orders_orderstatechange SET status = '02paused' WHERE order_id IN(SELECT id FROM orders_order WHERE externalsynchronized = false);
 
-UPDATE orders_orderstatechange SET phase = 7;
+UPDATE orders_orderstatechange SET phase = 8;
 
 -- end
 
 
+-- Table: technologies_technologystatechange
+-- changed: 21.06.2012
+
+ALTER TABLE technologies_logging RENAME TO technologies_technologystatechange;
+
+ALTER TABLE technologies_technologystatechange DROP COLUMN active;
+
+ALTER TABLE technologies_technologystatechange RENAME COLUMN previousstate TO sourcestate;
+ALTER TABLE technologies_technologystatechange RENAME COLUMN currentstate TO targetstate;
+
+ALTER TABLE technologies_technologystatechange ADD COLUMN status character varying(255);
+ALTER TABLE technologies_technologystatechange ALTER COLUMN status SET DEFAULT '01inProgress'::character varying;
+
+ALTER TABLE technologies_technologystatechange ADD COLUMN phase integer;
+
+UPDATE technologies_technologystatechange SET status = '03successful';
+
+UPDATE technologies_technologystatechange SET phase = 4;
+
+-- end
+
+-- Table: productioncounting_productionrecordstatechange
+-- changed: 21.06.2012
+
+ALTER TABLE productioncounting_productionrecordlogging RENAME TO productioncounting_productionrecordstatechange;
+
+ALTER TABLE productioncounting_productionrecordstatechange RENAME COLUMN previousstate TO sourcestate;
+ALTER TABLE productioncounting_productionrecordstatechange RENAME COLUMN currentstate TO targetstate;
+
+ALTER TABLE productioncounting_productionrecordstatechange ADD COLUMN status character varying(255);
+ALTER TABLE productioncounting_productionrecordstatechange ALTER COLUMN status SET DEFAULT '01inProgress'::character varying;
+
+ALTER TABLE productioncounting_productionrecordstatechange ADD COLUMN phase integer;
+
+ALTER TABLE productioncounting_productionrecordstatechange ADD COLUMN shift_id bigint;
+
+ALTER TABLE productioncounting_productionrecordstatechange 
+	ADD CONSTRAINT basic_shift_fkey 
+		FOREIGN KEY (shift_id)
+    	REFERENCES basic_shift (id) DEFERRABLE;
+
+UPDATE productioncounting_productionrecordstatechange SET status = '03successful';
+
+UPDATE productioncounting_productionrecordstatechange SET phase = 4;
+
+-- end
+
 -- Table: states_message
--- changed: 15.06.2012
+-- changed: 21.06.2012
 
 CREATE TABLE states_message
 (
@@ -245,13 +292,20 @@ CREATE TABLE states_message
   translationkey character varying(255),
   translationargs character varying(255),
   correspondfieldname character varying(255),
+  autoclose boolean,
   orderstatechange_id bigint,
+  technologystatechange_id bigint,
+  productionrecordstatechange_id bigint,
   CONSTRAINT states_message_pkey PRIMARY KEY (id ),
-  CONSTRAINT message_order_fkey FOREIGN KEY (orderstatechange_id)
-      REFERENCES orders_order (id) DEFERRABLE,
   CONSTRAINT message_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
-      REFERENCES orders_orderstatechange (id) DEFERRABLE
+      REFERENCES orders_orderstatechange (id) DEFERRABLE,
+  CONSTRAINT message_technologystatechange_fkey FOREIGN KEY (technologystatechange_id)
+      REFERENCES technologies_technologystatechange (id) DEFERRABLE,
+  CONSTRAINT message_prodrecstatechange_fkey FOREIGN KEY (productionrecordstatechange_id)
+      REFERENCES productioncounting_productionrecordstatechange (id) DEFERRABLE
 );
+
+ALTER TABLE states_message ALTER COLUMN autoclose SET DEFAULT true;
 
 -- end
 

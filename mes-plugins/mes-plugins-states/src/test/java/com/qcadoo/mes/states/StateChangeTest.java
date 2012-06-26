@@ -82,6 +82,7 @@ public abstract class StateChangeTest {
 
     protected void stubOwner() {
         given(owner.getDataDefinition()).willReturn(ownerDD);
+        given(owner.isValid()).willReturn(true);
         given(ownerDD.save(Mockito.any(Entity.class))).willAnswer(new Answer<Entity>() {
 
             @Override
@@ -95,6 +96,11 @@ public abstract class StateChangeTest {
         given(stateChangeContext.getOwner()).willReturn(owner);
         given(stateChangeContext.getStateChangeEntity()).willReturn(stateChangeEntity);
         given(stateChangeContext.getDescriber()).willReturn(DESCRIBER);
+        given(stateChangeContext.isOwnerValid()).willReturn(true);
+        StateEnum stateEnumMock = Mockito.mock(StateEnum.class);
+        given(stateEnumMock.canChangeTo(Mockito.any(StateEnum.class))).willReturn(true);
+        given(stateEnumMock.getStringValue()).willReturn("stateEnumMock");
+        given(stateChangeContext.getStateEnumValue(Mockito.anyString())).willReturn(stateEnumMock);
 
         Mockito.doAnswer(new Answer<Void>() {
 

@@ -27,7 +27,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -94,8 +93,6 @@ public class ProductionRecordViewServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldDisableTimePanelIfTimeRegistrationIsDisabled() {
         // given
         given(order.getBooleanField("registerProductionTime")).willReturn(false);
@@ -109,8 +106,6 @@ public class ProductionRecordViewServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldDisablePieceworkPanelIfPieceworkRegistrationIsDisabled() {
         // given
         given(order.getBooleanField("registerPiecework")).willReturn(false);
@@ -124,8 +119,6 @@ public class ProductionRecordViewServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldEnableTimePanelIfProductionRecordingTypeIsntSetToSimpleAndRegisterTimeIsSetToTrue() {
         // given
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
@@ -141,8 +134,6 @@ public class ProductionRecordViewServiceTest {
     }
 
     @Test
-    @Ignore
-    // TODO ALBR
     public void shouldEnablePieceworkPanelIfProductionRecordingTypeIsForOperationAndRegisterPiecworkIsSetToTrue() {
         // given
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(

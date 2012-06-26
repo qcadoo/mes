@@ -12,6 +12,9 @@ public interface MessagesHolder {
 
     void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs);
 
+    void addMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String... translationArgs);
+
     void addFieldValidationError(final String translationKey, final String fieldName, final String... translationArgs);
 
     void addValidationError(final String translationKey, final String... translationArgs);

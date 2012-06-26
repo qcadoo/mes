@@ -32,6 +32,7 @@
 		<string name="translationKey" required="true" />
 		<string name="translationArgs" />
 		<string name="correspondFieldName" />
+		<boolean name="autoClose" default="true" />
 	</fields>
 	<hooks />
 </model>

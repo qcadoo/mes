@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productionPerShift.constants;
 
-public class DailyProgressFields {
+public final class DailyProgressFields {
 
     private DailyProgressFields() {
 

@@ -3,14 +3,14 @@ package com.qcadoo.mes.states;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.states.messages.util.ValidationMessageHelper;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.validators.ErrorMessage;
 
 public final class StateChangeContextImpl implements StateChangeContext {
 
@@ -20,7 +20,7 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     private Entity entity;
 
-    private boolean ownerIsValid = true;
+    private boolean ownerValid = true;
 
     public StateChangeContextImpl(final Entity stateChangeEntity, final StateChangeEntityDescriber describer,
             final MessageService messageService) {
@@ -32,8 +32,12 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
-    public void save() {
-        setStateChangeEntity(describer.getDataDefinition().save(entity));
+    public boolean save() {
+        try {
+            return setStateChangeEntity(entity.getDataDefinition().save(entity));
+        } catch (Exception e) {
+            throw new StateChangeException(e);
+        }
     }
 
     @Override
@@ -76,16 +80,17 @@ public final class StateChangeContextImpl implements StateChangeContext {
         return describer;
     }
 
-    private void setStateChangeEntity(final Entity stateChange) {
+    private boolean setStateChangeEntity(final Entity stateChange) {
         Preconditions.checkNotNull(stateChange);
         if (stateChange.isValid()) {
             final Entity savedStateChange = describer.getDataDefinition().save(stateChange);
             if (savedStateChange.isValid()) {
                 this.entity = savedStateChange;
-                return;
+                return true;
             }
         }
         markAsFailureByValidation(stateChange);
+        return false;
     }
 
     private void markAsFailureByValidation(final Entity stateChange) {
@@ -94,13 +99,13 @@ public final class StateChangeContextImpl implements StateChangeContext {
         if (entityToBeMarkAsFailure == null && stateChangeEntityId != null) {
             entityToBeMarkAsFailure = describer.getDataDefinition().get(stateChangeEntityId);
         }
-        if (entityToBeMarkAsFailure != null) {
+        if (entityToBeMarkAsFailure == null) {
+            throw new IllegalArgumentException("Given state change entity have validation errors!");
+        } else {
             this.entity = entityToBeMarkAsFailure;
-            assignErrorsFromEntity(stateChange);
+            ValidationMessageHelper.copyErrorsFromEntity(this, stateChange);
             setStatus(FAILURE);
             describer.getDataDefinition().save(entityToBeMarkAsFailure);
-        } else {
-            throw new IllegalArgumentException("Given state change entity have validation errors!");
         }
     }
 
@@ -117,12 +122,18 @@ public final class StateChangeContextImpl implements StateChangeContext {
     @Override
     public void addFieldMessage(final String translationKey, final StateMessageType type, final String fieldName,
             final String... translationArgs) {
-        messageService.addMessage(this, type, null, translationKey, translationArgs);
+        messageService.addMessage(this, type, true, fieldName, translationKey, translationArgs);
     }
 
     @Override
     public void addMessage(final String translationKey, final StateMessageType type, final String... translationArgs) {
-        addFieldMessage(translationKey, type, null, translationArgs);
+        addMessage(translationKey, type, true, translationArgs);
+    }
+
+    @Override
+    public void addMessage(final String translationKey, final StateMessageType type, final boolean autoClose,
+            final String... translationArgs) {
+        messageService.addMessage(this, type, autoClose, null, translationKey, translationArgs);
     }
 
     @Override
@@ -146,9 +157,9 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
-    public void setOwner(final Entity owner) {
-        if (!ownerIsValid) {
-            return;
+    public boolean setOwner(final Entity owner) {
+        if (!ownerValid) {
+            return false;
         }
         boolean isValid = isEntityValid(owner);
         if (isValid) {
@@ -158,31 +169,23 @@ public final class StateChangeContextImpl implements StateChangeContext {
                 entity.setField(describer.getOwnerFieldName(), savedOwner);
             }
         }
-        ownerIsValid = isValid;
+        ownerValid = isValid;
         save();
+        return ownerValid;
     }
 
     private boolean isEntityValid(final Entity entity) {
         boolean isValid = entity.isValid();
         if (!isValid) {
-            assignErrorsFromEntity(entity);
+            ValidationMessageHelper.copyErrorsFromEntity(this, entity);
             setStatus(StateChangeStatus.FAILURE);
         }
         return isValid;
     }
 
-    private void assignErrorsFromEntity(final Entity entity) {
-        assignErrorsFromEntity(this, entity);
+    @Override
+    public boolean isOwnerValid() {
+        return ownerValid;
     }
 
-    private void assignErrorsFromEntity(final StateChangeContext stateContext, final Entity entity) {
-        for (ErrorMessage globalError : entity.getGlobalErrors()) {
-            addValidationError(globalError.getMessage(), globalError.getVars());
-        }
-
-        for (Entry<String, ErrorMessage> fieldErrorMessageEntry : entity.getErrors().entrySet()) {
-            final ErrorMessage fieldErrorMessage = fieldErrorMessageEntry.getValue();
-            addFieldValidationError(fieldErrorMessageEntry.getKey(), fieldErrorMessage.getMessage(), fieldErrorMessage.getVars());
-        }
-    }
 }

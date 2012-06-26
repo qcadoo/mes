@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.technologies;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyState.DRAFT;
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.DRAFT;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

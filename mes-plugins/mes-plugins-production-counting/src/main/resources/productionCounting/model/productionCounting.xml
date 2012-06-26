@@ -47,9 +47,6 @@
 		<validatesWith
 			class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceService"
 			method="validateOrder" />
-		<onSave
-			class="com.qcadoo.mes.productionCounting.internal.states.ProductionCountingChangeStateHook"
-			method="changedState" />
 	</hooks>
 	<identifier expression="#name" />
 </model>

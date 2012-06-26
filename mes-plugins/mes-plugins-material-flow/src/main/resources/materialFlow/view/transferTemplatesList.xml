@@ -48,7 +48,7 @@
 			<option type="searchable" value="stockAreasFrom,stockAreasTo,product" />
 			<option type="orderable" value="stockAreasFrom,stockAreasTo,product" />
 			
-			<option type="correspondingView" value="materialFlow/transferTemplateDetail" />
+			<option type="correspondingView" value="materialFlow/transferTemplateDetails" />
 			<option type="correspondingComponent" value="form" />
 			
 			<option type="fullscreen" value="true" />

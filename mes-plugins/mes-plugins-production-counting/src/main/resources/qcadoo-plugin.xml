@@ -64,15 +64,17 @@
 			<plugin>basicProductionCounting</plugin>
 			<version>[0.4.0</version>
 		</dependency>
+		<dependency>
+			<plugin>states</plugin>
+			<version>[1.1.7</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
-		<custom:custom
-			class="com.qcadoo.mes.productionCounting.internal.orderStates.ProductionCountingOnStartupService" />
 		<localization:translation path="locales" />
 
 		<model:model model="productionRecord" resource="model/productionRecord.xml" />
-		<model:model model="productionRecordLogging" resource="model/productionRecordLogging.xml" />
+		<model:model model="productionRecordStateChange" resource="model/productionRecordStateChange.xml" />
 		<model:model model="productionBalance" resource="model/productionBalance.xml" />
 		<model:model model="productionCounting" resource="model/productionCounting.xml" />
 		<model:model model="recordOperationProductInComponent"
@@ -104,6 +106,9 @@
 		<view:view resource="view/recordOperationProductInComponentDetails.xml" />
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
 
+		<model:model-field plugin="states" model="message">
+		    <model:belongsTo name="productionRecordStateChange" plugin="productionCounting" model="productionRecordStateChange" />
+		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
 				default="02cumulated" />
@@ -167,7 +172,7 @@
 		</model:model-field>
 		
 		<model:model-hook model="parameter" plugin="basic">
-		    <model:onCreate class="com.qcadoo.mes.productionCounting.internal.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
+		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
@@ -189,6 +194,8 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="changeProducedQuantityFieldState" />
+			
+		<custom:custom class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
 	</modules>
 	
 </plugin>

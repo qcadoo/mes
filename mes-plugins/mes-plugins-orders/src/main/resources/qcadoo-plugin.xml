@@ -72,7 +72,7 @@
 		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
 		
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="orderStateChange" plugin="orders" model="order" />
+		    <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>
 		
 		<model:model-field plugin="basic" model="product">
@@ -119,16 +119,16 @@
 		</model:model-field>
 		
 		<model:model-field plugin="basic" model="parameter">
-		    <model:integer name="delayedEffectiveDateFromTime" />
+		    <model:integer name="delayedEffectiveDateFromTime" default="900"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-		    <model:integer name="earlierEffectiveDateFromTime" />
+		    <model:integer name="earlierEffectiveDateFromTime" default="900"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-		    <model:integer name="delayedEffectiveDateToTime" />
+		    <model:integer name="delayedEffectiveDateToTime" default="900"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-		    <model:integer name="earlierEffectiveDateToTime" />
+		    <model:integer name="earlierEffectiveDateToTime" default="900"/>
 		</model:model-field>
 		
 		<model:model-hook plugin="technologies" model="technology">
@@ -170,8 +170,9 @@
 		<report:report-template name="order"
 			resource="report/order.jrxml" />
 			
-		<custom:custom class="com.qcadoo.mes.orders.TechnologyOnStartupModule" />
 		<view:resource uri="public/**/*" />
+		
+		<custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule" />
 	</modules>
 
 </plugin>

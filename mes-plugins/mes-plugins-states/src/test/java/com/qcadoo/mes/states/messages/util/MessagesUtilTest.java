@@ -146,6 +146,48 @@ public class MessagesUtilTest {
         assertFalse(result);
     }
 
+    @Test
+    public final void shouldIsAutoClosedReturnFalseIfFieldValueIsFalse() {
+        // given
+        final Entity message = mock(Entity.class);
+        given(message.getField(MessageFields.AUTO_CLOSE)).willReturn(false);
+        given(message.getBooleanField(MessageFields.AUTO_CLOSE)).willReturn(false);
+
+        // when
+        final boolean result = MessagesUtil.isAutoClosed(message);
+
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    public final void shouldIsAutoClosedReturnFalseIfFieldValueIsTrue() {
+        // given
+        final Entity message = mock(Entity.class);
+        given(message.getField(MessageFields.AUTO_CLOSE)).willReturn(true);
+        given(message.getBooleanField(MessageFields.AUTO_CLOSE)).willReturn(true);
+
+        // when
+        final boolean result = MessagesUtil.isAutoClosed(message);
+
+        // then
+        assertTrue(result);
+    }
+
+    @Test
+    public final void shouldIsAutoClosedReturnFalseIfFieldValueIsNull() {
+        // given
+        final Entity message = mock(Entity.class);
+        given(message.getField(MessageFields.AUTO_CLOSE)).willReturn(null);
+        given(message.getBooleanField(MessageFields.AUTO_CLOSE)).willReturn(false);
+
+        // when
+        final boolean result = MessagesUtil.isAutoClosed(message);
+
+        // then
+        assertTrue(result);
+    }
+
     private EntityList mockEntityList(final List<Entity> entities) {
         EntityList entityList = mock(EntityList.class);
         given(entityList.iterator()).willReturn(entities.iterator());

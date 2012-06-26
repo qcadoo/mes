@@ -49,7 +49,7 @@
 			joinField="technology" cascade="delete" copyable="true" />
 		<enum name="state" values="01draft,02accepted,03declined,04outdated,05checked"
 			default="01draft" required="true" />
-		<hasMany name="loggings" joinField="technology" model="logging"
+		<hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
 			cascade="delete" />
 		
 	</fields>
@@ -70,16 +70,18 @@
 			method="checkIfOperationsUsesSubOperationsProds" />
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
 			method="checkConsumingTheSameProductFromManySubOperations" />
+		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+			method="setInitialState" />
+		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
+			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
+		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
+			method="switchStateToDraftOnCopy" />
 		<onSave class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setFirstTechnologyAsDefault" />
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
-		<onSave class="com.qcadoo.mes.technologies.states.TechnologyStatesHook"
-			method="onSave" />
-		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
-			method="switchStateToDraftOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
