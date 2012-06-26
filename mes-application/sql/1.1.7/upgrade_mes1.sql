@@ -154,16 +154,16 @@ ALTER TABLE materialflow_stockareas RENAME TO materialflow_locations;
 ALTER TABLE materialflow_materialsinstockareas RENAME TO materialflow_materialsinlocation;
 ALTER TABLE materialflow_materialsinstockareascomponent RENAME TO materialflow_materialsinlocationcomponent;
 
-ALTER TABLE materialflow_materialsinlocationcomponent ALTER COLUMN stockareas_id RENAME TO location_id;
-ALTER TABLE materialflow_materialsinlocationcomponent ALTER COLUMN materialsinstockareas_id RENAME TO materialsinlocation_id;
+ALTER TABLE materialflow_materialsinlocationcomponent RENAME COLUMN stockareas_id TO location_id;
+ALTER TABLE materialflow_materialsinlocationcomponent RENAME COLUMN materialsinstockareas_id TO materialsinlocation_id;
 
-ALTER TABLE materialflow_stockcorrection ALTER COLUMN stockareas_id RENAME TO location_id;
+ALTER TABLE materialflow_stockcorrection RENAME COLUMN stockareas_id  TO location_id;
 
-ALTER TABLE  materialflow_transfer ALTER COLUMN stockareasfrom_id RENAME TO locationfrom_id;
-ALTER TABLE  materialflow_transfer ALTER COLUMN stockareasto_id RENAME TO locationto_id;
+ALTER TABLE  materialflow_transfer RENAME COLUMN stockareasfrom_id TO locationfrom_id;
+ALTER TABLE  materialflow_transfer RENAME COLUMN stockareasto_id TO locationto_id;
 
-ALTER TABLE  materialflow_transformations ALTER COLUMN stockareasfrom_id RENAME TO locationfrom_id;
-ALTER TABLE  materialflow_transformations ALTER COLUMN stockareasto_id RENAME TO locationto_id;
+ALTER TABLE  materialflow_transformations RENAME COLUMN stockareasfrom_id TO locationfrom_id;
+ALTER TABLE  materialflow_transformations RENAME COLUMN stockareasto_id  TO locationto_id;
 
 -- end
 
