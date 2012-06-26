@@ -244,9 +244,34 @@
 			<model:onCreate class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="copyTimeNormsToTechnologyOperationComponent" />
 		</model:model-hook>
+		
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+				method="checkIfUnitMatch" />
+		</model:model-hook>
+		
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+				method="checkIfUnitsInTechnologyMatch" />
+		</model:model-hook>
+		
 		<model:model-hook model="technologyInstanceOperationComponent" plugin="technologies">
 		    <model:onCreate class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompHooksTNFO" method="copyTimeNormsFromTechnology"/>
 		</model:model-hook>
+		
+		<model:model-hook model="technologyInstanceOperationComponent"
+			plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+				method="checkIfUnitMatch" />
+		</model:model-hook>
+		
+		<model:model-hook model="technologyInstanceOperationComponent"
+			plugin="technologies">
+			<model:validatesWith class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+				method="checkIfUnitsInInstanceTechnologyMatch" />
+		</model:model-hook> 
 		
 		
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -277,17 +302,9 @@
 			type="beforeRender" plugin="technologies"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateFieldsStateOnWindowLoad" />
 
-		<view:view-hook view="technologyOperationComponentDetails"
-			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="fillUnitFields" />
-		
 		<view:view-hook view="technologyInstanceOperationComponentDetails"
 			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
 			method="disableComponents" />
-			
-		<view:view-hook view="technologyInstanceOperationComponentDetails"
-			type="beforeRender" plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyInstanceOperCompDetailsHooksTNFO"
-			method="fillUnitFields" />
 
 		<view:view-listener component="operation"
 			event="onSelectedEntityChange" plugin="technologies"

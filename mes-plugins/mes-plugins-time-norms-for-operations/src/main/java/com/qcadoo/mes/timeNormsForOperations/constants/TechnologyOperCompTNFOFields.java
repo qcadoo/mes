@@ -58,4 +58,7 @@ public final class TechnologyOperCompTNFOFields {
     public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
 
     public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
+
+    public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
+
 }

@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.technologies;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.PARENT;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -309,4 +314,46 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             traverse(child, operationComponent, productQuantities, nonComponents, plannedQty, technology, operationRuns);
         }
     }
+
+    public Entity getOutputProductsFromOperataionComponent(final Entity operationComponent) {
+
+        List<Entity> outProducts = operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
+
+        if (outProducts == null || outProducts.isEmpty()) {
+            return null;
+        } else {
+            Entity parentOperation = operationComponent.getBelongsToField(PARENT);
+            if (parentOperation == null) {
+                return outProducts.get(0);
+
+            } else {
+                List<Entity> inProductsParent = parentOperation.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
+                for (Entity product : outProducts) {
+                    if (findProductParentOperation(product, inProductsParent)) {
+                        return product;
+                    }
+
+                }
+
+                return null;
+            }
+
+        }
+
+    }
+
+    private boolean findProductParentOperation(Entity product, List<Entity> parentProducts) {
+
+        for (Entity parent : parentProducts) {
+            Entity parentProduct = parent.getBelongsToField(PRODUCT);
+            Entity currentProduct = product.getBelongsToField(PRODUCT);
+
+            if (parentProduct.getId().equals(currentProduct.getId())) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
 }

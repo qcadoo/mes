@@ -314,7 +314,6 @@ public class ProductionRecordViewService {
         return parameter.getBooleanField(reference);
     }
 
-    // JAGA
     private String getDefaultValueForTypeOfProductionRecordingParameter(final String reference) {
         Entity parameter = parameterService.getParameter();
         return parameter.getStringField(reference);
