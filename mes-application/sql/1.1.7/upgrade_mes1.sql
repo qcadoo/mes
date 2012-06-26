@@ -374,11 +374,9 @@ CREATE TABLE materialflowmultitransfers_productquantity
   transfer_id bigint,
   CONSTRAINT materialflowmultitransfers_productquantity_pkey PRIMARY KEY (id),
   CONSTRAINT materialflowmultitransfers_transfer_pkey FOREIGN KEY (transfer_id)
-      REFERENCES materialflowmultitransfers_transfer (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      REFERENCES materialflow_transfer (id) DEFERRABLE,
   CONSTRAINT basic_product_pkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+      REFERENCES basic_product (id) DEFERRABLE
 );
 
 --end
