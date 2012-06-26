@@ -148,6 +148,10 @@ public class TimeTechnologyInOrderService {
 
             }
         }
+        plannedQuantity.requestComponentUpdateState();
+        startTime.requestComponentUpdateState();
+        stopTime.requestComponentUpdateState();
+        realizationTime.requestComponentUpdateState();
     }
 
     public void clearFieldValue(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

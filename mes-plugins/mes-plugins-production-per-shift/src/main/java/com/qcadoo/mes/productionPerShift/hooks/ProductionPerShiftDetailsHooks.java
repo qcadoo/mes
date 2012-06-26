@@ -9,6 +9,7 @@ import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFiel
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.PROGRESS_FOR_DAYS;
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
 
 import java.util.Date;
@@ -24,6 +25,8 @@ import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -46,6 +49,9 @@ public class ProductionPerShiftDetailsHooks {
 
     @Autowired
     private PPSHelper helper;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -172,8 +178,8 @@ public class ProductionPerShiftDetailsHooks {
                     .add(SearchRestrictions.eq(CORRECTED, !isPlanned(plannedProgressType.getFieldValue()))).list().getEntities();
             progressForDaysADL.setFieldValue(progressForDays);
         }
-
         progressForDaysADL.requestComponentUpdateState();
+        disabledComponents(viewState);
     }
 
     public void refreshProgressForDaysADL(final ViewDefinitionState viewState) {
@@ -266,7 +272,9 @@ public class ProductionPerShiftDetailsHooks {
 
     public void checkIfWasItCorrected(final ViewDefinitionState view) {
         Entity order = helper.getOrderFromLookup(view);
-        List<Entity> tiocWithCorrectedPlan = order.getHasManyField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS).find()
+        List<Entity> tiocWithCorrectedPlan = dataDefinitionService
+                .get(PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
+                .add(SearchRestrictions.belongsTo("order", order))
                 .add(SearchRestrictions.eq(TechInstOperCompFields.HAS_CORRECTIONS, true)).list().getEntities();
         FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
         if (tiocWithCorrectedPlan != null && !tiocWithCorrectedPlan.isEmpty()) {
