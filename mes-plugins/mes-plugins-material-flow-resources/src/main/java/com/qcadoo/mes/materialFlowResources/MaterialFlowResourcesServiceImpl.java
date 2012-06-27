@@ -6,6 +6,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
+import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
@@ -42,7 +43,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         String type = location.getStringField(TYPE);
 
-        if ((type != null) && ("02warehouse".equals(type))) {
+        if (isTypeWarehouse(type)) {
             if (resources == null) {
                 return false;
             } else {
@@ -76,27 +77,27 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         if (PRODUCTION.getStringValue().equals(type)) {
             String locationToType = locationTo.getStringField(TYPE);
 
-            if ((type != null) && ("02warehouse".equals(locationToType))) {
+            if (isTypeWarehouse(locationToType)) {
                 addResource(locationTo, product, quantity, time);
             }
         } else if (CONSUMPTION.getStringValue().equals(type)) {
             String locationFromType = locationFrom.getStringField(TYPE);
 
-            if ((type != null) && ("02warehouse".equals(locationFromType))) {
+            if (isTypeWarehouse(locationFromType)) {
                 updateResource(locationFrom, product, quantity);
             }
         } else if (TRANSPORT.getStringValue().equals(type)) {
             if (locationFrom != null) {
                 String locationFromType = locationFrom.getStringField(TYPE);
 
-                if ((type != null) && ("02warehouse".equals(locationFromType))) {
+                if (isTypeWarehouse(locationFromType)) {
                     updateResource(locationFrom, product, quantity);
                 }
             }
             if (locationTo != null) {
                 String locationToType = locationTo.getStringField(TYPE);
 
-                if ((type != null) && ("02warehouse".equals(locationToType))) {
+                if (isTypeWarehouse(locationToType)) {
                     addResource(locationTo, product, quantity, time);
                 }
             }
@@ -181,5 +182,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 .add(SearchRestrictions.belongsTo(LOCATION, location)).list().getEntities();
 
         return resources;
+    }
+
+    private boolean isTypeWarehouse(final String type) {
+        return ((type != null) && WAREHOUSE.getStringValue().equals(type));
     }
 }

@@ -122,36 +122,29 @@ public class TechnologyValidators {
     }
 
     public boolean checkIfUnitMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
-        String productionUnit = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        String machineUnit = technologyOperationComponent.getStringField(COUNT_MACHINE_UNIT);
+        String productionInOneCycleUnit = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
+        String countMachineUnit = technologyOperationComponent.getStringField(COUNT_MACHINE_UNIT);
         String countRealized = (String) technologyOperationComponent.getField(COUNT_REALIZED);
 
-        if (productionUnit == null) {
+        if (productionInOneCycleUnit == null) {
             return true;
         }
-        if (machineUnit == null) {
-            if ("02specified".equals(countRealized)) {
-                if (!productionUnit.equals(machineUnit)) {
-                    technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
-                            "technologies.operationDetails.validate.error.UnitsNotMatch");
-                    return false;
-                }
-            }
-        }
-        if (productionUnit != null && machineUnit != null) {
-            if ("02specified".equals(countRealized)) {
-                if (!productionUnit.equals(machineUnit)) {
-                    technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
-                            "technologies.operationDetails.validate.error.UnitsNotMatch");
-                    return false;
-                }
-            }
+
+        if ("02specified".equals(countRealized) && !productionInOneCycleUnit.equals(countMachineUnit)) {
+            technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
+                    "technologies.operationDetails.validate.error.UnitsNotMatch");
+            return false;
         }
         return true;
 
     }
 
     public boolean checkIfUnitsInTechnologyMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
+
+        if (technologyOperationComponent.getId() == null) {
+            return true;
+        }
+
         Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
         String productionInOneCycleUNIT = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
 
@@ -160,7 +153,7 @@ public class TechnologyValidators {
                     "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
             return false;
         }
-        if (outputProduct != null && productionInOneCycleUNIT != null) {
+        if (outputProduct != null) {
             String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
 
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
@@ -175,15 +168,28 @@ public class TechnologyValidators {
     public boolean checkIfUnitsInInstanceTechnologyMatch(final DataDefinition dataDefinition,
             final Entity technologyInstanceOperationComponent) {
 
-        String productionInOneCycleUNIT = technologyInstanceOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        Entity technologyOperationComponent = technologyInstanceOperationComponent
-                .getBelongsToField("technologyOperationComponent");
-        Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
-        String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
-        if (productionInOneCycleUNIT == null) {
+        if (technologyInstanceOperationComponent.getId() == null) {
             return true;
         }
-        if (outputProduct != null && productionInOneCycleUNIT != null) {
+
+        Entity technologyOperationComponent = technologyInstanceOperationComponent
+                .getBelongsToField("technologyOperationComponent");
+
+        if (technologyOperationComponent.getId() == null) {
+            return true;
+        }
+
+        String productionInOneCycleUNIT = technologyInstanceOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
+        Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
+
+        if (productionInOneCycleUNIT == null) {
+            technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
+                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+            return false;
+        }
+        if (outputProduct != null) {
+            String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
+
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                         "technologies.operationDetails.validate.error.OutputUnitsNotMatch");

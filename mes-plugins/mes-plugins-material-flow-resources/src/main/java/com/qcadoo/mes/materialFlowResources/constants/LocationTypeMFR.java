@@ -21,19 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.timeNormsForOperations.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-import java.util.Set;
+public enum LocationTypeMFR {
 
-import com.google.common.collect.Sets;
+    WAREHOUSE("02warehouse");
 
-public interface TimeNormsConstants {
+    private final String type;
 
-    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    private LocationTypeMFR(final String type) {
+        this.type = type;
+    }
 
-    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    public String getStringValue() {
+        return type;
+    }
+
+    public static LocationTypeMFR parseString(final String type) {
+        if ("02warehouse".equalsIgnoreCase(type)) {
+            return WAREHOUSE;
+        } else {
+            throw new IllegalArgumentException("Couldn't parse LocationTypeMFR from string '" + type + "'");
+        }
+    }
+
 }

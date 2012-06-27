@@ -68,7 +68,7 @@ public class TransformationsModelValidatorsMFR {
             if (CONSUMPTION.getStringValue().equals(type) && (locationFrom != null) && (product != null) && (quantity != null)
                     && !materialFlowResourcesService.areResourcesSufficient(locationFrom, product, quantity)) {
                 appendErrorToModelField(transfer, QUANTITY,
-                        "materialFlowResources.multitransfer.validation.resourcesArentSufficient");
+                        "materialFlowResources.validate.global.error.resourcesArentSufficient");
 
                 isValid = false;
             }
