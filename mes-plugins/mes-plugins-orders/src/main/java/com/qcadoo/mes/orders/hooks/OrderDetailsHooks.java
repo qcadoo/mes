@@ -2,17 +2,19 @@ package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
@@ -50,30 +52,39 @@ public class OrderDetailsHooks {
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
 
-    public void enabledFieldForSpecificOrderState(final ViewDefinitionState view) {
+    public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
             return;
         }
         final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
+
+        if (order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
+            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
+                    REASON_TYPE_CORRECTION_DATE_TO, REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
+                    REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
+                    COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM);
+            changedEnabledFields(view, references, false);
+        }
         if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
-            enabledFields(view, references);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+            changedEnabledFields(view, references, true);
         }
         if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_TO);
-            enabledFields(view, references);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+            changedEnabledFields(view, references, true);
         }
     }
 
-    private void enabledFields(final ViewDefinitionState view, final List<String> references) {
+    private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
         for (String reference : references) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setEnabled(true);
+            field.setEnabled(enabled);
             field.requestComponentUpdateState();
         }
     }

@@ -869,6 +869,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField("machineUtilization", operation.getField("machineUtilization"));
             component.setField("laborUtilization", operation.getField("laborUtilization"));
             component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
+            component.setField("productionInOneCycleUNIT", values.get("productioninonecycleunit"));
             component.setField("countRealized", operation.getField("countRealized"));
             component.setField("countMachine", operation.getField("countMachine"));
             component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));

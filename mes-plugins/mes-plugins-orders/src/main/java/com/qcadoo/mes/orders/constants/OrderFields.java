@@ -81,6 +81,14 @@ public final class OrderFields {
 
     public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_TO = "commentReasonTypeCorrectionDateTo";
 
+    public static final String REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "reasonTypeDeviationsOfEffectiveEnd";
+
+    public static final String REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "reasonTypeDeviationsOfEffectiveStart";
+
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
+
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
+
     public static final String START_DATE = "startDate";
 
     public static final String FINISH_DATE = "finishDate";

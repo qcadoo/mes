@@ -405,8 +405,7 @@
 							rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeCorrectionDateFrom"
-									field="#{form}.reasonTypeCorrectionDateFrom" reference="reasonTypeCorrectionDateFrom"
-									defaultEnabled="false">
+									field="#{form}.reasonTypeCorrectionDateFrom" reference="reasonTypeCorrectionDateFrom">
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -424,8 +423,7 @@
 							rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeDeviationsOfEffectiveStart"
-									reference="reasonTypeDeviationsOfEffectiveStart" field="#{form}.reasonTypeDeviationsOfEffectiveStart"
-									defaultEnabled="false">
+									reference="reasonTypeDeviationsOfEffectiveStart" field="#{form}.reasonTypeDeviationsOfEffectiveStart">
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -478,7 +476,7 @@
 							<layoutElement column="1" row="1">
 								<component type="select" name="reasonTypeCorrectionDateTo"
 									field="#{form}.reasonTypeCorrectionDateTo" reference="reasonTypeCorrectionDateTo"
-									defaultEnabled="false" >
+									defaultEnabled="false">
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -554,9 +552,7 @@
 			class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="enabledFieldForSpecificOrderState" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="enabledFieldForSpecificOrderState" />
+			method="changedEnabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="filterStateChangeHistory" />
 	</hooks>

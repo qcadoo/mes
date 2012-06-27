@@ -4,8 +4,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CO
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -63,12 +61,10 @@ public class OrderDetailsHooksTest {
         when(dataDefinition.get(id)).thenReturn(order);
         when(view.getComponentByReference(CORRECTED_DATE_FROM)).thenReturn(correctDateFromField);
         when(view.getComponentByReference(CORRECTED_DATE_TO)).thenReturn(correctDateToField);
-        when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
-        when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
         when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(reasonDateFromField);
         when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(reasonDateToField);
-        when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
-        when(view.getComponentByReference(DATE_TO)).thenReturn(dateTo);
+        when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
+        when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
     }
 
     @Test
@@ -76,7 +72,7 @@ public class OrderDetailsHooksTest {
         // given
         when(order.getStringField(STATE)).thenReturn("02accepted");
         // when
-        hooks.enabledFieldForSpecificOrderState(view);
+        hooks.changedEnabledFieldForSpecificOrderState(view);
         // then
         Mockito.verify(correctDateFromField).setEnabled(true);
         Mockito.verify(correctDateToField).setEnabled(true);
@@ -84,8 +80,6 @@ public class OrderDetailsHooksTest {
         Mockito.verify(commentDateToField).setEnabled(true);
         Mockito.verify(reasonDateFromField).setEnabled(true);
         Mockito.verify(reasonDateToField).setEnabled(true);
-        Mockito.verify(dateFrom).setEnabled(true);
-        Mockito.verify(dateTo).setEnabled(true);
     }
 
     @Test
@@ -93,12 +87,11 @@ public class OrderDetailsHooksTest {
         // given
         when(order.getStringField(STATE)).thenReturn("03inProgress");
         // when
-        hooks.enabledFieldForSpecificOrderState(view);
+        hooks.changedEnabledFieldForSpecificOrderState(view);
         // then
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
         Mockito.verify(reasonDateToField).setEnabled(true);
-        Mockito.verify(dateTo).setEnabled(true);
     }
 
 }
