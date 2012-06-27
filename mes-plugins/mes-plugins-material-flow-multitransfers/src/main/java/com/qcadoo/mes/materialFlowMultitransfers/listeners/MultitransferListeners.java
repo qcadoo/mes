@@ -10,6 +10,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.UNIT;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowMultitransfers.constants.MaterialFlowMultitransfersConstants;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -47,8 +49,8 @@ public class MultitransferListeners {
     @Autowired
     private MaterialFlowService materialFlowService;
 
-    // @Autowired
-    // private MaterialFlowResourceService materialFlowResourceService;
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -107,11 +109,12 @@ public class MultitransferListeners {
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
             if ((product != null) && (quantity != null)) {
-                createTransfer(type, locationFrom, locationTo, product, quantity, staff, time);
+                createTransfer(type, time, locationFrom, locationTo, staff, product, quantity);
             }
         }
 
-        view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.generate.success", MessageType.SUCCESS);
+        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.generate.success",
+                MessageType.SUCCESS);
     }
 
     public void getFromTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -126,7 +129,8 @@ public class MultitransferListeners {
         List<Entity> templates = getTransferTemplates(locationFrom, locationTo);
 
         if (templates.isEmpty()) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.template.failure", MessageType.FAILURE);
+            view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
+                    MessageType.FAILURE);
             return;
         }
 
@@ -148,7 +152,8 @@ public class MultitransferListeners {
 
         adlc.setFieldValue(productQuantities);
 
-        view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.template.success", MessageType.SUCCESS);
+        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
+                MessageType.SUCCESS);
     }
 
     private boolean validateMultitransferForm(final ViewDefinitionState view) {
@@ -182,8 +187,8 @@ public class MultitransferListeners {
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         if (formComponents.isEmpty()) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlow.multitransfer.validation.productsAreRequired",
-                    MessageType.FAILURE);
+            view.getComponentByReference(L_FORM).addMessage(
+                    "materialFlowMultitransfers.multitransfer.validation.productsAreRequired", MessageType.FAILURE);
 
             isValid = false;
         } else {
@@ -198,26 +203,26 @@ public class MultitransferListeners {
 
                 if (product == null) {
                     formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                            "materialFlow.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+                            "materialFlowMultitransfers.multitransfer.validation.fieldRequired", MessageType.FAILURE);
 
                     isValid = false;
                 } else {
                     if (isProductAlreadyAdded(formComponents, product)) {
                         formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                                "materialFlow.multitransfer.validation.productAlreadyAdded", MessageType.FAILURE);
+                                "materialFlowMultitransfers.multitransfer.validation.productAlreadyAdded", MessageType.FAILURE);
 
                         isValid = false;
                     }
                 }
 
-                // if ((type != null) && !PRODUCTION.getStringValue().equals(type) && (locationFrom != null) && (product != null)
-                // && (quantity != null)
-                // && !materialFlowResourceService.areResourcesSufficient(locationFrom, product, quantity)) {
-                // formComponent.findFieldComponentByName(QUANTITY).addMessage(
-                // "materialFlow.multitransfer.validation.resourcesArentSufficient", MessageType.FAILURE);
-                //
-                // isValid = false;
-                // }
+                if ((type != null) && !PRODUCTION.getStringValue().equals(type) && (locationFrom != null) && (product != null)
+                        && (quantity != null)
+                        && !materialFlowResourcesService.areResourcesSufficient(locationFrom, product, quantity)) {
+                    formComponent.findFieldComponentByName(QUANTITY).addMessage(
+                            "materialFlowResources.validate.global.error.resourcesArentSufficient", MessageType.FAILURE);
+
+                    isValid = false;
+                }
             }
         }
 
@@ -243,8 +248,8 @@ public class MultitransferListeners {
         return false;
     }
 
-    private void createTransfer(final String type, final Entity locationFrom, final Entity locationTo, final Entity product,
-            final BigDecimal quantity, final Entity staff, final Date time) {
+    private void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
+            final Entity staff, final Entity product, final BigDecimal quantity) {
         DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 

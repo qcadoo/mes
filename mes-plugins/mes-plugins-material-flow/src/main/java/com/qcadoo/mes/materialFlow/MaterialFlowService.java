@@ -55,7 +55,6 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -229,7 +228,7 @@ public class MaterialFlowService {
     }
 
     public void generateNumberAfterSelectingProduct(final ViewDefinitionState state, final ComponentState componentState,
-            final String tableToGenerateNumber) {
+            final String model) {
         if (!(componentState instanceof FieldComponent)) {
             throw new IllegalStateException("component is not FieldComponentState");
         }
@@ -241,7 +240,7 @@ public class MaterialFlowService {
         }
         if (productState.getFieldValue() != null) {
             Entity product = getProductById((Long) productState.getFieldValue());
-            number.setFieldValue(generateNumberFromProduct(product, tableToGenerateNumber));
+            number.setFieldValue(generateNumberFromProduct(product, model));
         }
         number.requestComponentUpdateState();
     }
@@ -250,8 +249,19 @@ public class MaterialFlowService {
         String number = "";
 
         if (product != null) {
-            number = product.getField(NUMBER) + "-"
-                    + numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+            String generatedNumber = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model, 3);
+
+            String prefix = product.getStringField(NUMBER);
+
+            number = prefix + "-" + generatedNumber;
+
+            Long parsedNumber = Long.parseLong(generatedNumber);
+
+            while (numberAlreadyExist(model, number)) {
+                parsedNumber++;
+
+                number = prefix + "-" + String.format("%03d", parsedNumber);
+            }
         }
 
         return number;
@@ -383,7 +393,7 @@ public class MaterialFlowService {
 
     public boolean numberAlreadyExist(final String model, final String number) {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
-                .add(SearchRestrictions.eq(TransferFields.NUMBER, number)).setMaxResults(1).uniqueResult() != null;
+                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult() != null;
     }
 
     public List<Entity> getLocationsFromDB() {

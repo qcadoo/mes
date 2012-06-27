@@ -26,8 +26,6 @@ package com.qcadoo.mes.materialFlow.hooks;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 
@@ -39,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlow.constants.TransformationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -51,18 +48,15 @@ public class TransformationsModelValidators {
     private MaterialFlowService materialFlowService;
 
     public boolean checkIfTransfersAreValid(final DataDefinition transformationsDD, final Entity transformations) {
-        Entity locationFrom = transformations.getBelongsToField(TransformationsFields.LOCATION_FROM);
-
         List<Entity> transfersConsumption = transformations.getHasManyField(TRANSFERS_CONSUMPTION);
         List<Entity> transfersProduction = transformations.getHasManyField(TRANSFERS_PRODUCTION);
 
-        return (checkIfTransfersAreValid(transfersConsumption, CONSUMPTION.getStringValue(), locationFrom) && checkIfTransfersAreValid(
-                transfersProduction, PRODUCTION.getStringValue(), null))
+        return (checkIfTransfersAreValid(transfersConsumption) && checkIfTransfersAreValid(transfersProduction))
                 && (checkIfTransfersNumbersAreDistinct(transfersConsumption, transfersProduction) && checkIfTransfersNumbersAreDistinct(
                         transfersProduction, transfersConsumption));
     }
 
-    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String type, final Entity locationFrom) {
+    private boolean checkIfTransfersAreValid(final List<Entity> transfers) {
         boolean isValid = true;
 
         for (Entity transfer : transfers) {
@@ -71,25 +65,25 @@ public class TransformationsModelValidators {
             BigDecimal quantity = transfer.getDecimalField(QUANTITY);
 
             if ((number == null) || number.isEmpty()) {
-                appendErrorToModelField(transfer, NUMBER, "materialFlow.multitransfer.validation.fieldRequired");
+                appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.fillRequired");
 
                 isValid = false;
             }
 
             if (product == null) {
-                appendErrorToModelField(transfer, PRODUCT, "materialFlow.multitransfer.validation.fieldRequired");
+                appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.fillRequired");
 
                 isValid = false;
             } else {
                 if (isProductAlreadyAdded(transfers, product)) {
-                    appendErrorToModelField(transfer, PRODUCT, "materialFlow.multitransfer.validation.productAlreadyAdded");
+                    appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.productAlreadyAdded");
 
                     isValid = false;
                 }
             }
 
             if (quantity == null) {
-                appendErrorToModelField(transfer, QUANTITY, "materialFlow.multitransfer.validation.fieldRequired");
+                appendErrorToModelField(transfer, QUANTITY, "materialFlow.validate.global.error.fillRequired");
 
                 isValid = false;
             }
@@ -109,7 +103,7 @@ public class TransformationsModelValidators {
                 if ((number != null)
                         && (((isNumberAlreadyUsed(transfersConsumption, number) + isNumberAlreadyUsed(transfersProduction, number)) > 1) || materialFlowService
                                 .numberAlreadyExist(MaterialFlowConstants.MODEL_TRANSFER, number))) {
-                    appendErrorToModelField(transfer, NUMBER, "materialFlow.multitransfer.validation.numberAlreadyUsed");
+                    appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.numberAlreadyUsed");
 
                     isValid = false;
                 }
