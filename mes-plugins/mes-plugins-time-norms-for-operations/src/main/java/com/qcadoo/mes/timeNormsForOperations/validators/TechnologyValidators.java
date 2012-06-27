@@ -175,10 +175,6 @@ public class TechnologyValidators {
         Entity technologyOperationComponent = technologyInstanceOperationComponent
                 .getBelongsToField("technologyOperationComponent");
 
-        if (technologyOperationComponent.getId() == null) {
-            return true;
-        }
-
         String productionInOneCycleUNIT = technologyInstanceOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
         Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
 
