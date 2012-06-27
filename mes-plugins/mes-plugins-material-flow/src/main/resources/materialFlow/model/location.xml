@@ -32,7 +32,7 @@
 			<validatesLength max="255" />
 		</string>
 		<string name="name" required="true" />
-		<enum name="type" values="01controlPoint" />
+		<enum name="type" values="01controlPoint"  required="true" />
 		<hasMany name="materialsInLocations" model="materialsInLocationComponent"
 			plugin="materialFlow" joinField="location" />
 	</fields>
