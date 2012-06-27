@@ -402,3 +402,6 @@ UPDATE materialflow_location SET type = '01controlPoint';
 
 UPDATE technologies_technologyinstanceoperationcomponent SET productioninonecycleunit = 'szt' WHERE productioninonecycleunit is null;
 UPDATE technologies_technologyoperationcomponent SET productioninonecycleunit = 'szt' WHERE productioninonecycleunit is null;
+
+UPDATE technologies_technologyinstanceoperationcomponent SET productioninonecycleunit = 'szt' WHERE countrealized like "02specified" and countmachineunit is null;
+UPDATE technologies_technologyoperationcomponent SET productioninonecycleunit = 'szt' WHERE countrealized like "02specified" and countmachineunit is null;
