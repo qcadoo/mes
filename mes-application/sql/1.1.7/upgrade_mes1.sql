@@ -150,7 +150,7 @@ CREATE TABLE productionpershift_dailyprogress
 -- Table: materialflow_...
 -- changed: 26.06.2012
 
-ALTER TABLE materialflow_stockareas RENAME TO materialflow_locations;
+ALTER TABLE materialflow_stockareas RENAME TO materialflow_location;
 ALTER TABLE materialflow_materialsinstockareas RENAME TO materialflow_materialsinlocation;
 ALTER TABLE materialflow_materialsinstockareascomponent RENAME TO materialflow_materialsinlocationcomponent;
 
@@ -173,7 +173,7 @@ ALTER TABLE  materialflow_transformations RENAME COLUMN stockareasto_id  TO loca
 
 ALTER TABLE simplematerialbalance_simplematerialbalancestockareascomponent RENAME TO simplematerialbalance_simplematerialbalancelocationscomponent;
 
-ALTER TABLE simplematerialbalance_simplematerialbalancelocationscomponent ALTER COLUMN stockareas_id RENAME TO location_id;
+ALTER TABLE simplematerialbalance_simplematerialbalancelocationscomponent RENAME COLUMN stockareas_id TO location_id;
 
 -- end
 
@@ -199,17 +199,17 @@ CREATE TABLE materialflowmultitransfers_transfertemplate
 -- end
 
 
--- Table: materialflow_resource
+-- Table: materialflowresources_resource
 -- changed: 01.06.2012
 
-CREATE TABLE materialflow_resource
+CREATE TABLE materialflowresources_resource
 (
   id bigint NOT NULL,
   location_id bigint,
   product_id bigint,
   quantity numeric(10,3),
   "time" timestamp without time zone,
-  CONSTRAINT materialflow_resource_pkey PRIMARY KEY (id),
+  CONSTRAINT materialflowresources_resource_pkey PRIMARY KEY (id),
   CONSTRAINT resource_location_fkey FOREIGN KEY (location_id)
       REFERENCES materialflow_location (id) DEFERRABLE,
   CONSTRAINT resource_product_fkey FOREIGN KEY (product_id)
@@ -394,6 +394,11 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN hascorr
 -- changed: 26.06.2012
 
 ALTER TABLE materialflow_location ADD COLUMN type character varying(255);
-ALTER TABLE materialflow_location ALTER COLUMN type SET DEFAULT '01simpleControlPoint'::character varying;
+ALTER TABLE materialflow_location ALTER COLUMN type SET DEFAULT '01controlPoint'::character varying;
+
+UPDATE materialflow_location SET type = '01controlPoint';
 
 -- end
+
+UPDATE technologies_technologyinstanceoperationcomponent SET productioninonecycleunit = 'szt' WHERE productioninonecycleunit is null;
+UPDATE technologies_technologyoperationcomponent SET productioninonecycleunit = 'szt' WHERE productioninonecycleunit is null;
