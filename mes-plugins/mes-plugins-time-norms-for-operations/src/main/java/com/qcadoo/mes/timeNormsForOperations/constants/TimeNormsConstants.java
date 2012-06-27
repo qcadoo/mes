@@ -34,5 +34,6 @@ public interface TimeNormsConstants {
             "areProductQuantitiesDivisible", "isTjDivisible");
 
     Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "timeNextOperation", "machineUtilization", "laborUtilization", "areProductQuantitiesDivisible", "isTjDivisible");
+            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
+            "areProductQuantitiesDivisible", "isTjDivisible");
 }
