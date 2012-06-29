@@ -32,14 +32,14 @@
 
 	<component type="window" name="window">
 		<ribbon>
-			<template name="standardGridTemplate" />
+			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
 		</ribbon>
 
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="location" fields="location"
-				expression="(#location == null) ? '' : #location['name']" link="true" />
+				expression="(#location == null) ? '' : #location['name']" />
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? '' : #product['name']" link="true" />
+				expression="(#product == null) ? '' : #product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="time" fields="time" />
 

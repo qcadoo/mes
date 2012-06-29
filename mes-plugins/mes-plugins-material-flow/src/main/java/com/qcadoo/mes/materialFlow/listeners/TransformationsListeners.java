@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlow.listeners;
 
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
@@ -39,6 +40,33 @@ public class TransformationsListeners {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    public void fillPrice(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        String value = (String) componentState.getFieldValue();
+
+        FieldComponent price = (FieldComponent) view.getComponentByReference("price");
+
+        price.setFieldValue(value);
+    }
+
+    public void hideFieldsIfLocationIsCorrect(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        hideFieldsIfLocationIsCorrect(view);
+    }
+
+    public void hideFieldsIfLocationIsCorrect(final ViewDefinitionState view) {
+        FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
+
+        AwesomeDynamicListComponent transfersConsumption = (AwesomeDynamicListComponent) view
+                .getComponentByReference(TRANSFERS_CONSUMPTION);
+        List<FormComponent> consumptionComponents = transfersConsumption.getFormComponents();
+
+        if (consumptionComponents != null && (locationFromField.getFieldValue() != null)) {
+            for (FormComponent formComponent : consumptionComponents) {
+                formComponent.findFieldComponentByName(PRODUCT).setVisible(false);
+            }
+        }
+    }
 
     public void fillTransferNumbersInTransfersConsumption(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
