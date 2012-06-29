@@ -65,7 +65,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -279,10 +278,6 @@ public class ProductionRecordService {
             return false;
         }
         return true;
-    }
-
-    public final void changeStateToDefault(final DataDefinition productionRecordDD, final Entity productionRecord) {
-        productionRecord.setField(ProductionRecordFields.STATE, ProductionRecordState.DRAFT.getStringValue());
     }
 
     public final void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component,

@@ -48,6 +48,11 @@ public class AbstractStateChangeDescriberTest {
             return mock(DataDefinition.class);
         }
 
+        @Override
+        public String getOwnerFieldName() {
+            return "owner";
+        }
+
     }
 
     private class BrokenTestStateChangeDescriber extends AbstractStateChangeDescriber {
@@ -75,6 +80,11 @@ public class AbstractStateChangeDescriberTest {
         @Override
         public DataDefinition getOwnerDataDefinition() {
             return mock(DataDefinition.class);
+        }
+
+        @Override
+        public String getOwnerFieldName() {
+            return "owner";
         }
 
     }

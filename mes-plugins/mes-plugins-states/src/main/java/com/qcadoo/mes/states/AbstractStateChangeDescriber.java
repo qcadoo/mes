@@ -37,11 +37,6 @@ public abstract class AbstractStateChangeDescriber implements StateChangeEntityD
     }
 
     @Override
-    public String getOwnerFieldName() {
-        return "owner";
-    }
-
-    @Override
     public String getPhaseFieldName() {
         return "phase";
     }
