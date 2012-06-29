@@ -8,7 +8,7 @@ import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.AbstractStateChangeViewClient;
 
 @Service
-public class ProductionRecordStateChangeViewClient extends AbstractStateChangeViewClient {
+public final class ProductionRecordStateChangeViewClient extends AbstractStateChangeViewClient {
 
     @Autowired
     private ProductionRecordStateChangeAspect productionRecordStateChangeAspect;

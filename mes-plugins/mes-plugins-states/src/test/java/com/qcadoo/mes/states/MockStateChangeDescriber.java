@@ -37,4 +37,9 @@ public final class MockStateChangeDescriber extends AbstractStateChangeDescriber
         return mock(DataDefinition.class);
     }
 
+    @Override
+    public String getOwnerFieldName() {
+        return "owner";
+    }
+
 }
