@@ -116,7 +116,7 @@
 							<option type="hasButtons" value="true" />
 							<components>
 								<component type="gridLayout" name="productLayout"
-									columns="4" rows="2">
+									columns="4" rows="1">
 									<layoutElement column="1" row="1">
 										<component type="input" name="number" field="number" />
 									</layoutElement>
@@ -136,20 +136,6 @@
 									</layoutElement>
 									<layoutElement column="4" row="1">
 										<component type="input" name="quantity" field="quantity">
-											<option type="alignment" value="right" />
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">
-										<component type="input" name="value" reference="value">
-											<option type="alignment" value="right" />
-											
-											<listener event="onChange"
-												class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
-												method="fillPrice" />
-										</component>
-									</layoutElement>
-									<layoutElement column="2" row="2">
-										<component type="input" name="price" reference="price">
 											<option type="alignment" value="right" />
 										</component>
 									</layoutElement>
@@ -173,8 +159,5 @@
 		<beforeRender 
 			class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="fillNumberFieldValue" />
-		<beforeRender 
-			class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
-			method="hideFieldsIfLocationIsCorrect" />
 	</hooks>
 </view>
