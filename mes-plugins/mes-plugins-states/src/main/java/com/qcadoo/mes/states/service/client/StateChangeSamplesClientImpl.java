@@ -43,18 +43,32 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
         Entity resultEntity = entity;
         final StateChangeService stateChangeService = stateChangeServiceResolver.get(entity.getDataDefinition());
         if (stateChangeService != null) {
-            final StateChangeEntityDescriber describer = stateChangeService.getChangeEntityDescriber();
-            final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(describer, entity, targetState);
-            stateChangeService.changeState(stateChangeContext);
-            checkResults(stateChangeContext);
-
-            if (entity.getId() == null) {
-                resultEntity = entity.getDataDefinition().save(entity);
-            } else {
-                resultEntity = entity.getDataDefinition().get(entity.getId());
-            }
+            resultEntity = performChange(stateChangeService, resultEntity, targetState);
+        } else {
+            resultEntity = performDummyChange(resultEntity, targetState);
         }
         return resultEntity;
+    }
+
+    private Entity performChange(final StateChangeService stateChangeService, final Entity entity, final String targetState) {
+        final StateChangeEntityDescriber describer = stateChangeService.getChangeEntityDescriber();
+        final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(describer, entity, targetState);
+        stateChangeService.changeState(stateChangeContext);
+        checkResults(stateChangeContext);
+
+        Entity resultEntity = entity;
+        if (entity.getId() == null) {
+            resultEntity = entity.getDataDefinition().save(entity);
+        } else {
+            resultEntity = entity.getDataDefinition().get(entity.getId());
+        }
+
+        return resultEntity;
+    }
+
+    private Entity performDummyChange(final Entity entity, final String targetState) {
+        entity.setField("state", targetState);
+        return entity.getDataDefinition().save(entity);
     }
 
     private void checkResults(final StateChangeContext stateChangeContext) {
@@ -90,4 +104,5 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
         }
         LOGGER.error(logMessage.toString());
     }
+
 }
