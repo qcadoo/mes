@@ -342,7 +342,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     }
 
-    private boolean findProductParentOperation(Entity product, List<Entity> parentProducts) {
+    private boolean findProductParentOperation(final Entity product, final List<Entity> parentProducts) {
 
         for (Entity parent : parentProducts) {
             Entity parentProduct = parent.getBelongsToField(PRODUCT);

@@ -46,6 +46,7 @@
 											<option type="fullScreen" value="true" />
 											<option type="expression" value="#number + ' - ' + #name" />
 											<option type="fieldCode" value="number" />
+											
 											<listener event="onSelectedEntityChange"
 												class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
 												method="fillTransferNumbersInTransfersConsumption" />
@@ -101,6 +102,7 @@
 						<option type="orderable" value="name,number" />
 						<option type="expression" value="#number" />
 						<option type="fieldCode" value="name" />
+						
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
 							method="fillProductionAndConsumption" />
@@ -126,6 +128,7 @@
 											<option type="fullScreen" value="true" />
 											<option type="expression" value="#number + ' - ' +  #name" />
 											<option type="fieldCode" value="number" />
+											
 											<listener event="onSelectedEntityChange"
 												class="com.qcadoo.mes.materialFlow.listeners.TransformationsListeners"
 												method="fillTransferNumbersInTransfersProduction" />

@@ -68,6 +68,11 @@ public class StateChangeContextBuilderTest extends StateChangeTest {
             return ownerDD;
         }
 
+        @Override
+        public String getOwnerFieldName() {
+            return "owner";
+        }
+
     }
 
     @Before
