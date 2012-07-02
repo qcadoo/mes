@@ -50,12 +50,12 @@
 		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
-			<validatesScale max="3" />
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="doneQuantity">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="5" />
-			<validatesScale max="3" />
+			<validatesScale max="5" />
 		</decimal>
 		<datetime name="effectiveDateFrom" readonly="true" />
 		<datetime name="effectiveDateTo" readonly="true" />

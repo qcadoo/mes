@@ -34,15 +34,15 @@
 		
 		<decimal name="plannedCycles">
 			<validatesUnscaledValue max="7" />
-			<validatesScale max="3" />
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cycles">
 			<validatesUnscaledValue max="7" />
-			<validatesScale max="3" />
+			<validatesScale max="5" />
 		</decimal>
 		<decimal name="cyclesBalance">
 			<validatesUnscaledValue max="7" />
-			<validatesScale max="3" />
+			<validatesScale max="5" />
 		</decimal>
 	</fields>
 	<hooks />

@@ -95,8 +95,8 @@ public class TechnologyOperationComponentDetailsHooksTest {
         locale = LocaleContextHolder.getLocale();
 
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-        decimalFormat.setMaximumFractionDigits(3);
-        decimalFormat.setMinimumFractionDigits(3);
+        decimalFormat.setMaximumFractionDigits(5);
+        decimalFormat.setMinimumFractionDigits(5);
         decimalFormat.setRoundingMode(RoundingMode.HALF_EVEN);
 
         given(numberService.format(Mockito.any(BigDecimal.class))).willAnswer(new Answer<String>() {

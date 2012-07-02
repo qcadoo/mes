@@ -81,21 +81,21 @@
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
@@ -112,7 +112,7 @@
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -120,7 +120,7 @@
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -128,7 +128,7 @@
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -146,7 +146,7 @@
 			<model:decimal name="pieceworkCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -154,7 +154,7 @@
 			<model:decimal name="laborHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -162,7 +162,7 @@
 			<model:decimal name="machineHourlyCost" default="0">
 				<model:validatesRange from="0" exclusively="false" />
 				<model:validatesUnscaledValue max="7" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"

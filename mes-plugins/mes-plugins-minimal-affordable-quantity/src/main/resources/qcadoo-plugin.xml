@@ -65,7 +65,7 @@
 			<model:decimal name="minimalQuantity">
 				<model:validatesRange from="0" exclusively="true" />
 				<model:validatesUnscaledValue max="5" />
-				<model:validatesScale max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 
