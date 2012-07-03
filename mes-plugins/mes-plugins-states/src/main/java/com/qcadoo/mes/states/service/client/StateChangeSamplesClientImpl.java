@@ -40,12 +40,12 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
 
     @Override
     public Entity changeState(final Entity entity, final String targetState) {
-        Entity resultEntity = entity;
+        Entity resultEntity = null;
         final StateChangeService stateChangeService = stateChangeServiceResolver.get(entity.getDataDefinition());
         if (stateChangeService != null) {
-            resultEntity = performChange(stateChangeService, resultEntity, targetState);
+            resultEntity = performChange(stateChangeService, entity, targetState);
         } else {
-            resultEntity = performDummyChange(resultEntity, targetState);
+            resultEntity = performDummyChange(entity, targetState);
         }
         return resultEntity;
     }
@@ -56,7 +56,7 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
         stateChangeService.changeState(stateChangeContext);
         checkResults(stateChangeContext);
 
-        Entity resultEntity = entity;
+        Entity resultEntity = null;
         if (entity.getId() == null) {
             resultEntity = entity.getDataDefinition().save(entity);
         } else {
