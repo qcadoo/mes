@@ -94,7 +94,7 @@ public class GenerateProductionBalanceWithCostsTest {
             public BigDecimal answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
                 BigDecimal number = (BigDecimal) args[0];
-                return number.setScale(3, RoundingMode.HALF_EVEN);
+                return number.setScale(5, RoundingMode.HALF_EVEN);
             }
         });
 
@@ -118,7 +118,7 @@ public class GenerateProductionBalanceWithCostsTest {
         verify(balance).setField("quantity", quantity);
         verify(balance).setField("technology", technology);
         verify(balance).setField("productionLine", productionLine);
-        verify(balance).setField("totalTechnicalProductionCostPerUnit", BigDecimal.TEN.setScale(3, RoundingMode.HALF_EVEN));
+        verify(balance).setField("totalTechnicalProductionCostPerUnit", BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
 
         verify(dataDefinition).save(balance);
     }

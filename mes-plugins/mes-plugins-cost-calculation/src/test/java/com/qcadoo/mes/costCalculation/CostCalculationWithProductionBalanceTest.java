@@ -84,7 +84,7 @@ public class CostCalculationWithProductionBalanceTest {
             public BigDecimal answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
                 BigDecimal number = (BigDecimal) args[0];
-                return number.setScale(3, RoundingMode.HALF_EVEN);
+                return number.setScale(5, RoundingMode.HALF_EVEN);
             }
         });
 
@@ -110,13 +110,13 @@ public class CostCalculationWithProductionBalanceTest {
         // then
         verify(productionBalance).setField(Mockito.eq("date"), Mockito.any(java.util.Date.class));
 
-        verify(productionBalance).setField("productionCostMarginValue", new BigDecimal(2).setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("materialCostMarginValue", new BigDecimal(0.5).setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("additionalOverheadValue", BigDecimal.ONE.setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("totalOverhead", new BigDecimal(3.5).setScale(3, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("productionCostMarginValue", new BigDecimal(2).setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("materialCostMarginValue", new BigDecimal(0.5).setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("additionalOverheadValue", BigDecimal.ONE.setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("totalOverhead", new BigDecimal(3.5).setScale(5, RoundingMode.HALF_EVEN));
         verify(productionBalance).setField("totalTechnicalProductionCosts",
-                new BigDecimal(250).setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("totalCosts", new BigDecimal(253.5).setScale(3, RoundingMode.HALF_EVEN));
-        verify(productionBalance).setField("totalCostPerUnit", new BigDecimal(25.35).setScale(3, RoundingMode.HALF_EVEN));
+                new BigDecimal(250).setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("totalCosts", new BigDecimal(253.5).setScale(5, RoundingMode.HALF_EVEN));
+        verify(productionBalance).setField("totalCostPerUnit", new BigDecimal(25.35).setScale(5, RoundingMode.HALF_EVEN));
     }
 }
