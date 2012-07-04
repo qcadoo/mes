@@ -62,8 +62,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     @Override
     protected void loadData(final String locale) {
         final String dataset = "minimal";
-        readDataFromXML(dataset, "activeCurrency", locale);
         readDataFromXML(dataset, "dictionaries", locale);
+        readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "company", locale);
 
@@ -74,10 +74,10 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected void readData(final Map<String, String> values, final String type, final Element node) {
-        if ("activeCurrency".equals(type)) {
-            addParameters(values);
-        } else if ("dictionaries".equals(type)) {
+        if ("dictionaries".equals(type)) {
             addDictionaryItems(values);
+        } else if ("defaultParameters".equals(type)) {
+            addParameters(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
         } else if ("company".equals(type)) {

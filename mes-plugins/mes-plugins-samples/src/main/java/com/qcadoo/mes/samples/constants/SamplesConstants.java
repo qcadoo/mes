@@ -36,6 +36,8 @@ public final class SamplesConstants {
 
     public static final String BASIC_MODEL_CURRENCY = "currency";
 
+    public static final String BASIC_MODEL_PARAMETER = "parameter";
+
     public static final String BASIC_MODEL_SHIFT = "shift";
 
     public static final String BASIC_MODEL_WORKSTATION_TYPE = "workstationType";

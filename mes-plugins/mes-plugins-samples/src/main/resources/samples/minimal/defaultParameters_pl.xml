@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<activeCurrency>
-	<row CODE="PLN" />
-</activeCurrency>
+<defaultParameters>
+	<row CODE="PLN" UNIT="szt" />
+</defaultParameters>
