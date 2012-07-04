@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="wageGroups" version="1.1.7-SNAPSHOT"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>Qcadoo MES :: Plugins :: Wage groups</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:dictionary name="superiorWageGroups" />
+
+		<model:model model="wageGroup" resource="model/wageGroup.xml" />
+
+		<model:model-field model="staff" plugin="basic">
+			<model:boolean name="determinedIndividual" />
+		</model:model-field>
+		<model:model-field model="staff" plugin="basic">
+			<model:decimal name="individualLaborCost" />
+		</model:model-field>
+		<model:model-field model="staff" plugin="basic">
+			<model:belongsTo name="wageGroup" model="wageGroup"
+				plugin="wageGroups" />
+		</model:model-field>
+		<model:model-field model="staff" plugin="basic">
+			<model:decimal name="laborHourlyCost" />
+		</model:model-field>
+		
+		<model:model-hook  model="staff" plugin="basic">
+			<model:onSave class="com.qcadoo.mes.wageGroups.hooks.StaffHooks" method="saveLaborHourlyCost"/>
+		</model:model-hook>
+
+		<menu:menu-item name="wageGroups" category="basic"
+			view="wageGroupsList" />
+		<menu:menu-item name="wages" category="basic" view="wagesList" />
+
+		<view:view resource="view/wageGroupsList.xml" />
+		<view:view resource="view/wageGroupsDetails.xml" />
+		<view:view resource="view/wagesList.xml" />
+		<view:view-tab resource="view/tabExtensions/staffDetails.xml" />
+
+		<view:resource uri="public/**/*" />
+
+		<view:view-hook view="staffDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.wageGroups.hooks.StaffDetailsHooks"
+			method="enabledIndividualCost" />
+		<view:view-hook view="staffDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.wageGroups.hooks.StaffDetailsHooks"
+			method="fillFieldAboutWageGroup" />
+		<view:view-hook view="staffDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.wageGroups.hooks.StaffDetailsHooks"
+			method="setCurrency" />
+
+	</modules>
+
+</plugin>

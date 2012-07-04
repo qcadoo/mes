@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="basic" view="staffDetails">
+
+	<windowTab name="costOfHourlyWork" reference="costOfHourlyWork">
+		<component type="gridLayout" name="gridsLayout" columns="3"
+			rows="4" hasBorders="false">
+			<layoutElement column="1" row="1">
+				<component type="checkbox" field="#{form}.determinedIndividual"
+					name="determinedIndividual" reference="determinedIndividual">
+					<listener event="onChange"
+						class="com.qcadoo.mes.wageGroups.listeners.StaffDetailsListenersWG"
+						method="enabledIndividualCost" defaultEnabled="false"/>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="gridLayout" name="gridLayout" columns="4"
+					rows="1" hasBorders="false">
+					<layoutElement column="1" row="1" width="3">
+						<component type="input" name="individualLaborCost"
+							field="#{form}.individualLaborCost" reference="individualLaborCost">
+							<option type="labelWidth" value="40" />
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="1">
+						<component type="input" name="individualLaborCostCURRENCY"
+							hasLabel="false" reference="individualLaborCostCURRENCY" defaultEnabled="false">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="1">
+				<component type="lookup" name="wageGroup" field="#{form}.wageGroup"
+					reference="wageGroup">
+					<option type="column" name="name" fields="name" />
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+					<option type="expression" value="#number + ' - ' + #name" />
+					<option type="fieldCode" value="number" />
+					<listener event="onSelectedEntityChange"
+						class="com.qcadoo.mes.wageGroups.listeners.StaffDetailsListenersWG"
+						method="fillFieldAboutWageGroup" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="2">
+				<component type="gridLayout" name="gridLayoutWageGroups" columns="4"
+					rows="1" hasBorders="false">
+					<layoutElement column="1" row="1" width="3">
+						<component type="input" name="laborCostFromWageGroups"
+							reference="laborCostFromWageGroups" defaultEnabled="false">
+							<option type="labelWidth" value="40" />
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="1">
+						<component type="input" name="laborCostFromWageGroupsCURRENCY"
+							hasLabel="false" reference="laborCostFromWageGroupsCURRENCY" defaultEnabled="false">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="3">
+				<component type="input" name="superiorWageGroups" 
+					reference="superiorWageGroups" defaultEnabled="false" />
+			</layoutElement>
+		</component>
+	</windowTab>
+</windowTabExtension>
