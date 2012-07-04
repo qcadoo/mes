@@ -29,7 +29,9 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="currency" plugin="basic" model="currency" />
+		<dictionary name="unit" dictionary="units"></dictionary>
 	</fields>
+	
 	<hooks>
 		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks" method="setDefaultCurrency" />
 	</hooks>

@@ -89,7 +89,7 @@ public class WorkPlansColumnFillerTest {
             public String answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
                 BigDecimal number = (BigDecimal) args[0];
-                return number.setScale(3, RoundingMode.HALF_EVEN).toString();
+                return number.setScale(5, RoundingMode.HALF_EVEN).toString();
             }
         });
 
@@ -124,7 +124,7 @@ public class WorkPlansColumnFillerTest {
         assertEquals("order", orderValues.get(order).get("orderName"));
         assertEquals("1234", orderValues.get(order).get("orderNumber"));
         assertEquals("product (123)", orderValues.get(order).get("productName"));
-        assertEquals("11.000 abc", orderValues.get(order).get("plannedQuantity"));
+        assertEquals("11.00000 abc", orderValues.get(order).get("plannedQuantity"));
     }
 
     @Test
@@ -154,6 +154,6 @@ public class WorkPlansColumnFillerTest {
         // then
         assertEquals(1, columnValues.size());
         assertEquals("product (123)", columnValues.get(productComponent).get("productName"));
-        assertEquals("11.000 abc", columnValues.get(productComponent).get("plannedQuantity"));
+        assertEquals("11.00000 abc", columnValues.get(productComponent).get("plannedQuantity"));
     }
 }

@@ -47,6 +47,8 @@ import com.qcadoo.model.api.EntityTree;
 @Service
 public class TechnologyValidators {
 
+    private static final String L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH = "technologies.operationDetails.validate.error.OutputUnitsNotMatch";
+
     @Autowired
     private NormService normService;
 
@@ -150,7 +152,7 @@ public class TechnologyValidators {
 
         if (productionInOneCycleUNIT == null) {
             technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
-                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                    L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
             return false;
         }
         if (outputProduct != null) {
@@ -158,7 +160,7 @@ public class TechnologyValidators {
 
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
-                        "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                        L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
                 return false;
             }
         }
@@ -180,7 +182,7 @@ public class TechnologyValidators {
 
         if (productionInOneCycleUNIT == null) {
             technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
-                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                    L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
             return false;
         }
         if (outputProduct != null) {
@@ -188,7 +190,7 @@ public class TechnologyValidators {
 
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
-                        "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                        L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
                 return false;
             }
         }
