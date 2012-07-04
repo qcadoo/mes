@@ -20,6 +20,7 @@ public class StaffHooks {
         } else {
             Entity wageGroup = entity.getBelongsToField(WAGE_GROUP);
             if (wageGroup == null) {
+                entity.setField("laborHourlyCost", null);
                 return;
             }
             entity.setField("laborHourlyCost", wageGroup.getField(LABOR_HOURLY_COST));

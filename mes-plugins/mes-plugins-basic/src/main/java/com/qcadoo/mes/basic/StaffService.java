@@ -24,7 +24,7 @@ public class StaffService {
         Entity ownerCompany = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("owner", true)).uniqueResult();
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() != null || lookup.getFieldValue() != null || ownerCompany == null) {
+        if (form.getEntityId()!= null || lookup.getFieldValue() != null || ownerCompany == null) {
             return;
         }
         lookup.setFieldValue(ownerCompany.getId());
