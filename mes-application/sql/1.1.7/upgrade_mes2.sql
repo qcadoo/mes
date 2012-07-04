@@ -236,3 +236,44 @@ ALTER TABLE states_message
 		DEFERRABLE;
 		
 -- end
+
+-- Table: wagegroups_wagegroup
+-- changed: 3.07.2012
+
+CREATE TABLE wagegroups_wagegroup
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  "name" character varying(255),
+  superiorwagegroup character varying(255),
+  laborhourlycostfromwagegroup numeric(12,5),
+  determinedindividually boolean,
+  individuallaborhourlycost numeric(12,5),
+  laborhourlycost numeric(12,5),
+  laborhourlycostunit character varying(255),
+  CONSTRAINT wagegroups_wagegroup_pkey PRIMARY KEY (id)
+);
+
+--end
+
+-- Table: basic_staff
+-- changed: 4.07.2012
+ALTER TABLE basic_staff ADD COLUMN individuallaborcost numeric(12,5);
+ALTER TABLE basic_staff ADD COLUMN determinedindividual boolean;
+ALTER TABLE basic_staff ADD COLUMN email character varying(255);
+ALTER TABLE basic_staff ADD COLUMN phone character varying(255);
+ALTER TABLE basic_staff ADD COLUMN workfor_id bigint;
+ALTER TABLE basic_staff  
+	ADD CONSTRAINT basic_company_fkey 
+		FOREIGN KEY (workfor_id)
+    	REFERENCES basic_company (id) 
+    	DEFERRABLE;
+ALTER TABLE basic_staff ADD COLUMN wagegroup_id bigint;
+ALTER TABLE basic_staff  
+	ADD CONSTRAINT wagegroups_wagegroup_fkey 
+		FOREIGN KEY (wagegroup_id)
+    	REFERENCES wagegroups_wagegroup (id) 
+    	DEFERRABLE;
+ALTER TABLE basic_staff ADD COLUMN laborhourlycost numeric(12,5);
+
+--end

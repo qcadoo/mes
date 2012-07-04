@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="wageGroup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true" />
+		<string name="name" />
+		<dictionary name="superiorWageGroup" dictionary="superiorWageGroups" />
+		<decimal name="laborHourlyCost" required="true"/>
+		<string name="laborHourlyCostCURRENCY"/>
+	</fields>
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
+</model>
