@@ -621,26 +621,25 @@
 						</layoutElement>
 					</component>
 					<component type="borderLayout" name="borderLayoutTotalOverhead"
-									reference="borderLayoutTotalOverhead">
-								<option type="label" value="totalOverhead" />
-								<component type="gridLayout" name="gridTotalOverhead"
-									columns="3" rows="1" hasBorders="false">
-								<layoutElement column="2" row="1">
-									<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
-										reference="totalOverhead" defaultEnabled="false" hasLabel="false">
-										<option type="alignment" value="right" />
-										<option type="boldTextRepresentationOnDisabled" value="true" />
-									</component>
-								</layoutElement>
-								<layoutElement column="3" row="1">
-									<component type="input" name="totalOverheadCurrency"
-										reference="totalOverheadCurrency" defaultEnabled="false"
-										hasLabel="false">
+						reference="borderLayoutTotalOverhead">
+						<option type="label" value="totalOverhead" />
+						<component type="gridLayout" name="gridTotalOverhead"
+							columns="3" rows="1" hasBorders="false">
+							<layoutElement column="2" row="1">
+								<component type="input" name="totalOverhead" field="#{form}.totalOverhead"
+									reference="totalOverhead" defaultEnabled="false" hasLabel="false">
+									<option type="alignment" value="right" />
 									<option type="boldTextRepresentationOnDisabled" value="true" />
-									</component> 
-								</layoutElement>
 								</component>
-							</component>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="input" name="totalOverheadCurrency"
+									reference="totalOverheadCurrency" defaultEnabled="false" hasLabel="false">
+									<option type="boldTextRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+						</component>
+					</component>
 
 					<option type="label" value="overheadsForRegisteredCosts" />
 				</component>
