@@ -174,7 +174,7 @@ public class TechnologyService {
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!((Boolean) entity.getField(L_MASTER))) {
+        if (!entity.getBooleanField(L_MASTER)) {
             return true;
         }
 
