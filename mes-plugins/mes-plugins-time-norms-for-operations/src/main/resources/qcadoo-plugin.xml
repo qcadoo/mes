@@ -293,6 +293,10 @@
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
 			method="setCountRealizedOperationValue" />
 			
+		<view:view-hook view="operationDetails" type="beforeRender"
+			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
+			method="setDefaultUnit" />
+			
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"

@@ -1,40 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.6
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.6 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="staffDetails"
-	modelName="staff">
-	
+	name="staffDetails" modelName="staff">
+
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
 		<component type="form" name="staff" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="5">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number">
 						<option type="alignment" value="right" />
@@ -47,23 +34,49 @@
 					<component type="input" name="surname" field="surname" />
 				</layoutElement>
 				<layoutElement column="1" row="4">
-					<component type="input" name="post" field="post" />
+					<component type="input" name="email" field="email" />
 				</layoutElement>
 				<layoutElement column="1" row="5">
-					<component type="lookup" name="shift" field="shift" reference="shift" hasDescription="true">
+					<component type="input" name="phone" field="phone" />
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="workFor" field="workFor"
+						reference="workFor">
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="lookup" name="division" field="division" reference="division" hasDescription="true">
-						<option type="column" name="name" fields="name" />
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
-						<option type="expression" value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
+				<layoutElement column="2" row="2">
+					<component type="input" name="post" field="post" />
+				</layoutElement>
+				<layoutElement column="2" row="3" height="3">
+					<component type="borderLayout" name="borderLayoutInCompany"
+						reference="borderLayoutInCompany">
+						<option type="label" value="inCompany" />
+						<component type="gridLayout" name="gridLayout" columns="1"
+							rows="2">
+							<layoutElement column="1" row="1">
+								<component type="lookup" name="shift" field="shift"
+									reference="shift" hasDescription="true">
+									<option type="searchable" value="name" />
+									<option type="orderable" value="name" />
+									<option type="expression" value="#name" />
+									<option type="fieldCode" value="name" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="lookup" name="division" field="division"
+									reference="division" hasDescription="true">
+									<option type="column" name="name" fields="name" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression" value="#number + ' - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+						</component>
 					</component>
 				</layoutElement>
 			</component>
@@ -71,4 +84,7 @@
 			<option type="expression" value="#name + ' ' + #surname" />
 		</component>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.StaffService" method="setOwnerCompany"/>
+	</hooks>
 </view>

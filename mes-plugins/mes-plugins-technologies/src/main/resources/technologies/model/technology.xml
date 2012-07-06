@@ -70,6 +70,12 @@
 			method="checkIfOperationsUsesSubOperationsProds" />
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
 			method="checkConsumingTheSameProductFromManySubOperations" />
+		<!-- FIXME 
+		This validator work when you unplugged validator 'invalidateIfBelongsToAcceptedTechnology' in technologyOperationComponent.
+		Otherwise test samples don't work.
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyModelValidators"
+			method="checkIfTreeOperationIsValid" />	 -->
+			
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
 			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 

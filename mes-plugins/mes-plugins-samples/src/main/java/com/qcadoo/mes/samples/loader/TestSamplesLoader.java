@@ -170,7 +170,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         readDataFromXML(dataset, "dictionaries", locale);
-        readDataFromXML(dataset, "activeCurrency", locale);
+        readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "company", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);

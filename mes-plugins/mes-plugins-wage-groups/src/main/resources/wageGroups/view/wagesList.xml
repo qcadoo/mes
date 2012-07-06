@@ -1,0 +1,37 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="wagesList" modelName="staff" menuAccessible="true" modelPlugin="basic" >
+
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+		</ribbon>
+		<component type="grid" name="grid" reference="grid">
+			<option type="column" name="number" fields="number" link="true"
+				width="50" />
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="surname" fields="surname" link="true" />
+			<option type="column" name="post" fields="post" link="true" />
+			<option type="column" name="shift" fields="shift" expression="#shift['name']"
+				link="true" />
+			<option type="column" name="division" fields="division"
+				expression="#division['number'] + ' - ' + #division['name']" link="true" />
+			<option type="column" name="laborHourlyCost" fields="laborHourlyCost" />
+			<option type="column" name="determinedIndividual" fields="determinedIndividual" />
+			<option type="order" column="number" direction="desc" />
+			<option type="searchable" value="name,number,surname,post,shift,division" />
+			<option type="orderable" value="name,number,surname,post,shift,division" />
+			<option type="correspondingView" value="basic/staffDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="deletable" value="false" />
+			<option type="creatable" value="false" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.wageGroups.hooks.WagesListsHooks" method="addDiscriminatorRestrictionToGrid"/>
+	</hooks>
+</view>

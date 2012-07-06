@@ -52,6 +52,7 @@
 		<module>mes-plugins-line-changeover-norms</module>
 		<module>mes-plugins-line-changeover-norms-for-orders</module>
 		<module>mes-plugins-states</module>
+    <module>mes-plugins-wage-groups</module>
   </modules>
 
 

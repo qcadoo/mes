@@ -26,14 +26,20 @@ package com.qcadoo.mes.timeNormsForOperations.hooks;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class OperationDetailsHooksTNFO {
+
+    @Autowired
+    private UnitService unitService;
 
     public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState) {
         FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
@@ -67,5 +73,20 @@ public class OperationDetailsHooksTNFO {
         if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
             isTjDivisible.setEnabled(true);
         }
+    }
+
+    public void setDefaultUnit(final ViewDefinitionState viewDefinitionState) {
+        String defaultUnit = unitService.getDefaultUnitFromSystemParameters();
+        FieldComponent productionInOneCycleUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(PRODUCTION_IN_ONE_CYCLE_UNIT);
+
+        String unit = (String) productionInOneCycleUNIT.getFieldValue();
+
+        if (defaultUnit != null) {
+            if (unit == null || "".equals(unit)) {
+                productionInOneCycleUNIT.setFieldValue(defaultUnit);
+            }
+        }
+
     }
 }

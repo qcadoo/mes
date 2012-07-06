@@ -51,6 +51,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected static final String NAME = "name";
 
+    protected static final String ITEM = "item";
+
     protected static final String EMAIL = "email";
 
     public static final Random RANDOM = new Random(System.currentTimeMillis());
@@ -145,6 +147,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
                 .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).uniqueResult();
 
         params.setField("currency", currency);
+        params.setField("unit", values.get("unit"));
 
         if (isEnabledOrEnabling("productionCounting")) {
             params.setField("registerQuantityInProduct", true);

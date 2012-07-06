@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -195,6 +196,11 @@
 			<version>1.1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-wage-groups</artifactId>
+			<version>1.1.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
@@ -332,9 +338,11 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime = ${build.time}
+									buildTime =
+									${build.time}
 									buildNumber = ${build.number}
-									buildRevision = ${build.revision}
+									buildRevision =
+									${build.revision}
 								</echo>
 							</target>
 						</configuration>
@@ -566,7 +574,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
@@ -603,7 +612,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
 									</target>
 								</configuration>
 								<goals>

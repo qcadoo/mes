@@ -24,6 +24,6 @@
     ***************************************************************************
 
 -->
-<activeCurrency>
-	<row CODE="USD" />
-</activeCurrency>
+<defaultParameters>
+	<row CODE="USD" UNIT="pc" />
+</defaultParameters>

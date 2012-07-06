@@ -37,6 +37,13 @@
 		<string name="surname" required="true">
 			<validatesLength max="255" />
 		</string>
+		<string name="email" >
+			<validatesLength max="255" />
+		</string>
+		<string name="phone" >
+			<validatesLength max="255" />
+		</string>
+		<belongsTo name="workFor" model="company"/>
 		<string name="post" />
 		<belongsTo name="shift" model="shift" />
 		<belongsTo name="division" model="division" />
