@@ -68,6 +68,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     private StateChangeSamplesClient stateChangeSamplesClient;
 
     @Override
+    @Transactional
     public void load() {
         if (databaseHasToBePrepared()) {
             LOG.debug("Database has to be prepared ...");
