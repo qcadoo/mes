@@ -610,33 +610,35 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                     .entrySet()) {
                 Entity productionRecordWithRegisteredTimes = productionRecordWithRegisteredTimesEntry.getValue();
 
-                Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
+                if (productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT) != null) {
+                    Entity operationPieceworkComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_OPERATION_PIECEWORK_COMPONENT).create();
 
-                operationPieceworkComponent.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
-                        productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
+                    operationPieceworkComponent.setField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT,
+                            productionRecordWithRegisteredTimes.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT));
 
-                Entity technologyInstanceOperationComponent = productionRecordWithRegisteredTimes
-                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                    Entity technologyInstanceOperationComponent = productionRecordWithRegisteredTimes
+                            .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
-                Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
-                        .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-                Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
+                    Entity proxyTechnologyOperationComponent = technologyInstanceOperationComponent
+                            .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
+                    Long technologyOperationComponentId = proxyTechnologyOperationComponent.getId();
 
-                Entity technologyOperationComponent = getTechnologyOperationComponentFromDB(technologyOperationComponentId);
+                    Entity technologyOperationComponent = getTechnologyOperationComponentFromDB(technologyOperationComponentId);
 
-                if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent)) {
-                    BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent);
+                    if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent)) {
+                        BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent);
 
-                    BigDecimal cycles = productionRecordWithRegisteredTimes.getDecimalField(EXECUTED_OPERATION_CYCLES);
+                        BigDecimal cycles = productionRecordWithRegisteredTimes.getDecimalField(EXECUTED_OPERATION_CYCLES);
 
-                    BigDecimal cyclesBalance = cycles.subtract(plannedCycles, numberService.getMathContext());
+                        BigDecimal cyclesBalance = cycles.subtract(plannedCycles, numberService.getMathContext());
 
-                    operationPieceworkComponent.setField(PLANNED_CYCLES, numberService.setScale(plannedCycles));
-                    operationPieceworkComponent.setField(CYCLES, numberService.setScale(cycles));
-                    operationPieceworkComponent.setField(CYCLES_BALANCE, numberService.setScale(cyclesBalance));
+                        operationPieceworkComponent.setField(PLANNED_CYCLES, numberService.setScale(plannedCycles));
+                        operationPieceworkComponent.setField(CYCLES, numberService.setScale(cycles));
+                        operationPieceworkComponent.setField(CYCLES_BALANCE, numberService.setScale(cyclesBalance));
 
-                    operationPieceworkComponents.add(operationPieceworkComponent);
+                        operationPieceworkComponents.add(operationPieceworkComponent);
+                    }
                 }
             }
         }
