@@ -82,10 +82,8 @@ public class OperationDetailsHooksTNFO {
 
         String unit = (String) productionInOneCycleUNIT.getFieldValue();
 
-        if (defaultUnit != null) {
-            if (unit == null || "".equals(unit)) {
-                productionInOneCycleUNIT.setFieldValue(defaultUnit);
-            }
+        if (defaultUnit != null && (unit == null || "".equals(unit))) {
+            productionInOneCycleUNIT.setFieldValue(defaultUnit);
         }
 
     }
