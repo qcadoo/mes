@@ -139,11 +139,12 @@
 						<component type="lookup" name="staff" reference="staff"
 							field="staff">
 							<option type="column" name="name" fields="name" />
+							<option type="column" name="surname" fields="surname" />
 							
-							<option type="searchable" value="name,number" />
+							<option type="searchable" value="surname,name,number" />
 							<option type="orderable" value="name,number" />
 							
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name + '&lt;/b&gt; - ' + #surname" />
 							<option type="fieldCode" value="number" />
 							
 							<listener event="onSelectedEntityChange" 
