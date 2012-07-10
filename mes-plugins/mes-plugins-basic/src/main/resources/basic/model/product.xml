@@ -46,7 +46,6 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<string name="externalID" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />

@@ -79,7 +79,6 @@
 		
 		<datetime name="startDate" />
 		<datetime name="finishDate" />
-		<string name="externalID" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
