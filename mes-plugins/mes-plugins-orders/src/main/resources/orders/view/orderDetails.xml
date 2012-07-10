@@ -527,6 +527,13 @@
 				<option type="correspondingComponent" value="form" />
 			</component>
 		</windowTab>
+		<windowTab name="integrationTab">
+			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="externalID" fields="#{form}.externalID" defaultEnabled="false"/>
+				</layoutElement>
+			</component>
+		</windowTab>
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
