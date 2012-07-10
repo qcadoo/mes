@@ -143,6 +143,13 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcosts TYPE nu
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit TYPE numeric(12,5);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN quantity TYPE numeric(12,5);
 
+-- Table: productioncounting_productionbalance --> ADD COLUMN active boolean
+-- changed: 9.07.2012
+
+ALTER TABLE productioncounting_productionbalance ADD COLUMN active boolean;
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN active SET DEFAULT true;
+
+
 ALTER TABLE technologies_technology ALTER COLUMN unitsamplingnr TYPE numeric(12,5);
 
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN productioninonecycle TYPE numeric(12,5);
