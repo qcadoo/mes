@@ -90,6 +90,7 @@ public abstract class StateChangeTest {
                 return (Entity) invocation.getArguments()[0];
             }
         });
+        given(owner.copy()).willReturn(owner);
     }
 
     protected void stubStateChangeContext() {

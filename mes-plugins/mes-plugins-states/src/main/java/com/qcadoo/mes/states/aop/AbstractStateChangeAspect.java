@@ -60,12 +60,12 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     private boolean performPreValidation(final StateChangeContext stateChangeContext) {
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        final Entity owner = stateChangeContext.getOwner();
-        owner.setField(describer.getOwnerStateFieldName(),
+        final Entity ownerCopy = stateChangeContext.getOwner().copy();
+        ownerCopy.setField(describer.getOwnerStateFieldName(),
                 stateChangeContext.getStateChangeEntity().getStringField(describer.getTargetStateFieldName()));
-        owner.getDataDefinition().callValidators(owner);
-        ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, owner);
-        return owner.isValid();
+        ownerCopy.getDataDefinition().callValidators(ownerCopy);
+        ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, ownerCopy);
+        return ownerCopy.isValid();
     }
 
     /**
