@@ -1,5 +1,6 @@
 package com.qcadoo.mes.states;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -114,22 +115,32 @@ public class AbstractStateChangeDescriberTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public final void shouldCheckFieldsThrowExceptionIfAtLeastOneFieldIsMissing() {
         // given
         dataDefFieldsSet.remove("sourceState");
 
-        // when
-        testStateChangeDescriber.checkFields();
+        try {
+            // when
+            testStateChangeDescriber.checkFields();
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+        }
+
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public final void shouldCheckFieldsThrowExceptionIfAtLeastOneFieldNameIsNotUnique() {
         // given
         BrokenTestStateChangeDescriber brokenTestStateChangeDescriber = new BrokenTestStateChangeDescriber();
 
-        // when
-        brokenTestStateChangeDescriber.checkFields();
+        try {
+            // when
+            brokenTestStateChangeDescriber.checkFields();
+        } catch (Exception e) {
+            // then
+            assertTrue(e instanceof IllegalStateException);
+        }
     }
 
 }

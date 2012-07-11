@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -135,6 +136,20 @@ public class StateChangeContextTest extends StateChangeTest {
         verify(messageService).addValidationError(stateChangeContext, FIELD_1_NAME, FIELD_1_MESSAGE_1, EMPTY_STRING_ARRAY);
         verify(messageService).addValidationError(stateChangeContext, null, GLOBAL_MESSAGE_1, EMPTY_STRING_ARRAY);
         verify(stateChangeEntity).setField(describer.getStatusFieldName(), FAILURE.getStringValue());
+    }
+
+    @Test
+    public final void shouldMarkEntityAsFailureAndRethrowExceptionIfOwnerValidatorThrowsException() {
+        // given
+        given(ownerDD.save(owner)).willThrow(new RuntimeException());
+
+        try {
+            // when
+            stateChangeContext.setOwner(owner);
+        } catch (StateChangeException e) {
+            // then
+            verify(stateChangeEntity).setField(describer.getStatusFieldName(), FAILURE.getStringValue());
+        }
     }
 
     @Test
@@ -265,7 +280,6 @@ public class StateChangeContextTest extends StateChangeTest {
         // then
         verify(messageService).addValidationError(stateChangeContext, FIELD_1_NAME, FIELD_1_MESSAGE_1, EMPTY_STRING_ARRAY);
         verify(messageService).addValidationError(stateChangeContext, null, GLOBAL_MESSAGE_1, EMPTY_STRING_ARRAY);
-
     }
 
     private ErrorMessage buildErrorMessage(final String message) {

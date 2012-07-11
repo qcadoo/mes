@@ -8,19 +8,26 @@ import com.qcadoo.model.api.DataDefinition;
 
 public final class MockStateChangeDescriber extends AbstractStateChangeDescriber {
 
-    private final DataDefinition dataDefinition;
+    private final DataDefinition stateChangeDataDefinition;
+
+    private final DataDefinition ownerDataDefinition;
 
     public MockStateChangeDescriber() {
-        this.dataDefinition = mock(DataDefinition.class);
+        this(mock(DataDefinition.class), mock(DataDefinition.class));
     }
 
-    public MockStateChangeDescriber(final DataDefinition dataDefinition) {
-        this.dataDefinition = dataDefinition;
+    public MockStateChangeDescriber(final DataDefinition stateChangeDD) {
+        this(stateChangeDD, mock(DataDefinition.class));
+    }
+
+    public MockStateChangeDescriber(final DataDefinition stateChangeDD, final DataDefinition ownerDD) {
+        this.stateChangeDataDefinition = stateChangeDD;
+        this.ownerDataDefinition = ownerDD;
     }
 
     @Override
     public DataDefinition getDataDefinition() {
-        return dataDefinition;
+        return stateChangeDataDefinition;
     }
 
     @Override
@@ -34,7 +41,7 @@ public final class MockStateChangeDescriber extends AbstractStateChangeDescriber
 
     @Override
     public DataDefinition getOwnerDataDefinition() {
-        return mock(DataDefinition.class);
+        return ownerDataDefinition;
     }
 
     @Override

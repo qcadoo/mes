@@ -4,6 +4,8 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
@@ -32,6 +34,7 @@ public final class StateChangeContextImpl implements StateChangeContext {
     }
 
     @Override
+    @Transactional
     public boolean save() {
         try {
             return setStateChangeEntity(entity.getDataDefinition().save(entity));
@@ -158,6 +161,17 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     @Override
     public boolean setOwner(final Entity owner) {
+        try {
+            return performSetOwner(owner);
+        } catch (Throwable throwable) {
+            setStatus(StateChangeStatus.FAILURE);
+            save();
+            throw new StateChangeException(throwable);
+        }
+    }
+
+    @Transactional
+    private boolean performSetOwner(final Entity owner) {
         if (!ownerValid) {
             return false;
         }

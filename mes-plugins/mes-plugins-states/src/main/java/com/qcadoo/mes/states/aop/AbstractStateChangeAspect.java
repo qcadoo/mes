@@ -34,28 +34,33 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     protected static final int DEFAULT_NUM_OF_PHASES = 2;
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = { StateChangeException.class })
     public void changeState(final StateChangeContext stateChangeContext) {
-        stateChangeContext.save();
-        performPreValidation(stateChangeContext);
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
         try {
-            describer.checkFields();
-            for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
-                if (StateChangePhaseUtil.canRun(stateChangeContext)) {
-                    stateChangeContext.setPhase(phase);
-                    changeStatePhase(stateChangeContext, phase);
-                }
-            }
-            final Entity owner = stateChangeContext.getOwner();
-            stateChangeContext.setOwner(owner);
-            performChangeEntityState(stateChangeContext);
-        } catch (Exception e) {
+            performStateChange(stateChangeContext);
+        } catch (final Throwable throwable) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
             stateChangeContext.save();
-            throw new StateChangeException(e);
+            throw new StateChangeException(throwable);
         }
+    }
+
+    private void performStateChange(final StateChangeContext stateChangeContext) {
+        stateChangeContext.save();
+        performPreValidation(stateChangeContext);
+        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
+
+        describer.checkFields();
+        for (int phase = stateChangeContext.getPhase() + 1; phase <= getNumOfPhases(); phase++) {
+            if (StateChangePhaseUtil.canRun(stateChangeContext)) {
+                stateChangeContext.setPhase(phase);
+                changeStatePhase(stateChangeContext, phase);
+            }
+        }
+        final Entity owner = stateChangeContext.getOwner();
+        stateChangeContext.setOwner(owner);
+        performChangeEntityState(stateChangeContext);
     }
 
     private boolean performPreValidation(final StateChangeContext stateChangeContext) {
