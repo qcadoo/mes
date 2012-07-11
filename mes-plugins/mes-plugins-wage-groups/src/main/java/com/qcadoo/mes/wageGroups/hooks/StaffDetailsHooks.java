@@ -27,10 +27,10 @@ public class StaffDetailsHooks {
     public void enabledIndividualCost(final ViewDefinitionState view) {
         FieldComponent individual = (FieldComponent) view.getComponentByReference("determinedIndividual");
         FieldComponent individualLaborCost = (FieldComponent) view.getComponentByReference("individualLaborCost");
-        if (individual.getFieldValue().equals("0")) {
-            individualLaborCost.setEnabled(false);
-        } else {
+        if (individual.getFieldValue() != null && individual.getFieldValue().equals("1")) {
             individualLaborCost.setEnabled(true);
+        } else {
+            individualLaborCost.setEnabled(false);
         }
         individualLaborCost.requestComponentUpdateState();
     }

@@ -39,7 +39,7 @@
 					<option type="column" name="name" fields="name" />
 					<option type="searchable" value="name,number" />
 					<option type="orderable" value="name,number" />
-					<option type="expression" value="#number + ' - ' + #name" />
+					<option type="expression" value="#number" />
 					<option type="fieldCode" value="number" />
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.wageGroups.listeners.StaffDetailsListenersWG"
