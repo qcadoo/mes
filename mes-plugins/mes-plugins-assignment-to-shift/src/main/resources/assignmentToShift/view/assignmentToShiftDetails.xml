@@ -26,6 +26,14 @@
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (!value || !value.content) {
+								var stateButton = #{window}.getRibbonItem("status.state");
+								stateButton.disable();
+								return;
+							}
+							var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+							if(!isSaved){
+								var stateButton = #{window}.getRibbonItem("status.state");
+								stateButton.disable();
 								return;
 							}
 							var state = #{state}.getValue().content.value;
