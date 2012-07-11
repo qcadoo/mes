@@ -201,6 +201,11 @@
 			<version>1.1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-assignment-to-shift</artifactId>
+			<version>1.1.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>

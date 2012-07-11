@@ -259,6 +259,7 @@ CREATE TABLE wagegroups_wagegroup
   laborhourlycost numeric(12,5),
   laborhourlycostunit character varying(255),
   CONSTRAINT wagegroups_wagegroup_pkey PRIMARY KEY (id)
+  
 );
 
 --end
@@ -284,3 +285,85 @@ ALTER TABLE basic_staff
 ALTER TABLE basic_staff ADD COLUMN laborhourlycost numeric(12,5);
 
 --end
+
+-- Table: qcadoomodel_dictionaryitem
+-- changed: 11.07.2012
+
+ALTER TABLE qcadoomodel_dictionaryitem ADD COLUMN technicalcode character varying(255);
+
+-- end 
+
+-- Table: assignmenttoshift_assignmenttoshift
+-- changed: 11.07.2012
+CREATE TABLE assignmenttoshift_assignmenttoshift
+(
+  id bigint NOT NULL,
+  startdate date,
+  shift_id bigint,
+  state character varying(255) DEFAULT '01draft'::character varying,
+  approvedattendancelist boolean,
+  CONSTRAINT assignmenttoshift_assignmenttoshift_pkey PRIMARY KEY (id),
+  CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE
+);
+
+--end 
+
+-- Table: assignmenttoshift_assignmenttoshiftstatechange
+-- changed: 11.07.2012
+CREATE TABLE assignmenttoshift_assignmenttoshiftstatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  status character varying(255),
+  phase integer,
+  worker character varying(255),
+  assignmenttoshift_id bigint,
+  shift_id bigint,
+  additionalinformation character varying(255),
+  CONSTRAINT assignmenttoshift_assignmenttoshiftstatechange_pkey PRIMARY KEY (id),
+  CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE,
+  CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
+      REFERENCES assignmenttoshift_assignmenttoshift (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE
+);
+
+--end
+
+-- Table: assignmenttoshift_staffassignmenttoshift
+-- changed: 11.07.2012
+CREATE TABLE assignmenttoshift_staffassignmenttoshift
+(
+  id bigint NOT NULL,
+  assignmenttoshift_id bigint,
+  worker_id bigint,
+  productionline_id bigint,
+  occupationtype character varying(255),
+  occupationtypename character varying(255),
+  state character varying(255) DEFAULT '01simple'::character varying,
+  occupationtypeenum character varying(255),
+  occupationtypevalueforgrid character varying(255),
+  CONSTRAINT assignmenttoshift_staffassignmenttoshift_pkey PRIMARY KEY (id),
+  CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id)
+      REFERENCES basic_staff (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE,
+  CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION  DEFERRABLE,
+  CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
+      REFERENCES assignmenttoshift_assignmenttoshift (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION  DEFERRABLE
+);
+
+--end 
+
+-- Table: states_message
+-- changed: 11.07.2012
+ALTER TABLE states_message ADD COLUMN assignmenttoshiftstatechange_id bigint;
+
+--end 

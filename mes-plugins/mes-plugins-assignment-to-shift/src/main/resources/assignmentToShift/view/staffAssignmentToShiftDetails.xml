@@ -1,0 +1,57 @@
+<view name="staffAssignmentToShiftDetails" modelName="staffAssignmentToShift"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" excludeItems="actions.copy, actions.delete" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="assignmentToShiftDetails"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="5">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="worker" field="worker"
+							reference="worker" >
+							<option type="column" name="name" fields="name" link="true"/>
+							<option type="column" name="surname" fields="surname" link="true"/>
+							<option type="searchable" value="number,surname,name" />
+							<option type="orderable" value="number" />
+							<option type="expression" value="#number + ' ' + #surname + ' ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="select" name="occupationType" field="occupationType"
+							reference="occupationType" >
+							<listener event="onSelectedEntityChange" method="enabledFieldWhenTypeIsSpecific"
+								class="com.qcadoo.mes.assignmentToShift.listeners.StaffAssignmentToShiftListeners" />
+							</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="select" name="state" field="state"
+							reference="state" defaultVisible="false" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="productionLine" field="productionLine"
+							reference="productionLine" defaultEnabled="false">
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#number + ' '+#name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="input" name="occupationTypeName" field="occupationTypeName"
+							reference="occupationTypeName" defaultEnabled="false"/>
+					</layoutElement>
+				</component>
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
+			method="enabledFieldWhenTypeIsSpecific" />
+ 	</hooks>
+</view>
