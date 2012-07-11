@@ -1,0 +1,205 @@
+<view name="assignmentToShiftDetails" modelName="assignmentToShift"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="status">
+				<bigButton name="state" icon="startIcon24.png" state="disabled"
+					action="#{form}.changeState(state)" />
+			</group>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="form" reference="form">
+				<listener event="changeState"
+					class="com.qcadoo.mes.assignmentToShift.states.client.AssignmentToShiftStateChangeViewClient"
+					method="changeState" />
+				<script>
+					<![CDATA[
+					this.changeState = function(eventPerformer, ribbonItemName) {
+						var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+						var newState = ribbonItem.forState;
+						if (window.confirm(ribbonItem.confirmMessage)) {
+							#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
+						}
+					}
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								var stateButton = #{window}.getRibbonItem("status.state");
+								stateButton.disable();
+								return;
+							}
+							var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+							if(!isSaved){
+								var stateButton = #{window}.getRibbonItem("status.state");
+								stateButton.disable();
+								return;
+							}
+							var state = #{state}.getValue().content.value;
+							if (!state) {
+								return;
+							}
+							updateRibbon(state);
+						}
+					});
+					function updateRibbon(state) {
+						var stateButton = #{window}.getRibbonItem("status.state");
+						if (state == "01draft") {
+							stateButton.enable();
+							stateButton.actualState = "draft";
+							stateButton.forState="02accepted";
+							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted)}");
+							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.accepted.confirm)}"
+						} else if (state == "02accepted") {
+							stateButton.enable();
+							stateButton.actualState = "accepted";
+							stateButton.forState="03duringCorrection";
+							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
+							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}"
+						} else if (state == "03duringCorrection") {
+							stateButton.enable();
+							stateButton.forState="04corrected";
+							stateButton.actualState = "duringCorrection";
+							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected)}");
+							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.corrected.confirm)}"
+						} else if (state == "04corrected") {
+							stateButton.enable();
+							stateButton.forState="03duringCorrection";
+							stateButton.actualState = "corrected";
+							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection)}");
+							stateButton.confirmMessage = "#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.duringCorrection.confirm)}"
+						}else{
+							stateButton.setLabel("#{translate(assignmentToShift.assignmentToShiftDetails.window.ribbon.status.state)}");
+							stateButton.disable();
+						}
+					}
+						this.updateRibbon = updateRibbon;
+					]]>
+				</script>
+				<component type="select" name="state" field="state"
+					reference="state" hasLabel="false" defaultVisible="false" />
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="6">
+					<layoutElement column="1" row="1">
+						<component type="calendar" name="startDate" field="startDate"
+							reference="startDate">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="shift" field="shift"
+							reference="shift">
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression" value="#name" />
+							<option type="fieldCode" value="name" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1" width="2">
+						<component type="grid" name="staffAssignmentToShifts"
+							reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
+							<option type="column" name="workerNumber" fields="worker"
+								expression="#worker['number']" link="true" />
+							<option type="column" name="workerName" fields="worker"
+								expression="#worker['name']" link="true" />
+							<option type="column" name="workerSurname" fields="worker"
+								expression="#worker['surname']" link="true" />
+							<option type="column" name="workerWageGroup" fields="worker"
+								expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')" />
+							<option type="column" name="worker" fields="worker"
+								expression="#worker['laborHourlyCost']" link="true" />
+							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
+							<option type="order" column="workerNumber" direction="desc" />
+							<option type="correspondingView"
+								value="assignmentToShift/staffAssignmentToShiftDetails" />
+							<option type="correspondingComponent" value="form" />
+							<option type="correspondingViewInModal" value="false" />
+							<option type="searchable" value="workerNumber,workerName" />
+							<option type="orderable" value="workerNumber,workerName" />
+							<option type="paginable" value="false" />
+							<option type="creatable" value="true" />
+							<option type="deletable" value="true" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+		<windowTab name="comparePlanAndCorrected">
+			<component type="form" name="compareForm" reference="compareForm">
+				<component type="gridLayout" name="gridLayout" columns="2"
+					rows="6">
+					<layoutElement column="1" row="1">
+						<component type="grid" name="plannedStaffAssignment"
+							reference="plannedStaffAssignment" source="#{form}.plannedStaffAssignmentToShifts">
+							<option type="column" name="workerNumber" fields="worker"
+								expression="#worker['number']" link="true" />
+							<option type="column" name="workerName" fields="worker"
+								expression="#worker['name']" link="true" />
+							<option type="column" name="workerSurname" fields="worker"
+								expression="#worker['surname']" link="true" />
+							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
+							<option type="order" column="workerNumber" direction="desc" />
+							<option type="searchable" value="workerNumber,workerName" />
+							<option type="orderable" value="workerNumber,workerName" />
+							<option type="paginable" value="false" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+							<option type="editable" value="false"/>s
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="grid" name="correctedStaffAssignment"
+							reference="correctedStaffAssignment" source="#{form}.correctedStaffAssignmentToShifts" >
+							<option type="column" name="workerNumber" fields="worker"
+								expression="#worker['number']" link="true" />
+							<option type="column" name="workerName" fields="worker"
+								expression="#worker['name']" link="true" />
+							<option type="column" name="workerSurname" fields="worker"
+								expression="#worker['surname']" link="true" />
+							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
+							<option type="order" column="workerNumber" direction="desc" />
+							<option type="searchable" value="workerNumber,workerName" />
+							<option type="orderable" value="workerNumber,workerName" />
+							<option type="paginable" value="false" />
+							<option type="fullscreen" value="true" />
+							<option type="multiselect" value="true" />
+							<option type="editable" value="false"/>
+						</component>
+					</layoutElement>
+				</component>
+			</component>
+		</windowTab>
+		<windowTab name="history">
+			<component type="grid" name="assignmentToShiftStateChange"
+				reference="grid" source="#{form}.assignmentToShiftStateChange">
+				<option type="column" name="dateAndTime" fields="dateAndTime" />
+				<option type="column" name="previousState" fields="sourceState" />
+				<option type="column" name="currentState" fields="targetState" />
+				<option type="column" name="shift" fields="shift"
+					expression="#shift != null ? #shift['name'] : ''" />
+				<option type="column" name="worker" fields="worker" />
+				<option type="order" column="dateAndTime" direction="desc" />
+				<option type="searchable" value="dateAndTime,sourceState,targetState" />
+				<option type="orderable" value="dateAndTime,sourceState,targetState" />
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
+			method="addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid" />
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
+			method="addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid" />
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
+			method="addDiscriminatorRestrictionToStaffAssignmentGrid" />
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftDetailsHooks"
+			method="disabledGridWhenStateIsAcceptedOrCorrected" />
+	</hooks>
+</view>

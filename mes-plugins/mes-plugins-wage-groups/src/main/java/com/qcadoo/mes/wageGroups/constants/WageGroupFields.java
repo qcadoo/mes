@@ -1,6 +1,6 @@
 package com.qcadoo.mes.wageGroups.constants;
 
-public class WageGroupFields {
+public final class WageGroupFields {
 
     private WageGroupFields() {
     }

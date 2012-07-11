@@ -1,6 +1,6 @@
 package com.qcadoo.mes.wageGroups.constants;
 
-public class StaffFieldsWG {
+public final class StaffFieldsWG {
 
     private StaffFieldsWG() {
     }

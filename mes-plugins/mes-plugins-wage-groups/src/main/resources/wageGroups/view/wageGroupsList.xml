@@ -14,7 +14,7 @@
 			<option type="column" name="number" fields="number" link="true" />
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="superiorWageGroup" fields="superiorWageGroup"
-				link="true" />
+				expressions="#superiorWageGroup!= null ? '' : #superiorWageGroup.get('name')"/>
 			<option type="column" name="laborHourlyCost" fields="laborHourlyCost"
 				link="true" />
 			<option type="order" column="name" direction="asc" />

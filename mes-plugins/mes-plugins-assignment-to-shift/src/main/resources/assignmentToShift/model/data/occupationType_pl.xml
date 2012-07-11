@@ -1,0 +1,6 @@
+<occupationType>
+	<row NAME="Praca na linii" TECHNICALCODE="01workOnLine" />
+	<row NAME="Inne zadania" TECHNICALCODE="02otherCase" />
+	<row NAME="MIX" TECHNICALCODE="03mix" />
+	<row NAME="L4" TECHNICALCODE="04sickness" />
+</occupationType>

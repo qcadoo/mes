@@ -165,6 +165,13 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		<windowTab name="integrationTab">
+			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="externalNumber" fields="#{form}.externalNumber" defaultEnabled="false"/>
+				</layoutElement>
+			</component>
+		</windowTab>
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="generateProductNumber" />

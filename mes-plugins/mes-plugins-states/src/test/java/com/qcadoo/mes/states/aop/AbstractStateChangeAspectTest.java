@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.MockStateChangeDescriber;
@@ -22,6 +24,7 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -109,6 +112,20 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
 
     }
 
+    @Aspect
+    public static class ExceptionThrowingStateChangeService extends AbstractStateChangeAspect {
+
+        @Override
+        public StateChangeEntityDescriber getChangeEntityDescriber() {
+            return new MockStateChangeDescriber();
+        }
+
+        @Override
+        protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
+            throw new RuntimeException();
+        }
+    }
+
     @Mock
     private Entity ownerEntity;
 
@@ -123,6 +140,13 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
         stubStateChangeContext();
         stubOwner();
         given(stateChangeEntity.getHasManyField("messages")).willReturn(emptyEntityList);
+        given(DESCRIBER.getOwnerDataDefinition().save(Mockito.any(Entity.class))).willAnswer(new Answer<Entity>() {
+
+            @Override
+            public Entity answer(final InvocationOnMock invocation) throws Throwable {
+                return (Entity) invocation.getArguments()[0];
+            }
+        });
     }
 
     @Test
@@ -261,6 +285,51 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
 
         // then
         verify(stateChangeContext).setStatus(StateChangeStatus.FAILURE);
+    }
+
+    @Test
+    public final void shouldMarkStateChangeAsFailureAndRethrowExceptionWhenStateChangePhaseThrowsException() {
+        // given
+        ExceptionThrowingStateChangeService stateChangeService = new ExceptionThrowingStateChangeService();
+        try {
+            // when
+            stateChangeService.changeState(stateChangeContext);
+        } catch (StateChangeException e) {
+            // then
+            verify(stateChangeContext).setStatus(StateChangeStatus.FAILURE);
+            verify(stateChangeContext, Mockito.atLeastOnce()).save();
+        }
+    }
+
+    @Test
+    public final void shouldMarkStateChangeAsFailureAndRethrowExceptionWhenOwnerEntityValidatorThrowException() {
+        // given
+        AlmostRealStateChangeService stateChangeService = new AlmostRealStateChangeService();
+        given(ownerDD.callValidators(Mockito.any(Entity.class))).willThrow(new RuntimeException());
+
+        try {
+            // when
+            stateChangeService.changeState(stateChangeContext);
+        } catch (StateChangeException e) {
+            // then
+            verify(stateChangeContext).setStatus(StateChangeStatus.FAILURE);
+            verify(stateChangeContext, Mockito.atLeastOnce()).save();
+        }
+    }
+
+    @Test
+    public final void shouldMarkStateChangeAsFailureWhenOwnerIsInvalid() {
+        // given
+        AlmostRealStateChangeService stateChangeService = new AlmostRealStateChangeService();
+        given(owner.isValid()).willReturn(false);
+        given(ownerDD.callValidators(owner)).willReturn(false);
+
+        // when
+        stateChangeService.changeState(stateChangeContext);
+
+        // then
+        verify(stateChangeContext).setStatus(StateChangeStatus.FAILURE);
+        verify(stateChangeContext, Mockito.atLeastOnce()).save();
     }
 
     @SuppressWarnings("unchecked")
