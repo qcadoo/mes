@@ -19,4 +19,6 @@ public final class AssignmentToShiftFields {
     public static final String PLANNED_STAFF_ASSIGNMENT_TO_SHIFTS = "plannedStaffAssignmentToShifts";
 
     public static final String CORRECTED_STAFF_ASSIGNMENT_TO_SHIFTS = "correctedStaffAssignmentToShifts";
+
+    public static final String STATE_CHANGES = "assignmentToShiftStateChange";
 }

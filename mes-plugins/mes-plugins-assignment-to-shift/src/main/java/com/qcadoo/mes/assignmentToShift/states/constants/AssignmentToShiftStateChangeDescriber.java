@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;
@@ -37,5 +38,10 @@ public final class AssignmentToShiftStateChangeDescriber extends AbstractStateCh
     public DataDefinition getOwnerDataDefinition() {
         return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_ASSIGNMENT_TO_SHIFT);
     }
+
+    @Override
+    public String getOwnerStateChangesFieldName() {
+        return AssignmentToShiftFields.STATE_CHANGES;
+    };
 
 }
