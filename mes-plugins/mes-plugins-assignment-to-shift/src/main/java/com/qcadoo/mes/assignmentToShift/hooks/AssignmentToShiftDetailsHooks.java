@@ -18,39 +18,45 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class AssignmentToShiftDetailsHooks {
 
+    private static CustomRestriction customRestrictionAccepted = new CustomRestriction() {
+
+        @Override
+        public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
+            searchBuilder.add(SearchRestrictions.eq("state", ACCEPTED));
+        }
+
+    };
+
+    private static CustomRestriction customRestrictionSimple = new CustomRestriction() {
+
+        @Override
+        public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
+            searchBuilder.add(SearchRestrictions.eq("state", SIMPLE));
+        }
+    };
+
+    private static CustomRestriction customRestrictionCorrected = new CustomRestriction() {
+
+        @Override
+        public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
+            searchBuilder.add(SearchRestrictions.eq("state", CORRECTED));
+        }
+
+    };
+
     public final void addDiscriminatorRestrictionToStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference("staffAssignmentToShifts");
-        grid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.eq("state", SIMPLE));
-            }
-        });
+        grid.setCustomRestriction(customRestrictionSimple);
     }
 
     public final void addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference("correctedStaffAssignment");
-        grid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.eq("state", CORRECTED));
-            }
-
-        });
+        grid.setCustomRestriction(customRestrictionCorrected);
     }
 
     public final void addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid(final ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference("plannedStaffAssignment");
-        grid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.eq("state", ACCEPTED));
-            }
-
-        });
+        grid.setCustomRestriction(customRestrictionAccepted);
     }
 
     public void disabledGridWhenStateIsAcceptedOrCorrected(final ViewDefinitionState view) {
