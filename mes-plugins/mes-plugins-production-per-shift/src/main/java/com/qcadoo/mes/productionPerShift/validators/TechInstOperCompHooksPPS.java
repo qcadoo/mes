@@ -82,12 +82,14 @@ public class TechInstOperCompHooksPPS {
 
     private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity tioc,
             final Entity shift) {
-        boolean works = true;
+        boolean works = false;
         if (progressForDay.equals(progressForDays.get(0))) {
             Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(getDateAfterStartOrderForProgress(
                     tioc.getBelongsToField("order"), progressForDay));
-            if (!(shiftFromDay != null && shift.getId().equals(shiftFromDay.getId()))) {
+            if (shiftFromDay == null) {
                 works = false;
+            } else if (shift.getId().equals(shiftFromDay.getId())) {
+                works = true;
             }
         } else {
             works = shiftsService.checkIfShiftWorkAtDate(
