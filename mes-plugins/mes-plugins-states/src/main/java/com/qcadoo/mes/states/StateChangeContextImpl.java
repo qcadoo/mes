@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.messages.MessageService;
@@ -156,7 +157,9 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     @Override
     public List<Entity> getAllMessages() {
-        return entity.getHasManyField(describer.getMessagesFieldName());
+        final List<Entity> messagesAsEntityList = entity.getHasManyField(describer.getMessagesFieldName());
+        final List<Entity> messagesAsList = Lists.newArrayList(messagesAsEntityList);
+        return messagesAsList;
     }
 
     @Override
