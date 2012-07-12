@@ -163,10 +163,10 @@ public final class StateChangeContextImpl implements StateChangeContext {
     public boolean setOwner(final Entity owner) {
         try {
             return performSetOwner(owner);
-        } catch (Throwable throwable) {
+        } catch (Exception exception) {
             setStatus(StateChangeStatus.FAILURE);
             save();
-            throw new StateChangeException(throwable);
+            throw new StateChangeException(exception);
         }
     }
 

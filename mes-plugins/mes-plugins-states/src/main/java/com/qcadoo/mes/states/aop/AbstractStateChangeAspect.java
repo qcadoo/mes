@@ -38,11 +38,11 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
     public void changeState(final StateChangeContext stateChangeContext) {
         try {
             performStateChange(stateChangeContext);
-        } catch (final Throwable throwable) {
+        } catch (Exception exception) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
             stateChangeContext.save();
-            throw new StateChangeException(throwable);
+            throw new StateChangeException(exception);
         }
     }
 
