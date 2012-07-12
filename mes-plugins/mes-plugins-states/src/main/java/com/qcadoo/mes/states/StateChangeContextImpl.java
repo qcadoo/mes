@@ -14,6 +14,7 @@ import com.qcadoo.mes.states.messages.MessageService;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.messages.util.ValidationMessageHelper;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 
 public final class StateChangeContextImpl implements StateChangeContext {
 
@@ -157,7 +158,7 @@ public final class StateChangeContextImpl implements StateChangeContext {
 
     @Override
     public List<Entity> getAllMessages() {
-        final List<Entity> messagesAsEntityList = entity.getHasManyField(describer.getMessagesFieldName());
+        final EntityList messagesAsEntityList = entity.getHasManyField(describer.getMessagesFieldName());
         final List<Entity> messagesAsList = Lists.newArrayList(messagesAsEntityList);
         return messagesAsList;
     }
