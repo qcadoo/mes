@@ -530,22 +530,36 @@ public class ShiftsServiceImpl implements ShiftsService {
         searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + WORKING_LITERAL, true));
         List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
 
-        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
-        int minuteOfHour = cal.get(Calendar.MINUTE);
-
         for (Entity shift : shifts) {
             String stringHours = shift.getStringField(dayOfWeek.get(day) + HOURS_LITERAL);
             LocalTime[][] dayHours = convertDayHoursToInt(stringHours);
             for (LocalTime[] dayHour : dayHours) {
-                if ((dayHour[0].getHourOfDay() < hourOfDay || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0]
-                        .getMinuteOfHour() <= minuteOfHour))
-                        && (hourOfDay < dayHour[1].getHourOfDay() || (hourOfDay == dayHour[1].getHourOfDay() && minuteOfHour < dayHour[1]
-                                .getMinuteOfHour()))) {
-                    return shift;
+                if (dayHour[1].getHourOfDay() < dayHour[0].getHourOfDay()) {
+                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, cal) || checkIfEndDateShiftIsLaterThanDate(dayHour, cal)) {
+                        return shift;
+                    }
+                } else {
+                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, cal) && checkIfEndDateShiftIsLaterThanDate(dayHour, cal)) {
+                        return shift;
+                    }
                 }
             }
         }
         return null;
+    }
+
+    private boolean checkIfStartDateShiftIsEarlierThanDate(final LocalTime[] dayHour, final Calendar cal) {
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        int minuteOfHour = cal.get(Calendar.MINUTE);
+        return dayHour[0].getHourOfDay() < hourOfDay
+                || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0].getMinuteOfHour() <= minuteOfHour);
+    }
+
+    private boolean checkIfEndDateShiftIsLaterThanDate(final LocalTime[] dayHour, final Calendar cal) {
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        int minuteOfHour = cal.get(Calendar.MINUTE);
+        return hourOfDay < dayHour[1].getHourOfDay()
+                || (hourOfDay == dayHour[1].getHourOfDay() && minuteOfHour < dayHour[1].getMinuteOfHour());
     }
 
     @Override
