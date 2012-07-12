@@ -1,6 +1,6 @@
 package com.qcadoo.mes.assignmentToShift.states.constants;
 
-public class AssignmentToShiftStateChangePhase {
+public final class AssignmentToShiftStateChangePhase {
 
     public static final int PRE_VALIDATION = 1;
 

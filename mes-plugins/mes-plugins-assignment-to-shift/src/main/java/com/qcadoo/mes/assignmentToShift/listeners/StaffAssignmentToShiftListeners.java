@@ -13,7 +13,7 @@ public class StaffAssignmentToShiftListeners {
     @Autowired
     private StaffAssignmentToShiftDetailsHooks staffAssignmentToShiftDetailsHooks;
 
-    public void enabledFieldWhenTypeIsSpecific(final ViewDefinitionState view, final ComponentState state, String[] args) {
+    public void enabledFieldWhenTypeIsSpecific(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         staffAssignmentToShiftDetailsHooks.enabledFieldWhenTypeIsSpecific(view);
     }
 }

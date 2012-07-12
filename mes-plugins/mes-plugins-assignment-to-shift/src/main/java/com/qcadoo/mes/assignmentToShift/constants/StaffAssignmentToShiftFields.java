@@ -1,6 +1,6 @@
 package com.qcadoo.mes.assignmentToShift.constants;
 
-public class StaffAssignmentToShiftFields {
+public final class StaffAssignmentToShiftFields {
 
     private StaffAssignmentToShiftFields() {
 
