@@ -40,8 +40,7 @@ public class AssignmentToShiftListenerService {
     private List<Entity> setFlagPlannedToStaffAssignmentToShift(final ArrayList<Entity> staffs, final String state) {
         List<Entity> staffWithSetFlags = new ArrayList<Entity>();
         for (Entity staff : staffs) {
-            Entity acceptedStaff = staff.getDataDefinition().create();
-            acceptedStaff = staff.getDataDefinition().copy(staff.getId()).get(0);
+            Entity acceptedStaff = staff.getDataDefinition().copy(staff.getId()).get(0);
             acceptedStaff.setField(STATE, state);
             staffWithSetFlags.add(acceptedStaff);
         }
