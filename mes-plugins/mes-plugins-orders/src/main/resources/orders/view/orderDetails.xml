@@ -146,7 +146,6 @@
 						cancel.enable();
 						del.enable();
 						var state = #{state}.getValue().content.value;
-						var externalNumber = #{externalNumber}.getValue().content.value;
 						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
 						if (!state) {
 							return;
@@ -212,9 +211,6 @@
 							declineOrder.disable();
 							interruptOrder.disable();
 						}
-						if(externalNumber != undefined && externalNumber != '') {
-							del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-						}
 						}
 					});
 					]]>
@@ -226,8 +222,6 @@
 							field="number">
 							<option type="alignment" value="right" />
 						</component>
-						<component type="hidden" name="externalNumber" field="externalNumber"
-							reference="externalNumber" />
 						<component type="hidden" name="externalSynchronized"
 							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
@@ -528,9 +522,25 @@
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
+		<script>
+					<![CDATA[
+						var del = #{window}.getRibbonItem("actions.delete");
+						var externalNumberListener = {
+							onSetValue: function(value) {
+								
+								var externalNumber = #{externalNumber}.getValue().content.value;
+								
+								if(externalNumber != undefined && externalNumber != '') {
+									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								}
+							}
+						};
+						#{form}.addOnChangeListener(externalNumberListener);
+					]]>
+				</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" fields="#{form}.externalNumber" defaultEnabled="false"/>
+					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="false"/>
 				</layoutElement>
 			</component>
 		</windowTab>

@@ -61,12 +61,7 @@
 								cancel.enable();
 								del.enable();
 								
-								var externalNumber = #{externalNumber}.getValue().content.value;
 								
-								if(externalNumber != undefined && externalNumber != '') {
-									saveNew.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
-									del.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
-								}
 							}
 						});
 					]]>
@@ -76,7 +71,6 @@
 						<component type="input" name="number" field="number" reference="number">
 							<option type="alignment" value="right" />
 						</component>
-						<component type="hidden" name="externalNumber" field="externalNumber" reference="externalNumber" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name" hasDescription="true" />
@@ -166,9 +160,27 @@
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
+		<script>
+					<![CDATA[
+						var del = #{window}.getRibbonItem("actions.delete");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var externalNumberListener = {
+							onSetValue: function(value) {
+								
+								var externalNumber = #{externalNumber}.getValue().content.value;
+								
+								if(externalNumber != undefined && externalNumber != '') {
+									saveNew.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
+									del.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
+								}
+							}
+						};
+						#{form}.addOnChangeListener(externalNumberListener);
+					]]>
+				</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" fields="#{form}.externalNumber" defaultEnabled="false"/>
+					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="false"/>
 				</layoutElement>
 			</component>
 		</windowTab>

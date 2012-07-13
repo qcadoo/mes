@@ -59,7 +59,7 @@
 		</decimal>
 		<datetime name="effectiveDateFrom" readonly="true" />
 		<datetime name="effectiveDateTo" readonly="true" />
-		<string name="externalNumber" />
+		<string name="externalNumber" readonly="true" />
 		<boolean name="externalSynchronized" default="true" />
 		
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
