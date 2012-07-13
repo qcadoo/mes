@@ -13,7 +13,7 @@
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologyOperationComponentInOrderList" modelPlugin="orders"
+	name="technologyInstanceOperationComponentList" modelPlugin="orders"
 	modelName="order">
 
 	<component type="window" name="window" reference="window">

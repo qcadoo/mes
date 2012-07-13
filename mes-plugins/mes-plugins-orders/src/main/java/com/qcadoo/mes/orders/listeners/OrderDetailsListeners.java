@@ -53,7 +53,7 @@ public class OrderDetailsListeners {
         Long orderId = (Long) componentState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/orders/technologyOperationComponentInOrderList.html?context={\"form.id\":\"" + orderId + "\"}";
+            String url = "../page/orders/technologyInstanceOperationComponentList.html?context={\"form.id\":\"" + orderId + "\"}";
             view.redirectTo(url, false, true);
         }
     }
