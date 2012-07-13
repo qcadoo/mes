@@ -3,15 +3,15 @@
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 		<windowTab name="mainTab">
-			<component type="form" name="order" reference="form">
+			<component type="form" name="order" reference="order">
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="order" field="#{form}"
-							reference="order">
+						<component type="lookup" name="technology" field="#{order}.technology"
+							reference="technology" defaultEnabled="false">
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="#name" />
@@ -19,32 +19,25 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="lookup" name="technology" field="#{form}.technology"
-							reference="technology">
-							<option type="searchable" value="name" />
-							<option type="orderable" value="name" />
-							<option type="expression" value="#name" />
-							<option type="fieldCode" value="name" />
-						</component>
-						</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="input" name="lastUpdate" field="updateDate" reference="lastUpdate" />
+						<component type="input" name="lastUpdate" reference="lastUpdate"
+							defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2">
 						<component type="grid" name="technologyInstanceOperationComponents"
-							reference="technologyInstanceOperationComponents" source="#{form}.technologyInstanceOperationComponents">
-							<option type="column" name="nodeNumber" fields="nodeNumber"
-								 link="true" />
+							reference="technologyInstanceOperationComponents" source="#{order}.technologyInstanceOperationComponents">
+							<option type="column" name="nodeNumber" fields="nodeNumber" />
+							<option type="column" name="operationNumber" fields="operation"
+								expression="#operation['number']" />
 							<option type="column" name="operationName" fields="operation"
-								expression="#operation['name']" link="true" />
+								expression="#operation['name']" />
 							<option type="column" name="laborHourlyCost" fields="laborHourlyCost" />
 							<option type="column" name="machineHourlyCost" fields="machineHourlyCost" />
+							<option type="column" name="unit" fields="operation"
+								expression="T(com.qcadoo.mes.basic.util.CurrencyService).getCurrencyAlphabeticCodeForGrid()" />
 							<option type="order" column="nodeNumber" direction="desc" />
 							<option type="searchable" value="nodeNumber,operationName" />
-							<option type="orderable" value="nodeNumber,operationName" />
 							<option type="paginable" value="false" />
 							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
 						</component>
 					</layoutElement>
 				</component>
@@ -54,5 +47,8 @@
 		</windowTab>
 	</component>
 	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.costNormsForOperationInOrder.hooks.HourlyCostNormsInOrderDetailsHooks"
+			method="setLastUpdateDateTioc" />
 	</hooks>
 </view>

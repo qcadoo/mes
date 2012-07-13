@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="costNormsForOperationInOrder" version="#{qcadoo.plugin.version}"
+<plugin plugin="costNormsForOperationInOrder" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -42,12 +42,11 @@
 		<view:view resource="view/hourlyCostNormsInOrderDetails.xml"/>
 		
 		<view:view-ribbon-group resource="view/ribbonExtensions/hourlyCostNormsInOrder.xml"/>
-		<view:view-ribbon-group resource="view/ribbonExtensions/technologyInstanceOperationComponentList.xml" />
 		
 		<view:view-listener plugin="orders"
 			view="technologyInstanceOperationComponentList" component="form"
 			event="showHourlyCostNorms"
-			class="com.qcadoo.mes.costNormsForOperationInOrder.listeners.HourlyCostNormsInOrderListenerss"
+			class="com.qcadoo.mes.costNormsForOperationInOrder.listeners.HourlyCostNormsInOrderListeners"
 			method="showHourlyCostNorms" />
 			
 	</modules>

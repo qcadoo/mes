@@ -22,7 +22,7 @@ public class HourlyCostNormsInOrderListeners {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("order.id", orderId);
 
-        String url = "../page/costNormsForOperationInOrder/trackingRecordForSpecifiedOrderList.html";
+        String url = "../page/costNormsForOperationInOrder/hourlyCostNormsInOrderDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 }
