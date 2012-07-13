@@ -367,3 +367,11 @@ CREATE TABLE assignmenttoshift_staffassignmenttoshift
 ALTER TABLE states_message ADD COLUMN assignmenttoshiftstatechange_id bigint;
 
 --end 
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- changed: 13.07.2012
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN createdate timestamp without time zone;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN updatedate timestamp without time zone;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN "createuser" character varying(255);
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN updateuser character varying(255);
+--end
