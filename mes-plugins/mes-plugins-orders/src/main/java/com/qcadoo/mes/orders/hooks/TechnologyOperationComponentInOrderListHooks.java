@@ -24,8 +24,12 @@ public class TechnologyOperationComponentInOrderListHooks {
         Entity order = dataDefinitionService.get(PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 ((FormComponent) view.getComponentByReference("form")).getEntityId());
         FieldComponent technology = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
-
-        technology.setFieldValue(order.getBelongsToField(TECHNOLOGY).getStringField("number"));
+        Entity technologyEntity = order.getBelongsToField(TECHNOLOGY);
+        if (technologyEntity != null) {
+            technology.setFieldValue(technologyEntity.getStringField("number"));
+        } else {
+            technology.setFieldValue(null);
+        }
         technology.requestComponentUpdateState();
     }
 }
