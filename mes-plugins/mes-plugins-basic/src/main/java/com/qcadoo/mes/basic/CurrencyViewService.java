@@ -41,4 +41,5 @@ public class CurrencyViewService {
         lookup.setFieldValue(currencyService.getCurrentCurrency().getId());
         lookup.requestComponentUpdateState();
     }
+
 }

@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic.util;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,14 @@ public class CurrencyService {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private static ParameterService staticParameterService;
+
+    @PostConstruct
+    public void init() {
+        staticParameterService = this.parameterService;
+    }
 
     /**
      * Returns currently used currency {@link Entity}.
@@ -55,6 +65,28 @@ public class CurrencyService {
      */
     public String getCurrencyAlphabeticCode() {
         return getCurrentCurrency().getStringField("alphabeticCode");
+    }
+
+    /**
+     * Method for using in grid column
+     * 
+     * Returns currently used currency {@link Entity}.
+     * 
+     * @return currently used currency {@link Entity}.
+     */
+    public static Entity getCurrentCurrencyForGrid() {
+        return staticParameterService.getParameter().getBelongsToField("currency");
+    }
+
+    /**
+     * Method for using in grid column
+     * 
+     * Returns alphabetic (ISO-4217) code for currently used currency.
+     * 
+     * @return alphabetic (ISO-4217) code for currently used currency.
+     */
+    public static String getCurrencyAlphabeticCodeForGrid() {
+        return getCurrentCurrencyForGrid().getStringField("alphabeticCode");
     }
 
 }
