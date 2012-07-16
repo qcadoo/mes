@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.basic.util;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +42,9 @@ public class CurrencyService {
     @Autowired
     private static ParameterService staticParameterService;
 
-    @PostConstruct
-    public void init() {
-        staticParameterService = this.parameterService;
+    @Autowired
+    public void setStaticParameterService(ParameterService parameterService) {
+        CurrencyService.staticParameterService = parameterService;
     }
 
     /**
