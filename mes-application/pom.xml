@@ -211,6 +211,11 @@
 			<version>1.1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-average-labor-hourly-calculator-for-order</artifactId>
+			<version>1.1.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
