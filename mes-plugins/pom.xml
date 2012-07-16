@@ -55,6 +55,7 @@
     	<module>mes-plugins-wage-groups</module>
     	<module>mes-plugins-assignment-to-shift</module>
     <module>mes-plugins-cost-norms-for-operation-in-order</module>
+    <module>mes-plugins-average-labor-hourly-calculator-for-order</module>
   </modules>
 
 
