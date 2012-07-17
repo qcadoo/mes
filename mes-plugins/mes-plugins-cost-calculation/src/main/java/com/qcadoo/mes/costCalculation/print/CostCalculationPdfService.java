@@ -383,6 +383,14 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         }
         PdfPTable materialsTable = pdfHelper.createTableWithHeader(materialsTableHeader.size(), materialsTableHeader, false);
+
+        try {
+            float[] columnWidths = { 1f, 1f, 0.5f, 1f, 1f, 1.5f };
+            materialsTable.setWidths(columnWidths);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
         Entity technology;
         Entity order = costCalculation.getBelongsToField(ORDER);
         if (order == null) {
@@ -414,7 +422,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             BigDecimal margin = (BigDecimal) costCalculation.getField(MATERIAL_COST_MARGIN);
             if (margin == null) {
-                materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
+                materialsTable.addCell(new Phrase(numberService.format(0.0), FontUtils.getDejavuRegular9Dark()));
                 materialsTable.addCell(new Phrase(numberService.format(costs), FontUtils.getDejavuRegular9Dark()));
             } else {
                 MathContext mc = numberService.getMathContext();
@@ -439,12 +447,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
         materialsTable.addCell(new Phrase(totalMaterialCosts, FontUtils.getDejavuRegular9Dark()));
-
-        if (materialCostMarginValue.equals("0,00000")) {
-            materialsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-        } else {
-            materialsTable.addCell(new Phrase(materialCostMarginValue, FontUtils.getDejavuRegular9Dark()));
-        }
+        materialsTable.addCell(new Phrase(materialCostMarginValue, FontUtils.getDejavuRegular9Dark()));
         materialsTable.addCell(new Phrase(totalCostOfMaterial, FontUtils.getDejavuRegular9Dark()));
 
         materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -658,12 +661,21 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             operationsTableHeader.add(translationService.translate(translate, locale));
+
         }
 
         List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
                 .getTreeField(CALCULATION_OPERATION_COMPONENTS));
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
+
+        try {
+            float[] columnWidths = { 1f, 0.75f, 1f, 1f, 1f, 1f, 1f, 1.25f };
+            operationsTable.setWidths(columnWidths);
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
 
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             BigDecimal totalOperationCostSummary = null;
@@ -762,6 +774,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
         List<Entity> calculationOperationComponents = costCalculation.getTreeField(CALCULATION_OPERATION_COMPONENTS);
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
+
+        try {
+            float[] columnWidths = { 1f, 0.75f, 1f, 1f, 1f, 1.25f };
+            operationsTable.setWidths(columnWidths);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
 
         if (!calculationOperationComponents.isEmpty()) {
             BigDecimal totalOperationCostSummary = null;
