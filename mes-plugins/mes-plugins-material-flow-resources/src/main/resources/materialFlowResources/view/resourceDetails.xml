@@ -36,7 +36,7 @@
 
 		<component type="form" name="resourceForm" reference="form">
 			<component type="gridLayout" name="resourceGridLayout"
-				hasBorders="false" columns="15" rows="4">
+				hasBorders="false" columns="15" rows="6">
 				<layoutElement column="1" row="1" width="5">
 					<component type="lookup" name="location" field="location"
 						reference="location">
@@ -56,7 +56,9 @@
 						<option type="expression" value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValue" />
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillUnitFieldValues" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.materialFlow.MaterialFlowService" method="fillCurrencyFieldValues" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
@@ -70,6 +72,22 @@
 						defaultEnabled="false" hasLabel="false" />
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">
+					<component type="input" name="price" field="price"
+						reference="price">
+						<option type="alignment" value="right" />
+					</component>
+				</layoutElement>
+				<layoutElement column="6" row="4" width="1">
+					<component type="input" name="priceCurrency" reference="priceCurrency"
+						defaultEnabled="false" hasLabel="false" />
+				</layoutElement>
+				<layoutElement column="1" row="5" width="5">
+					<component type="input" name="batch" field="batch"
+						reference="batch">
+						<option type="alignment" value="right" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="6" width="5">
 					<component type="calendar" name="time" field="time"
 						reference="time">
 						<option type="withTimePicker" value="true" />
@@ -83,6 +101,8 @@
 	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="fillUnitFieldValue" />
+			method="fillUnitFieldValues" />
+		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+			method="fillCurrencyFieldValues" />
 	</hooks>
 </view>

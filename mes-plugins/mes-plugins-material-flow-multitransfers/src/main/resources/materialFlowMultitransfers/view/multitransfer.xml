@@ -8,7 +8,7 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<group name="create">
-				<bigButton name="create" icon="newGenealogyIcon24.png"
+				<bigButton name="createMultitransfer" icon="newGenealogyIcon24.png"
 					state="enabled">
 					<script>
 						<![CDATA[
@@ -22,13 +22,13 @@
 				</bigButton>
 			</group>
 			<group name="template">
-				<bigButton name="template" icon="downloadIcon24.png"
+				<bigButton name="getFromTemplates" icon="downloadIcon24.png"
 					state="enabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{form}.performEvent('getFromTemplate', []);
+									#{form}.performEvent('getFromTemplates', []);
 								}
 							});
 						]]>
@@ -39,8 +39,8 @@
 		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="grid" reference="grid"
-				hasBorders="false" columns="2" rows="6">
-				<layoutElement column="1" row="1">
+				hasBorders="false" columns="15" rows="6">
+				<layoutElement column="1" row="1" width="5">
 					<component type="select" name="type" field="type"
 						reference="type">
 						<listener event="onSelectedEntityChange"
@@ -48,13 +48,13 @@
 							method="disableLocationFieldForParticularTransferType" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
+				<layoutElement column="1" row="2" width="5">
 					<component type="calendar" name="time" field="time"
 						reference="time">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3">
+				<layoutElement column="1" row="3" width="5">
 					<component type="lookup" name="locationFrom" field="locationFrom"
 						reference="locationFrom">
 						<option type="searchable" value="name" />
@@ -63,7 +63,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4">
+				<layoutElement column="1" row="4" width="5">
 					<component type="lookup" name="locationTo" field="locationTo"
 						reference="locationTo">
 						<option type="searchable" value="name" />
@@ -72,7 +72,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="5">
+				<layoutElement column="1" row="5" width="5">
 					<component type="lookup" name="staff" field="staff"
 						reference="staff">
 						<option type="searchable" value="name" />
@@ -82,7 +82,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="6">
+				<layoutElement column="1" row="6" width="6">
 					<component type="borderLayout" name="products">
 						<component type="awesomeDynamicList" name="products"
 							source="#{form}.products" reference="products">
@@ -127,9 +127,9 @@
 			<listener event="createMultitransfer"
 				class="com.qcadoo.mes.materialFlowMultitransfers.listeners.MultitransferListeners"
 				method="createMultitransfer" />
-			<listener event="getFromTemplate"
+			<listener event="getFromTemplates"
 				class="com.qcadoo.mes.materialFlowMultitransfers.listeners.MultitransferListeners"
-				method="getFromTemplate" />
+				method="getFromTemplates" />
 		</component>
 	</component>
 	

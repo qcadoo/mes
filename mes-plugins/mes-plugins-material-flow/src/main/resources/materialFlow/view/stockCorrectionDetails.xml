@@ -71,7 +71,7 @@
 						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 							method="refreshShouldBeInStockCorrectionDetails" />
 						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-							method="fillUnitFieldValue" />
+							method="fillUnitFieldValues" />
 						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 							method="generateNumberForStockCorrection" />
 					</component>
@@ -108,7 +108,7 @@
 	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
-			method="fillUnitFieldValue" />
+			method="fillUnitFieldValues" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
 			method="refreshShouldBeInStockCorrectionDetails" /> 
 	</hooks>

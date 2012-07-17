@@ -3,14 +3,13 @@ package com.qcadoo.mes.materialFlowResources;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.TRANSPORT;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.BATCH;
+import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -67,57 +66,41 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return;
         }
 
-        String type = transfer.getStringField(TYPE);
         Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
         Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
         Entity product = transfer.getBelongsToField(PRODUCT);
         BigDecimal quantity = transfer.getDecimalField(QUANTITY);
         Date time = (Date) transfer.getField(TIME);
+        String batch = transfer.getStringField(BATCH);
+        BigDecimal price = transfer.getDecimalField(PRICE);
 
-        if (PRODUCTION.getStringValue().equals(type)) {
-            String locationToType = locationTo.getStringField(TYPE);
-
-            if (isTypeWarehouse(locationToType)) {
-                addResource(locationTo, product, quantity, time);
-            }
-        } else if (CONSUMPTION.getStringValue().equals(type)) {
-            String locationFromType = locationFrom.getStringField(TYPE);
-
-            if (isTypeWarehouse(locationFromType)) {
-                updateResource(locationFrom, product, quantity);
-            }
-        } else if (TRANSPORT.getStringValue().equals(type)) {
-            if (locationFrom != null) {
-                String locationFromType = locationFrom.getStringField(TYPE);
-
-                if (isTypeWarehouse(locationFromType)) {
-                    updateResource(locationFrom, product, quantity);
-                }
-            }
-            if (locationTo != null) {
-                String locationToType = locationTo.getStringField(TYPE);
-
-                if (isTypeWarehouse(locationToType)) {
-                    addResource(locationTo, product, quantity, time);
-                }
-            }
+        if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE)) && (locationTo != null)
+                && isTypeWarehouse(locationTo.getStringField(TYPE))) {
+            moveResource(locationFrom, locationTo, product, quantity, time, batch, price);
+        } else if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE))) {
+            updateResource(locationFrom, product, quantity);
+        } else if ((locationTo != null) && isTypeWarehouse(locationTo.getStringField(TYPE))) {
+            addResource(locationTo, product, quantity, time, batch, price);
         }
     }
 
-    private void addResource(final Entity location, final Entity product, final BigDecimal quantity, final Date time) {
+    private void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
+            final String batch, final BigDecimal price) {
         Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).create();
 
-        resource.setField(LOCATION, location);
+        resource.setField(LOCATION, locationTo);
         resource.setField(PRODUCT, product);
         resource.setField(QUANTITY, quantity);
         resource.setField(TIME, time);
+        resource.setField(BATCH, batch);
+        resource.setField(PRICE, price);
 
         resource.getDataDefinition().save(resource);
     }
 
-    private void updateResource(final Entity location, final Entity product, BigDecimal quantity) {
-        List<Entity> resources = getResourcesForLocationAndProduct(location, product);
+    private void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity) {
+        List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
         if (resources != null) {
             for (Entity resource : resources) {
@@ -137,6 +120,40 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                     resource.setField(QUANTITY, resourceQuantity);
 
                     resource.getDataDefinition().save(resource);
+
+                    return;
+                }
+            }
+        }
+    }
+
+    private void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
+            final Date time, final String batch, final BigDecimal price) {
+        List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
+
+        if (resources != null) {
+            for (Entity resource : resources) {
+                BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
+                BigDecimal resourcePrice = (price == null) ? resource.getDecimalField(PRICE) : price;
+
+                if (quantity.compareTo(resourceQuantity) >= 0) {
+                    quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
+
+                    resource.getDataDefinition().delete(resource.getId());
+
+                    addResource(locationTo, product, resourceQuantity, time, batch, resourcePrice);
+
+                    if (BigDecimal.ZERO.compareTo(quantity) == 0) {
+                        return;
+                    }
+                } else {
+                    resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
+
+                    resource.setField(QUANTITY, resourceQuantity);
+
+                    resource.getDataDefinition().save(resource);
+
+                    addResource(locationTo, product, quantity, time, batch, resourcePrice);
 
                     return;
                 }

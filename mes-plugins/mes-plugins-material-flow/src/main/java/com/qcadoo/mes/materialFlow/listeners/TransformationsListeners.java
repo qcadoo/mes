@@ -79,12 +79,13 @@ public class TransformationsListeners {
 
                     transfer.setField(NUMBER, number);
                 }
+
                 formComponent.setEntity(transfer);
             }
         }
     }
 
-    public void fillProductionAndConsumption(final ViewDefinitionState view, final ComponentState componentState,
+    public void fillProductionAndConsumption(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         FieldComponent operationComponent = (FieldComponent) view.getComponentByReference(OPERATION);
 

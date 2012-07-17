@@ -23,22 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class ResourceFields {
+public final class TransferFieldsMFR {
 
-    private ResourceFields() {
+    private TransferFieldsMFR() {
 
     }
-
-    public static final String LOCATION = "location";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
 
     public static final String PRICE = "price";
 
     public static final String BATCH = "batch";
-
-    public static final String TIME = "time";
 
 }

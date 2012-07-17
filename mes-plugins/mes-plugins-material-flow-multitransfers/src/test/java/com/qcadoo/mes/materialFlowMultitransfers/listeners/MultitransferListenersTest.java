@@ -186,7 +186,7 @@ public class MultitransferListenersTest {
         given(productQuantityDD.create()).willReturn(productQuantity);
 
         // when
-        multitransferListeners.getFromTemplate(view, state, null);
+        multitransferListeners.getFromTemplates(view, state, null);
 
         // then
         verify(productQuantity).setField(PRODUCT, product);

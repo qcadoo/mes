@@ -53,6 +53,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -105,6 +106,9 @@ public class MaterialFlowService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -267,18 +271,20 @@ public class MaterialFlowService {
         return number;
     }
 
-    public void fillUnitFieldValue(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        fillUnitFieldValue(view);
+    public void fillUnitFieldValues(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        fillUnitFieldValues(view);
     }
 
-    public void fillUnitFieldValue(final ViewDefinitionState view) {
+    public void fillUnitFieldValues(final ViewDefinitionState view) {
         Long productId = (Long) view.getComponentByReference(PRODUCT).getFieldValue();
         if (productId == null) {
             return;
         }
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
+
         FieldComponent unitField = null;
         String unit = product.getStringField(UNIT);
+
         for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
             unitField = (FieldComponent) view.getComponentByReference(referenceName);
             if (unitField == null) {
@@ -286,6 +292,24 @@ public class MaterialFlowService {
             }
             unitField.setFieldValue(unit);
             unitField.requestComponentUpdateState();
+        }
+    }
+
+    public void fillCurrencyFieldValues(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        fillCurrencyFieldValues(view);
+    }
+
+    public void fillCurrencyFieldValues(final ViewDefinitionState view) {
+        FieldComponent currencyField = null;
+        String currency = currencyService.getCurrencyAlphabeticCode();
+
+        for (String referenceName : Sets.newHashSet("priceCurrency")) {
+            currencyField = (FieldComponent) view.getComponentByReference(referenceName);
+            if (currencyField == null) {
+                continue;
+            }
+            currencyField.setFieldValue(currency);
+            currencyField.requestComponentUpdateState();
         }
     }
 

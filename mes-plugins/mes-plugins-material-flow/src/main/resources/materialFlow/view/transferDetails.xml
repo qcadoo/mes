@@ -86,7 +86,7 @@
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
-							method="fillUnitFieldValue" />
+							method="fillUnitFieldValues" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
 							method="generateNumberForTransfer" />
@@ -120,7 +120,7 @@
 		<beforeRender class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
 			method="checkIfTransferHasTransformations" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-			method="fillUnitFieldValue" />
+			method="fillUnitFieldValues" />
 		<beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 			method="disableLocationFieldForParticularTransferType" />
 	</hooks>

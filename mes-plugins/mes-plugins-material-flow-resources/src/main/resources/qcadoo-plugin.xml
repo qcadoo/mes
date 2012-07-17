@@ -62,6 +62,14 @@
 	
 		<model:model model="resource" resource="model/resource.xml" />
 		
+		<model:model-field plugin="materialFlow" model="transfer">
+			<model:decimal name="price" default="0" />
+		</model:model-field>
+		
+		<model:model-field plugin="materialFlow" model="transfer">
+			<model:string name="batch" required="true" unique="true" />
+		</model:model-field>
+		
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
    
@@ -70,16 +78,23 @@
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
 				method="validateTransferResources" />
 		</model:model-hook>
-		<model:model-hook plugin="materialFlow" model="transformations">
-			<model:validatesWith
-				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-				method="checkIfTransfersResourcesAreValid" />
+		
+		<model:model-hook plugin="materialFlow" model="transfer">
+			<model:onCreate
+				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+				method="generateBatch" />
 		</model:model-hook>
 		
 		<model:model-hook plugin="materialFlow" model="transfer">
 			<model:onSave
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
 				method="manageResources" />
+		</model:model-hook>
+		
+		<model:model-hook plugin="materialFlow" model="transformations">
+			<model:validatesWith
+				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+				method="checkIfTransfersResourcesAreValid" />
 		</model:model-hook>
 		
 		<menu:menu-item name="resources" category="materialFlow"
