@@ -173,6 +173,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
         if (isEnabledOrEnabling("advancedGenealogyForOrders")) {
             params.setField("trackingRecordForOrderTreatment", "01duringProduction");
+            params.setField("batchNumberRequiredInputProducts", false);
         }
 
         params.getDataDefinition().save(params);
