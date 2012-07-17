@@ -125,8 +125,6 @@
 									}
 									updateRibbon(newValue.content.value);
 									toggleEditable(newValue.content.value);
-									#{inProducts}.setEnabled(false, true); 
-  									#{outProducts}.setEnabled(false, true);
 								}
 							});
 							
@@ -139,17 +137,6 @@
 									}
 								}
 							};
-							
- 							#{technologyTree}.addOnChangeListener({  
- 								select: function(newValue){ 
- 									#{outProducts}.setEnabled(true, true); 
- 									#{inProducts}.setEnabled(true, true); 
- 								} 
- 							}); 
-							
-							#{technologyTree}.addOnChangeListener(onSetValueListener); 
-   							#{outProducts}.addOnChangeListener(onSetValueListener);    
-							#{inProducts}.addOnChangeListener(onSetValueListener);    
 							
 							function toggleEditable(state) {
 								var isDraft = state == "01draft";
@@ -267,6 +254,7 @@
 						</dataType>
 						<option type="selectableWhenDisabled" value="true" />
 						<listener event="select" class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
+						<listener event="select" class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" method="setGridEditable" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="4">
