@@ -12,6 +12,7 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.UNIT;
+import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -64,18 +65,20 @@ public class MultitransferListeners {
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         for (FormComponent formComponent : formComponents) {
-            Entity entity = formComponent.getEntity();
-            Entity product = entity.getBelongsToField(PRODUCT);
+            Entity productQuantity = formComponent.getEntity();
+            Entity product = productQuantity.getBelongsToField(PRODUCT);
+
             if (product != null) {
-                entity.setField(UNIT, product.getStringField(UNIT));
+                productQuantity.setField(UNIT, product.getStringField(UNIT));
             }
-            formComponent.setEntity(entity);
+
+            formComponent.setEntity(productQuantity);
         }
     }
 
     @Transactional
     public void createMultitransfer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        if (!validateMultitransferForm(view)) {
+        if (!isMultitransferFormValid(view)) {
             return;
         }
 
@@ -109,7 +112,7 @@ public class MultitransferListeners {
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
             if ((product != null) && (quantity != null)) {
-                createTransfer(type, time, locationFrom, locationTo, staff, product, quantity);
+                createTransfer(type, time, locationFrom, locationTo, staff, product, quantity, null);
             }
         }
 
@@ -117,20 +120,20 @@ public class MultitransferListeners {
                 MessageType.SUCCESS);
     }
 
-    public void getFromTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void getFromTemplates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
 
-        FieldComponent locationFromComponent = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
-        FieldComponent locationToComponent = (FieldComponent) view.getComponentByReference(LOCATION_TO);
+        FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
+        FieldComponent locationToField = (FieldComponent) view.getComponentByReference(LOCATION_TO);
 
-        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromComponent.getFieldValue());
-        Entity locationTo = materialFlowService.getLocationById((Long) locationToComponent.getFieldValue());
+        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
+        Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
 
         List<Entity> templates = getTransferTemplates(locationFrom, locationTo);
 
         if (templates.isEmpty()) {
             view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
-                    MessageType.FAILURE);
+                    MessageType.INFO);
             return;
         }
 
@@ -156,7 +159,7 @@ public class MultitransferListeners {
                 MessageType.SUCCESS);
     }
 
-    private boolean validateMultitransferForm(final ViewDefinitionState view) {
+    public boolean isMultitransferFormValid(final ViewDefinitionState view) {
         boolean isValid = true;
 
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
@@ -248,8 +251,8 @@ public class MultitransferListeners {
         return false;
     }
 
-    private void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
-            final Entity staff, final Entity product, final BigDecimal quantity) {
+    public void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
+            final Entity staff, final Entity product, final BigDecimal quantity, final BigDecimal price) {
         DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
@@ -264,6 +267,7 @@ public class MultitransferListeners {
         transfer.setField(STAFF, staff);
         transfer.setField(PRODUCT, product);
         transfer.setField(QUANTITY, quantity);
+        transfer.setField(PRICE, price);
 
         checkArgument(dd.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }

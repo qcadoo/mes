@@ -33,6 +33,8 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="quantity" required="true" />
+		<decimal name="price" default="0" />
+		<string name="batch" required="true" />
 		<datetime name="time" required="true" />
 	</fields>
 	<hooks>

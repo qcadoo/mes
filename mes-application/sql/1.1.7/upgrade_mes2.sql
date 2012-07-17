@@ -1,3 +1,6 @@
+-- Table: ...
+-- changed: ...
+
 ALTER TABLE basic_substituteComponent ALTER COLUMN quantity TYPE numeric(9,5);
 
 ALTER TABLE basicproductioncounting_basicproductioncounting ALTER COLUMN plannedquantity TYPE numeric(12,5);
@@ -143,6 +146,9 @@ ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcosts TYPE nu
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN totalcostperunit TYPE numeric(12,5);
 ALTER TABLE productioncounting_productionbalance ALTER COLUMN quantity TYPE numeric(12,5);
 
+-- end
+
+
 -- Table: productioncounting_productionbalance --> ADD COLUMN active boolean
 -- changed: 9.07.2012
 
@@ -166,6 +172,9 @@ ALTER TABLE technologies_operation ALTER COLUMN productioninonecycle TYPE numeri
 ALTER TABLE technologies_operation ALTER COLUMN countmachine TYPE numeric(12,5);
 ALTER TABLE technologies_operation ALTER COLUMN machineutilization TYPE numeric(8,5);
 ALTER TABLE technologies_operation ALTER COLUMN laborutilization TYPE numeric(8,5);
+
+-- end
+
 
 -- Table: advancedgenealogy_batchlogging --> advancedgenealogy_batchstatechange
 -- changed: 28.06.2012
@@ -194,6 +203,7 @@ UPDATE advancedgenealogy_batchstatechange SET phase = 4;
 
 -- end
 
+
 -- Table: advancedgenealogy_trackingrecordlogging --> advancedgenealogy_trackingrecordstatechange
 -- changed: 28.06.2012
 
@@ -221,6 +231,7 @@ UPDATE advancedgenealogy_trackingrecordstatechange SET phase = 4;
 
 -- end
 
+
 -- Table: states_message
 -- changed: 28.06.2012
 
@@ -244,6 +255,7 @@ ALTER TABLE states_message
 		
 -- end
 
+		
 -- Table: wagegroups_wagegroup
 -- changed: 3.07.2012
 
@@ -259,13 +271,14 @@ CREATE TABLE wagegroups_wagegroup
   laborhourlycost numeric(12,5),
   laborhourlycostunit character varying(255),
   CONSTRAINT wagegroups_wagegroup_pkey PRIMARY KEY (id)
-  
 );
 
---end
+-- end
+
 
 -- Table: basic_staff
 -- changed: 4.07.2012
+
 ALTER TABLE basic_staff ADD COLUMN individuallaborcost numeric(12,5);
 ALTER TABLE basic_staff ADD COLUMN determinedindividual boolean;
 ALTER TABLE basic_staff ADD COLUMN email character varying(255);
@@ -284,7 +297,8 @@ ALTER TABLE basic_staff
     	DEFERRABLE;
 ALTER TABLE basic_staff ADD COLUMN laborhourlycost numeric(12,5);
 
---end
+-- end
+
 
 -- Table: qcadoomodel_dictionaryitem
 -- changed: 11.07.2012
@@ -293,8 +307,10 @@ ALTER TABLE qcadoomodel_dictionaryitem ADD COLUMN technicalcode character varyin
 
 -- end 
 
+
 -- Table: assignmenttoshift_assignmenttoshift
 -- changed: 11.07.2012
+
 CREATE TABLE assignmenttoshift_assignmenttoshift
 (
   id bigint NOT NULL,
@@ -304,14 +320,15 @@ CREATE TABLE assignmenttoshift_assignmenttoshift
   approvedattendancelist boolean,
   CONSTRAINT assignmenttoshift_assignmenttoshift_pkey PRIMARY KEY (id),
   CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE
+      REFERENCES basic_shift (id) DEFERRABLE
 );
 
---end 
+-- end 
+
 
 -- Table: assignmenttoshift_assignmenttoshiftstatechange
 -- changed: 11.07.2012
+
 CREATE TABLE assignmenttoshift_assignmenttoshiftstatechange
 (
   id bigint NOT NULL,
@@ -326,17 +343,17 @@ CREATE TABLE assignmenttoshift_assignmenttoshiftstatechange
   additionalinformation character varying(255),
   CONSTRAINT assignmenttoshift_assignmenttoshiftstatechange_pkey PRIMARY KEY (id),
   CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE,
+      REFERENCES basic_shift DEFERRABLE,
   CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
-      REFERENCES assignmenttoshift_assignmenttoshift (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE
+      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
 );
 
---end
+-- end
+
 
 -- Table: assignmenttoshift_staffassignmenttoshift
 -- changed: 11.07.2012
+
 CREATE TABLE assignmenttoshift_staffassignmenttoshift
 (
   id bigint NOT NULL,
@@ -350,28 +367,61 @@ CREATE TABLE assignmenttoshift_staffassignmenttoshift
   occupationtypevalueforgrid character varying(255),
   CONSTRAINT assignmenttoshift_staffassignmenttoshift_pkey PRIMARY KEY (id),
   CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id)
-      REFERENCES basic_staff (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE,
+      REFERENCES basic_staff DEFERRABLE,
   CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION  DEFERRABLE,
+      REFERENCES productionlines_productionline DEFERRABLE,
   CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
-      REFERENCES assignmenttoshift_assignmenttoshift (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION  DEFERRABLE
+      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
 );
 
---end 
+-- end 
+
 
 -- Table: states_message
 -- changed: 11.07.2012
+
 ALTER TABLE states_message ADD COLUMN assignmenttoshiftstatechange_id bigint;
 
---end 
+-- end 
+
 
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 13.07.2012
+
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN createdate timestamp without time zone;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN updatedate timestamp without time zone;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN "createuser" character varying(255);
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN updateuser character varying(255);
---end
+
+-- end
+
+
+-- Table: materialflow_transfer
+-- changed: 06.06.2012
+
+ALTER TABLE materialflow_transfer ADD COLUMN price numeric(12,5);
+ALTER TABLE materialflow_transfer ALTER COLUMN price SET DEFAULT 0::numeric;
+
+ALTER TABLE materialflow_transfer ADD COLUMN batch character varying(255);
+
+-- end
+
+
+-- Table: materialflowmultitransfers_productquantity
+-- changed: 06.06.2012
+
+ALTER TABLE materialflowmultitransfers_productquantity ADD COLUMN price numeric(12,5);
+ALTER TABLE materialflowmultitransfers_productquantity ALTER COLUMN price SET DEFAULT 0::numeric;
+
+-- end
+
+
+-- Table: materialflowresources_resource
+-- changed: 06.06.2012
+
+ALTER TABLE materialflowresources_resource ADD COLUMN price numeric(12,5);
+ALTER TABLE materialflowresources_resource ALTER COLUMN price SET DEFAULT 0::numeric;
+
+ALTER TABLE materialflowresources_resource ADD COLUMN batch character varying(255);
+
+-- end
