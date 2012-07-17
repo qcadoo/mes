@@ -248,27 +248,6 @@ public class TechnologyService {
         outProductsGrid.setEditable(false);
     }
 
-    public void checkQualityControlType(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            throw new IllegalStateException("component is not select");
-        }
-
-        FieldComponent qualityControlType = (FieldComponent) state;
-
-        FieldComponent unitSamplingNr = (FieldComponent) viewDefinitionState.getComponentByReference(L_UNIT_SAMPLING_NR);
-
-        if (qualityControlType.getFieldValue() != null) {
-            if (qualityControlType.getFieldValue().equals("02forUnit")) {
-                unitSamplingNr.setRequired(true);
-                unitSamplingNr.setVisible(true);
-            } else {
-                unitSamplingNr.setRequired(false);
-                unitSamplingNr.setVisible(false);
-            }
-        }
-    }
-
     public void generateTechnologyGroupNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, L_FORM, L_NUMBER);
@@ -606,21 +585,6 @@ public class TechnologyService {
         }
 
         return operations;
-    }
-
-    public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(L_QUALITY_CONTROL_TYPE);
-        if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-            BigDecimal unitSamplingNr = (BigDecimal) entity.getField(L_UNIT_SAMPLING_NR);
-            if (unitSamplingNr == null || unitSamplingNr.scale() > 3 || unitSamplingNr.compareTo(BigDecimal.ZERO) < 0
-                    || unitSamplingNr.precision() > 7) {
-                entity.addGlobalError("qcadooView.validate.global.error.custom");
-                entity.addError(dataDefinition.getField(L_UNIT_SAMPLING_NR),
-                        "technologies.technology.validate.global.error.unitSamplingNr");
-                return false;
-            }
-        }
-        return true;
     }
 
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {

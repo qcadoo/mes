@@ -33,7 +33,7 @@
 		<component type="gridLayout" name="genealogyLayout" columns="3" rows="4">
 			<layoutElement column="1" row="1">
 				<component type="select" name="qualityControlType" reference="qualityControlType" field="#{form}.qualityControlType" >
-					<listener event="onSelectedEntityChange" class="com.qcadoo.mes.technologies.TechnologyService" method="checkQualityControlType"/>									
+					<listener event="onSelectedEntityChange" class="com.qcadoo.mes.qualityControls.TechnologyModelValidatorQC" method="checkQualityControlType"/>									
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">	

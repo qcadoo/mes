@@ -68,8 +68,13 @@
 			<model:enum name="qualityControlType" values="02forUnit,03forOrder" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technology">
-			<model:decimal name="unitSamplingNr" />
+			<model:decimal name="unitSamplingNr">
+				<model:validatesRange from="0" />
+				<model:validatesUnscaledValue max="7" />
+   				<model:validatesScale max="5" />
+			</model:decimal>
 		</model:model-field>
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:string name="qualityControlInstruction">
 				<model:validatesLength max="255" />
@@ -97,6 +102,10 @@
 		
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.qualityControls.ParameterServiceQC" method="addFieldsForParameter"/>
+		</model:model-hook>
+		<model:model-hook plugin="technologies" model="technology">
+			<model:validatesWith class="com.qcadoo.mes.qualityControls.TechnologyModelValidatorQC"
+				method="checkIfUnitSampligNrIsReq" />
 		</model:model-hook>
 
 		<menu:menu-category name="quality" />
