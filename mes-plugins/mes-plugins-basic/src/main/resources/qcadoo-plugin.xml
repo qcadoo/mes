@@ -51,6 +51,13 @@
 		</vendor>
 	</information>
 
+	<dependencies>
+		<dependency>
+			<plugin>qcadooDictionaries</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+	</dependencies>
+
 	<modules>
 		<localization:translation-group name="dashboard"
 			prefix="basic.dashboard" />
