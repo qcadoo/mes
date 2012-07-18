@@ -1,6 +1,9 @@
 package com.qcadoo.mes.wageGroups.constants;
 
-public class WageGroupsConstants {
+public final class WageGroupsConstants {
+
+    private WageGroupsConstants() {
+    }
 
     public static final String PLUGIN_IDENTIFIER = "wageGroups";
 
