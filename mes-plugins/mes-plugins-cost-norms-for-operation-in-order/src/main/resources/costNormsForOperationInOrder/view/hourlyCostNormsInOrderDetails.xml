@@ -6,11 +6,11 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 		<windowTab name="mainTab">
-			<component type="form" name="order" reference="order">
+			<component type="form" name="order" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
-						<component type="lookup" name="technology" field="#{order}.technology"
+						<component type="lookup" name="technology" field="#{form}.technology"
 							reference="technology" defaultEnabled="false">
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
@@ -24,7 +24,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2">
 						<component type="grid" name="technologyInstanceOperationComponents"
-							reference="technologyInstanceOperationComponents" source="#{order}.technologyInstanceOperationComponents">
+							reference="technologyInstanceOperationComponents" source="#{form}.technologyInstanceOperationComponents">
 							<option type="column" name="nodeNumber" fields="nodeNumber" />
 							<option type="column" name="operationNumber" fields="operation"
 								expression="#operation['number']" />
@@ -33,7 +33,7 @@
 							<option type="column" name="laborHourlyCost" fields="laborHourlyCost" />
 							<option type="column" name="machineHourlyCost" fields="machineHourlyCost" />
 							<option type="column" name="unit" fields="operation"
-								expression="T(com.qcadoo.mes.basic.util.CurrencyService).getInstance().getCurrencyAlphabeticCodeForGrid()" />
+								expression="PLN" />
 							<option type="order" column="nodeNumber" direction="desc" />
 							<option type="searchable" value="nodeNumber,operationName" />
 							<option type="paginable" value="false" />

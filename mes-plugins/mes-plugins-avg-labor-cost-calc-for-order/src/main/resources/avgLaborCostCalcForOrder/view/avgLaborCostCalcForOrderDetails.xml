@@ -1,0 +1,117 @@
+<view name="avgLaborCostCalcForOrderDetails" modelName="avgLaborCostCalcForOrder"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back" />
+			<group name="hourlyCostNorms">
+				<bigButton name="generateAverageCost" icon="calculateTimeIcon24.png"
+					action="#{form}.fireEvent(generateAverageCost);" reference="generateAverageCost" />
+				<bigButton name="copyToOperationsNorms" icon="copyIcon24.png"
+					action="#{form}.fireEvent(copyToOperationsNorms);" state="disabled"
+					reference="copyToOperationsNorms" />
+			</group>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="orderId" reference="orderId"
+				defaultVisible="false" />
+			<component type="form" name="form"
+				reference="form">
+				<script>
+					<![CDATA[
+						jQuery(document).ready(function() {
+							var json = JSON.parse(context);
+							var orderId = json['window.mainTab.orderId'];
+							if (orderId != null) {
+								#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
+							}
+						});
+							]]>
+				</script>
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="5">
+					<layoutElement column="1" row="1">
+						<component type="calendar" name="startDate" field="startDate"
+							reference="startDate">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="calendar" name="finishDate" field="finishDate"
+							reference="finishDate">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="productionLine"
+							reference="productionLine" field="productionLine">
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
+							<option type="searchable" value="name" />
+							<option type="orderable" value="name" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="select" reference="basedOn" name="basedOn"
+							field="basedOn" />
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="hidden" name="order"
+							reference="order" field="order">
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#order['number']" />
+				<listener event="generateAverageCost"
+					class="com.qcadoo.mes.avgLaborCostCalcForOrder.listeners.AvgLaborCostCalcForOrderDetailsListeners"
+					method="generateAssignmentWorkerToShiftAndAverageCost" />
+				<listener event="copyToOperationsNorms"
+					class="com.qcadoo.mes.avgLaborCostCalcForOrder.listeners.AvgLaborCostCalcForOrderDetailsListeners"
+					method="copyToOperationsNorms" />
+				<listener event="requestCopyFieldValues"
+					class="com.qcadoo.mes.avgLaborCostCalcForOrder.listeners.AvgLaborCostCalcForOrderDetailsListeners"
+					method="setAvgLaborCostCalcForGivenOrder" />
+			</component>
+		</windowTab>
+		<windowTab name="resultTab">
+			<component type="gridLayout" name="resultGridLayout"
+				columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="averageLaborHourlyCost"
+						field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost" defaultEnabled="false">
+							<option type="alignment" value="right" />
+					</component>
+				</layoutElement>
+			</component>
+			<component type="grid" name="assignmentWorkerToShifts"
+				reference="assignmentWorkerToShifts" source="#{form}.assignmentWorkerToShifts">
+				<option type="column" name="startDate" fields="assignmentToShift"
+					expression="#assignmentToShift['startDate']" link="true" />
+				<option type="column" name="shift" fields="assignmentToShift"
+					expression="#assignmentToShift['shift'].get('name')" link="true" />
+				<option type="column" name="workerNumber" fields="worker"
+					expression="#worker['number']" link="true" />
+				<option type="column" name="workerName" fields="worker"
+					expression="#worker['name']" link="true" />
+				<option type="column" name="workerSurname" fields="worker"
+					expression="#worker['surname']" link="true" />
+				<option type="column" name="workerLaborHourlyCost" fields="worker"
+					expression="#worker['laborHourlyCost']" link="true" />
+				<option type="column" name="workerWageGroup" fields="worker"
+					expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')" />
+				<option type="order" column="workerNumber" direction="desc" />
+				<option type="searchable" value="workerNumber,workerName" />
+				<option type="orderable" value="workerNumber,workerName" />
+				<option type="paginable" value="false" />
+				<option type="fullscreen" value="true" />
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.avgLaborCostCalcForOrder.hooks.AvgLaborCostCalcForOrderDetailsHooks" method="enabledButtonForCopyNorms" />
+	</hooks>
+</view>

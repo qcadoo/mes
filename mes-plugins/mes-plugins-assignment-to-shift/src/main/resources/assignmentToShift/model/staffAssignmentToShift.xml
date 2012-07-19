@@ -15,6 +15,7 @@
 	</fields>
 	<hooks >
 		<onSave class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="setOccupationTypeForGridValue"/>
+		<onSave class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="setOccupationTypeEnum"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

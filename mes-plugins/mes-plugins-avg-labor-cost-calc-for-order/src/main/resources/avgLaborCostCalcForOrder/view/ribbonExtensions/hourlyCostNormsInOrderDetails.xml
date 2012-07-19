@@ -26,8 +26,8 @@
 -->
 <ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="orders"
-	view="technologyInstanceOperationComponentList">
+	plugin="costNormsForOperationInOrder"
+	view="hourlyCostNormsInOrderDetails">
 	
 	<group name="costsNorms">
 		<bigButton name="hourlyCostNorms" icon="copyIcon24.png"  state="enabled" action="#{form}.fireEvent(showCalculateForWorkerOnLine);" />
