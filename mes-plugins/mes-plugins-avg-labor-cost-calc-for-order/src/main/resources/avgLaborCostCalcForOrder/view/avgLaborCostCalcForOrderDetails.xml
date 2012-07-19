@@ -90,17 +90,17 @@
 			<component type="grid" name="assignmentWorkerToShifts"
 				reference="assignmentWorkerToShifts" source="#{form}.assignmentWorkerToShifts">
 				<option type="column" name="startDate" fields="assignmentToShift"
-					expression="#assignmentToShift['startDate']" link="true" />
+					expression="#assignmentToShift['startDate']"  />
 				<option type="column" name="shift" fields="assignmentToShift"
-					expression="#assignmentToShift['shift'].get('name')" link="true" />
+					expression="#assignmentToShift['shift'].get('name')"  />
 				<option type="column" name="workerNumber" fields="worker"
-					expression="#worker['number']" link="true" />
+					expression="#worker['number']"  />
 				<option type="column" name="workerName" fields="worker"
-					expression="#worker['name']" link="true" />
+					expression="#worker['name']"  />
 				<option type="column" name="workerSurname" fields="worker"
-					expression="#worker['surname']" link="true" />
+					expression="#worker['surname']"  />
 				<option type="column" name="workerLaborHourlyCost" fields="worker"
-					expression="#worker['laborHourlyCost']" link="true" />
+					expression="#worker['laborHourlyCost']"  />
 				<option type="column" name="workerWageGroup" fields="worker"
 					expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')" />
 				<option type="order" column="workerNumber" direction="desc" />
