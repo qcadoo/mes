@@ -41,4 +41,11 @@ public class ParameterHooksPC {
         parameter.setField("allowToClose", false);
 
     }
+
+    public void setDefaultParameterToProductionCounting(final DataDefinition dataDefinition, final Entity parameter) {
+        if (parameter.getStringField("typeOfProductionRecording") == null) {
+            parameter.setField("typeOfProductionRecording", "01basic");
+        }
+
+    }
 }
