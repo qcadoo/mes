@@ -16,7 +16,7 @@ public class MultitransferViewHooks {
 
     private static final List<String> COMPONENTS = Arrays.asList(TYPE, TIME);
 
-    public void makeAllFieldsRequired(final ViewDefinitionState view) {
+    public void makeFieldsRequired(final ViewDefinitionState view) {
         for (String componentRef : COMPONENTS) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(componentRef);
             component.setRequired(true);

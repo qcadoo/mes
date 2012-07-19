@@ -179,7 +179,7 @@
 		</model:model-hook>
 		
 		<model:model-hook model="parameter" plugin="basic">
-			<model:onCreate class="com.qcadoo.mes.basic.hooks.ParameterHookPC" method="setDefaultParameterToProductionCounting"/>
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setDefaultParameterToProductionCounting"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />

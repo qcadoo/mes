@@ -24,7 +24,6 @@
 package com.qcadoo.mes.basic;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PARAMETER;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,8 @@ public class ParameterService {
      */
     @Transactional
     public Entity getParameter() {
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER);
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PARAMETER);
         Entity parameter = dataDefinition.find().setMaxResults(1).uniqueResult();
         if (parameter == null) {
             parameter = createParameter(dataDefinition);
