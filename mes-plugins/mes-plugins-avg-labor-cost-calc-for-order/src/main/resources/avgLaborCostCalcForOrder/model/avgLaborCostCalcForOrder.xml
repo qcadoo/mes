@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="avgLaborCostCalcForOrder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<datetime name="startDate" />
+		<datetime name="finishDate" />
+		<belongsTo name="order" model="order" plugin="orders" />
+		<belongsTo name="productionLine" model="productionLine"
+			plugin="productionLines" />
+		<hasMany name="assignmentWorkerToShifts" joinField="avgLaborCostCalcForOrder"
+			model="assignmentWorkerToShift" />
+		<enum values="01assignment" name="basedOn" default="01assignment"/>
+		<decimal name="averageLaborHourlyCost" />
+	</fields>
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
+</model>

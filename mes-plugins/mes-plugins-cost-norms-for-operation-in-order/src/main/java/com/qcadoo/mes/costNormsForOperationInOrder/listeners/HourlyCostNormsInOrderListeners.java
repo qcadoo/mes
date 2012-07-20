@@ -20,7 +20,7 @@ public class HourlyCostNormsInOrderListeners {
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("order.id", orderId);
+        parameters.put("form.id", orderId);
 
         String url = "../page/costNormsForOperationInOrder/hourlyCostNormsInOrderDetails.html";
         viewState.redirectTo(url, false, true, parameters);

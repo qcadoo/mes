@@ -37,7 +37,7 @@ public class MultitransferViewHooksTest {
         given(view.getComponentByReference(TYPE)).willReturn(type);
 
         // when
-        multitransferViewHooks.makeAllFieldsRequired(view);
+        multitransferViewHooks.makeFieldsRequired(view);
 
         // then
         verify(time).setRequired(true);

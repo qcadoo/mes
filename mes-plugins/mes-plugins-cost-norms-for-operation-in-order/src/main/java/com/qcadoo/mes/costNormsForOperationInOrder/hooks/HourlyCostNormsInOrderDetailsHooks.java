@@ -23,7 +23,7 @@ public class HourlyCostNormsInOrderDetailsHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void setLastUpdateDateTioc(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("order");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
         Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
         List<Entity> tiocs = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)

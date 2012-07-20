@@ -46,4 +46,11 @@ public class StaffAssignmentToShiftHooks {
             entity.setField("occupationTypeValueForGrid", occupationType);
         }
     }
+
+    public void setOccupationTypeEnum(final DataDefinition dataDefinition, final Entity entity) {
+        String occupationType = entity.getStringField("occupationType");
+        Entity dictionaryItem = assignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType);
+        String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
+        entity.setField("occupationTypeEnum", technicalCode);
+    }
 }
