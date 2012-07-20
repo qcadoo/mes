@@ -21,5 +21,4 @@ public class ProductionRecordModelHooks {
     public void setInitialState(final DataDefinition dataDefinition, final Entity productionRecord) {
         stateChangeEntityBuilder.buildInitial(describer, productionRecord, ProductionRecordState.DRAFT);
     }
-
 }

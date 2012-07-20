@@ -55,6 +55,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -68,6 +69,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class ProductionRecordViewService {
@@ -122,6 +125,22 @@ public class ProductionRecordViewService {
     private StateChangeHistoryService stateChangeHistoryService;
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductionRecordViewService.class);
+
+    public void enabledOrDisabledCopyRibbon(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntity() == null) {
+            return;
+        }
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem copyButton = window.getRibbon().getGroupByName("actions").getItemByName("copy");
+
+        Entity tR = form.getEntity();
+        String orderState = tR.getBelongsToField("order").getStringField("state");
+        if (!OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+            copyButton.setEnabled(false);
+            copyButton.requestUpdate(true);
+        }
+    }
 
     public void initializeRecordDetailsView(final ViewDefinitionState view) {
         FormComponent recordForm = (FormComponent) view.getComponentByReference(L_FORM);

@@ -413,5 +413,10 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="filterStateChangeHistory" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			method="enabledOrDisabledCopyRibbon" />	
+			
+			
 	</hooks>
 </view>

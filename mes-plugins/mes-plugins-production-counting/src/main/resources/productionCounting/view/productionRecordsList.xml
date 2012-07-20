@@ -36,29 +36,50 @@
 			<script>
 			<![CDATA[ 
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var copyButton = #{window}.getRibbonItem("actions.copy");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							var deleteable = true;
+							var copyable = true;
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
+								copyButton.disable();
 							}else{
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
+									
 									if(selectedEntitiesArray[i].fields.state == "02accepted"){
 										deleteable = false;
 										break;
-									}
-								}
+									}}
+								
+								for (var i in selectedEntitiesArray) {
+									console.log(selectedEntitiesArray[i].fields);
+									
+									if(selectedEntitiesArray[i].fields.orderState != "03inProgress"){
+										copyable = false;
+										break;
+									}}
+								
 								if(deleteable == false){
 									deleteButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.delete)}");
 								}else{
 									deleteButton.enable();
 								}
+								
+								if(copyable == false){
+									copyButton.disable("#{translate(productionCounting.productionRecordsList.window.mainTab.productionRecordsList.grid.error.copy)}");
+								}else{
+									copyButton.enable();}
 							}
 						}
 					}
+
+					
 					this.addOnChangeListener(listener);
+					
+		
 				]]>
 				</script>
 			<option type="column" name="number" fields="number" link="true"
@@ -76,6 +97,8 @@
 				link="true" width="300" />
 			<option type="column" name="worker" fields="stateChanges" expression="#stateChanges[0].getField('worker')" link="true"
 				width="300" />
+			<option type="column" name="orderState" fields="order" hidden="true" 
+				expression="#order!=null ? #order['state'] : ''" />	
 			<option type="column" name="state" fields="state" reference="state" />
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
