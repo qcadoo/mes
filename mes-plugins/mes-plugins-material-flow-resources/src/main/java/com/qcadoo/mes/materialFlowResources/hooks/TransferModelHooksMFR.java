@@ -64,7 +64,7 @@ public class TransferModelHooksMFR {
         while (batchAlreadyExist(model, batch)) {
             parsedNumber++;
 
-            batch = String.format("%03d", parsedNumber);
+            batch = String.format("%06d", parsedNumber);
         }
 
         return batch;

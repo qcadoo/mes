@@ -388,7 +388,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             float[] columnWidths = { 1f, 1f, 0.5f, 1f, 1f, 1.5f };
             materialsTable.setWidths(columnWidths);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
 
         Entity technology;
@@ -674,7 +674,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTable.setWidths(columnWidths);
 
         } catch (DocumentException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
 
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
@@ -779,7 +779,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
             float[] columnWidths = { 1f, 0.75f, 1f, 1f, 1f, 1.25f };
             operationsTable.setWidths(columnWidths);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e.getMessage(), e);
         }
 
         if (!calculationOperationComponents.isEmpty()) {
