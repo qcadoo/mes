@@ -117,7 +117,6 @@ public class MaterialFlowService {
     private TimeConverterService timeConverterService;
 
     public BigDecimal calculateShouldBeInLocation(final Long locationId, final Long productId, final Date forDate) {
-
         BigDecimal countProductIn = BigDecimal.ZERO;
         BigDecimal countProductOut = BigDecimal.ZERO;
         BigDecimal countProduct = BigDecimal.ZERO;

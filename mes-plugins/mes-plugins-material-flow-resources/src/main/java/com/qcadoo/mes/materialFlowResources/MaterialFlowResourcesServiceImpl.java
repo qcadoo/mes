@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -84,7 +85,12 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
-    private void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
+    private boolean isTypeWarehouse(final String type) {
+        return ((type != null) && WAREHOUSE.getStringValue().equals(type));
+    }
+
+    @Override
+    public void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
             final String batch, final BigDecimal price) {
         Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).create();
@@ -99,7 +105,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         resource.getDataDefinition().save(resource);
     }
 
-    private void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity) {
+    @Override
+    public void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity) {
         List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
         if (resources != null) {
@@ -127,7 +134,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
-    private void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
+    @Override
+    public void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
             final Date time, final String batch, final BigDecimal price) {
         List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
@@ -161,7 +169,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
-    private List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product) {
+    public List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product) {
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(LOCATION, location)).add(SearchRestrictions.belongsTo(PRODUCT, product))
@@ -201,7 +209,35 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return resources;
     }
 
-    private boolean isTypeWarehouse(final String type) {
-        return ((type != null) && WAREHOUSE.getStringValue().equals(type));
+    @Override
+    public BigDecimal calculatePrice(final Entity location, final Entity product) {
+        if ((location != null) && (product != null)) {
+            List<Entity> resources = getResourcesForLocationAndProduct(location, product);
+
+            if (resources != null) {
+                BigDecimal avgPrice = BigDecimal.ZERO;
+                BigDecimal avgQuantity = BigDecimal.ZERO;
+
+                for (Entity resource : resources) {
+                    BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+                    BigDecimal price = resource.getDecimalField(ResourceFields.PRICE);
+
+                    if (price != null) {
+                        avgPrice = avgPrice.add(quantity.multiply(price, numberService.getMathContext()),
+                                numberService.getMathContext());
+                        avgQuantity = avgQuantity.add(quantity, numberService.getMathContext());
+                    }
+                }
+
+                if (!BigDecimal.ZERO.equals(avgPrice) && !BigDecimal.ZERO.equals(avgQuantity)) {
+                    avgPrice = avgPrice.divide(avgQuantity, numberService.getMathContext());
+
+                    return avgPrice;
+                }
+            }
+        }
+
+        return null;
     }
+
 }
