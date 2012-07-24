@@ -205,14 +205,14 @@ public class MultitransferListeners {
                 Entity product = productQuantity.getBelongsToField(PRODUCT);
 
                 if (product == null) {
-                    formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                            "materialFlowMultitransfers.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+                    formComponent.findFieldComponentByName(PRODUCT).addMessage("materialFlow.validate.global.error.fillRequired",
+                            MessageType.FAILURE);
 
                     isValid = false;
                 } else {
                     if (isProductAlreadyAdded(formComponents, product)) {
                         formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                                "materialFlowMultitransfers.multitransfer.validation.productAlreadyAdded", MessageType.FAILURE);
+                                "materialFlow.validate.global.error.productAlreadyAdded", MessageType.FAILURE);
 
                         isValid = false;
                     }
@@ -254,10 +254,10 @@ public class MultitransferListeners {
 
     public void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
             final Entity staff, final Entity product, final BigDecimal quantity, final BigDecimal price) {
-        DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+        DataDefinition transferDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
-        Entity transfer = dd.create();
+        Entity transfer = transferDD.create();
         String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
 
         transfer.setField(NUMBER, number);
@@ -270,7 +270,7 @@ public class MultitransferListeners {
         transfer.setField(QUANTITY, quantity);
         transfer.setField(PRICE, price);
 
-        checkArgument(dd.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
+        checkArgument(transferDD.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }
 
     private List<Entity> getTransferTemplates(final Entity locationFrom, final Entity locationTo) {
