@@ -353,7 +353,7 @@
 				<listener event="showOrderParameters" method="showOrderParameters"
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 				<listener event="save" class="com.qcadoo.mes.orders.OrderService"
-					method="compareDeadlineAndDateTo" />
+					method="compareDeadlineAndDateTo" />		
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">

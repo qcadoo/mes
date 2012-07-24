@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.aspectj.lang.annotation.After;
@@ -19,13 +20,14 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
-public class OrderEffectiveDateAspect extends AbstractStateListenerAspect {
+public class FillFieldsOnChangesStates extends AbstractStateListenerAspect {
 
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterStartProgress(final StateChangeContext stateChangeContext, final int phase) {
         stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
+        stateChangeContext.getOwner().setField(OrderFields.DONE_QUANTITY, BigDecimal.ZERO);
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)

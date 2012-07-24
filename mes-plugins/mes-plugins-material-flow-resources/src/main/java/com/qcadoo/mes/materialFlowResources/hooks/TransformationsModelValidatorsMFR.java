@@ -65,7 +65,8 @@ public class TransformationsModelValidatorsMFR {
             Entity product = transfer.getBelongsToField(PRODUCT);
             BigDecimal quantity = transfer.getDecimalField(QUANTITY);
 
-            if (CONSUMPTION.getStringValue().equals(type) && (locationFrom != null) && (product != null) && (quantity != null)
+            if ((type != null) && CONSUMPTION.getStringValue().equals(type) && (locationFrom != null) && (product != null)
+                    && (quantity != null)
                     && !materialFlowResourcesService.areResourcesSufficient(locationFrom, product, quantity)) {
                 appendErrorToModelField(transfer, QUANTITY,
                         "materialFlowResources.validate.global.error.resourcesArentSufficient");

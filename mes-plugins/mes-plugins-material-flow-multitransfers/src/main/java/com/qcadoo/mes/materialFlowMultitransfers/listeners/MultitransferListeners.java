@@ -82,23 +82,23 @@ public class MultitransferListeners {
             return;
         }
 
-        FieldComponent typeComponent = (FieldComponent) view.getComponentByReference(TYPE);
-        FieldComponent timeComponent = (FieldComponent) view.getComponentByReference(TIME);
-        FieldComponent locationFromComponent = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
-        FieldComponent locationToComponent = (FieldComponent) view.getComponentByReference(LOCATION_TO);
-        FieldComponent staffComponent = (FieldComponent) view.getComponentByReference(STAFF);
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
+        FieldComponent timeField = (FieldComponent) view.getComponentByReference(TIME);
+        FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
+        FieldComponent locationToField = (FieldComponent) view.getComponentByReference(LOCATION_TO);
+        FieldComponent staffField = (FieldComponent) view.getComponentByReference(STAFF);
 
-        typeComponent.requestComponentUpdateState();
-        timeComponent.requestComponentUpdateState();
-        locationToComponent.requestComponentUpdateState();
-        locationFromComponent.requestComponentUpdateState();
-        staffComponent.requestComponentUpdateState();
+        typeField.requestComponentUpdateState();
+        timeField.requestComponentUpdateState();
+        locationToField.requestComponentUpdateState();
+        locationFromField.requestComponentUpdateState();
+        staffField.requestComponentUpdateState();
 
-        String type = typeComponent.getFieldValue().toString();
-        Date time = timeConverterService.getDateFromField(timeComponent.getFieldValue());
-        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromComponent.getFieldValue());
-        Entity locationTo = materialFlowService.getLocationById((Long) locationToComponent.getFieldValue());
-        Entity staff = materialFlowService.getStaffById((Long) staffComponent.getFieldValue());
+        String type = typeField.getFieldValue().toString();
+        Date time = timeConverterService.getDateFromField(timeField.getFieldValue());
+        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
+        Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
+        Entity staff = materialFlowService.getStaffById((Long) staffField.getFieldValue());
 
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
 
@@ -205,14 +205,14 @@ public class MultitransferListeners {
                 Entity product = productQuantity.getBelongsToField(PRODUCT);
 
                 if (product == null) {
-                    formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                            "materialFlowMultitransfers.multitransfer.validation.fieldRequired", MessageType.FAILURE);
+                    formComponent.findFieldComponentByName(PRODUCT).addMessage("materialFlow.validate.global.error.fillRequired",
+                            MessageType.FAILURE);
 
                     isValid = false;
                 } else {
                     if (isProductAlreadyAdded(formComponents, product)) {
                         formComponent.findFieldComponentByName(PRODUCT).addMessage(
-                                "materialFlowMultitransfers.multitransfer.validation.productAlreadyAdded", MessageType.FAILURE);
+                                "materialFlow.validate.global.error.productAlreadyAdded", MessageType.FAILURE);
 
                         isValid = false;
                     }
@@ -233,30 +233,31 @@ public class MultitransferListeners {
     }
 
     private boolean isProductAlreadyAdded(final List<FormComponent> formComponents, final Entity product) {
-        if (product == null) {
-            return false;
-        }
-        int count = 0;
-        for (FormComponent formComponent : formComponents) {
-            Entity productQuantity = formComponent.getEntity();
-            Entity productAlreadyAdded = productQuantity.getBelongsToField(PRODUCT);
+        if ((formComponents != null) && (product != null)) {
+            int count = 0;
 
-            if (product.equals(productAlreadyAdded)) {
-                count++;
-                if (count > 1) {
-                    return true;
+            for (FormComponent formComponent : formComponents) {
+                Entity productQuantity = formComponent.getEntity();
+                Entity productAlreadyAdded = productQuantity.getBelongsToField(PRODUCT);
+
+                if (product.equals(productAlreadyAdded)) {
+                    count++;
+                    if (count > 1) {
+                        return true;
+                    }
                 }
             }
         }
+
         return false;
     }
 
     public void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
             final Entity staff, final Entity product, final BigDecimal quantity, final BigDecimal price) {
-        DataDefinition dd = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+        DataDefinition transferDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
-        Entity transfer = dd.create();
+        Entity transfer = transferDD.create();
         String number = materialFlowService.generateNumberFromProduct(product, MaterialFlowConstants.MODEL_TRANSFER);
 
         transfer.setField(NUMBER, number);
@@ -269,7 +270,7 @@ public class MultitransferListeners {
         transfer.setField(QUANTITY, quantity);
         transfer.setField(PRICE, price);
 
-        checkArgument(dd.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
+        checkArgument(transferDD.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }
 
     private List<Entity> getTransferTemplates(final Entity locationFrom, final Entity locationTo) {

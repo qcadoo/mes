@@ -59,33 +59,35 @@ public class TransformationsModelValidators {
     private boolean checkIfTransfersAreValid(final List<Entity> transfers) {
         boolean isValid = true;
 
-        for (Entity transfer : transfers) {
-            String number = transfer.getStringField(NUMBER);
-            Entity product = transfer.getBelongsToField(PRODUCT);
-            BigDecimal quantity = transfer.getDecimalField(QUANTITY);
+        if (transfers != null) {
+            for (Entity transfer : transfers) {
+                String number = transfer.getStringField(NUMBER);
+                Entity product = transfer.getBelongsToField(PRODUCT);
+                BigDecimal quantity = transfer.getDecimalField(QUANTITY);
 
-            if ((number == null) || number.isEmpty()) {
-                appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.fillRequired");
-
-                isValid = false;
-            }
-
-            if (product == null) {
-                appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.fillRequired");
-
-                isValid = false;
-            } else {
-                if (isProductAlreadyAdded(transfers, product)) {
-                    appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.productAlreadyAdded");
+                if ((number == null) || number.isEmpty()) {
+                    appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.fillRequired");
 
                     isValid = false;
                 }
-            }
 
-            if (quantity == null) {
-                appendErrorToModelField(transfer, QUANTITY, "materialFlow.validate.global.error.fillRequired");
+                if (product == null) {
+                    appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.fillRequired");
 
-                isValid = false;
+                    isValid = false;
+                } else {
+                    if (isProductAlreadyAdded(transfers, product)) {
+                        appendErrorToModelField(transfer, PRODUCT, "materialFlow.validate.global.error.productAlreadyAdded");
+
+                        isValid = false;
+                    }
+                }
+
+                if (quantity == null) {
+                    appendErrorToModelField(transfer, QUANTITY, "materialFlow.validate.global.error.fillRequired");
+
+                    isValid = false;
+                }
             }
         }
 
@@ -96,16 +98,19 @@ public class TransformationsModelValidators {
             final List<Entity> transfersProduction) {
         boolean isValid = true;
 
-        for (Entity transfer : transfersConsumption) {
-            if (transfer.getId() == null) {
-                String number = transfer.getStringField(NUMBER);
+        if (transfersConsumption != null) {
+            for (Entity transfer : transfersConsumption) {
+                if (transfer.getId() == null) {
+                    String number = transfer.getStringField(NUMBER);
 
-                if ((number != null)
-                        && (((isNumberAlreadyUsed(transfersConsumption, number) + isNumberAlreadyUsed(transfersProduction, number)) > 1) || materialFlowService
-                                .numberAlreadyExist(MaterialFlowConstants.MODEL_TRANSFER, number))) {
-                    appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.numberAlreadyUsed");
+                    if ((number != null)
+                            && (((isNumberAlreadyUsed(transfersConsumption, number) + isNumberAlreadyUsed(transfersProduction,
+                                    number)) > 1) || materialFlowService.numberAlreadyExist(MaterialFlowConstants.MODEL_TRANSFER,
+                                    number))) {
+                        appendErrorToModelField(transfer, NUMBER, "materialFlow.validate.global.error.numberAlreadyUsed");
 
-                    isValid = false;
+                        isValid = false;
+                    }
                 }
             }
         }
@@ -114,20 +119,18 @@ public class TransformationsModelValidators {
     }
 
     private boolean isProductAlreadyAdded(final List<Entity> transfers, final Entity product) {
-        if (product == null) {
-            return false;
-        }
+        if ((transfers != null) && (product != null)) {
+            int count = 0;
 
-        int count = 0;
+            for (Entity transfer : transfers) {
+                Entity productAlreadyAdded = transfer.getBelongsToField(PRODUCT);
 
-        for (Entity transfer : transfers) {
-            Entity productAlreadyAdded = transfer.getBelongsToField(PRODUCT);
+                if (product.equals(productAlreadyAdded)) {
+                    count++;
 
-            if (product.equals(productAlreadyAdded)) {
-                count++;
-
-                if (count > 1) {
-                    return true;
+                    if (count > 1) {
+                        return true;
+                    }
                 }
             }
         }
@@ -136,25 +139,23 @@ public class TransformationsModelValidators {
     }
 
     private int isNumberAlreadyUsed(final List<Entity> transfers, final String number) {
-        if (number == null) {
-            return 0;
-        }
+        if ((transfers != null) && (number != null)) {
+            int count = 0;
 
-        int count = 0;
+            for (Entity transfer : transfers) {
+                String numberAlreadyUsed = transfer.getStringField(NUMBER);
 
-        for (Entity transfer : transfers) {
-            String numberAlreadyUsed = transfer.getStringField(NUMBER);
+                if (number.equals(numberAlreadyUsed)) {
+                    count++;
 
-            if (number.equals(numberAlreadyUsed)) {
-                count++;
-
-                if (count > 1) {
-                    return count;
+                    if (count > 0) {
+                        return count;
+                    }
                 }
             }
         }
 
-        return count;
+        return 0;
     }
 
     private void appendErrorToModelField(final Entity entity, final String fieldName, final String messageKey) {
