@@ -78,6 +78,10 @@ public final class SamplesConstants {
 
     public static final String PRODUCTION_COUNTING_PLUGIN_IDENTIFIER = "productionCounting";
 
+    public static final String WAGE_GROUPS_PLUGIN_IDENTIFIER = "wageGroups";
+
+    public static final String WAGE_GROUPS_MODEL_IDENTIFIER = "wageGroup";
+
     public static final String RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT = "recordOperationProductInComponent";
 
     public static final String RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT = "recordOperationProductOutComponent";
@@ -357,5 +361,9 @@ public final class SamplesConstants {
     public static final String L_1600 = "1600";
 
     public static final String L_2400 = "2400";
+
+    public static final String L_WAGE_GROUP = "wageGroup";
+
+    public static final String L_LABOR_HOURLY_COST = "laborHourlyCost";
 
 }

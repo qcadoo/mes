@@ -40,4 +40,6 @@
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Production resources overload" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Machine malfunction" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Other" DESCRIPTION="" />
+    <row NAME="superiorWageGroups" ITEM="FLT" DESCRIPTION="Full time" />
+ 	<row NAME="superiorWageGroups" ITEM="JOB" DESCRIPTION="Jobbing" />
 </dictionaries>

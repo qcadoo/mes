@@ -49,6 +49,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EAN;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_FILE_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABLES;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENERATED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_HOURLY_COST;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_TIME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LAST_RECORD;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION;
@@ -94,6 +95,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRACKING_RECOR
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFORMATIONS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WAGE_GROUP;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPES;
@@ -113,6 +115,8 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_STATE_ACCEPTED;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TRACKING_RECORD_STATE_DRAFT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_MODEL_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_PLUGIN_IDENTIFIER;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -239,6 +243,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
+        if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_WAGE_GROUP, locale);
+        }
     }
 
     // FIXME MAKU we still need it?
@@ -314,6 +321,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addProductionCounting(values);
         } else if (L_PRODUCTION_BALANCE.equals(type)) {
             addProductionBalance(values);
+        } else if (L_WAGE_GROUP.equals(type)) {
+            addWageGroups(values);
         }
     }
 
@@ -375,7 +384,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
             operation.setField("machineHourlyCost", values.get("machinehourlycost"));
-            operation.setField("laborHourlyCost", values.get("laborhourlycost"));
+            operation.setField(L_LABOR_HOURLY_COST, values.get(L_LABOR_HOURLY_COST));
             operation.setField("numberOfOperations", values.get("numberofoperations"));
         }
 
@@ -880,7 +889,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (isEnabledOrEnabling("costNormsForOperation")) {
             component.setField("pieceworkCost", operation.getField("pieceworkCost"));
             component.setField("machineHourlyCost", operation.getField("machineHourlyCost"));
-            component.setField("laborHourlyCost", operation.getField("laborHourlyCost"));
+            component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
         component = techOperCompDD.save(component);
@@ -1089,6 +1098,21 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         qualitycontrol.getDataDefinition().save(qualitycontrol);
+    }
+
+    private void addWageGroups(final Map<String, String> values) {
+        Entity wageGroups = dataDefinitionService.get(WAGE_GROUPS_PLUGIN_IDENTIFIER, WAGE_GROUPS_MODEL_IDENTIFIER).create();
+        wageGroups.setField(L_NUMBER, values.get(L_NUMBER));
+        wageGroups.setField(L_NAME, values.get(L_NAME));
+        wageGroups.setField("superiorWageGroup", values.get("superior_wage_group"));
+        wageGroups.setField(L_LABOR_HOURLY_COST, values.get("labor_hourly_cost"));
+
+        Entity currency = dataDefinitionService
+                .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
+                .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).uniqueResult();
+        wageGroups.setField("laborHourlyCostCURRENCY", currency);
+        wageGroups.getDataDefinition().save(wageGroups);
+
     }
 
     private Entity getRandomStaff() {

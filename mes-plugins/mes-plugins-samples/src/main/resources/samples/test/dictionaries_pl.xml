@@ -40,4 +40,6 @@
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Przeciążenia zasobów produkcji" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Awaria maszyny" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Inne" DESCRIPTION="" />
+ 	<row NAME="superiorWageGroups" ITEM="PNE" DESCRIPTION="Pełnoetatowi" />
+ 	<row NAME="superiorWageGroups" ITEM="WYN" DESCRIPTION="Wynajmowani" />
 </dictionaries>
