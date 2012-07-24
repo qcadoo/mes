@@ -70,5 +70,4 @@ public class OrderStateReasonViewListeners {
         final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference("reasonType");
         reasonTypeField.setRequired(form.getEntity().getBooleanField(REASON_REQUIRED));
     }
-
 }
