@@ -60,7 +60,7 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     private XlsHelper xlsHelper;
 
     @Override
-    protected void addHeader(final HSSFSheet sheet, final Locale locale) {
+    protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity entity) {
         HSSFRow header = sheet.createRow(0);
         HSSFCell cell0 = header.createCell(0);
         cell0.setCellValue(translationService.translate("materialFlow.materialFlow.report.columnHeader.number", locale));
@@ -98,4 +98,5 @@ public final class MaterialFlowXlsService extends XlsDocumentService {
     public String getReportTitle(final Locale locale) {
         return translationService.translate("materialFlow.materialFlow.report.title", locale);
     }
+
 }
