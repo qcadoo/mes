@@ -14,4 +14,6 @@ public final class ProgressForDayFields {
 
     public static final String CORRECTED = "corrected";
 
+    public static final String DATE_OF_DAY = "dateOfDay";
+
 }

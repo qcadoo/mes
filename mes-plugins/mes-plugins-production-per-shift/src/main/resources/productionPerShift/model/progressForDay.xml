@@ -7,6 +7,9 @@
 		<integer name="day" />
 		<hasMany name="dailyProgress" joinField="progressForDay" model="dailyProgress" cascade="delete" copyable="true"/> 
 		<boolean name="corrected" default="false" />
+		<date name="dateOfDay"/>
 	</fields>
-	<hooks />
+	<hooks >
+	    <onSave class="com.qcadoo.mes.productionPerShift.hooks.ProgressForDayHooks" method="saveDateOfDay"/>
+	    </hooks>
 </model>
