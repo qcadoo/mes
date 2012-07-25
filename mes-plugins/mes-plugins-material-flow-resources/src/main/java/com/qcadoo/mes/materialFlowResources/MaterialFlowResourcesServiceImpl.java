@@ -245,6 +245,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    @Override
     public String generateBatchForTransfer(final String model) {
         String batch = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model);
 
@@ -259,7 +260,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return batch;
     }
 
-    private boolean batchAlreadyExist(final String model, final String batch) {
+    @Override
+    public boolean batchAlreadyExist(final String model, final String batch) {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
                 .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
     }

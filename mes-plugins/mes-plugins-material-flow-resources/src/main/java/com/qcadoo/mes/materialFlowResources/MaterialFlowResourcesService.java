@@ -29,4 +29,6 @@ public interface MaterialFlowResourcesService {
 
     String generateBatchForTransfer(final String model);
 
+    boolean batchAlreadyExist(final String model, final String batch);
+
 }

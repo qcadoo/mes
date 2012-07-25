@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlow.listeners;
 
+import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
@@ -74,8 +75,7 @@ public class TransformationsListeners {
                 String number = transfer.getStringField(NUMBER);
 
                 if ((product != null) && ((number == null) || !number.contains(product.getStringField(NUMBER)))) {
-                    number = generateNumberForTransfer(product, MaterialFlowConstants.MODEL_TRANSFER, consumptionComponents,
-                            productionComponents);
+                    number = generateNumberForTransfer(product, MODEL_TRANSFER, consumptionComponents, productionComponents);
 
                     transfer.setField(NUMBER, number);
                 }
@@ -85,8 +85,7 @@ public class TransformationsListeners {
         }
     }
 
-    public void fillProductionAndConsumption(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void fillProductionAndConsumption(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent operationComponent = (FieldComponent) view.getComponentByReference(OPERATION);
 
         Object operationComponentValue = operationComponent.getFieldValue();
@@ -204,7 +203,7 @@ public class TransformationsListeners {
         }
 
         for (Entity transfer : transfers) {
-            if (transfer.getStringField(NUMBER).equals(number)) {
+            if (number.equals(transfer.getStringField(NUMBER))) {
                 return true;
             }
         }
@@ -220,7 +219,7 @@ public class TransformationsListeners {
         for (FormComponent formComponent : formComponents) {
             Entity transfer = formComponent.getEntity();
 
-            if ((transfer != null) && transfer.getStringField(NUMBER).equals(number)) {
+            if ((transfer != null) && number.equals(transfer.getStringField(NUMBER))) {
                 return true;
             }
         }
