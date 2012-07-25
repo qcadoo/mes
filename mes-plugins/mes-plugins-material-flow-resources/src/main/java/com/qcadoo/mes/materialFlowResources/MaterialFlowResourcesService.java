@@ -26,4 +26,7 @@ public interface MaterialFlowResourcesService {
             final Date time, final String batch, final BigDecimal price);
 
     BigDecimal calculatePrice(final Entity location, final Entity product);
+
+    String generateBatchForTransfer(final String model);
+
 }

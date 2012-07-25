@@ -23,56 +23,30 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.BATCH;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class TransferModelHooksMFR {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void generateBatch(final DataDefinition transferDD, final Entity transfer) {
-        transfer.setField(BATCH, generateBatchForTransfer(MaterialFlowConstants.MODEL_TRANSFER));
+        if (transfer.getField(BATCH) == null) {
+            transfer.setField(BATCH, materialFlowResourcesService.generateBatchForTransfer(MODEL_TRANSFER));
+        }
     }
 
     public void manageResources(final DataDefinition transferDD, final Entity transfer) {
         materialFlowResourcesService.manageResources(transfer);
-    }
-
-    private String generateBatchForTransfer(final String model) {
-        String batch = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model);
-
-        Long parsedNumber = Long.parseLong(batch);
-
-        while (batchAlreadyExist(model, batch)) {
-            parsedNumber++;
-
-            batch = String.format("%06d", parsedNumber);
-        }
-
-        return batch;
-    }
-
-    public boolean batchAlreadyExist(final String model, final String batch) {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
-                .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
     }
 
 }
