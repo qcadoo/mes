@@ -31,7 +31,7 @@
 		
 		<aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
 		<aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateChangeReasonAspect" />
-		<aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStates" />
+		<aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStatesAspect" />
 		
 		<aspect name="com.qcadoo.mes.orders.states.aop.listener.TechnologyStateChangeListenerAspect" />
 	</aspects>
