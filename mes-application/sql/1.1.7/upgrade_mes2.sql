@@ -425,3 +425,91 @@ ALTER TABLE materialflowresources_resource ALTER COLUMN price SET DEFAULT 0::num
 ALTER TABLE materialflowresources_resource ADD COLUMN batch character varying(255);
 
 -- end
+
+
+-- Table: productionpershift_productionpershift
+-- changed: 26.07.2012
+
+CREATE TABLE productionpershift_productionpershift
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  plannedprogresscorrectiontype character varying(255),
+  plannedprogresscorrectioncomment text,
+  CONSTRAINT productionpershift_productionpershift_pkey PRIMARY KEY (id),
+  CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order DEFERRABLE
+)
+--end 
+
+-- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
+-- changed: 26.07.2012
+
+CREATE TABLE productionpershift_progressforday
+(
+  id bigint NOT NULL,
+  technologyinstanceoperationcomponent_id bigint,
+  "day" integer,
+  corrected boolean DEFAULT false,
+  dateofday date,
+  CONSTRAINT productionpershift_progressforday_pkey PRIMARY KEY (id),
+  CONSTRAINT technologies_technologyinstanceoperationcomponent_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
+      REFERENCES technologies_technologyinstanceoperationcomponent DEFERRABLE
+)
+--end 
+
+-- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
+-- changed: 26.07.2012
+
+CREATE TABLE productionpershift_dailyprogress
+(
+  id bigint NOT NULL,
+  progressforday_id bigint,
+  shift_id bigint,
+  quantity numeric(12,5),
+  CONSTRAINT productionpershift_dailyprogress_pkey PRIMARY KEY (id),
+  CONSTRAINT basic_shift_fkey FOREIGN KEY DEFERRABLE,
+  CONSTRAINT productionpershift_progressforday_fkey FOREIGN KEY (progressforday_id)
+      REFERENCES productionpershift_progressforday DEFERRABLE
+)
+--end 
+
+-- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
+-- changed: 26.07.2012
+
+CREATE TABLE avglaborcostcalcfororder_avglaborcostcalcfororder
+(
+  id bigint NOT NULL,
+  startdate timestamp without time zone,
+  finishdate timestamp without time zone,
+  order_id bigint,
+  productionline_id bigint,
+  basedon character varying(255) DEFAULT '01assignment'::character varying,
+  averagelaborhourlycost numeric(12,5),
+  CONSTRAINT avglaborcostcalcfororder_avglaborcostcalcfororder_pkey PRIMARY KEY (id),
+  CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline DEFERRABLE,
+  CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order DEFERRABLE
+)
+--end 
+
+-- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
+-- changed: 26.07.2012
+
+CREATE TABLE avglaborcostcalcfororder_assignmentworkertoshift
+(
+  id bigint NOT NULL,
+  worker_id bigint,
+  assignmenttoshift_id bigint,
+  avglaborcostcalcfororder_id bigint,
+  CONSTRAINT avglaborcostcalcfororder_assignmentworkertoshift_pkey PRIMARY KEY (id),
+  CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id)
+      REFERENCES basic_staff DEFERRABLE,
+  CONSTRAINT avglaborcostcalcfororder_avglaborcostcalcfororder_fkey FOREIGN KEY (avglaborcostcalcfororder_id)
+      REFERENCES avglaborcostcalcfororder_avglaborcostcalcfororder DEFERRABLE,
+  CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
+      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
+)
+
+-- end
