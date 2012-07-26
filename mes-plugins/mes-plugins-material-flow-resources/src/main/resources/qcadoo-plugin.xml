@@ -68,7 +68,7 @@
 		</model:model-field>
 		
 		<model:model-field plugin="materialFlow" model="transfer">
-			<model:string name="batch" required="true" unique="true" />
+			<model:string name="batch" required="true" />
 		</model:model-field>
 		
 		<model:model-enum-value plugin="materialFlow"
