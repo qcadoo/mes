@@ -269,7 +269,7 @@ CREATE TABLE wagegroups_wagegroup
   determinedindividually boolean,
   individuallaborhourlycost numeric(12,5),
   laborhourlycost numeric(12,5),
-  laborhourlycostunit character varying(255),
+  laborhourlycostcurrency character varying(255),
   CONSTRAINT wagegroups_wagegroup_pkey PRIMARY KEY (id)
 );
 
@@ -343,14 +343,13 @@ CREATE TABLE assignmenttoshift_assignmenttoshiftstatechange
   additionalinformation character varying(255),
   CONSTRAINT assignmenttoshift_assignmenttoshiftstatechange_pkey PRIMARY KEY (id),
   CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
-      REFERENCES basic_shift DEFERRABLE,
+      REFERENCES basic_shift  (id) DEFERRABLE,
   CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
-      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
+      REFERENCES assignmenttoshift_assignmenttoshift (id)
+       DEFERRABLE
 );
 
 -- end
-
-
 -- Table: assignmenttoshift_staffassignmenttoshift
 -- changed: 11.07.2012
 
@@ -367,11 +366,11 @@ CREATE TABLE assignmenttoshift_staffassignmenttoshift
   occupationtypevalueforgrid character varying(255),
   CONSTRAINT assignmenttoshift_staffassignmenttoshift_pkey PRIMARY KEY (id),
   CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id)
-      REFERENCES basic_staff DEFERRABLE,
+      REFERENCES basic_staff (id) DEFERRABLE,
   CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline DEFERRABLE,
+      REFERENCES productionlines_productionline  (id) DEFERRABLE,
   CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
-      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
+      REFERENCES assignmenttoshift_assignmenttoshift  (id) DEFERRABLE
 );
 
 -- end 
@@ -427,53 +426,6 @@ ALTER TABLE materialflowresources_resource ADD COLUMN batch character varying(25
 -- end
 
 
--- Table: productionpershift_productionpershift
--- changed: 26.07.2012
-
-CREATE TABLE productionpershift_productionpershift
-(
-  id bigint NOT NULL,
-  order_id bigint,
-  plannedprogresscorrectiontype character varying(255),
-  plannedprogresscorrectioncomment text,
-  CONSTRAINT productionpershift_productionpershift_pkey PRIMARY KEY (id),
-  CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
-      REFERENCES orders_order DEFERRABLE
-)
---end 
-
--- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
--- changed: 26.07.2012
-
-CREATE TABLE productionpershift_progressforday
-(
-  id bigint NOT NULL,
-  technologyinstanceoperationcomponent_id bigint,
-  "day" integer,
-  corrected boolean DEFAULT false,
-  dateofday date,
-  CONSTRAINT productionpershift_progressforday_pkey PRIMARY KEY (id),
-  CONSTRAINT technologies_technologyinstanceoperationcomponent_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
-      REFERENCES technologies_technologyinstanceoperationcomponent DEFERRABLE
-)
---end 
-
--- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
--- changed: 26.07.2012
-
-CREATE TABLE productionpershift_dailyprogress
-(
-  id bigint NOT NULL,
-  progressforday_id bigint,
-  shift_id bigint,
-  quantity numeric(12,5),
-  CONSTRAINT productionpershift_dailyprogress_pkey PRIMARY KEY (id),
-  CONSTRAINT basic_shift_fkey FOREIGN KEY DEFERRABLE,
-  CONSTRAINT productionpershift_progressforday_fkey FOREIGN KEY (progressforday_id)
-      REFERENCES productionpershift_progressforday DEFERRABLE
-)
---end 
-
 -- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
 -- changed: 26.07.2012
 
@@ -488,10 +440,10 @@ CREATE TABLE avglaborcostcalcfororder_avglaborcostcalcfororder
   averagelaborhourlycost numeric(12,5),
   CONSTRAINT avglaborcostcalcfororder_avglaborcostcalcfororder_pkey PRIMARY KEY (id),
   CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline DEFERRABLE,
+      REFERENCES productionlines_productionline  (id) DEFERRABLE,
   CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
-      REFERENCES orders_order DEFERRABLE
-)
+      REFERENCES orders_order  (id) DEFERRABLE
+);
 --end 
 
 -- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -505,11 +457,23 @@ CREATE TABLE avglaborcostcalcfororder_assignmentworkertoshift
   avglaborcostcalcfororder_id bigint,
   CONSTRAINT avglaborcostcalcfororder_assignmentworkertoshift_pkey PRIMARY KEY (id),
   CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id)
-      REFERENCES basic_staff DEFERRABLE,
+      REFERENCES basic_staff  (id) DEFERRABLE,
   CONSTRAINT avglaborcostcalcfororder_avglaborcostcalcfororder_fkey FOREIGN KEY (avglaborcostcalcfororder_id)
-      REFERENCES avglaborcostcalcfororder_avglaborcostcalcfororder DEFERRABLE,
+      REFERENCES avglaborcostcalcfororder_avglaborcostcalcfororder  (id) DEFERRABLE,
   CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id)
-      REFERENCES assignmenttoshift_assignmenttoshift DEFERRABLE
-)
+      REFERENCES assignmenttoshift_assignmenttoshift  (id) DEFERRABLE
+);
 
+-- end
+
+-- Table: basic_parameter
+-- changed: 26.07.2012
+ALTER TABLE basic_parameter ADD COLUMN unit character varying(255);
+
+-- end
+
+-- Table: productionpershift_progressforday
+-- changed: 26.07.2012
+
+ALTER TABLE productionpershift_progressforday ADD COLUMN dateofday date;
 -- end
