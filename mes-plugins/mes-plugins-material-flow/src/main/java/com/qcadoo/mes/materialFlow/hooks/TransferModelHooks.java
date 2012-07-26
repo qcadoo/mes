@@ -42,25 +42,25 @@ import com.qcadoo.model.api.Entity;
 public class TransferModelHooks {
 
     public void copyProductionOrConsumptionDataFromBelongingTransformation(final DataDefinition dd, final Entity transfer) {
-        Entity transformation = transfer.getBelongsToField(TRANSFORMATIONS_PRODUCTION);
+        Entity transformations = transfer.getBelongsToField(TRANSFORMATIONS_PRODUCTION);
 
-        if (transformation == null) {
-            transformation = transfer.getBelongsToField(TRANSFORMATIONS_CONSUMPTION);
+        if (transformations == null) {
+            transformations = transfer.getBelongsToField(TRANSFORMATIONS_CONSUMPTION);
 
-            if (transformation == null) {
+            if (transformations == null) {
                 // came here from plain transfer detail view
                 return;
             } else {
                 transfer.setField(TYPE, CONSUMPTION.getStringValue());
-                transfer.setField(LOCATION_FROM, transformation.getBelongsToField(LOCATION_FROM));
+                transfer.setField(LOCATION_FROM, transformations.getBelongsToField(LOCATION_FROM));
             }
         } else {
             transfer.setField(TYPE, PRODUCTION.getStringValue());
-            transfer.setField(LOCATION_TO, transformation.getBelongsToField(LOCATION_TO));
+            transfer.setField(LOCATION_TO, transformations.getBelongsToField(LOCATION_TO));
         }
 
-        transfer.setField(TIME, transformation.getField(TIME));
-        transfer.setField(STAFF, transformation.getBelongsToField(STAFF));
+        transfer.setField(TIME, transformations.getField(TIME));
+        transfer.setField(STAFF, transformations.getBelongsToField(STAFF));
     }
 
 }

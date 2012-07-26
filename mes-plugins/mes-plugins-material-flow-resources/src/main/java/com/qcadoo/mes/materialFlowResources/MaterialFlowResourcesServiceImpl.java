@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
@@ -36,6 +38,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     @Override
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
@@ -238,6 +243,27 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
 
         return null;
+    }
+
+    @Override
+    public String generateBatchForTransfer(final String model) {
+        String batch = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model);
+
+        Long parsedNumber = Long.parseLong(batch);
+
+        while (batchAlreadyExist(model, batch)) {
+            parsedNumber++;
+
+            batch = String.format("%06d", parsedNumber);
+        }
+
+        return batch;
+    }
+
+    @Override
+    public boolean batchAlreadyExist(final String model, final String batch) {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
+                .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
     }
 
 }
