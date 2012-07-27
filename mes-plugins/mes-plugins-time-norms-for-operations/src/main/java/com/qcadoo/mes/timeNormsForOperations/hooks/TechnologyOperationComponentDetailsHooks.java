@@ -55,6 +55,9 @@ public class TechnologyOperationComponentDetailsHooks {
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
 
         Entity operationComponent = form.getEntity();
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
