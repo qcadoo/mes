@@ -16,5 +16,7 @@ public final class StaffAssignmentToShiftFields {
 
     public static final String OCCUPATION_TYPE_NAME = "occupationTypeName";
 
+    public static final String OCCUPATION_TYPE_ENUM = "occupationTypeEnum";
+
     public static final String STATE = "state";
 }

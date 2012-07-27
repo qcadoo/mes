@@ -34,6 +34,10 @@
 			<version>[1.1.7</version>
 		</dependency>
 		<dependency>
+			<plugin>productionLines</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+		<dependency>
 			<plugin>states</plugin>
 			<version>[1.1.7</version>
 		</dependency>
@@ -47,6 +51,7 @@
 		<model:model model="assignmentToShift" resource="model/assignmentToShift.xml" />
 		<model:model model="staffAssignmentToShift" resource="model/staffAssignmentToShift.xml" />
 		<model:model model="assignmentToShiftStateChange" resource="model/assignmentToShiftStateChange.xml" />
+		<model:model model="assignmentToShiftReport" resource="model/assignmentToShiftReport.xml" />
 		
 		<model:model-field plugin="states" model="message">
 		    <model:belongsTo name="assignmentToShiftStateChange" plugin="assignmentToShift" model="assignmentToShiftStateChange" />
@@ -55,10 +60,14 @@
 		<menu:menu-category name="orders" />
 		<menu:menu-item name="assignmentToShift" category="orders"
 			view="assignmentToShiftList" />
+		<menu:menu-item name="assignmentToShiftReportList" category="orders"
+			view="assignmentToShiftReportList" />
 
 		<view:view resource="view/assignmentToShiftList.xml" />
+		<view:view resource="view/assignmentToShiftReportList.xml" />
 		<view:view resource="view/assignmentToShiftDetails.xml" />
 		<view:view resource="view/staffAssignmentToShiftDetails.xml" />
+		<view:view resource="view/assignmentToShiftReportDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 
