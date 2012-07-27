@@ -34,19 +34,25 @@
 			product.name AS basic_product_name,
 			(
 				SELECT 
-					logging.worker AS startWorker 
+					stateChange.worker AS startWorker 
 				FROM 
-					orders.loggings AS logging
+					orders.stateChanges AS stateChange
 				WHERE
-					logging.previousState = '02accepted' AND logging.currentState = '03inProgress'
+					stateChange.sourceState = '02accepted' 
+					AND 
+					stateChange.targetState = '03inProgress' 
+					AND 
+					stateChange.status = '03successful'
 			) AS orders_order_startworker,
 			(
 				SELECT 
-					logging.worker AS endWorker 
+					stateChange.worker AS endWorker 
 				FROM 
-					orders.loggings AS logging
+					orders.stateChanges AS stateChange
 				WHERE
-					logging.currentState = '04completed'
+					stateChange.targetState = '04completed' 
+					AND 
+					stateChange.status = '03successful'
 			) AS orders_order_endworker
 			FROM 
 			com.qcadoo.model.beans.basic.BasicCompany AS company, 
