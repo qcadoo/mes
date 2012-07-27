@@ -130,7 +130,9 @@ public class ProductionPerShiftDetailsHooks {
                 unit.setFieldValue(prod.getStringField(UNIT));
                 unit.requestComponentUpdateState();
             }
+            dailyProgressADL.requestComponentUpdateState();
         }
+        progressForDaysADL.requestComponentUpdateState();
     }
 
     public void setOrderStartDate(final ViewDefinitionState view) {
@@ -233,6 +235,7 @@ public class ProductionPerShiftDetailsHooks {
         boolean shouldDisabled = helper.shouldHasCorrections(viewState)
                 || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue());
         progressForDaysADL.setEnabled(shouldDisabled);
+        progressForDaysADL.requestComponentUpdateState();
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
             ((FieldComponent) form.findFieldComponentByName("day")).setEnabled(shouldDisabled);
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
@@ -277,10 +280,10 @@ public class ProductionPerShiftDetailsHooks {
                 .add(SearchRestrictions.belongsTo("order", order))
                 .add(SearchRestrictions.eq(TechInstOperCompFields.HAS_CORRECTIONS, true)).list().getEntities();
         FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
-        if (tiocWithCorrectedPlan != null && !tiocWithCorrectedPlan.isEmpty()) {
-            wasItCorrected.setFieldValue(true);
-        } else {
+        if (tiocWithCorrectedPlan.isEmpty()) {
             wasItCorrected.setFieldValue(false);
+        } else {
+            wasItCorrected.setFieldValue(true);
         }
         wasItCorrected.requestComponentUpdateState();
     }

@@ -131,7 +131,7 @@ public class ProductionPerShiftListeners {
                 }
             }
             if (componentState.isHasError()) {
-                componentState.performEvent(viewState, "reset", new String[0]);
+                componentState.performEvent(viewState, "initialize", new String[0]);
             } else {
                 componentState.performEvent(viewState, "save");
             }
