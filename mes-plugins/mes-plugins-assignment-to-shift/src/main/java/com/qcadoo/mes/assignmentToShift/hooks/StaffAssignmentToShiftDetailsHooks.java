@@ -25,9 +25,9 @@ public class StaffAssignmentToShiftDetailsHooks {
         FieldComponent occupationType = (FieldComponent) view.getComponentByReference("occupationType");
         Entity dictionaryItem = findDictionaryItemByName(occupationType.getFieldValue().toString());
         String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
-        if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.WORK_ON_LINE)) {
+        if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.WORK_ON_LINE.getStringValue())) {
             setFieldsEnabled(view, true, false);
-        } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE)) {
+        } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE.getStringValue())) {
             setFieldsEnabled(view, false, true);
         } else {
             setFieldsEnabled(view, false, false);

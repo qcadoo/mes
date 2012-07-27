@@ -26,7 +26,7 @@ public class StaffAssignmentToShiftHooks {
         String occupationType = entity.getStringField("occupationType");
         Entity dictionaryItem = assignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType);
         String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
-        if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.WORK_ON_LINE)) {
+        if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.WORK_ON_LINE.getStringValue())) {
             if (entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE) == null) {
                 entity.addError(dataDefinition.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
                         "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");
@@ -39,7 +39,7 @@ public class StaffAssignmentToShiftHooks {
                             + translationService.translate("assignmentToShift.staffAssignmentToShift.workOnLine.lineNumber",
                                     Locale.getDefault(), entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE)
                                             .getStringField("number")));
-        } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE)) {
+        } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE.getStringValue())) {
             entity.setField("occupationTypeValueForGrid",
                     occupationType + ": " + entity.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
         } else {

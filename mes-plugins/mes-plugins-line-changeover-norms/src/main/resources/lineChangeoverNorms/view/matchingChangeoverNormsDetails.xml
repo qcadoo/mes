@@ -6,7 +6,7 @@
 	    <ribbon>
 			<group name="matching">
 				<bigButton name="matchingChangeoverNorm" icon="generateIcon24.png"
-					action="#{form}.fireEvent(matchingChangeoverNorm);" state="enabled" />
+					action="#{form}.fireEvent(matchingChangeoverNorm);" state="disabled" />
 				<bigButton name="edit" icon="editIcon16.png"
 					action="#{form}.fireEvent(editChangeoverNorm);" state="disabled" />
 			</group>
@@ -24,6 +24,8 @@
 							<option type="orderable" value="name,number" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="enabledButtonAfterSelectionTechnologies" />
 						</component>
 					  </layoutElement>
 					  <layoutElement column="2" row="1">
@@ -33,6 +35,8 @@
 							<option type="orderable" value="name,number" />
 							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="enabledButtonAfterSelectionTechnologies" />
 						</component>
 					  </layoutElement>
 					  <layoutElement column="3" row="1">

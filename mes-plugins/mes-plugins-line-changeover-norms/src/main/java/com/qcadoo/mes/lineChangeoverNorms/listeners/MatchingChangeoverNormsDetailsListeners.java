@@ -66,6 +66,21 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
     }
 
+    public void enabledButtonAfterSelectionTechnologies(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
+        RibbonActionItem matchingChangeoverNorm = window.getRibbon().getGroupByName("matching")
+                .getItemByName("matchingChangeoverNorm");
+        Entity fromTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_FROM_TECHNOLOGY);
+        Entity toTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_TO_TECHNOLOGY);
+        if (fromTechnology != null && toTechnology != null) {
+            matchingChangeoverNorm.setEnabled(true);
+        } else {
+            matchingChangeoverNorm.setEnabled(false);
+        }
+        matchingChangeoverNorm.requestUpdate(true);
+    }
+
     public void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonActionItem edit = window.getRibbon().getGroupByName("matching").getItemByName("edit");
