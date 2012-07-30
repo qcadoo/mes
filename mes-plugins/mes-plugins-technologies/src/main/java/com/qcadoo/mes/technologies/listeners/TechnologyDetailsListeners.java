@@ -14,12 +14,13 @@ public class TechnologyDetailsListeners {
         TreeComponent technologyTree = (TreeComponent) view.getComponentByReference("technologyTree");
         GridComponent outProducts = (GridComponent) view.getComponentByReference("outProducts");
         GridComponent inProducts = (GridComponent) view.getComponentByReference("inProducts");
-        if (technologyTree.getSelectedEntityId() != null) {
-            outProducts.setEditable(true);
-            inProducts.setEditable(true);
-        } else {
+
+        if (technologyTree.getSelectedEntityId() == null) {
             outProducts.setEditable(false);
             inProducts.setEditable(false);
+        } else {
+            outProducts.setEditable(true);
+            inProducts.setEditable(true);
         }
     }
 }

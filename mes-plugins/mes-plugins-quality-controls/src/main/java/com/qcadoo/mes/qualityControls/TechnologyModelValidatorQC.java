@@ -21,13 +21,10 @@ public class TechnologyModelValidatorQC {
         String qualityControlType = (String) entity.getField(L_QUALITY_CONTROL_TYPE);
         BigDecimal unitSamplingNr = (BigDecimal) entity.getField(L_UNIT_SAMPLING_NR);
 
-        if (qualityControlType != null && qualityControlType.equals("02forUnit")) {
-
-            if (unitSamplingNr == null) {
-                entity.addError(dataDefinition.getField(L_UNIT_SAMPLING_NR),
-                        "technologies.technology.validate.global.error.unitSamplingNr");
-                return false;
-            }
+        if ((qualityControlType != null) && "02forUnit".equals(qualityControlType) && (unitSamplingNr == null)) {
+            entity.addError(dataDefinition.getField(L_UNIT_SAMPLING_NR),
+                    "technologies.technology.validate.global.error.unitSamplingNr");
+            return false;
         }
         return true;
 

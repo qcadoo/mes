@@ -10,6 +10,7 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReport
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.CREATE_USER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.UPDATE_DATE;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.PLACE;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -89,7 +90,7 @@ public class AssignmentToShiftReportXlsService extends XlsDocumentService {
             HSSFCell cellDay = header.createCell(columnNumber);
             columnNumber++;
             cellDay.setCellValue(translationService.translate(COLUMN_HEADER_DAY, locale,
-                    DateFormat.getDateInstance().format(new Date(day.getMillis()))).toString());
+                    DateFormat.getDateInstance().format(new Date(day.getMillis()))));
             xlsHelper.setCellStyle(sheet, cellDay);
         }
     }
@@ -110,12 +111,15 @@ public class AssignmentToShiftReportXlsService extends XlsDocumentService {
     }
 
     private int addRowForProductioLines(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-            List<DateTime> days) {
+            final List<DateTime> days) {
         for (Entity productionLine : assignmentToShiftReportHelper.getProductionLines()) {
             HSSFRow row = sheet.createRow(rowNum++);
-            String cellValue = productionLine.getStringField(NUMBER);
-            if (productionLine.getStringField(ProductionLineFields.PLACE) != null) {
-                cellValue.concat("-" + productionLine.getStringField(ProductionLineFields.PLACE));
+            String cellValue = null;
+            if (productionLine.getStringField(PLACE) == null) {
+                cellValue = productionLine.getStringField(NUMBER);
+            } else {
+                cellValue = productionLine.getStringField(NUMBER) + "-"
+                        + productionLine.getStringField(ProductionLineFields.PLACE);
             }
             row.createCell(0).setCellValue(cellValue);
             int columnNumber = 1;
@@ -134,8 +138,8 @@ public class AssignmentToShiftReportXlsService extends XlsDocumentService {
         return rowNum;
     }
 
-    private void fillColumnWithStaffsWithOccupationTypeEnumOtherThanOnLine(final HSSFSheet sheet, int rowNum,
-            final Entity assignmentToShiftReport, List<DateTime> days,
+    private void fillColumnWithStaffsWithOccupationTypeEnumOtherThanOnLine(final HSSFSheet sheet, final int rowNum,
+            final Entity assignmentToShiftReport, final List<DateTime> days,
             final OccupationTypeEnumStringValue occupationTypeEnumStringValue) {
         // TODO ALBR
         // HSSFRow row = sheet.createRow(rowNum++);

@@ -159,8 +159,7 @@ public final class StateChangeContextImpl implements StateChangeContext {
     @Override
     public List<Entity> getAllMessages() {
         final EntityList messagesAsEntityList = entity.getHasManyField(describer.getMessagesFieldName());
-        final List<Entity> messagesAsList = Lists.newArrayList(messagesAsEntityList);
-        return messagesAsList;
+        return Lists.newArrayList(messagesAsEntityList);
     }
 
     @Override

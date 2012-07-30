@@ -27,6 +27,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
@@ -178,7 +179,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(LOCATION, location)).add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .orderAscBy(TIME).list().getEntities();
+                .addOrder(SearchOrders.asc(TIME)).list().getEntities();
 
         return resources;
     }
