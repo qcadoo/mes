@@ -110,8 +110,7 @@
 										</component>
 									</layoutElement>
 									<layoutElement column="4" row="1">
-										<component type="input" name="unit" field="unit"
-											hasLabel="false">
+										<component type="input" name="unit" hasLabel="false">
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
 									</layoutElement>

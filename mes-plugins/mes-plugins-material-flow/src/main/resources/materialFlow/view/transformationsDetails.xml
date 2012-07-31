@@ -155,6 +155,9 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.materialFlow.hooks.TransformationsDetailsViewHooks"
+			method="disableFields" />
+		<beforeRender
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationsDetailsViewHooks"
 			method="disableExistingADLelements" />
 		<beforeRender 
 			class="com.qcadoo.mes.materialFlow.MaterialFlowService"

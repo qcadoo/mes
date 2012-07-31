@@ -42,6 +42,8 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Component
 public class MultitransferListeners {
 
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
+
     private static final String L_FORM = "form";
 
     @Autowired
@@ -69,7 +71,7 @@ public class MultitransferListeners {
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
             if (product != null) {
-                productQuantity.setField(UNIT, product.getStringField(UNIT));
+                formComponent.findFieldComponentByName(UNIT).setFieldValue(product.getStringField(UNIT));
             }
 
             formComponent.setEntity(productQuantity);
@@ -121,6 +123,10 @@ public class MultitransferListeners {
     }
 
     public void getFromTemplates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        getFromTemplates(view);
+    }
+
+    public void getFromTemplates(final ViewDefinitionState view) {
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
 
         FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
@@ -148,12 +154,13 @@ public class MultitransferListeners {
             Entity productQuantity = productQuantityDD.create();
 
             productQuantity.setField(PRODUCT, product);
-            productQuantity.setField(UNIT, product.getStringField(UNIT));
 
             productQuantities.add(productQuantity);
         }
 
         adlc.setFieldValue(productQuantities);
+
+        fillUnitsInADL(view, PRODUCTS);
 
         view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
                 MessageType.SUCCESS);
@@ -179,8 +186,8 @@ public class MultitransferListeners {
         }
 
         if ((locationFromField.getFieldValue() == null) && (locationToField.getFieldValue() == null)) {
-            locationFromField.addMessage("materialFlow.validate.global.error.fillAtLeastOneLocation", MessageType.FAILURE);
-            locationToField.addMessage("materialFlow.validate.global.error.fillAtLeastOneLocation", MessageType.FAILURE);
+            locationFromField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
+            locationToField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
 
             isValid = false;
         }

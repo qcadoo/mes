@@ -1,9 +1,9 @@
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
@@ -25,6 +25,16 @@ public class TransformationsDetailsViewHooks {
 
     private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, LOCATION_FROM, LOCATION_TO, OPERATION);
 
+    public void disableFields(final ViewDefinitionState view) {
+        FormComponent transformationsForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (transformationsForm.getEntityId() == null) {
+            changeFieldComponentsState(view, true);
+        } else {
+            changeFieldComponentsState(view, false);
+        }
+    }
+
     public void disableExistingADLelements(final ViewDefinitionState view) {
         disableADL(view, TRANSFERS_CONSUMPTION);
         disableADL(view, TRANSFERS_PRODUCTION);
@@ -37,12 +47,8 @@ public class TransformationsDetailsViewHooks {
 
         if (transformationsForm.getEntityId() == null) {
             adl.setEnabled(false);
-
-            changeFieldComponentsState(view, true);
         } else {
             adl.setEnabled(true);
-
-            changeFieldComponentsState(view, false);
 
             List<FormComponent> formComponents = adl.getFormComponents();
 

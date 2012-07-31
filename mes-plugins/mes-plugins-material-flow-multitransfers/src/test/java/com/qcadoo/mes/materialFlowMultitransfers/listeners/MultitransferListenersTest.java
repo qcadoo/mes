@@ -73,6 +73,9 @@ public class MultitransferListenersTest {
     private FormComponent formComponent;
 
     @Mock
+    private FieldComponent unit;
+
+    @Mock
     private Entity productQuantity, product, staff, locationFrom, locationTo;
 
     @Mock
@@ -87,9 +90,9 @@ public class MultitransferListenersTest {
     @Mock
     private Entity template;
 
-    private String unit = "szt";
+    private static final String L_UNIT = "szt";
 
-    private String type = "type";
+    private static final String L_TYPE = "type";
 
     @Mock
     private DataDefinition productQuantityDD;
@@ -118,11 +121,13 @@ public class MultitransferListenersTest {
         given(adlc.getFormComponents()).willReturn(formComponents);
 
         given(formComponent.getEntity()).willReturn(productQuantity);
+        given(formComponent.findFieldComponentByName(UNIT)).willReturn(unit);
+
         given(productQuantity.getBelongsToField(PRODUCT)).willReturn(product);
         given(productQuantity.getDecimalField(QUANTITY)).willReturn(BigDecimal.TEN);
-        given(product.getStringField(UNIT)).willReturn(unit);
+        given(product.getStringField(UNIT)).willReturn(L_UNIT);
 
-        given(typeComponent.getFieldValue()).willReturn(type);
+        given(typeComponent.getFieldValue()).willReturn(L_TYPE);
         given(staffComponent.getFieldValue()).willReturn(1L);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF)).willReturn(staffDD);
@@ -152,7 +157,7 @@ public class MultitransferListenersTest {
         multitransferListeners.fillUnitsInADL(view, state, null);
 
         // then
-        verify(productQuantity).setField(UNIT, unit);
+        verify(unit).setFieldValue(L_UNIT);
         verify(formComponent).setEntity(productQuantity);
     }
 

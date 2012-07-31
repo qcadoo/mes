@@ -31,7 +31,6 @@
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 		<decimal name="quantity" required="true" />
-		<string name="unit" />
 		<decimal name="price" default="0" />
 		<belongsTo name="transfer" model="transfer" plugin="materialFlow"
 			required="true" />
