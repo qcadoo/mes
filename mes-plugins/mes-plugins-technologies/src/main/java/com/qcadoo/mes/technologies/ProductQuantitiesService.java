@@ -121,4 +121,6 @@ public interface ProductQuantitiesService {
      *         aggregated)
      */
     Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final boolean onlyComponents);
+
+    Entity getOutputProductsFromOperataionComponent(final Entity operationComponent);
 }

@@ -62,11 +62,13 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     @Autowired
     private NumberService numberService;
 
+    @Override
     public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders) {
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         return getProductComponentQuantities(orders, operationMultipliers);
     }
 
+    @Override
     public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders,
             final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -77,6 +79,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return productComponentQuantities;
     }
 
+    @Override
     public Map<Entity, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQty,
             final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -88,6 +91,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return productComponentQuantities;
     }
 
+    @Override
     public Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQty,
             final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -99,6 +103,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
+    @Override
     public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
@@ -109,6 +114,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
+    @Override
     public Map<Entity, BigDecimal> getOutputProductQuantities(final List<Entity> orders) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
@@ -119,6 +125,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, false, OUT_PRODUCT);
     }
 
+    @Override
     public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents,
             final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -129,6 +136,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
     }
 
+    @Override
     public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
             final boolean onlyComponents) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -315,31 +323,25 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
+    @Override
     public Entity getOutputProductsFromOperataionComponent(final Entity operationComponent) {
-
-        List<Entity> outProducts = operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        if (outProducts == null || outProducts.isEmpty()) {
+        final List<Entity> outProducts = operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS);
+        if (outProducts.isEmpty()) {
             return null;
-        } else {
-            Entity parentOperation = operationComponent.getBelongsToField(PARENT);
-            if (parentOperation == null) {
-                return outProducts.get(0);
-
-            } else {
-                List<Entity> inProductsParent = parentOperation.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
-                for (Entity product : outProducts) {
-                    if (findProductParentOperation(product, inProductsParent)) {
-                        return product;
-                    }
-
-                }
-
-                return null;
-            }
-
         }
 
+        final Entity parentOperation = operationComponent.getBelongsToField(PARENT);
+        if (parentOperation == null) {
+            return outProducts.get(0);
+        } else {
+            final List<Entity> inProductsParent = parentOperation.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS);
+            for (Entity product : outProducts) {
+                if (findProductParentOperation(product, inProductsParent)) {
+                    return product;
+                }
+            }
+            return null;
+        }
     }
 
     private boolean findProductParentOperation(final Entity product, final List<Entity> parentProducts) {

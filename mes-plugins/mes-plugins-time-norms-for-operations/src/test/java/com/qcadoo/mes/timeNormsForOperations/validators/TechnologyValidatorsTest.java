@@ -26,20 +26,25 @@ package com.qcadoo.mes.timeNormsForOperations.validators;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public class TechnologyValidatorsTest {
+
+    private static final String SOME_UNIT = "someUnit";
 
     private TechnologyValidators technologyValidators;
 
@@ -50,18 +55,29 @@ public class TechnologyValidatorsTest {
     private DataDefinition dataDefinition;
 
     @Mock
-    private Entity operComp1, operComp2, prod1, prod2, prod1Comp, prod2Comp;
+    private Entity techOpComponent;
+
+    @Mock
+    private Entity product;
+
+    @Mock
+    private Entity outputProduct;
+
+    @Mock
+    private Entity techInstanceOpComponent;
 
     @Mock
     private NormService normService;
+
+    @Mock
+    private ProductQuantitiesService productQuantitiesService;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         technologyValidators = new TechnologyValidators();
-
-        // BDDMockito.
+        ReflectionTestUtils.setField(technologyValidators, "productQuantitiyService", productQuantitiesService);
     }
 
     @Test
@@ -76,25 +92,168 @@ public class TechnologyValidatorsTest {
         assertTrue(isValid);
     }
 
-    @Ignore
     @Test
-    public void shouldPassValidationErrorsToTheEntityForAcceptedTechnology() {
+    public final void shouldCheckUnitsForTocReturnFalseOnCreateIfUnitIsEmpty() {
         // given
-        given(technology.getStringField("state")).willReturn("02accepted");
-        given(technology.getDataDefinition()).willReturn(dataDefinition);
-        given(technology.getId()).willReturn(0L);
-        given(dataDefinition.get(0L)).willReturn(technology);
-
-        ReflectionTestUtils.setField(technologyValidators, "normService", normService);
-
-        // given(normService.checkOperationOutputQuantities(technology)).willReturn(asList("err1", "err2"));
+        given(techOpComponent.getId()).willReturn(null);
+        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
-        boolean isValid = technologyValidators.checkOperationOutputQuantities(dataDefinition, technology);
+        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertFalse(isValid);
-        verify(technology).addGlobalError("err1");
-        verify(technology).addGlobalError("err2");
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTocReturnTrueOnCreateIfUnitIsNotEmpty() {
+        // given
+        given(techOpComponent.getId()).willReturn(null);
+        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+
+        // then
+        assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTocReturnFalseOnUpdateIfUnitIsEmpty() {
+        // given
+        given(techOpComponent.getId()).willReturn(1L);
+        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+
+        // then
+        assertFalse(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTocReturnFalseOnUpdateIfUnitIsNotEmptyButDoNotMatchProduct() {
+        // given
+        given(techOpComponent.getId()).willReturn(1L);
+        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
+        given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+
+        // then
+        assertFalse(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTocReturnTrueOnUpdateIfUnitIsNotEmptyAndMatchProduct() {
+        // given
+        given(techOpComponent.getId()).willReturn(1L);
+        given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
+        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
+        given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+
+        // then
+        assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTiocReturnFalseOnCreateIfUnitIsEmpty() {
+        // given
+        given(techInstanceOpComponent.getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT))
+                .willReturn(techOpComponent);
+
+        given(techInstanceOpComponent.getId()).willReturn(null);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+                techInstanceOpComponent);
+
+        // then
+        assertFalse(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTiocReturnTrueOnCreateIfUnitIsNotEmpty() {
+        // given
+        given(techInstanceOpComponent.getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT))
+                .willReturn(techOpComponent);
+
+        given(techInstanceOpComponent.getId()).willReturn(null);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+                SOME_UNIT);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+                techInstanceOpComponent);
+
+        // then
+        assertTrue(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTiocReturnFalseOnUpdateIfUnitIsEmpty() {
+        // given
+        given(techInstanceOpComponent.getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT))
+                .willReturn(techOpComponent);
+
+        given(techInstanceOpComponent.getId()).willReturn(1L);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+                techInstanceOpComponent);
+
+        // then
+        assertFalse(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTiocReturnFalseOnUpdateIfUnitIsNotEmptyButDoNotMatchProduct() {
+        // given
+        given(techInstanceOpComponent.getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT))
+                .willReturn(techOpComponent);
+
+        given(techInstanceOpComponent.getId()).willReturn(1L);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+                SOME_UNIT);
+        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
+        given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+                techInstanceOpComponent);
+
+        // then
+        assertFalse(isValid);
+    }
+
+    @Test
+    public final void shouldCheckUnitsForTiocReturnTrueOnUpdateIfUnitIsNotEmptyAndMatchProduct() {
+        // given
+        given(techInstanceOpComponent.getBelongsToField(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT))
+                .willReturn(techOpComponent);
+
+        given(techInstanceOpComponent.getId()).willReturn(1L);
+        given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
+                SOME_UNIT);
+        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
+        given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
+
+        // when
+        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+                techInstanceOpComponent);
+
+        // then
+        assertTrue(isValid);
     }
 }

@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -53,7 +53,7 @@ public class TechnologyValidators {
     private NormService normService;
 
     @Autowired
-    private ProductQuantitiesServiceImpl productQuantitiyService;
+    private ProductQuantitiesService productQuantitiyService;
 
     public boolean checkOperationOutputQuantities(final DataDefinition dd, final Entity tech) {
         if (!(ACCEPTED.getStringValue().equals(tech.getStringField(STATE)) || CHECKED.getStringValue().equals(
@@ -142,22 +142,21 @@ public class TechnologyValidators {
     }
 
     public boolean checkIfUnitsInTechnologyMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
-
-        if (technologyOperationComponent.getId() == null) {
-            return true;
-        }
-
-        Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
-        String productionInOneCycleUNIT = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-
+        final String productionInOneCycleUNIT = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
         if (productionInOneCycleUNIT == null) {
             technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                     L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
             return false;
         }
-        if (outputProduct != null) {
-            String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
 
+        if (technologyOperationComponent.getId() == null) {
+            return true;
+        }
+
+        final Entity outputProduct = productQuantitiyService
+                .getOutputProductsFromOperataionComponent(technologyOperationComponent);
+        if (outputProduct != null) {
+            final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                         L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
@@ -169,25 +168,23 @@ public class TechnologyValidators {
 
     public boolean checkIfUnitsInInstanceTechnologyMatch(final DataDefinition dataDefinition,
             final Entity technologyInstanceOperationComponent) {
-
-        if (technologyInstanceOperationComponent.getId() == null) {
-            return true;
-        }
-
-        Entity technologyOperationComponent = technologyInstanceOperationComponent
-                .getBelongsToField("technologyOperationComponent");
-
-        String productionInOneCycleUNIT = technologyInstanceOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        Entity outputProduct = productQuantitiyService.getOutputProductsFromOperataionComponent(technologyOperationComponent);
-
+        final String productionInOneCycleUNIT = technologyInstanceOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
         if (productionInOneCycleUNIT == null) {
             technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                     L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
             return false;
         }
-        if (outputProduct != null) {
-            String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
 
+        if (technologyInstanceOperationComponent.getId() == null) {
+            return true;
+        }
+
+        final Entity technologyOperationComponent = technologyInstanceOperationComponent
+                .getBelongsToField("technologyOperationComponent");
+        final Entity outputProduct = productQuantitiyService
+                .getOutputProductsFromOperataionComponent(technologyOperationComponent);
+        if (outputProduct != null) {
+            final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyInstanceOperationComponent.addError(dataDefinition.getField(PRODUCTION_IN_ONE_CYCLE_UNIT),
                         L_TECHNOLOGIES_OPERATION_DETAILS_VALIDATE_ERROR_OUTPUT_UNITS_NOT_MATCH);
