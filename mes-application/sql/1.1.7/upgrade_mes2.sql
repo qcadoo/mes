@@ -444,7 +444,9 @@ CREATE TABLE avglaborcostcalcfororder_avglaborcostcalcfororder
   CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order  (id) DEFERRABLE
 );
+
 --end 
+
 
 -- Table: avglaborcostcalcfororder_avglaborcostcalcfororder
 -- changed: 26.07.2012
@@ -468,6 +470,7 @@ CREATE TABLE avglaborcostcalcfororder_assignmentworkertoshift
 
 -- Table: basic_parameter
 -- changed: 26.07.2012
+
 ALTER TABLE basic_parameter ADD COLUMN unit character varying(255);
 
 -- end
@@ -476,4 +479,13 @@ ALTER TABLE basic_parameter ADD COLUMN unit character varying(255);
 -- changed: 26.07.2012
 
 ALTER TABLE productionpershift_progressforday ADD COLUMN dateofday date;
+
+-- end
+
+
+-- Table: materialflowmultitransfers_productquantity
+-- changed: 06.06.2012
+
+ALTER TABLE materialflowmultitransfers_productquantity DROP COLUMN unit;
+
 -- end
