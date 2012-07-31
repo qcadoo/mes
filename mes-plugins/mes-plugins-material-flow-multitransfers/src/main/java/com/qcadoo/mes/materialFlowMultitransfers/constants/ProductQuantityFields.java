@@ -33,8 +33,6 @@ public final class ProductQuantityFields {
 
     public static final String QUANTITY = "quantity";
 
-    public static final String UNIT = "unit";
-
     public static final String PRICE = "price";
 
 }

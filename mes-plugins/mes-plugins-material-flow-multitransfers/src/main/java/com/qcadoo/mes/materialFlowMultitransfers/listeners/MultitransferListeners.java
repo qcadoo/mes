@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowMultitransfers.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
@@ -11,7 +12,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.UNIT;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
@@ -46,6 +46,8 @@ public class MultitransferListeners {
 
     private static final String L_FORM = "form";
 
+    private static final String L_UNIT = "unit";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -70,8 +72,10 @@ public class MultitransferListeners {
             Entity productQuantity = formComponent.getEntity();
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
-            if (product != null) {
-                formComponent.findFieldComponentByName(UNIT).setFieldValue(product.getStringField(UNIT));
+            if (product == null) {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(null);
+            } else {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(product.getStringField(UNIT));
             }
 
             formComponent.setEntity(productQuantity);
