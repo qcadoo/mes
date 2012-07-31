@@ -319,8 +319,11 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks" method="rebuildTreeNumbering" />
+		<beforeRender class="com.qcadoo.mes.technologies.TechnologyTreeNumberingHooks"
+			method="rebuildTreeNumbering" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="filterStateChangeHistory" />
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
+			method="setTreeTabEditable" />	
 	</hooks>
 </view>
