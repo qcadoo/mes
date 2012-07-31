@@ -540,7 +540,7 @@
 				</script>
 			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="false"/>
+					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="never"/>
 				</layoutElement>
 			</component>
 		</windowTab>
