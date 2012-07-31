@@ -95,12 +95,12 @@ public class AssignmentToShiftReportHelper {
         SearchCriterion criterion = SearchRestrictions.eq(StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM,
                 occupationTypeEnum.getStringValue());
         String assignmentState = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
-        if (assignmentState.equals("04corrected")) {
+        if ("04corrected".equals(assignmentState)) {
             staffs = assignmentToShift.getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
                     .add(SearchRestrictions.eq(STATE, StaffAssignmentToShiftStateStringValue.CORRECTED))
                     .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine)).list()
                     .getEntities();
-        } else if (!assignmentState.equals("01draft")) {
+        } else if (!"01draft".equals(assignmentState)) {
             staffs = assignmentToShift.getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
                     .add(SearchRestrictions.eq(STATE, StaffAssignmentToShiftStateStringValue.ACCEPTED))
                     .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine)).list()

@@ -120,12 +120,12 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                     Entity lineChangeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology,
                             productionLine);
 
-                    if (lineChangeoverNorm != null) {
-                        lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
-                        lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
-                    } else {
+                    if (lineChangeoverNorm == null) {
                         lineChangeoverNormField.setFieldValue(null);
                         lineChangeoverNormDurationField.setFieldValue(null);
+                    } else {
+                        lineChangeoverNormField.setFieldValue(lineChangeoverNorm.getId());
+                        lineChangeoverNormDurationField.setFieldValue(lineChangeoverNorm.getField(DURATION));
                     }
                     lineChangeoverNormField.requestComponentUpdateState();
                     lineChangeoverNormDurationField.requestComponentUpdateState();

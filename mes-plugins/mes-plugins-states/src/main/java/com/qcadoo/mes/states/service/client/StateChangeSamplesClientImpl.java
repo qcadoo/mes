@@ -42,10 +42,10 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
     public Entity changeState(final Entity entity, final String targetState) {
         Entity resultEntity = null;
         final StateChangeService stateChangeService = stateChangeServiceResolver.get(entity.getDataDefinition());
-        if (stateChangeService != null) {
-            resultEntity = performChange(stateChangeService, entity, targetState);
-        } else {
+        if (stateChangeService == null) {
             resultEntity = performDummyChange(entity, targetState);
+        } else {
+            resultEntity = performChange(stateChangeService, entity, targetState);
         }
         return resultEntity;
     }

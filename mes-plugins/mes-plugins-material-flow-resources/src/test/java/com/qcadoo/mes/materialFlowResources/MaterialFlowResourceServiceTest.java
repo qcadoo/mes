@@ -41,6 +41,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
@@ -103,7 +104,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 
@@ -125,7 +126,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(resources);
 
@@ -157,7 +158,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(resources);
 
@@ -233,7 +234,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 
@@ -264,7 +265,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(resources);
 
@@ -308,7 +309,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(resources);
 
@@ -350,7 +351,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 
@@ -385,7 +386,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(resources);
 
@@ -433,7 +434,7 @@ public class MaterialFlowResourceServiceTest {
                         MaterialFlowResourcesConstants.MODEL_RESOURCE)).willReturn(resourceDD);
         given(resourceDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderAscBy(Mockito.anyString())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 

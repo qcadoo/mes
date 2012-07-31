@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowMultitransfers.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
@@ -11,7 +12,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.UNIT;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
@@ -42,7 +42,11 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Component
 public class MultitransferListeners {
 
+    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
+
     private static final String L_FORM = "form";
+
+    private static final String L_UNIT = "unit";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -68,8 +72,10 @@ public class MultitransferListeners {
             Entity productQuantity = formComponent.getEntity();
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
-            if (product != null) {
-                productQuantity.setField(UNIT, product.getStringField(UNIT));
+            if (product == null) {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(null);
+            } else {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(product.getStringField(UNIT));
             }
 
             formComponent.setEntity(productQuantity);
@@ -121,6 +127,10 @@ public class MultitransferListeners {
     }
 
     public void getFromTemplates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        getFromTemplates(view);
+    }
+
+    public void getFromTemplates(final ViewDefinitionState view) {
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
 
         FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
@@ -148,12 +158,13 @@ public class MultitransferListeners {
             Entity productQuantity = productQuantityDD.create();
 
             productQuantity.setField(PRODUCT, product);
-            productQuantity.setField(UNIT, product.getStringField(UNIT));
 
             productQuantities.add(productQuantity);
         }
 
         adlc.setFieldValue(productQuantities);
+
+        fillUnitsInADL(view, PRODUCTS);
 
         view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
                 MessageType.SUCCESS);
@@ -179,8 +190,8 @@ public class MultitransferListeners {
         }
 
         if ((locationFromField.getFieldValue() == null) && (locationToField.getFieldValue() == null)) {
-            locationFromField.addMessage("materialFlow.validate.global.error.fillAtLeastOneLocation", MessageType.FAILURE);
-            locationToField.addMessage("materialFlow.validate.global.error.fillAtLeastOneLocation", MessageType.FAILURE);
+            locationFromField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
+            locationToField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
 
             isValid = false;
         }

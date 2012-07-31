@@ -73,10 +73,10 @@ public class MatchingChangeoverNormsDetailsListeners {
                 .getItemByName("matchingChangeoverNorm");
         Entity fromTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_FROM_TECHNOLOGY);
         Entity toTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_TO_TECHNOLOGY);
-        if (fromTechnology != null && toTechnology != null) {
-            matchingChangeoverNorm.setEnabled(true);
-        } else {
+        if ((fromTechnology == null) || (toTechnology == null)) {
             matchingChangeoverNorm.setEnabled(false);
+        } else {
+            matchingChangeoverNorm.setEnabled(true);
         }
         matchingChangeoverNorm.requestUpdate(true);
     }

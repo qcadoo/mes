@@ -86,6 +86,10 @@ public class TransformationsListeners {
     }
 
     public void fillProductionAndConsumption(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        fillProductionAndConsumption(view);
+    }
+
+    public void fillProductionAndConsumption(final ViewDefinitionState view) {
         FieldComponent operationComponent = (FieldComponent) view.getComponentByReference(OPERATION);
 
         Object operationComponentValue = operationComponent.getFieldValue();
