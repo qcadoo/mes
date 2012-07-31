@@ -38,7 +38,7 @@
 									<layoutElement column="1" row="1">
 										<component type="input" name="number" field="number" />
 									</layoutElement>
-									<layoutElement column="2" width="2" row="1">
+									<layoutElement column="2" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
 											<option type="searchable" value="number,name" />
@@ -120,7 +120,7 @@
 									<layoutElement column="1" row="1">
 										<component type="input" name="number" field="number" />
 									</layoutElement>
-									<layoutElement column="2" width="2" row="1">
+									<layoutElement column="2" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
 											<option type="searchable" value="number,name" />

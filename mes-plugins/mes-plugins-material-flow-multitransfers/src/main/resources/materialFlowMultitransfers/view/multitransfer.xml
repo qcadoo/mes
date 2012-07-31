@@ -82,7 +82,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="6" width="7">
+				<layoutElement column="1" row="6" width="6">
 					<component type="borderLayout" name="products">
 						<component type="awesomeDynamicList" name="products"
 							source="#{form}.products" reference="products">
@@ -90,8 +90,8 @@
 							<option type="hasButtons" value="true" />
 							<components>
 								<component type="gridLayout" name="productLayout"
-									columns="4" rows="1">
-									<layoutElement column="1" width="2" row="1">
+									columns="6" rows="1">
+									<layoutElement column="1" row="1" width="3">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
 											<option type="searchable" value="number,name" />
@@ -104,12 +104,12 @@
 												method="fillUnitsInADL" />
 										</component>
 									</layoutElement>
-									<layoutElement column="3" row="1">
+									<layoutElement column="4" row="1" width="2">
 										<component type="input" name="quantity" field="quantity">
 											<option type="alignment" value="right" />
 										</component>
 									</layoutElement>
-									<layoutElement column="4" row="1">
+									<layoutElement column="6" row="1">
 										<component type="input" name="unit" hasLabel="false">
 											<option type="textRepresentationOnDisabled" value="true" />
 										</component>
