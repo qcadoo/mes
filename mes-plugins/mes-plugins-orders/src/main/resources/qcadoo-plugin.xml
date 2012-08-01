@@ -101,7 +101,7 @@
 		<model:model-field plugin="basic" model="parameter">
 		    <model:boolean name="reasonNeededWhenChangingStateToInterrupted" default="false" />
 		</model:model-field>
-				<model:model-field plugin="basic" model="parameter">
+		<model:model-field plugin="basic" model="parameter">
 		    <model:boolean name="reasonNeededWhenChangingStateToAbandoned" default="false" />
 		</model:model-field>
 		
