@@ -4,18 +4,25 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="assignmentToShift" model="assignmentToShift" />
-		<belongsTo name="worker" model="staff" plugin="basic" required="true"/>
+		<belongsTo name="worker" model="staff" plugin="basic"
+			required="true" />
 		<belongsTo name="productionLine" model="productionLine"
 			plugin="productionLines" />
-		<dictionary dictionary="occupationType" name="occupationType" required="true"/>
+		<dictionary dictionary="occupationType" name="occupationType"
+			required="true" />
 		<string name="occupationTypeName" />
-		<enum name="state" values="01simple,02accepted,03corrected" default="01simple" />
-		<enum values="01workOnLine,02otherCase,03mix,04sickness" name="occupationTypeEnum"/>
-		<string name="occupationTypeValueForGrid"/>
+		<enum name="state" values="01simple,02accepted,03corrected"
+			default="01simple" />
+		<enum values="01workOnLine,02otherCase,03mix,04sickness" name="occupationTypeEnum" />
+		<string name="occupationTypeValueForGrid" />
 	</fields>
-	<hooks >
-		<onSave class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="setOccupationTypeForGridValue"/>
-		<onSave class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="setOccupationTypeEnum"/>
+	<hooks>
+		<onSave
+			class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks"
+			method="setOccupationTypeForGridValue" />
+		<onSave
+			class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks"
+			method="setOccupationTypeEnum" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
