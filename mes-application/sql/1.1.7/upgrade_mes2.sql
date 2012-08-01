@@ -489,3 +489,28 @@ ALTER TABLE productionpershift_progressforday ADD COLUMN dateofday date;
 ALTER TABLE materialflowmultitransfers_productquantity DROP COLUMN unit;
 
 -- end
+
+
+-- Table: materialflowmultitransfers_productquantity
+-- changed: 31.07.2012
+
+CREATE TABLE assignmenttoshift_assignmenttoshiftreport
+(
+  id bigint NOT NULL,
+  "number" character varying(1024),
+  name character varying(1024),
+  datefrom date,
+  dateto date,
+  shift_id bigint,
+  filename character varying(255),
+  generated boolean DEFAULT false,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  createuser character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT assignmenttoshift_assignmenttoshiftreport_pkey PRIMARY KEY (id),
+  CONSTRAINT assignmenttoshiftreport_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+);
+
+-- end
