@@ -5,7 +5,7 @@
 	<fields>
 		<string name="number" required="true" unique="true" />
 		<enum name="changeoverType" values="01forTechnology,02forTechnologyGroup"
-			default="01forTechnology" />
+			default="01forTechnology" required="true" />
 		<belongsTo name="fromTechnology" model="technology" plugin="technologies" />
 		<belongsTo name="toTechnology" model="technology" plugin="technologies" />
 		<belongsTo name="fromTechnologyGroup" model="technologyGroup"
@@ -17,9 +17,9 @@
 		<integer name="duration" required="true" />
 	</fields>
 	<hooks>
-<!-- 		<validatesWith -->
-<!-- 			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks" -->
-<!-- 			method="checkUniqueNorms" /> -->
+		<validatesWith
+			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks"
+			method="checkUniqueNorms" />
 		<validatesWith
 			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks"
 			method="checkRequiredField" />
