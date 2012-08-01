@@ -32,25 +32,28 @@
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
-
-		<component type="grid" name="technologyGroups" reference="grid">
-			<option type="column" name="number" fields="number" link="true"
-				width="50" />
-			<option type="column" name="name" fields="name" link="true" />
-			
-			<option type="order" column="number" direction="desc" />
-			
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
-			
-			<option type="correspondingView" value="technologies/technologyGroupDetails" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-		</component>
+	
+		<component type="gridLayout" name="gridsLayout" columns="2"
+			rows="1" hasBorders="false">
+			<layoutElement column="1" row="1">
+				<component type="grid" name="technologyGroups" reference="grid">
+					<option type="column" name="number" fields="number" link="true"
+						width="50" />
+					<option type="column" name="name" fields="name" link="true" />
+		
+					<option type="order" column="number" direction="desc" />
+		
+					<option type="searchable" value="name,number" />
+					<option type="orderable" value="name,number" />
+		
+					<option type="correspondingView" value="technologies/technologyGroupDetails" />
+					<option type="correspondingComponent" value="form" />
+		
+					<option type="multiselect" value="true" />
+				</component>
+			</layoutElement>
+		</component>	
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
-	</component>
-	
+	</component>	
 </view>
