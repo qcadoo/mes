@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="currency" plugin="basic" model="currency" />
-		<dictionary name="unit" dictionary="units"></dictionary>
+		<dictionary name="unit" dictionary="units" />
 	</fields>
 	
 	<hooks>
