@@ -65,9 +65,6 @@ public class LineChangeoverNormsHooksTest {
 
     private SearchCriteriaBuilder searchMatchingChangeroverNorms(final Entity fromTechnology, final Entity toTechnology,
             final Entity fromTechnologyGroup, final Entity toTechnologyGroup, final Entity producionLine) {
-        when(SearchRestrictions.ne(NUMBER, entity.getStringField(NUMBER))).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
-
         when(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, fromTechnology)).thenReturn(criterion);
         when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
 
@@ -82,15 +79,19 @@ public class LineChangeoverNormsHooksTest {
 
         when(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).thenReturn(criterion);
         when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+
+        when(SearchRestrictions.ne("id", entity.getId())).thenReturn(criterion);
+        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+
         return searchCriteria;
     }
 
     @Test
     public void shouldAddErrorForEntityWhenNotUnique() throws Exception {
         // given
-        String number = "0001";
+        Long id = 1L;
         String changeoverNumber = "0002";
-        when(entity.getStringField(NUMBER)).thenReturn(number);
+        when(entity.getId()).thenReturn(id);
         when(entity.getBelongsToField(FROM_TECHNOLOGY)).thenReturn(fromTechnology);
         when(entity.getBelongsToField(TO_TECHNOLOGY)).thenReturn(toTechnology);
         when(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).thenReturn(fromTechnologyGroup);

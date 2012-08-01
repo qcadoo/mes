@@ -18,6 +18,7 @@ import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -27,14 +28,20 @@ public class LineChangeoverNormsHooks {
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkUniqueNorms(final DataDefinition dataDefinition, final Entity entity) {
-        Entity lineChangeoverNorms = dataDefinitionService
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
-                .find().add(SearchRestrictions.ne(NUMBER, entity.getStringField(NUMBER)))
-                .add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, entity.getBelongsToField(FROM_TECHNOLOGY)))
+                .find().add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, entity.getBelongsToField(FROM_TECHNOLOGY)))
                 .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY, entity.getBelongsToField(TO_TECHNOLOGY)))
                 .add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY_GROUP, entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)))
                 .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY_GROUP, entity.getBelongsToField(TO_TECHNOLOGY_GROUP)))
-                .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, entity.getBelongsToField(PRODUCTION_LINE))).uniqueResult();
+                .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, entity.getBelongsToField(PRODUCTION_LINE)));
+
+        if (entity.getId() != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", entity.getId()));
+        }
+
+        Entity lineChangeoverNorms = searchCriteriaBuilder.uniqueResult();
+
         if (lineChangeoverNorms == null) {
             return true;
         } else {
