@@ -31,7 +31,7 @@
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="name" required="true">
+		<string name="name" required="true" unique="true">
 			<validatesLength max="2048" />
 		</string>
 		
