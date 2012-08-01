@@ -4,17 +4,25 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true" />
-		<enum name="changeoverType" values="01forTechnology,02forTechnologyGroup" default="01forTechnology"/>	
-		<belongsTo name="fromTechnology" model="technology" plugin="technologies"/>	
-		<belongsTo name="toTechnology" model="technology" plugin="technologies"/>	
-		<belongsTo name="fromTechnologyGroup" model="technologyGroup" plugin="technologies"/>	
-		<belongsTo name="toTechnologyGroup" model="technologyGroup" plugin="technologies"/>	
-		<belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
-		<integer name="duration" />
+		<enum name="changeoverType" values="01forTechnology,02forTechnologyGroup"
+			default="01forTechnology" />
+		<belongsTo name="fromTechnology" model="technology" plugin="technologies" />
+		<belongsTo name="toTechnology" model="technology" plugin="technologies" />
+		<belongsTo name="fromTechnologyGroup" model="technologyGroup"
+			plugin="technologies" />
+		<belongsTo name="toTechnologyGroup" model="technologyGroup"
+			plugin="technologies" />
+		<belongsTo name="productionLine" model="productionLine"
+			plugin="productionLines" />
+		<integer name="duration" required="true" />
 	</fields>
-	<hooks >
-		<validatesWith class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks" method="checkUniqueNorms"/>
-		<validatesWith class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks" method="checkRequiredField"/>
+	<hooks>
+<!-- 		<validatesWith -->
+<!-- 			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks" -->
+<!-- 			method="checkUniqueNorms" /> -->
+		<validatesWith
+			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsHooks"
+			method="checkRequiredField" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
