@@ -64,9 +64,14 @@
 
 		<model:model model="qualityControl" resource="model/qualityControl.xml" />
 
+		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
+			<model:hasMany name="qualityControls" joinField="operation" model="qualityControl" plugin="qualityControls" cascade="delete"/>
+		</model:model-field>
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:enum name="qualityControlType" values="02forUnit,03forOrder" />
 		</model:model-field>
+		
 		<model:model-field plugin="technologies" model="technology">
 			<model:decimal name="unitSamplingNr">
 				<model:validatesRange from="0" />
@@ -85,6 +90,7 @@
 			<model:boolean name="checkDoneOrderForQuality"
 				required="true" />
 		</model:model-field>
+		
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="autoGenerateQualityControl"
 				required="true" />
@@ -103,6 +109,7 @@
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.qualityControls.ParameterServiceQC" method="addFieldsForParameter"/>
 		</model:model-hook>
+		
 		<model:model-hook plugin="technologies" model="technology">
 			<model:validatesWith class="com.qcadoo.mes.qualityControls.TechnologyModelValidatorQC"
 				method="checkIfUnitSampligNrIsReq" />
