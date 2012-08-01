@@ -350,6 +350,8 @@ CREATE TABLE assignmenttoshift_assignmenttoshiftstatechange
 );
 
 -- end
+
+
 -- Table: assignmenttoshift_staffassignmenttoshift
 -- changed: 11.07.2012
 
@@ -468,12 +470,14 @@ CREATE TABLE avglaborcostcalcfororder_assignmentworkertoshift
 
 -- end
 
+
 -- Table: basic_parameter
 -- changed: 26.07.2012
 
 ALTER TABLE basic_parameter ADD COLUMN unit character varying(255);
 
 -- end
+
 
 -- Table: productionpershift_progressforday
 -- changed: 26.07.2012
@@ -491,7 +495,7 @@ ALTER TABLE materialflowmultitransfers_productquantity DROP COLUMN unit;
 -- end
 
 
--- Table: materialflowmultitransfers_productquantity
+-- Table: assignmenttoshift_assignmenttoshiftreport
 -- changed: 31.07.2012
 
 CREATE TABLE assignmenttoshift_assignmenttoshiftreport
