@@ -52,6 +52,9 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
-			method="enabledFieldWhenTypeIsSpecific" />
+			method="setOccupationTypeToDefault" />
+		<beforeRender
+			class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
+			method="setFieldsEnabledWhenTypeIsSpecific" />
  	</hooks>
 </view>

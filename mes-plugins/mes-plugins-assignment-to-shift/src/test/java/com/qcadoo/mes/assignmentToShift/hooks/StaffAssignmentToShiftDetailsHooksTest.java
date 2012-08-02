@@ -70,7 +70,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
 
         // when
-        detailsHooks.enabledFieldWhenTypeIsSpecific(view);
+        detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
         // then
         Mockito.verify(productionLine).setEnabled(true);
         Mockito.verify(occupationTypeName).setEnabled(false);
@@ -89,7 +89,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
 
         // when
-        detailsHooks.enabledFieldWhenTypeIsSpecific(view);
+        detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
         // then
         Mockito.verify(productionLine).setEnabled(false);
         Mockito.verify(occupationTypeName).setEnabled(true);
@@ -107,7 +107,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         when(dictionary.getStringField("technicalCode")).thenReturn(Mockito.anyString());
 
         // when
-        detailsHooks.enabledFieldWhenTypeIsSpecific(view);
+        detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
         // then
         Mockito.verify(productionLine).setEnabled(false);
         Mockito.verify(occupationTypeName).setEnabled(false);
