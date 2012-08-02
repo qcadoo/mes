@@ -81,4 +81,5 @@ public class StaffAssignmentToShiftHooksTest {
         Mockito.verify(entity).addError(dataDefinition.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
                 "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");
     }
+
 }

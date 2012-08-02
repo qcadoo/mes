@@ -1,6 +1,11 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue.WORK_ON_LINE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
 import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
+import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -18,6 +23,7 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 public class StaffAssignmentToShiftDetailsHooksTest {
 
@@ -39,6 +45,9 @@ public class StaffAssignmentToShiftDetailsHooksTest {
     private DataDefinition dataDefinition;
 
     @Mock
+    private FormComponent staffAssignmentToShiftForm;
+
+    @Mock
     private FieldComponent occupationType, productionLine, occupationTypeName;
 
     @Before
@@ -48,9 +57,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
 
         ReflectionTestUtils.setField(detailsHooks, "dataDefinitionService", dataDefinitionService);
 
-        when(view.getComponentByReference("occupationType")).thenReturn(occupationType);
-        when(view.getComponentByReference("productionLine")).thenReturn(productionLine);
-        when(view.getComponentByReference("occupationTypeName")).thenReturn(occupationTypeName);
+        when(view.getComponentByReference("form")).thenReturn(staffAssignmentToShiftForm);
+
+        when(view.getComponentByReference(OCCUPATION_TYPE)).thenReturn(occupationType);
+        when(view.getComponentByReference(PRODUCTION_LINE)).thenReturn(productionLine);
+        when(view.getComponentByReference(OCCUPATION_TYPE_NAME)).thenReturn(occupationTypeName);
 
         when(dataDefinitionService.get("qcadooModel", "dictionaryItem")).thenReturn(dataDefinition);
         when(dataDefinition.find()).thenReturn(builder);
@@ -67,10 +78,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
         when(builder.add(criterion)).thenReturn(builder);
         when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
+        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(technicalCode);
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
+
         // then
         Mockito.verify(productionLine).setEnabled(true);
         Mockito.verify(occupationTypeName).setEnabled(false);
@@ -86,10 +98,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
         when(builder.add(criterion)).thenReturn(builder);
         when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
+        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(technicalCode);
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
+
         // then
         Mockito.verify(productionLine).setEnabled(false);
         Mockito.verify(occupationTypeName).setEnabled(true);
@@ -104,12 +117,82 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
         when(builder.add(criterion)).thenReturn(builder);
         when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField("technicalCode")).thenReturn(Mockito.anyString());
+        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(Mockito.anyString());
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
+
         // then
         Mockito.verify(productionLine).setEnabled(false);
         Mockito.verify(occupationTypeName).setEnabled(false);
     }
+
+    @Test
+    public void shouldDisabledProductionLineAndOccupationTypeNameFieldsWhenEmptyIsSelected() throws Exception {
+        // given
+        String dictionaryName = "";
+
+        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
+        when(builder.add(criterion)).thenReturn(builder);
+        when(builder.uniqueResult()).thenReturn(null);
+
+        // when
+        detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
+
+        // then
+        Mockito.verify(productionLine).setEnabled(false);
+        Mockito.verify(occupationTypeName).setEnabled(false);
+    }
+
+    @Test
+    public void shouldntSetOccupationTypeToDefaultWhenFormIsSaved() {
+        // given
+        String dictionaryName = "Praca na linii";
+
+        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(1L);
+        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+
+        // when
+        detailsHooks.setOccupationTypeToDefault(view);
+
+        // then
+        Mockito.verify(occupationType, Mockito.never()).setFieldValue(Mockito.anyString());
+    }
+
+    @Test
+    public void shouldntSetOccupationTypeToDefaultWhenDictionaryIsNull() {
+        // given
+        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(null);
+        when(occupationType.getFieldValue()).thenReturn(null);
+
+        SearchCriterion criterion = SearchRestrictions.eq(TECHNICAL_CODE, WORK_ON_LINE.getStringValue());
+        when(builder.add(criterion)).thenReturn(builder);
+        when(builder.uniqueResult()).thenReturn(null);
+
+        // when
+        detailsHooks.setOccupationTypeToDefault(view);
+
+        // then
+        Mockito.verify(occupationType, Mockito.never()).setFieldValue(Mockito.anyString());
+    }
+
+    @Test
+    public void shouldSetOccupationTypeToDefaultWhenDictionary() {
+        // given
+        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(null);
+        when(occupationType.getFieldValue()).thenReturn(null);
+
+        SearchCriterion criterion = SearchRestrictions.eq(TECHNICAL_CODE, WORK_ON_LINE.getStringValue());
+        when(builder.add(criterion)).thenReturn(builder);
+        when(builder.uniqueResult()).thenReturn(dictionary);
+        when(dictionary.getStringField(NAME)).thenReturn(Mockito.anyString());
+
+        // when
+        detailsHooks.setOccupationTypeToDefault(view);
+
+        // then
+        Mockito.verify(occupationType).setFieldValue(Mockito.anyString());
+    }
+
 }
