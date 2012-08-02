@@ -39,7 +39,7 @@
 		</decimal>
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
 			method="invalidateIfBelongsToAcceptedTechnology" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="invalidateIfAllreadyInTheSameOperation" />

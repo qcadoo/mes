@@ -624,58 +624,6 @@ public class TechnologyService {
         view.getComponentByReference(STATE).performEvent(view, "toggleEnabled");
     }
 
-    public boolean invalidateIfBelongsToAcceptedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity technology = null;
-        String errorMessageKey = "technologies.technology.state.error.modifyBelongsToAcceptedTechnology";
-        if (L_TECHNOLOGY.equals(dataDefinition.getName())) {
-            technology = entity;
-            errorMessageKey = "technologies.technology.state.error.modifyAcceptedTechnology";
-        } else if ("technologyOperationComponent".equals(dataDefinition.getName())) {
-            technology = entity.getBelongsToField(L_TECHNOLOGY);
-        } else if ("operationProductOutComponent".equals(dataDefinition.getName())
-                || "operationProductInComponent".equals(dataDefinition.getName())) {
-            Entity operationComponent = entity.getBelongsToField(L_OPERATION_COMPONENT);
-            if (operationComponent == null) {
-                return true;
-            }
-            technology = operationComponent.getBelongsToField(L_TECHNOLOGY);
-        }
-
-        if (technology == null || technology.getId() == null) {
-            return true;
-        }
-
-        Entity existingTechnology = technology.getDataDefinition().get(technology.getId());
-        if (checkIfDeactivated(dataDefinition, technology, existingTechnology)) {
-            return true;
-        }
-        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology)) {
-            entity.addGlobalError(errorMessageKey, technology.getStringField(L_NAME));
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean checkIfDeactivated(final DataDefinition dataDefinition, final Entity technology,
-            final Entity existingTechnology) {
-        if (isTechnologyIsAlreadyAccepted(technology, existingTechnology) && L_TECHNOLOGY.equals(dataDefinition.getName())
-                && technology.isActive() != existingTechnology.isActive()) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isTechnologyIsAlreadyAccepted(final Entity technology, final Entity existingTechnology) {
-        if (technology == null || existingTechnology == null) {
-            return false;
-        }
-        TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(STATE));
-        TechnologyState existingTechnologyState = TechnologyState.parseString(existingTechnology.getStringField(STATE));
-
-        return TechnologyState.ACCEPTED.equals(technologyState) && technologyState.equals(existingTechnologyState);
-    }
-
     private boolean productComponentsContainProduct(final List<Entity> components, final Entity product) {
         boolean contains = false;
 
