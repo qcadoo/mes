@@ -70,6 +70,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                         technologyGroupNumberField.setFieldValue(technologyGroupNumber);
                     }
                 }
+
                 technologyGroupNumberField.requestComponentUpdateState();
                 technologyNumberField.requestComponentUpdateState();
 
@@ -112,7 +113,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 && order != null
                 && (ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
                         || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE)) || !checkDateIfUncorrect(
-                        previousOrder, order))) {
+                            previousOrder, order))) {
             return false;
         }
 
