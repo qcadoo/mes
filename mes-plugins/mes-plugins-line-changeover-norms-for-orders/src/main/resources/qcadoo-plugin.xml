@@ -63,12 +63,6 @@
 			<model:integer name="ownLineChangeoverDuration" />
 		</model:model-field>
 		
-		<model:model-hook plugin="orders" model="order">
-			<model:validatesWith
-				class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.OrderModelValidatorsLCNFO"
-				method="checkIfOrderHasCorrectStateAndIsPrevious" />
-		</model:model-hook>
-		
 		<view:view resource="view/lineChangeoverNormsForOrderDetails.xml" />
 		
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
