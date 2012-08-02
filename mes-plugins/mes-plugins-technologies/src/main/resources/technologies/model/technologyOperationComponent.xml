@@ -54,7 +54,7 @@
 			method="validateTechnologyOperationComponent" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="copyReferencedTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
 			method="invalidateIfBelongsToAcceptedTechnology" />
 		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setParentIfRootNodeAlreadyExists" />
