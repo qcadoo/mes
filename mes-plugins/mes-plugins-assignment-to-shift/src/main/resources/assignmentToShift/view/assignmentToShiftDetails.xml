@@ -113,7 +113,7 @@
 							<option type="correspondingView"
 								value="assignmentToShift/staffAssignmentToShiftDetails" />
 							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="false" />
+							<option type="correspondingViewInModal" value="true" />
 							<option type="searchable" value="workerNumber,workerName" />
 							<option type="orderable" value="workerNumber,workerName" />
 							<option type="paginable" value="false" />

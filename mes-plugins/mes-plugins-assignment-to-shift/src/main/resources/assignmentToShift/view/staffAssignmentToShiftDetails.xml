@@ -8,7 +8,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="assignmentToShiftDetails"
 				reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3"
+				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="worker" field="worker"
@@ -34,7 +34,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="productionLine" field="productionLine"
-							reference="productionLine" defaultEnabled="false">
+							reference="productionLine" defaultVisible="false">
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression" value="#number + ' '+#name" />
@@ -43,7 +43,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="2">
 						<component type="input" name="occupationTypeName" field="occupationTypeName"
-							reference="occupationTypeName" defaultEnabled="false"/>
+							reference="occupationTypeName" defaultVisible="false" />
 					</layoutElement>
 				</component>
 			</component>

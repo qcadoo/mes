@@ -84,8 +84,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setEnabled(true);
-        Mockito.verify(occupationTypeName).setEnabled(false);
+        Mockito.verify(productionLine).setVisible(true);
+        Mockito.verify(occupationTypeName).setVisible(false);
     }
 
     @Test
@@ -104,8 +104,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setEnabled(false);
-        Mockito.verify(occupationTypeName).setEnabled(true);
+        Mockito.verify(productionLine).setVisible(false);
+        Mockito.verify(occupationTypeName).setVisible(true);
     }
 
     @Test
@@ -123,8 +123,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setEnabled(false);
-        Mockito.verify(occupationTypeName).setEnabled(false);
+        Mockito.verify(productionLine).setVisible(false);
+        Mockito.verify(occupationTypeName).setVisible(false);
     }
 
     @Test
@@ -141,8 +141,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setEnabled(false);
-        Mockito.verify(occupationTypeName).setEnabled(false);
+        Mockito.verify(productionLine).setVisible(false);
+        Mockito.verify(occupationTypeName).setVisible(false);
     }
 
     @Test

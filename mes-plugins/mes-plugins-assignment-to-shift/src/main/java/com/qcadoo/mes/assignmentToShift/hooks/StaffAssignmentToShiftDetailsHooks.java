@@ -44,16 +44,16 @@ public class StaffAssignmentToShiftDetailsHooks {
         }
     }
 
-    private void setFieldsEnabled(final ViewDefinitionState view, final boolean enabledOrRequiredProductionLine,
-            final boolean enabledOrRequiredOccupationTypeName) {
+    private void setFieldsEnabled(final ViewDefinitionState view, final boolean visibleOrRequiredProductionLine,
+            final boolean visibleOrRequiredOccupationTypeName) {
         FieldComponent productionLine = (FieldComponent) view.getComponentByReference(PRODUCTION_LINE);
         FieldComponent occupationTypeName = (FieldComponent) view.getComponentByReference(OCCUPATION_TYPE_NAME);
 
-        productionLine.setEnabled(enabledOrRequiredProductionLine);
-        productionLine.setRequired(enabledOrRequiredProductionLine);
+        productionLine.setVisible(visibleOrRequiredProductionLine);
+        productionLine.setRequired(visibleOrRequiredProductionLine);
         productionLine.requestComponentUpdateState();
-        occupationTypeName.setEnabled(enabledOrRequiredOccupationTypeName);
-        occupationTypeName.setRequired(enabledOrRequiredOccupationTypeName);
+        occupationTypeName.setVisible(visibleOrRequiredOccupationTypeName);
+        occupationTypeName.setRequired(visibleOrRequiredOccupationTypeName);
         occupationTypeName.requestComponentUpdateState();
     }
 
