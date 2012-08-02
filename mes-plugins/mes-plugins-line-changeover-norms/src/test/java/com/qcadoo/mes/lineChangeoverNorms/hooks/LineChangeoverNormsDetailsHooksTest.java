@@ -1,25 +1,22 @@
 package com.qcadoo.mes.lineChangeoverNorms.hooks;
 
+import static com.qcadoo.mes.lineChangeoverNorms.constants.ChangeoverType.FOR_TECHNOLOGY;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.ChangeoverType.FOR_TECHNOLOGY_GROUP;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.CHANGEOVER_TYPE;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 public class LineChangeoverNormsDetailsHooksTest {
 
@@ -29,103 +26,65 @@ public class LineChangeoverNormsDetailsHooksTest {
     private ViewDefinitionState view;
 
     @Mock
-    private ComponentState state;
-
-    @Mock
-    private FieldComponent changeoverType, fromTechnology, toTechnology, fromGroupTech, toGroupTech;
-
-    @Mock
-    private FormComponent form;
-
-    @Mock
-    private Entity entity;
-
-    @Mock
-    private DataDefinition dataDefinition;
+    private FieldComponent changeoverType, fromTechnology, toTechnology, fromTechnologyGroup, toTechnologyGroup;
 
     @Before
     public void init() {
         hooks = new LineChangeoverNormsDetailsHooks();
 
         MockitoAnnotations.initMocks(this);
-        when(view.getComponentByReference(CHANGEOVER_TYPE)).thenReturn(changeoverType);
-        when(view.getComponentByReference(FROM_TECHNOLOGY)).thenReturn(fromTechnology);
-        when(view.getComponentByReference(TO_TECHNOLOGY)).thenReturn(toTechnology);
-        when(view.getComponentByReference(FROM_TECHNOLOGY_GROUP)).thenReturn(fromGroupTech);
-        when(view.getComponentByReference(TO_TECHNOLOGY_GROUP)).thenReturn(toGroupTech);
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntity()).thenReturn(entity);
-        when(entity.getDataDefinition()).thenReturn(dataDefinition);
-
+        given(view.getComponentByReference(CHANGEOVER_TYPE)).willReturn(changeoverType);
+        given(view.getComponentByReference(FROM_TECHNOLOGY)).willReturn(fromTechnology);
+        given(view.getComponentByReference(TO_TECHNOLOGY)).willReturn(toTechnology);
+        given(view.getComponentByReference(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
+        given(view.getComponentByReference(TO_TECHNOLOGY_GROUP)).willReturn(toTechnologyGroup);
     }
 
     @Test
-    @Ignore
-    public void shouldInvisibleField() throws Exception {
+    public void shouldSetFieldsVisibleAndRequiredWhenChangeoverTypeIsForTechnology() {
         // given
-        Long entityId = 1L;
-        when(form.getEntityId()).thenReturn(entityId);
-        when(changeoverType.getFieldValue()).thenReturn("01forTechnology");
-        when(dataDefinition.get(entityId)).thenReturn(entity);
-        when(entity.getStringField("changeoverType")).thenReturn("02forTechnologyGroup");
-        // when
-        hooks.invisibleAndSetRequiredFields(view, state, null);
-        // then
+        given(changeoverType.getFieldValue()).willReturn(FOR_TECHNOLOGY.getStringValue());
 
-        Mockito.verify(fromTechnology).setVisible(true);
-        Mockito.verify(toTechnology).setVisible(true);
-        Mockito.verify(fromGroupTech).setVisible(false);
-        Mockito.verify(toGroupTech).setVisible(false);
+        // given
+        hooks.setFieldsVisibleAndRequired(view, null, null);
+
+        // then
+        verify(fromTechnology).setVisible(true);
+        verify(fromTechnology).setRequired(true);
+
+        verify(toTechnology).setVisible(true);
+        verify(toTechnology).setRequired(true);
+
+        verify(fromTechnologyGroup).setVisible(false);
+        verify(fromTechnologyGroup).setRequired(false);
+        verify(fromTechnologyGroup).setFieldValue(null);
+
+        verify(toTechnologyGroup).setVisible(false);
+        verify(toTechnologyGroup).setRequired(false);
+        verify(toTechnologyGroup).setFieldValue(null);
     }
 
     @Test
-    @Ignore
-    public void shouldSetRequiredField() throws Exception {
+    public void shouldSetFieldsVisibleAndRequiredWhenChangeoverTypeIsForTechnologyGroup() {
         // given
-        Long entityId = 1L;
-        when(form.getEntityId()).thenReturn(entityId);
-        when(changeoverType.getFieldValue()).thenReturn("02forTechnologyGroup");
-        when(dataDefinition.get(entityId)).thenReturn(entity);
-        when(entity.getStringField("changeoverType")).thenReturn("01forTechnology");
-        // when
-        hooks.invisibleAndSetRequiredFields(view, state, null);
-        // then
-        Mockito.verify(fromTechnology).setRequired(false);
-        Mockito.verify(toTechnology).setRequired(false);
-        Mockito.verify(fromGroupTech).setRequired(true);
-        Mockito.verify(toGroupTech).setRequired(true);
+        given(changeoverType.getFieldValue()).willReturn(FOR_TECHNOLOGY_GROUP.getStringValue());
+
+        // given
+        hooks.setFieldsVisibleAndRequired(view, null, null);
+
+        verify(fromTechnology).setVisible(false);
+        verify(fromTechnology).setRequired(false);
+        verify(fromTechnology).setFieldValue(null);
+
+        verify(toTechnology).setVisible(false);
+        verify(toTechnology).setRequired(false);
+        verify(toTechnology).setFieldValue(null);
+
+        verify(fromTechnologyGroup).setVisible(true);
+        verify(fromTechnologyGroup).setRequired(true);
+
+        verify(toTechnologyGroup).setVisible(true);
+        verify(toTechnologyGroup).setRequired(true);
     }
 
-    @Test
-    @Ignore
-    public void shouldClearFieldValue() throws Exception {
-        // given
-        Long entityId = 1L;
-        when(form.getEntityId()).thenReturn(entityId);
-        when(changeoverType.getFieldValue()).thenReturn("02forTechnologyGroup");
-        when(dataDefinition.get(entityId)).thenReturn(entity);
-        when(entity.getStringField("changeoverType")).thenReturn("01forTechnology");
-        // when
-        hooks.invisibleAndSetRequiredFields(view, state, null);
-
-        // then
-        Mockito.verify(fromTechnology).setFieldValue(null);
-        Mockito.verify(toTechnology).setFieldValue(null);
-        Mockito.verify(fromGroupTech).setFieldValue(null);
-        Mockito.verify(toGroupTech).setFieldValue(null);
-    }
-
-    @Test
-    @Ignore
-    public void shouldReturnWhenEntityIdIsNull() throws Exception {
-        // given
-        when(form.getEntityId()).thenReturn(null);
-
-        // when
-        hooks.invisibleAndSetRequiredFields(view, state, null);
-
-        // when
-
-        // then
-    }
 }

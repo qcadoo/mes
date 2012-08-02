@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns="http://schema.qcadoo.org/view"
-    xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	 name="matchingChangeoverNormsDetails" modelName="lineChangeoverNorms">
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="matchingChangeoverNormsDetails" modelName="lineChangeoverNorms">
 	<component type="window" name="window" menuAccessible="true">
-	    <ribbon>
+		<ribbon>
 			<group name="matching">
 				<bigButton name="matchingChangeoverNorm" icon="generateIcon24.png"
 					action="#{form}.fireEvent(matchingChangeoverNorm);" state="disabled" />
@@ -11,128 +11,167 @@
 					action="#{form}.fireEvent(editChangeoverNorm);" state="disabled" />
 			</group>
 		</ribbon>
-		<component type="form" name="matchingChangeoverNormsDetails" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="3" rows="2">
-					<layoutElement column="1" row="1" width="3">
-					    <component type="borderLayout" name="matchingChangeoverNorm">
-							<component type="gridLayout" name="matchingChangeoverNormGridLayout"
-								columns="3" rows="1" reference="matchingChangeoverNormGridLayout" hasBorders="false">
+		<component type="form" name="matchingChangeoverNormsDetails"
+			reference="form">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="2">
+				<layoutElement column="1" row="1" width="3">
+					<component type="borderLayout" name="matchingChangeoverNorm">
+						<component type="gridLayout" name="matchingChangeoverNormGridLayout"
+							columns="3" rows="1" reference="matchingChangeoverNormGridLayout"
+							hasBorders="false">
 							<layoutElement column="1" row="1">
-							    <component type="lookup" name="matchingFromTechnology" field="fromTechnology" reference="matchingFromTechnology" >
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="enabledButtonAfterSelectionTechnologies" />
+								<component type="lookup" name="matchingFromTechnology"
+									field="fromTechnology" reference="matchingFromTechnology">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
+										method="enabledButtonAfterSelectionTechnologies" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="lookup" name="matchingToTechnology"
+									field="toTechnology" reference="matchingToTechnology">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
+										method="enabledButtonAfterSelectionTechnologies" />
+								</component>
+							</layoutElement>
+							<layoutElement column="3" row="1">
+								<component type="lookup" name="matchingProductionLine"
+									field="productionLine" reference="matchingProductionLine">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
 						</component>
-					  </layoutElement>
-					  <layoutElement column="2" row="1">
-					      <component type="lookup" name="matchingToTechnology" field="toTechnology" reference="matchingToTechnology" >
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="enabledButtonAfterSelectionTechnologies" />
+						<option type="label" value="matchingChangeoverNormLabel" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" width="3">
+					<component type="label" name="matchingNormNotFound"
+						reference="matchingNormNotFound" defaultEnabled="false" />
+					<component type="borderLayout" name="matchingNorm"
+						reference="matchingNorm">
+						<component type="gridLayout" name="gridLayout" columns="3"
+							rows="4">
+							<layoutElement column="1" row="1">
+								<component type="input" name="number" field="number"
+									reference="number" defaultEnabled="false">
+									<option type="alignment" value="right" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="select" name="changeoverType" field="changeoverType"
+									reference="changeoverType" defaultEnabled="false">
+									<listener event="onSelectedEntityChange"
+										class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+										method="setFieldsVisibleAndRequired" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3">
+								<component type="lookup" name="fromTechnology" field="fromTechnology"
+									reference="fromTechnology" defaultEnabled="false">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="4">
+								<component type="lookup" name="toTechnology" field="toTechnology"
+									reference="toTechnology" defaultEnabled="false">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="1">
+								<component type="time" name="duration" field="duration"
+									reference="duration" defaultEnabled="false" />
+							</layoutElement>
+							<layoutElement column="2" row="2">
+								<component type="lookup" name="productionLine" field="productionLine"
+									reference="productionLine" defaultEnabled="false">
+									<option type="column" name="name" fields="name" link="true"
+										width="300" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="3">
+								<component type="lookup" name="fromTechnologyGroup"
+									field="fromTechnologyGroup" reference="fromTechnologyGroup"
+									defaultEnabled="false">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="4">
+								<component type="lookup" name="toTechnologyGroup"
+									field="toTechnologyGroup" reference="toTechnologyGroup"
+									defaultEnabled="false">
+									<option type="column" name="name" fields="name" link="true"
+										width="200" />
+									<option type="searchable" value="name,number" />
+									<option type="orderable" value="name,number" />
+									<option type="expression"
+										value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+									<option type="fieldCode" value="number" />
+								</component>
+							</layoutElement>
 						</component>
-					  </layoutElement>
-					  <layoutElement column="3" row="1">
-					      <component type="lookup" name="matchingProductionLine" field="productionLine" reference="matchingProductionLine" >
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					  </layoutElement>
-					  </component>
-					  <option type="label" value="matchingChangeoverNormLabel" />
-				  </component>
-			  </layoutElement>
-			  <layoutElement column="1" row="2" width="3" >
-			   <component type="label" name="matchingNormNotFound" reference="matchingNormNotFound" defaultEnabled="false"/>
-			       <component type="borderLayout" name="matchingNorm" reference="matchingNorm">
-			      <component type="gridLayout" name="gridLayout" columns="3" rows="4" >
-					<layoutElement column="1" row="1" >
-						<component type="input" name="number" field="number" reference="number" defaultEnabled="false">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="select" name="changeoverType" field="changeoverType" reference="changeoverType" defaultEnabled="false">
-						    <listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
-								method="invisibleAndSetRequiredFields" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="3">
-						<component type="lookup" name="fromTechnology" field="fromTechnology" reference="fromTechnology" defaultEnabled="false">
-							<option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="4">
-						<component type="lookup" name="toTechnology" field="toTechnology" reference="toTechnology" defaultEnabled="false" >
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="time" name="duration" field="duration" reference="duration" defaultEnabled="false" />
-					</layoutElement>	
-					<layoutElement column="2" row="2">
-						<component type="lookup" name="productionLine" field="productionLine" reference="productionLine" defaultEnabled="false">
-							<option type="column" name="name" fields="name" link="true"
-								width="300" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>	
-					<layoutElement column="2" row="3">
-						<component type="lookup" name="fromTechnologyGroup" field="fromTechnologyGroup" reference="fromTechnologyGroup" defaultEnabled="false">
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="4">
-						<component type="lookup" name="toTechnologyGroup" field="toTechnologyGroup" reference="toTechnologyGroup" defaultEnabled="false">
-						    <option type="column" name="name" fields="name" link="true" width="200" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
-					</layoutElement>			
-				</component>
-					<option type="label" value="matchNormsLabel" />
-				</component>
-			  </layoutElement>
-		  </component>
-		  <listener event="matchingChangeoverNorm"
-					class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="matchingChangeoverNorm" />
-		  <listener event="editChangeoverNorm"
-					class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners" method="redirectToChangedNormsDetails" />
-	  </component>
+						<option type="label" value="matchNormsLabel" />
+					</component>
+				</layoutElement>
+			</component>
+			<listener event="matchingChangeoverNorm"
+				class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
+				method="matchingChangeoverNorm" />
+			<listener event="editChangeoverNorm"
+				class="com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners"
+				method="redirectToChangedNormsDetails" />
+		</component>
 	</component>
 	<hooks>
-	    <beforeRender class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
-			method="invisibleField" />
-	    <beforeRender class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
+			method="setFieldsVisible" />
+		<beforeRender
+			class="com.qcadoo.mes.lineChangeoverNorms.hooks.MatchingChangeoverNormsDetailsHooks"
 			method="fillOrCleanFields" />
-	    </hooks>
+	</hooks>
 </view>

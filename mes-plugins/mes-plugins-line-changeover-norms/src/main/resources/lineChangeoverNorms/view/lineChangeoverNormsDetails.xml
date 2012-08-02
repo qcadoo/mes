@@ -22,7 +22,7 @@
 							reference="changeoverType">
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
-								method="invisibleAndSetRequiredFields" />
+								method="setFieldsVisibleAndRequired" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
@@ -98,6 +98,6 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
-			method="invisibleField" />
+			method="setFieldsVisibleAndRequired" />
 	</hooks>
 </view>

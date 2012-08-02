@@ -20,7 +20,7 @@ public class MatchingChangeoverNormsDetailsHooks {
     @Autowired
     private MatchingChangeoverNormsDetailsListeners listeners;
 
-    public void invisibleField(final ViewDefinitionState view) {
+    public void setFieldsVisible(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         ComponentState matchingNorm = view.getComponentByReference("matchingNorm");
         ComponentState matchingNormNotFound = view.getComponentByReference("matchingNormNotFound");

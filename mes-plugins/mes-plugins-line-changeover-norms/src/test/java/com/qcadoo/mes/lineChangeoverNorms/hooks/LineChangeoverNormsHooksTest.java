@@ -6,8 +6,8 @@ import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFi
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY;
 import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +34,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @PrepareForTest(SearchRestrictions.class)
 public class LineChangeoverNormsHooksTest {
 
+    private static final String L_ERROR = "lineChangeoverNorms.lineChangeoverNorm.fieldIsRequired";
+
     private LineChangeoverNormsHooks hooks;
 
     @Mock
@@ -57,31 +59,32 @@ public class LineChangeoverNormsHooksTest {
     @Before
     public void init() {
         hooks = new LineChangeoverNormsHooks();
+
         MockitoAnnotations.initMocks(this);
+
         ReflectionTestUtils.setField(hooks, "dataDefinitionService", dataDefinitionService);
         PowerMockito.mockStatic(SearchRestrictions.class);
-
     }
 
     private SearchCriteriaBuilder searchMatchingChangeroverNorms(final Entity fromTechnology, final Entity toTechnology,
             final Entity fromTechnologyGroup, final Entity toTechnologyGroup, final Entity producionLine) {
-        when(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, fromTechnology)).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, fromTechnology)).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        when(SearchRestrictions.belongsTo(TO_TECHNOLOGY, toTechnology)).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.belongsTo(TO_TECHNOLOGY, toTechnology)).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        when(SearchRestrictions.belongsTo(FROM_TECHNOLOGY_GROUP, fromTechnologyGroup)).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.belongsTo(FROM_TECHNOLOGY_GROUP, fromTechnologyGroup)).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        when(SearchRestrictions.belongsTo(TO_TECHNOLOGY_GROUP, toTechnologyGroup)).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.belongsTo(TO_TECHNOLOGY_GROUP, toTechnologyGroup)).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        when(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        when(SearchRestrictions.ne("id", entity.getId())).thenReturn(criterion);
-        when(searchCriteria.add(criterion)).thenReturn(searchCriteria);
+        given(SearchRestrictions.ne("id", entity.getId())).willReturn(criterion);
+        given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
         return searchCriteria;
     }
@@ -91,23 +94,26 @@ public class LineChangeoverNormsHooksTest {
         // given
         Long id = 1L;
         String changeoverNumber = "0002";
-        when(entity.getId()).thenReturn(id);
-        when(entity.getBelongsToField(FROM_TECHNOLOGY)).thenReturn(fromTechnology);
-        when(entity.getBelongsToField(TO_TECHNOLOGY)).thenReturn(toTechnology);
-        when(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).thenReturn(fromTechnologyGroup);
-        when(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).thenReturn(toTechnologyGroup);
-        when(entity.getBelongsToField(PRODUCTION_LINE)).thenReturn(productionLine);
-        when(
+
+        given(entity.getId()).willReturn(id);
+        given(entity.getBelongsToField(FROM_TECHNOLOGY)).willReturn(fromTechnology);
+        given(entity.getBelongsToField(TO_TECHNOLOGY)).willReturn(toTechnology);
+        given(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
+        given(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(toTechnologyGroup);
+        given(entity.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(
                 dataDefinitionService.get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER,
-                        LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)).thenReturn(dataDefinition);
-        when(dataDefinition.find()).thenReturn(searchCriteria);
+                        LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)).willReturn(dataDefinition);
+        given(dataDefinition.find()).willReturn(searchCriteria);
 
         searchMatchingChangeroverNorms(fromTechnology, toTechnology, fromTechnologyGroup, toTechnologyGroup, productionLine);
-        when(searchCriteria.uniqueResult()).thenReturn(changeover);
+        given(searchCriteria.uniqueResult()).willReturn(changeover);
 
-        when(changeover.getStringField(NUMBER)).thenReturn(changeoverNumber);
+        given(changeover.getStringField(NUMBER)).willReturn(changeoverNumber);
+
         // when
         hooks.checkUniqueNorms(dataDefinition, entity);
+
         // then
         verify(entity).addGlobalError("lineChangeoverNorms.lineChangeoverNorm.notUnique", changeoverNumber);
     }
@@ -115,32 +121,35 @@ public class LineChangeoverNormsHooksTest {
     @Test
     public void shouldReturnErrorWhenRequiredFieldForTechnologyIsNotFill() throws Exception {
         // given
-        final String error = "lineChangeoverNorms.lineChangeoverNorm.fieldIsRequired";
-        when(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).thenReturn("01forTechnology");
-        when(entity.getBelongsToField(FROM_TECHNOLOGY)).thenReturn(null);
-        when(entity.getDataDefinition()).thenReturn(dataDefinition);
-        when(dataDefinition.getField(FROM_TECHNOLOGY)).thenReturn(field);
+        given(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("01forTechnology");
+        given(entity.getBelongsToField(FROM_TECHNOLOGY)).willReturn(null);
+        given(entity.getDataDefinition()).willReturn(dataDefinition);
+        given(dataDefinition.getField(FROM_TECHNOLOGY)).willReturn(field);
+
         // when
         boolean result = hooks.checkRequiredField(dataDefinition, entity);
+
         // then
         Assert.isTrue(!result);
-        verify(entity).addError(field, error);
+        verify(entity).addError(field, L_ERROR);
     }
 
     @Test
     public void shouldReturnErrorWhenRequiredFieldForTechnologyGroupIsNotFill() throws Exception {
         // given
-        final String error = "lineChangeoverNorms.lineChangeoverNorm.fieldIsRequired";
-        when(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).thenReturn("02forTechnologyGroup");
-        when(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).thenReturn(fromTechnologyGroup);
-        when(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).thenReturn(null);
+        given(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("02forTechnologyGroup");
+        given(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
+        given(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(null);
 
-        when(entity.getDataDefinition()).thenReturn(dataDefinition);
-        when(dataDefinition.getField(TO_TECHNOLOGY_GROUP)).thenReturn(field);
+        given(entity.getDataDefinition()).willReturn(dataDefinition);
+        given(dataDefinition.getField(TO_TECHNOLOGY_GROUP)).willReturn(field);
+
         // when
         boolean result = hooks.checkRequiredField(dataDefinition, entity);
+
         // then
         Assert.isTrue(!result);
-        verify(entity).addError(field, error);
+        verify(entity).addError(field, L_ERROR);
     }
+
 }
