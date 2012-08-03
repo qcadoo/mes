@@ -57,7 +57,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldInvisibleBorderLayoutWhenNormsNotFound() throws Exception {
+    public void shouldntSetFieldsVisibleWhenNormsNotFound() throws Exception {
         // given
         given(form.getEntityId()).willReturn(null);
 
@@ -70,7 +70,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldInvisibleLabelWhenNormsFound() throws Exception {
+    public void shouldSetFieldsVisibleWhenNormsFound() throws Exception {
         // given
         given(form.getEntityId()).willReturn(1L);
 
