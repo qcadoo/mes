@@ -15,7 +15,6 @@ import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +23,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.Module;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
 public class OccupationTypeLoaderModule extends Module {
@@ -42,8 +42,8 @@ public class OccupationTypeLoaderModule extends Module {
 
     private static final String L_NAME = "name";
 
-    @Value("${samplesDatasetLocale}")
-    private String locale;
+    @Autowired
+    private DefaultLocaleResolver defaultLocaleResolver;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -121,20 +121,9 @@ public class OccupationTypeLoaderModule extends Module {
                 .add(SearchRestrictions.eq(L_NAME, L_OCCUPATION_TYPE)).uniqueResult();
     }
 
-    private String getSamplesDatasetLocale() {
-        if ("pl".equalsIgnoreCase(locale)) {
-            return "pl";
-        }
-        if ("en".equalsIgnoreCase(locale)) {
-            return "en";
-        }
-
-        return Locale.getDefault().getLanguage();
-    }
-
     private InputStream getOccupationTypeXmlFile() throws IOException {
         return OccupationTypeLoaderModule.class.getResourceAsStream("/assignmentToShift/model/data/occupationType" + "_"
-                + getSamplesDatasetLocale() + ".xml");
+                + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
 }

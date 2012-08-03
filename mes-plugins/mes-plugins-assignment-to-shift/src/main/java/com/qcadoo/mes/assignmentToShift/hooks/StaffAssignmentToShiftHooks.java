@@ -2,8 +2,6 @@ package com.qcadoo.mes.assignmentToShift.hooks;
 
 import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +30,9 @@ public class StaffAssignmentToShiftHooks {
                         "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");
                 return;
             }
-            entity.setField(
-                    "occupationTypeValueForGrid",
-                    occupationType
-                            + ": "
-                            + translationService.translate("assignmentToShift.staffAssignmentToShift.workOnLine.lineNumber",
-                                    Locale.getDefault(), entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE)
-                                            .getStringField("number")));
+            entity.setField("occupationTypeValueForGrid",
+                    occupationType + ": "
+                            + entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE).getStringField("number"));
         } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE.getStringValue())) {
             entity.setField("occupationTypeValueForGrid",
                     occupationType + ": " + entity.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
