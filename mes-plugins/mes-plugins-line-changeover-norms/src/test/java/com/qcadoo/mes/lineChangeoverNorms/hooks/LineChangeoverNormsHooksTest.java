@@ -42,10 +42,11 @@ public class LineChangeoverNormsHooksTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private Entity entity, fromTechnology, toTechnology, productionLine, changeover, fromTechnologyGroup, toTechnologyGroup;
+    private Entity changeoverNorm, fromTechnology, toTechnology, productionLine, changeover, fromTechnologyGroup,
+            toTechnologyGroup;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition changeoverNormDD;
 
     @Mock
     private SearchCriteriaBuilder searchCriteria;
@@ -83,28 +84,28 @@ public class LineChangeoverNormsHooksTest {
         given(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).willReturn(criterion);
         given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
-        given(SearchRestrictions.ne("id", entity.getId())).willReturn(criterion);
+        given(SearchRestrictions.ne("id", changeoverNorm.getId())).willReturn(criterion);
         given(searchCriteria.add(criterion)).willReturn(searchCriteria);
 
         return searchCriteria;
     }
 
     @Test
-    public void shouldAddErrorForEntityWhenNotUnique() throws Exception {
+    public void shouldAddErrorForEntityWhenNotUnique() {
         // given
         Long id = 1L;
         String changeoverNumber = "0002";
 
-        given(entity.getId()).willReturn(id);
-        given(entity.getBelongsToField(FROM_TECHNOLOGY)).willReturn(fromTechnology);
-        given(entity.getBelongsToField(TO_TECHNOLOGY)).willReturn(toTechnology);
-        given(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
-        given(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(toTechnologyGroup);
-        given(entity.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(changeoverNorm.getId()).willReturn(id);
+        given(changeoverNorm.getBelongsToField(FROM_TECHNOLOGY)).willReturn(fromTechnology);
+        given(changeoverNorm.getBelongsToField(TO_TECHNOLOGY)).willReturn(toTechnology);
+        given(changeoverNorm.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
+        given(changeoverNorm.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(toTechnologyGroup);
+        given(changeoverNorm.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(
                 dataDefinitionService.get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER,
-                        LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)).willReturn(dataDefinition);
-        given(dataDefinition.find()).willReturn(searchCriteria);
+                        LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)).willReturn(changeoverNormDD);
+        given(changeoverNormDD.find()).willReturn(searchCriteria);
 
         searchMatchingChangeroverNorms(fromTechnology, toTechnology, fromTechnologyGroup, toTechnologyGroup, productionLine);
         given(searchCriteria.uniqueResult()).willReturn(changeover);
@@ -112,44 +113,46 @@ public class LineChangeoverNormsHooksTest {
         given(changeover.getStringField(NUMBER)).willReturn(changeoverNumber);
 
         // when
-        hooks.checkUniqueNorms(dataDefinition, entity);
+        hooks.checkUniqueNorms(changeoverNormDD, changeoverNorm);
 
         // then
-        verify(entity).addGlobalError("lineChangeoverNorms.lineChangeoverNorm.notUnique", changeoverNumber);
+        verify(changeoverNorm).addGlobalError("lineChangeoverNorms.lineChangeoverNorm.notUnique", changeoverNumber);
     }
 
     @Test
-    public void shouldReturnErrorWhenRequiredFieldForTechnologyIsNotFill() throws Exception {
+    public void shouldReturnErrorWhenRequiredFieldForTechnologyIsNotFill() {
         // given
-        given(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("01forTechnology");
-        given(entity.getBelongsToField(FROM_TECHNOLOGY)).willReturn(null);
-        given(entity.getDataDefinition()).willReturn(dataDefinition);
-        given(dataDefinition.getField(FROM_TECHNOLOGY)).willReturn(field);
+        given(changeoverNorm.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("01forTechnology");
+        given(changeoverNorm.getBelongsToField(FROM_TECHNOLOGY)).willReturn(null);
+        given(changeoverNorm.getDataDefinition()).willReturn(changeoverNormDD);
+        given(changeoverNormDD.getField(FROM_TECHNOLOGY)).willReturn(field);
 
         // when
-        boolean result = hooks.checkRequiredField(dataDefinition, entity);
+        boolean result = hooks.checkRequiredField(changeoverNormDD, changeoverNorm);
 
         // then
         Assert.isTrue(!result);
-        verify(entity).addError(field, L_ERROR);
+
+        verify(changeoverNorm).addError(field, L_ERROR);
     }
 
     @Test
     public void shouldReturnErrorWhenRequiredFieldForTechnologyGroupIsNotFill() throws Exception {
         // given
-        given(entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("02forTechnologyGroup");
-        given(entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
-        given(entity.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(null);
+        given(changeoverNorm.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE)).willReturn("02forTechnologyGroup");
+        given(changeoverNorm.getBelongsToField(FROM_TECHNOLOGY_GROUP)).willReturn(fromTechnologyGroup);
+        given(changeoverNorm.getBelongsToField(TO_TECHNOLOGY_GROUP)).willReturn(null);
 
-        given(entity.getDataDefinition()).willReturn(dataDefinition);
-        given(dataDefinition.getField(TO_TECHNOLOGY_GROUP)).willReturn(field);
+        given(changeoverNorm.getDataDefinition()).willReturn(changeoverNormDD);
+        given(changeoverNormDD.getField(TO_TECHNOLOGY_GROUP)).willReturn(field);
 
         // when
-        boolean result = hooks.checkRequiredField(dataDefinition, entity);
+        boolean result = hooks.checkRequiredField(changeoverNormDD, changeoverNorm);
 
         // then
         Assert.isTrue(!result);
-        verify(entity).addError(field, L_ERROR);
+
+        verify(changeoverNorm).addError(field, L_ERROR);
     }
 
 }

@@ -46,6 +46,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     @Before
     public void init() {
         hooks = new MatchingChangeoverNormsDetailsHooks();
+
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(hooks, "dataDefinitionService", dataDefinitionService);
@@ -57,7 +58,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldntSetFieldsVisibleWhenNormsNotFound() throws Exception {
+    public void shouldntSetFieldsVisibleWhenNormsNotFound() {
         // given
         given(form.getEntityId()).willReturn(null);
 
@@ -70,7 +71,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldSetFieldsVisibleWhenNormsFound() throws Exception {
+    public void shouldSetFieldsVisibleWhenNormsFound() {
         // given
         given(form.getEntityId()).willReturn(1L);
 
@@ -83,7 +84,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldFillOrCleanFieldsNormsNotFound() throws Exception {
+    public void shouldFillOrCleanFieldsNormsNotFound() {
         // given
         given(form.getEntityId()).willReturn(null);
 
@@ -96,7 +97,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
     }
 
     @Test
-    public void shouldFillOrCleanFieldsWhenNormsFound() throws Exception {
+    public void shouldFillOrCleanFieldsWhenNormsFound() {
         // given
         given(form.getEntityId()).willReturn(1L);
         given(

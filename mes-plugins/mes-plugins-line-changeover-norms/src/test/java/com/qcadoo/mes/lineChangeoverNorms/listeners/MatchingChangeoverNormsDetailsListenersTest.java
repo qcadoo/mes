@@ -42,7 +42,7 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private Entity fromTechnology, toTechnology, productionLine, changeoverNorm;
+    private Entity fromTechnology, toTechnology, productionLine;
 
     @Mock
     private FieldComponent number, fromTechField, toTechField, fromTechGpField, toTechGpField, changeoverTypField, durationField,
@@ -103,7 +103,6 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     @Test
     public void shouldClearFieldAndDisabledButtonWhenMatchingChangeoverNormWasnotFound() throws Exception {
         // given
-
         when(changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).thenReturn(null);
         when(view.getComponentByReference(LineChangeoverNormsFields.NUMBER)).thenReturn(number);
         when(view.getComponentByReference(LineChangeoverNormsFields.FROM_TECHNOLOGY)).thenReturn(fromTechField);
@@ -125,6 +124,6 @@ public class MatchingChangeoverNormsDetailsListenersTest {
         // then
         Mockito.verify(fromTechField).setFieldValue(null);
         Mockito.verify(edit).setEnabled(false);
-
     }
+
 }
