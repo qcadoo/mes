@@ -36,13 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.samples.api.SamplesLoader;
 import com.qcadoo.mes.samples.constants.SamplesConstants;
-import com.qcadoo.mes.samples.resolver.SamplesLocaleResolver;
 import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Transactional
 public abstract class AbstractSamplesLoader implements SamplesLoader {
@@ -64,7 +64,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private SamplesLocaleResolver samplesLocaleResolver;
+    private DefaultLocaleResolver defaultLocaleResolver;
 
     @Autowired
     private StateChangeSamplesClient stateChangeSamplesClient;
@@ -74,7 +74,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
     public void load() {
         if (databaseHasToBePrepared()) {
             LOG.debug("Database has to be prepared ...");
-            loadData(samplesLocaleResolver.resolve());
+            loadData(defaultLocaleResolver.getDefaultLocale().getLanguage());
             markSamplesAsLoaded();
         } else {
             LOG.debug("Database won't be changed ... ");
