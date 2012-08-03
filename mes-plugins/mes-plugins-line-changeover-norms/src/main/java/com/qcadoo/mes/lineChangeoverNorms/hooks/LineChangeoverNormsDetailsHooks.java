@@ -37,7 +37,8 @@ public class LineChangeoverNormsDetailsHooks {
         changeFieldsState(view, TECHNOLOGY_GROUP_FIELDS, !selectForTechnology);
     }
 
-    private void changeFieldsState(final ViewDefinitionState view, final List<String> fieldNames, boolean selectForTechnology) {
+    private void changeFieldsState(final ViewDefinitionState view, final List<String> fieldNames,
+            final boolean selectForTechnology) {
         for (String fieldName : fieldNames) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(fieldName);
             field.setVisible(selectForTechnology);

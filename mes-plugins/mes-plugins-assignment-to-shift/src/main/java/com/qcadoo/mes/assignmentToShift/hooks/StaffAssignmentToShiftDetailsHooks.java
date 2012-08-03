@@ -34,9 +34,9 @@ public class StaffAssignmentToShiftDetailsHooks {
         } else {
             String occupationTypeTechnicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
 
-            if (occupationTypeTechnicalCode != null && WORK_ON_LINE.getStringValue().equals(occupationTypeTechnicalCode)) {
+            if (WORK_ON_LINE.getStringValue().equals(occupationTypeTechnicalCode)) {
                 setFieldsEnabled(view, true, false);
-            } else if (occupationTypeTechnicalCode != null && OTHER_CASE.getStringValue().equals(occupationTypeTechnicalCode)) {
+            } else if (OTHER_CASE.getStringValue().equals(occupationTypeTechnicalCode)) {
                 setFieldsEnabled(view, false, true);
             } else {
                 setFieldsEnabled(view, false, false);

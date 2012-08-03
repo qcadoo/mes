@@ -19,10 +19,14 @@
 			model="assignmentToShiftStateChange" cascade="delete" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks" method="checkUniqueEntity"/>
-		<onCreate class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+		<validatesWith
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+			method="checkUniqueEntity" />
+		<onCreate
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
 			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks" 
+		<onCopy
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
 			method="setInitialState" />
 		<onCopy
 			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"

@@ -121,7 +121,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                     }
                 }
 
-                if ((dateToFromField == null) || (dateIs == null)) {
+                if ((dateToFrom == null) || (dateIs == null)) {
                     dateToFromField.setFieldValue(null);
                     dateIsField.setFieldValue(null);
                 } else {
