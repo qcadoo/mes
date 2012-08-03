@@ -39,6 +39,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -731,7 +732,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
                 previousOrderDD);
         given(previousOrderDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.orderDescBy(DATE_TO)).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.uniqueResult()).willReturn(previousOrder);
 

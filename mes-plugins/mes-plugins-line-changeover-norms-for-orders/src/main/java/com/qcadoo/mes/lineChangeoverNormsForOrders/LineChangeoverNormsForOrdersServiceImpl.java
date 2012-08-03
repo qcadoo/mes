@@ -29,6 +29,7 @@ import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -195,8 +196,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 .find()
                 .add(SearchRestrictions.or(SearchRestrictions.ne(STATE, DECLINED.getStringValue()),
                         SearchRestrictions.ne(STATE, ABANDONED.getStringValue())))
-                .add(SearchRestrictions.lt(DATE_TO, (Date) order.getField(DATE_FROM))).orderDescBy(DATE_TO).setMaxResults(1)
-                .uniqueResult();
+                .add(SearchRestrictions.lt(DATE_TO, (Date) order.getField(DATE_FROM))).addOrder(SearchOrders.desc(DATE_TO))
+                .setMaxResults(1).uniqueResult();
     }
 
 }
