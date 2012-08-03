@@ -55,9 +55,7 @@ public class StaffAssignmentToShiftHooksTest {
         when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
         when(entity.getBelongsToField("productionLine")).thenReturn(productionLine);
         when(productionLine.getStringField("number")).thenReturn(productionLineNumber);
-        when(
-                translationService.translate("assignmentToShift.staffAssignmentToShift.workOnLine.lineNumber", locale,
-                        productionLineNumber)).thenReturn(occupationTypeForGridValue);
+
         // when
         hooks.setOccupationTypeForGridValue(dataDefinition, entity);
         // then
