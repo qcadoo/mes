@@ -31,8 +31,8 @@ public interface LineChangeoverNormsForOrdersConstants {
     String PLUGIN_IDENTIFIER = "LineChangeoverNormsForOrders";
 
     List<String> PREVIOUS_ORDER_FIELDS = Arrays.asList("previousOrder", "previousOrderTechnologyNumber",
-            "previousOrderTechnologyGroupNumber", "previousOrderDateFrom", "previousOrderDateTo");
+            "previousOrderTechnologyGroupNumber", "previousOrderDateTo", "previousOrderDateIs");
 
-    List<String> ORDER_FIELDS = Arrays.asList("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateTo");
+    List<String> ORDER_FIELDS = Arrays.asList("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateIs");
 
 }

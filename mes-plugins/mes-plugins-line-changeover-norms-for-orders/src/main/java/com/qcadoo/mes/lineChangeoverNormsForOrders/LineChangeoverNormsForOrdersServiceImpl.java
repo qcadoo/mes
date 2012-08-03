@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
@@ -34,8 +36,17 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNormsForOrdersService {
 
+    private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED = "lineChangeoverNormsForOrders.dateIs.planned";
+
+    private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED = "lineChangeoverNormsForOrders.dateIs.corrected";
+
+    private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE = "lineChangeoverNormsForOrders.dateIs.effective";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Override
     public void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields) {
@@ -49,8 +60,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
             if (order != null) {
                 FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(1));
                 FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference(orderFields.get(2));
-                FieldComponent dateFromField = (FieldComponent) view.getComponentByReference(orderFields.get(3));
-                FieldComponent dateToField = (FieldComponent) view.getComponentByReference(orderFields.get(4));
+                FieldComponent dateToFromField = (FieldComponent) view.getComponentByReference(orderFields.get(3));
+                FieldComponent dateIsField = (FieldComponent) view.getComponentByReference(orderFields.get(4));
 
                 orderField.setFieldValue(order.getId());
                 orderField.requestComponentUpdateState();
@@ -74,35 +85,52 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 technologyGroupNumberField.requestComponentUpdateState();
                 technologyNumberField.requestComponentUpdateState();
 
-                Date dateFrom = (Date) order.getField(DATE_FROM);
-                Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
-                Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+                Date dateToFrom = null;
+                String dateIs = null;
 
-                if (effectiveDateFrom != null) {
-                    dateFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(effectiveDateFrom));
-                } else if (correctedDateFrom != null) {
-                    dateFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(correctedDateFrom));
-                } else if (dateFrom != null) {
-                    dateFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(dateFrom));
+                if ("previousOrderDateTo".equals(orderFields.get(3))) {
+                    Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
+                    Date correctedDateTo = (Date) order.getField(CORRECTED_DATE_TO);
+                    Date dateTo = (Date) order.getField(DATE_TO);
+
+                    if (effectiveDateTo != null) {
+                        dateToFrom = effectiveDateTo;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
+                    } else if (correctedDateTo != null) {
+                        dateToFrom = correctedDateTo;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
+                    } else if (dateTo != null) {
+                        dateToFrom = dateTo;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
+                    }
+                } else if ("dateFrom".equals(orderFields.get(3))) {
+                    Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+                    Date correctedDateFrom = (Date) order.getField(CORRECTED_DATE_FROM);
+                    Date dateFrom = (Date) order.getField(DATE_FROM);
+
+                    if (effectiveDateFrom != null) {
+                        dateToFrom = effectiveDateFrom;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
+                    } else if (correctedDateFrom != null) {
+                        dateToFrom = correctedDateFrom;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
+                    } else if (dateFrom != null) {
+                        dateToFrom = dateFrom;
+                        dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
+                    }
                 }
 
-                Date dateTo = (Date) order.getField(DATE_TO);
-                Date correctedDateTo = (Date) order.getField(CORRECTED_DATE_TO);
-                Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
-
-                if (effectiveDateTo != null) {
-                    dateToField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(effectiveDateTo));
-                } else if (correctedDateTo != null) {
-                    dateToField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(correctedDateTo));
-                } else if (dateTo != null) {
-                    dateToField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(dateTo));
+                if ((dateToFromField == null) || (dateIs == null)) {
+                    dateToFromField.setFieldValue(null);
+                    dateIsField.setFieldValue(null);
+                } else {
+                    dateToFromField.setFieldValue(new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
+                            .format(dateToFrom));
+                    dateIsField.setFieldValue(translationService.translate(dateIs, LocaleContextHolder.getLocale()));
                 }
+
+                dateToFromField.requestComponentUpdateState();
+                dateIsField.requestComponentUpdateState();
             }
         }
     }
@@ -110,9 +138,9 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     @Override
     public boolean checkIfOrderHasCorrectStateAndIsPrevious(final Entity previousOrder, final Entity order) {
         if ((previousOrder != null)
-                && order != null
+                && (order != null)
                 && (ABANDONED.getStringValue().equals(previousOrder.getStringField(STATE))
-                        || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE)) || !checkDateIfUncorrect(
+                        || DECLINED.getStringValue().equals(previousOrder.getStringField(STATE)) || !checkIfDateIsUncorrect(
                             previousOrder, order))) {
             return false;
         }
@@ -120,7 +148,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
         return true;
     }
 
-    private boolean checkDateIfUncorrect(final Entity previousOrder, final Entity order) {
+    private boolean checkIfDateIsUncorrect(final Entity previousOrder, final Entity order) {
         if (previousOrder.getField(DATE_TO) == null || order.getField(DATE_FROM) == null) {
             return false;
         }

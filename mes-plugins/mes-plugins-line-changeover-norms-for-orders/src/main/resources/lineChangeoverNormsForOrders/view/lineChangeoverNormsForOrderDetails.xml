@@ -141,17 +141,16 @@
 										reference="previousOrderTechnologyGroupNumber" defaultEnabled="false" />
 								</layoutElement>
 								<layoutElement column="1" row="4">
-									<component type="calendar" name="previousOrderDateFrom"
-										reference="previousOrderDateFrom" defaultEnabled="false">
+									<component type="calendar" name="previousOrderDateTo"
+										reference="previousOrderDateTo" defaultEnabled="false">
 										<option type="labelWidth" value="50" />
 										<option type="withTimePicker" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="5">
-									<component type="calendar" name="previousOrderDateTo"
-										reference="previousOrderDateTo" defaultEnabled="false">
-										<option type="labelWidth" value="50" />
-										<option type="withTimePicker" value="true" />
+									<component type="input" name="previousOrderDateIs"
+										reference="previousOrderDateIs" defaultEnabled="false" hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 							</component>
@@ -192,10 +191,9 @@
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="5">
-									<component type="calendar" name="dateTo" reference="dateTo"
-										defaultEnabled="false">
-										<option type="labelWidth" value="50" />
-										<option type="withTimePicker" value="true" />
+									<component type="input" name="dateIs" reference="dateIs"
+										defaultEnabled="false" hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
 									</component>
 								</layoutElement>
 							</component>

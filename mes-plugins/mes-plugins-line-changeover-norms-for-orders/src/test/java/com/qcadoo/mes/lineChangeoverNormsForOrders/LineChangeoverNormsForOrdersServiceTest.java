@@ -1,6 +1,7 @@
 package com.qcadoo.mes.lineChangeoverNormsForOrders;
 
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.ORDER_FIELDS;
+import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
@@ -11,7 +12,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -59,6 +60,9 @@ public class LineChangeoverNormsForOrdersServiceTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
+    private TranslationService translationService;
+
+    @Mock
     private DataDefinition previousOrderDD, orderDD, technologyDD, technologyGroupDD, productionLineDD;
 
     @Mock
@@ -68,13 +72,13 @@ public class LineChangeoverNormsForOrdersServiceTest {
     private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Mock
-    private Date dateTo, dateFrom;
+    private Date dateFrom, dateTo;
 
     @Mock
     private ViewDefinitionState view;
 
     @Mock
-    private FieldComponent orderField, technologyNumberField, technologyGroupNumberField, dateFromField, dateToField;
+    private FieldComponent orderField, technologyNumberField, technologyGroupNumberField, dateToFromField, dateIsField;
 
     @Mock
     private List<String> orderFields;
@@ -86,6 +90,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         lineChangeoverNormsForOrdersService = new LineChangeoverNormsForOrdersServiceImpl();
 
         setField(lineChangeoverNormsForOrdersService, "dataDefinitionService", dataDefinitionService);
+        setField(lineChangeoverNormsForOrdersService, "translationService", translationService);
     }
 
     @Test
@@ -108,8 +113,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField, never()).setFieldValue(Mockito.any());
         verify(technologyNumberField, never()).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField, never()).setFieldValue(Mockito.any());
-        verify(dateFromField, never()).setFieldValue(Mockito.any());
-        verify(dateToField, never()).setFieldValue(Mockito.any());
+        verify(dateToFromField, never()).setFieldValue(Mockito.any());
+        verify(dateIsField, never()).setFieldValue(Mockito.any());
     }
 
     @Test
@@ -135,8 +140,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField, never()).setFieldValue(Mockito.any());
         verify(technologyNumberField, never()).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField, never()).setFieldValue(Mockito.any());
-        verify(dateFromField, never()).setFieldValue(Mockito.any());
-        verify(dateToField, never()).setFieldValue(Mockito.any());
+        verify(dateToFromField, never()).setFieldValue(Mockito.any());
+        verify(dateIsField, never()).setFieldValue(Mockito.any());
     }
 
     @Test
@@ -157,20 +162,20 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
         given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
 
         given(order.getId()).willReturn(L_ID);
 
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
 
-        given(order.getField(DATE_FROM)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
 
-        given(order.getField(DATE_TO)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
@@ -179,8 +184,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField).setFieldValue(Mockito.any());
         verify(technologyNumberField, never()).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField, never()).setFieldValue(Mockito.any());
-        verify(dateFromField, never()).setFieldValue(Mockito.any());
-        verify(dateToField, never()).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(null);
+        verify(dateIsField).setFieldValue(null);
     }
 
     @Test
@@ -201,8 +206,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
         given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
 
         given(order.getId()).willReturn(L_ID);
 
@@ -212,13 +217,13 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
 
-        given(order.getField(DATE_FROM)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
 
-        given(order.getField(DATE_TO)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
@@ -227,8 +232,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField).setFieldValue(Mockito.any());
         verify(technologyNumberField).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField, never()).setFieldValue(Mockito.any());
-        verify(dateFromField, never()).setFieldValue(Mockito.any());
-        verify(dateToField, never()).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(null);
+        verify(dateIsField).setFieldValue(null);
     }
 
     @Test
@@ -249,8 +254,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
         given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
 
         given(order.getId()).willReturn(L_ID);
 
@@ -262,13 +267,13 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
 
-        given(order.getField(DATE_FROM)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
 
-        given(order.getField(DATE_TO)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
@@ -277,12 +282,12 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField).setFieldValue(Mockito.any());
         verify(technologyNumberField).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField).setFieldValue(Mockito.any());
-        verify(dateFromField, never()).setFieldValue(Mockito.any());
-        verify(dateToField, never()).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(null);
+        verify(dateIsField).setFieldValue(null);
     }
 
     @Test
-    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndEffectiveDatesArentNull() {
+    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndEffectiveDateFromIsntNull() {
         // given
         given(orderFields.get(0)).willReturn(ORDER_FIELDS.get(0));
         given(orderFields.get(1)).willReturn(ORDER_FIELDS.get(1));
@@ -299,8 +304,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
         given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
 
         given(order.getId()).willReturn(L_ID);
 
@@ -312,113 +317,13 @@ public class LineChangeoverNormsForOrdersServiceTest {
 
         given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
 
-        given(order.getField(DATE_FROM)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(dateFrom);
-
-        given(order.getField(DATE_TO)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
-        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(dateTo);
-
-        // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
-
-        // then
-        verify(orderField).setFieldValue(Mockito.any());
-        verify(technologyNumberField).setFieldValue(Mockito.any());
-        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
-        verify(dateFromField).setFieldValue(Mockito.any());
-        verify(dateToField).setFieldValue(Mockito.any());
-    }
-
-    @Test
-    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndCorrectedDatesArentNull() {
-        // given
-        given(orderFields.get(0)).willReturn(ORDER_FIELDS.get(0));
-        given(orderFields.get(1)).willReturn(ORDER_FIELDS.get(1));
-        given(orderFields.get(2)).willReturn(ORDER_FIELDS.get(2));
-        given(orderFields.get(3)).willReturn(ORDER_FIELDS.get(3));
-        given(orderFields.get(4)).willReturn(ORDER_FIELDS.get(4));
-
-        given(view.getComponentByReference(ORDER_FIELDS.get(0))).willReturn(orderField);
-
-        given(orderField.getFieldValue()).willReturn(L_ID);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
-        given(orderDD.get(L_ID)).willReturn(order);
-
-        given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
-
-        given(order.getId()).willReturn(L_ID);
-
-        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
-
-        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
-
-        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
-
-        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
-
-        given(order.getField(DATE_FROM)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_FROM)).willReturn(dateFrom);
-        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
-
-        given(order.getField(DATE_TO)).willReturn(null);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(dateTo);
-        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
-
-        // when
-        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
-
-        // then
-        verify(orderField).setFieldValue(Mockito.any());
-        verify(technologyNumberField).setFieldValue(Mockito.any());
-        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
-        verify(dateFromField).setFieldValue(Mockito.any());
-        verify(dateToField).setFieldValue(Mockito.any());
-    }
-
-    @Test
-    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndDatesArentNull() {
-        // given
-        given(orderFields.get(0)).willReturn(ORDER_FIELDS.get(0));
-        given(orderFields.get(1)).willReturn(ORDER_FIELDS.get(1));
-        given(orderFields.get(2)).willReturn(ORDER_FIELDS.get(2));
-        given(orderFields.get(3)).willReturn(ORDER_FIELDS.get(3));
-        given(orderFields.get(4)).willReturn(ORDER_FIELDS.get(4));
-
-        given(view.getComponentByReference(ORDER_FIELDS.get(0))).willReturn(orderField);
-
-        given(orderField.getFieldValue()).willReturn(L_ID);
-
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
-        given(orderDD.get(L_ID)).willReturn(order);
-
-        given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateFromField);
-        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateToField);
-
-        given(order.getId()).willReturn(L_ID);
-
-        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
-
-        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
-
-        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
-
-        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
-
-        given(order.getField(DATE_FROM)).willReturn(dateFrom);
         given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
-        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
 
-        given(order.getField(DATE_TO)).willReturn(dateTo);
-        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
         given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
@@ -427,8 +332,258 @@ public class LineChangeoverNormsForOrdersServiceTest {
         verify(orderField).setFieldValue(Mockito.any());
         verify(technologyNumberField).setFieldValue(Mockito.any());
         verify(technologyGroupNumberField).setFieldValue(Mockito.any());
-        verify(dateFromField).setFieldValue(Mockito.any());
-        verify(dateToField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
+    }
+
+    @Test
+    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndCorrectedDateFromIsntNull() {
+        // given
+        given(orderFields.get(0)).willReturn(ORDER_FIELDS.get(0));
+        given(orderFields.get(1)).willReturn(ORDER_FIELDS.get(1));
+        given(orderFields.get(2)).willReturn(ORDER_FIELDS.get(2));
+        given(orderFields.get(3)).willReturn(ORDER_FIELDS.get(3));
+        given(orderFields.get(4)).willReturn(ORDER_FIELDS.get(4));
+
+        given(view.getComponentByReference(ORDER_FIELDS.get(0))).willReturn(orderField);
+
+        given(orderField.getFieldValue()).willReturn(L_ID);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
+        given(orderDD.get(L_ID)).willReturn(order);
+
+        given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
+
+        given(order.getId()).willReturn(L_ID);
+
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(dateFrom);
+        given(order.getField(DATE_FROM)).willReturn(null);
+
+        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
+
+        // when
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
+
+        // then
+        verify(orderField).setFieldValue(Mockito.any());
+        verify(technologyNumberField).setFieldValue(Mockito.any());
+        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
+    }
+
+    @Test
+    public void shouldFillOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndDateFromIsntNull() {
+        // given
+        given(orderFields.get(0)).willReturn(ORDER_FIELDS.get(0));
+        given(orderFields.get(1)).willReturn(ORDER_FIELDS.get(1));
+        given(orderFields.get(2)).willReturn(ORDER_FIELDS.get(2));
+        given(orderFields.get(3)).willReturn(ORDER_FIELDS.get(3));
+        given(orderFields.get(4)).willReturn(ORDER_FIELDS.get(4));
+
+        given(view.getComponentByReference(ORDER_FIELDS.get(0))).willReturn(orderField);
+
+        given(orderField.getFieldValue()).willReturn(L_ID);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
+        given(orderDD.get(L_ID)).willReturn(order);
+
+        given(view.getComponentByReference(ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(ORDER_FIELDS.get(4))).willReturn(dateIsField);
+
+        given(order.getId()).willReturn(L_ID);
+
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(dateFrom);
+
+        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
+
+        // when
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
+
+        // then
+        verify(orderField).setFieldValue(Mockito.any());
+        verify(technologyNumberField).setFieldValue(Mockito.any());
+        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
+    }
+
+    @Test
+    public void shouldFillPreviousOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndEffectiveDateToIsntNull() {
+        // given
+        given(orderFields.get(0)).willReturn(PREVIOUS_ORDER_FIELDS.get(0));
+        given(orderFields.get(1)).willReturn(PREVIOUS_ORDER_FIELDS.get(1));
+        given(orderFields.get(2)).willReturn(PREVIOUS_ORDER_FIELDS.get(2));
+        given(orderFields.get(3)).willReturn(PREVIOUS_ORDER_FIELDS.get(3));
+        given(orderFields.get(4)).willReturn(PREVIOUS_ORDER_FIELDS.get(4));
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderField);
+
+        given(orderField.getFieldValue()).willReturn(L_ID);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
+        given(orderDD.get(L_ID)).willReturn(order);
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
+
+        given(order.getId()).willReturn(L_ID);
+
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
+
+        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(dateTo);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(null);
+
+        // when
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
+
+        // then
+        verify(orderField).setFieldValue(Mockito.any());
+        verify(technologyNumberField).setFieldValue(Mockito.any());
+        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
+    }
+
+    @Test
+    public void shouldFillPreviousOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndCorrectedDateToIsntNull() {
+        // given
+        given(orderFields.get(0)).willReturn(PREVIOUS_ORDER_FIELDS.get(0));
+        given(orderFields.get(1)).willReturn(PREVIOUS_ORDER_FIELDS.get(1));
+        given(orderFields.get(2)).willReturn(PREVIOUS_ORDER_FIELDS.get(2));
+        given(orderFields.get(3)).willReturn(PREVIOUS_ORDER_FIELDS.get(3));
+        given(orderFields.get(4)).willReturn(PREVIOUS_ORDER_FIELDS.get(4));
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderField);
+
+        given(orderField.getFieldValue()).willReturn(L_ID);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
+        given(orderDD.get(L_ID)).willReturn(order);
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
+
+        given(order.getId()).willReturn(L_ID);
+
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
+
+        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(dateTo);
+        given(order.getField(DATE_TO)).willReturn(null);
+
+        // when
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
+
+        // then
+        verify(orderField).setFieldValue(Mockito.any());
+        verify(technologyNumberField).setFieldValue(Mockito.any());
+        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
+    }
+
+    @Test
+    public void shouldFillPreviousOrderFormIfFormIsntNullAndTechnologyIsntNullAndTechnologyGroupIsntNullAndDateToIsntNull() {
+        // given
+        given(orderFields.get(0)).willReturn(PREVIOUS_ORDER_FIELDS.get(0));
+        given(orderFields.get(1)).willReturn(PREVIOUS_ORDER_FIELDS.get(1));
+        given(orderFields.get(2)).willReturn(PREVIOUS_ORDER_FIELDS.get(2));
+        given(orderFields.get(3)).willReturn(PREVIOUS_ORDER_FIELDS.get(3));
+        given(orderFields.get(4)).willReturn(PREVIOUS_ORDER_FIELDS.get(4));
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(0))).willReturn(orderField);
+
+        given(orderField.getFieldValue()).willReturn(L_ID);
+
+        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
+        given(orderDD.get(L_ID)).willReturn(order);
+
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(1))).willReturn(technologyNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(2))).willReturn(technologyGroupNumberField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(3))).willReturn(dateToFromField);
+        given(view.getComponentByReference(PREVIOUS_ORDER_FIELDS.get(4))).willReturn(dateIsField);
+
+        given(order.getId()).willReturn(L_ID);
+
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
+
+        given(technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP)).willReturn(technologyGroup);
+
+        given(technology.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_NUMBER);
+
+        given(technologyGroup.getStringField(NUMBER)).willReturn(L_TECHNOLOGY_GROUP_NUMBER);
+
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_FROM)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
+
+        given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
+        given(order.getField(CORRECTED_DATE_TO)).willReturn(null);
+        given(order.getField(DATE_TO)).willReturn(dateTo);
+
+        // when
+        lineChangeoverNormsForOrdersService.fillOrderForm(view, orderFields);
+
+        // then
+        verify(orderField).setFieldValue(Mockito.any());
+        verify(technologyNumberField).setFieldValue(Mockito.any());
+        verify(technologyGroupNumberField).setFieldValue(Mockito.any());
+        verify(dateToFromField).setFieldValue(Mockito.any());
+        verify(dateIsField).setFieldValue(Mockito.any());
     }
 
     @Test
@@ -461,15 +616,30 @@ public class LineChangeoverNormsForOrdersServiceTest {
     }
 
     @Test
+    public void shouldReturnFalseWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderDateToIsAndOrderDateFromIsNull() {
+        // given
+        given(previousOrder.getStringField(STATE)).willReturn(ACCEPTED.getStringValue());
+
+        given(previousOrder.getField(DATE_TO)).willReturn(null);
+        given(order.getField(DATE_FROM)).willReturn(null);
+
+        // when
+        boolean result = lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrder, order);
+
+        // then
+        assertFalse(result);
+    }
+
+    @Test
     public void shouldReturnFalseWhenCheckIfOrderHasCorrectStateAndIsPreviousIfOrdersArentNullAndPreviousOrderIsntCorrectAndPrevious() {
         // given
-        given(previousOrder.getStringField(STATE)).willReturn(DECLINED.getStringValue());
+        given(previousOrder.getStringField(STATE)).willReturn(ACCEPTED.getStringValue());
 
         given(previousOrder.getField(DATE_TO)).willReturn(dateTo);
         given(order.getField(DATE_FROM)).willReturn(dateFrom);
 
-        given(dateTo.getTime()).willReturn(L_DATE_TIME_10);
-        given(dateFrom.getTime()).willReturn(L_DATE_TIME_20);
+        given(dateTo.getTime()).willReturn(L_DATE_TIME_20);
+        given(dateFrom.getTime()).willReturn(L_DATE_TIME_10);
 
         // when
         boolean result = lineChangeoverNormsForOrdersService.checkIfOrderHasCorrectStateAndIsPrevious(previousOrder, order);
