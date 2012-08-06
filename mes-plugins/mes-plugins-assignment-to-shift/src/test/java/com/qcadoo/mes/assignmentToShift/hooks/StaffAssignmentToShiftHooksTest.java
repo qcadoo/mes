@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -29,16 +28,12 @@ public class StaffAssignmentToShiftHooksTest {
     private Entity entity, dictionary, productionLine;
 
     @Mock
-    private TranslationService translationService;
-
-    @Mock
     private StaffAssignmentToShiftDetailsHooks staffAssignmentToShiftDetailsHooks;
 
     @Before
     public void init() {
         hooks = new StaffAssignmentToShiftHooks();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(hooks, "translationService", translationService);
         ReflectionTestUtils.setField(hooks, "assignmentToShiftDetailsHooks", staffAssignmentToShiftDetailsHooks);
     }
 

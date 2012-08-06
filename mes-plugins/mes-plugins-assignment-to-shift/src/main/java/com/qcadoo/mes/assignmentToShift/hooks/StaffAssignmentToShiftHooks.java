@@ -5,7 +5,6 @@ import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -16,9 +15,6 @@ public class StaffAssignmentToShiftHooks {
 
     @Autowired
     private StaffAssignmentToShiftDetailsHooks assignmentToShiftDetailsHooks;
-
-    @Autowired
-    private TranslationService translationService;
 
     public void setOccupationTypeForGridValue(final DataDefinition dataDefinition, final Entity entity) {
         String occupationType = entity.getStringField("occupationType");
