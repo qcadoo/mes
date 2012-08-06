@@ -14,6 +14,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class MatchingChangeoverNormsDetailsHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -21,9 +23,11 @@ public class MatchingChangeoverNormsDetailsHooks {
     private MatchingChangeoverNormsDetailsListeners listeners;
 
     public void setFieldsVisible(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
         ComponentState matchingNorm = view.getComponentByReference("matchingNorm");
         ComponentState matchingNormNotFound = view.getComponentByReference("matchingNormNotFound");
+
         if (form.getEntityId() == null) {
             matchingNorm.setVisible(false);
             matchingNormNotFound.setVisible(true);
@@ -34,7 +38,8 @@ public class MatchingChangeoverNormsDetailsHooks {
     }
 
     public void fillOrCleanFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
         if (form.getEntityId() == null) {
             listeners.clearField(view);
             listeners.changeStateEditButton(view, false);
@@ -45,4 +50,5 @@ public class MatchingChangeoverNormsDetailsHooks {
             listeners.changeStateEditButton(view, true);
         }
     }
+
 }

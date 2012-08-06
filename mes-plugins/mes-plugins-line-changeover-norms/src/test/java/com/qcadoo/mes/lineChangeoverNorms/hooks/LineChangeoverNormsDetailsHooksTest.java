@@ -33,6 +33,7 @@ public class LineChangeoverNormsDetailsHooksTest {
         hooks = new LineChangeoverNormsDetailsHooks();
 
         MockitoAnnotations.initMocks(this);
+
         given(view.getComponentByReference(CHANGEOVER_TYPE)).willReturn(changeoverType);
         given(view.getComponentByReference(FROM_TECHNOLOGY)).willReturn(fromTechnology);
         given(view.getComponentByReference(TO_TECHNOLOGY)).willReturn(toTechnology);

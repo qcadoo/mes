@@ -24,50 +24,63 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class LineChangeoverNormsHooks {
 
+    private static final String L_LINE_CHANGEOVER_NORMS_LINE_CHANGEOVER_NORM_FIELD_IS_REQUIRED = "lineChangeoverNorms.lineChangeoverNorm.fieldIsRequired";
+
+    private static final String L_LINE_CHANGEOVER_NORMS_LINE_CHANGEOVER_NORM_NOT_UNIQUE = "lineChangeoverNorms.lineChangeoverNorm.notUnique";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public boolean checkUniqueNorms(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean checkUniqueNorms(final DataDefinition changeoverNormDD, final Entity changeoverNorm) {
         SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
                 .get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER, LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS)
-                .find().add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, entity.getBelongsToField(FROM_TECHNOLOGY)))
-                .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY, entity.getBelongsToField(TO_TECHNOLOGY)))
-                .add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY_GROUP, entity.getBelongsToField(FROM_TECHNOLOGY_GROUP)))
-                .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY_GROUP, entity.getBelongsToField(TO_TECHNOLOGY_GROUP)))
-                .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, entity.getBelongsToField(PRODUCTION_LINE)));
+                .find()
+                .add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY, changeoverNorm.getBelongsToField(FROM_TECHNOLOGY)))
+                .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY, changeoverNorm.getBelongsToField(TO_TECHNOLOGY)))
+                .add(SearchRestrictions.belongsTo(FROM_TECHNOLOGY_GROUP, changeoverNorm.getBelongsToField(FROM_TECHNOLOGY_GROUP)))
+                .add(SearchRestrictions.belongsTo(TO_TECHNOLOGY_GROUP, changeoverNorm.getBelongsToField(TO_TECHNOLOGY_GROUP)))
+                .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, changeoverNorm.getBelongsToField(PRODUCTION_LINE)));
 
-        if (entity.getId() != null) {
-            searchCriteriaBuilder.add(SearchRestrictions.ne("id", entity.getId()));
+        if (changeoverNorm.getId() != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", changeoverNorm.getId()));
         }
 
-        Entity lineChangeoverNorms = searchCriteriaBuilder.uniqueResult();
+        Entity existingChangeoverNorm = searchCriteriaBuilder.uniqueResult();
 
-        if (lineChangeoverNorms == null) {
-            return true;
-        } else {
-            entity.addGlobalError("lineChangeoverNorms.lineChangeoverNorm.notUnique", lineChangeoverNorms.getStringField(NUMBER));
+        if (existingChangeoverNorm != null) {
+            changeoverNorm.addGlobalError(L_LINE_CHANGEOVER_NORMS_LINE_CHANGEOVER_NORM_NOT_UNIQUE,
+                    existingChangeoverNorm.getStringField(NUMBER));
+
             return false;
         }
+
+        return true;
     }
 
-    public boolean checkRequiredField(final DataDefinition dataDefinition, final Entity entity) {
-        String changeoverType = entity.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE);
-        final String error = "lineChangeoverNorms.lineChangeoverNorm.fieldIsRequired";
+    public boolean checkRequiredField(final DataDefinition changeoverNormDD, final Entity changeoverNorm) {
+        String changeoverType = changeoverNorm.getStringField(LineChangeoverNormsFields.CHANGEOVER_TYPE);
+
         if (changeoverType.equals(ChangeoverType.FOR_TECHNOLOGY.getStringValue())) {
             for (String reference : Arrays.asList(FROM_TECHNOLOGY, TO_TECHNOLOGY)) {
-                if (entity.getBelongsToField(reference) == null) {
-                    entity.addError(entity.getDataDefinition().getField(reference), error);
+                if (changeoverNorm.getBelongsToField(reference) == null) {
+                    changeoverNorm.addError(changeoverNorm.getDataDefinition().getField(reference),
+                            L_LINE_CHANGEOVER_NORMS_LINE_CHANGEOVER_NORM_FIELD_IS_REQUIRED);
+
                     return false;
                 }
             }
         } else {
             for (String reference : Arrays.asList(FROM_TECHNOLOGY_GROUP, TO_TECHNOLOGY_GROUP)) {
-                if (entity.getBelongsToField(reference) == null) {
-                    entity.addError(entity.getDataDefinition().getField(reference), error);
+                if (changeoverNorm.getBelongsToField(reference) == null) {
+                    changeoverNorm.addError(changeoverNorm.getDataDefinition().getField(reference),
+                            L_LINE_CHANGEOVER_NORMS_LINE_CHANGEOVER_NORM_FIELD_IS_REQUIRED);
+
                     return false;
                 }
             }
         }
+
         return true;
     }
+
 }

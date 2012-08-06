@@ -118,4 +118,12 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender 
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks" 
+			method="generateAssignmentToShiftReportNumber" />
+		<beforeRender 
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportDetailsHooks" 
+			method="disableFields" />
+	</hooks>
 </view>

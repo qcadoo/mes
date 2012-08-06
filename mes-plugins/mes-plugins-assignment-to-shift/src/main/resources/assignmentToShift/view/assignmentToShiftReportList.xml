@@ -1,26 +1,23 @@
-<view name="assignmentToShiftReportList" modelName="assignmentToShiftReport" menuAccessible="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+<view name="assignmentToShiftReportList" modelName="assignmentToShiftReport"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
-			<group name="report">
-				<bigButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('assignmentToShiftReport','sample','pdf',ReportTitle='Sample')"
-					state="enabled" />
-			</group>
 		</ribbon>
-		<component type="grid" name="assignmentToShiftReportList" reference="grid">
+		<component type="grid" name="assignmentToShiftReportList"
+			reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="shift" fields="shift" expression="#shift['name']"/>
+			<option type="column" name="shift" fields="shift" expression="#shift['name']" />
 			<option type="column" name="dateFrom" fields="dateFrom" />
 			<option type="column" name="dateTo" fields="dateTo" />
 			<option type="column" name="generated" fields="generated" />
 			<option type="column" name="createDate" fields="createDate" />
 			<option type="column" name="createUser" fields="createUser" />
 			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="assignmentToShift/assignmentToShiftReportDetails" />
+			<option type="correspondingView"
+				value="assignmentToShift/assignmentToShiftReportDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable" value="name,number" />
 			<option type="orderable" value="name,number" />

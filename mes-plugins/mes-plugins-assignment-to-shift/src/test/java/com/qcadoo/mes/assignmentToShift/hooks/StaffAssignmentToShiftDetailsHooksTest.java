@@ -6,7 +6,7 @@ import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftF
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
 import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
 import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,14 +57,14 @@ public class StaffAssignmentToShiftDetailsHooksTest {
 
         ReflectionTestUtils.setField(detailsHooks, "dataDefinitionService", dataDefinitionService);
 
-        when(view.getComponentByReference("form")).thenReturn(staffAssignmentToShiftForm);
+        given(view.getComponentByReference("form")).willReturn(staffAssignmentToShiftForm);
 
-        when(view.getComponentByReference(OCCUPATION_TYPE)).thenReturn(occupationType);
-        when(view.getComponentByReference(PRODUCTION_LINE)).thenReturn(productionLine);
-        when(view.getComponentByReference(OCCUPATION_TYPE_NAME)).thenReturn(occupationTypeName);
+        given(view.getComponentByReference(OCCUPATION_TYPE)).willReturn(occupationType);
+        given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLine);
+        given(view.getComponentByReference(OCCUPATION_TYPE_NAME)).willReturn(occupationTypeName);
 
-        when(dataDefinitionService.get("qcadooModel", "dictionaryItem")).thenReturn(dataDefinition);
-        when(dataDefinition.find()).thenReturn(builder);
+        given(dataDefinitionService.get("qcadooModel", "dictionaryItem")).willReturn(dataDefinition);
+        given(dataDefinition.find()).willReturn(builder);
 
     }
 
@@ -74,11 +74,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         String dictionaryName = "Praca na linii";
         String technicalCode = "01workOnLine";
 
-        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(technicalCode);
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(dictionary);
+        given(dictionary.getStringField(TECHNICAL_CODE)).willReturn(technicalCode);
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
@@ -94,11 +94,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         String dictionaryName = "Inne zadania";
         String technicalCode = "02otherCase";
 
-        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(technicalCode);
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(dictionary);
+        given(dictionary.getStringField(TECHNICAL_CODE)).willReturn(technicalCode);
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
@@ -113,11 +113,11 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         // given
         String dictionaryName = "MIX";
 
-        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField(TECHNICAL_CODE)).thenReturn(Mockito.anyString());
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(dictionary);
+        given(dictionary.getStringField(TECHNICAL_CODE)).willReturn(Mockito.anyString());
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
@@ -132,10 +132,10 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         // given
         String dictionaryName = "";
 
-        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(null);
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(null);
 
         // when
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
@@ -150,8 +150,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         // given
         String dictionaryName = "Praca na linii";
 
-        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(1L);
-        when(occupationType.getFieldValue()).thenReturn(dictionaryName);
+        given(staffAssignmentToShiftForm.getEntityId()).willReturn(1L);
+        given(occupationType.getFieldValue()).willReturn(dictionaryName);
 
         // when
         detailsHooks.setOccupationTypeToDefault(view);
@@ -163,12 +163,12 @@ public class StaffAssignmentToShiftDetailsHooksTest {
     @Test
     public void shouldntSetOccupationTypeToDefaultWhenDictionaryIsNull() {
         // given
-        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(null);
-        when(occupationType.getFieldValue()).thenReturn(null);
+        given(staffAssignmentToShiftForm.getEntityId()).willReturn(null);
+        given(occupationType.getFieldValue()).willReturn(null);
 
         SearchCriterion criterion = SearchRestrictions.eq(TECHNICAL_CODE, WORK_ON_LINE.getStringValue());
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(null);
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(null);
 
         // when
         detailsHooks.setOccupationTypeToDefault(view);
@@ -180,13 +180,13 @@ public class StaffAssignmentToShiftDetailsHooksTest {
     @Test
     public void shouldSetOccupationTypeToDefaultWhenDictionary() {
         // given
-        when(staffAssignmentToShiftForm.getEntityId()).thenReturn(null);
-        when(occupationType.getFieldValue()).thenReturn(null);
+        given(staffAssignmentToShiftForm.getEntityId()).willReturn(null);
+        given(occupationType.getFieldValue()).willReturn(null);
 
         SearchCriterion criterion = SearchRestrictions.eq(TECHNICAL_CODE, WORK_ON_LINE.getStringValue());
-        when(builder.add(criterion)).thenReturn(builder);
-        when(builder.uniqueResult()).thenReturn(dictionary);
-        when(dictionary.getStringField(NAME)).thenReturn(Mockito.anyString());
+        given(builder.add(criterion)).willReturn(builder);
+        given(builder.uniqueResult()).willReturn(dictionary);
+        given(dictionary.getStringField(NAME)).willReturn(Mockito.anyString());
 
         // when
         detailsHooks.setOccupationTypeToDefault(view);
