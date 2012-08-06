@@ -325,5 +325,7 @@
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks"
 			method="setTreeTabEditable" />	
+		<beforeRender class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" 
+			method="setGridEditable" />
 	</hooks>
 </view>
