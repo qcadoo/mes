@@ -1,9 +1,6 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static org.mockito.Mockito.when;
-
-import java.util.Locale;
-
+import static org.mockito.BDDMockito.given;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -33,7 +30,9 @@ public class StaffAssignmentToShiftHooksTest {
     @Before
     public void init() {
         hooks = new StaffAssignmentToShiftHooks();
+
         MockitoAnnotations.initMocks(this);
+
         ReflectionTestUtils.setField(hooks, "assignmentToShiftDetailsHooks", staffAssignmentToShiftDetailsHooks);
     }
 
@@ -44,17 +43,17 @@ public class StaffAssignmentToShiftHooksTest {
         String occupationType = "Praca na linii";
         String productionLineNumber = "00001";
         String occupationTypeForGridValue = "info";
-        Locale locale = Locale.getDefault();
-        when(entity.getStringField("occupationType")).thenReturn(occupationType);
-        when(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).thenReturn(dictionary);
-        when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
-        when(entity.getBelongsToField("productionLine")).thenReturn(productionLine);
-        when(productionLine.getStringField("number")).thenReturn(productionLineNumber);
+
+        given(entity.getStringField("occupationType")).willReturn(occupationType);
+        given(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).willReturn(dictionary);
+        given(dictionary.getStringField("technicalCode")).willReturn(technicalCode);
+        given(entity.getBelongsToField("productionLine")).willReturn(productionLine);
+        given(productionLine.getStringField("number")).willReturn(productionLineNumber);
 
         // when
         hooks.setOccupationTypeForGridValue(dataDefinition, entity);
-        // then
 
+        // then
         Assert.assertEquals("info", occupationTypeForGridValue);
     }
 
@@ -63,13 +62,15 @@ public class StaffAssignmentToShiftHooksTest {
         // given
         String technicalCode = "01workOnLine";
         String occupationType = "Praca na linii";
-        when(entity.getStringField("occupationType")).thenReturn(occupationType);
-        when(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).thenReturn(dictionary);
-        when(dictionary.getStringField("technicalCode")).thenReturn(technicalCode);
-        when(entity.getBelongsToField("productionLine")).thenReturn(null);
+
+        given(entity.getStringField("occupationType")).willReturn(occupationType);
+        given(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).willReturn(dictionary);
+        given(dictionary.getStringField("technicalCode")).willReturn(technicalCode);
+        given(entity.getBelongsToField("productionLine")).willReturn(null);
 
         // when
         hooks.setOccupationTypeForGridValue(dataDefinition, entity);
+
         // then
         Mockito.verify(entity).addError(dataDefinition.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
                 "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");

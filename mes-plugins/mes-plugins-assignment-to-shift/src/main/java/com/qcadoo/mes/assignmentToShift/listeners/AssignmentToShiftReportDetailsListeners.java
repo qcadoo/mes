@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
-import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftReportXlsService;
+import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftXlsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,7 +38,7 @@ public class AssignmentToShiftReportDetailsListeners {
     private ReportService reportService;
 
     @Autowired
-    private AssignmentToShiftReportXlsService assignmentReportXlsService;
+    private AssignmentToShiftXlsService assignmentReportXlsService;
 
     public void printAssignmentToShiftReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], AssignmentToShiftConstants.PLUGIN_IDENTIFIER,

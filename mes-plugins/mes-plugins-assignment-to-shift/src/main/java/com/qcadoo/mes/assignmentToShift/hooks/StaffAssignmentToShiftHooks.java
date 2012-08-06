@@ -16,31 +16,31 @@ public class StaffAssignmentToShiftHooks {
     @Autowired
     private StaffAssignmentToShiftDetailsHooks assignmentToShiftDetailsHooks;
 
-    public void setOccupationTypeForGridValue(final DataDefinition dataDefinition, final Entity entity) {
-        String occupationType = entity.getStringField("occupationType");
+    public void setOccupationTypeForGridValue(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
+        String occupationType = staffAssignmentToShift.getStringField("occupationType");
         Entity dictionaryItem = assignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType);
         String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
         if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.WORK_ON_LINE.getStringValue())) {
-            if (entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE) == null) {
-                entity.addError(dataDefinition.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
+            if (staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE) == null) {
+                staffAssignmentToShift.addError(staffAssignmentToShiftDD.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
                         "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");
                 return;
             }
-            entity.setField("occupationTypeValueForGrid",
+            staffAssignmentToShift.setField("occupationTypeValueForGrid",
                     occupationType + ": "
-                            + entity.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE).getStringField("number"));
+                            + staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE).getStringField("number"));
         } else if (technicalCode != null && technicalCode.equals(OccupationTypeEnumStringValue.OTHER_CASE.getStringValue())) {
-            entity.setField("occupationTypeValueForGrid",
-                    occupationType + ": " + entity.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
+            staffAssignmentToShift.setField("occupationTypeValueForGrid",
+                    occupationType + ": " + staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
         } else {
-            entity.setField("occupationTypeValueForGrid", occupationType);
+            staffAssignmentToShift.setField("occupationTypeValueForGrid", occupationType);
         }
     }
 
-    public void setOccupationTypeEnum(final DataDefinition dataDefinition, final Entity entity) {
-        String occupationType = entity.getStringField("occupationType");
+    public void setOccupationTypeEnum(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
+        String occupationType = staffAssignmentToShift.getStringField("occupationType");
         Entity dictionaryItem = assignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType);
         String technicalCode = dictionaryItem.getStringField(TECHNICAL_CODE);
-        entity.setField("occupationTypeEnum", technicalCode);
+        staffAssignmentToShift.setField("occupationTypeEnum", technicalCode);
     }
 }

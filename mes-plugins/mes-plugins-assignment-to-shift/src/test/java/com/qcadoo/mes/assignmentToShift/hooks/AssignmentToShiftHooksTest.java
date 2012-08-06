@@ -64,6 +64,7 @@ public class AssignmentToShiftHooksTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(hooks, "stateChangeEntityBuilder", stateChangeEntityBuilder);
+
         PowerMockito.mockStatic(SearchRestrictions.class);
     }
 

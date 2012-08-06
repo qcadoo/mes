@@ -1,4 +1,4 @@
-package com.qcadoo.mes.assignmentToShift;
+package com.qcadoo.mes.assignmentToShift.print.xls;
 
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.START_DATE;
@@ -30,7 +30,7 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class AssignmentToShiftReportHelper {
+public class AssignmentToShiftXlsHelper {
 
     private static final String EMPTY = "";
 
@@ -40,20 +40,33 @@ public class AssignmentToShiftReportHelper {
     @Autowired
     private ShiftsService shiftsService;
 
-    public List<DateTime> getDaysFromGivenDate(final Entity entity) {
+    public List<DateTime> getDaysBetweenGivenDates(final Entity entity) {
         List<DateTime> days = new LinkedList<DateTime>();
+
         DateTime dateFrom = new DateTime((Date) entity.getField(DATE_FROM));
         DateTime dateTo = new DateTime((Date) entity.getField(DATE_TO));
+
         DateTime nextDay = dateFrom;
-        int dayQuantity = Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
+
+        int numberOfDays = Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
+
         days.add(nextDay);
+
         int oneDay = 1;
-        while (dayQuantity != 0) {
+        while (numberOfDays != 0) {
             nextDay = nextDay.plusDays(oneDay).toDateTime();
             days.add(nextDay);
-            dayQuantity--;
+            numberOfDays--;
         }
+
         return days;
+    }
+
+    public int getNumberOfDaysBetweenGivenDates(final Entity entity) {
+        DateTime dateFrom = new DateTime((Date) entity.getField(DATE_FROM));
+        DateTime dateTo = new DateTime((Date) entity.getField(DATE_TO));
+
+        return Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
     }
 
     public List<Entity> getAssignmentToShift(final Entity entity) {
