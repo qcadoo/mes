@@ -295,11 +295,11 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void deleteColumnForOrders(final Map<String, String> values) {
-        Entity columnForOrders = getColumnForOrdersDD().find().add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER)))
-                .uniqueResult();
+        final List<Entity> columnsForOrders = getColumnForOrdersDD().find()
+                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
 
-        if (columnForOrders != null) {
-            getColumnForOrdersDD().delete(columnForOrders.getId());
+        for (Entity columnForOrder : columnsForOrders) {
+            getColumnForOrdersDD().delete(columnForOrder.getId());
         }
     }
 
@@ -336,10 +336,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void deleteColumnForInputProducts(final Map<String, String> values) {
-        Entity columnForInputProduct = getColumnForInputProductsDD().find()
-                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).uniqueResult();
+        final List<Entity> columnsForInputProduct = getColumnForInputProductsDD().find()
+                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
 
-        if (columnForInputProduct != null) {
+        for (Entity columnForInputProduct : columnsForInputProduct) {
             getColumnForInputProductsDD().delete(columnForInputProduct.getId());
         }
     }
@@ -377,10 +377,10 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     private void deleteColumnForOutputProducts(final Map<String, String> values) {
-        Entity columnForOutputProduct = getColumnForOutputProductsDD().find()
-                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).uniqueResult();
+        final List<Entity> columnsForOutputProduct = getColumnForOutputProductsDD().find()
+                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
 
-        if (columnForOutputProduct != null) {
+        for (Entity columnForOutputProduct : columnsForOutputProduct) {
             getColumnForOutputProductsDD().delete(columnForOutputProduct.getId());
         }
     }
