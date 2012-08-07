@@ -1,12 +1,14 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue.WORK_ON_LINE;
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
 import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
 import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +71,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
     }
 
     @Test
-    public void shouldEnabledProductionLineAndDisableOccupationTypeNameFieldsWhenWorkOnLineIsSelected() throws Exception {
+    public void shouldEnabledProductionLineAndDisableOccupationTypeNameFieldsWhenWorkOnLineIsSelected() {
         // given
         String dictionaryName = "Praca na linii";
         String technicalCode = "01workOnLine";
@@ -84,15 +86,15 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setVisible(true);
-        Mockito.verify(occupationTypeName).setVisible(false);
+        verify(productionLine).setVisible(true);
+        verify(occupationTypeName).setVisible(false);
     }
 
     @Test
-    public void shouldDisabledProductionLineAndEnableOccupationTypeNameFieldsWhenOtherCaseIsSelected() throws Exception {
+    public void shouldDisabledProductionLineAndEnableOccupationTypeNameFieldsWhenOtherCaseIsSelected() {
         // given
         String dictionaryName = "Inne zadania";
-        String technicalCode = "02otherCase";
+        String technicalCode = "04otherCase";
 
         given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);
@@ -104,12 +106,12 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setVisible(false);
-        Mockito.verify(occupationTypeName).setVisible(true);
+        verify(productionLine).setVisible(false);
+        verify(occupationTypeName).setVisible(true);
     }
 
     @Test
-    public void shouldDisabledProductionLineAndOccupationTypeNameFieldsWhenMixDictionaryIsSelected() throws Exception {
+    public void shouldDisabledProductionLineAndOccupationTypeNameFieldsWhenMixDictionaryIsSelected() {
         // given
         String dictionaryName = "MIX";
 
@@ -123,12 +125,12 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setVisible(false);
-        Mockito.verify(occupationTypeName).setVisible(false);
+        verify(productionLine).setVisible(false);
+        verify(occupationTypeName).setVisible(false);
     }
 
     @Test
-    public void shouldDisabledProductionLineAndOccupationTypeNameFieldsWhenEmptyIsSelected() throws Exception {
+    public void shouldDisabledProductionLineAndOccupationTypeNameFieldsWhenEmptyIsSelected() {
         // given
         String dictionaryName = "";
 
@@ -141,8 +143,8 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
 
         // then
-        Mockito.verify(productionLine).setVisible(false);
-        Mockito.verify(occupationTypeName).setVisible(false);
+        verify(productionLine).setVisible(false);
+        verify(occupationTypeName).setVisible(false);
     }
 
     @Test
@@ -157,7 +159,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setOccupationTypeToDefault(view);
 
         // then
-        Mockito.verify(occupationType, Mockito.never()).setFieldValue(Mockito.anyString());
+        verify(occupationType, never()).setFieldValue(Mockito.anyString());
     }
 
     @Test
@@ -174,7 +176,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setOccupationTypeToDefault(view);
 
         // then
-        Mockito.verify(occupationType, Mockito.never()).setFieldValue(Mockito.anyString());
+        verify(occupationType, never()).setFieldValue(Mockito.anyString());
     }
 
     @Test
@@ -192,7 +194,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
         detailsHooks.setOccupationTypeToDefault(view);
 
         // then
-        Mockito.verify(occupationType).setFieldValue(Mockito.anyString());
+        verify(occupationType).setFieldValue(Mockito.anyString());
     }
 
 }

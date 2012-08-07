@@ -1,10 +1,17 @@
 package com.qcadoo.mes.assignmentToShift.print.xls;
 
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.START_DATE;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_FROM;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_TO;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.STATE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.WORKER;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState.ACCEPTED;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState.CORRECTED;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,10 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
-import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
-import com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue;
-import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
-import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftStateStringValue;
+import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
+import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -87,45 +92,74 @@ public class AssignmentToShiftXlsHelper {
         }
     }
 
-    public String getListOfWorker(final List<Entity> staffs) {
-        if (staffs.isEmpty()) {
+    public String getListOfWorkers(final List<Entity> staffAssignmentToShifts) {
+        if (staffAssignmentToShifts == null) {
             return EMPTY;
         }
-        StringBuilder listOfWorker = new StringBuilder();
-        for (Entity staff : staffs) {
-            Entity worker = staff.getBelongsToField(StaffAssignmentToShiftFields.WORKER);
-            listOfWorker.append(worker.getStringField("name"));
-            listOfWorker.append(" ");
-            listOfWorker.append(worker.getStringField("surname"));
-            listOfWorker.append(", ");
+
+        StringBuilder listOfWorkers = new StringBuilder();
+
+        for (Entity staffAssignmentToShift : staffAssignmentToShifts) {
+            Entity worker = staffAssignmentToShift.getBelongsToField(WORKER);
+            listOfWorkers.append(worker.getStringField("name"));
+            listOfWorkers.append(" ");
+            listOfWorkers.append(worker.getStringField("surname"));
+
+            if (staffAssignmentToShifts.indexOf(staffAssignmentToShift) != (staffAssignmentToShifts.size() - 1)) {
+                listOfWorkers.append(", ");
+            }
         }
-        return listOfWorker.toString();
+
+        return listOfWorkers.toString();
     }
 
-    public List<Entity> getStaffsList(final Entity assignmentToShift, final OccupationTypeEnumStringValue occupationTypeEnum,
+    public String getListOfWorkersWithOtherCases(final List<Entity> staffAssignmentToShifts) {
+        if (staffAssignmentToShifts == null) {
+            return EMPTY;
+        }
+
+        StringBuilder listOfWorkersWithOtherCases = new StringBuilder();
+
+        for (Entity staffAssignmentToShift : staffAssignmentToShifts) {
+            Entity worker = staffAssignmentToShift.getBelongsToField(WORKER);
+            listOfWorkersWithOtherCases.append(worker.getStringField("name"));
+            listOfWorkersWithOtherCases.append(" ");
+            listOfWorkersWithOtherCases.append(worker.getStringField("surname"));
+            listOfWorkersWithOtherCases.append(" - ");
+            listOfWorkersWithOtherCases.append(staffAssignmentToShift.getStringField(OCCUPATION_TYPE_NAME));
+
+            if (staffAssignmentToShifts.indexOf(staffAssignmentToShift) != (staffAssignmentToShifts.size() - 1)) {
+                listOfWorkersWithOtherCases.append(", ");
+            }
+        }
+
+        return listOfWorkersWithOtherCases.toString();
+    }
+
+    public List<Entity> getStaffsList(final Entity assignmentToShift, final OccupationType occupationTypeEnum,
             final Entity productionLine) {
         List<Entity> staffs = new ArrayList<Entity>();
-        SearchCriterion criterion = SearchRestrictions.eq(StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM,
-                occupationTypeEnum.getStringValue());
-        String assignmentState = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
-        if ("04corrected".equals(assignmentState)) {
-            staffs = assignmentToShift.getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
-                    .add(SearchRestrictions.eq(STATE, StaffAssignmentToShiftStateStringValue.CORRECTED))
-                    .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine)).list()
-                    .getEntities();
-        } else if (!"01draft".equals(assignmentState)) {
-            staffs = assignmentToShift.getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
-                    .add(SearchRestrictions.eq(STATE, StaffAssignmentToShiftStateStringValue.ACCEPTED))
-                    .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine)).list()
-                    .getEntities();
+
+        SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE_ENUM, occupationTypeEnum.getStringValue());
+        String assignmentState = assignmentToShift.getStringField(STATE);
+
+        if (AssignmentToShiftState.CORRECTED.getStringValue().equals(assignmentState)) {
+            staffs = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
+                    .add(SearchRestrictions.eq(STATE, CORRECTED.getStringValue()))
+                    .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).list().getEntities();
+        } else if (!AssignmentToShiftState.DRAFT.getStringValue().equals(assignmentState)) {
+            staffs = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
+                    .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
+                    .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).list().getEntities();
         }
+
         return staffs;
     }
 
     public List<Entity> getProductionLines() {
         return dataDefinitionService
-                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE).find().list()
-                .getEntities();
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE).find()
+                .add(SearchRestrictions.eq("active", true)).list().getEntities();
     }
 
 }

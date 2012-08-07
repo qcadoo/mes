@@ -1,12 +1,13 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftStateStringValue.ACCEPTED;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftStateStringValue.CORRECTED;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftStateStringValue.SIMPLE;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState.ACCEPTED;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState.CORRECTED;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState.SIMPLE;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -22,7 +23,7 @@ public class AssignmentToShiftDetailsHooks {
 
         @Override
         public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-            searchBuilder.add(SearchRestrictions.eq("state", ACCEPTED));
+            searchBuilder.add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()));
         }
 
     };
@@ -31,7 +32,7 @@ public class AssignmentToShiftDetailsHooks {
 
         @Override
         public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-            searchBuilder.add(SearchRestrictions.eq("state", SIMPLE));
+            searchBuilder.add(SearchRestrictions.eq(STATE, SIMPLE.getStringValue()));
         }
     };
 
@@ -39,13 +40,13 @@ public class AssignmentToShiftDetailsHooks {
 
         @Override
         public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-            searchBuilder.add(SearchRestrictions.eq("state", CORRECTED));
+            searchBuilder.add(SearchRestrictions.eq(STATE, CORRECTED.getStringValue()));
         }
 
     };
 
     public final void addDiscriminatorRestrictionToStaffAssignmentGrid(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("staffAssignmentToShifts");
+        GridComponent grid = (GridComponent) view.getComponentByReference(STAFF_ASSIGNMENT_TO_SHIFTS);
         grid.setCustomRestriction(customRestrictionSimple);
     }
 
@@ -60,9 +61,9 @@ public class AssignmentToShiftDetailsHooks {
     }
 
     public void disabledGridWhenStateIsAcceptedOrCorrected(final ViewDefinitionState view) {
-        FieldComponent stateField = (FieldComponent) view.getComponentByReference(AssignmentToShiftFields.STATE);
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
         String state = stateField.getFieldValue().toString();
-        GridComponent grid = (GridComponent) view.getComponentByReference("staffAssignmentToShifts");
+        GridComponent grid = (GridComponent) view.getComponentByReference(STAFF_ASSIGNMENT_TO_SHIFTS);
         if (AssignmentToShiftState.ACCEPTED.getStringValue().equals(state)
                 || AssignmentToShiftState.CORRECTED.getStringValue().equals(state)) {
             grid.setEditable(false);
@@ -70,4 +71,5 @@ public class AssignmentToShiftDetailsHooks {
             grid.setEditable(true);
         }
     }
+
 }

@@ -13,7 +13,7 @@
 		<string name="occupationTypeName" />
 		<enum name="state" values="01simple,02accepted,03corrected"
 			default="01simple" />
-		<enum values="01workOnLine,02otherCase,03mix,04sickness" name="occupationTypeEnum" />
+		<enum values="01workOnLine,02mix,03sickness,04otherCase" name="occupationTypeEnum" />
 		<string name="occupationTypeValueForGrid" />
 	</fields>
 	<hooks>

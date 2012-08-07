@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
-import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftStateStringValue;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AssignmentWorkerToShiftFields;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderConstants;
@@ -160,11 +160,11 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
                 .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine));
         if (state.equals(AssignmentToShiftState.CORRECTED.getStringValue())) {
             staffAssignmentToShifts = searchCriteriaBuilder
-                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftStateStringValue.CORRECTED)).list().getEntities();
+                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.CORRECTED)).list().getEntities();
         } else if (state.equals(AssignmentToShiftState.ACCEPTED.getStringValue())
                 || state.equals(AssignmentToShiftState.DURING_CORRECTION.getStringValue())) {
             staffAssignmentToShifts = searchCriteriaBuilder
-                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftStateStringValue.ACCEPTED)).list().getEntities();
+                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.ACCEPTED)).list().getEntities();
         }
         return staffAssignmentToShifts;
     }

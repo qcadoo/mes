@@ -1,5 +1,7 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -33,13 +35,13 @@ public class AssignmentToShiftDetailsHooksTest {
     }
 
     @Test
-    public void shouldDisabledGridWhenStateIsAccepted() throws Exception {
+    public void shouldDisabledGridWhenStateIsAccepted() {
         // given
         String state = "02accepted";
 
-        given(view.getComponentByReference("state")).willReturn(stateField);
+        given(view.getComponentByReference(STATE)).willReturn(stateField);
         given(stateField.getFieldValue()).willReturn(state);
-        given(view.getComponentByReference("staffAssignmentToShifts")).willReturn(grid);
+        given(view.getComponentByReference(STAFF_ASSIGNMENT_TO_SHIFTS)).willReturn(grid);
 
         // when
         detailsHooks.disabledGridWhenStateIsAcceptedOrCorrected(view);
@@ -49,13 +51,13 @@ public class AssignmentToShiftDetailsHooksTest {
     }
 
     @Test
-    public void shouldDisabledGridWhenStateIsCorrected() throws Exception {
+    public void shouldDisabledGridWhenStateIsCorrected() {
         // given
         String state = "04corrected";
 
-        given(view.getComponentByReference("state")).willReturn(stateField);
+        given(view.getComponentByReference(STATE)).willReturn(stateField);
         given(stateField.getFieldValue()).willReturn(state);
-        given(view.getComponentByReference("staffAssignmentToShifts")).willReturn(grid);
+        given(view.getComponentByReference(STAFF_ASSIGNMENT_TO_SHIFTS)).willReturn(grid);
 
         // when
         detailsHooks.disabledGridWhenStateIsAcceptedOrCorrected(view);
@@ -65,13 +67,13 @@ public class AssignmentToShiftDetailsHooksTest {
     }
 
     @Test
-    public void shouldEnabledGridWhenStateIsDraft() throws Exception {
+    public void shouldEnabledGridWhenStateIsDraft() {
         // given
         String state = "01draft";
 
-        given(view.getComponentByReference("state")).willReturn(stateField);
+        given(view.getComponentByReference(STATE)).willReturn(stateField);
         given(stateField.getFieldValue()).willReturn(state);
-        given(view.getComponentByReference("staffAssignmentToShifts")).willReturn(grid);
+        given(view.getComponentByReference(STAFF_ASSIGNMENT_TO_SHIFTS)).willReturn(grid);
 
         // when
         detailsHooks.disabledGridWhenStateIsAcceptedOrCorrected(view);

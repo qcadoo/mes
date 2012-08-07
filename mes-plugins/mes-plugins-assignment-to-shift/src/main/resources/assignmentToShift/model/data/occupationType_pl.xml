@@ -1,5 +1,5 @@
 <occupationType>
 	<row NAME="Praca na linii" TECHNICALCODE="01workOnLine" />
-	<row NAME="Inne zadanie" TECHNICALCODE="02otherCase" />
-	<row NAME="L4" TECHNICALCODE="04sickness" />
+	<row NAME="L4" TECHNICALCODE="03sickness" />
+	<row NAME="Inne zadanie" TECHNICALCODE="04otherCase" />
 </occupationType>

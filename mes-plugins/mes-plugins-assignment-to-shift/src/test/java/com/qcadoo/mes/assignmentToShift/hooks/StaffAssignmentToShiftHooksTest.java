@@ -1,12 +1,16 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
+import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -19,10 +23,10 @@ public class StaffAssignmentToShiftHooksTest {
     private StaffAssignmentToShiftHooks hooks;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition staffAssignmentToShiftDD;
 
     @Mock
-    private Entity entity, dictionary, productionLine;
+    private Entity staffAssignmentToShift, dictionary, productionLine;
 
     @Mock
     private StaffAssignmentToShiftDetailsHooks staffAssignmentToShiftDetailsHooks;
@@ -37,42 +41,42 @@ public class StaffAssignmentToShiftHooksTest {
     }
 
     @Test
-    public void shouldSaveOccupationTypeForGridValueWhenProductionLineIsSelected() throws Exception {
+    public void shouldSaveOccupationTypeForGridValueWhenProductionLineIsSelected() {
         // given
         String technicalCode = "01workOnLine";
         String occupationType = "Praca na linii";
         String productionLineNumber = "00001";
         String occupationTypeForGridValue = "info";
 
-        given(entity.getStringField("occupationType")).willReturn(occupationType);
+        given(staffAssignmentToShift.getStringField(OCCUPATION_TYPE)).willReturn(occupationType);
         given(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).willReturn(dictionary);
-        given(dictionary.getStringField("technicalCode")).willReturn(technicalCode);
-        given(entity.getBelongsToField("productionLine")).willReturn(productionLine);
-        given(productionLine.getStringField("number")).willReturn(productionLineNumber);
+        given(dictionary.getStringField(TECHNICAL_CODE)).willReturn(technicalCode);
+        given(staffAssignmentToShift.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
+        given(productionLine.getStringField(NUMBER)).willReturn(productionLineNumber);
 
         // when
-        hooks.setOccupationTypeForGridValue(dataDefinition, entity);
+        hooks.setOccupationTypeForGridValue(staffAssignmentToShiftDD, staffAssignmentToShift);
 
         // then
         Assert.assertEquals("info", occupationTypeForGridValue);
     }
 
     @Test
-    public void shouldAddErrorForEntityWhenProductionLineIsNull() throws Exception {
+    public void shouldAddErrorForEntityWhenProductionLineIsNull() {
         // given
         String technicalCode = "01workOnLine";
         String occupationType = "Praca na linii";
 
-        given(entity.getStringField("occupationType")).willReturn(occupationType);
+        given(staffAssignmentToShift.getStringField(OCCUPATION_TYPE)).willReturn(occupationType);
         given(staffAssignmentToShiftDetailsHooks.findDictionaryItemByName(occupationType)).willReturn(dictionary);
-        given(dictionary.getStringField("technicalCode")).willReturn(technicalCode);
-        given(entity.getBelongsToField("productionLine")).willReturn(null);
+        given(dictionary.getStringField(TECHNICAL_CODE)).willReturn(technicalCode);
+        given(staffAssignmentToShift.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
 
         // when
-        hooks.setOccupationTypeForGridValue(dataDefinition, entity);
+        hooks.setOccupationTypeForGridValue(staffAssignmentToShiftDD, staffAssignmentToShift);
 
         // then
-        Mockito.verify(entity).addError(dataDefinition.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
+        verify(staffAssignmentToShift).addError(staffAssignmentToShiftDD.getField(StaffAssignmentToShiftFields.PRODUCTION_LINE),
                 "assignmentToShift.staffAssignmentToShift.productionLine.isEmpty");
     }
 

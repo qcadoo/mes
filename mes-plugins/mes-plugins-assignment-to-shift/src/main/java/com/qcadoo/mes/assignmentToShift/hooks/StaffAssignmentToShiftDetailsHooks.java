@@ -1,7 +1,7 @@
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue.OTHER_CASE;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationTypeEnumStringValue.WORK_ON_LINE;
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.OTHER_CASE;
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;

@@ -18,6 +18,8 @@ public final class AssignmentToShiftReportConstants {
 
     public static final String COLUMN_HEADER_OCCUPATIONTYPE = "assignmentToShift.assignmentToShiftReport.report.columnHeader.occupationType";
 
+    public static final String COLUMN_HEADER_OCCUPATIONTYPE_VALUE = "assignmentToShift.assignmentToShiftReport.report.columnHeader.occupationType.value.";
+
     public static final String COLUMN_HEADER_DAY = "assignmentToShift.assignmentToShiftReport.report.columnHeader.day";
 
     public static final String COLUMN_HEADER_SHIFT_NUMBER = "assignmentToShift.assignmentToShiftReport.report.columnHeader.shiftNumber";
