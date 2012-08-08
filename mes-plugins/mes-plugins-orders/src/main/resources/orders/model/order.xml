@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="order" activable="true" 
+<model name="order" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
@@ -59,24 +59,29 @@
 		</decimal>
 		<datetime name="effectiveDateFrom" readonly="true" />
 		<datetime name="effectiveDateTo" readonly="true" />
-		<string name="externalNumber"  />
+		<string name="externalNumber" />
 		<boolean name="externalSynchronized" default="true" />
-		
+
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
 			cascade="delete" />
-		
-		<tree name="technologyInstanceOperationComponents" copyable="true" joinField="order" model="technologyInstanceOperationComponent" plugin="technologies" cascade="delete" />
-		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" required="true" />	
+
+		<tree name="technologyInstanceOperationComponents" copyable="true"
+			joinField="order" model="technologyInstanceOperationComponent"
+			plugin="technologies" cascade="delete" />
+		<belongsTo name="productionLine" plugin="productionLines"
+			model="productionLine" required="true" />
 		<datetime name="deadline" />
 		<datetime name="correctedDateFrom" />
 		<datetime name="correctedDateTo" />
 		<dictionary name="reasonTypeCorrectionDateFrom" dictionary="reasonTypeOfChaningOrderState" />
 		<dictionary name="reasonTypeCorrectionDateTo" dictionary="reasonTypeOfChaningOrderState" />
-		<dictionary name="reasonTypeDeviationsOfEffectiveStart" dictionary="reasonTypeOfChaningOrderState" persistent="false"/>
-		<dictionary name="reasonTypeDeviationsOfEffectiveEnd" dictionary="reasonTypeOfChaningOrderState" persistent="false" />
-		<string name="commentReasonTypeCorrectionDateFrom"/>
-		<string name="commentReasonTypeCorrectionDateTo"/>
-		
+		<dictionary name="reasonTypeDeviationsOfEffectiveStart"
+			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
+		<dictionary name="reasonTypeDeviationsOfEffectiveEnd"
+			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
+		<string name="commentReasonTypeCorrectionDateFrom" />
+		<string name="commentReasonTypeCorrectionDateTo" />
+
 		<datetime name="startDate" />
 		<datetime name="finishDate" />
 	</fields>
@@ -89,22 +94,22 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkChosenTechnologyState" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"	
+		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkIfProductionLineSupportsTechnology" />
-		<onCreate 
-			class="com.qcadoo.mes.orders.hooks.OrderHooks" 
+		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="setInitialState" />
-		<onCopy 
-			class="com.qcadoo.mes.orders.hooks.OrderHooks" 
-			method="setInitialState" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
-		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder" method="createTechnologyInstanceForOrder"/>
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate"/>
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate"/>
-		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired"/>
-		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired"/>
+		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
+			method="createTechnologyInstanceForOrder" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
+		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
+		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

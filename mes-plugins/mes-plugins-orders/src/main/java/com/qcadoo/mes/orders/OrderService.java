@@ -40,6 +40,7 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
@@ -384,16 +385,20 @@ public class OrderService {
         FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
         Entity order = orderForm.getEntity();
 
-        FieldComponent productionLineLookup = (FieldComponent) view.getComponentByReference("productionLine");
+        String state = order.getStringField(STATE);
 
-        if (!checkIfProductionLineSupportsTechnology(order)) {
+        if (PENDING.getStringValue().equals(state) && !checkIfProductionLineSupportsTechnology(order)) {
+            FieldComponent productionLineLookup = (FieldComponent) view.getComponentByReference("productionLine");
+
             productionLineLookup.addMessage("orders.order.productionLine.error.productionLineDoesntSupportTechnology",
                     ComponentState.MessageType.FAILURE);
         }
     }
 
     public boolean checkIfProductionLineSupportsTechnology(final DataDefinition orderDD, final Entity order) {
-        if (!checkIfProductionLineSupportsTechnology(order)) {
+        String state = order.getStringField(STATE);
+
+        if (PENDING.getStringValue().equals(state) && !checkIfProductionLineSupportsTechnology(order)) {
             order.addError(orderDD.getField(PRODUCTION_LINE),
                     "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
 
@@ -403,7 +408,7 @@ public class OrderService {
         return true;
     }
 
-    private boolean checkIfProductionLineSupportsTechnology(final Entity order) {
+    public boolean checkIfProductionLineSupportsTechnology(final Entity order) {
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
         Entity technology = order.getBelongsToField(TECHNOLOGY);
 
@@ -430,6 +435,7 @@ public class OrderService {
 
             return false;
         }
+
         return true;
     }
 

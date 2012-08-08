@@ -46,7 +46,10 @@
 package com.qcadoo.mes.orders;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
@@ -309,6 +312,33 @@ public class OrderServiceTest {
 
         given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
+
+        // when
+        orderService.checkIfProductionLineSupportsTechnology(view);
+
+        // then
+        verify(productionLineLookup, never()).addMessage(Mockito.anyString(), Mockito.eq(ComponentState.MessageType.FAILURE));
+    }
+
+    @Test
+    public void shouldntAddMessageIfOrderStateIsAccepted() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent orderForm = mock(FormComponent.class);
+
+        FieldComponent productionLineLookup = mock(FieldComponent.class);
+
+        Entity order = mock(Entity.class);
+
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
+
+        given(order.getStringField(STATE)).willReturn(ACCEPTED.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
 
@@ -337,6 +367,7 @@ public class OrderServiceTest {
 
         given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -372,6 +403,7 @@ public class OrderServiceTest {
 
         given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -419,6 +451,7 @@ public class OrderServiceTest {
 
         given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -473,6 +506,7 @@ public class OrderServiceTest {
 
         given(view.getComponentByReference(L_PRODUCTION_LINE)).willReturn(productionLineLookup);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -508,6 +542,26 @@ public class OrderServiceTest {
         Entity order = mock(Entity.class);
         DataDefinition orderDD = mock(DataDefinition.class);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
+        given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
+        given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
+
+        // when
+        boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
+
+        // then
+        assertTrue(result);
+
+        verify(order, never()).addError(Mockito.eq(orderDD.getField(PRODUCTION_LINE)), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldReturnTrueIfOrderStateIsAccepted() {
+        // given
+        Entity order = mock(Entity.class);
+        DataDefinition orderDD = mock(DataDefinition.class);
+
+        given(order.getStringField(STATE)).willReturn(ACCEPTED.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(null);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(null);
 
@@ -529,6 +583,7 @@ public class OrderServiceTest {
         Entity technology = mock(Entity.class);
         Entity productionLine = mock(Entity.class);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -557,6 +612,7 @@ public class OrderServiceTest {
 
         List<Entity> productionLineGroups = mock(EntityList.class);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -597,6 +653,7 @@ public class OrderServiceTest {
         List<Entity> productionLineGroups = mock(EntityList.class);
         List<Entity> productionLineTechnologies = mock(EntityList.class);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
@@ -644,6 +701,7 @@ public class OrderServiceTest {
         List<Entity> productionLineGroups = mock(EntityList.class);
         List<Entity> productionLineTechnologies = mock(EntityList.class);
 
+        given(order.getStringField(STATE)).willReturn(PENDING.getStringValue());
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 

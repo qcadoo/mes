@@ -27,13 +27,16 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -44,23 +47,22 @@ public class OrderStateValidationService {
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
+    @Autowired
+    private OrderService orderService;
+
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
         checkRequired(references, stateChangeContext);
 
-        final Entity order = stateChangeContext.getOwner();
-        final Entity technology = order.getBelongsToField(TECHNOLOGY);
-        if (technology == null) {
-            return;
-        }
-        final TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
-        if (!TechnologyState.ACCEPTED.equals(technologyState)) {
-            stateChangeContext.addFieldValidationError(TECHNOLOGY, "orders.validate.technology.error.wrongState.accepted");
-        }
+        validateTechnologyState(stateChangeContext);
+        validateProductionLine(stateChangeContext);
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
-        validationOnAccepted(stateChangeContext);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
+        checkRequired(references, stateChangeContext);
+
+        validateTechnologyState(stateChangeContext);
     }
 
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
@@ -77,4 +79,29 @@ public class OrderStateValidationService {
             }
         }
     }
+
+    private void validateTechnologyState(final StateChangeContext stateChangeContext) {
+        checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
+
+        final Entity order = stateChangeContext.getOwner();
+        final Entity technology = order.getBelongsToField(TECHNOLOGY);
+        if (technology == null) {
+            return;
+        }
+        final TechnologyState technologyState = TechnologyState.parseString(technology.getStringField(TechnologyFields.STATE));
+        if (!TechnologyState.ACCEPTED.equals(technologyState)) {
+            stateChangeContext.addFieldValidationError(TECHNOLOGY, "orders.validate.technology.error.wrongState.accepted");
+        }
+    }
+
+    private void validateProductionLine(final StateChangeContext stateChangeContext) {
+        checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
+
+        final Entity order = stateChangeContext.getOwner();
+        if (!orderService.checkIfProductionLineSupportsTechnology(order)) {
+            stateChangeContext.addFieldValidationError(PRODUCTION_LINE,
+                    "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
+        }
+    }
+
 }

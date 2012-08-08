@@ -26,6 +26,7 @@ package com.qcadoo.mes.orders.states;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -38,7 +39,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -46,11 +49,16 @@ import com.qcadoo.model.api.Entity;
 
 public class OrderStateValidationServiceTest {
 
-    private static final String MISSING_MESSAGE = "orders.order.orderStates.fieldRequired";
+    private static final String L_MISSING_MESSAGE = "orders.order.orderStates.fieldRequired";
 
-    private static final String TECHNOLOGY_WRONG_STATE = "orders.validate.technology.error.wrongState.accepted";
+    private static final String L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY = "orders.order.productionLine.error.productionLineDoesntSupportTechnology";
+
+    private static final String L_TECHNOLOGY_WRONG_STATE = "orders.validate.technology.error.wrongState.accepted";
 
     private OrderStateValidationService orderStateValidationService;
+
+    @Mock
+    private OrderService orderService;
 
     @Mock
     private Entity order;
@@ -64,7 +72,11 @@ public class OrderStateValidationServiceTest {
     @Before
     public final void init() {
         MockitoAnnotations.initMocks(this);
+
         orderStateValidationService = new OrderStateValidationService();
+
+        ReflectionTestUtils.setField(orderStateValidationService, "orderService", orderService);
+
         given(stateChangeContext.getOwner()).willReturn(order);
         stubTechnologyField(technology);
         stubTechnologyState(TechnologyState.ACCEPTED);
@@ -92,12 +104,15 @@ public class OrderStateValidationServiceTest {
     public void shouldPerformValidationAccepted() throws Exception {
         // given
         given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+        given(orderService.checkIfProductionLineSupportsTechnology(order)).willReturn(true);
 
         // when
         orderStateValidationService.validationOnAccepted(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(PRODUCTION_LINE, L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY);
     }
 
     @Test
@@ -109,7 +124,7 @@ public class OrderStateValidationServiceTest {
         orderStateValidationService.validationOnInProgress(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
     }
 
     @Test
@@ -121,12 +136,14 @@ public class OrderStateValidationServiceTest {
         orderStateValidationService.validationOnCompleted(stateChangeContext);
 
         // then
-        verify(stateChangeContext, Mockito.never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
     }
 
     @Test
     public void shouldPerformValidationAcceptedFail() throws Exception {
         // given
+        given(order.getField(Mockito.anyString())).willReturn(null);
+        given(orderService.checkIfProductionLineSupportsTechnology(order)).willReturn(true);
         stubTechnologyField(null);
 
         // when
@@ -134,61 +151,77 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
+            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(PRODUCTION_LINE, L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY);
     }
 
     @Test
     public void shouldPerformValidationAcceptedFailOnTechnologyState() throws Exception {
         // given
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+        given(orderService.checkIfProductionLineSupportsTechnology(order)).willReturn(true);
         stubTechnologyState(TechnologyState.DRAFT);
 
         // when
         orderStateValidationService.validationOnAccepted(stateChangeContext);
 
         // then
-        for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
-            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
-        }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, MISSING_MESSAGE);
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(PRODUCTION_LINE, L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY);
+    }
+
+    @Test
+    public void shouldPerformValidationAcceptedFailOnProductionLine() throws Exception {
+        // given
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+        given(orderService.checkIfProductionLineSupportsTechnology(order)).willReturn(false);
+
+        // when
+        orderStateValidationService.validationOnAccepted(stateChangeContext);
+
+        // then
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext).addFieldValidationError(PRODUCTION_LINE, L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY);
     }
 
     @Test
     public void shouldPerformValidationInProgressFail() throws Exception {
         // given
         given(order.getField(Mockito.anyString())).willReturn(null);
+        stubTechnologyField(null);
 
         // when
         orderStateValidationService.validationOnInProgress(stateChangeContext);
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY)) {
-            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
+            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
         }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
     public void shouldPerformValidationInProgresFailOnTechnologyState() throws Exception {
         // given
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
         stubTechnologyState(TechnologyState.DRAFT);
 
         // when
         orderStateValidationService.validationOnInProgress(stateChangeContext);
 
         // then
-        for (String field : Arrays.asList(DATE_TO, DATE_FROM)) {
-            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
-        }
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, MISSING_MESSAGE);
-        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, TECHNOLOGY_WRONG_STATE);
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
     }
 
     @Test
     public void shouldPerformValidationCompletedFail() throws Exception {
         // given
+        given(order.getField(Mockito.anyString())).willReturn(null);
         stubTechnologyField(null);
 
         // when
@@ -196,7 +229,7 @@ public class OrderStateValidationServiceTest {
 
         // then
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY)) {
-            verify(stateChangeContext).addFieldValidationError(field, MISSING_MESSAGE);
+            verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
         }
     }
 
