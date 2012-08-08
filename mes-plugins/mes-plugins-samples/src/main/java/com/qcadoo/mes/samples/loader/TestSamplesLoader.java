@@ -45,6 +45,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEADLINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DIVISION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DONE_QUANTITY;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EAN;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_FILE_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABLES;
@@ -554,6 +555,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         order.setField(L_NUMBER, values.get(L_ORDER_NR));
         order.setField(L_PLANNED_QUANTITY, values.get("quantity_scheduled").isEmpty() ? new BigDecimal(
                 100 * RANDOM.nextDouble() + 1) : new BigDecimal(values.get("quantity_scheduled")));
+        order.setField(L_DONE_QUANTITY, values.get("done_quantity"));
 
         order.setField(L_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
 

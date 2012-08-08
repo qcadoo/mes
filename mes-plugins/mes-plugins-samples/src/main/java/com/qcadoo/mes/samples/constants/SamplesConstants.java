@@ -248,6 +248,8 @@ public final class SamplesConstants {
 
     public static final String L_PLANNED_QUANTITY = "plannedQuantity";
 
+    public static final String L_DONE_QUANTITY = "doneQuantity";
+
     public static final String L_PRODUCT = "product";
 
     public static final String L_STATE = "state";
