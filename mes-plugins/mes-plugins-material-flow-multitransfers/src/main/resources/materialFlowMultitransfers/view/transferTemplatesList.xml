@@ -41,7 +41,7 @@
 			<option type="column" name="locationTo" fields="locationTo"
 				expression="(#locationTo == null) ? '' : #locationTo['name']" link="true" />
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? '' : #product['name']" link="true" />
+				expression="#product['name']" link="true" />
 				
 			<option type="order" column="product" direction="asc" />
 			
