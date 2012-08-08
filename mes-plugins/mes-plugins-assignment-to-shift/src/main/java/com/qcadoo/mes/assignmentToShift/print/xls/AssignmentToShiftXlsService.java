@@ -179,7 +179,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         }
     }
 
-    private void fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
+    private void fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, final int rowNum, final Entity assignmentToShiftReport,
             final List<DateTime> days, final OccupationType occupationType) {
         if ((assignmentToShiftReport != null) && (days != null) && (occupationType != null)) {
             HSSFRow row = sheet.createRow(rowNum);
