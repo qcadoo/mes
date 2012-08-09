@@ -416,7 +416,5 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="enabledOrDisabledCopyRibbon" />	
-			
-			
 	</hooks>
 </view>
