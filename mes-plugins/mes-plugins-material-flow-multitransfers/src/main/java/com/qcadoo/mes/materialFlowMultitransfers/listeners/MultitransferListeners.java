@@ -42,7 +42,7 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Component
 public class MultitransferListeners {
 
-    private static final String L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
+    private static final String L_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
 
     private static final String L_FORM = "form";
 
@@ -183,6 +183,7 @@ public class MultitransferListeners {
 
             isValid = false;
         }
+
         if (timeField.getFieldValue() == null || timeField.getFieldValue().toString().isEmpty()) {
             timeField.addMessage("materialFlow.validate.global.error.fillDate", MessageType.FAILURE);
 
@@ -190,8 +191,8 @@ public class MultitransferListeners {
         }
 
         if ((locationFromField.getFieldValue() == null) && (locationToField.getFieldValue() == null)) {
-            locationFromField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
-            locationToField.addMessage(L_MATERIAL_FLOW_VALIDATE_GLOBAL_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
+            locationFromField.addMessage(L_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
+            locationToField.addMessage(L_ERROR_FILL_AT_LEAST_ONE_LOCATION, MessageType.FAILURE);
 
             isValid = false;
         }
@@ -291,4 +292,5 @@ public class MultitransferListeners {
                 .add(SearchRestrictions.belongsTo(LOCATION_FROM, locationFrom))
                 .add(SearchRestrictions.belongsTo(LOCATION_TO, locationTo)).list().getEntities();
     }
+
 }

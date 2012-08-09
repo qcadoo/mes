@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
-import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.BATCH;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,12 +35,6 @@ public class TransferModelHooksMFR {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
-
-    public void generateBatch(final DataDefinition transferDD, final Entity transfer) {
-        if (transfer.getField(BATCH) == null) {
-            transfer.setField(BATCH, materialFlowResourcesService.generateBatchForTransfer(MODEL_TRANSFER));
-        }
-    }
 
     public void manageResources(final DataDefinition transferDD, final Entity transfer) {
         materialFlowResourcesService.manageResources(transfer);

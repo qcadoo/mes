@@ -4,11 +4,11 @@ import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.BATCH;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -29,7 +28,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
@@ -39,9 +37,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Override
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
@@ -78,16 +73,15 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Entity product = transfer.getBelongsToField(PRODUCT);
         BigDecimal quantity = transfer.getDecimalField(QUANTITY);
         Date time = (Date) transfer.getField(TIME);
-        String batch = transfer.getStringField(BATCH);
         BigDecimal price = transfer.getDecimalField(PRICE);
 
         if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE)) && (locationTo != null)
                 && isTypeWarehouse(locationTo.getStringField(TYPE))) {
-            moveResource(locationFrom, locationTo, product, quantity, time, batch, price);
+            moveResource(locationFrom, locationTo, product, quantity, time, price);
         } else if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE))) {
             updateResource(locationFrom, product, quantity);
         } else if ((locationTo != null) && isTypeWarehouse(locationTo.getStringField(TYPE))) {
-            addResource(locationTo, product, quantity, time, batch, price);
+            addResource(locationTo, product, quantity, time, price);
         }
     }
 
@@ -97,7 +91,13 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final String batch, final BigDecimal price) {
+            final BigDecimal price) {
+        addResource(locationTo, product, quantity, time, price, null);
+    }
+
+    @Override
+    public void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
+            final BigDecimal price, final String batch) {
         Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).create();
 
@@ -142,20 +142,21 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
-            final Date time, final String batch, final BigDecimal price) {
+            final Date time, final BigDecimal price) {
         List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
         if (resources != null) {
             for (Entity resource : resources) {
                 BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
                 BigDecimal resourcePrice = (price == null) ? resource.getDecimalField(PRICE) : price;
+                String resourceBatch = (price == null) ? resource.getStringField(BATCH) : null;
 
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
                     resource.getDataDefinition().delete(resource.getId());
 
-                    addResource(locationTo, product, resourceQuantity, time, batch, resourcePrice);
+                    addResource(locationTo, product, resourceQuantity, time, resourcePrice, resourceBatch);
 
                     if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                         return;
@@ -167,7 +168,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
                     resource.getDataDefinition().save(resource);
 
-                    addResource(locationTo, product, quantity, time, batch, resourcePrice);
+                    addResource(locationTo, product, quantity, time, resourcePrice, resourceBatch);
 
                     return;
                 }
@@ -244,27 +245,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
 
         return null;
-    }
-
-    @Override
-    public String generateBatchForTransfer(final String model) {
-        String batch = numberGeneratorService.generateNumber(MaterialFlowConstants.PLUGIN_IDENTIFIER, model);
-
-        Long parsedNumber = Long.parseLong(batch);
-
-        while (batchAlreadyExist(model, batch)) {
-            parsedNumber++;
-
-            batch = String.format("%06d", parsedNumber);
-        }
-
-        return batch;
-    }
-
-    @Override
-    public boolean batchAlreadyExist(final String model, final String batch) {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, model).find()
-                .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
     }
 
 }

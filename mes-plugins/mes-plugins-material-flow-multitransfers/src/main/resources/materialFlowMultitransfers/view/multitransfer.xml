@@ -82,7 +82,7 @@
 						<option type="fieldCode" value="name" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="6" width="6">
+				<layoutElement column="1" row="6" width="7">
 					<component type="borderLayout" name="products">
 						<component type="awesomeDynamicList" name="products"
 							source="#{form}.products" reference="products">

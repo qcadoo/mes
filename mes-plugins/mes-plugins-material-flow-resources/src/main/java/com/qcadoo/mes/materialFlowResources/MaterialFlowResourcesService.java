@@ -18,17 +18,16 @@ public interface MaterialFlowResourcesService {
     Map<Entity, BigDecimal> groupResourcesByProduct(final Entity location);
 
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final String batch, final BigDecimal price);
+            final BigDecimal price, final String batch);
+
+    void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
+            final BigDecimal price);
 
     void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity);
 
     void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
-            final Date time, final String batch, final BigDecimal price);
+            final Date time, final BigDecimal price);
 
     BigDecimal calculatePrice(final Entity location, final Entity product);
-
-    String generateBatchForTransfer(final String model);
-
-    boolean batchAlreadyExist(final String model, final String batch);
 
 }

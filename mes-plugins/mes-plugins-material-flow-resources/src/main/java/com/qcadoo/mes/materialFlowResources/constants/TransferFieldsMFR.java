@@ -31,6 +31,4 @@ public final class TransferFieldsMFR {
 
     public static final String PRICE = "price";
 
-    public static final String BATCH = "batch";
-
 }
