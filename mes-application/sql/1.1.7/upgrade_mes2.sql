@@ -403,17 +403,6 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN updateu
 ALTER TABLE materialflow_transfer ADD COLUMN price numeric(12,5);
 ALTER TABLE materialflow_transfer ALTER COLUMN price SET DEFAULT 0::numeric;
 
-ALTER TABLE materialflow_transfer ADD COLUMN batch character varying(255);
-
--- end
-
-
--- Table: materialflowmultitransfers_productquantity
--- changed: 06.06.2012
-
-ALTER TABLE materialflowmultitransfers_productquantity ADD COLUMN price numeric(12,5);
-ALTER TABLE materialflowmultitransfers_productquantity ALTER COLUMN price SET DEFAULT 0::numeric;
-
 -- end
 
 
