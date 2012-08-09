@@ -37,6 +37,7 @@ import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.NUMBER;
@@ -197,8 +198,7 @@ public class ProductionRecordService {
             }
 
             if (registerInput) {
-                copyOperationProductComponents(operationComponents, productionRecord,
-                        MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT);
+                copyOperationProductComponents(operationComponents, productionRecord, MODEL_RECORD_OPERATION_PRODUCT_IN_COMPONENT);
             }
             if (registerOutput) {
                 copyOperationProductComponents(operationComponents, productionRecord,
