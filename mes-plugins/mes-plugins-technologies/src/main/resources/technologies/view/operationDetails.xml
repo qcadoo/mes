@@ -76,7 +76,7 @@
 							<components>
 								<component type="gridLayout" name="productInComponentGridLayout" 
 									columns="4" rows="1">
-									<layoutElement column="1" width="2" row="1">
+									<layoutElement column="1" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
 											<option type="searchable" value="number,name" />
@@ -104,7 +104,7 @@
 							<components>
 								<component type="gridLayout" name="productOutComponentGridLayout" 
 									columns="4" rows="1">
-									<layoutElement column="1" width="2" row="1">
+									<layoutElement column="1" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
 											<option type="searchable" value="number,name" />
