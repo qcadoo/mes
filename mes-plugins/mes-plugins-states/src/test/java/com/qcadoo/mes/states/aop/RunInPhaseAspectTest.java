@@ -1,6 +1,8 @@
 package com.qcadoo.mes.states.aop;
 
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -33,6 +35,21 @@ public class RunInPhaseAspectTest extends StateChangeTest {
     private static final int LAST_PHASE = 8;
 
     private StateChangeService stateChangeService;
+
+    @Test
+    public final void checkPointcutsDefinition() throws NoSuchMethodException {
+        assertEquals("com.qcadoo.mes.states.annotation.RunInPhase", RunInPhase.class.getCanonicalName());
+        assertEquals("com.qcadoo.mes.states.aop.AbstractStateListenerAspect",
+                AbstractStateListenerAspect.class.getCanonicalName());
+        assertEquals("com.qcadoo.mes.states.aop.StatesXpiAspect", StatesXpiAspect.class.getCanonicalName());
+    }
+
+    @Test
+    public final void checkXpi() throws NoSuchMethodException {
+        final Class<?> clazz = StatesXpiAspect.class;
+        assertEquals("com.qcadoo.mes.states.aop.StatesXpiAspect", clazz.getCanonicalName());
+        assertNotNull(clazz.getDeclaredMethod("listenerExecution"));
+    }
 
     @Aspect
     public static final class TestStateChangeAspect extends AbstractStateChangeAspect {

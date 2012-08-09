@@ -1,5 +1,6 @@
 package com.qcadoo.mes.states.aop;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,6 +36,12 @@ public class AbstractStateChangeAspectTest extends StateChangeTest {
     private static final String STATE_FIELD_NAME = "state";
 
     private static final String STATE_FIELD_VALUE = "someState";
+
+    @Test
+    public final void checkPrecedencePointcutDefinitions() {
+        assertEquals("com.qcadoo.mes.states.aop.StateChangePhaseAspect", StateChangePhaseAspect.class.getCanonicalName());
+        assertEquals("com.qcadoo.mes.states.aop.RunInPhaseAspect", RunInPhaseAspect.class.getCanonicalName());
+    }
 
     @Aspect
     public static class TestStateChangeAspect extends AbstractStateListenerAspect {

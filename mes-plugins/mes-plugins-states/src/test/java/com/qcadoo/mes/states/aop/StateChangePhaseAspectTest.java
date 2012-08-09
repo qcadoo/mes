@@ -1,37 +1,88 @@
 package com.qcadoo.mes.states.aop;
 
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.states.MockStateChangeDescriber;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateChangeTest;
+import com.qcadoo.mes.states.annotation.StateChangePhase;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 
 public class StateChangePhaseAspectTest extends StateChangeTest {
-
-    private static final String STATE_FIELD_NAME = "state";
 
     private static final String TOUCHED_FIELD = "touched";
 
     private static final String TOUCHED_PHASE = "touchedPhase";
 
     private TestStateChangeService stateChangeService;
+
+    @Test
+    public final void checkPointcutsDefinition() throws NoSuchMethodException {
+        assertEquals("com.qcadoo.mes.states.annotation.StateChangePhase", StateChangePhase.class.getCanonicalName());
+        assertEquals("com.qcadoo.mes.states.StateChangeContext", StateChangeContext.class.getCanonicalName());
+        assertEquals("com.qcadoo.mes.states.service.StateChangeService", StateChangeService.class.getCanonicalName());
+
+        final Map<Integer, Class<?>> changeStateArgsMap = Maps.newHashMap();
+        changeStateArgsMap.put(0, StateChangeContext.class);
+        final Method changeStateMethod = findMethod(StateChangeService.class, "changeState", changeStateArgsMap);
+        assertNotNull(changeStateMethod);
+        Assert.assertTrue(Modifier.isPublic(changeStateMethod.getModifiers()));
+        assertEquals(void.class, changeStateMethod.getReturnType());
+
+        final Map<Integer, Class<?>> changeStatePhaseArgsMap = changeStateArgsMap;
+        final Method changeStatePhaseMethod = findMethod(StateChangeService.class, "changeState", changeStatePhaseArgsMap);
+        assertNotNull(changeStatePhaseMethod);
+        Assert.assertTrue(Modifier.isPublic(changeStatePhaseMethod.getModifiers()));
+        assertEquals(void.class, changeStatePhaseMethod.getReturnType());
+    }
+
+    private Method findMethod(final Class<?> clazz, final String name, final Map<Integer, Class<?>> argsMap) {
+        final List<Method> methods = Lists.newArrayList(clazz.getMethods());
+        methods.addAll(Lists.newArrayList(clazz.getDeclaredMethods()));
+        for (Method method : methods) {
+            if (method.getName().equals(name) && methodMatchArguments(method, argsMap)) {
+                return method;
+            }
+        }
+        Assert.fail("method not found");
+        return null;
+    }
+
+    private boolean methodMatchArguments(final Method method, final Map<Integer, Class<?>> argsMap) {
+        final Class<?>[] arguments = method.getParameterTypes();
+        for (Map.Entry<Integer, Class<?>> argEntry : argsMap.entrySet()) {
+            final int argIndex = argEntry.getKey();
+            final Class<?> argType = argEntry.getValue();
+            if (!argType.isAssignableFrom(arguments[argIndex])) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Aspect
     public static class TestStateChangeService extends AbstractStateChangeAspect {

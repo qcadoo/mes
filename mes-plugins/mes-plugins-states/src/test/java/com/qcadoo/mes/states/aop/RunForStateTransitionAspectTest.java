@@ -1,6 +1,7 @@
 package com.qcadoo.mes.states.aop;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -44,6 +45,12 @@ public class RunForStateTransitionAspectTest extends StateChangeTest {
     private static final String MARKED_MANY_2 = "markedMany02";
 
     private TestStateChangeServiceAspect testService;
+
+    @Test
+    public final void checkAnnotationSelectorPointcutDefinition() throws NoSuchMethodException {
+        final Class<?> clazz = RunForStateTransitions.class;
+        assertEquals("com.qcadoo.mes.states.annotation.RunForStateTransitions", clazz.getCanonicalName());
+    }
 
     @Aspect
     public static class TestStateChangeServiceAspect extends AbstractStateChangeAspect {
