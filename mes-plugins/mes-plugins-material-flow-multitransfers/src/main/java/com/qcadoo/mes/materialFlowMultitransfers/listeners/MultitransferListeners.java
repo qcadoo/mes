@@ -12,7 +12,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -49,13 +48,13 @@ public class MultitransferListeners {
     private static final String L_UNIT = "unit";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private MaterialFlowService materialFlowService;
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private TimeConverterService timeConverterService;
@@ -118,7 +117,7 @@ public class MultitransferListeners {
             Entity product = productQuantity.getBelongsToField(PRODUCT);
 
             if ((product != null) && (quantity != null)) {
-                createTransfer(type, time, locationFrom, locationTo, staff, product, quantity, null);
+                createTransfer(type, time, locationFrom, locationTo, staff, product, quantity);
             }
         }
 
@@ -265,7 +264,7 @@ public class MultitransferListeners {
     }
 
     public void createTransfer(final String type, final Date time, final Entity locationFrom, final Entity locationTo,
-            final Entity staff, final Entity product, final BigDecimal quantity, final BigDecimal price) {
+            final Entity staff, final Entity product, final BigDecimal quantity) {
         DataDefinition transferDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_TRANSFER);
 
@@ -280,7 +279,6 @@ public class MultitransferListeners {
         transfer.setField(STAFF, staff);
         transfer.setField(PRODUCT, product);
         transfer.setField(QUANTITY, quantity);
-        transfer.setField(PRICE, price);
 
         checkArgument(transferDD.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }

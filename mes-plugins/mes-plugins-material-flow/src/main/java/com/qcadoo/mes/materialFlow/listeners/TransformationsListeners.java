@@ -33,10 +33,10 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 public class TransformationsListeners {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private MaterialFlowService materialFlowService;
 
     @Autowired
-    private MaterialFlowService materialFlowService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
