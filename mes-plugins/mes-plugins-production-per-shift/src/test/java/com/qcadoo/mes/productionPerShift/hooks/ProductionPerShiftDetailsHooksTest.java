@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import static java.util.Arrays.asList;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,8 +17,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
@@ -59,7 +66,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private DataDefinition ddTIOC, orderDD;
 
     @Mock
-    private Entity tioc, toc, prodComp, prod, order;
+    private Entity tioc, toc, prodComp, prod, order, shift;
 
     @Mock
     private EntityTreeNode root;
@@ -101,6 +108,9 @@ public class ProductionPerShiftDetailsHooksTest {
     @Mock
     private PPSHelper helper;
 
+    @Mock
+    private ShiftsService shiftsService;
+
     private Long orderId;
 
     @Before
@@ -110,6 +120,7 @@ public class ProductionPerShiftDetailsHooksTest {
         ReflectionTestUtils.setField(hooks, "technologyService", technologyService);
         ReflectionTestUtils.setField(hooks, "helper", helper);
         ReflectionTestUtils.setField(hooks, "timeConverterService", timeConverterService);
+        ReflectionTestUtils.setField(hooks, "shiftsService", shiftsService);
 
         when(dataDefinitionService.get("orders", "order")).thenReturn(orderDD);
         when(dataDefinitionService.get("technologies", "technologyInstanceOperationComponent")).thenReturn(ddTIOC);
@@ -347,6 +358,67 @@ public class ProductionPerShiftDetailsHooksTest {
         // then
         Mockito.verify(clearButton).setEnabled(true);
         Mockito.verify(copyButton).setEnabled(true);
+    }
+
+    @Test
+    public void returnFalseWhenFirstProgressDoesnotWorkAtDateTime() throws Exception {
+        // given
+        Entity productionPerShift = mock(Entity.class);
+        Entity pfd1 = mock(Entity.class);
+        List<Entity> pfds = asList(pfd1);
+        Integer day = Integer.valueOf(1);
+        EntityList progressForDays = mockEntityList(pfds);
+        Entity dp1 = mock(Entity.class);
+        List<Entity> dps = asList(dp1);
+        EntityList dailyProgress = mockEntityList(dps);
+        Date correctedDate = new Date();
+
+        when(view.getComponentByReference("form")).thenReturn(form);
+        when(form.getEntity()).thenReturn(productionPerShift);
+
+        when(order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS)).thenReturn(techInstOperComps);
+
+        when(techInstOperComps.iterator()).thenAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return Lists.newArrayList(tioc).iterator();
+            }
+        });
+
+        when(tioc.getHasManyField("progressForDays")).thenReturn(progressForDays);
+        when(tioc.getBelongsToField("order")).thenReturn(order);
+
+        when(progressForDays.get(0)).thenReturn(pfd1);
+        when(pfd1.getField("day")).thenReturn(day);
+        when(pfd1.getBooleanField("corrected")).thenReturn(false);
+        when(productionPerShift.getBooleanField("hasCorrections")).thenReturn(true);
+
+        when(pfd1.getHasManyField("dailyProgress")).thenReturn(dailyProgress);
+        when(dailyProgress.get(0)).thenReturn(dp1);
+        when(dp1.getBelongsToField("shift")).thenReturn(shift);
+
+        when(productionPerShift.getBelongsToField("order")).thenReturn(order);
+        when(order.getField("correctedDateFrom")).thenReturn(correctedDate);
+
+        // when
+        hooks.checkShiftsIfWorks(view);
+
+        // then
+        // Assert.assertFalse(result);
+    }
+
+    public EntityList mockEntityList(final List<Entity> entities) {
+        final EntityList entityList = mock(EntityList.class);
+        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return ImmutableList.copyOf(entities).iterator();
+            }
+        });
+        given(entityList.isEmpty()).willReturn(entities.isEmpty());
+        return entityList;
     }
 
 }

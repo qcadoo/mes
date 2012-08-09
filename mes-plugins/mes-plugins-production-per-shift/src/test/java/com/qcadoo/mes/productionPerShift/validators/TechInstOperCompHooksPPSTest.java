@@ -2,10 +2,12 @@ package com.qcadoo.mes.productionPerShift.validators;
 
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
 import static java.util.Arrays.asList;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,9 +16,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
-import com.qcadoo.mes.basic.ShiftsService;
+import com.google.common.collect.ImmutableList;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -32,24 +35,24 @@ public class TechInstOperCompHooksPPSTest {
     private Entity entity;
 
     @Mock
-    private ShiftsService shiftsService;
-
-    @Mock
     private EntityList progressForDays;
-
-    @Mock
-    private Entity shift, order;
 
     @Before
     public void init() {
         hooksPPS = new TechInstOperCompHooksPPS();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(hooksPPS, "shiftsService", shiftsService);
     }
 
-    private EntityList mockEntityList(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
+    public EntityList mockEntityList(final List<Entity> entities) {
+        final EntityList entityList = mock(EntityList.class);
+        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return ImmutableList.copyOf(entities).iterator();
+            }
+        });
+        given(entityList.isEmpty()).willReturn(entities.isEmpty());
         return entityList;
     }
 
@@ -108,6 +111,7 @@ public class TechInstOperCompHooksPPSTest {
     @Test
     public void shouldReturnTrueWhenPFDIsEmpty() throws Exception {
         // given
+        progressForDays = mockEntityList(Collections.<Entity> emptyList());
         when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
         when(progressForDays.isEmpty()).thenReturn(true);
         // when
@@ -134,35 +138,4 @@ public class TechInstOperCompHooksPPSTest {
         Assert.assertTrue(result);
     }
 
-    @Test
-    public void returnFalseWhenFirstProgressDoesnotWorkAtDateTime() throws Exception {
-        // given
-        Entity pfd1 = mock(Entity.class);
-        List<Entity> pfds = asList(pfd1);
-        Integer day = Integer.valueOf(1);
-        EntityList progressForDays = mockEntityList(pfds);
-        Entity dp1 = mock(Entity.class);
-        List<Entity> dps = asList(dp1);
-        EntityList dailyProgress = mockEntityList(dps);
-        Date correctedDate = new Date();
-
-        when(entity.getHasManyField("progressForDays")).thenReturn(progressForDays);
-        when(progressForDays.get(0)).thenReturn(pfd1);
-        when(pfd1.getField("day")).thenReturn(day);
-        when(pfd1.getBooleanField("corrected")).thenReturn(false);
-        when(entity.getBooleanField("hasCorrections")).thenReturn(true);
-
-        when(pfd1.getHasManyField("dailyProgress")).thenReturn(dailyProgress);
-        when(dailyProgress.get(0)).thenReturn(dp1);
-        when(dp1.getBelongsToField("shift")).thenReturn(shift);
-
-        when(entity.getBelongsToField("order")).thenReturn(order);
-        when(order.getField("correctedDateFrom")).thenReturn(correctedDate);
-
-        // when
-        boolean result = hooksPPS.checkShiftsIfWorks(dataDefinition, entity);
-        // then
-        Assert.assertFalse(result);
-
-    }
 }
