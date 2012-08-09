@@ -1,6 +1,8 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
@@ -8,20 +10,29 @@ import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFiel
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAILY_PROGRESS;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.HAS_CORRECTIONS;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields.PROGRESS_FOR_DAYS;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -31,6 +42,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -46,6 +58,11 @@ public class ProductionPerShiftDetailsHooks {
     private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
 
     private static final String PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
+
+    private static final Long MILLISECONDS_OF_ONE_DAY = 86400000L;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     @Autowired
     private PPSHelper helper;
@@ -286,6 +303,81 @@ public class ProductionPerShiftDetailsHooks {
             wasItCorrected.setFieldValue(true);
         }
         wasItCorrected.requestComponentUpdateState();
+    }
+
+    public void checkShiftsIfWorks(final ViewDefinitionState view) {
+        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final Entity productionPerShift = form.getEntity();
+        final Entity order = productionPerShift.getBelongsToField(ProductionPerShiftFields.ORDER);
+        if (order == null) {
+            return;
+        }
+        List<Entity> tiocs = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+        if (tiocs == null) {
+            final Entity orderFromDb = order.getDataDefinition().get(order.getId());
+            tiocs = orderFromDb.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
+            if (tiocs == null) {
+                return;
+            }
+        }
+        for (Entity tioc : tiocs) {
+            checkShiftsIfWorks(form, tioc);
+        }
+    }
+
+    private void checkShiftsIfWorks(final FormComponent formComponent, final Entity tioc) {
+        final List<Entity> progressForDays = tioc.getHasManyField("progressForDays");
+        for (Entity progressForDay : progressForDays) {
+            if ((progressForDay.getBooleanField(CORRECTED) && !tioc.getBooleanField(HAS_CORRECTIONS))) {
+                continue;
+            }
+            final List<Entity> dailyProgressList = progressForDay.getHasManyField(DAILY_PROGRESS);
+            for (Entity dailyProgress : dailyProgressList) {
+                Entity shift = dailyProgress.getBelongsToField("shift");
+                if (shift == null) {
+                    continue;
+                }
+                if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift)) {
+                    final String shiftName = shift.getStringField(ShiftFields.NAME);
+                    final String workDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
+                            .format(getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay));
+                    formComponent.addMessage("productionPerShift.progressForDay.shiftDoesNotWork", MessageType.INFO, shiftName,
+                            workDate);
+                }
+            }
+        }
+    }
+
+    private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity tioc,
+            final Entity shift) {
+        boolean works = false;
+        if (progressForDay.equals(progressForDays.get(0))) {
+            Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(getDateAfterStartOrderForProgress(
+                    tioc.getBelongsToField("order"), progressForDay));
+            if (shiftFromDay == null) {
+                works = false;
+            } else if (shift.getId().equals(shiftFromDay.getId())) {
+                works = true;
+            }
+        } else {
+            works = shiftsService.checkIfShiftWorkAtDate(
+                    getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay), shift);
+        }
+        return works;
+    }
+
+    private Date getDateAfterStartOrderForProgress(final Entity order, final Entity progressForDay) {
+        final Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+        final Date startOrder = getPlannedOrCorrectedDate(order);
+        return new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
+    }
+
+    private Date getPlannedOrCorrectedDate(final Entity order) {
+        if (order.getField(CORRECTED_DATE_FROM) == null) {
+            return (Date) order.getField(DATE_FROM);
+        } else {
+            return (Date) order.getField(CORRECTED_DATE_FROM);
+        }
     }
 
 }
