@@ -11,5 +11,5 @@
 	</fields>
 	<hooks >
 	    <onSave class="com.qcadoo.mes.productionPerShift.hooks.ProgressForDayHooks" method="saveDateOfDay"/>
-	    </hooks>
+	</hooks>
 </model>

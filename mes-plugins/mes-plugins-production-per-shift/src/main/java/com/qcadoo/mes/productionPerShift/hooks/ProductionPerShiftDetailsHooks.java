@@ -369,7 +369,7 @@ public class ProductionPerShiftDetailsHooks {
     private Date getDateAfterStartOrderForProgress(final Entity order, final Entity progressForDay) {
         final Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
         final Date startOrder = getPlannedOrCorrectedDate(order);
-        return new Date(startOrder.getTime() + day * MILLISECONDS_OF_ONE_DAY);
+        return new Date(startOrder.getTime() + (day - 1) * MILLISECONDS_OF_ONE_DAY);
     }
 
     private Date getPlannedOrCorrectedDate(final Entity order) {
