@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="product" plugin="basic" model="product"
-			equired="true" />
+			required="true" />
 		
 		<belongsTo name="operationIn" model="operation" />
 		<belongsTo name="operationOut" model="operation" />
