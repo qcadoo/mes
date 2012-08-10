@@ -46,10 +46,10 @@
 		<boolean name="isTjDivisible" default="false"/>
 		
 		<hasMany name="productInComponents" model="productComponent"
-			joinField="operationIn" cascade="nullify" />
+			joinField="operationIn" cascade="delete" copyable="true" />
 			
 		<hasMany name="productOutComponents" model="productComponent"
-			joinField="operationOut" cascade="nullify" />
+			joinField="operationOut" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
