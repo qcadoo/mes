@@ -175,7 +175,7 @@
 		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setParameterWithDefaultProductionCountingValues"/>
 		</model:model-hook>
 		<model:model-hook model="order" plugin="orders">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC" method="setOrderWithDefaultValues"/>
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC" method="setOrderWithDefaultProductionCountingValues"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
