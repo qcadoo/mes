@@ -49,6 +49,7 @@
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
+		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
