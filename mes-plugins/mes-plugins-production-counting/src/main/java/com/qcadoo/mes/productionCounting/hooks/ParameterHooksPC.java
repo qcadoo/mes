@@ -46,7 +46,7 @@ public class ParameterHooksPC {
 
     public void setDefaultParameterToProductionCounting(final DataDefinition dataDefinition, final Entity parameter) {
         if (parameter.getStringField("typeOfProductionRecording") == null) {
-            parameter.setField("typeOfProductionRecording", CUMULATED);
+            parameter.setField("typeOfProductionRecording", CUMULATED.getStringValue());
         }
 
     }
