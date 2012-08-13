@@ -507,3 +507,13 @@ CREATE TABLE assignmenttoshift_assignmenttoshiftreport
 );
 
 -- end
+
+
+-- Table: basic_parameter
+-- changed: 13.08.2012
+
+UPDATE basic_parameter SET typeofproductionrecording = '02cumulated';
+
+UPDATE basic_parameter SET unit = 'szt';
+
+-- end
