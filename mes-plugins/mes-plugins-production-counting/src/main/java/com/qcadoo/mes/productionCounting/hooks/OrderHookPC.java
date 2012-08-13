@@ -49,7 +49,7 @@ public class OrderHookPC {
     public void setOrderWithDefaultProductionCountingValues(final DataDefinition dataDefinition, final Entity order) {
         for (String fieldName : Arrays.asList(TYPE_OF_PRODUCTION_RECORDING, REGISTER_PIECEWORK, REGISTER_QUANTITY_IN_PRODUCT,
                 REGISTER_QUANTITY_OUT_PRODUCT, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER)) {
-            if (order.getStringField(fieldName) == null) {
+            if (order.getField(fieldName) == null) {
                 order.setField(fieldName, parameterService.getParameter().getField(fieldName));
             }
         }
