@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.6
+    Version: 1.1.7
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <technologyOperComp>
  	<row BOM_ID="1" NODE_NUMBER="" TECHNOLOGY_NR="T-TBL-1-2012.04-01" PARENT="" ENTITY_TYPE="operation" OPERATION_NR="PCK" REFERENCE_TECHNOLOGY_NR="" PRIORITY="" PRODUCTIONINONECYCLEUNIT="pc" />
     <row BOM_ID="2" NODE_NUMBER="" TECHNOLOGY_NR="T-TBL-1-2012.04-01" PARENT="1" ENTITY_TYPE="operation" OPERATION_NR="PLN" REFERENCE_TECHNOLOGY_NR="" PRIORITY="" PRODUCTIONINONECYCLEUNIT="pc" />
