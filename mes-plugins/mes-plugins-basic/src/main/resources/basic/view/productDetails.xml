@@ -187,6 +187,7 @@
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="generateProductNumber" />
+		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="disableProductFormForExternalItems" />
 	</hooks>
 </view>
