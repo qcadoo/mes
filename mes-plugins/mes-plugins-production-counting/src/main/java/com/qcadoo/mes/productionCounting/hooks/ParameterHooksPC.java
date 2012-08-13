@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -44,7 +46,7 @@ public class ParameterHooksPC {
 
     public void setDefaultParameterToProductionCounting(final DataDefinition dataDefinition, final Entity parameter) {
         if (parameter.getStringField("typeOfProductionRecording") == null) {
-            parameter.setField("typeOfProductionRecording", "01basic");
+            parameter.setField("typeOfProductionRecording", CUMULATED);
         }
 
     }
