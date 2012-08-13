@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.ALLOW_TO_CLOSE;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.JUST_ONE;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +46,13 @@ public class OrderHookPC {
     @Autowired
     private ParameterService parameterService;
 
-    public void setDefaultParameterToProductionCounting(final DataDefinition dataDefinition, final Entity order) {
-        String typeOfProductionRecording = order.getStringField("typeOfProductionRecording");
-        Entity parameter = parameterService.getParameter();
-        String defaultTypeOfProductionRecording = parameter.getStringField("typeOfProductionRecording");
-
-        if ("".equals(typeOfProductionRecording) || typeOfProductionRecording == null) {
-            order.setField("typeOfProductionRecording", defaultTypeOfProductionRecording);
+    public void setOrderWithDefaultProductionCountingValues(final DataDefinition dataDefinition, final Entity order) {
+        for (String fieldName : Arrays.asList(TYPE_OF_PRODUCTION_RECORDING, REGISTER_PIECEWORK, REGISTER_QUANTITY_IN_PRODUCT,
+                REGISTER_QUANTITY_OUT_PRODUCT, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER)) {
+            if (order.getStringField(fieldName) == null) {
+                order.setField(fieldName, parameterService.getParameter().getField(fieldName));
+            }
         }
     }
+
 }

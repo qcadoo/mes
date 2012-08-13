@@ -114,13 +114,16 @@
 				default="02cumulated" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+			<model:boolean name="registerPiecework" />
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="registerQuantityOutProduct" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerProductionTime" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="justOne" />
@@ -130,21 +133,21 @@
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:boolean name="autoCloseOrder" />
-		</model:model-field>
-		<model:model-field model="parameter" plugin="basic">
-			<model:boolean name="registerPiecework" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerProductionTime" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:boolean name="registerPiecework" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
 			<model:boolean name="registerQuantityInProduct" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="registerQuantityOutProduct" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerProductionTime" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="justOne" />
@@ -154,9 +157,6 @@
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:boolean name="autoCloseOrder" />
-		</model:model-field>
-		<model:model-field model="order" plugin="orders">
-			<model:boolean name="registerPiecework" />
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionRecords" model="productionRecord"
@@ -172,14 +172,10 @@
 		</model:model-field>
 		
 		<model:model-hook model="parameter" plugin="basic">
-		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="addFieldsForParameter"/>
+		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setParameterWithDefaultProductionCountingValues"/>
 		</model:model-hook>
 		<model:model-hook model="order" plugin="orders">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC" method="setDefaultParameterToProductionCounting"/>
-		</model:model-hook>
-		
-		<model:model-hook model="parameter" plugin="basic">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setDefaultParameterToProductionCounting"/>
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC" method="setOrderWithDefaultValues"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />

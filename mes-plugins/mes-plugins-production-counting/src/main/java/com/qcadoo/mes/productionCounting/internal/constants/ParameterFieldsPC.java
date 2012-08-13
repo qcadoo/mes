@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.internal.constants;
 
-public final class OrderFieldsPC {
+public final class ParameterFieldsPC {
 
-    private OrderFieldsPC() {
+    private ParameterFieldsPC() {
 
     }
 
