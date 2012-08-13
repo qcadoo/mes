@@ -32,8 +32,6 @@
 								expression="#operation['name']" />
 							<option type="column" name="laborHourlyCost" fields="laborHourlyCost" />
 							<option type="column" name="machineHourlyCost" fields="machineHourlyCost" />
-							<option type="column" name="unit" fields="operation"
-								expression="PLN" />
 							<option type="order" column="nodeNumber" direction="desc" />
 							<option type="searchable" value="nodeNumber,operationName" />
 							<option type="paginable" value="false" />
