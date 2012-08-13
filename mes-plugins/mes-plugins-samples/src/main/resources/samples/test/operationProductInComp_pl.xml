@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.6
+    Version: 1.1.7
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <operationProductInComps>
     <row OPERATION_COMP_ID="1" PRODUCT_NR="PD-1" QUANTITY="1"/>
 	<row OPERATION_COMP_ID="1" PRODUCT_NR="RM" QUANTITY="1"/>
