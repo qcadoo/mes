@@ -149,12 +149,6 @@ public final class ProductService {
         return true;
     }
 
-    public void fillUnit(final DataDefinition productDD, final Entity product) {
-        if (product.getField(UNIT) == null) {
-            product.setField(UNIT, unitService.getDefaultUnitFromSystemParameters());
-        }
-    }
-
     public void fillUnit(final ViewDefinitionState view) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -163,6 +157,12 @@ public final class ProductService {
         if ((productForm.getEntityId() == null) && (unitField.getFieldValue() == null)) {
             unitField.setFieldValue(unitService.getDefaultUnitFromSystemParameters());
             unitField.requestComponentUpdateState();
+        }
+    }
+
+    public void fillUnit(final DataDefinition productDD, final Entity product) {
+        if (product.getField(UNIT) == null) {
+            product.setField(UNIT, unitService.getDefaultUnitFromSystemParameters());
         }
     }
 
