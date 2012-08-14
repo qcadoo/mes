@@ -135,11 +135,17 @@ public class ProductionRecordViewService {
         RibbonActionItem copyButton = window.getRibbon().getGroupByName("actions").getItemByName("copy");
 
         Entity tR = form.getEntity();
-        String orderState = tR.getBelongsToField("order").getStringField("state");
+        Entity order = tR.getBelongsToField("order");
+        if (order == null) {
+            return;
+        }
+        String orderState = order.getStringField("state");
         if (!OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyButton.setEnabled(false);
-            copyButton.requestUpdate(true);
+        } else {
+            copyButton.setEnabled(true);
         }
+        copyButton.requestUpdate(true);
     }
 
     public void initializeRecordDetailsView(final ViewDefinitionState view) {
