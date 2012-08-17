@@ -47,8 +47,8 @@
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="lineChangeoverNorms/lineChangeoverNormsDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+			<option type="searchable" value="number,fromTechnology,toTechnology,fromTechnologyGroup,toTechnologyGroup,productionLine" />
+			<option type="orderable" value="number,fromTechnology,toTechnology,fromTechnologyGroup,toTechnologyGroup,productionLine" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
