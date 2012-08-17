@@ -30,6 +30,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DE
 import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
@@ -94,12 +96,12 @@ public class OrderDetailsHooks {
         if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
             changedEnabledFields(view, references, true);
         }
         if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
             List<String> references = Arrays.asList(CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_TO);
             changedEnabledFields(view, references, true);
         }
     }
