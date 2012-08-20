@@ -1,0 +1,39 @@
+<view name="productCatalogNumbersList" modelName="productCatalogNumbers"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+			<group name="report">
+				<bigButton name="print" icon="pdfIcon16.png"
+					action="#{grid}.generateReportForEntity('productCatalogNumbers','sample','pdf',ReportTitle='Sample')"
+					state="enabled" />
+			</group>
+		</ribbon>
+		<component type="grid" name="productCatalogNumbersList"
+			reference="grid">
+			<option type="column" name="productNumber" fields="product"
+				link="true" expression="#product['number']" />
+			<option type="column" name="productName" fields="product"
+				link="true" expression="#product['name']" />
+			<option type="column" name="companyNumber" fields="company"
+				link="true" expression="#company['number']" />
+			<option type="column" name="companyName" fields="company"
+				link="true" expression="#company['number']" />
+			<option type="column" name="catalogNumber" fields="catalogNumber"
+				link="true" />
+			<option type="order" column="productNumber" direction="asc" />
+			<option type="correspondingView"
+				value="productCatalogNumbers/productCatalogNumbersDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable"
+				value="catalogNumber,productNumber,productName,companyNumber,companyName" />
+			<option type="orderable"
+				value="catalogNumber,productNumber,productName,companyNumber,companyName" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+</view>

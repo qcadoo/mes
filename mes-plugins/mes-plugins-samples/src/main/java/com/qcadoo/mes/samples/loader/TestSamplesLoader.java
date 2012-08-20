@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.6
+ * Version: 1.1.7
  *
  * This file is part of Qcadoo.
  *
@@ -228,10 +228,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (isEnabledOrEnabling(L_PRODUCTION_COUNTING)) {
             readDataFromXML(dataset, L_PRODUCTION_RECORD, locale);
-            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
-            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT, locale);
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
+            readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
+            readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
 
         }
 

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.6
+ * Version: 1.1.7
  *
  * This file is part of Qcadoo.
  *
@@ -23,9 +23,11 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,19 +38,30 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class ProductServiceTest {
 
+    private static final String L_SZT = "szt";
+
+    private static final String L_FORM = "form";
+
+    private static final long L_ID = 1L;
+
     private ProductService productService;
 
     @Mock
     private ViewDefinitionState view;
+
+    @Mock
+    private UnitService unitService;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
@@ -68,6 +81,7 @@ public class ProductServiceTest {
 
         MockitoAnnotations.initMocks(this);
 
+        ReflectionTestUtils.setField(productService, "unitService", unitService);
         ReflectionTestUtils.setField(productService, "numberGeneratorService", numberGeneratorService);
         ReflectionTestUtils.setField(productService, "dataDefinitionService", dataDefinitionService);
     }
@@ -179,7 +193,80 @@ public class ProductServiceTest {
         productService.disableProductFormForExternalItems(view);
         // then
         verify(form).setFormEnabled(false);
+    }
 
+    @Test
+    public void shouldntFillUnitIfFormIsSaved() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent productForm = mock(FormComponent.class);
+
+        FieldComponent unitField = mock(FieldComponent.class);
+
+        when(view.getComponentByReference(L_FORM)).thenReturn(productForm);
+        when(productForm.getEntityId()).thenReturn(L_ID);
+
+        // when
+        productService.fillUnit(view);
+
+        // then
+        verify(unitField, never()).setFieldValue(Mockito.anyString());
+    }
+
+    @Test
+    public void shouldFillUnitIfFormIsntSaved() {
+        // given
+        ViewDefinitionState view = mock(ViewDefinitionState.class);
+        FormComponent productForm = mock(FormComponent.class);
+
+        FieldComponent unitField = mock(FieldComponent.class);
+
+        when(view.getComponentByReference(L_FORM)).thenReturn(productForm);
+        when(productForm.getEntityId()).thenReturn(null);
+
+        when(view.getComponentByReference(UNIT)).thenReturn(unitField);
+
+        when(unitField.getFieldValue()).thenReturn(null);
+
+        when(unitService.getDefaultUnitFromSystemParameters()).thenReturn(L_SZT);
+
+        // when
+        productService.fillUnit(view);
+
+        // then
+        verify(unitField).setFieldValue(L_SZT);
+    }
+
+    @Test
+    public void shouldntFillUnitIfUnitIsntNull() {
+        // given
+        Entity product = mock(Entity.class);
+        DataDefinition productDD = mock(DataDefinition.class);
+
+        when(product.getField(UNIT)).thenReturn(L_SZT);
+
+        // when
+        productService.fillUnit(productDD, product);
+
+        // then
+        verify(product, never()).setField(Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    public void shouldFillUnitIfUnitIsNull() {
+        // given
+        Entity product = mock(Entity.class);
+        DataDefinition productDD = mock(DataDefinition.class);
+
+        when(product.getField(UNIT)).thenReturn(null);
+
+        when(unitService.getDefaultUnitFromSystemParameters()).thenReturn(L_SZT);
+
+        // when
+        productService.fillUnit(productDD, product);
+
+        // then
+        verify(product).setField(UNIT, L_SZT);
     }
 
 }

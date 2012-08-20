@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.6
+ * Version: 1.1.7
  *
  * This file is part of Qcadoo.
  *
@@ -101,6 +101,10 @@ public class CostNormsForProductService {
 
     public void fillCurrencyFieldsInProduct(final ViewDefinitionState viewDefinitionState) {
         fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_PRODUCT);
+    }
+
+    public void fillCurrencyFieldsInOrder(final ViewDefinitionState viewDefinitionState) {
+        fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_ORDER);
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="productCatalogNumbers" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>MES - Product catalog numbers</name>
+		<vendor>
+			<name>Qcadoo Limited </name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="productCatalogNumbers" resource="model/productCatalogNumbers.xml" />
+		
+		<menu:menu-category name="basic" />
+
+		<menu:menu-item name="productCatalogNumbers" category="basic"
+			view="productCatalogNumbersList" />
+
+		<view:view resource="view/productCatalogNumbersList.xml" />
+		<view:view resource="view/productCatalogNumbersDetails.xml" />
+		
+	</modules>
+
+</plugin>

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.1.6
+    Version: 1.1.7
 
     This file is part of Qcadoo.
 
@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="product" plugin="basic" model="product"
-			equired="true" />
+			required="true" />
 		
 		<belongsTo name="operationIn" model="operation" />
 		<belongsTo name="operationOut" model="operation" />

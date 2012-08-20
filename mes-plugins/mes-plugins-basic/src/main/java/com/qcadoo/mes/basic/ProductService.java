@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.6
+ * Version: 1.1.7
  *
  * This file is part of Qcadoo.
  *
@@ -23,25 +23,34 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public final class ProductService {
 
+    private static final String L_FORM = "form";
+
     private static final String SUBSTITUTE_FIELD = "substitute";
 
     private static final String PRODUCT_FIELD = "product";
+
+    @Autowired
+    private UnitService unitService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -51,7 +60,7 @@ public final class ProductService {
 
     public void generateProductNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                "form", "number");
+                L_FORM, "number");
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
@@ -112,7 +121,7 @@ public final class ProductService {
     }
 
     public void disableProductFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
 
         if (form.getEntityId() == null) {
             return;
@@ -138,6 +147,23 @@ public final class ProductService {
         }
         entity.setField("externalNumber", null);
         return true;
+    }
+
+    public void fillUnit(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(UNIT);
+
+        if ((productForm.getEntityId() == null) && (unitField.getFieldValue() == null)) {
+            unitField.setFieldValue(unitService.getDefaultUnitFromSystemParameters());
+            unitField.requestComponentUpdateState();
+        }
+    }
+
+    public void fillUnit(final DataDefinition productDD, final Entity product) {
+        if (product.getField(UNIT) == null) {
+            product.setField(UNIT, unitService.getDefaultUnitFromSystemParameters());
+        }
     }
 
 }

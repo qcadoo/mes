@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.1.6
+ * Version: 1.1.7
  *
  * This file is part of Qcadoo.
  *
@@ -38,4 +38,10 @@ public final class OrderFieldsPC {
     public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
 
     public static final String REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";
+
+    public static final String JUST_ONE = "justOne";
+
+    public static final String ALLOW_TO_CLOSE = "allowToClose";
+
+    public static final String AUTO_CLOSE_ORDER = "autoCloseOrder";
 }
