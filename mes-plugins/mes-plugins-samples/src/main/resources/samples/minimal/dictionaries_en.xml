@@ -25,11 +25,17 @@
 
 -->
 <dictionaries>
+	<row NAME="units" ITEM="g" DESCRIPTION="Gram" />
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
+	<row NAME="units" ITEM="mm" DESCRIPTION="Millimetr" />
+	<row NAME="units" ITEM="cm" DESCRIPTION="Centimetre" />
+	<row NAME="units" ITEM="cm2" DESCRIPTION="Cubic centimeter" />
+	<row NAME="units" ITEM="dam" DESCRIPTION="Cubic decametre" />	
 	<row NAME="units" ITEM="m" DESCRIPTION="Meter" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
 	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter" />
 	<row NAME="units" ITEM="l" DESCRIPTION="Liter" />
+	<row NAME="units" ITEM="hl" DESCRIPTION="Hectolitre" />
 	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
 	<row NAME="units" ITEM="pair" DESCRIPTION="Pair" />
 	<row NAME="units" ITEM="set" DESCRIPTION="Set" />

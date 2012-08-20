@@ -31,9 +31,20 @@
 	<row NAME="categories" ITEM="category 4" DESCRIPTION="" />
 	<row NAME="posts" ITEM="post 1" DESCRIPTION="" />
 	<row NAME="posts" ITEM="post 2" DESCRIPTION="" />
+	<row NAME="units" ITEM="g" DESCRIPTION="Gram" />
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
-	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
+	<row NAME="units" ITEM="mm" DESCRIPTION="Millimetr" />
+	<row NAME="units" ITEM="cm" DESCRIPTION="Centimetre" />
+	<row NAME="units" ITEM="cm2" DESCRIPTION="Cubic centimeter" />
+	<row NAME="units" ITEM="dam" DESCRIPTION="Cubic decametre" />	
+	<row NAME="units" ITEM="m" DESCRIPTION="Meter" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
+	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter" />
+	<row NAME="units" ITEM="l" DESCRIPTION="Liter" />
+	<row NAME="units" ITEM="hl" DESCRIPTION="Hectolitre" />
+	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
+	<row NAME="units" ITEM="pair" DESCRIPTION="Pair" />
+	<row NAME="units" ITEM="set" DESCRIPTION="Set" />
 	<row NAME="reasonTypeOfChaningOrderState" ITEM="Employee absence" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Delays in materials delivery" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Faulty materials" DESCRIPTION="" />

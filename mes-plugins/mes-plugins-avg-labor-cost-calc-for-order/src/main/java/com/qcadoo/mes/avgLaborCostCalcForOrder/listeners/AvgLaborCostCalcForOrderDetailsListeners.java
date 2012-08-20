@@ -151,10 +151,14 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
             Entity worker = assignmentWorkerToShift.getBelongsToField(AssignmentWorkerToShiftFields.WORKER);
             averageCost = averageCost.add(worker.getDecimalField(StaffFieldsWG.LABOR_HOURLY_COST));
         }
-        if (assignmentWorkerToShifts.size() != 0) {
-            averageCost = averageCost.divide(BigDecimal.valueOf(assignmentWorkerToShifts.size()));
+
+        averageCost = averageCost.divide(BigDecimal.valueOf(assignmentWorkerToShifts.size()));
+        if (BigDecimal.ZERO.compareTo(averageCost) == 0) {
+            return averageCost;
+        } else {
+            return BigDecimal.ZERO;
         }
-        return averageCost;
+
     }
 
     private List<Entity> getAssignmentForGivenShift(final Entity shiftWorkAtStartDate, final Entity shiftWorkAtFinishDate) {

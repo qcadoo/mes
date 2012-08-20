@@ -33,7 +33,9 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		
+<!-- 		<hasMany name="conversionItems" joinField="conversion" model="conversionItem" /> -->
+		<hasMany name="productConversion" joinField="product" model="conversionItem" />
+				
 		<!-- PRODUCTS FAMILY TREE -->
 		<enum values="01particularProduct,02productsFamily" name="productFamilyElementType" />
 		<belongsTo name="productFamilyParent" model="product" />

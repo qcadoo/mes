@@ -49,6 +49,8 @@ public interface BasicConstants {
 
     String MODEL_DIVISION = "division";
 
+    String MODEL_CONVERSION = "conversion";
+
     // VIEW
     String VIEW_MACHINE_DETAILS = "machineDetails";
 
@@ -69,5 +71,7 @@ public interface BasicConstants {
     String VIEW_STAFFS_LIST = "staffsList";
 
     String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
+
+    String VIEW_CONVERSION = "conversion";
 
 }
