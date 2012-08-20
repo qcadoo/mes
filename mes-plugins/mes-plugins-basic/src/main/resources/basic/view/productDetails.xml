@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.7
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.7 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productDetails"
-	modelName="product">
-	
+	name="productDetails" modelName="product">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
@@ -66,21 +52,26 @@
 						});
 					]]>
 				</script>
-				<component type="gridLayout" name="gridLayout" columns="3" rows="5">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="5">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number">
+						<component type="input" name="number" field="number"
+							reference="number">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name" hasDescription="true" />
-					</layoutElement>				
+						<component type="textarea" name="name" field="name"
+							hasDescription="true" />
+					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="select" name="globalTypeOfMaterial" field="globalTypeOfMaterial" hasDescription="true"/>
+						<component type="select" name="globalTypeOfMaterial"
+							field="globalTypeOfMaterial" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="select" name="unit" field="unit" reference="unit" />
-					</layoutElement>	
+						<component type="select" name="unit" field="unit"
+							reference="unit" />
+					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="input" name="ean" field="ean" />
 					</layoutElement>
@@ -88,31 +79,60 @@
 						<component type="select" name="category" field="category" />
 					</layoutElement>
 					<layoutElement column="2" row="3" height="2">
-						<component type="textarea" name="description" field="description" hasDescription="false" />
+						<component type="textarea" name="description" field="description"
+							hasDescription="false" />
 					</layoutElement>
 				</component>
-				<option type="header" value="true"/>
+				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
+		<windowTab name="productFamily">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="2">
+				<layoutElement column="1" row="1">
+					<component type="select" name="productFamilyElementType"
+						field="#{form}.productFamilyElementType" />
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="lookup" name="productFamilyParent" field="#{form}.productFamilyParent"
+						reference="productFamilyParent">
+						<option type="column" name="name" fields="name" link="true" />
+						<option type="column" name="isParentFamily" expression="#family['productFamilyParent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
+						<option type="column" name="productFamilyParent" fields="productFamilyParent" expression="#productFamilyParent['number']" />
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
 		<windowTab name="auditTab">
-			<component type="gridLayout" name="gridLayout" columns="3" rows="4">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="4">
 				<layoutElement column="1" row="1" height="4">
 					<component type="borderLayout" name="auditBorderLayout"
 						reference="auditBorderLayout">
 						<option type="label" value="auditLayoutLabel" />
-						<component type="gridLayout" name="gridLayout" columns="1" rows="4">
+						<component type="gridLayout" name="gridLayout" columns="1"
+							rows="4">
 							<layoutElement column="1" row="1">
-								<component type="input" name="createDate" field="#{form}.createDate" defaultEnabled="false"/>
+								<component type="input" name="createDate" field="#{form}.createDate"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="2">
-								<component type="input" name="createUser" field="#{form}.createUser" defaultEnabled="false"/>
+								<component type="input" name="createUser" field="#{form}.createUser"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="3">
-								<component type="input" name="updateDate" field="#{form}.updateDate" defaultEnabled="false"/>
+								<component type="input" name="updateDate" field="#{form}.updateDate"
+									defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="1" row="4">
-								<component type="input" name="updateUser" field="#{form}.updateUser" defaultEnabled="false"/>
+								<component type="input" name="updateUser" field="#{form}.updateUser"
+									defaultEnabled="false" />
 							</layoutElement>
 						</component>
 					</component>
@@ -120,12 +140,16 @@
 			</component>
 		</windowTab>
 		<windowTab name="substitutesTab">
-			<component type="gridLayout" name="gridsLayout" columns="5" rows="6" hasBorders="false">
+			<component type="gridLayout" name="gridsLayout" columns="5"
+				rows="6" hasBorders="false">
 				<layoutElement column="1" row="1" width="2" height="6">
-					<component type="grid" name="substitutes" reference="substitutes" source="#{form}.substitutes">
-						<option type="column" name="number" fields="number" link="true" width="50"/>
-						<option type="column" name="name" fields="name" link="true" width="100"/>
-						<option type="order" column="priority" direction="asc"/>
+					<component type="grid" name="substitutes" reference="substitutes"
+						source="#{form}.substitutes">
+						<option type="column" name="number" fields="number" link="true"
+							width="50" />
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+						<option type="order" column="priority" direction="asc" />
 						<option type="correspondingView" value="basic/productSubstituteDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
@@ -140,13 +164,14 @@
 					<component type="grid" name="substituteComponents"
 						source="#{substitutes}.components">
 						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" width="50"/>
+							expression="#product['number']" link="true" width="50" />
 						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" width="100"/>
-						<option type="column" name="quantity" fields="quantity" width="40"/>
+							expression="#product['name']" link="true" width="100" />
+						<option type="column" name="quantity" fields="quantity"
+							width="40" />
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="30"/>
-						<option type="order" column="number" direction="desc"/>
+							expression="#product['unit']" link="false" width="30" />
+						<option type="order" column="number" direction="desc" />
 						<option type="correspondingView" value="basic/productSubstituteComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
@@ -160,7 +185,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
-		<script>
+			<script>
 					<![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
@@ -177,17 +202,22 @@
 						};
 						#{form}.addOnChangeListener(externalNumberListener);
 					]]>
-				</script>
-			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="false"/>
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+						reference="externalNumber" defaultEnabled="false" />
 				</layoutElement>
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="generateProductNumber" />
-		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
-		<beforeRender class="com.qcadoo.mes.basic.ProductService" method="disableProductFormForExternalItems" />
+		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+			method="generateProductNumber" />
+		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+			method="fillUnit" />
+		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+			method="disableProductFormForExternalItems" />
 	</hooks>
 </view>
