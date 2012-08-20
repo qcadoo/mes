@@ -74,7 +74,9 @@
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
 		<model:model model="workstationType" resource="model/workstationType.xml" />
 		<model:model model="division" resource="model/division.xml" />
-
+		<model:model model="conversion" resource="model/conversion.xml" />
+		<model:model model="conversionItem" resource="model/conversionItem.xml" />
+		
 		<model:model model="parameter" resource="model/parameter.xml" />
 
 		<model:model model="currency" resource="model/currency.xml" />
@@ -107,6 +109,8 @@
 
 		<menu:menu-item-url name="company" category="administration"
 			url="/companyView.html" />
+		<menu:menu-item-url name="conversion" category="basic"
+			url="/conversionView.html" />
 
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
@@ -120,6 +124,7 @@
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 
+
 		<view:view resource="view/workstationTypesList.xml" />
 		<view:view resource="view/workstationTypeDetails.xml" />
 
@@ -129,6 +134,8 @@
 		<view:view resource="view/parameters.xml" />
 
 		<view:view resource="view/companyInAdministrationDetails.xml" />
+		
+		<view:view resource="view/conversion.xml" />
 
 		<view:view-hook view="parameters" type="beforeRender"
 			plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService"

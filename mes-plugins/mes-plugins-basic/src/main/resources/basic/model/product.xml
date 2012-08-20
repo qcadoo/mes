@@ -46,6 +46,8 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+<!-- 		<hasMany name="conversionItems" joinField="conversion" model="conversionItem" /> -->
+		<hasMany name="productConversion" joinField="product" model="conversionItem" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
