@@ -28,40 +28,8 @@
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
 	plugin="technologies" 
-	view="technologyInstanceOperationComponentDetails">
+	view="operationDetails">
 
-	<windowTab name="workPlansBasicTab" reference="workPlansBasicTab">
-		<component type="gridLayout" name="workPlansBasicGridLayout" columns="3" rows="1">
-			<layoutElement column="1" row="1">
-				<component type="borderLayout" name="workPlansBasicBorderLayout">
-					<component type="gridLayout" name="workPlansGridLayout" columns="1" rows="4">
-						<layoutElement column="1" row="1">
-							<component type="checkbox" name="hideDescriptionInWorkPlans" field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
-								<option type="labelWidth" value="50" />
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="2">
-							<component type="checkbox" name="hideDetailsInWorkPlans" field="#{form}.hideDetailsInWorkPlans" reference="hideDetailsInWorkPlans">
-								<option type="labelWidth" value="50" />
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="3">
-							<component type="checkbox" name="hideTechnologyAndOrderInWorkPlans" field="#{form}.hideTechnologyAndOrderInWorkPlans" reference="hideTechnologyAndOrderInWorkPlans">
-								<option type="labelWidth" value="50" />
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="4">
-							<component type="file" name="imageUrlInWorkPlan" field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan" hasDescription="true">
-								<option type="labelWidth" value="50" />
-							</component>
-						</layoutElement>
-					</component>
-					
-					<option type="label" value="workPlansBasicTabWelcome" />
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
 	<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
 		<component type="gridLayout" name="workPlansProductsGridLayout" columns="2" rows="3">
 			<layoutElement column="1" row="1" width="2">
@@ -76,7 +44,7 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="grid" name="columnsForInputProducts" source="#{form}.orderOperationInputColumns" reference="columnsForInputProducts" >
+				<component type="grid" name="columnsForInputProducts" source="#{form}.operationInputColumns" reference="columnsForInputProducts" >
 					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
 					
 					<option type="searchable" value="name" />
@@ -84,7 +52,7 @@
 					
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/orderOperationInputColumnDetails" />
+					<option type="correspondingView" value="workPlans/operationInputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 						
@@ -101,7 +69,7 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="3">
-				<component type="grid" name="columnsForOutputProducts" source="#{form}.orderOperationOutputColumns" reference="columnsForOutputProducts" >
+				<component type="grid" name="columnsForOutputProducts" source="#{form}.operationOutputColumns" reference="columnsForOutputProducts" >
 					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
 					
 					<option type="searchable" value="name" />
@@ -109,7 +77,7 @@
 					
 					<option type="order" column="succession" direction="desc" />
 					
-					<option type="correspondingView" value="workPlans/orderOperationOutputColumnDetails" />
+					<option type="correspondingView" value="workPlans/operationOutputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 					
