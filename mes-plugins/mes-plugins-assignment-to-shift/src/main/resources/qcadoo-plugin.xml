@@ -46,7 +46,7 @@
 		http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Assignment to shift</name>
+		<name>MES - Assignment to shift</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
