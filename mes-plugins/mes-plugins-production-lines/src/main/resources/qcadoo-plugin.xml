@@ -91,7 +91,7 @@
 		    <model:onCreate class="com.qcadoo.mes.productionLines.hooks.ParameterHooksPL" method="addFieldsForParameter"/>
 		</model:model-hook>
 		
-		<menu:menu-item name="productionLines" category="basic"
+		<menu:menu-item name="productionLines" category="technology"
 			view="productionLinesList" />
 
 		<view:view resource="view/productionLinesList.xml" />
