@@ -82,9 +82,11 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
 		<view:view resource="view/orderTimePrediction.xml" />
-
+		
+		<menu:menu-category name="calculations" />
+		
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
-			category="orders" />
+			category="calculations" />
 
 		<view:view resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />

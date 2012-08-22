@@ -63,15 +63,16 @@
 		
 		<model:model model="lineChangeoverNorms" resource="model/lineChangeoverNorms.xml" />
 		
+		<menu:menu-category name="calculations" />
+		
 		<menu:menu-item name="lineChangeoverNorms" category="technology"
-			view="lineChangeoverNormsList" plugin="technologies"/>
-		<menu:menu-item name="matchingChangeoverNorms" category="technology"
-			view="matchingChangeoverNormsDetails" plugin="technologies"/>
+			view="lineChangeoverNormsList" />
+		<menu:menu-item name="matchingChangeoverNorms" category="calculations"
+			view="matchingChangeoverNormsDetails" />
 		
 		<view:view resource="view/lineChangeoverNormsList.xml" />
 		<view:view resource="view/lineChangeoverNormsDetails.xml" />
 		<view:view resource="view/matchingChangeoverNormsDetails.xml" />
-		
 		
 	</modules>
 

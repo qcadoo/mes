@@ -63,8 +63,10 @@
 		<localization:translation path="locales" />
 
 		<model:model model="costCalculation" resource="model/costCalculation.xml" />
-
-		<menu:menu-item name="costCalculation" category="orders"
+	
+		<menu:menu-category name="calculations" />
+		
+		<menu:menu-item name="costCalculation" category="calculations"
 			view="costCalculationList" />
 
 		<model:model-field model="calculationOperationComponent"

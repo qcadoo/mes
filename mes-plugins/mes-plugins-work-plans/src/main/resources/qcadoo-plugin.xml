@@ -283,13 +283,6 @@
 				method="copyColumnForProducts" />
 		</model:model-hook>
 
-		<!-- TODO LUPO maybe used in future -->
-		<!-- <model:model-hook plugin="productionScheduling" model="technologyInstanceOperationComponent"> -->
-		<!-- <model:onCreate class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelHooks" 
-			method="copyColumnForProducts" /> -->
-		<!-- </model:model-hook> -->
-
-
 		<menu:menu-item name="workPlans" category="orders"
 			view="workPlansList" />
 
@@ -311,14 +304,12 @@
 		<view:view resource="view/orderOperationInputColumnDetails.xml" />
 		<view:view resource="view/orderOperationOutputColumnDetails.xml" />
 		<view:view resource="view/workPlanParameters.xml" />
-		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
-		<view:view-tab
-			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
-
-		<!-- TODO LUPO maybe used in future -->
-		<!-- <view:view-tab resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" 
-			/> -->
 		
+		<view:view-tab resource="view/tabExtensions/operationDetailsBasicTab.xml" />
+		<view:view-tab resource="view/tabExtensions/operationDetailsProductsTab.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetailsBasicTab.xml" />
+		<view:view-tab resource="view/tabExtensions/technologyOperationComponentDetailsProductsTab.xml" />
+
 		<view:view-hook plugin="workPlans" view="workPlanDetails"
 			type="beforeRender" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
 			method="setWorkPlanDefaultValues" />
