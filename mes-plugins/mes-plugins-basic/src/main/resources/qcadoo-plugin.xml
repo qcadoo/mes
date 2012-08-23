@@ -125,6 +125,7 @@
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
 		<view:view resource="view/productsFamilies.xml" />
+		<view:view resource="view/productFamiliesAddProduct.xml" />
 
 
 		<view:view resource="view/workstationTypesList.xml" />

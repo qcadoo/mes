@@ -43,11 +43,8 @@
 									del.disable();
 									return;
 								}
-								
 								cancel.enable();
 								del.enable();
-								
-								
 							}
 						});
 					]]>
@@ -91,15 +88,16 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
-					<component type="select" name="productFamilyElementType"
-						field="#{form}.productFamilyElementType" />
+					<component type="select" name="entityType"
+						field="#{form}.entityType" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="lookup" name="productFamilyParent" field="#{form}.productFamilyParent"
-						reference="productFamilyParent">
+					<component type="lookup" name="parent" field="#{form}.parent"
+						reference="parent">
 						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="isParentFamily" expression="#family['productFamilyParent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
-						<option type="column" name="productFamilyParent" fields="productFamilyParent" expression="#productFamilyParent['number']" />
+						<option type="column" name="isParentFamily" expression="#family['parent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
+						<option type="column" name="isFamily" expression="#family['entityType'] == '01particularProduct' ? '@qcadooView.false' :'qcadooView.true' " />
+						<option type="column" name="parent" fields="parent" expression="#parent['number']" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"

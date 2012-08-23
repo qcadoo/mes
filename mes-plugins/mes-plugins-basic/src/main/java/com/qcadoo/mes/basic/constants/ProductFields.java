@@ -49,13 +49,15 @@ public final class ProductFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String PRODUCT_FAMILY_ELEMENT_TYPE = "productFamilyElementType";
+    public static final String PARENT = "parent";
 
-    public static final String PRODUCT_FAMILY_PARENT = "productFamilyParent";
-
-    public static final String PRODUCT_FAMILY_CHILDREN = "productFamilyChildren";
+    public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 
     public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
 
     public static final String PRODUCT_FAMILY_PRIORITY = "productFamilyPriority";
+
+    public static final String PRIORITY = "priority";
+
+    public static final String ENTITY_TYPE = "entityType";
 }

@@ -1,78 +1,52 @@
 package com.qcadoo.mes.basic.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.tree.ProductsFamiliesTreeService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.utils.EntityTreeUtilsService;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.TreeComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ProductsFamiliesListeners {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductsFamiliesTreeService productsFamiliesTreeService;
-
-    class FormValidationException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-        FormValidationException(final String msg) {
-            super(msg);
-        }
-    }
+    private ProductsFamiliesHooks productsFamiliesHooks;
 
     public final void generateHierarchyTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        try {
-            Entity formEntity = generateFormEntity(view, state);
-
-            FormComponent form = getForm(view);
-            form.setEntity(formEntity);
-            view.getComponentByReference("genealogyTree").setEnabled(true);
-        } catch (FormValidationException e) {
-            state.addMessage(e.getMessage(), MessageType.FAILURE);
-        }
+        productsFamiliesHooks.generateTreeWhenIdIsSet(view);
     }
 
-    final Entity generateFormEntity(final ViewDefinitionState view, final ComponentState state) {
-        DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-
-        FormComponent form = getForm(view);
-        Entity formEntity = form.getEntity();
-        GridComponent parentsGrid = (GridComponent) view.getComponentByReference("parents");
-        Long productId = parentsGrid.getSelectedEntities().get(0).getId();
+    public final void editSelectedProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        TreeComponent tree = (TreeComponent) view.getComponentByReference(PRODUCT_FAMILY_CHILDREN_TREE);
+        Long productId = tree.getSelectedEntityId();
 
         if (productId == null) {
-            throw new FormValidationException("advancedGenealogy.genealogyTree.noBatchSelected");
+            return;
         }
 
-        Entity product = dd.get(productId);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", productId);
 
-        List<Entity> tree = new ArrayList<Entity>();
-        tree.add(product);
-
-        EntityTree entityTree = EntityTreeUtilsService.getDetachedEntityTree(tree);
-        formEntity.setField("familyHierarchyTree", entityTree);
-
-        return formEntity;
+        String url = "../page/basic/productDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
-    private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
+    public final void enabledEditButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonGroup edit = (RibbonGroup) window.getRibbon().getGroupByName("edit");
+        RibbonActionItem editSelectedProductFromTree = edit.getItemByName("editSelectedProduct");
+        editSelectedProductFromTree.setEnabled(true);
+        editSelectedProductFromTree.requestUpdate(true);
     }
+
 }

@@ -33,21 +33,27 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-<!-- 		<hasMany name="conversionItems" joinField="conversion" model="conversionItem" /> -->
+		<!-- <hasMany name="conversionItems" joinField="conversion" model="conversionItem" 
+			/> -->
 		<hasMany name="productConversion" joinField="product" model="conversionItem" />
-				
+
 		<!-- PRODUCTS FAMILY TREE -->
-		<enum values="01particularProduct,02productsFamily" name="productFamilyElementType" />
-		<belongsTo name="productFamilyParent" model="product" />
-		<hasMany name="productFamilyChildren" joinField="parent" model="product"/>
-		<tree name="productFamilyChildrenTree" joinField="productFamilyParent" model="product"
+		<belongsTo name="parent" model="product" />
+		<belongsTo name="child" model="product" persistent="false" />
+		<hasMany name="productFamilyChildrens" joinField="parent"
+			model="product" />
+		<tree name="productFamilyChildrenTree" joinField="parent" model="product"
 			cascade="nullify" persistent="false" />
-		<priority name="productFamilyPriority" scope="parent" />
-		
+		<integer name="priority" persistent="false" />
+		<string name="nodeNumber" persistent="false" />
+		<enum name="entityType" values="01particularProduct,02productsFamily"
+			default="01particularProduct" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
+		<validatesWith class="com.qcadoo.mes.basic.ProductService"
+			method="checkIfParentIsFamily" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
