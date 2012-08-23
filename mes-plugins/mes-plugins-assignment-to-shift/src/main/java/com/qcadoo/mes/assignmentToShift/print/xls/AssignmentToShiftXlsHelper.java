@@ -29,7 +29,7 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_FROM;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_TO;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_ENUM;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.WORKER;
@@ -47,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
-import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
@@ -159,11 +158,10 @@ public class AssignmentToShiftXlsHelper {
         return listOfWorkersWithOtherCases.toString();
     }
 
-    public List<Entity> getStaffsList(final Entity assignmentToShift, final OccupationType occupationTypeEnum,
-            final Entity productionLine) {
+    public List<Entity> getStaffsList(final Entity assignmentToShift, final String occupationType, final Entity productionLine) {
         List<Entity> staffs = new ArrayList<Entity>();
 
-        SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE_ENUM, occupationTypeEnum.getStringValue());
+        SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE, occupationType);
         String assignmentState = assignmentToShift.getStringField(STATE);
 
         if (AssignmentToShiftState.CORRECTED.getStringValue().equals(assignmentState)) {

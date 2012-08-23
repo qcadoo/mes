@@ -35,3 +35,6 @@ ADD CONSTRAINT basic_product_fkey
   DEFERRABLE;
 
 --end
+
+
+ 

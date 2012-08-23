@@ -25,6 +25,6 @@
 -->
 <occupationType>
 	<row NAME="Work on line" TECHNICALCODE="01workOnLine" />
-	<row NAME="Sick leave" TECHNICALCODE="03sickness" />
-	<row NAME="Other tasks" TECHNICALCODE="04otherCase" />
+	<row NAME="Sick leave" TECHNICALCODE="" />
+	<row NAME="Other tasks" TECHNICALCODE="02otherCase" />
 </occupationType>
