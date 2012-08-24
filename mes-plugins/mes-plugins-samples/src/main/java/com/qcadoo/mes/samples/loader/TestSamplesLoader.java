@@ -921,8 +921,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productComponent.setField(L_OPERATION_COMPONENT, operationComponent);
         productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
         productComponent.setField(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
-        productComponent.setField("batchRequired", true);
-        productComponent.setField("productBatchRequired", true);
+        productComponent.setField("batchRequired", false);
+        productComponent.setField("productBatchRequired", false);
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent").save(
                 productComponent);
