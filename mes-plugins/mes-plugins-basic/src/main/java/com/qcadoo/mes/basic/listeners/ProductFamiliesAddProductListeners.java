@@ -21,10 +21,12 @@ public class ProductFamiliesAddProductListeners {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity formEntity = form.getEntity();
         Entity child = getProductFromLookup(view, "child");
-        if (child != null) {
+        if (child == null) {
+            return;
+        } else {
             child.setField(ProductFields.PARENT, formEntity.getField(ProductFields.PARENT));
+            child.getDataDefinition().save(child);
         }
-        child.getDataDefinition().save(child);
     }
 
     private Entity getProductFromLookup(final ViewDefinitionState view, final String fieldName) {

@@ -326,16 +326,17 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    private void addConversion(final Map<String, String> values) {
-        Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "conversion").create();
-
-        conversion.setField(L_NUMBER, values.get(L_NUMBER));
-        conversion.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
-        conversion.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
-        conversion.setField(L_STATE, BATCH_STATE_TRACKED);
-
-        conversion.getDataDefinition().save(conversion);
-    }
+    // TODO MIKO
+    // private void addConversion(final Map<String, String> values) {
+    // Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "conversion").create();
+    //
+    // conversion.setField(L_NUMBER, values.get(L_NUMBER));
+    // conversion.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
+    // conversion.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
+    // conversion.setField(L_STATE, BATCH_STATE_TRACKED);
+    //
+    // conversion.getDataDefinition().save(conversion);
+    // }
 
     private void addWorkstationType(final Map<String, String> values) {
         Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
