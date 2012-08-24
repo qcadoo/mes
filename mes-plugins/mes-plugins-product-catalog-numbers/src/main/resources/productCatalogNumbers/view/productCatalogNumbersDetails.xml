@@ -6,7 +6,24 @@
 			<template name="standardFormTemplate" />
 			<group name="show">
 				<bigButton name="showProduct" icon="newGenealogyIcon24.png"
-					action="#{form}.fireEvent(showProduct);" />
+					action="#{form}.fireEvent(showProduct);" >
+					<script>
+						<![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});					
+						]]>
+					</script>
+				</bigButton>
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
