@@ -8,6 +8,8 @@
 <!-- 		<belongsTo name="product" model="product" /> -->
 		<hasMany name="conversionItems" joinField="conversion" model="conversionItem" />
 	</fields>
-	<hooks />
+	<hooks>
+			
+	</hooks>
 
 </model>

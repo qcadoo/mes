@@ -50,6 +50,7 @@
 		<hasMany name="productConversion" joinField="product" model="conversionItem" />
 	</fields>
 	<hooks>
+		<onSave class="com.qcadoo.mes.basic.ProductService" method="conversionForProductUnit" />
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 	</hooks>

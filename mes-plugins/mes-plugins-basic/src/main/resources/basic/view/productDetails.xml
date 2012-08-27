@@ -189,9 +189,6 @@
 					source="#{form}.productConversion" reference="product">
 					<option type="hasBorder" value="false" />
 					<option type="hasButtons" value="true" />
-					<!-- <listener event="saveConversion" -->
-					<!-- class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" -->
-					<!-- method="saveProgressForDays" /> -->
 
 					<components>
 						<component type="gridLayout" name="conversionGridLayout"
@@ -202,7 +199,7 @@
 							</layoutElement>
 							<layoutElement column="2" row="1">
 								<component type="select" name="unitFrom" field="unitFrom"
-									reference="unitFrom" />
+									reference="unitFrom" defaultEnabled="false" />
 							</layoutElement>
 							<layoutElement column="3" row="1">
 								<component type="input" name="quantityTo" field="quantityTo"
