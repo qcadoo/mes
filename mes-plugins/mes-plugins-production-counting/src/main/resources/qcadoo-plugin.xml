@@ -170,6 +170,18 @@
 			<model:hasMany name="productionCountings" model="productionCounting"
 				joinField="order" plugin="productionCounting" cascade="delete" />
 		</model:model-field>
+		<model:model-field model="staff" plugin="basic">
+			<model:hasMany name="productionRecords" model="productionRecord"
+				joinField="staff" plugin="productionCounting" />
+		</model:model-field>
+		<model:model-field model="workstationType" plugin="basic">
+			<model:hasMany name="productionRecords" model="productionRecord"
+				joinField="workstationType" plugin="productionCounting"  />
+		</model:model-field>
+		<model:model-field model="division" plugin="basic">
+			<model:hasMany name="productionRecords" model="productionRecord"
+				joinField="division" plugin="productionCounting" />
+		</model:model-field>
 		
 		<model:model-hook model="parameter" plugin="basic">
 		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setParameterWithDefaultProductionCountingValues"/>

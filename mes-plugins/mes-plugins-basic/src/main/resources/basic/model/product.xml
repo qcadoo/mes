@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.7
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.7 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <model name="product" activable="true" auditable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
@@ -46,13 +33,28 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-<!-- 		<hasMany name="conversionItems" joinField="conversion" model="conversionItem" /> -->
+		<!-- <hasMany name="conversionItems" joinField="conversion" model="conversionItem" 
+			/> -->
 		<hasMany name="productConversion" joinField="product" model="conversionItem" />
+
+		<!-- PRODUCTS FAMILY TREE -->
+		<belongsTo name="parent" model="product" />
+		<belongsTo name="child" model="product" persistent="false" />
+		<hasMany name="productFamilyChildrens" joinField="parent"
+			model="product" />
+		<tree name="productFamilyChildrenTree" joinField="parent" model="product"
+			cascade="nullify" persistent="false" />
+		<integer name="priority" persistent="false" />
+		<string name="nodeNumber" persistent="false" />
+		<enum name="entityType" values="01particularProduct,02productsFamily"
+			default="01particularProduct" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.basic.ProductService" method="conversionForProductUnit" />
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
+		<validatesWith class="com.qcadoo.mes.basic.ProductService"
+			method="checkIfParentIsFamily" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

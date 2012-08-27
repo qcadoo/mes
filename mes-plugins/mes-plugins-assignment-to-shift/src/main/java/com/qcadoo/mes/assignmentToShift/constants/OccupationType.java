@@ -25,7 +25,7 @@ package com.qcadoo.mes.assignmentToShift.constants;
 
 public enum OccupationType {
 
-    WORK_ON_LINE("01workOnLine"), MIX("02mix"), SICKNESS("03sickness"), OTHER_CASE("04otherCase");
+    WORK_ON_LINE("01workOnLine"), OTHER_CASE("02otherCase");
 
     private final String type;
 
@@ -40,11 +40,7 @@ public enum OccupationType {
     public static OccupationType parseString(final String string) {
         if ("01workOnLine".equals(string)) {
             return WORK_ON_LINE;
-        } else if ("02mix".equals(string)) {
-            return MIX;
-        } else if ("03sickness".equals(string)) {
-            return SICKNESS;
-        } else if ("04otherCase".equals(string)) {
+        } else if ("02otherCase".equals(string)) {
             return OTHER_CASE;
         }
 

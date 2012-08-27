@@ -27,17 +27,16 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_AUTHOR;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_DAY;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_OCCUPATIONTYPE;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_OCCUPATIONTYPE_VALUE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_SHIFT;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.TITLE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.CREATE_USER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.UPDATE_DATE;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.MIX;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.SICKNESS;
 import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.PLACE;
+import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
+import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -49,13 +48,15 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 
 @Service
@@ -69,6 +70,9 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
     @Autowired
     private AssignmentToShiftXlsStyleHelper assignmentToShiftXlsStyleHelper;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -138,24 +142,18 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         if (days != null) {
             int rowNum = 4;
-            for (OccupationType occupationType : OccupationType.values()) {
-                if (WORK_ON_LINE.equals(occupationType)) {
-                    List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
+            List<Entity> occupationTypesWithoutTechnicalCode = getOccupationTypeDictionaryWithoutTechnicalCode();
+            List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
 
-                    if (productionlines != null) {
-                        fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines);
-
-                        rowNum += productionlines.size();
-                    }
-                } else {
-                    if (!MIX.equals(occupationType)) {
-                        fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, occupationType);
-
-                        rowNum++;
-                    }
-                }
+            if (productionlines != null) {
+                fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines);
+                rowNum += productionlines.size();
             }
-
+            for (Entity dictionaryItem : occupationTypesWithoutTechnicalCode) {
+                fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, dictionaryItem);
+                rowNum++;
+            }
+            fillColumnWithStaffForOtherTypes(sheet, rowNum, entity, days, getDictionaryItemWithOtherCase());
             sheet.autoSizeColumn(0);
         }
 
@@ -183,8 +181,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                         continue;
                     }
 
-                    List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift, WORK_ON_LINE,
-                            productionLine);
+                    List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                            WORK_ON_LINE.getStringValue(), productionLine);
 
                     String staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
 
@@ -203,11 +201,10 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private void fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, final int rowNum, final Entity assignmentToShiftReport,
-            final List<DateTime> days, final OccupationType occupationType) {
+            final List<DateTime> days, final Entity occupationType) {
         if ((assignmentToShiftReport != null) && (days != null) && (occupationType != null)) {
             HSSFRow row = sheet.createRow(rowNum);
-            String occupationTypeValue = translationService.translate(
-                    COLUMN_HEADER_OCCUPATIONTYPE_VALUE + occupationType.getStringValue(), LocaleContextHolder.getLocale());
+            String occupationTypeValue = occupationType.getStringField(NAME);
 
             row.createCell(0).setCellValue(occupationTypeValue);
 
@@ -219,13 +216,14 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     continue;
                 }
 
-                List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift, occupationType, null);
+                List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
+                        occupationType.getStringField(NAME), null);
 
                 String staffsValue = null;
-                if (SICKNESS.equals(occupationType)) {
-                    staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
-                } else {
+                if (OccupationType.OTHER_CASE.getStringValue().equals(occupationType.getStringField(TECHNICAL_CODE))) {
                     staffsValue = assignmentToShiftXlsHelper.getListOfWorkersWithOtherCases(staffs);
+                } else {
+                    staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
                 }
 
                 row.createCell(columnNumber).setCellValue(staffsValue);
@@ -237,5 +235,23 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
                     assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
         }
+    }
+
+    private List<Entity> getOccupationTypeDictionaryWithoutTechnicalCode() {
+        Entity occupationTypeDictionary = dataDefinitionService
+                .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
+                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+        return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
+                .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
+                .add(SearchRestrictions.isNull("technicalCode")).list().getEntities();
+    }
+
+    private Entity getDictionaryItemWithOtherCase() {
+        Entity occupationTypeDictionary = dataDefinitionService
+                .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
+                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+        return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
+                .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
+                .add(SearchRestrictions.eq("technicalCode", OccupationType.OTHER_CASE.getStringValue())).uniqueResult();
     }
 }

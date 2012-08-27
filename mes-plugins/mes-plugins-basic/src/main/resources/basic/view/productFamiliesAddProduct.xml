@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.7 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="productFamiliesAddProduct" modelName="product">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back" />
+			<group name="add">
+				<bigButton name="addProduct" icon="generateIcon24.png"
+					state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('addSelectedProductToFamily', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="gridLayout" columns="1"
+				rows="5">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="child" field="child"
+						reference="child">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="column" name="parent" fields="parent" expression="#parent['number'] + ' - ' + #parent['name']" />
+						<option type="searchable" value="name" />
+						<option type="orderable" value="name" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+			</component>
+			<listener event="addSelectedProductToFamily" class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners" method="addSelectedProductToFamily" />
+		</component>
+	</component>
+	<hooks>
+	</hooks>
+</view>

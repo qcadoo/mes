@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -306,6 +308,19 @@ public final class ProductService {
     public void fillUnit(final DataDefinition productDD, final Entity product) {
         if (product.getField(UNIT) == null) {
             product.setField(UNIT, unitService.getDefaultUnitFromSystemParameters());
+        }
+    }
+
+    public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+        if (parent == null) {
+            return true;
+        }
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
+            return true;
+        } else {
+            product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.parentIsNotFamily");
+            return false;
         }
     }
 

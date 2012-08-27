@@ -117,7 +117,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
     public void shouldDisabledProductionLineAndEnableOccupationTypeNameFieldsWhenOtherCaseIsSelected() {
         // given
         String dictionaryName = "Inne zadania";
-        String technicalCode = "04otherCase";
+        String technicalCode = "02otherCase";
 
         given(occupationType.getFieldValue()).willReturn(dictionaryName);
         SearchCriterion criterion = SearchRestrictions.eq(NAME, dictionaryName);

@@ -96,6 +96,7 @@
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
+		<menu:menu-item name="productsFamilies" category="basic" view="productsFamilies" />
 		<menu:menu-item name="workstationTypes" category="basic"
 			view="workstationTypesList" />
 		<menu:menu-item name="divisions" category="basic"
@@ -123,6 +124,8 @@
 		<view:view resource="view/productDetails.xml" />
 		<view:view resource="view/productSubstituteDetails.xml" />
 		<view:view resource="view/productSubstituteComponentDetails.xml" />
+		<view:view resource="view/productsFamilies.xml" />
+		<view:view resource="view/productFamiliesAddProduct.xml" />
 
 
 		<view:view resource="view/workstationTypesList.xml" />

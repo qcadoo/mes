@@ -326,16 +326,17 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    private void addConversion(final Map<String, String> values) {
-        Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "conversion").create();
-
-        conversion.setField(L_NUMBER, values.get(L_NUMBER));
-        conversion.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
-        conversion.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
-        conversion.setField(L_STATE, BATCH_STATE_TRACKED);
-
-        conversion.getDataDefinition().save(conversion);
-    }
+    // TODO MIKO
+    // private void addConversion(final Map<String, String> values) {
+    // Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "conversion").create();
+    //
+    // conversion.setField(L_NUMBER, values.get(L_NUMBER));
+    // conversion.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
+    // conversion.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
+    // conversion.setField(L_STATE, BATCH_STATE_TRACKED);
+    //
+    // conversion.getDataDefinition().save(conversion);
+    // }
 
     private void addWorkstationType(final Map<String, String> values) {
         Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
@@ -920,8 +921,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productComponent.setField(L_OPERATION_COMPONENT, operationComponent);
         productComponent.setField(L_QUANTITY, values.get(L_QUANTITY));
         productComponent.setField(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
-        productComponent.setField("batchRequired", true);
-        productComponent.setField("productBatchRequired", true);
+        productComponent.setField("batchRequired", false);
+        productComponent.setField("productBatchRequired", false);
 
         productComponent = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER, "operationProductInComponent").save(
                 productComponent);
