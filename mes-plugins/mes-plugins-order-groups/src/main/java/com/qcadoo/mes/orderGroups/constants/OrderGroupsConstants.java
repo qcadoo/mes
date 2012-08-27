@@ -27,7 +27,7 @@ public interface OrderGroupsConstants {
 
     String PLUGIN_IDENTIFIER = "orderGroups";
 
-    String MODEL_ORDERGROUP = "orderGroup";
+    String MODEL_ORDER_GROUP = "orderGroup";
 
     String DATE_RANGE_ERROR = "orderGroups.validate.error.wrongDataRange";
 

@@ -79,7 +79,7 @@ public class OrderGroupsService {
         }
 
         numberGeneratorService.generateAndInsertNumber(view, OrderGroupsConstants.PLUGIN_IDENTIFIER,
-                OrderGroupsConstants.MODEL_ORDERGROUP, "form", NUMBER_FIELD);
+                OrderGroupsConstants.MODEL_ORDER_GROUP, "form", NUMBER_FIELD);
 
         ComponentState name = view.getComponentByReference(NAME_FIELD);
         if (StringUtils.hasText((String) name.getFieldValue())) {
