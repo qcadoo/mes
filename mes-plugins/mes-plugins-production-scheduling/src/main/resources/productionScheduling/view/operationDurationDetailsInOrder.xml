@@ -40,10 +40,21 @@
 					action="#{form}.performSave;" />
 			</group>
 			<group name="operationDuration">
-				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{window}.fireEvent(generateRealizationTime);" />
+				<bigButton name="generate" icon="generateIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('generateRealizationTime', []);
+									}
+								}
+							});	
+						]]>
+					</script>	
+				</bigButton>
 				<bigButton name="copy" icon="copyIcon24.png" state="disabled"
-					action="#{window}.fireEvent(copyRealizationTime);">
+					action="#{form}.fireEvent(copyRealizationTime);">
 					<script><![CDATA[
 				#{form}.addOnChangeListener({
 					onSetValue: function(value) {
@@ -197,6 +208,10 @@
 			<option type="expression" value="" />
 			<listener event="showOrderParameters" method="showOrderParameters"
 				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+			<listener event="generateRealizationTime" method="generateRealizationTime" 
+				class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"	/>
+			<listener event="copyRealizationTime" method="copyRealizationTime"
+				class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" 	 />
 		</component>
 	</component>
 	<hooks>

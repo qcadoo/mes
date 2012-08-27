@@ -102,16 +102,6 @@
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
 			method="changeRealizationTime" />
 			
-		<view:view-listener plugin="productionScheduling"
-			view="operationDurationDetailsInOrder" component="window" event="generateRealizationTime"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="generateRealizationTime" />
-
-		<view:view-listener plugin="productionScheduling"
-			view="operationDurationDetailsInOrder" component="window" event="copyRealizationTime"
-			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
-			method="copyRealizationTime" />
-
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
