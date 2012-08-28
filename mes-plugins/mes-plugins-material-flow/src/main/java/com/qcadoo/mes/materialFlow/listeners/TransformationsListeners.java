@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlow.listeners;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
@@ -45,6 +46,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
@@ -132,8 +134,12 @@ public class TransformationsListeners {
         List<Entity> consumptionComponents = null;
         List<Entity> productionComponents = Lists.newArrayList();
 
-        consumptionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_IN_COMPONENTS), productionComponents);
-        productionComponents = getTransfersFromProducts(operation.getHasManyField(PRODUCT_OUT_COMPONENTS), consumptionComponents);
+        consumptionComponents = getTransfersFromProducts(
+                operation.getHasManyField(PRODUCT_IN_COMPONENTS).find().createAlias(PRODUCT, PRODUCT)
+                        .addOrder(SearchOrders.asc(PRODUCT + "." + NAME)).list().getEntities(), productionComponents);
+        productionComponents = getTransfersFromProducts(
+                operation.getHasManyField(PRODUCT_OUT_COMPONENTS).find().createAlias(PRODUCT, PRODUCT)
+                        .addOrder(SearchOrders.asc(PRODUCT + "." + NAME)).list().getEntities(), consumptionComponents);
 
         if (!consumptionComponents.isEmpty()) {
             transfersConsumption.setFieldValue(consumptionComponents);
