@@ -53,8 +53,8 @@ CREATE TABLE basic_conversion
 CREATE TABLE basic_conversionitem
 (
   id bigint NOT NULL,
-  quantityfrom character varying(255),
-  quantityto character varying(255),
+  quantityfrom numeric(12,5),
+  quantityto numeric(12,5),
   unitfrom character varying(255),
   unitto character varying(255),
   conversion_id bigint,
