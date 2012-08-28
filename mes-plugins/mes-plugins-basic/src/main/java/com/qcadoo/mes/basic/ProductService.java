@@ -74,63 +74,71 @@ public final class ProductService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    final List<ConversionTree> conversionTreeList = Lists.newArrayList();
+    public void conversionTree(final DataDefinition conversionDD, String unit, ConversionTree parent,
+            List<ConversionTree> conversionTreeList, int x) {
 
-    public void conversionTree(final DataDefinition conversionDD, String unit, ConversionTree parent) {
-
-        final List<Entity> left = conversionDD.find().add(SearchRestrictions.eq(UNIT_FROM, unit))
-                .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
-                .getEntities();
-
-        final List<Entity> right = conversionDD.find().add(SearchRestrictions.eq(UNIT_TO, unit))
-                .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
-                .getEntities();
-
-        if (!left.isEmpty()) {
-
-            for (int i = 0; i < left.size(); i++) {
-
-                if (checkList(conversionTreeList, left.get(i).getStringField(UNIT_TO))) {
-
-                    ConversionTree ct = new ConversionTree();
-                    ct.setQuantityFrom((BigDecimal) left.get(i).getField(QUANTITY_FROM));
-                    ct.setQuantityTo((BigDecimal) left.get(i).getField(QUANTITY_TO));
-                    ct.setUnitFrom(left.get(i).getStringField(UNIT_FROM));
-                    ct.setUnitTo(left.get(i).getStringField(UNIT_TO));
-                    ct.setParent(parent);
-                    conversionTreeList.add(ct);
-                }
-            }
-
-        }
-        if (!right.isEmpty()) {
-
-            for (int i = 0; i < right.size(); i++) {
-
-                if (checkList(conversionTreeList, right.get(i).getStringField(UNIT_FROM))) {
-
-                    ConversionTree ct = new ConversionTree();
-                    ct.setQuantityFrom((BigDecimal) left.get(i).getField(QUANTITY_TO));
-                    ct.setQuantityTo((BigDecimal) left.get(i).getField(QUANTITY_FROM));
-                    ct.setUnitFrom(left.get(i).getStringField(UNIT_TO));
-                    ct.setUnitTo(left.get(i).getStringField(UNIT_FROM));
-                    ct.setParent(parent);
-                    conversionTreeList.add(ct);
-                }
-            }
-        }
-        if (conversionTreeList.iterator().hasNext()) {
-            conversionTree(conversionDD, conversionTreeList.iterator().next().getUnitTo(), conversionTreeList.iterator().next());
-        } else {
+        if (x > conversionTreeList.size() - 1) {
             return;
-        }
+        } else {
 
+            if (conversionTreeList.get(x) != null) {
+
+                final List<Entity> left = conversionDD.find().add(SearchRestrictions.eq(UNIT_FROM, unit))
+                        .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
+                        .getEntities();
+
+                final List<Entity> right = conversionDD.find().add(SearchRestrictions.eq(UNIT_TO, unit))
+                        .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
+                        .getEntities();
+
+                if (!left.isEmpty()) {
+
+                    for (int i = 0; i < left.size(); i++) {
+
+                        if (checkList(conversionTreeList, left.get(i).getStringField(UNIT_TO))) {
+
+                            ConversionTree ct = new ConversionTree();
+                            ct.setQuantityFrom((BigDecimal) left.get(i).getField(QUANTITY_FROM));
+                            ct.setQuantityTo((BigDecimal) left.get(i).getField(QUANTITY_TO));
+                            ct.setUnitFrom(left.get(i).getStringField(UNIT_FROM));
+                            ct.setUnitTo(left.get(i).getStringField(UNIT_TO));
+                            ct.setParent(parent);
+                            conversionTreeList.add(ct);
+                        }
+                    }
+
+                }
+                if (!right.isEmpty()) {
+
+                    for (int i = 0; i < right.size(); i++) {
+
+                        if (checkList(conversionTreeList, right.get(i).getStringField(UNIT_FROM))) {
+
+                            ConversionTree ct = new ConversionTree();
+                            ct.setQuantityFrom((BigDecimal) right.get(i).getField(QUANTITY_TO));
+                            ct.setQuantityTo((BigDecimal) right.get(i).getField(QUANTITY_FROM));
+                            ct.setUnitFrom(right.get(i).getStringField(UNIT_TO));
+                            ct.setUnitTo(right.get(i).getStringField(UNIT_FROM));
+                            ct.setParent(parent);
+                            conversionTreeList.add(ct);
+                        }
+                    }
+                }
+                x++;
+
+                conversionTree(conversionDD, conversionTreeList.get(x).getUnitTo(), conversionTreeList.get(x),
+                        conversionTreeList, x);
+
+            } else {
+                return;
+            }
+        }
     }
 
     public boolean checkList(List<ConversionTree> list, String unit) {
         if (!list.isEmpty()) {
             for (int j = 0; j < list.size(); j++) {
-                if (list.get(j).getUnitTo().equals(unit)) {
+                if (unit.equals(list.get(j).getUnitTo())) {
                     return false;
                 }
             }
@@ -140,22 +148,22 @@ public final class ProductService {
         return true;
     }
 
-    public void conversionForProductUnit(final DataDefinition dataDefinition, final Entity entity) {
+    public void conversionForProductUnit(final DataDefinition dataDefinition, final Entity product) {
 
-        String productUnit = entity.getStringField("unit");
+        String productUnit = product.getStringField("unit");
 
         final DataDefinition conversionDD = dataDefinitionService.get("basic", "conversionItem");
 
         ConversionTree root = new ConversionTree();
         root.setParent(null);
-        root.setQuantityFrom(entity.getDecimalField(QUANTITY_FROM));
-        root.setQuantityTo(entity.getDecimalField(QUANTITY_TO));
-        root.setUnitFrom(entity.getStringField(UNIT_FROM));
-        root.setUnitTo(entity.getStringField(UNIT_TO));
+
+        root.setUnitTo(product.getStringField("unit"));
+
+        final List<ConversionTree> conversionTreeList = Lists.newArrayList();
 
         conversionTreeList.add(root);
 
-        conversionTree(conversionDD, productUnit, root);
+        conversionTree(conversionDD, productUnit, root, conversionTreeList, 0);
 
         // final List<Entity> left = conversionDD.find().add(SearchRestrictions.eq(UNIT_FROM, productUnit))
         // .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
