@@ -7,44 +7,72 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" excludeItems="actions.copy" />
+			<group name="dictionary">
+				<bigButton name="unitsDictionary" icon="calendarIcon24.png"
+					action="">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('redirectToDictionary', []);
+									}
+								}
+							});	
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<windowTab name="mainTab" reference="conversionTab">
 			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="conversionGridLayout"
+					columns="3" rows="1">
+					<layoutElement column="1" row="1" width="2">
+						<component type="borderLayout" name="defaultConverion">
+							<component type="awesomeDynamicList" name="conversion"
+								source="conversionItems" reference="conversion">
+								<option type="hasBorder" value="false" />
+								<option type="hasButtons" value="true" />
+								<!-- <listener event="saveConversion" -->
+								<!-- class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" -->
+								<!-- method="saveProgressForDays" /> -->
+								<components>
+									<component type="gridLayout" name="conversionGridLayout"
+										columns="4" rows="1">
+										<layoutElement column="1" row="1">
+											<component type="input" name="quantityFrom" field="quantityFrom"
+												reference="quantityFrom" hasLabel="false">
+												<option type="alignment" value="right" />
+											</component>
+										</layoutElement>
+										<layoutElement column="2" row="1">
+											<component type="select" name="unitFrom" field="unitFrom"
+												reference="unitFrom" hasLabel="false">
+												<option type="labelWidth" value="10" />
+											</component>
+										</layoutElement>
+										<layoutElement column="3" row="1">
+											<component type="input" name="quantityTo" field="quantityTo"
+												reference="quantityTo">
+												<option type="alignment" value="right" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="select" name="unitTo" field="unitTo"
+												reference="unitTo" hasLabel="false" />
+										</layoutElement>
+									</component>
 
-				<component type="awesomeDynamicList" name="conversion"
-					source="conversionItems" reference="conversion">
-					<option type="hasBorder" value="false" />
-					<option type="hasButtons" value="true" />
-					<!-- <listener event="saveConversion" -->
-					<!-- class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" -->
-					<!-- method="saveProgressForDays" /> -->
-
-					<components>
-						<component type="gridLayout" name="conversionGridLayout"
-							columns="4" rows="1">
-							<layoutElement column="1" row="1">
-								<component type="input" name="quantityFrom" field="quantityFrom"
-									reference="quantityFrom" />
-							</layoutElement>
-							<layoutElement column="2" row="1">
-								<component type="select" name="unitFrom" field="unitFrom"
-									reference="unitFrom" />
-							</layoutElement>
-							<layoutElement column="3" row="1">
-								<component type="input" name="quantityTo" field="quantityTo"
-									reference="quantityTo" />
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="select" name="unitTo" field="unitTo"
-									reference="unitTo" />
-							</layoutElement>
+								</components>
+							</component>
+							<option type="label" value="defaultConversion" />
 						</component>
-
-					</components>
+					</layoutElement>
 				</component>
+				<listener event="redirectToDictionary"
+					class="com.qcadoo.mes.basic.listeners.ConversionListeners" method="redirectToDictionary" />
 			</component>
-
-
 		</windowTab>
 		<option type="header" value="true" />
 	</component>
