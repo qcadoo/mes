@@ -33,8 +33,6 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<!-- <hasMany name="conversionItems" joinField="conversion" model="conversionItem" 
-			/> -->
 		<hasMany name="productConversion" joinField="product" model="conversionItem" />
 
 		<!-- PRODUCTS FAMILY TREE -->
@@ -50,7 +48,7 @@
 			default="01particularProduct" />
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.basic.ProductService" method="conversionForProductUnit" />
+		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"

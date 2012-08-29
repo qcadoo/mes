@@ -18,6 +18,21 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="convesrions">
+				<bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('getDefaultConversions', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="product" reference="form">
@@ -82,22 +97,26 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				<listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
+						method="getDefaultConversions" />
 			</component>
 		</windowTab>
 		<windowTab name="productFamily">
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
-					<component type="select" name="entityType"
-						field="#{form}.entityType" />
+					<component type="select" name="entityType" field="#{form}.entityType" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="parent" field="#{form}.parent"
 						reference="parent">
 						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="isParentFamily" expression="#family['parent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
-						<option type="column" name="isFamily" expression="#family['entityType'] == '01particularProduct' ? '@qcadooView.false' :'qcadooView.true' " />
-						<option type="column" name="parent" fields="parent" expression="#parent['number']" />
+						<option type="column" name="isParentFamily"
+							expression="#family['parent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
+						<option type="column" name="isFamily"
+							expression="#family['entityType'] == '01particularProduct' ? '@qcadooView.false' :'qcadooView.true' " />
+						<option type="column" name="parent" fields="parent"
+							expression="#parent['number']" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"
@@ -211,34 +230,35 @@
 		</windowTab>
 		<windowTab name="conversionTab">
 			<component type="awesomeDynamicList" name="product"
-					source="#{form}.productConversion" reference="product">
-					<option type="hasBorder" value="false" />
-					<option type="hasButtons" value="true" />
+				source="#{form}.productConversion" reference="product">
+				<option type="hasBorder" value="false" />
+				<option type="hasButtons" value="true" />
 
-					<components>
-						<component type="gridLayout" name="conversionGridLayout"
-							columns="4" rows="1">
-							<layoutElement column="1" row="1">
-								<component type="input" name="quantityFrom" field="quantityFrom"
-									reference="quantityFrom" />
-							</layoutElement>
-							<layoutElement column="2" row="1">
-								<component type="select" name="unitFrom" field="unitFrom"
-									reference="unitFrom" defaultEnabled="false" />
-							</layoutElement>
-							<layoutElement column="3" row="1">
-								<component type="input" name="quantityTo" field="quantityTo"
-									reference="quantityTo" />
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="select" name="unitTo" field="unitTo"
-									reference="unitTo" />
-							</layoutElement>
-						</component>
-
-					</components>
-				</component>
+				<components>
+					<component type="gridLayout" name="conversionGridLayout"
+						columns="4" rows="1">
+						<layoutElement column="1" row="1">
+							<component type="input" name="quantityFrom" field="quantityFrom"
+								reference="quantityFrom" />
+						</layoutElement>
+						<layoutElement column="2" row="1">
+							<component type="select" name="unitFrom" field="unitFrom"
+								reference="unitFrom" defaultEnabled="false" />
+						</layoutElement>
+						<layoutElement column="3" row="1">
+							<component type="input" name="quantityTo" field="quantityTo"
+								reference="quantityTo" />
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="select" name="unitTo" field="unitTo"
+								reference="unitTo" />
+						</layoutElement>
+					</component>
+				</components>
+			</component>
 		</windowTab>
+
+
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ProductService"

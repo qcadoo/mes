@@ -29,7 +29,9 @@
 	<row NAME="units" ITEM="kg" DESCRIPTION="Kilogram" />
 	<row NAME="units" ITEM="mm" DESCRIPTION="Minimetr" />
 	<row NAME="units" ITEM="cm" DESCRIPTION="Centymetr" />
-	<row NAME="units" ITEM="cm2" DESCRIPTION="Centymetr kwadratowy" />
+	<row NAME="units" ITEM="cm2" DESCRIPTION="Centymetr kwadratowy" /
+	<row NAME="units" ITEM="dm" DESCRIPTION="Decymetr" />
+	<row NAME="units" ITEM="km" DESCRIPTION="Kilometr" />
 	<row NAME="units" ITEM="m" DESCRIPTION="Metr" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Metr kwadratowy" />
 	<row NAME="units" ITEM="m3" DESCRIPTION="Metr sześcienny" />

@@ -42,6 +42,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -209,6 +210,51 @@ public final class ProductService {
 
         product.setField("productConversion", conversionListForProduct);
 
+    }
+
+    public final void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
+
+        String productUnit = product.getStringField("unit");
+
+        if (hasUnitChanged(product, productUnit)) {
+
+            conversionForProductUnit(productDD, product);
+
+        }
+
+    }
+
+    private boolean hasUnitChanged(final Entity product, final String unit) {
+        Entity existingProduct = getExistingProduct(product);
+        if (existingProduct == null) {
+            return true;
+        }
+        String existingProductUnit = existingProduct.getStringField("unit");
+        if (existingProductUnit == null) {
+            return true;
+        }
+        return !existingProductUnit.equals(unit);
+    }
+
+    private Entity getExistingProduct(final Entity product) {
+        if (product.getId() == null) {
+            return null;
+        }
+        return product.getDataDefinition().get(product.getId());
+    }
+
+    public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        Entity product = form.getEntity();
+
+        conversionForProductUnit(product.getDataDefinition(), product);
+
+        product.getDataDefinition().save(product);
+
+        state.performEvent(view, "reset", new String[0]);
     }
 
     public void generateProductNumber(final ViewDefinitionState state) {
