@@ -46,6 +46,8 @@ public final class SamplesConstants {
 
     public static final String BASIC_MODEL_PRODUCT = "product";
 
+    public static final String BASIC_MODEL_CONVERSION = "conversion";
+
     public static final String BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
 
     public static final String BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
