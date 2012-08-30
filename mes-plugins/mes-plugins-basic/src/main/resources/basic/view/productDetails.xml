@@ -18,7 +18,7 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
-			<group name="convesrions">
+			<group name="conversions">
 				<bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
 					<script>
 						<![CDATA[
@@ -97,6 +97,7 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				
 				<listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
 						method="getDefaultConversions" />
 			</component>
@@ -257,8 +258,6 @@
 				</components>
 			</component>
 		</windowTab>
-
-
 	</component>
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ProductService"

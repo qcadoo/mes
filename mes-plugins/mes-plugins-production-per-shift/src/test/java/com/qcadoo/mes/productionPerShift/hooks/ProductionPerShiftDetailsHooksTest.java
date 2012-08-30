@@ -66,6 +66,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -120,6 +121,9 @@ public class ProductionPerShiftDetailsHooksTest {
     private TimeConverterService timeConverterService;
 
     @Mock
+    private LookupComponent lookupComponent;
+
+    @Mock
     private List<FormComponent> forms, forms1;
 
     @Mock
@@ -147,7 +151,8 @@ public class ProductionPerShiftDetailsHooksTest {
 
         when(dataDefinitionService.get("orders", "order")).thenReturn(orderDD);
         when(dataDefinitionService.get("technologies", "technologyInstanceOperationComponent")).thenReturn(ddTIOC);
-        when(helper.getOrderFromLookup(view)).thenReturn(order);
+        when(view.getComponentByReference("order")).thenReturn(lookupComponent);
+        when(lookupComponent.getEntity()).thenReturn(order);
     }
 
     @Test
@@ -156,7 +161,8 @@ public class ProductionPerShiftDetailsHooksTest {
         String prodName = "asdf";
         String unit = "PLN";
 
-        when(helper.getTiocFromOperationLookup(view)).thenReturn(tioc);
+        when(view.getComponentByReference("productionPerShiftOperation")).thenReturn(lookupComponent);
+        when(lookupComponent.getEntity()).thenReturn(tioc);
         when(view.getComponentByReference("produces")).thenReturn(producesInput);
         when(producesInput.getFieldValue()).thenReturn("");
 
@@ -232,11 +238,9 @@ public class ProductionPerShiftDetailsHooksTest {
     @Test
     public void shouldEnabledPlannedProgressTypeForInProgressOrder() throws Exception {
         // given
-        Long orderId = 1L;
         String empty = "";
-        when(view.getComponentByReference("order")).thenReturn(lookup);
-        when(lookup.getFieldValue()).thenReturn(orderId);
-        when(orderDD.get(orderId)).thenReturn(order);
+        when(view.getComponentByReference("order")).thenReturn(lookupComponent);
+        when(lookupComponent.getEntity()).thenReturn(order);
         when(order.getStringField("state")).thenReturn("03inProgress");
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
         when(plannedProgressType.getFieldValue()).thenReturn(empty);
@@ -314,7 +318,6 @@ public class ProductionPerShiftDetailsHooksTest {
         // given
         String corrected = "02corrected";
         when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
-        when(helper.getTiocFromOperationLookup(view)).thenReturn(tioc);
 
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
         when(tioc.getHasManyField("progressForDays")).thenReturn(progressForDays);

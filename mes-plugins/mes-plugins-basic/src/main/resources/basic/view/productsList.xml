@@ -33,15 +33,32 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="conversions">
+				<bigButton name="getDefaultConversions" icon="genealogyIcon24.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('getDefaultConversionsForGrid', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<component type="grid" name="products" reference="grid">
 			<script>
 				<![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var conversionsButton = #{window}.getRibbonItem("conversions.getDefaultConversions");
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
+								conversionsButton.disable();
 							} else {
 								var hasExternal = false;
 								for (var i in selectedEntitiesArray) {
@@ -55,6 +72,7 @@
 								} else {
 									deleteButton.enable();
 								}
+								conversionsButton.enable();
 							}
 						}
 					}
@@ -76,6 +94,9 @@
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+			
+			<listener event="getDefaultConversionsForGrid" class="com.qcadoo.mes.basic.ProductService" 
+				method="getDefaultConversionsForGrid" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

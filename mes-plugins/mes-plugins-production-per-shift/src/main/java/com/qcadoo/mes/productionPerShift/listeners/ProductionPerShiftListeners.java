@@ -53,6 +53,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -141,7 +142,7 @@ public class ProductionPerShiftListeners {
         for (Entity progressForDay : progressForDays) {
             progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
-        Entity tioc = helper.getTiocFromOperationLookup(viewState);
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
         boolean hasCorrections = helper.shouldHasCorrections(viewState);
         if (tioc != null) {
             tioc.setField(HAS_CORRECTIONS, hasCorrections);
@@ -188,7 +189,7 @@ public class ProductionPerShiftListeners {
     public void copyFromPlanned(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
         DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Entity tioc = helper.getTiocFromOperationLookup(viewState);
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
         if (tioc == null) {
             return;
         } else {
@@ -212,7 +213,7 @@ public class ProductionPerShiftListeners {
 
     public void deleteProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
-        Entity tioc = helper.getTiocFromOperationLookup(viewState);
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
         if (tioc == null) {
             return;
         } else {

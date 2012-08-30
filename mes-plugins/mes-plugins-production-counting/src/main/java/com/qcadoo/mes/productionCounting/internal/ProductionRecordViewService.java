@@ -69,6 +69,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -161,7 +162,7 @@ public class ProductionRecordViewService {
         status.setFieldValue(record.getField(L_STATE));
         status.requestComponentUpdateState();
 
-        Entity order = getOrderFromLookup(view);
+        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
@@ -291,12 +292,8 @@ public class ProductionRecordViewService {
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {
-        ComponentState lookup = view.getComponentByReference(L_ORDER);
-        if (!(lookup.getFieldValue() instanceof Long)) {
-            return null;
-        }
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                (Long) lookup.getFieldValue());
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(L_ORDER);
+        return lookup.getEntity();
     }
 
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
