@@ -51,6 +51,8 @@ public interface BasicConstants {
 
     String MODEL_CONVERSION = "conversion";
 
+    String MODEL_CONVERSION_ITEM = "conversionItem";
+
     // VIEW
     String VIEW_MACHINE_DETAILS = "machineDetails";
 
