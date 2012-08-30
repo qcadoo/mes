@@ -23,11 +23,18 @@
  */
 package com.qcadoo.mes.samples.loader;
 
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONVERSION;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONVERSION_ITEM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES_DICTIONARY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY_TO;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_FROM;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT_TO;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_MODEL_PRODUCTION_LINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
 
@@ -66,6 +73,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "company", locale);
+        readDataFromXML(dataset, "conversion", locale);
+        readDataFromXML(dataset, "conversionItem", locale);
 
         if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_PRODUCTION_LINES, locale);
@@ -88,7 +97,36 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
             addDictionaryItems(values);
         } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
             addDefaultProductionLine(values);
+        } else if ("conversion".equals(type)) {
+            addConversion();
+        } else if ("conversionItem".equals(type)) {
+            addConversionItem(values);
         }
+    }
+
+    private void addConversion() {
+        Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION).create();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("conversion is added");
+        }
+
+        conversion.getDataDefinition().save(conversion);
+    }
+
+    private void addConversionItem(final Map<String, String> values) {
+        Entity conversionItem = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION_ITEM).create();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(" unitFrom " + values.get(L_UNIT_FROM) + " unitTo " + values.get(L_UNIT_TO) + " quantityFrom "
+                    + values.get(L_QUANTITY_FROM) + " quantityTo " + values.get(L_QUANTITY_TO));
+        }
+        conversionItem.setField(L_UNIT_FROM, values.get("unitfrom"));
+        conversionItem.setField(L_UNIT_TO, values.get("unitto"));
+        conversionItem.setField(L_QUANTITY_FROM, values.get("quantityfrom"));
+        conversionItem.setField(L_QUANTITY_TO, values.get("quantityto"));
+        conversionItem.setField(BASIC_MODEL_CONVERSION, getConversion());
+        conversionItem.getDataDefinition().save(conversionItem);
     }
 
     protected void addUser(final Map<String, String> values) {
@@ -162,6 +200,10 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     protected Entity getProductionLineByNumber(final String number) {
         return dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER, PRODUCTION_LINES_MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    protected Entity getConversion() {
+        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION).find().setMaxResults(1).uniqueResult();
     }
 
 }

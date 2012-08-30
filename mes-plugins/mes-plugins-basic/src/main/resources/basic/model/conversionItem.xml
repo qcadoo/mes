@@ -4,22 +4,12 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 
-		<decimal name="quantityFrom" required="true">
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="7" />
-		</decimal>
-		<decimal name="quantityTo" required="true">
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="7" />
-		</decimal>
+		<decimal name="quantityFrom" required="true"/>
+		<decimal name="quantityTo" required="true"/>
 		<dictionary name="unitFrom" dictionary="units" />
 		<dictionary name="unitTo" dictionary="units" />
 		<belongsTo name="conversion" model="conversion" />
 		<belongsTo name="product" model="product" />
-		<!--  for tree -->
-<!-- 		<belongsTo name="parent" model="conversionItem" /> -->
-<!-- 		<hasMany name="conversionFamilyChildrens" joinField="parent" -->
-<!-- 			model="conversionItem" /> -->
 		
 	</fields>
 
