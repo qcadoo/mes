@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 public class ProductionRecordViewServiceTest {
 
@@ -63,6 +64,9 @@ public class ProductionRecordViewServiceTest {
     private Entity formEntity, order;
 
     @Mock
+    private LookupComponent lookupComponent;
+
+    @Mock
     private DataDefinition dataDefinition;
 
     @Mock
@@ -81,14 +85,16 @@ public class ProductionRecordViewServiceTest {
                 technologyInstanceOperationComponent);
         given(view.getComponentByReference("form")).willReturn(form);
         given(view.getComponentByReference("state")).willReturn(state);
-        given(view.getComponentByReference("order")).willReturn(lookup);
-        given(lookup.getFieldValue()).willReturn(2L);
+        given(view.getComponentByReference("order")).willReturn(lookupComponent);
+
+        given(lookupComponent.getEntity()).willReturn(order);
 
         given(form.getEntity()).willReturn(formEntity);
         given(formEntity.getDataDefinition()).willReturn(dataDefinition);
         given(form.getEntityId()).willReturn(1L);
         given(dataDefinition.get(1L)).willReturn(formEntity);
-        given(dataDefinition.get(2L)).willReturn(order);
+        given(view.getComponentByReference("order")).willReturn(lookupComponent);
+
         given(dataDefinitionService.get("orders", "order")).willReturn(dataDefinition);
     }
 
@@ -97,7 +103,6 @@ public class ProductionRecordViewServiceTest {
         // given
         given(order.getBooleanField("registerProductionTime")).willReturn(false);
         given(view.getComponentByReference("borderLayoutTime")).willReturn(borderLayoutTime);
-
         // when
         productionRecordViewService.initializeRecordDetailsView(view);
 

@@ -34,14 +34,12 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsConstants;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
@@ -50,9 +48,6 @@ public class MatchingChangeoverNormsDetailsListeners {
 
     @Autowired
     private ChangeoverNormsService changeoverNormsService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     private static final String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
 
@@ -63,9 +58,12 @@ public class MatchingChangeoverNormsDetailsListeners {
     public void matchingChangeoverNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
 
-        Entity fromTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_FROM_TECHNOLOGY);
-        Entity toTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_TO_TECHNOLOGY);
-        Entity productionLine = getProductionLinesFromLookup(viewDefinitionState);
+        Entity fromTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_FROM_TECHNOLOGY))
+                .getEntity();
+
+        Entity toTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_TO_TECHNOLOGY)).getEntity();
+        Entity productionLine = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_PRODUCTION_LINE))
+                .getEntity();
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity changeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         if (changeoverNorm == null) {
@@ -94,8 +92,9 @@ public class MatchingChangeoverNormsDetailsListeners {
         WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
         RibbonActionItem matchingChangeoverNorm = window.getRibbon().getGroupByName("matching")
                 .getItemByName("matchingChangeoverNorm");
-        Entity fromTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_FROM_TECHNOLOGY);
-        Entity toTechnology = getTechnologyFromLookup(viewDefinitionState, MATCHING_TO_TECHNOLOGY);
+        Entity fromTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_FROM_TECHNOLOGY))
+                .getEntity();
+        Entity toTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_TO_TECHNOLOGY)).getEntity();
         if ((fromTechnology == null) || (toTechnology == null)) {
             matchingChangeoverNorm.setEnabled(false);
         } else {
@@ -137,21 +136,4 @@ public class MatchingChangeoverNormsDetailsListeners {
         }
     }
 
-    private Entity getTechnologyFromLookup(final ViewDefinitionState view, final String fieldName) {
-        ComponentState lookup = view.getComponentByReference(fieldName);
-        if (!(lookup.getFieldValue() instanceof Long)) {
-            return null;
-        }
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(
-                (Long) lookup.getFieldValue());
-    }
-
-    private Entity getProductionLinesFromLookup(final ViewDefinitionState view) {
-        ComponentState lookup = view.getComponentByReference(MATCHING_PRODUCTION_LINE);
-        if (!(lookup.getFieldValue() instanceof Long)) {
-            return null;
-        }
-        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) lookup.getFieldValue());
-    }
 }
