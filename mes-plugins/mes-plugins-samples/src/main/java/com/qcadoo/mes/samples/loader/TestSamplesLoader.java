@@ -427,6 +427,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (!values.get("typeofproduct").isEmpty()) {
             product.setField("globalTypeOfMaterial", values.get("typeofproduct"));
         }
+        product.setField("entityType", "01particularProduct");
         product.setField("unit", values.get("unit"));
 
         if (isEnabledOrEnabling("costNormsForProduct")) {

@@ -23,6 +23,9 @@ public class ProductFamiliesAddProductListeners {
             child.setField(ProductFields.PARENT, formEntity.getField(ProductFields.PARENT));
             child.getDataDefinition().save(child);
         }
+        childLookup.requestComponentUpdateState();
+        form.setEntity(formEntity);
+        view.performEvent(view, "refresh");
     }
 
 }

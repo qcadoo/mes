@@ -48,7 +48,7 @@
 			default="01particularProduct" />
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
+<!-- 		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" /> -->
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"

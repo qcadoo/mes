@@ -53,7 +53,9 @@ public class ProductsFamiliesHooks {
         FormComponent form = getForm(view);
         try {
             Entity formEntity = generateFormEntity(view);
-
+            if (formEntity == null) {
+                return;
+            }
             form.setEntity(formEntity);
             view.getComponentByReference(PRODUCT_FAMILY_CHILDREN_TREE).setEnabled(true);
         } catch (FormValidationException e) {
@@ -68,6 +70,9 @@ public class ProductsFamiliesHooks {
         FormComponent form = getForm(view);
         Entity formEntity = form.getEntity();
         GridComponent parentsGrid = (GridComponent) view.getComponentByReference("parents");
+        if (parentsGrid.getSelectedEntities().isEmpty()) {
+            return null;
+        }
         Long productId = parentsGrid.getSelectedEntities().get(0).getId();
 
         if (productId == null) {
