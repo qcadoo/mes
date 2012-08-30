@@ -38,7 +38,7 @@
 	<row NAME="units" ITEM="mm" DESCRIPTION="Millimetr" />
 	<row NAME="units" ITEM="cm" DESCRIPTION="Centimetre" />
 	<row NAME="units" ITEM="cm2" DESCRIPTION="Cubic centimeter" />
-	<row NAME="units" ITEM="dam" DESCRIPTION="Cubic decametre" />	
+	<row NAME="units" ITEM="dm3" DESCRIPTION="Cubic decimeter" />	
 	<row NAME="units" ITEM="m" DESCRIPTION="Meter" />
 	<row NAME="units" ITEM="m2" DESCRIPTION="Square meter" />
 	<row NAME="units" ITEM="m3" DESCRIPTION="Cubic meter" />

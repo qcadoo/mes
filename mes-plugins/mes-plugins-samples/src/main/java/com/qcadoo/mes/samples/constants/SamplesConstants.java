@@ -48,6 +48,8 @@ public final class SamplesConstants {
 
     public static final String BASIC_MODEL_CONVERSION = "conversion";
 
+    public static final String BASIC_MODEL_CONVERSION_ITEM = "conversionItem";
+
     public static final String BASICPRODUCTIONCOUNTING_MODEL_BASICPRODUCTIONCOUNTING = "basicProductionCounting";
 
     public static final String BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
@@ -123,6 +125,14 @@ public final class SamplesConstants {
     public static final String TRACKING_RECORD_STATE_DRAFT = "01draft";
 
     public static final String BATCH_STATE_TRACKED = "01tracked";
+
+    public static final String L_UNIT_FROM = "unitFrom";
+
+    public static final String L_UNIT_TO = "unitTo";
+
+    public static final String L_QUANTITY_FROM = "quantityFrom";
+
+    public static final String L_QUANTITY_TO = "quantityTo";
 
     public static final String L_SHIFTS = "shifts";
 

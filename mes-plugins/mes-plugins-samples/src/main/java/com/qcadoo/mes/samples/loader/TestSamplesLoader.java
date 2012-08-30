@@ -178,6 +178,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, "company", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
+        readDataFromXML(dataset, "conversion", locale);
+        readDataFromXML(dataset, "conversionItem", locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
         readDataFromXML(dataset, L_SHIFTS, locale);
         readDataFromXML(dataset, "divisions", locale);
@@ -325,20 +327,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addWageGroups(values);
         }
     }
-
-    // TODO MIKO
-    // private void addConversion(final Map<String, String> values) {
-    // Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION).create();
-    //
-    // LOG.debug("id: " + values.get("id") + " name " + values.get(L_NAME) + " prod_line " + values.get("prod_line")
-    // + " description " + values.get(L_DESCRIPTION));
-    // conversion.setField(L_NUMBER, values.get(L_NUMBER));
-    // conversion.setField(L_PRODUCT, getProductByNumber(values.get("product_nr")));
-    // conversion.setField(L_SUPPLIER, getSupplierByNumber(values.get("supplier_nr")));
-    // conversion.setField(L_STATE, BATCH_STATE_TRACKED);
-    //
-    // conversion.getDataDefinition().save(conversion);
-    // }
 
     private void addWorkstationType(final Map<String, String> values) {
         Entity machine = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_WORKSTATION_TYPE).create();
