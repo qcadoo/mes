@@ -51,7 +51,6 @@ import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrde
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.wageGroups.constants.StaffFieldsWG;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -62,6 +61,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -120,7 +120,9 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
                 .getFieldValue()));
         Entity shiftWorkAtFinishDate = shiftsService.getShiftFromDateWithTime(timeConverterService.getDateFromField(finishDate
                 .getFieldValue()));
-        Entity productionLine = getProductionLinesFromLookup(view);
+
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference("productionLine");
+        Entity productionLine = lookup.getEntity();
 
         avgLaborCostCalcForOrder.setField(
                 AvgLaborCostCalcForOrderFields.ASSIGNMENT_WORKER_TO_SHIFTS,
@@ -201,14 +203,4 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.WORKER, staffAssignmentToShift.getBelongsToField(WORKER));
         return assignmentWorkerToShift;
     }
-
-    private Entity getProductionLinesFromLookup(final ViewDefinitionState view) {
-        ComponentState lookup = view.getComponentByReference("productionLine");
-        if (!(lookup.getFieldValue() instanceof Long)) {
-            return null;
-        }
-        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) lookup.getFieldValue());
-    }
-
 }

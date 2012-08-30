@@ -25,8 +25,6 @@ package com.qcadoo.mes.wageGroups.hooks;
 
 import static com.qcadoo.mes.wageGroups.constants.WageGroupFields.LABOR_HOURLY_COST;
 import static com.qcadoo.mes.wageGroups.constants.WageGroupFields.SUPERIOR_WAGE_GROUP;
-import static com.qcadoo.mes.wageGroups.constants.WageGroupsConstants.MODEL_WAGE_GROUP;
-import static com.qcadoo.mes.wageGroups.constants.WageGroupsConstants.PLUGIN_IDENTIFIER;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +32,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class StaffDetailsHooks {
@@ -69,7 +67,8 @@ public class StaffDetailsHooks {
     }
 
     public void fillFieldAboutWageGroup(final ViewDefinitionState view) {
-        Entity wageGroup = getWageGroupFromLookup(view);
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference("wageGroup");
+        Entity wageGroup = lookup.getEntity();
         if (wageGroup == null) {
             return;
         }
@@ -79,11 +78,4 @@ public class StaffDetailsHooks {
         superiorWageGroups.setFieldValue(wageGroup.getStringField(SUPERIOR_WAGE_GROUP));
     }
 
-    private Entity getWageGroupFromLookup(final ViewDefinitionState view) {
-        ComponentState lookup = view.getComponentByReference("wageGroup");
-        if (!(lookup.getFieldValue() instanceof Long)) {
-            return null;
-        }
-        return dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_WAGE_GROUP).get((Long) lookup.getFieldValue());
-    }
 }

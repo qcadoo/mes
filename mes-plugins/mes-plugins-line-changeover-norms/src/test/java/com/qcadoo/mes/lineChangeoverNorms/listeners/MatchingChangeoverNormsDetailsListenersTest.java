@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms.listeners;
 
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.CHANGEOVER_TYPE;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.DURATION;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.NUMBER;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -33,7 +41,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
-import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -43,6 +50,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -68,8 +76,10 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     private Entity fromTechnology, toTechnology, productionLine;
 
     @Mock
-    private FieldComponent number, fromTechField, toTechField, fromTechGpField, toTechGpField, changeoverTypField, durationField,
-            productionLineField;
+    private FieldComponent number, changeoverTypField, durationField;
+
+    @Mock
+    private LookupComponent fromTechLookup, toTechLookup, fromTechGpLookup, toTechGpLookup, productionLineLookup;
 
     @Mock
     private FormComponent form;
@@ -87,7 +97,10 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     private RibbonActionItem edit;
 
     @Mock
-    private ComponentState state, fromTechnologyLookup, toTechnologyLookup, productionLinesLookup;
+    private ComponentState state;
+
+    @Mock
+    private LookupComponent fromTechnologyLookup, toTechnologyLookup, productionLinesLookup;
 
     private static final String MATCHING_FROM_TECHNOLOGY = "matchingFromTechnology";
 
@@ -99,7 +112,6 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     public void init() {
         listeners = new MatchingChangeoverNormsDetailsListeners();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(listeners, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(listeners, "changeoverNormsService", changeoverNormsService);
 
         Long toTechId = 1L;
@@ -127,14 +139,14 @@ public class MatchingChangeoverNormsDetailsListenersTest {
     public void shouldClearFieldAndDisabledButtonWhenMatchingChangeoverNormWasnotFound() throws Exception {
         // given
         when(changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine)).thenReturn(null);
-        when(view.getComponentByReference(LineChangeoverNormsFields.NUMBER)).thenReturn(number);
-        when(view.getComponentByReference(LineChangeoverNormsFields.FROM_TECHNOLOGY)).thenReturn(fromTechField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.TO_TECHNOLOGY)).thenReturn(toTechField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP)).thenReturn(fromTechGpField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP)).thenReturn(toTechGpField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.CHANGEOVER_TYPE)).thenReturn(changeoverTypField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.DURATION)).thenReturn(durationField);
-        when(view.getComponentByReference(LineChangeoverNormsFields.PRODUCTION_LINE)).thenReturn(productionLineField);
+        when(view.getComponentByReference(NUMBER)).thenReturn(number);
+        when(view.getComponentByReference(FROM_TECHNOLOGY)).thenReturn(fromTechLookup);
+        when(view.getComponentByReference(TO_TECHNOLOGY)).thenReturn(toTechLookup);
+        when(view.getComponentByReference(FROM_TECHNOLOGY_GROUP)).thenReturn(fromTechGpLookup);
+        when(view.getComponentByReference(TO_TECHNOLOGY_GROUP)).thenReturn(toTechGpLookup);
+        when(view.getComponentByReference(CHANGEOVER_TYPE)).thenReturn(changeoverTypField);
+        when(view.getComponentByReference(DURATION)).thenReturn(durationField);
+        when(view.getComponentByReference(PRODUCTION_LINE)).thenReturn(productionLineLookup);
         when(view.getComponentByReference("form")).thenReturn(form);
         when(view.getComponentByReference("window")).thenReturn((ComponentState) window);
         when(window.getRibbon()).thenReturn(ribbon);
@@ -145,7 +157,7 @@ public class MatchingChangeoverNormsDetailsListenersTest {
         listeners.matchingChangeoverNorm(view, state, null);
 
         // then
-        Mockito.verify(fromTechField).setFieldValue(null);
+        Mockito.verify(fromTechLookup).setFieldValue(null);
         Mockito.verify(edit).setEnabled(false);
     }
 

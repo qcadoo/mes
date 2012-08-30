@@ -25,8 +25,6 @@ package com.qcadoo.mes.wageGroups.hooks;
 
 import static com.qcadoo.mes.wageGroups.constants.WageGroupFields.LABOR_HOURLY_COST;
 import static com.qcadoo.mes.wageGroups.constants.WageGroupFields.SUPERIOR_WAGE_GROUP;
-import static com.qcadoo.mes.wageGroups.constants.WageGroupsConstants.MODEL_WAGE_GROUP;
-import static com.qcadoo.mes.wageGroups.constants.WageGroupsConstants.PLUGIN_IDENTIFIER;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -39,11 +37,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 public class StaffDetailsHooksTest {
 
@@ -53,13 +51,13 @@ public class StaffDetailsHooksTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private DataDefinition dataDefinition;
-
-    @Mock
     private CurrencyService currencyService;
 
     @Mock
-    private FieldComponent field1, field2, lookup;
+    private FieldComponent field1, field2;
+
+    @Mock
+    private LookupComponent lookup;
 
     @Mock
     private Entity wageGroup;
@@ -122,7 +120,7 @@ public class StaffDetailsHooksTest {
     @Test
     public void shouldReturnWhenWageGroupsLookupIsEmpty() throws Exception {
         // given
-        when(view.getComponentByReference("wageGroup")).thenReturn(field1);
+        when(view.getComponentByReference("wageGroup")).thenReturn(lookup);
         when(field1.getFieldValue()).thenReturn(null);
         // when
         detailsHooks.fillFieldAboutWageGroup(view);
@@ -131,13 +129,10 @@ public class StaffDetailsHooksTest {
     @Test
     public void shouldFillFieldValuesOfSelectedWageGroup() throws Exception {
         // given
-        Long wageId = 1L;
         String superiorWageGroup = "1234";
 
         when(view.getComponentByReference("wageGroup")).thenReturn(lookup);
-        when(lookup.getFieldValue()).thenReturn(wageId);
-        when(dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_WAGE_GROUP)).thenReturn(dataDefinition);
-        when(dataDefinition.get(wageId)).thenReturn(wageGroup);
+        when(lookup.getEntity()).thenReturn(wageGroup);
 
         when(view.getComponentByReference("laborCostFromWageGroups")).thenReturn(field1);
         when(view.getComponentByReference("superiorWageGroups")).thenReturn(field2);
