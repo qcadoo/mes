@@ -49,6 +49,8 @@ public final class ProductFields {
 
     public static final String DESCRIPTION = "description";
 
+    public static final String CONVERSION_ITEMS = "conversionItems";
+
     public static final String PARENT = "parent";
 
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
@@ -60,4 +62,5 @@ public final class ProductFields {
     public static final String PRIORITY = "priority";
 
     public static final String ENTITY_TYPE = "entityType";
+
 }

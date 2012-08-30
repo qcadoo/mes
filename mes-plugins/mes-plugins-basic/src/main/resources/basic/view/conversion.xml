@@ -29,14 +29,12 @@
 				<component type="gridLayout" name="conversionGridLayout"
 					columns="3" rows="1">
 					<layoutElement column="1" row="1" width="2">
-						<component type="borderLayout" name="defaultConverion">
-							<component type="awesomeDynamicList" name="conversion"
-								source="conversionItems" reference="conversion">
+						<component type="borderLayout" name="conversionBorderLayout">
+							<component type="awesomeDynamicList" name="conversionItems"
+								source="conversionItems" reference="conversionItems">
 								<option type="hasBorder" value="false" />
 								<option type="hasButtons" value="true" />
-								<!-- <listener event="saveConversion" -->
-								<!-- class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" -->
-								<!-- method="saveProgressForDays" /> -->
+
 								<components>
 									<component type="gridLayout" name="conversionGridLayout"
 										columns="4" rows="1">
@@ -66,10 +64,11 @@
 
 								</components>
 							</component>
-							<option type="label" value="defaultConversion" />
+							<option type="label" value="defaultConversionItems" />
 						</component>
 					</layoutElement>
 				</component>
+				
 				<listener event="redirectToDictionary"
 					class="com.qcadoo.mes.basic.listeners.ConversionListeners" method="redirectToDictionary" />
 			</component>

@@ -25,11 +25,12 @@ package com.qcadoo.mes.basic;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_CONVERSION_ITEM;
 import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.basic.constants.ConversionFields.PRODUCT_FIELD;
-import static com.qcadoo.mes.basic.constants.ConversionFields.QUANTITY_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionFields.QUANTITY_TO;
-import static com.qcadoo.mes.basic.constants.ConversionFields.UNIT_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionFields.UNIT_TO;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.PRODUCT;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_FROM;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_TO;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_FROM;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_TO;
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.util.List;
@@ -106,18 +107,15 @@ public final class ProductService {
 
         }
 
-        product.setField("productConversion", conversionListForProduct);
+        product.setField(CONVERSION_ITEMS, conversionListForProduct);
 
     }
 
     public final void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
-
         String productUnit = product.getStringField(UNIT);
 
         if (hasUnitChanged(product, productUnit)) {
-
             conversionForProductUnit(productDD, product);
-
         }
 
     }
@@ -198,18 +196,18 @@ public final class ProductService {
     }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(PRODUCT_FIELD);
+        Entity product = entity.getBelongsToField(PRODUCT);
         Entity substitute = entity.getBelongsToField(SUBSTITUTE_FIELD);
 
         if (substitute == null || product == null) {
             return false;
         }
 
-        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo(PRODUCT_FIELD, product))
+        SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo(PRODUCT, product))
                 .add(SearchRestrictions.belongsTo(SUBSTITUTE_FIELD, substitute)).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField(PRODUCT_FIELD), "basic.validate.global.error.substituteComponentDuplicated");
+            entity.addError(dataDefinition.getField(PRODUCT), "basic.validate.global.error.substituteComponentDuplicated");
             return false;
         } else {
             return true;
@@ -217,7 +215,7 @@ public final class ProductService {
     }
 
     public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(PRODUCT_FIELD);
+        Entity product = entity.getBelongsToField(PRODUCT);
 
         if (product == null || product.getId() == null) {
             return true;
@@ -228,7 +226,7 @@ public final class ProductService {
 
         if (productEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField(PRODUCT_FIELD, null);
+            entity.setField(PRODUCT, null);
             return false;
         } else {
             return true;

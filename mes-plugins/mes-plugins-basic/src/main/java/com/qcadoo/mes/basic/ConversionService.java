@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.ConversionFields.PRODUCT_FIELD;
-import static com.qcadoo.mes.basic.constants.ConversionFields.QUANTITY_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionFields.QUANTITY_TO;
-import static com.qcadoo.mes.basic.constants.ConversionFields.UNIT_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionFields.UNIT_TO;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.PRODUCT;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_FROM;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_TO;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_FROM;
+import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_TO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -77,11 +77,11 @@ public class ConversionService {
         while (y <= conversionTreeList.size()) {
 
             final List<Entity> left = conversionDD.find().add(SearchRestrictions.eq(UNIT_FROM, unit))
-                    .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
+                    .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT)).list()
                     .getEntities();
 
             final List<Entity> right = conversionDD.find().add(SearchRestrictions.eq(UNIT_TO, unit))
-                    .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT_FIELD)).list()
+                    .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT)).list()
                     .getEntities();
 
             if (!left.isEmpty()) {

@@ -6,14 +6,6 @@ public final class ConversionFields {
 
     }
 
-    public static final String UNIT_FROM = "unitFrom";
-
-    public static final String UNIT_TO = "unitTo";
-
-    public static final String QUANTITY_FROM = "quantityFrom";
-
-    public static final String QUANTITY_TO = "quantityTo";
-
-    public static final String PRODUCT_FIELD = "product";
+    public static final String CONVERSION_ITEMS = "conversionItems";
 
 }

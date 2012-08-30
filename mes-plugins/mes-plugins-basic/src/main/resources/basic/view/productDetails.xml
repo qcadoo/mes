@@ -230,32 +230,47 @@
 			</component>
 		</windowTab>
 		<windowTab name="conversionTab">
-			<component type="awesomeDynamicList" name="product"
-				source="#{form}.productConversion" reference="product">
-				<option type="hasBorder" value="false" />
-				<option type="hasButtons" value="true" />
+			<component type="gridLayout" name="conversionGridLayout"
+				columns="3" rows="1">
+				<layoutElement column="1" row="1" width="2">
+					<component type="borderLayout" name="conversionBorderLayout">
+						<component type="awesomeDynamicList" name="conversionItems"
+							source="#{form}.conversionItems" reference="conversionItems">
+							<option type="hasBorder" value="false" />
+							<option type="hasButtons" value="true" />
 
-				<components>
-					<component type="gridLayout" name="conversionGridLayout"
-						columns="4" rows="1">
-						<layoutElement column="1" row="1">
-							<component type="input" name="quantityFrom" field="quantityFrom"
-								reference="quantityFrom" />
-						</layoutElement>
-						<layoutElement column="2" row="1">
-							<component type="select" name="unitFrom" field="unitFrom"
-								reference="unitFrom" defaultEnabled="false" />
-						</layoutElement>
-						<layoutElement column="3" row="1">
-							<component type="input" name="quantityTo" field="quantityTo"
-								reference="quantityTo" />
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="select" name="unitTo" field="unitTo"
-								reference="unitTo" />
-						</layoutElement>
+							<components>
+								<component type="gridLayout" name="conversionGridLayout"
+									columns="4" rows="1">
+									<layoutElement column="1" row="1">
+										<component type="input" name="quantityFrom" field="quantityFrom"
+											reference="quantityFrom" hasLabel="false">
+											<option type="alignment" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="2" row="1">
+										<component type="select" name="unitFrom" field="unitFrom"
+											reference="unitFrom" hasLabel="false">
+											<option type="labelWidth" value="10" />
+										</component>
+									</layoutElement>
+									<layoutElement column="3" row="1">
+										<component type="input" name="quantityTo" field="quantityTo"
+											reference="quantityTo">
+											<option type="alignment" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="4" row="1">
+										<component type="select" name="unitTo" field="unitTo"
+											reference="unitTo" hasLabel="false" />
+									</layoutElement>
+								</component>
+
+							</components>
+						</component>
+						<option type="label" value="conversionItems" />
 					</component>
-				</components>
+				</layoutElement>
 			</component>
 		</windowTab>
 	</component>
