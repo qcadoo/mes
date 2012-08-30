@@ -51,6 +51,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -141,17 +142,35 @@ public final class ProductService {
     }
 
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+
+        if (productForm.getEntityId() == null) {
             return;
         }
-        Entity product = form.getEntity();
+
+        Entity product = productForm.getEntity();
 
         conversionForProductUnit(product.getDataDefinition(), product);
 
         product.getDataDefinition().save(product);
 
         state.performEvent(view, "reset", new String[0]);
+    }
+
+    public void getDefaultConversionsForGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference("grid");
+
+        if (productsGrid.getSelectedEntities() == null) {
+            return;
+        }
+
+        List<Entity> products = productsGrid.getSelectedEntities();
+
+        for (Entity product : products) {
+            conversionForProductUnit(product.getDataDefinition(), product);
+
+            product.getDataDefinition().save(product);
+        }
     }
 
     public void generateProductNumber(final ViewDefinitionState state) {
