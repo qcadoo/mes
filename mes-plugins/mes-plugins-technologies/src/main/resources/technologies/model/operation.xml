@@ -39,15 +39,16 @@
 		</string>
 		<belongsTo name="workstationType" plugin="basic" model="workstationType"
 			lazy="false" />
-		<hasMany name="operationComponents" model="technologyOperationComponent"
-			joinField="operation" cascade="nullify" />
+		
 		<file name="attachment" />
 		<boolean name="areProductQuantitiesDivisible" default="false" />
 		<boolean name="isTjDivisible" default="false"/>
 		
+		<hasMany name="operationComponents" model="technologyOperationComponent"
+			joinField="operation" cascade="nullify" />
+			
 		<hasMany name="productInComponents" model="productComponent"
 			joinField="operationIn" cascade="delete" copyable="true" />
-			
 		<hasMany name="productOutComponents" model="productComponent"
 			joinField="operationOut" cascade="delete" copyable="true" />
 	</fields>

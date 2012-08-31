@@ -29,19 +29,27 @@ public final class TechnologyInstanceOperCompFields {
 
     }
 
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     public static final String TECHONOLOGY = "technology";
 
     public static final String OPERATION = "operation";
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
     public static final String PARENT = "parent";
 
-    public static final String ENTITY_TYPE = "entityType";
-
     public static final String CHILDREN = "children";
+
+    public static final String ENTITY_TYPE = "entityType";
 
     public static final String PRIORITY = "priority";
 
     public static final String NODE_NUMBER = "nodeNumber";
+
+    public static final String COMMENT = "comment";
+
+    public static final String ATTACHMENT = "attachment";
+
+    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
+
+    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
 }

@@ -361,11 +361,10 @@ public class WorkPlanPdfServiceTest {
     public void shouldAddOperationComment() throws DocumentException {
         // given
         Entity operationComponent = mock(Entity.class);
-        Entity operation = mock(Entity.class);
         PdfPTable table = mock(PdfPTable.class);
         PdfPCell cell = mock(PdfPCell.class);
-        when(operation.getStringField("comment")).thenReturn("comment");
-        when(operationComponent.getBelongsToField("operation")).thenReturn(operation);
+
+        when(operationComponent.getStringField("comment")).thenReturn("comment");
         when(operationComponent.getField("hideDescriptionInWorkPlans")).thenReturn(false);
         when(pdfHelper.createPanelTable(1)).thenReturn(table);
         when(table.getDefaultCell()).thenReturn(cell);

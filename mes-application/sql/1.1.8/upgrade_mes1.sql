@@ -35,12 +35,11 @@ ALTER TABLE basic_product ADD CONSTRAINT basic_product_fkey
 
 
 -- Table: basic_conversion
--- change: 24.08.2012
+-- change: 30.08.2012
 
 CREATE TABLE basic_conversion
 (
   id bigint NOT NULL,
-  active boolean DEFAULT true,
   CONSTRAINT basic_conversion_pkey PRIMARY KEY (id )
 );
 
@@ -48,7 +47,7 @@ CREATE TABLE basic_conversion
 
 
 -- Table: basic_conversionitem
--- change: 24.08.2012
+-- change: 30.08.2012
 
 CREATE TABLE basic_conversionitem
 (
@@ -59,12 +58,28 @@ CREATE TABLE basic_conversionitem
   unitto character varying(255),
   conversion_id bigint,
   product_id bigint,
-  active boolean DEFAULT true,
   CONSTRAINT basic_conversionitem_pkey PRIMARY KEY (id ),
   CONSTRAINT conversionitem_conversion_fkey FOREIGN KEY (conversion_id)
       REFERENCES basic_conversion (id) DEFERRABLE,
   CONSTRAINT conversionitem_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
+-- end
+
+
+-- Table: technologies_technologyoperationcomponent
+-- change: 30.08.2012
+
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN comment character varying(2048);
+
+-- end
+
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- change: 30.08.2012
+
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN comment character varying(2048);
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachment character varying(255);
 
 -- end

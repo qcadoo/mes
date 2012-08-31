@@ -183,7 +183,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         table.getDefaultCell().setBackgroundColor(null);
 
         String commentLabel = translationService.translate("workPlans.workPlan.report.operation.comment", locale);
-        String commentContent = operationComponent.getBelongsToField(OPERATION_LITERAL).getStringField("comment");
+        String commentContent = operationComponent.getStringField("comment");
 
         if (commentContent == null) {
             return;

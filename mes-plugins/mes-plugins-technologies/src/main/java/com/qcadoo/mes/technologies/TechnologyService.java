@@ -23,9 +23,13 @@
  */
 package com.qcadoo.mes.technologies;
 
+import static com.qcadoo.mes.technologies.constants.OperationFields.ATTACHMENT;
+import static com.qcadoo.mes.technologies.constants.OperationFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 
@@ -74,10 +78,6 @@ public class TechnologyService {
     private static final String L_FORM = "form";
 
     private static final String L_QUANTITY = "quantity";
-
-    private static final String L_UNIT_SAMPLING_NR = "unitSamplingNr";
-
-    private static final String L_QUALITY_CONTROL_TYPE = "qualityControlType";
 
     private static final String L_ENTITY_TYPE = "entityType";
 
@@ -134,6 +134,25 @@ public class TechnologyService {
 
     @Autowired
     private PluginAccessor pluginAccessor;
+
+    public void copyCommentAndAttachmentFromOperation(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
+        copyCommentAndAttachmentFromLowerInstance(technologyOperationComponent, OPERATION);
+    }
+
+    public void copyCommentAndAttachmentFromTechnologyOperationComponent(
+            final DataDefinition technologyInstanceOperationComponentDD, final Entity technologyInstanceOperationComponent) {
+        copyCommentAndAttachmentFromLowerInstance(technologyInstanceOperationComponent, TECHNOLOGY_OPERATION_COMPONENT);
+    }
+
+    private void copyCommentAndAttachmentFromLowerInstance(final Entity operationComponent, final String belongsToName) {
+        Entity operation = operationComponent.getBelongsToField(belongsToName);
+
+        if (operation != null) {
+            operationComponent.setField(COMMENT, operation.getStringField(COMMENT));
+            operationComponent.setField(ATTACHMENT, operation.getStringField(ATTACHMENT));
+        }
+    }
 
     public boolean isTechnologyUsedInActiveOrder(final Entity technology) {
         if (!ordersPluginIsEnabled()) {

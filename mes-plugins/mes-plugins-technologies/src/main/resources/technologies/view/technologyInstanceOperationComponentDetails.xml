@@ -36,7 +36,7 @@
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="1">
+				rows="4">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="operation" field="operation"
 						reference="operation"  defaultEnabled="false">
@@ -48,6 +48,12 @@
 						<option type="fieldCode" value="number" />
 						<option type="required" value="true" />
 					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="comment" field="comment" />
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="file" name="attachment" field="attachment" />
 				</layoutElement>
 			</component>
 			<option type="header" value="true" />

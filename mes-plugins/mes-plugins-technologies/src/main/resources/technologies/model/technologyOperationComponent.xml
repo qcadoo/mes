@@ -28,26 +28,30 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="nodeNumber" />
-
 		<belongsTo name="technology" model="technology" required="true" />
+		<belongsTo name="operation" model="operation" />
+		<belongsTo name="parent" model="technologyOperationComponent" />
 		<hasMany name="children" model="technologyOperationComponent"
 			joinField="parent" cascade="delete" copyable="true" />
-		<belongsTo name="parent" model="technologyOperationComponent" />
 		<enum name="entityType" values="operation,referenceTechnology"
 			required="true" />
-		<belongsTo name="operation" model="operation" />
+		<priority name="priority" scope="parent" />
+		<string name="nodeNumber" />
+		<belongsTo name="referenceTechnology" model="technology" />
+		<enum name="referenceMode" values="01reference,02copy" default="01reference"
+			persistent="false" />
+			
+		<string name="comment">
+			<validatesLength max="2048" />
+		</string>
+		<file name="attachment" />
+		<boolean name="areProductQuantitiesDivisible" default="false" />
+		<boolean name="isTjDivisible" default="false"/>
+			
 		<hasMany name="operationProductInComponents" model="operationProductInComponent"
 			joinField="operationComponent" cascade="delete" copyable="true" />
 		<hasMany name="operationProductOutComponents" model="operationProductOutComponent"
 			joinField="operationComponent" cascade="delete" copyable="true" />
-		<belongsTo name="referenceTechnology" model="technology" />
-		<enum name="referenceMode" values="01reference,02copy" default="01reference"
-			persistent="false" />
-		<priority name="priority" scope="parent" />
-		<file name="attachment" />
-		<boolean name="areProductQuantitiesDivisible" default="false" />
-		<boolean name="isTjDivisible" default="false"/>
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
@@ -58,5 +62,7 @@
 			method="invalidateIfBelongsToAcceptedTechnology" />
 		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="setParentIfRootNodeAlreadyExists" />
+		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
+			method="copyCommentAndAttachmentFromOperation" />
 	</hooks>
 </model>
