@@ -75,11 +75,11 @@ public class TransformationsDetailsViewHooks {
 
             List<FormComponent> formComponents = adl.getFormComponents();
 
-            for (FormComponent form : formComponents) {
-                if ((form.getEntityId() != null) && form.getEntity().isValid()) {
-                    form.setFormEnabled(false);
+            for (FormComponent formComponent : formComponents) {
+                if ((formComponent.getEntityId() != null) && formComponent.getEntity().isValid()) {
+                    formComponent.setFormEnabled(false);
                 } else {
-                    form.setFormEnabled(true);
+                    formComponent.setFormEnabled(true);
                 }
             }
         }

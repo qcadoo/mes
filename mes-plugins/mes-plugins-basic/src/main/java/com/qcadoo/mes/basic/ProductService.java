@@ -184,11 +184,11 @@ public final class ProductService {
 
             List<FormComponent> formComponents = adl.getFormComponents();
 
-            for (FormComponent form : formComponents) {
-                if (form.getEntityId() != null) {
-                    form.findFieldComponentByName("unitFrom").setEnabled(false);
+            for (FormComponent formComponent : formComponents) {
+                if (formComponent.getEntityId() != null) {
+                    formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(false);
                 } else {
-                    form.findFieldComponentByName("unitFrom").setEnabled(true);
+                    formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(true);
                 }
             }
         }
