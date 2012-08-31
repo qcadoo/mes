@@ -37,7 +37,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -46,9 +45,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class StaffDetailsHooksTest {
 
     private StaffDetailsHooks detailsHooks;
-
-    @Mock
-    private DataDefinitionService dataDefinitionService;
 
     @Mock
     private CurrencyService currencyService;
@@ -70,7 +66,6 @@ public class StaffDetailsHooksTest {
         detailsHooks = new StaffDetailsHooks();
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(detailsHooks, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(detailsHooks, "currencyService", currencyService);
 
     }

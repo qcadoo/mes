@@ -57,15 +57,13 @@ public class OrderDetailsHooksCNFM {
 
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-            if (order != null) {
-                Entity technology = order.getBelongsToField(TECHNOLOGY);
-
-                if ((technology != null) && (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(STATE)))) {
-                    viewCosts.setEnabled(true);
-                    viewCosts.requestUpdate(true);
-
-                    return;
-                }
+            if (order != null
+                    && order.getBelongsToField(TECHNOLOGY) != null
+                    && (TechnologyState.ACCEPTED.getStringValue().equals(order.getBelongsToField(TECHNOLOGY)
+                            .getStringField(STATE)))) {
+                viewCosts.setEnabled(true);
+                viewCosts.requestUpdate(true);
+                return;
             }
         }
         viewCosts.setEnabled(false);

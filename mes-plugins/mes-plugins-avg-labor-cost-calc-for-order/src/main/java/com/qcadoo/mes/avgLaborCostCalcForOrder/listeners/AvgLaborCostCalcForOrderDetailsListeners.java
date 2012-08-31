@@ -89,14 +89,13 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         Entity avgLaborCostCalcForOrder = avgLaborCostCalcForOrderDD.find().add(SearchRestrictions.belongsTo("order", order))
                 .uniqueResult();
         if (avgLaborCostCalcForOrder == null) {
-            avgLaborCostCalcForOrder = createAverageWithDataFromOrder(view, order, avgLaborCostCalcForOrderDD);
+            avgLaborCostCalcForOrder = createAverageWithDataFromOrder(order, avgLaborCostCalcForOrderDD);
         }
         avgLaborCostCalcForOrderForm.setEntity(avgLaborCostCalcForOrder);
         avgLaborCostCalcForOrderForm.performEvent(view, "refresh", args);
     }
 
-    private Entity createAverageWithDataFromOrder(final ViewDefinitionState view, final Entity order,
-            final DataDefinition avgLaborCostCalcForOrderDD) {
+    private Entity createAverageWithDataFromOrder(final Entity order, final DataDefinition avgLaborCostCalcForOrderDD) {
         Entity avgLaborCostCalcForOrder = avgLaborCostCalcForOrderDD.create();
         avgLaborCostCalcForOrder.setField(ORDER, order);
         avgLaborCostCalcForOrder.setField(START_DATE, order.getField(OrderFields.START_DATE));

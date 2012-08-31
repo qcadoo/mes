@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productCatalogNumbers.constants;
 
-public class ProductCatalogNumberFields {
+public final class ProductCatalogNumberFields {
 
     private ProductCatalogNumberFields() {
     }

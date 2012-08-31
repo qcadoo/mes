@@ -45,19 +45,20 @@ public class ChangeoverNormsServiceImpl implements ChangeoverNormsService {
         Entity matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
                 toTechnology, productionLine);
         if (matchingNorm == null) {
-            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
-                    null);
+            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
+                    toTechnology, null);
         }
         if (matchingNorm == null) {
             Entity fromTechnologyGroup = getTechnologyGroupForTechnology(fromTechnology);
             Entity toTechnologyGroup = getTechnologyGroupForTechnology(toTechnology);
-            if (fromTechnologyGroup != null && toTechnologyGroup != null) {
+            if (fromTechnologyGroup == null || toTechnologyGroup == null) {
+                return matchingNorm;
+            }
+            matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
+                    fromTechnologyGroup, toTechnologyGroup, productionLine);
+            if (matchingNorm == null) {
                 matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
-                        fromTechnologyGroup, toTechnologyGroup, productionLine);
-                if (matchingNorm == null) {
-                    matchingNorm = changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
-                            fromTechnologyGroup, toTechnologyGroup, null);
-                }
+                        fromTechnologyGroup, toTechnologyGroup, null);
             }
         }
         return matchingNorm;
