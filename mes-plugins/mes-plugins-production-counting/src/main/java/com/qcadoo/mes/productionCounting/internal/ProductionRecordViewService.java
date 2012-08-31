@@ -135,12 +135,12 @@ public class ProductionRecordViewService {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonActionItem copyButton = window.getRibbon().getGroupByName("actions").getItemByName("copy");
 
-        Entity tR = form.getEntity();
-        Entity order = tR.getBelongsToField("order");
+        Entity productionRecord = form.getEntity();
+        Entity order = productionRecord.getBelongsToField(L_ORDER);
         if (order == null) {
             return;
         }
-        String orderState = order.getStringField("state");
+        String orderState = order.getStringField(L_STATE);
         if (!OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyButton.setEnabled(false);
         } else {
@@ -162,7 +162,7 @@ public class ProductionRecordViewService {
         status.setFieldValue(record.getField(L_STATE));
         status.requestComponentUpdateState();
 
-        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
