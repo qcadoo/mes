@@ -50,6 +50,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -140,7 +141,7 @@ public final class ProductService {
     }
 
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (productForm.getEntityId() == null) {
             return;
@@ -168,6 +169,28 @@ public final class ProductService {
             conversionForProductUnit(product.getDataDefinition(), product);
 
             product.getDataDefinition().save(product);
+        }
+    }
+
+    public void disableUnitFromWhenFormIsSaved(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(CONVERSION_ITEMS);
+
+        if (productForm.getEntityId() == null) {
+            adl.setEnabled(false);
+        } else {
+            adl.setEnabled(true);
+
+            List<FormComponent> formComponents = adl.getFormComponents();
+
+            for (FormComponent form : formComponents) {
+                if (form.getEntityId() != null) {
+                    form.findFieldComponentByName("unitFrom").setEnabled(false);
+                } else {
+                    form.findFieldComponentByName("unitFrom").setEnabled(true);
+                }
+            }
         }
     }
 

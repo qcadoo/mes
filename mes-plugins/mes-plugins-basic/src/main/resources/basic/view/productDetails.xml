@@ -281,5 +281,7 @@
 			method="fillUnit" />
 		<beforeRender class="com.qcadoo.mes.basic.ProductService"
 			method="disableProductFormForExternalItems" />
+		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+			method="disableUnitFromWhenFormIsSaved" />
 	</hooks>
 </view>
