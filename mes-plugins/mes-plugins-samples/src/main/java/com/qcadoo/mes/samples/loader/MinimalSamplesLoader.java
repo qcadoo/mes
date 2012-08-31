@@ -73,7 +73,6 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "shifts", locale);
         readDataFromXML(dataset, "company", locale);
-        readDataFromXML(dataset, "conversion", locale);
         readDataFromXML(dataset, "conversionItem", locale);
 
         if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
@@ -97,9 +96,8 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
             addDictionaryItems(values);
         } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
             addDefaultProductionLine(values);
-        } else if ("conversion".equals(type)) {
-            addConversion();
         } else if ("conversionItem".equals(type)) {
+            addConversion();
             addConversionItem(values);
         }
     }
