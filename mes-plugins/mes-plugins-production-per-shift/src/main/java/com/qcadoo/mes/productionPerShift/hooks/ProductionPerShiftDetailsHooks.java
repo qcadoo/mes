@@ -79,9 +79,11 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class ProductionPerShiftDetailsHooks {
 
+    private static final String L_ORDER = "order";
+
     private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
 
-    private static final String PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
+    private static final String L_PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
 
     private static final Long MILLISECONDS_OF_ONE_DAY = 86400000L;
 
@@ -105,13 +107,13 @@ public class ProductionPerShiftDetailsHooks {
         if (setRootField.getFieldValue() != null && setRootField.getFieldValue().equals("1")) {
             return;
         }
-        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         EntityTree techInstOperComps = order.getTreeField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
         if (techInstOperComps.isEmpty()) {
             return;
         }
         Entity root = techInstOperComps.getRoot();
-        FieldComponent operation = (FieldComponent) view.getComponentByReference(PRODUCTION_PER_SHIFT_OPERATION);
+        FieldComponent operation = (FieldComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
 
         if (operation.getFieldValue() == null) {
             operation.setFieldValue(root.getId());
@@ -122,7 +124,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public void disablePlannedProgressTypeForPendingOrder(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent plannedProgressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
         if (plannedProgressType.getFieldValue().equals("") || isPlanned(plannedProgressType.getFieldValue())) {
             plannedProgressType.setFieldValue(PlannedProgressType.PLANNED.getStringValue());
@@ -143,7 +145,7 @@ public class ProductionPerShiftDetailsHooks {
             return;
         }
 
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         if (tioc == null) {
             return;
         }
@@ -158,7 +160,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void fillUnitFields(final ViewDefinitionState viewState) {
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
         Entity prodComp = technologyService.getMainOutputProductComponent(toc);
         Entity prod = prodComp.getBelongsToField("product");
@@ -178,7 +180,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public void setOrderStartDate(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference("orderPlannedStartDate");
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference("orderCorrectedStartDate");
         if (order.getField(OrderFields.DATE_FROM) != null) {
@@ -213,7 +215,7 @@ public class ProductionPerShiftDetailsHooks {
     public void fillProgressForDays(final ViewDefinitionState viewState) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         if (tioc == null) {
             progressForDaysADL.setFieldValue(null);
         } else {
@@ -242,7 +244,7 @@ public class ProductionPerShiftDetailsHooks {
         if (progressForDays.isEmpty()) {
             return true;
         }
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         Entity tiocFromPfdays = progressForDays.get(0).getDataDefinition().get(progressForDays.get(0).getId())
                 .getBelongsToField(ProgressForDayFields.TECH_INST_OPER_COMP);
         if (!tioc.getId().equals(tiocFromPfdays.getId())) {
@@ -271,7 +273,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void disabledComponents(final ViewDefinitionState viewState) {
-        Entity order = ((LookupComponent) viewState.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) viewState.getComponentByReference(L_ORDER)).getEntity();
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
                 .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         boolean shouldDisabled = helper.shouldHasCorrections(viewState)
@@ -316,10 +318,10 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public void checkIfWasItCorrected(final ViewDefinitionState view) {
-        Entity order = ((LookupComponent) view.getComponentByReference("order")).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         List<Entity> tiocWithCorrectedPlan = dataDefinitionService
                 .get(PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo("order", order))
+                .add(SearchRestrictions.belongsTo(L_ORDER, order))
                 .add(SearchRestrictions.eq(TechInstOperCompFields.HAS_CORRECTIONS, true)).list().getEntities();
         FieldComponent wasItCorrected = (FieldComponent) view.getComponentByReference("wasItCorrected");
         if (tiocWithCorrectedPlan.isEmpty()) {
@@ -365,7 +367,7 @@ public class ProductionPerShiftDetailsHooks {
                 if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift)) {
                     final String shiftName = shift.getStringField(ShiftFields.NAME);
                     final String workDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
-                            .format(getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay));
+                            .format(getDateAfterStartOrderForProgress(tioc.getBelongsToField(L_ORDER), progressForDay));
                     formComponent.addMessage("productionPerShift.progressForDay.shiftDoesNotWork", MessageType.INFO, shiftName,
                             workDate);
                 }
@@ -378,7 +380,7 @@ public class ProductionPerShiftDetailsHooks {
         boolean works = false;
         if (progressForDay.equals(progressForDays.get(0))) {
             Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(getDateAfterStartOrderForProgress(
-                    tioc.getBelongsToField("order"), progressForDay));
+                    tioc.getBelongsToField(L_ORDER), progressForDay));
             if (shiftFromDay == null) {
                 works = false;
             } else if (shift.getId().equals(shiftFromDay.getId())) {
@@ -386,7 +388,7 @@ public class ProductionPerShiftDetailsHooks {
             }
         } else {
             works = shiftsService.checkIfShiftWorkAtDate(
-                    getDateAfterStartOrderForProgress(tioc.getBelongsToField("order"), progressForDay), shift);
+                    getDateAfterStartOrderForProgress(tioc.getBelongsToField(L_ORDER), progressForDay), shift);
         }
         return works;
     }
