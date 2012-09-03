@@ -39,7 +39,30 @@
 									#{form}.performEvent('showProductionCounting', []);
 								}
 						}
-					});		
+					});	
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+								return;
+							} else {
+								this.enable();
+							}
+						var externalNumber = #{externalNumber}.getValue().content.value;
+						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
+							if (externalNumber == ""){
+								this.disable();
+							} if(!externalSynchronized){
+								this.disable();
+							}
+							else {
+								this.enable();
+							}
+						}
+					});				
 					
 					#{typeOfProductionRecording}.addOnChangeListener({
 						onSetValue: function(value) {
