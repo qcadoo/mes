@@ -19,7 +19,7 @@
 			<option type="column" name="companyNumber" fields="company"
 				link="true" expression="#company['number']" />
 			<option type="column" name="companyName" fields="company"
-				link="true" expression="#company['number']" />
+				link="true" expression="#company['name']" />
 			<option type="column" name="catalogNumber" fields="catalogNumber"
 				link="true" />
 			<option type="order" column="productNumber" direction="asc" />

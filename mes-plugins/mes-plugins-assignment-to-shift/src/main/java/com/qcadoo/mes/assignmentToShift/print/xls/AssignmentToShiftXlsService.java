@@ -32,7 +32,6 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReport
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.TITLE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.CREATE_USER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.UPDATE_DATE;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.PLACE;
 import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
@@ -146,7 +145,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
 
             if (productionlines != null) {
-                fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines);
+                fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines,
+                        getDictionaryItemWithProductionOnLine());
                 rowNum += productionlines.size();
             }
             for (Entity dictionaryItem : occupationTypesWithoutTechnicalCode) {
@@ -160,7 +160,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private void fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-            final List<DateTime> days, final List<Entity> productionLines) {
+            final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (productionLines != null)) {
             for (Entity productionLine : productionLines) {
                 HSSFRow row = sheet.createRow(rowNum);
@@ -182,7 +182,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     }
 
                     List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
-                            WORK_ON_LINE.getStringValue(), productionLine);
+                            dictionaryItem.getStringField(NAME), productionLine);
 
                     String staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
 
@@ -215,7 +215,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 if (assignmentToShift == null) {
                     continue;
                 }
-
                 List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                         occupationType.getStringField(NAME), null);
 
@@ -244,6 +243,15 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
                 .add(SearchRestrictions.isNull("technicalCode")).list().getEntities();
+    }
+
+    private Entity getDictionaryItemWithProductionOnLine() {
+        Entity occupationTypeDictionary = dataDefinitionService
+                .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
+                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+        return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
+                .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
+                .add(SearchRestrictions.eq("technicalCode", OccupationType.WORK_ON_LINE.getStringValue())).uniqueResult();
     }
 
     private Entity getDictionaryItemWithOtherCase() {

@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -67,12 +68,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class OrderDetailsHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OrderStateService orderStateService;
 
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
@@ -142,5 +150,32 @@ public class OrderDetailsHooks {
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
                 Lists.newArrayList(SUCCESSFUL.getStringValue()));
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
+    }
+
+    public void disabledRibbonWhenOrderIsSynchronized(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = window.getRibbon();
+        List<RibbonGroup> ribbonGroups = ribbon.getGroups();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Long orderId = form.getEntityId();
+        if (orderId == null) {
+            return;
+        }
+        if (orderStateService.isSynchronized(form.getEntity().getDataDefinition().get(orderId))) {
+            return;
+        }
+        for (RibbonGroup ribbonGroup : ribbonGroups) {
+            for (RibbonActionItem actionItem : ribbonGroup.getItems()) {
+                actionItem.setEnabled(false);
+                actionItem.requestUpdate(true);
+            }
+        }
+        RibbonActionItem refresh = ribbon.getGroupByName("actions").getItemByName("refresh");
+        RibbonActionItem back = ribbon.getGroupByName("navigation").getItemByName("back");
+        refresh.setEnabled(true);
+        back.setEnabled(true);
+        refresh.requestUpdate(true);
+        back.requestUpdate(true);
+        form.setFormEnabled(false);
     }
 }

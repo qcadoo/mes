@@ -585,5 +585,7 @@
 			method="changedEnabledFieldForSpecificOrderState" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="filterStateChangeHistory" />
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+			method="disabledRibbonWhenOrderIsSynchronized" />
 	</hooks>
 </view>

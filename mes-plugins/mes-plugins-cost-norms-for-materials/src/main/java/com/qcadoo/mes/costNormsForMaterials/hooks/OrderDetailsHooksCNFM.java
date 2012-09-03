@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +46,9 @@ public class OrderDetailsHooksCNFM {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private OrderStateService orderStateService;
+
     public void updateViewCostsButtonState(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
 
@@ -57,10 +61,8 @@ public class OrderDetailsHooksCNFM {
 
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-            if (order != null
-                    && order.getBelongsToField(TECHNOLOGY) != null
-                    && (TechnologyState.ACCEPTED.getStringValue().equals(order.getBelongsToField(TECHNOLOGY)
-                            .getStringField(STATE)))) {
+            if (order.getBelongsToField(TECHNOLOGY) != null && isTechnologyAccepted(order)
+                    && orderStateService.isSynchronized(order)) {
                 viewCosts.setEnabled(true);
                 viewCosts.requestUpdate(true);
                 return;
@@ -68,5 +70,9 @@ public class OrderDetailsHooksCNFM {
         }
         viewCosts.setEnabled(false);
         viewCosts.requestUpdate(true);
+    }
+
+    private boolean isTechnologyAccepted(final Entity order) {
+        return TechnologyState.ACCEPTED.getStringValue().equals(order.getBelongsToField(TECHNOLOGY).getStringField(STATE));
     }
 }
