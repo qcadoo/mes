@@ -4,19 +4,21 @@ import java.math.BigDecimal;
 
 public class ConversionTree {
 
-    public String unitTo;
+    private String unitTo;
 
-    public String unitFrom;
+    private String unitFrom;
 
-    public BigDecimal quantityFrom;
+    private BigDecimal quantityFrom;
 
-    public BigDecimal quantityTo;
+    private BigDecimal quantityTo;
+
+    private ConversionTree parent;
 
     public String getUnitTo() {
         return unitTo;
     }
 
-    public void setUnitTo(String unitTo) {
+    public void setUnitTo(final String unitTo) {
         this.unitTo = unitTo;
     }
 
@@ -24,7 +26,7 @@ public class ConversionTree {
         return unitFrom;
     }
 
-    public void setUnitFrom(String unitFrom) {
+    public void setUnitFrom(final String unitFrom) {
         this.unitFrom = unitFrom;
     }
 
@@ -32,7 +34,7 @@ public class ConversionTree {
         return quantityFrom;
     }
 
-    public void setQuantityFrom(BigDecimal quantityFrom) {
+    public void setQuantityFrom(final BigDecimal quantityFrom) {
         this.quantityFrom = quantityFrom;
     }
 
@@ -40,7 +42,7 @@ public class ConversionTree {
         return quantityTo;
     }
 
-    public void setQuantityTo(BigDecimal quantityTo) {
+    public void setQuantityTo(final BigDecimal quantityTo) {
         this.quantityTo = quantityTo;
     }
 
@@ -48,12 +50,8 @@ public class ConversionTree {
         return parent;
     }
 
-    public void setParent(ConversionTree parent) {
+    public void setParent(final ConversionTree parent) {
         this.parent = parent;
     }
-
-    public ConversionTree parent;
-
-    // public ConversionTree child;
 
 }

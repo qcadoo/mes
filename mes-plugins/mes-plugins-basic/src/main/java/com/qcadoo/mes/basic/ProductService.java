@@ -57,11 +57,11 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
-public final class ProductService {
+public class ProductService {
 
     private static final String L_FORM = "form";
 
-    private static final String SUBSTITUTE_FIELD = "substitute";
+    private static final String L_SUBSTITUTE_FIELD = "substitute";
 
     @Autowired
     private ConversionService conversionService;
@@ -100,10 +100,10 @@ public final class ProductService {
             conversionService.calculateTree(conversionTreeList.get(i), productUnit);
 
             Entity conversionItem = conversionDD.create();
-            conversionItem.setField(QUANTITY_FROM, conversionTreeList.get(i).quantityFrom);
-            conversionItem.setField(QUANTITY_TO, conversionTreeList.get(i).quantityTo);
-            conversionItem.setField(UNIT_FROM, conversionTreeList.get(i).unitFrom);
-            conversionItem.setField(UNIT_TO, conversionTreeList.get(i).unitTo);
+            conversionItem.setField(QUANTITY_FROM, conversionTreeList.get(i).getQuantityFrom());
+            conversionItem.setField(QUANTITY_TO, conversionTreeList.get(i).getQuantityTo());
+            conversionItem.setField(UNIT_FROM, conversionTreeList.get(i).getUnitFrom());
+            conversionItem.setField(UNIT_TO, conversionTreeList.get(i).getUnitTo());
             conversionListForProduct.add(conversionItem);
 
         }
@@ -112,7 +112,7 @@ public final class ProductService {
 
     }
 
-    public final void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
+    public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
         String productUnit = product.getStringField(UNIT);
 
         if (hasUnitChanged(product, productUnit)) {
@@ -200,7 +200,7 @@ public final class ProductService {
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity substitute = entity.getBelongsToField(SUBSTITUTE_FIELD);
+        Entity substitute = entity.getBelongsToField(L_SUBSTITUTE_FIELD);
 
         if (substitute == null || substitute.getId() == null) {
             return true;
@@ -211,7 +211,7 @@ public final class ProductService {
 
         if (substituteEntity == null) {
             entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField(SUBSTITUTE_FIELD, null);
+            entity.setField(L_SUBSTITUTE_FIELD, null);
             return false;
         } else {
             return true;
@@ -220,14 +220,14 @@ public final class ProductService {
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
         Entity product = entity.getBelongsToField(PRODUCT);
-        Entity substitute = entity.getBelongsToField(SUBSTITUTE_FIELD);
+        Entity substitute = entity.getBelongsToField(L_SUBSTITUTE_FIELD);
 
         if (substitute == null || product == null) {
             return false;
         }
 
         SearchResult searchResult = dataDefinition.find().add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(SUBSTITUTE_FIELD, substitute)).list();
+                .add(SearchRestrictions.belongsTo(L_SUBSTITUTE_FIELD, substitute)).list();
 
         if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
             entity.addError(dataDefinition.getField(PRODUCT), "basic.validate.global.error.substituteComponentDuplicated");

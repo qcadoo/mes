@@ -54,7 +54,6 @@ public class ConversionService {
 
     @Transactional
     public Long getParameterId() {
-
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_CONVERSION);
         Entity conversion = dataDefinition.find().setMaxResults(1).uniqueResult();
@@ -71,7 +70,7 @@ public class ConversionService {
     }
 
     public void getUnitConversionTree(final DataDefinition conversionDD, String unit, ConversionTree parent,
-            List<ConversionTree> conversionTreeList) {
+            final List<ConversionTree> conversionTreeList) {
         int y = 0;
 
         while (y <= conversionTreeList.size()) {
@@ -128,9 +127,8 @@ public class ConversionService {
 
     }
 
-    public void addConversionToTree(BigDecimal quntityFrom, BigDecimal quntityTo, String unitFrom, String unitTo,
-            List<Entity> list, int i, ConversionTree parent, List<ConversionTree> conversionTreeList) {
-
+    public void addConversionToTree(final BigDecimal quntityFrom, final BigDecimal quntityTo, final String unitFrom,
+            final String unitTo, List<Entity> list, int i, ConversionTree parent, List<ConversionTree> conversionTreeList) {
         ConversionTree ct = new ConversionTree();
         ct.setQuantityFrom(quntityFrom);
         ct.setQuantityTo(quntityTo);
@@ -147,19 +145,18 @@ public class ConversionService {
 
     }
 
-    public void calculateTree(ConversionTree node, String unit) {
-
-        if (!node.unitFrom.equals(unit) && node.getParent().getUnitFrom() != null) {
+    public void calculateTree(final ConversionTree node, final String unit) {
+        if (!node.getUnitFrom().equals(unit) && node.getParent().getUnitFrom() != null) {
             node.setQuantityTo(node.getQuantityTo().multiply(node.getParent().getQuantityTo(), numberService.getMathContext()));
             node.setUnitFrom(node.getParent().getUnitFrom());
             calculateTree(node.getParent(), unit);
         }
     }
 
-    public boolean checkList(List<ConversionTree> list, String unit) {
-        if (!list.isEmpty()) {
-            for (int j = 0; j < list.size(); j++) {
-                if (unit.equals(list.get(j).getUnitTo())) {
+    public boolean checkList(final List<ConversionTree> conversionTreeList, final String unit) {
+        if (!conversionTreeList.isEmpty()) {
+            for (int j = 0; j < conversionTreeList.size(); j++) {
+                if (unit.equals(conversionTreeList.get(j).getUnitTo())) {
                     return false;
                 }
             }
