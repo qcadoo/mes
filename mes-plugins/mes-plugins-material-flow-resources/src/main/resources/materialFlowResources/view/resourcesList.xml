@@ -37,18 +37,17 @@
 
 		<component type="grid" name="resourceGrid" reference="grid">
 			<option type="column" name="location" fields="location"
-				expression="(#location == null) ? '' : #location['name']" />
+				expression="#location['name']" />
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? '' : #product['name']" />
+				expression="#product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="price" fields="price" />
-			<option type="column" name="batch" fields="batch" />
 			<option type="column" name="time" fields="time" />
 
 			<option type="order" column="product" direction="asc" />
 
-			<option type="searchable" value="location,product,quantity,price,batch,time" />
-			<option type="orderable" value="location,product,quantity,price,batch,time" />
+			<option type="searchable" value="location,product,quantity,price,time" />
+			<option type="orderable" value="location,product,quantity,price,time" />
 
 			<option type="correspondingView" value="materialFlowResources/resourceDetails" />
 			<option type="correspondingComponent" value="form" />

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialFlowMultitransfers.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
@@ -52,6 +53,7 @@ import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -143,6 +145,8 @@ public class MultitransferListeners {
                 createTransfer(type, time, locationFrom, locationTo, staff, product, quantity);
             }
         }
+
+        state.performEvent(view, "refresh", new String[0]);
 
         view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.generate.success",
                 MessageType.SUCCESS);
@@ -309,9 +313,9 @@ public class MultitransferListeners {
     private List<Entity> getTransferTemplates(final Entity locationFrom, final Entity locationTo) {
         return dataDefinitionService
                 .get(MaterialFlowMultitransfersConstants.PLUGIN_IDENTIFIER,
-                        MaterialFlowMultitransfersConstants.MODEL_TRANSFER_TEMPLATE).find()
+                        MaterialFlowMultitransfersConstants.MODEL_TRANSFER_TEMPLATE).find().createAlias(PRODUCT, PRODUCT)
                 .add(SearchRestrictions.belongsTo(LOCATION_FROM, locationFrom))
-                .add(SearchRestrictions.belongsTo(LOCATION_TO, locationTo)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(LOCATION_TO, locationTo)).addOrder(SearchOrders.asc(PRODUCT + "." + NAME))
+                .list().getEntities();
     }
-
 }

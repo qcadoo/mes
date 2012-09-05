@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
@@ -234,7 +235,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     private List<Entity> getResourcesForLocation(final Entity location) {
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                .add(SearchRestrictions.belongsTo(LOCATION, location)).list().getEntities();
+                .createAlias(PRODUCT, PRODUCT).add(SearchRestrictions.belongsTo(LOCATION, location))
+                .addOrder(SearchOrders.asc(PRODUCT + "." + NAME)).list().getEntities();
 
         return resources;
     }
