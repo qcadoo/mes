@@ -84,33 +84,13 @@ public class MultitransferListeners {
     @Autowired
     private TimeConverterService timeConverterService;
 
-    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        fillUnitsInADL(view, PRODUCTS);
-    }
-
-    private void fillUnitsInADL(final ViewDefinitionState view, final String adlName) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
-        List<FormComponent> formComponents = adlc.getFormComponents();
-
-        for (FormComponent formComponent : formComponents) {
-            Entity productQuantity = formComponent.getEntity();
-            Entity product = productQuantity.getBelongsToField(PRODUCT);
-
-            if (product == null) {
-                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(null);
-            } else {
-                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(product.getStringField(UNIT));
-            }
-
-            formComponent.setEntity(productQuantity);
-        }
-    }
-
     @Transactional
     public void createMultitransfer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (!isMultitransferFormValid(view)) {
             return;
         }
+
+        FormComponent multitransferForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
         FieldComponent timeField = (FieldComponent) view.getComponentByReference(TIME);
@@ -132,8 +112,6 @@ public class MultitransferListeners {
 
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
 
-        adlc.requestComponentUpdateState();
-
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         for (FormComponent formComponent : formComponents) {
@@ -146,53 +124,13 @@ public class MultitransferListeners {
             }
         }
 
+        adlc.setFieldValue(null);
+
+        multitransferForm.setEntity(multitransferForm.getEntity());
+
         state.performEvent(view, "refresh", new String[0]);
 
         view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.generate.success",
-                MessageType.SUCCESS);
-    }
-
-    public void getFromTemplates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        getFromTemplates(view);
-    }
-
-    public void getFromTemplates(final ViewDefinitionState view) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
-
-        FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
-        FieldComponent locationToField = (FieldComponent) view.getComponentByReference(LOCATION_TO);
-
-        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
-        Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
-
-        List<Entity> templates = getTransferTemplates(locationFrom, locationTo);
-
-        if (templates.isEmpty()) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
-                    MessageType.INFO);
-            return;
-        }
-
-        List<Entity> productQuantities = Lists.newArrayList();
-
-        DataDefinition productQuantityDD = dataDefinitionService.get(MaterialFlowMultitransfersConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowMultitransfersConstants.MODEL_PRODUCT_QUANTITY);
-
-        for (Entity template : templates) {
-            Entity product = template.getBelongsToField(PRODUCT);
-
-            Entity productQuantity = productQuantityDD.create();
-
-            productQuantity.setField(PRODUCT, product);
-
-            productQuantities.add(productQuantity);
-        }
-
-        adlc.setFieldValue(productQuantities);
-
-        fillUnitsInADL(view, PRODUCTS);
-
-        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
                 MessageType.SUCCESS);
     }
 
@@ -310,6 +248,72 @@ public class MultitransferListeners {
         checkArgument(transferDD.save(transfer).isValid(), "invalid transfer id =" + transfer.getId());
     }
 
+    public void fillUnitsInADL(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        fillUnitsInADL(view, PRODUCTS);
+    }
+
+    private void fillUnitsInADL(final ViewDefinitionState view, final String adlName) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlName);
+        List<FormComponent> formComponents = adlc.getFormComponents();
+
+        for (FormComponent formComponent : formComponents) {
+            Entity productQuantity = formComponent.getEntity();
+            Entity product = productQuantity.getBelongsToField(PRODUCT);
+
+            if (product == null) {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(null);
+            } else {
+                formComponent.findFieldComponentByName(L_UNIT).setFieldValue(product.getStringField(UNIT));
+            }
+
+            formComponent.setEntity(productQuantity);
+        }
+    }
+
+    public void getFromTemplates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        getFromTemplates(view);
+    }
+
+    public void getFromTemplates(final ViewDefinitionState view) {
+        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(PRODUCTS);
+
+        FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
+        FieldComponent locationToField = (FieldComponent) view.getComponentByReference(LOCATION_TO);
+
+        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
+        Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
+
+        List<Entity> templates = getTransferTemplates(locationFrom, locationTo);
+
+        if (templates.isEmpty()) {
+            view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
+                    MessageType.INFO);
+            return;
+        }
+
+        List<Entity> productQuantities = Lists.newArrayList();
+
+        DataDefinition productQuantityDD = dataDefinitionService.get(MaterialFlowMultitransfersConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowMultitransfersConstants.MODEL_PRODUCT_QUANTITY);
+
+        for (Entity template : templates) {
+            Entity product = template.getBelongsToField(PRODUCT);
+
+            Entity productQuantity = productQuantityDD.create();
+
+            productQuantity.setField(PRODUCT, product);
+
+            productQuantities.add(productQuantity);
+        }
+
+        adlc.setFieldValue(productQuantities);
+
+        fillUnitsInADL(view, PRODUCTS);
+
+        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
+                MessageType.SUCCESS);
+    }
+
     private List<Entity> getTransferTemplates(final Entity locationFrom, final Entity locationTo) {
         return dataDefinitionService
                 .get(MaterialFlowMultitransfersConstants.PLUGIN_IDENTIFIER,
@@ -318,4 +322,5 @@ public class MultitransferListeners {
                 .add(SearchRestrictions.belongsTo(LOCATION_TO, locationTo)).addOrder(SearchOrders.asc(PRODUCT + "." + NAME))
                 .list().getEntities();
     }
+
 }
