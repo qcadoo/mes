@@ -161,11 +161,11 @@
 						<component type="grid" name="plannedStaffAssignment"
 							reference="plannedStaffAssignment" source="#{form}.plannedStaffAssignmentToShifts">
 							<option type="column" name="workerNumber" fields="worker"
-								expression="#worker['number']" link="true" />
+								expression="#worker['number']"  />
 							<option type="column" name="workerName" fields="worker"
-								expression="#worker['name']" link="true" />
+								expression="#worker['name']" />
 							<option type="column" name="workerSurname" fields="worker"
-								expression="#worker['surname']" link="true" />
+								expression="#worker['surname']" />
 							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
 							<option type="order" column="workerNumber" direction="desc" />
 							<option type="searchable" value="workerNumber,workerName" />
@@ -173,18 +173,18 @@
 							<option type="paginable" value="false" />
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
-							<option type="editable" value="false"/>s
+							<option type="editable" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="grid" name="correctedStaffAssignment"
 							reference="correctedStaffAssignment" source="#{form}.correctedStaffAssignmentToShifts" >
 							<option type="column" name="workerNumber" fields="worker"
-								expression="#worker['number']" link="true" />
+								expression="#worker['number']" />
 							<option type="column" name="workerName" fields="worker"
-								expression="#worker['name']" link="true" />
+								expression="#worker['name']"  />
 							<option type="column" name="workerSurname" fields="worker"
-								expression="#worker['surname']" link="true" />
+								expression="#worker['surname']" />
 							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
 							<option type="order" column="workerNumber" direction="desc" />
 							<option type="searchable" value="workerNumber,workerName" />
@@ -192,7 +192,7 @@
 							<option type="paginable" value="false" />
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
-							<option type="editable" value="false"/>
+							<option type="editable" value="false" />
 						</component>
 					</layoutElement>
 				</component>

@@ -6,7 +6,7 @@
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy" />
+			<template name="standardFormTemplate" includeItems="actions.save,actions.refresh" />
 			<group name="dictionary">
 				<bigButton name="unitsDictionary" icon="calendarIcon24.png"
 					action="">

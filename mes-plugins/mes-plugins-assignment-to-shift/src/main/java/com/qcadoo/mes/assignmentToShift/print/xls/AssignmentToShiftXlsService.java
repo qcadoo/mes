@@ -178,6 +178,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
                     if (assignmentToShift == null) {
+                        columnNumber += 3;
                         continue;
                     }
 
