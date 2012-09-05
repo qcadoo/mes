@@ -26,10 +26,6 @@ package com.qcadoo.mes.basic;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_CONVERSION_ITEM;
 import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.basic.constants.ConversionItemFields.PRODUCT;
-import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionItemFields.QUANTITY_TO;
-import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_FROM;
-import static com.qcadoo.mes.basic.constants.ConversionItemFields.UNIT_TO;
 import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -62,6 +58,16 @@ public class ProductService {
     private static final String L_FORM = "form";
 
     private static final String L_SUBSTITUTE_FIELD = "substitute";
+
+    private static final String PRODUCT_FIELD = "product";
+
+    private static final String UNIT_FROM = "unitFrom";
+
+    private static final String UNIT_TO = "unitTo";
+
+    private static final String QUANTITY_FROM = "quantityFrom";
+
+    private static final String QUANTITY_TO = "quantityTo";
 
     @Autowired
     private ConversionService conversionService;
