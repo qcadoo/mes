@@ -386,7 +386,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
             operation.setField("machineHourlyCost", values.get("machinehourlycost"));
-            operation.setField(L_LABOR_HOURLY_COST, values.get(L_LABOR_HOURLY_COST));
+            operation.setField(L_LABOR_HOURLY_COST, values.get("laborhourlycost"));
             operation.setField("numberOfOperations", values.get("numberofoperations"));
         }
 
