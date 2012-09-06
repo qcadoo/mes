@@ -50,7 +50,7 @@
 			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS" method="copySubstractingFieldFromLowerInstance"/>
 		</model:model-hook>
 		<model:model-hook model="technologyInstanceOperationComponent" plugin="technologies">
-			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTSTest" method="copySubstractingFieldFromLowerInstance"/>
+			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS" method="copySubstractingFieldFromLowerInstance"/>
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
