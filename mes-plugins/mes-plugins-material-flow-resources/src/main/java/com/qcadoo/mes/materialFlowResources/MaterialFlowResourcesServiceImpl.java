@@ -37,7 +37,7 @@ import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.P
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -211,7 +211,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Entity, BigDecimal> groupResourcesByProduct(final Entity location) {
-        Map<Entity, BigDecimal> productsAndQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> productsAndQuantities = new LinkedHashMap<Entity, BigDecimal>();
 
         List<Entity> resources = getResourcesForLocation(location);
 
