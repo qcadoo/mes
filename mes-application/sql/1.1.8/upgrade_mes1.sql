@@ -83,3 +83,21 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN comment
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachment character varying(255);
 
 -- end
+
+-- Table: technologies_operation
+-- change: 6.09.2012
+ALTER TABLE technologies_operation ADD COLUMN issubcontracting boolean;
+ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT false;
+-- end
+
+-- Table: technologies_technologyoperationcomponent
+-- change: 6.09.2012
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN issubcontracting boolean;
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
+-- end
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- change: 6.09.2012
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN issubcontracting boolean;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
+-- end
