@@ -112,7 +112,7 @@
 					<component type="lookup" name="parent" field="#{form}.parent"
 						reference="parent">
 						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="isParentFamily" fields="entityType"
+						<option type="column" name="isParentFamily" 
 							 expression="(#entityType.equals('02productsFamily')) ? '@qcadooView.true' : '@qcadooView.false'" />
 						<option type="column" name="parent" fields="parent"
 							expression="(#parent == null) ? '' : #parent['number']" />
