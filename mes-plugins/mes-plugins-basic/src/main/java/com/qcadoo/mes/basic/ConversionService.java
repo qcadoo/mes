@@ -124,6 +124,53 @@ public class ConversionService {
 
             }
         }
+    }
+
+    /**
+     * 
+     * @param product
+     *            Entity of product
+     * @param unitFrom
+     *            unitFrom
+     * @param unitTo
+     *            unitTo
+     * 
+     * @return BigDecimal convert result if the converter exist in product
+     */
+    public BigDecimal convertAnyToAny(Entity product, String unitFrom, String unitTo, BigDecimal quantity) {
+
+        Entity resultLeftToRight = searchConversion(product, unitFrom, unitTo);
+
+        if (resultLeftToRight != null) {
+
+            return quantity.multiply(resultLeftToRight.getDecimalField(QUANTITY_TO), numberService.getMathContext());
+
+        }
+
+        Entity resultRightToLeft = searchConversion(product, unitTo, unitFrom);
+
+        if (resultRightToLeft != null) {
+
+            BigDecimal tmp = resultRightToLeft.getDecimalField(QUANTITY_FROM).divide(
+                    resultRightToLeft.getDecimalField(QUANTITY_TO));
+
+            return quantity.multiply(tmp, numberService.getMathContext());
+        }
+
+        return null;
+
+    }
+
+    private Entity searchConversion(Entity product, String unitFrom, String unitTo) {
+
+        DataDefinition convertDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_CONVERSION_ITEM);
+
+        Entity result = convertDD.find().add(SearchRestrictions.eq(UNIT_FROM, unitFrom))
+                .add(SearchRestrictions.eq(UNIT_TO, unitTo)).add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1)
+                .uniqueResult();
+
+        return result;
 
     }
 

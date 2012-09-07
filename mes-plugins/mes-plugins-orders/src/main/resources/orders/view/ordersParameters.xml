@@ -70,6 +70,9 @@
 				
 				<listener event="redirectToDeviationsDictionary"
 					class="com.qcadoo.mes.orders.listeners.ParametersListenersO" method="redirectToDeviationsDictionary" />
+					
+				<option type="header" value="true" />
+				<option type="expression" value="" />
 			</component>
 		</windowTab>
 		<windowTab name="deviationsDocumentationTab" reference="deviationsDocumentationTab">

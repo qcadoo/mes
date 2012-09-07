@@ -112,12 +112,10 @@
 					<component type="lookup" name="parent" field="#{form}.parent"
 						reference="parent">
 						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="isParentFamily"
-							expression="#family['parent'] ==null ? '@qcadooView.true' :'qcadooView.false'" />
-						<option type="column" name="isFamily"
-							expression="#family['entityType'] == '01particularProduct' ? '@qcadooView.false' :'qcadooView.true' " />
+						<option type="column" name="isParentFamily" 
+							 expression="(#entityType.equals('02productsFamily')) ? '@qcadooView.true' : '@qcadooView.false'" />
 						<option type="column" name="parent" fields="parent"
-							expression="#parent['number']" />
+							expression="(#parent == null) ? '' : #parent['number']" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"

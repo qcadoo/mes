@@ -57,6 +57,7 @@
     	<module>mes-plugins-cost-norms-for-operation-in-order</module>
     	<module>mes-plugins-avg-labor-cost-calc-for-order</module>
     	<module>mes-plugins-product-catalog-numbers</module>
+    <module>mes-plugins-tech-subcontracting</module>
   </modules>
 
 

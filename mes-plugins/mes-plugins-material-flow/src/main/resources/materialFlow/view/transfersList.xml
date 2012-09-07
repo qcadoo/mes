@@ -41,14 +41,14 @@
 			<option type="column" name="type" fields="type" />
 			<option type="column" name="time" fields="time" />
 			<option type="column" name="locationFrom" fields="locationFrom"
-				expression="(#locationFrom == null) ? '' : #locationFrom['name']" />
+				expression="#locationFrom['name']" />
 			<option type="column" name="locationTo" fields="locationTo"
-				expression="(#locationTo == null) ? '' : #locationTo['name']" />
+				expression="#locationTo['name']" />
 			<option type="column" name="product" fields="product"
-				expression="(#product == null) ? '' : #product['name']" />
+				expression="#product['name']" />
 			<option type="column" name="quantity" fields="quantity" />
 			<option type="column" name="staff" fields="staff"
-				expression="(#staff == null) ? '' : #staff['name']" />
+				expression="#staff['name']" />
 			
 			<option type="order" column="number" direction="asc" />
 			

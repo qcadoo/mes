@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="techSubcontracting" version="1.1.8-SNAPSHOT"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>MES - Tech subcontracting</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>technologies</plugin>
+			<version>[1.1.8</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model-field model="operation" plugin="technologies">
+			<model:boolean name="isSubcontracting" default="false" />
+		</model:model-field>
+		<model:model-field model="technologyOperationComponent" plugin="technologies">
+			<model:boolean name="isSubcontracting" default="false" />
+		</model:model-field>
+		<model:model-field model="technologyInstanceOperationComponent" plugin="technologies">
+			<model:boolean name="isSubcontracting" default="false" />
+		</model:model-field>
+
+		<model:model-hook model="technologyOperationComponent" plugin="technologies">
+			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS" method="copySubstractingFieldFromLowerInstance"/>
+		</model:model-hook>
+		<model:model-hook model="technologyInstanceOperationComponent" plugin="technologies">
+			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS" method="copySubstractingFieldFromLowerInstance"/>
+		</model:model-hook>
+
+		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
+		<view:view-tab
+			resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
+		<view:view-tab
+			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
+
+
+
+	</modules>
+
+</plugin>
