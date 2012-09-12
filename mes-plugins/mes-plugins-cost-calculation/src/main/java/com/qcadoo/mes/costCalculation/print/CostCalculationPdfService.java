@@ -33,6 +33,7 @@ import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.QUA
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TECHNOLOGY;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TOTAL_COSTS;
 import static com.qcadoo.mes.costCalculation.constants.CostCalculationFields.TOTAL_COST_PER_UNIT;
+import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -62,6 +63,7 @@ import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -401,7 +403,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                givenQty, true);
+                givenQty, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
 
         for (Entry<Entity, BigDecimal> productWithNeededQuantity : neededProductQuantities.entrySet()) {
@@ -475,7 +477,8 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         BigDecimal givenQty = (BigDecimal) costCalculation.getField(QUANTITY);
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty, true);
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(technology, givenQty,
+                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
 

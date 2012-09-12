@@ -28,6 +28,7 @@ import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperP
 import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.COST_FOR_NUMBER;
 import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST;
 import static com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields.NOMINAL_COST;
+import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -117,7 +118,7 @@ public class CostNormsForMaterialsService {
                 BigDecimal giventQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
                 Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                        giventQty, true);
+                        giventQty, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
                 return productQuantities;
             } catch (IllegalStateException e) {

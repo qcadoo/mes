@@ -40,6 +40,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
@@ -93,25 +94,25 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQty,
-            final boolean onlyComponents) {
+            final MrpAlgorithm mrpAlgorithm) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         fillMapWithQuantitiesForTechnology(technology, givenQty, productComponentQuantities, nonComponents, operationMultipliers);
 
-        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
+        return getProducts(productComponentQuantities, nonComponents, mrpAlgorithm, IN_PRODUCT);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents) {
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         getAllQuantitiesForOrders(orders, productComponentQuantities, operationMultipliers, nonComponents);
 
-        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
+        return getProducts(productComponentQuantities, nonComponents, mrpAlgorithm, IN_PRODUCT);
     }
 
     @Override
@@ -122,23 +123,23 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
         getAllQuantitiesForOrders(orders, productComponentQuantities, operationMultipliers, nonComponents);
 
-        return getProducts(productComponentQuantities, nonComponents, false, OUT_PRODUCT);
+        return getProducts(productComponentQuantities, nonComponents, MrpAlgorithm.ALL_PRODUCTS_IN, OUT_PRODUCT);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents,
+    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
             final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Set<Entity> nonComponents = new HashSet<Entity>();
 
         getAllQuantitiesForOrders(orders, productComponentQuantities, operationRuns, nonComponents);
 
-        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
+        return getProducts(productComponentQuantities, nonComponents, mrpAlgorithm, IN_PRODUCT);
     }
 
     @Override
     public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
-            final boolean onlyComponents) {
+            final MrpAlgorithm mrpAlgorithm) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
         Map<Entity, BigDecimal> operationMultipliers = new HashMap<Entity, BigDecimal>();
 
@@ -164,7 +165,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                     operationMultipliers);
         }
 
-        return getProducts(productComponentQuantities, nonComponents, onlyComponents, IN_PRODUCT);
+        return getProducts(productComponentQuantities, nonComponents, mrpAlgorithm, IN_PRODUCT);
     }
 
     private void getAllQuantitiesForOrders(final List<Entity> orders, final Map<Entity, BigDecimal> productComponentQuantities,
@@ -183,7 +184,17 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private Map<Entity, BigDecimal> getProducts(final Map<Entity, BigDecimal> productComponentQuantities,
-            final Set<Entity> nonComponents, final boolean onlyComponents, final String type) {
+            final Set<Entity> nonComponents, final MrpAlgorithm algorithm, final String type) {
+        if (algorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
+            return getProductWithoutSubcontractingProduct(productComponentQuantities, nonComponents, false, type);
+        } else {
+            return getProductWithoutSubcontractingProduct(productComponentQuantities, nonComponents, true, type);
+        }
+    }
+
+    private Map<Entity, BigDecimal> getProductWithoutSubcontractingProduct(
+            final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents,
+            final boolean onlyComponents, final String type) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
         for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
@@ -191,20 +202,23 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 if (onlyComponents && nonComponents.contains(productComponentQuantity.getKey())) {
                     continue;
                 }
-
-                Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_L);
-                BigDecimal newQty = productComponentQuantity.getValue();
-
-                BigDecimal oldQty = productQuantities.get(product);
-                if (oldQty != null) {
-                    newQty = newQty.add(oldQty);
-
-                }
-                productQuantities.put(product, newQty);
+                addProductQuantitiesToList(productComponentQuantity, productQuantities);
             }
         }
-
         return productQuantities;
+    }
+
+    private void addProductQuantitiesToList(final Entry<Entity, BigDecimal> productComponentQuantity,
+            final Map<Entity, BigDecimal> productQuantities) {
+        Entity product = productComponentQuantity.getKey().getBelongsToField(PRODUCT_L);
+        BigDecimal newQty = productComponentQuantity.getValue();
+
+        BigDecimal oldQty = productQuantities.get(product);
+        if (oldQty != null) {
+            newQty = newQty.add(oldQty);
+
+        }
+        productQuantities.put(product, newQty);
     }
 
     private void fillMapWithQuantitiesForTechnology(final Entity technology, final BigDecimal givenQty,

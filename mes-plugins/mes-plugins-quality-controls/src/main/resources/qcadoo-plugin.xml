@@ -76,7 +76,7 @@
 			<model:decimal name="unitSamplingNr">
 				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="7" />
-   				<model:validatesScale max="5" />
+ 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		

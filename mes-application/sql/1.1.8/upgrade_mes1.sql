@@ -101,3 +101,28 @@ ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontract
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
 -- end
+
+
+-- Table materialrequirements_materialrequirement
+-- change: 12.09.2012
+ALTER TABLE materialrequirements_materialrequirement ADD COLUMN "number" character varying(256);
+ALTER TABLE materialrequirements_materialrequirement ADD COLUMN mrpalgorithm character varying(255);
+ALTER TABLE materialrequirements_materialrequirement ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
+
+UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '01onlyComponents' WHERE  onlyComponents=true;
+UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '02allProductsIn' WHERE  onlyComponents=false;
+
+ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponents ;
+-- end
+
+
+-- Table materialrequirements_materialrequirement
+-- change: 12.09.2012
+ALTER TABLE simplematerialbalance_simplematerialbalance ADD COLUMN mrpalgorithm character varying(255);
+ALTER TABLE simplematerialbalance_simplematerialbalance ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
+
+UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '01onlyComponents' WHERE  onlyComponents=true;
+UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '02allProductsIn' WHERE  onlyComponents=false;
+
+ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN  onlycomponents ;
+-- end

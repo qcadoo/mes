@@ -125,7 +125,7 @@
 					}
 				]]>
 			</script>
-			<component type="gridLayout" name="gridLayout" columns="3" rows="6">
+			<component type="gridLayout" name="gridLayout" columns="3" rows="7">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
 						field="generated" defaultEnabled="false">
@@ -144,14 +144,17 @@
 						<option type="textRepresentationOnDisabled" value="false" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="4" height="2">
+				<layoutElement column="1" row="4" >
+					<component type="input" name="number" reference="number"
+						field="number" />
+				</layoutElement>
+				<layoutElement column="1" row="5" height="2">
 					<component type="textarea" name="name" reference="name"
 						field="name" />
 				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="checkbox" name="onlyComponents"
-						reference="onlyComponents" field="onlyComponents">
-						<option type="labelWidth" value="55" />
+				<layoutElement column="1" row="7">
+					<component type="select" name="mrpAlgorithm"
+						reference="mrpAlgorithm" field="mrpAlgorithm">
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" width="2" height="6">
@@ -196,5 +199,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
 			method="disableFormForExistingMaterialRequirement" />
+		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.hooks.MaterialRequirementDetailsHooks"
+			method="generateProductNumber" />
 	</hooks>
 </view>

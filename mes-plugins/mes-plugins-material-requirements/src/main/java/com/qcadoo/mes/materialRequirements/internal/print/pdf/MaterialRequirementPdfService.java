@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialRequirements.internal.print.pdf;
 
+import static com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementFields.MRP_ALGORITHM;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,10 +34,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -46,6 +48,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialRequirements.internal.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -60,8 +63,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private static final String PLANNED_QUANTITY_FIELD = "plannedQuantity";
 
     private static final String PRODUCT_FIELD = "product";
-
-    private static final String ONLY_COMPONENTS_FIELD = "onlyComponents";
 
     private static final String UNIT_FIELD = "unit";
 
@@ -96,9 +97,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = translationService.translate("materialRequirements.materialRequirement.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, entity.getField(NAME_FIELD).toString(), documenTitle, documentAuthor,
-                (Date) entity.getField(DATE_FIELD), securityService.getCurrentUserName());
-        document.add(Chunk.NEWLINE);
+        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) entity.getField(DATE_FIELD),
+                securityService.getCurrentUserName());
+        addPanel(document, entity, locale);
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), FontUtils.getDejavuBold11Dark()));
         List<String> orderHeader = new ArrayList<String>();
@@ -108,7 +109,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         orderHeader.add(translationService.translate("basic.product.unit.label", locale));
         orderHeader.add(translationService.translate("orders.order.plannedQuantity.label", locale));
         addOrderSeries(document, entity, orderHeader);
-        document.add(Chunk.NEWLINE);
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
                 locale), FontUtils.getDejavuBold11Dark()));
         List<String> productHeader = new ArrayList<String>();
@@ -119,12 +119,34 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         addTechnologySeries(document, entity, productHeader);
     }
 
+    private void addPanel(final Document document, final Entity materialRequirement, final Locale locale)
+            throws DocumentException {
+        PdfPTable panelTable = pdfHelper.createPanelTable(2);
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate("materialRequirements.materialRequirement.report.panel.number", locale),
+                materialRequirement.getStringField("number"));
+        pdfHelper
+                .addTableCellAsOneColumnTable(panelTable, translationService.translate(
+                        "materialRequirements.materialRequirement.report.panel.name", locale), StringUtils
+                        .isEmpty(materialRequirement.getStringField("name")) ? "" : materialRequirement.getStringField("name"));
+        pdfHelper.addTableCellAsOneColumnTable(
+                panelTable,
+                translationService.translate("materialRequirements.materialRequirement.report.panel.mrpAlgorithm", locale),
+                translationService.translate(
+                        "materialRequirements.materialRequirement.mrpAlgorithm.value."
+                                + materialRequirement.getStringField("mrpAlgorithm"), locale));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+        panelTable.setSpacingAfter(20);
+        panelTable.setSpacingBefore(20);
+        document.add(panelTable);
+    }
+
     private void addTechnologySeries(final Document document, final Entity entity, final List<String> productHeader)
             throws DocumentException {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
-        Boolean onlyComponents = (Boolean) entity.getField(ONLY_COMPONENTS_FIELD);
+        MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity.getStringField(MRP_ALGORITHM));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, algorithm);
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);

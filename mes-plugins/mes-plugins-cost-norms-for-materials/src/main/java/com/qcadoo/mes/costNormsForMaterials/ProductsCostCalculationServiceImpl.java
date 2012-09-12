@@ -24,6 +24,7 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                quantity, true);
+                quantity, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
         for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantity.getKey();
@@ -113,7 +114,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
         Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                quantity, true);
+                quantity, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
 
         for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {

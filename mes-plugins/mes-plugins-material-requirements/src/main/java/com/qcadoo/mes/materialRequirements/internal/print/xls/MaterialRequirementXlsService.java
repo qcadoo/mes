@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialRequirements.internal.print.xls;
 
+import static com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementFields.MRP_ALGORITHM;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
@@ -80,9 +83,10 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
-        Boolean onlyComponents = (Boolean) entity.getField("onlyComponents");
+        MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity
+                .getStringField(MRP_ALGORITHM));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, onlyComponents);
+        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, algorithm);
 
         products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
         for (Entry<Entity, BigDecimal> entry : products.entrySet()) {

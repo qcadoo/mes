@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 
 public interface ProductQuantitiesService {
@@ -74,7 +75,7 @@ public interface ProductQuantitiesService {
      * @return Map with product as the key and its quantity as the value. This time keys are products, so they are aggregated.
      */
     Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQty,
-            final boolean onlyComponents);
+            final MrpAlgorithm mrpAlgorithm);
 
     /**
      * 
@@ -85,7 +86,7 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final boolean onlyComponents);
+    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm);
 
     /**
      * 
@@ -108,7 +109,7 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, boolean onlyComponents,
+    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, MrpAlgorithm mrpAlgorithm,
             Map<Entity, BigDecimal> operationRuns);
 
     /**
@@ -120,7 +121,8 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final boolean onlyComponents);
+    Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final MrpAlgorithm mrpAlgorithm);
 
     Entity getOutputProductsFromOperataionComponent(final Entity operationComponent);
+
 }
