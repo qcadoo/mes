@@ -17,8 +17,8 @@ public class ProductHooks {
         if (entity.getId() == null) {
             return;
         }
-        Entity productFromDB = entity.getDataDefinition().get(entity.getId());
         String entityType = entity.getStringField(ProductFields.ENTITY_TYPE);
+        Entity productFromDB = entity.getDataDefinition().get(entity.getId());
         if (entityType.equals(ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue())
                 && !entityType.equals(productFromDB.getStringField(ProductFields.ENTITY_TYPE))) {
             deleteProductFamily(productFromDB);
