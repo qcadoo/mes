@@ -48,6 +48,10 @@
 						<component type="textarea" name="comment" field="comment" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
+						<component type="file" name="attachment" field="attachment" />
+					</layoutElement>
+					
+					<layoutElement column="2" row="1">
 						<component type="lookup" name="workstationType" field="workstationType">
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
@@ -58,8 +62,16 @@
 							<option type="fieldCode" value="number" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="7">
-						<component type="file" name="attachment" field="attachment" />
+					<layoutElement column="2" row="2">
+						<component type="lookup" name="operationGroup" field="operationGroup">
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
