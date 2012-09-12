@@ -44,8 +44,8 @@
 	<row NAME="units" ITEM="l" DESCRIPTION="Litr" />
 	<row NAME="units" ITEM="hl" DESCRIPTION="Hektolitr" />
 	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
-	<row NAME="units" ITEM="pair" DESCRIPTION="Para" />
-	<row NAME="units" ITEM="set" DESCRIPTION="Komplet" />
+	<row NAME="units" ITEM="para" DESCRIPTION="Para" />
+	<row NAME="units" ITEM="kpl" DESCRIPTION="Komplet" />
 	<row NAME="reasonTypeOfChaningOrderState" ITEM="Nieobecność pracownika" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Opóźnienia w dostawie surowców" DESCRIPTION="" />
     <row NAME="reasonTypeOfChaningOrderState" ITEM="Wadliwe surowce" DESCRIPTION="" />
