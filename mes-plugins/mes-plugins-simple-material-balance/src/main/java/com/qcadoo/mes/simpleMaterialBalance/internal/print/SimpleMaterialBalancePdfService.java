@@ -48,6 +48,7 @@ import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityLocationNumberComparator;
 import com.qcadoo.mes.simpleMaterialBalance.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -125,12 +126,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
                 "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.worker", locale),
                 simpleMaterialBalance.getStringField(L_WORKER));
-        pdfHelper.addTableCellAsOneColumnTable(
-                panelTable,
-                translationService.translate(
-                        "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.onlyComponents", locale),
-                (Boolean) simpleMaterialBalance.getField(L_ONLY_COMPONENTS) ? translationService.translate("qcadooView.true",
-                        locale) : translationService.translate("qcadooView.false", locale));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
+                "simpleMaterialBalance.simpleMaterialBalance.report.panel.simpleMaterialBalance.mrpAlgorithm", locale),
+                translationService.translate("simpleMaterialBalance.simpleMaterialBalance.mrpAlgorithm.value."
+                        + simpleMaterialBalance.getStringField("mrpAlgorithm"), locale));
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
         document.add(panelTable);
@@ -157,10 +156,10 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(6, simpleMaterialBalanceTableHeader, false);
         List<Entity> simpleMaterialBalanceOrdersComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
-        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(L_ONLY_COMPONENTS);
+        MrpAlgorithm mrpAlgorithm = MrpAlgorithm.parseString(simpleMaterialBalance.getStringField("mrpAlgorithm"));
 
         Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
-                simpleMaterialBalanceOrdersComponents, onlyComponents);
+                simpleMaterialBalanceOrdersComponents, mrpAlgorithm);
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);

@@ -51,6 +51,7 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -248,7 +249,7 @@ public class TechnologyService {
 
         List<Entity> inProducts = new ArrayList<Entity>();
         Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                BigDecimal.ONE, false);
+                BigDecimal.ONE, MrpAlgorithm.ALL_PRODUCTS_IN);
 
         for (Entry<Entity, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity inProduct = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

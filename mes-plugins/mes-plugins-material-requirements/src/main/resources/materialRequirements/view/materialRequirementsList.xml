@@ -44,15 +44,17 @@
 		</ribbon>
 		<component type="grid" name="materialRequirements"
 			reference="grid">
+			<option type="column" name="number" fields="number" link="true"
+				width="200" />
 			<option type="column" name="name" fields="name" link="true"
-				width="300" />
+				width="200" />
 			<option type="column" name="generated" fields="generated"
 				link="false" />
-			<option type="column" name="worker" fields="worker" width="200" />
+			<option type="column" name="worker" fields="worker" width="100" />
 			<option type="column" name="date" fields="date" />
 			<option type="order" column="name" direction="asc" />
-			<option type="searchable" value="name,generated,worker,date" />
-			<option type="orderable" value="name,generated,worker,date" />
+			<option type="searchable" value="number,name,generated,worker,date" />
+			<option type="orderable" value="number,name,generated,worker,date" />
 			<option type="correspondingView" value="materialRequirements/materialRequirementDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />

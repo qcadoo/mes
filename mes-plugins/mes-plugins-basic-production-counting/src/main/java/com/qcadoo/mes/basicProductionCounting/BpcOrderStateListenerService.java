@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
+import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.ALL_PRODUCTS_IN;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +74,7 @@ public class BpcOrderStateListenerService {
 
         if (prodCountings == null || prodCountings.isEmpty()) {
             final Map<Entity, BigDecimal> productsReq = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order),
-                    false);
+                    ALL_PRODUCTS_IN);
 
             for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
                 createBasicProductionCounting(order, productReq.getKey(), productReq.getValue());

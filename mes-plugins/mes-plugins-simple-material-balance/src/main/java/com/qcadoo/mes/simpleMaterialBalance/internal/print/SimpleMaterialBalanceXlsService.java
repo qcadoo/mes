@@ -40,6 +40,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.SortUtil;
@@ -113,10 +114,10 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
         int rowNum = 1;
         List<Entity> simpleMaterialBalanceOrdersComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS);
-        Boolean onlyComponents = (Boolean) simpleMaterialBalance.getField(L_ONLY_COMPONENTS);
+        MrpAlgorithm mrpAlgorithm = MrpAlgorithm.parseString(simpleMaterialBalance.getStringField("mrpAlgorithm"));
 
         Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantitiesForComponents(
-                simpleMaterialBalanceOrdersComponents, onlyComponents);
+                simpleMaterialBalanceOrdersComponents, mrpAlgorithm);
 
         List<Entity> simpleMaterialBalanceLocationComponents = simpleMaterialBalance
                 .getHasManyField(L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS);

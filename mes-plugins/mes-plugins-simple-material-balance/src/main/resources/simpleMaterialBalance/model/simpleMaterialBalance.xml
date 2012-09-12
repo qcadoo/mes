@@ -33,7 +33,7 @@
 		</string>
 		<datetime name="date" />
 		<string name="worker" />
-		<boolean name="onlyComponents" default="1" />
+		<enum values="01onlyComponents,02allProductsIn" name="mrpAlgorithm" default="01onlyComponents" required="true" />
 		<boolean name="generated" />
 		<string name="fileName" />
 		<hasMany name="simpleMaterialBalanceOrdersComponents" model="simpleMaterialBalanceOrdersComponent"

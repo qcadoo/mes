@@ -109,8 +109,8 @@
 					<component type="textarea" name="name" reference="name" field="name" />
 				</layoutElement>
 				<layoutElement column="3" row="3" width="2">
-					<component type="checkbox" name="onlyComponents" reference="onlyComponents" field="onlyComponents">
-						<option type="labelWidth" value="55" />
+					<component type="select" name="mrpAlgorithm"
+						reference="mrpAlgorithm" field="mrpAlgorithm">
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4" width="2" height="6">

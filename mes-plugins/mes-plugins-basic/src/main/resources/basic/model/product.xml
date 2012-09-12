@@ -58,7 +58,7 @@
 		<integer name="priority" persistent="false" />
 		<string name="nodeNumber" persistent="false" />
 		<enum name="entityType" values="01particularProduct,02productsFamily"
-			default="01particularProduct" />
+			default="01particularProduct" required="true"/>
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />

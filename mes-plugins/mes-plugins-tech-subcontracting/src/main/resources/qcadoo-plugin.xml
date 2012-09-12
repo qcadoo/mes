@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="techSubcontracting" version="1.1.8-SNAPSHOT"
+<plugin plugin="techSubcontracting" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -45,7 +45,13 @@
 		<model:model-field model="technologyInstanceOperationComponent" plugin="technologies">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-
+		
+		<model:model-enum-value plugin="materialRequirements"
+			model="materialRequirement" enum="mrpAlgorithm" value="03componentsAndSubcontractorsProducts" />
+			
+		<model:model-enum-value plugin="simpleMaterialBalance"
+			model="simpleMaterialBalance" enum="mrpAlgorithm" value="03componentsAndSubcontractorsProducts" />
+		
 		<model:model-hook model="technologyOperationComponent" plugin="technologies">
 			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS" method="copySubstractingFieldFromLowerInstance"/>
 		</model:model-hook>
