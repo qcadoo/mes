@@ -51,6 +51,8 @@
 			joinField="operationIn" cascade="delete" copyable="true" />
 		<hasMany name="productOutComponents" model="productComponent"
 			joinField="operationOut" cascade="delete" copyable="true" />
+			
+		<belongsTo name="operationGroup" model="operationGroup" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"

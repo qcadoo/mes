@@ -67,6 +67,7 @@
 
 		<model:model model="productComponent" resource="model/productComponent.xml" />
 		<model:model model="operation" resource="model/operation.xml" />
+		<model:model model="operationGroup" resource="model/operationGroup.xml" />
 		<model:model model="operationProductOutComponent"
 			resource="model/operationProductOutComponent.xml" />
 		<model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml" />
@@ -109,6 +110,8 @@
 			view="technologiesList" />
 		<menu:menu-item name="operations" category="technology"
 			view="operationsList" />
+		<menu:menu-item name="operationGroups" category="technology"
+			view="operationGroupsList" />
 		<menu:menu-item name="technologyGroups" category="technology"
 			view="technologyGroupsList" />
 		
@@ -116,6 +119,8 @@
 		
 		<view:view resource="view/operationsList.xml" />
 		<view:view resource="view/operationDetails.xml" />
+		<view:view resource="view/operationGroupsList.xml" />
+		<view:view resource="view/operationGroupDetails.xml" />
 		<view:view resource="view/technologiesList.xml" />
 		<view:view resource="view/technologyDetails.xml" />
 		<view:view resource="view/technologyOperationComponentDetails.xml" />
