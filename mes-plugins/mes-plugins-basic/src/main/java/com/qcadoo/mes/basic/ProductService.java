@@ -45,6 +45,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -159,6 +160,8 @@ public class ProductService {
 
         product.getDataDefinition().save(product);
 
+        productForm.addMessage("basic.productDetails.message.getDefaultConversionsForProductSuccess", MessageType.SUCCESS);
+
         state.performEvent(view, "reset", new String[0]);
     }
 
@@ -176,6 +179,8 @@ public class ProductService {
 
             product.getDataDefinition().save(product);
         }
+
+        productsGrid.addMessage("basic.productsList.message.getDefaultConversionsForProductsSuccess", MessageType.SUCCESS);
     }
 
     public void disableUnitFromWhenFormIsSaved(final ViewDefinitionState view) {
