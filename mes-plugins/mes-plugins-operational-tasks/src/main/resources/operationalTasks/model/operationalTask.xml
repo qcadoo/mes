@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="operationalTask" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="256" />
+		</string>
+		<string name="name">
+			<validatesLength max="1024" />
+		</string>
+		<string name="description">
+			<validatesLength max="1024" />
+		</string>
+		<enum values="01otherCase" name="typeTask" required="true" default="01otherCase" />
+		<datetime name="startDate" required="true"/>
+		<datetime name="finishDate" required="true"/>
+		<belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+		<belongsTo name="productIn" model="product" plugin="basic" persistent="false"/>
+		<belongsTo name="productOut" model="product" plugin="basic" persistent="false"/>
+	</fields>
+	<hooks />
+	<identifier expression="#number + ' - ' + #name" />
+</model>

@@ -1,0 +1,58 @@
+<view name="operationalTasksList" modelName="operationalTask"
+	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardGridTemplate" />
+		</ribbon>
+		<component type="form" name="form" reference="form">
+			<component type="gridLayout" name="mainTabGridLayout"
+				columns="3" rows="2">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="productIn" field="productIn"
+						reference="productIn">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1">
+					<component type="lookup" name="productOut" field="productOut"
+						reference="productOut">
+						<option type="column" name="name" fields="name" link="true"
+							width="200" />
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" width="3">
+					<component type="grid" name="operationalTasksList"
+						reference="grid">
+						<option type="column" name="number" fields="number" link="true"	 />
+						<option type="column" name="name" fields="name" link="true" />
+						<option type="column" name="startDate" fields="startDate"  />
+						<option type="column" name="finishDate" fields="finishDate"  />
+						<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['name']" />
+						<option type="order" column="name" direction="asc" />
+						<option type="correspondingView" value="operationalTasks/operationalTasksDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+					<option type="fixedHeight" value="true" />
+					<option type="header" value="false" />
+					</component>
+				</layoutElement>
+			</component>
+			<option type="header" value="true" />
+		</component>
+	</component>
+</view>

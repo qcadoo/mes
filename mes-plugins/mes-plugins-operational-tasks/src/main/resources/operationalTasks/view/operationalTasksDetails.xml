@@ -1,0 +1,64 @@
+<view name="operationalTasksDetails" modelName="operationalTask"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="operationalTasksDetails"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="6">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number"
+							reference="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="select" name="typeTask" reference="typeTask"
+							field="typeTask" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="calendar" name="startDate" field="startDate"
+							reference="startDate">
+							<option type="labelWidth" value="50" />
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="calendar" name="finishDate" field="finishDate"
+							reference="finishDate">
+							<option type="labelWidth" value="50" />
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1" height="2">
+						<component type="textarea" name="name" field="name"	/>
+					</layoutElement>
+					<layoutElement column="2" row="3" >
+						<component type="lookup" name="productionLine"
+							reference="productionLine" field="productionLine">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+							</component>
+					</layoutElement>
+					<layoutElement column="2" row="4" height="2">
+						<component type="input" name="description" field="description"
+							reference="description" />
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#number" />
+				
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.operationalTasks.hooks.OperationalTasksDetailsHooks" method="generateOperationalTasksNumber"/>
+	</hooks>
+</view>
