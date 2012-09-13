@@ -126,3 +126,22 @@ UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '02allProd
 
 ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN  onlycomponents ;
 -- end
+
+
+-- Table operationaltasks_operationaltask
+-- change: 13.09.2012
+CREATE TABLE operationaltasks_operationaltask
+(
+  id bigint NOT NULL,
+  "number" character varying(256),
+  "name" character varying(1024),
+  description character varying(1024),
+  typetask character varying(255),
+  startdate timestamp without time zone,
+  finishdate timestamp without time zone,
+  productionline_id bigint,
+  CONSTRAINT operationaltasks_operationaltask_pkey PRIMARY KEY (id),
+   CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
+);
+--end

@@ -225,6 +225,11 @@
 			<version>1.1.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-operational-tasks</artifactId>
+			<version>1.1.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
