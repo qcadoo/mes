@@ -281,5 +281,7 @@
 			method="disableProductFormForExternalItems" />
 		<beforeRender class="com.qcadoo.mes.basic.ProductService"
 			method="disableUnitFromWhenFormIsSaved" />
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+			method="updateRibbonState" />
 	</hooks>
 </view>
