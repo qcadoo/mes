@@ -96,9 +96,9 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         HSSFCell cellAuthorLine0 = headerAuthorLine.createCell(0);
         cellAuthorLine0.setCellValue(shift);
         HSSFCell cellAuthorLine3 = headerAuthorLine.createCell(3);
-        cellAuthorLine3.setCellValue(user);
+        cellAuthorLine3.setCellValue(date);
         HSSFCell cellAuthorLine6 = headerAuthorLine.createCell(6);
-        cellAuthorLine6.setCellValue(date);
+        cellAuthorLine6.setCellValue(user);
 
         headerAuthorLine.setHeightInPoints(15);
 

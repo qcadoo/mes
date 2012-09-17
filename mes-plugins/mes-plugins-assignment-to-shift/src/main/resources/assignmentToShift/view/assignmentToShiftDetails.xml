@@ -121,26 +121,35 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2">
+					
 						<component type="grid" name="staffAssignmentToShifts"
 							reference="staffAssignmentToShifts" source="#{form}.staffAssignmentToShifts">
+								
 							<option type="column" name="workerNumber" fields="worker"
 								expression="#worker['number']" link="true" />
+								
 							<option type="column" name="workerName" fields="worker"
 								expression="#worker['name']" link="true" />
+								
 							<option type="column" name="workerSurname" fields="worker"
 								expression="#worker['surname']" link="true" />
+								
+							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
+							
 							<option type="column" name="workerWageGroup" fields="worker"
 								expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')" />
-							<option type="column" name="worker" fields="worker"
+								
+							<option type="column" name="workerLaborHourlyCost" fields="worker"
 								expression="#worker['laborHourlyCost']" link="true" />
-							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
+								
 							<option type="order" column="workerNumber" direction="desc" />
 							<option type="correspondingView"
 								value="assignmentToShift/staffAssignmentToShiftDetails" />
+								
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="true" />
-							<option type="searchable" value="workerNumber,workerName" />
-							<option type="orderable" value="workerNumber,workerName" />
+							<option type="searchable" value="false" />
+							<option type="orderable" value="false" />
 							<option type="paginable" value="false" />
 							<option type="creatable" value="true" />
 							<option type="deletable" value="true" />
@@ -168,8 +177,8 @@
 								expression="#worker['surname']" />
 							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
 							<option type="order" column="workerNumber" direction="desc" />
-							<option type="searchable" value="workerNumber,workerName" />
-							<option type="orderable" value="workerNumber,workerName" />
+							<option type="searchable" value="false" />
+							<option type="orderable" value="false" />							
 							<option type="paginable" value="false" />
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
@@ -187,8 +196,8 @@
 								expression="#worker['surname']" />
 							<option type="column" name="occupationTypeValueForGrid" fields="occupationTypeValueForGrid" />
 							<option type="order" column="workerNumber" direction="desc" />
-							<option type="searchable" value="workerNumber,workerName" />
-							<option type="orderable" value="workerNumber,workerName" />
+							<option type="searchable" value="false" />
+							<option type="orderable" value="false" />
 							<option type="paginable" value="false" />
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="true" />
@@ -208,8 +217,8 @@
 					expression="#shift != null ? #shift['name'] : ''" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="order" column="dateAndTime" direction="desc" />
-				<option type="searchable" value="dateAndTime,sourceState,targetState" />
-				<option type="orderable" value="dateAndTime,sourceState,targetState" />
+				<option type="searchable" value="false" />
+				<option type="orderable" value="false" />
 			</component>
 		</windowTab>
 	</component>
