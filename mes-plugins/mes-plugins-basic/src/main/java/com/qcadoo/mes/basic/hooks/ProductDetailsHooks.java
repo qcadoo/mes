@@ -26,15 +26,8 @@ public class ProductDetailsHooks {
 
         RibbonActionItem getDefaultConversions = (RibbonActionItem) operationGroups.getItemByName("getDefaultConversions");
 
-        if (operationGroup.getId() != null) {
+        updateButtonState(getDefaultConversions, operationGroup.getId() != null);
 
-            updateButtonState(getDefaultConversions, true);
-
-        } else {
-
-            updateButtonState(getDefaultConversions, false);
-
-        }
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
