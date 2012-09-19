@@ -28,15 +28,23 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.STATE;
 import static com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState.DRAFT;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftStateChangeDescriber;
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
 public class AssignmentToShiftHooks {
@@ -47,12 +55,47 @@ public class AssignmentToShiftHooks {
     @Autowired
     private AssignmentToShiftStateChangeDescriber describer;
 
+    @Autowired
+    private ShiftsServiceImpl shiftService;
+
     public void setInitialState(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
         stateChangeEntityBuilder.buildInitial(describer, assignmentToShift, DRAFT);
     }
 
     public void clearState(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
         assignmentToShift.setField(STATE, DRAFT.getStringValue());
+    }
+
+    public void setNextDay(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
+
+        Date newDate;
+        Date currentDate = (Date) assignmentToShift.getField("startDate");
+        int i = 1;
+
+        do {
+            newDate = new DateTime(currentDate).plusDays(i).toDate();
+            i++;
+        } while (!shiftService.checkIfShiftWorkAtDate(newDate, assignmentToShift.getBelongsToField(SHIFT))
+                || !searchResultOfAssignmentToShift(assignmentToShiftDD, assignmentToShift, newDate));
+
+        assignmentToShift.setField("startDate",
+                new SimpleDateFormat(DateUtils.L_DATE_FORMAT, LocaleContextHolder.getLocale()).format(newDate));
+
+    }
+
+    final private boolean searchResultOfAssignmentToShift(final DataDefinition assignmentToShiftDD,
+            final Entity assignmentToShift, final Object startDate) {
+
+        SearchResult searchResult = assignmentToShiftDD.find()
+                .add(SearchRestrictions.belongsTo(SHIFT, assignmentToShift.getBelongsToField(SHIFT)))
+                .add(SearchRestrictions.eq(START_DATE, startDate)).list();
+
+        if (searchResult.getEntities().isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public boolean checkUniqueEntity(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {

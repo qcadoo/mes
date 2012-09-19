@@ -52,6 +52,10 @@
 			method="setInitialState" />
 		<onCopy
 			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
+			method="setNextDay" />	
+			
+		<onCopy
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"
 			method="setInitialState" />
 		<onCopy
 			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftHooks"

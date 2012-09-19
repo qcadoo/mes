@@ -145,3 +145,23 @@ CREATE TABLE operationaltasks_operationaltask
       REFERENCES productionlines_productionline (id) DEFERRABLE,
 );
 --end
+
+-- Table technologies_operationgroup
+-- change: 18.09.2012
+CREATE TABLE technologies_operationgroup
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  "name" character varying(1024),
+  CONSTRAINT technologies_operationgroup_pkey PRIMARY KEY (id)
+);
+--end
+
+-- Table technologies_operationgroup
+-- change: 18.09.2012
+ALTER TABLE technologies_operation ADD COLUMN operationgroup_id bigint;
+
+ALTER TABLE technologies_operation
+  ADD CONSTRAINT operation_operationgroup_fkey FOREIGN KEY (operationgroup_id)
+      REFERENCES technologies_operationgroup (id) DEFERRABLE;
+--end
