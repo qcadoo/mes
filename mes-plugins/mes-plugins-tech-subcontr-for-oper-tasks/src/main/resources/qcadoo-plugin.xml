@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="operationalTasks" version="${qcadoo.plugin.version}"
+<plugin plugin="techSubcontrForOperTasks" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -19,7 +19,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>MES - Operational tasks</name>
+		<name>MES - Technology subcontracting for operational tasks</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
@@ -28,26 +28,24 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>productionLines</plugin>
+			<plugin>operationalTasksForOrders</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+		<dependency>
+			<plugin>techSubcontracting</plugin>
 			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
 
+
 	<modules>
 		<localization:translation path="locales" />
-		
-		<model:model model="operationalTask" resource="model/operationalTask.xml" />
-		
-		<menu:menu-category name="orders" />
 
-		<menu:menu-item name="operationalTasks" category="orders"
-			view="operationalTasksList" />
-
-		<view:view resource="view/operationalTasksList.xml" />
-		<view:view resource="view/operationalTaskDetails.xml" />
-		
-		<view:resource uri="public/**/*" />
-		
+		<view:view-grid-column plugin="operationalTasks"
+			view="operationalTasksList" component="grid" >
+			<view:column name="techInstOperCompIsSubcontracting" fields="technologyInstanceOperationComponent"
+				orderable="true" expression="#technologyInstanceOperationComponent['isSubcontracting'] == '0' ? '@qcadooView.true' : '@qcadooView.false'" />
+		</view:view-grid-column>
 
 	</modules>
 

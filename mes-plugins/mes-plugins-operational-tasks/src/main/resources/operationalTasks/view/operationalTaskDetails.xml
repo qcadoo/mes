@@ -1,4 +1,4 @@
-<view name="operationalTasksDetails" modelName="operationalTask"
+<view name="operationalTaskDetails" modelName="operationalTask"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
@@ -9,7 +9,7 @@
 			<component type="form" name="operationalTasksDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 							reference="number" />
@@ -33,7 +33,7 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
-						<component type="textarea" name="name" field="name"	/>
+						<component type="textarea" name="name" field="name" reference="name" />
 					</layoutElement>
 					<layoutElement column="2" row="3" >
 						<component type="lookup" name="productionLine"
@@ -48,7 +48,7 @@
 							</component>
 					</layoutElement>
 					<layoutElement column="2" row="4" height="2">
-						<component type="input" name="description" field="description"
+						<component type="textarea" name="description" field="description"
 							reference="description" />
 					</layoutElement>
 				</component>

@@ -59,6 +59,8 @@
     	<module>mes-plugins-product-catalog-numbers</module>
     <module>mes-plugins-tech-subcontracting</module>
     <module>mes-plugins-operational-tasks</module>
+    <module>mes-plugins-operational-tasks-for-orders</module>
+    <module>mes-plugins-tech-subcontr-for-oper-tasks</module>
   </modules>
 
 

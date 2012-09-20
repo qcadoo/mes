@@ -41,10 +41,10 @@
 						<option type="column" name="finishDate" fields="finishDate"  />
 						<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['name']" />
 						<option type="order" column="name" direction="asc" />
-						<option type="correspondingView" value="operationalTasks/operationalTasksDetails" />
+						<option type="correspondingView" value="operationalTasks/operationalTaskDetails" />
 						<option type="correspondingComponent" value="form" />
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+						<option type="searchable" value="name,number,productionLine" />
+						<option type="orderable" value="name,number,startDate,finishDate,productionLine" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					<option type="fixedHeight" value="true" />

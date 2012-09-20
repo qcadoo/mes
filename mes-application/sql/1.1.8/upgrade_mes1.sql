@@ -165,3 +165,18 @@ ALTER TABLE technologies_operation
   ADD CONSTRAINT operation_operationgroup_fkey FOREIGN KEY (operationgroup_id)
       REFERENCES technologies_operationgroup (id) DEFERRABLE;
 --end
+
+-- Table operationaltasks_operationaltask
+-- change: 20.09.2012
+ALTER TABLE operationaltasks_operationaltask ADD COLUMN technologyinstanceoperationcomponent_id bigint;
+ALTER TABLE operationaltasks_operationaltask
+	ADD CONSTRAINT technologies_technologyinstanceoperationcomponent_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
+      REFERENCES technologies_technologyinstanceoperationcomponent (id) DEFERRABLE;
+      
+ALTER TABLE operationaltasks_operationaltask ADD COLUMN order_id bigint;    
+ALTER TABLE operationaltasks_operationaltask
+	ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE; 
+      
+--end   
+      

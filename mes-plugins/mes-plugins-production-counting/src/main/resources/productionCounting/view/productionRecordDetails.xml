@@ -127,10 +127,8 @@
 							reference="technologyInstanceOperationComponent" defaultEnabled="false">
 							<option type="column" name="name" fields="operation"
 								expression="#operation['name']" link="true" />
-							
 							<option type="searchable" value="name,nodeNumber" />
 							<option type="orderable" value="name,nodeNumber" />
-							
 							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
 							<option type="fieldCode" value="nodeNumber" />
 						</component>

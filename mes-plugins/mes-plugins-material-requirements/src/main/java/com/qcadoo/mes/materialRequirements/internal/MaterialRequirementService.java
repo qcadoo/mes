@@ -101,15 +101,19 @@ public class MaterialRequirementService {
         ComponentState name = state.getComponentByReference("name");
         ComponentState mrpAlgorithm = state.getComponentByReference("mrpAlgorithm");
         ComponentState materialRequirementComponents = state.getComponentByReference("materialRequirementComponents");
+        ComponentState number = state.getComponentByReference("number");
         FieldComponent generated = (FieldComponent) state.getComponentByReference("generated");
 
         if ("1".equals(generated.getFieldValue())) {
+            number.setEnabled(false);
             name.setEnabled(false);
             mrpAlgorithm.setEnabled(false);
             materialRequirementComponents.setEnabled(false);
         } else {
+            number.setEnabled(true);
             name.setEnabled(true);
             mrpAlgorithm.setEnabled(true);
+            materialRequirementComponents.setEnabled(true);
         }
     }
 
