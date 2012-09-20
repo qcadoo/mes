@@ -4,11 +4,6 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
-			<group name="report">
-				<bigButton name="print" icon="pdfIcon16.png"
-					action="#{grid}.generateReportForEntity('productCatalogNumbers','sample','pdf',ReportTitle='Sample')"
-					state="enabled" />
-			</group>
 		</ribbon>
 		<component type="grid" name="productCatalogNumbersList"
 			reference="grid">
