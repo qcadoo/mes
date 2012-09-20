@@ -187,14 +187,14 @@ public class OrderTimePredictionService {
                 if (generatedStopTime != null) {
                     if (stopTime == null) {
                         order.setField(DATE_TO, orderRealizationTimeService.setDateToField(generatedStopTime));
-                        realizationTime.setFieldValue(maxPathTime);
                         dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                         generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                     }
                     order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
                     scheduleOrder(order.getId());
+                } else {
+                    form.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
                 }
-                generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                 realizationTime.setFieldValue(maxPathTime);
                 realizationTime.requestComponentUpdateState();
                 dateTo.requestComponentUpdateState();
