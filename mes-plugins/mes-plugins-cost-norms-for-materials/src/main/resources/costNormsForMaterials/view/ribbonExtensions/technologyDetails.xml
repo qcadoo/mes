@@ -39,6 +39,18 @@
 								#{form}.performEvent('showInputProductsCost', []);
 							}
 						}
+					});	
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								if (! value.content.entityId) {
+									this.disable();
+								} else {
+									this.enable();
+								}
+							}
 					});		
 				]]>
 			</script>
