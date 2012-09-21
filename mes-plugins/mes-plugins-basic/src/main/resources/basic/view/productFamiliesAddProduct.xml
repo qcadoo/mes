@@ -19,16 +19,7 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
 				<bigButton name="addProduct" icon="generateIcon24.png"
-					state="enabled">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{form}.performEvent('addSelectedProductToFamily', []);
-								}
-							});
-						]]>
-					</script>
+					state="enabled" action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
 				</bigButton>
 			</group>
 		</ribbon>
