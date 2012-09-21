@@ -14,21 +14,12 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="productFamiliesAddProduct" modelName="product">
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
 				<bigButton name="addProduct" icon="generateIcon24.png"
-					state="enabled">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{form}.performEvent('addSelectedProductToFamily', []);
-								}
-							});
-						]]>
-					</script>
+					state="enabled" action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
 				</bigButton>
 			</group>
 		</ribbon>
@@ -46,6 +37,7 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners" method="changeProductInLookup" />
 					</component>
 				</layoutElement>
 			</component>
@@ -53,5 +45,7 @@
 		</component>
 	</component>
 	<hooks>
+	<beforeRender class="com.qcadoo.mes.basic.hooks.ProductFamiliesAddProductHooks"
+			method="updateRibbonState" />
 	</hooks>
 </view>
