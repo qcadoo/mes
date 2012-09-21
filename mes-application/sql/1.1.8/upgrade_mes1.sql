@@ -84,52 +84,66 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachm
 
 -- end
 
+
 -- Table: technologies_operation
--- change: 6.09.2012
+-- change: 06.09.2012
+
 ALTER TABLE technologies_operation ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT false;
+
 -- end
+
 
 -- Table: technologies_technologyoperationcomponent
--- change: 6.09.2012
+-- change: 06.09.2012
+
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
+
 -- end
 
+
 -- Table: technologies_technologyinstanceoperationcomponent
--- change: 6.09.2012
+-- change: 06.09.2012
+
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
+
 -- end
 
 
 -- Table materialrequirements_materialrequirement
 -- change: 12.09.2012
+
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN "number" character varying(256);
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN mrpalgorithm character varying(255);
 ALTER TABLE materialrequirements_materialrequirement ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
 
-UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '01onlyComponents' WHERE  onlyComponents=true;
-UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '02allProductsIn' WHERE  onlyComponents=false;
+UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '01onlyComponents' WHERE onlyComponents = true;
+UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '02allProductsIn' WHERE onlyComponents = false;
 
-ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponents ;
+ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponents;
+
 -- end
 
 
 -- Table materialrequirements_materialrequirement
 -- change: 12.09.2012
+
 ALTER TABLE simplematerialbalance_simplematerialbalance ADD COLUMN mrpalgorithm character varying(255);
 ALTER TABLE simplematerialbalance_simplematerialbalance ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
 
-UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '01onlyComponents' WHERE  onlyComponents=true;
-UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '02allProductsIn' WHERE  onlyComponents=false;
+UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '01onlyComponents' WHERE onlyComponents = true;
+UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '02allProductsIn' WHERE onlyComponents = false;
 
-ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN  onlycomponents ;
+ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN onlycomponents;
+
 -- end
 
 
 -- Table operationaltasks_operationaltask
 -- change: 13.09.2012
+
 CREATE TABLE operationaltasks_operationaltask
 (
   id bigint NOT NULL,
@@ -142,12 +156,33 @@ CREATE TABLE operationaltasks_operationaltask
   productionline_id bigint,
   CONSTRAINT operationaltasks_operationaltask_pkey PRIMARY KEY (id),
    CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id)
-      REFERENCES productionlines_productionline (id) DEFERRABLE,
+      REFERENCES productionlines_productionline (id) DEFERRABLE
 );
---end
+
+-- end
+
+
+-- Table: assignmenttoshift_assignmenttoshift
+-- change: 18.09.2012
+
+ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN active boolean;
+ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN active SET DEFAULT true;
+
+-- end
+
+
+-- Table: assignmenttoshift_assignmenttoshiftreport
+-- change: 18.09.2012
+
+ALTER TABLE assignmenttoshift_assignmenttoshiftreport ADD COLUMN active boolean;
+ALTER TABLE assignmenttoshift_assignmenttoshiftreport ALTER COLUMN active SET DEFAULT true;
+
+-- end
+
 
 -- Table technologies_operationgroup
 -- change: 18.09.2012
+
 CREATE TABLE technologies_operationgroup
 (
   id bigint NOT NULL,
@@ -155,19 +190,25 @@ CREATE TABLE technologies_operationgroup
   "name" character varying(1024),
   CONSTRAINT technologies_operationgroup_pkey PRIMARY KEY (id)
 );
---end
+
+-- end
+
 
 -- Table technologies_operationgroup
 -- change: 18.09.2012
+
 ALTER TABLE technologies_operation ADD COLUMN operationgroup_id bigint;
 
 ALTER TABLE technologies_operation
   ADD CONSTRAINT operation_operationgroup_fkey FOREIGN KEY (operationgroup_id)
       REFERENCES technologies_operationgroup (id) DEFERRABLE;
---end
+      
+-- end
+
 
 -- Table operationaltasks_operationaltask
 -- change: 20.09.2012
+
 ALTER TABLE operationaltasks_operationaltask ADD COLUMN technologyinstanceoperationcomponent_id bigint;
 ALTER TABLE operationaltasks_operationaltask
 	ADD CONSTRAINT technologies_technologyinstanceoperationcomponent_fkey FOREIGN KEY (technologyinstanceoperationcomponent_id)
@@ -178,5 +219,5 @@ ALTER TABLE operationaltasks_operationaltask
 	ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE; 
       
---end   
+-- end   
       
