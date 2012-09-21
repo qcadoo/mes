@@ -34,7 +34,7 @@ public class ConversionItemHooksTest {
 
     private BigDecimal bdTwo = new BigDecimal(2L);
 
-    private String L_SZT = "szt";
+    private static final String L_SZT = "szt";
 
     @Before
     public void init() {

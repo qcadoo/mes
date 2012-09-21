@@ -184,7 +184,9 @@ public class OrderTimePredictionService {
                 dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
                 Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-                if (generatedStopTime != null) {
+                if (generatedStopTime == null) {
+                    form.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
+                } else {
                     if (stopTime == null) {
                         order.setField(DATE_TO, orderRealizationTimeService.setDateToField(generatedStopTime));
                         dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
@@ -192,8 +194,6 @@ public class OrderTimePredictionService {
                     }
                     order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
                     scheduleOrder(order.getId());
-                } else {
-                    form.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
                 }
                 realizationTime.setFieldValue(maxPathTime);
                 realizationTime.requestComponentUpdateState();

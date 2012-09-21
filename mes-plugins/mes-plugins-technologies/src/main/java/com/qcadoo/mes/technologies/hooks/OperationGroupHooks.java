@@ -27,14 +27,10 @@ public class OperationGroupHooks {
         RibbonActionItem redirectToFilteredOperationGroupsList = (RibbonActionItem) operationGroups
                 .getItemByName("redirectToFilteredOperationGroupsList");
 
-        if (operationGroup.getId() != null) {
-
-            updateButtonState(redirectToFilteredOperationGroupsList, true);
-
-        } else {
-
+        if (operationGroup.getId() == null) {
             updateButtonState(redirectToFilteredOperationGroupsList, false);
-
+        } else {
+            updateButtonState(redirectToFilteredOperationGroupsList, true);
         }
     }
 

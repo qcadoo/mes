@@ -10,18 +10,19 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class TechnologyDetailsHooksCNFM {
-	public void updateViewCostsButtonState(final ViewDefinitionState view){
-		FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+
+    public void updateViewCostsButtonState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("materials");
         RibbonActionItem viewCosts = (RibbonActionItem) materials.getItemByName("viewCosts");
-        if(orderForm.getEntityId()==null){
-        	viewCosts.setEnabled(false);
-        }else{
-        	viewCosts.setEnabled(true);
+        if (orderForm.getEntityId() == null) {
+            viewCosts.setEnabled(false);
+        } else {
+            viewCosts.setEnabled(true);
         }
         viewCosts.requestUpdate(true);
-       
-	}
+
+    }
 }
