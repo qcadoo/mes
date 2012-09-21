@@ -10,17 +10,18 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class TechnologyDetailsHooksCC {
-	public void updateViewCostsCalculationButtonState(final ViewDefinitionState view){
-		FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+
+    public void updateViewCostsCalculationButtonState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("costCalculate");
         RibbonActionItem costCalculate = (RibbonActionItem) materials.getItemByName("costCalculate");
-        if(orderForm.getEntityId()==null){
-        	costCalculate.setEnabled(false);
-        }else{
-        	costCalculate.setEnabled(true);
+        if (orderForm.getEntityId() == null) {
+            costCalculate.setEnabled(false);
+        } else {
+            costCalculate.setEnabled(true);
         }
         costCalculate.requestUpdate(true);
-	}
+    }
 }
