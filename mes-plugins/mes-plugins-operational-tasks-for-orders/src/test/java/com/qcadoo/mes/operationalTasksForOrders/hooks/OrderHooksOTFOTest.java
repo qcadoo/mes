@@ -114,24 +114,6 @@ public class OrderHooksOTFOTest {
     }
 
     @Test
-    public void shouldChangedProdLineWhenProdLineWasNull() throws Exception {
-        // given
-        Long orderId = 1L;
-        when(entity.getId()).thenReturn(orderId);
-        when(dataDefinition.get(orderId)).thenReturn(order);
-        when(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(null);
-        when(entity.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(prodLine);
-        EntityList tasks = mockEntityList(Lists.newArrayList(task1));
-
-        when(result.getEntities()).thenReturn(tasks);
-        // when
-        hooksOTFO.changedProductionLine(dataDefinition, entity);
-        // then
-
-        Mockito.verify(task1).setField(OrderFields.PRODUCTION_LINE, prodLine);
-    }
-
-    @Test
     public void shouldChangedProdLineWhenProdLineIsChanging() throws Exception {
         // given
         Long orderId = 1L;
