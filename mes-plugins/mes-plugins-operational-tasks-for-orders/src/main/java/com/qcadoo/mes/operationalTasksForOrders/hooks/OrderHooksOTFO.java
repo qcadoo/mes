@@ -26,8 +26,9 @@ public class OrderHooksOTFO {
         Entity order = dataDefinition.get(entity.getId());
         Entity productionLine = entity.getBelongsToField(OrderFields.PRODUCTION_LINE);
         Entity orderProductionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        if ((orderProductionLine != null && productionLine == null) || (orderProductionLine == null && productionLine != null)
-                || (!orderProductionLine.equals(productionLine))) {
+        if ((orderProductionLine == null && productionLine == null) || orderProductionLine.equals(productionLine)) {
+            return;
+        } else {
             changedProductionLineInOperationalTasks(order, productionLine);
         }
     }
