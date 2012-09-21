@@ -106,6 +106,10 @@
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderDetailsHooksCNFM"
 			method="updateViewCostsButtonState" />
+			
+		<view:view-hook plugin="technologies" view="technologyDetails"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyDetailsHooksCNFM"
+			method="updateViewCostsButtonState" />
 	</modules>
 
 </plugin>

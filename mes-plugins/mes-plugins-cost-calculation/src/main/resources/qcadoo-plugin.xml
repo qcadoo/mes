@@ -89,6 +89,10 @@
 			component="form" event="showCostCalculateFromTechnology"
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="showCostCalculateFromTechnology" />
+			
+		<view:view-hook plugin="technologies" view="technologyDetails"
+			type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
+			method="updateViewCostsCalculationButtonState" />
 	</modules>
 
 </plugin>
