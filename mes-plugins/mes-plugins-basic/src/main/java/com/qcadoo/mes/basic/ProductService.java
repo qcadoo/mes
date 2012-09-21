@@ -168,7 +168,7 @@ public class ProductService {
     public void getDefaultConversionsForGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent productsGrid = (GridComponent) view.getComponentByReference("grid");
 
-        if (productsGrid.getSelectedEntities() == null) {
+        if (productsGrid.getSelectedEntities().isEmpty()) {
             return;
         }
 
@@ -196,10 +196,10 @@ public class ProductService {
             List<FormComponent> formComponents = adl.getFormComponents();
 
             for (FormComponent formComponent : formComponents) {
-                if (formComponent.getEntityId() != null) {
-                    formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(false);
-                } else {
+                if (formComponent.getEntityId() == null) {
                     formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(true);
+                } else {
+                    formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(false);
                 }
             }
         }

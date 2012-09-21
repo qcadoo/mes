@@ -32,9 +32,9 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReport
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants.TITLE;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.CREATE_USER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.UPDATE_DATE;
+import static com.qcadoo.mes.basic.constants.ShiftFields.NAME;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.PLACE;
-import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
 import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 
 import java.text.DateFormat;
@@ -88,7 +88,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         HSSFRow headerAuthorLine = sheet.createRow(1);
 
         String shift = translationService.translate(COLUMN_HEADER_SHIFT, locale) + " "
-                + entity.getBelongsToField(SHIFT).getStringField("name");
+                + entity.getBelongsToField(SHIFT).getStringField(NAME);
         String user = translationService.translate(COLUMN_HEADER_AUTHOR, locale) + " " + entity.getField(CREATE_USER).toString();
         String date = translationService.translate(COLUMN_HEADER_UPDATE_DATE, locale) + " "
                 + DateFormat.getDateInstance().format(entity.getField(UPDATE_DATE));
@@ -241,7 +241,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private List<Entity> getOccupationTypeDictionaryWithoutTechnicalCode() {
         Entity occupationTypeDictionary = dataDefinitionService
                 .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
-                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+                .add(SearchRestrictions.eq(NAME, "occupationType")).uniqueResult();
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
                 .add(SearchRestrictions.isNull("technicalCode")).list().getEntities();
@@ -250,7 +250,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private Entity getDictionaryItemWithProductionOnLine() {
         Entity occupationTypeDictionary = dataDefinitionService
                 .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
-                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+                .add(SearchRestrictions.eq(NAME, "occupationType")).uniqueResult();
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
                 .add(SearchRestrictions.eq("technicalCode", OccupationType.WORK_ON_LINE.getStringValue())).uniqueResult();
@@ -259,7 +259,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private Entity getDictionaryItemWithOtherCase() {
         Entity occupationTypeDictionary = dataDefinitionService
                 .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY).find()
-                .add(SearchRestrictions.eq("name", "occupationType")).uniqueResult();
+                .add(SearchRestrictions.eq(NAME, "occupationType")).uniqueResult();
         return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_DICTIONARY_ITEM)
                 .find().add(SearchRestrictions.belongsTo("dictionary", occupationTypeDictionary))
                 .add(SearchRestrictions.eq("technicalCode", OccupationType.OTHER_CASE.getStringValue())).uniqueResult();

@@ -141,10 +141,10 @@ public class ProductionRecordViewService {
             return;
         }
         String orderState = order.getStringField(L_STATE);
-        if (!OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
-            copyButton.setEnabled(false);
-        } else {
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyButton.setEnabled(true);
+        } else {
+            copyButton.setEnabled(false);
         }
         copyButton.requestUpdate(true);
     }

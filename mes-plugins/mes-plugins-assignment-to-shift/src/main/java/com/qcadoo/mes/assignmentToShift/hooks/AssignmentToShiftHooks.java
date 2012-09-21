@@ -77,25 +77,19 @@ public class AssignmentToShiftHooks {
             i++;
         } while (!shiftService.checkIfShiftWorkAtDate(newDate, assignmentToShift.getBelongsToField(SHIFT))
                 || !searchResultOfAssignmentToShift(assignmentToShiftDD, assignmentToShift, newDate));
-
         assignmentToShift.setField("startDate",
                 new SimpleDateFormat(DateUtils.L_DATE_FORMAT, LocaleContextHolder.getLocale()).format(newDate));
 
     }
 
-    final private boolean searchResultOfAssignmentToShift(final DataDefinition assignmentToShiftDD,
-            final Entity assignmentToShift, final Object startDate) {
+    private boolean searchResultOfAssignmentToShift(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift,
+            final Object startDate) {
 
         SearchResult searchResult = assignmentToShiftDD.find()
                 .add(SearchRestrictions.belongsTo(SHIFT, assignmentToShift.getBelongsToField(SHIFT)))
                 .add(SearchRestrictions.eq(START_DATE, startDate)).list();
 
-        if (searchResult.getEntities().isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return searchResult.getEntities().isEmpty();
     }
 
     public boolean checkUniqueEntity(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
@@ -107,9 +101,9 @@ public class AssignmentToShiftHooks {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", assignmentToShift.getId()));
         }
 
-        Entity existingAssignmentToShift = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+        SearchResult searchResult = searchCriteriaBuilder.list();
 
-        if (existingAssignmentToShift != null) {
+        if (!searchResult.getEntities().isEmpty()) {
             assignmentToShift.addError(assignmentToShiftDD.getField(SHIFT),
                     "assignmentToShift.assignmentToShift.entityAlreadyExists");
             assignmentToShift.addError(assignmentToShiftDD.getField(START_DATE),

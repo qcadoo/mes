@@ -58,10 +58,10 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
             final Entity order) {
         FieldComponent productionLine = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksFields.PRODUCTION_LINE);
-        if (!techInstOperComp.getBooleanField("isSubcontracting") && order.getBelongsToField(OrderFields.PRODUCTION_LINE) != null) {
-            productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
-        } else {
+        if (techInstOperComp.getBooleanField("isSubcontracting") || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
             productionLine.setFieldValue(null);
+        } else {
+            productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
         }
         productionLine.requestComponentUpdateState();
     }

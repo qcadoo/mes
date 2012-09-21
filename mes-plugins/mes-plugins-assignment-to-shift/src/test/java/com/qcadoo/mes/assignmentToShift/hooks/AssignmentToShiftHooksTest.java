@@ -33,6 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,6 +56,7 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -76,6 +78,12 @@ public class AssignmentToShiftHooksTest {
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
+
+    @Mock
+    private SearchResult searchResult;
+
+    @Mock
+    private List<Entity> assignmentToShifts;
 
     @Mock
     private Date startDate;
@@ -123,8 +131,9 @@ public class AssignmentToShiftHooksTest {
 
         given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(null);
+        given(searchCriteriaBuilder.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(assignmentToShifts);
+        given(assignmentToShifts.isEmpty()).willReturn(true);
 
         // when
         boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
@@ -145,8 +154,9 @@ public class AssignmentToShiftHooksTest {
 
         given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(null);
+        given(searchCriteriaBuilder.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(assignmentToShifts);
+        given(assignmentToShifts.isEmpty()).willReturn(true);
 
         // when
         boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
@@ -167,8 +177,9 @@ public class AssignmentToShiftHooksTest {
 
         given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(assignmentToShift);
+        given(searchCriteriaBuilder.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(assignmentToShifts);
+        given(assignmentToShifts.isEmpty()).willReturn(false);
 
         // when
         boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);
@@ -189,8 +200,9 @@ public class AssignmentToShiftHooksTest {
 
         given(assignmentToShiftDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(assignmentToShift);
+        given(searchCriteriaBuilder.list()).willReturn(searchResult);
+        given(searchResult.getEntities()).willReturn(assignmentToShifts);
+        given(assignmentToShifts.isEmpty()).willReturn(false);
 
         // when
         boolean result = hooks.checkUniqueEntity(assignmentToShiftDD, assignmentToShift);

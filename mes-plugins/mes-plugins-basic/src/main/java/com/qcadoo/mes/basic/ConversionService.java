@@ -56,17 +56,17 @@ public class ConversionService {
     public Long getParameterId() {
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_CONVERSION);
+
         Entity conversion = dataDefinition.find().setMaxResults(1).uniqueResult();
 
         if (conversion == null) {
             Entity newConversion = dataDefinition.create();
             Entity savedConversion = dataDefinition.save(newConversion);
-            return savedConversion.getId();
 
+            return savedConversion.getId();
         } else {
             return conversion.getId();
         }
-
     }
 
     public void getUnitConversionTree(final DataDefinition conversionDD, String unit, ConversionTree parent,
@@ -74,7 +74,6 @@ public class ConversionService {
         int y = 0;
 
         while (y <= conversionTreeList.size()) {
-
             final List<Entity> left = conversionDD.find().add(SearchRestrictions.eq(UNIT_FROM, unit))
                     .add(SearchRestrictions.neField(UNIT_FROM, UNIT_TO)).add(SearchRestrictions.isNull(PRODUCT)).list()
                     .getEntities();
@@ -84,29 +83,21 @@ public class ConversionService {
                     .getEntities();
 
             if (!left.isEmpty()) {
-
                 for (int i = 0; i < left.size(); i++) {
-
                     if (checkList(conversionTreeList, left.get(i).getStringField(UNIT_TO))) {
-
                         addConversionToTree((BigDecimal) left.get(i).getField(QUANTITY_FROM),
                                 (BigDecimal) left.get(i).getField(QUANTITY_TO), left.get(i).getStringField(UNIT_FROM), left
                                         .get(i).getStringField(UNIT_TO), left, i, parent, conversionTreeList);
-
                     }
                 }
-
             }
+
             if (!right.isEmpty()) {
-
                 for (int i = 0; i < right.size(); i++) {
-
                     if (checkList(conversionTreeList, right.get(i).getStringField(UNIT_FROM))) {
-
                         addConversionToTree((BigDecimal) right.get(i).getField(QUANTITY_TO),
                                 (BigDecimal) right.get(i).getField(QUANTITY_FROM), right.get(i).getStringField(UNIT_TO), right
                                         .get(i).getStringField(UNIT_FROM), right, i, parent, conversionTreeList);
-
                     }
                 }
             }
@@ -114,14 +105,10 @@ public class ConversionService {
             y++;
 
             if ((y > conversionTreeList.size() - 1)) {
-
                 break;
-
             } else {
-
                 unit = conversionTreeList.get(y).getUnitTo();
                 parent = conversionTreeList.get(y);
-
             }
         }
     }
@@ -137,20 +124,17 @@ public class ConversionService {
      * 
      * @return BigDecimal convert result if the converter exist in product
      */
-    public BigDecimal convertAnyToAny(Entity product, String unitFrom, String unitTo, BigDecimal quantity) {
+    public BigDecimal convertAnyToAny(final Entity product, final String unitFrom, final String unitTo, final BigDecimal quantity) {
 
         Entity resultLeftToRight = searchConversion(product, unitFrom, unitTo);
 
         if (resultLeftToRight != null) {
-
             return quantity.multiply(resultLeftToRight.getDecimalField(QUANTITY_TO), numberService.getMathContext());
-
         }
 
         Entity resultRightToLeft = searchConversion(product, unitTo, unitFrom);
 
         if (resultRightToLeft != null) {
-
             BigDecimal tmp = resultRightToLeft.getDecimalField(QUANTITY_FROM).divide(
                     resultRightToLeft.getDecimalField(QUANTITY_TO));
 
@@ -158,11 +142,9 @@ public class ConversionService {
         }
 
         return null;
-
     }
 
-    private Entity searchConversion(Entity product, String unitFrom, String unitTo) {
-
+    private Entity searchConversion(final Entity product, final String unitFrom, final String unitTo) {
         DataDefinition convertDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_CONVERSION_ITEM);
 
@@ -171,11 +153,11 @@ public class ConversionService {
                 .uniqueResult();
 
         return result;
-
     }
 
     public void addConversionToTree(final BigDecimal quntityFrom, final BigDecimal quntityTo, final String unitFrom,
-            final String unitTo, List<Entity> list, int i, ConversionTree parent, List<ConversionTree> conversionTreeList) {
+            final String unitTo, final List<Entity> list, final int i, final ConversionTree parent,
+            final List<ConversionTree> conversionTreeList) {
         ConversionTree ct = new ConversionTree();
         ct.setQuantityFrom(quntityFrom);
         ct.setQuantityTo(quntityTo);
@@ -188,8 +170,8 @@ public class ConversionService {
             ct.setQuantityTo(div);
             ct.setQuantityFrom(BigDecimal.ONE);
         }
-        conversionTreeList.add(ct);
 
+        conversionTreeList.add(ct);
     }
 
     public void calculateTree(final ConversionTree node, final String unit) {
@@ -210,6 +192,7 @@ public class ConversionService {
 
             return true;
         }
+
         return true;
     }
 
