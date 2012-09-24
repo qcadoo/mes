@@ -19,6 +19,8 @@
 		<belongsTo name="productIn" model="product" plugin="basic" persistent="false"/>
 		<belongsTo name="productOut" model="product" plugin="basic" persistent="false"/>
 	</fields>
-	<hooks />
+	<hooks >
+		<validatesWith class="com.qcadoo.mes.operationalTasks.validators.OperationalTaskValidators" method="compareDate" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
