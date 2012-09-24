@@ -51,6 +51,7 @@
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
 					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 					var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+					var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
 					
 					var containsAtLeastOneLocation = false;
 					var entityExists = false;
@@ -89,16 +90,19 @@
 								xlsRibbonItem.enable();
 								pdfRibbonItem.enable();
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+								cancelRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
+								cancelRibbonItem.enable();
 							}
 						} else {
 							copyRibbonItem.disable("#{translate(recordNotCreated)}");
 							xlsRibbonItem.disable("#{translate(recordNotCreated)}");
 							pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 							saveRibbonItem.enable();
+							cancelRibbonItem.enable();
 						}
 					}
 				]]>
