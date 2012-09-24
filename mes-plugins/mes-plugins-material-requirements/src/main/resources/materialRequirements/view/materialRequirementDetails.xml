@@ -54,6 +54,7 @@
 					var saveBack = #{window}.getRibbonItem("actions.saveBack");
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
 					var generateRibbonItem = #{window}.getRibbonItem("generate.generate");
+					var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -95,6 +96,7 @@
 								saveRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveBack.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveNew.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
+								cancelRibbonItem.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 							} else {
 							
 							if(containsAtLeastOneOrder && !generated){
@@ -103,7 +105,8 @@
 								generateRibbonItem.enable();
 								saveRibbonItem.enable();
 								saveBack.enable();
-								saveNew.enable(); } else
+								saveNew.enable();
+								cancelRibbonItem.enable(); } else
 								{
 								xlsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
@@ -111,6 +114,7 @@
 								saveRibbonItem.enable();
 								saveBack.enable();
 								saveNew.enable();
+								cancelRibbonItem.enable();
 								}
 							}
 						} else {
@@ -121,6 +125,7 @@
 							saveRibbonItem.enable();
 							saveBack.enable();
 							saveNew.enable();
+							cancelRibbonItem.enable();
 						}
 					}
 				]]>
