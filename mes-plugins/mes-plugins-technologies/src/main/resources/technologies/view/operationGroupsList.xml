@@ -34,17 +34,21 @@
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
-		<component type="grid" name="operationGroups" reference="grid">
-			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="name" fields="name" link="true"
-				width="200" />
-			<option type="order" column="number" direction="asc" />
-			<option type="correspondingView" value="technologies/operationGroupDetails" />
-			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number, name" />
-			<option type="orderable" value="number, name" />
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+		<component type="gridLayout" name="gridLayout" columns="2"
+			rows="1" hasBorders="false">
+			<layoutElement column="1" row="1">
+				<component type="grid" name="operationGroups" reference="grid">
+					<option type="column" name="number" fields="number" link="true" width="50" />
+					<option type="column" name="name" fields="name" link="true" />
+					<option type="order" column="number" direction="asc" />
+					<option type="correspondingView" value="technologies/operationGroupDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="searchable" value="number, name" />
+					<option type="orderable" value="number, name" />
+					<option type="fullscreen" value="true" />
+					<option type="multiselect" value="true" />
+				</component>	
+			</layoutElement>
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
