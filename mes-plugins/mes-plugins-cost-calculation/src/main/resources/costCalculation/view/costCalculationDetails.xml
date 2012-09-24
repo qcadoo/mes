@@ -82,6 +82,7 @@
 						var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
 						var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
 						var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+						var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
 						
 						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 						
@@ -117,14 +118,17 @@
 									saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
 									saveBackRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
 									saveNewRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
+									cancelRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
 								} else {
 									pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
 									saveRibbonItem.enable();
+									cancelRibbonItem.enabled()
 								}
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 								saveRibbonItem.enable();
+								cancelRibbonItem.enabled()
 							}
 						}
 					]]>
