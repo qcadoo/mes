@@ -58,6 +58,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class MaterialRequirementService {
@@ -88,6 +89,9 @@ public class MaterialRequirementService {
 
     @Autowired
     private OrderHelperService orderHelperService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField("fileName", null);
@@ -232,7 +236,10 @@ public class MaterialRequirementService {
     private Entity printMaterialReqForOrder(final ComponentState state) {
 
         Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
-        entityFieldsMap.put("onlyComponents", false);
+        entityFieldsMap.put("mrpAlgorithm", "02allProductsIn");
+
+        entityFieldsMap.put("number", numberGeneratorService.generateNumber(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT));
 
         OrderReportService.OrderValidator orderValidator = new OrderReportService.OrderValidator() {
 
