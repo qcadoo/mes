@@ -150,7 +150,8 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         List<Entity> assignmentWorkerToShifts = avgLaborCostCalcForOrder.getHasManyField("assignmentWorkerToShifts");
         for (Entity assignmentWorkerToShift : assignmentWorkerToShifts) {
             Entity worker = assignmentWorkerToShift.getBelongsToField(AssignmentWorkerToShiftFields.WORKER);
-            averageCost = averageCost.add(worker.getDecimalField(StaffFieldsWG.LABOR_HOURLY_COST));
+            averageCost = averageCost.add(worker.getDataDefinition().get(worker.getId())
+                    .getDecimalField(StaffFieldsWG.LABOR_HOURLY_COST));
         }
         if (!assignmentWorkerToShifts.isEmpty()) {
             averageCost = averageCost.divide(BigDecimal.valueOf(assignmentWorkerToShifts.size()));
@@ -190,7 +191,8 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         } else if (state.equals(AssignmentToShiftState.ACCEPTED.getStringValue())
                 || state.equals(AssignmentToShiftState.DURING_CORRECTION.getStringValue())) {
             staffAssignmentToShifts = searchCriteriaBuilder
-                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.ACCEPTED)).list().getEntities();
+                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.ACCEPTED.getStringValue())).list()
+                    .getEntities();
         }
         return staffAssignmentToShifts;
     }
