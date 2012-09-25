@@ -176,7 +176,7 @@
 						<option type="multiselect" value="true" />
 					</component>
 					<component type="grid" name="materialRequirementComponents"
-						reference="materialRequirementComponents" source="#{form}.orders">
+						reference="materialRequirementComponents" source="#{form}.orders" defaultEnabled="false">
 						<option type="column" name="number" fields="number" width="50" />
 						<option type="column" name="name" fields="name" />
 						<option type="order" column="number" direction="desc" />
