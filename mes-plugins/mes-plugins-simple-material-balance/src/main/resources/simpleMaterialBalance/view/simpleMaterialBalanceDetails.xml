@@ -115,7 +115,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="4" width="2" height="6">
 					<component type="grid" name="simpleMaterialBalanceOrdersComponents"
-						reference="simpleMaterialBalanceOrdersComponents" source="#{form}.simpleMaterialBalanceOrdersComponents">
+						reference="simpleMaterialBalanceOrdersComponents" source="#{form}.simpleMaterialBalanceOrdersComponents" defaultEnabled="false">
 						<option type="column" name="number" fields="order"
 							expression="#order['number']" width="50" />
 						<option type="column" name="name" fields="order"
@@ -136,7 +136,7 @@
 				</layoutElement>
 				<layoutElement column="3" row="4" width="2" height="6">
 					<component type="grid" name="simpleMaterialBalanceLocationsComponents"
-						reference="simpleMaterialBalanceLocationsComponents" source="#{form}.simpleMaterialBalanceLocationsComponents">
+						reference="simpleMaterialBalanceLocationsComponents" source="#{form}.simpleMaterialBalanceLocationsComponents" defaultEnabled="false">
 						<option type="column" name="number" fields="location"
 							expression="#location['number']" width="50" />
 						<option type="column" name="name" fields="location"

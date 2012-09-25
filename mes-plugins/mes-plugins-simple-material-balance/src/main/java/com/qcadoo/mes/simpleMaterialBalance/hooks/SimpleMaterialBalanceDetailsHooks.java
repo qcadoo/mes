@@ -11,6 +11,7 @@ import com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBal
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 @Service
@@ -18,6 +19,10 @@ public class SimpleMaterialBalanceDetailsHooks {
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
         Boolean enabled = false;
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
         ComponentState generated = (ComponentState) view.getComponentByReference("generated");
         if (generated == null || generated.getFieldValue() == null || "0".equals(generated.getFieldValue())) {
             enabled = true;
