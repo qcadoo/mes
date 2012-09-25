@@ -37,12 +37,12 @@
 		<component type="grid" name="operations" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
 			<option type="column" name="name" fields="name" link="true" />
-			<option type="column" name="operationGroupNumber" fields="operationGroup" expression="#operationGroup['number']"/>
+			<option type="column" name="operationGroupNumber" fields="operationGroup" expression="#operationGroup['number']" link="true"/>
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="technologies/operationDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number, name" />
-			<option type="orderable" value="number, name" />
+			<option type="searchable" value="number, name, operationGroupNumber" />
+			<option type="orderable" value="number, name, operationGroupNumber" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
