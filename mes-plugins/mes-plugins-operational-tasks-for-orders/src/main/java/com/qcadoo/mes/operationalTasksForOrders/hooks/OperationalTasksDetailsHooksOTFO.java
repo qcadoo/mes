@@ -24,9 +24,18 @@ public class OperationalTasksDetailsHooksOTFO {
         if (type.getFieldValue().equals("01otherCase")) {
             changedStateField(view, referenceBasicFields, true);
             changedStateField(view, extendFields, false);
+            clearFieldValue(view, extendFields);
         } else {
             changedStateField(view, referenceBasicFields, false);
             changedStateField(view, extendFields, true);
+        }
+    }
+
+    private void clearFieldValue(final ViewDefinitionState view, final List<String> references) {
+        for (String reference : references) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setFieldValue(null);
+            field.requestComponentUpdateState();
         }
     }
 

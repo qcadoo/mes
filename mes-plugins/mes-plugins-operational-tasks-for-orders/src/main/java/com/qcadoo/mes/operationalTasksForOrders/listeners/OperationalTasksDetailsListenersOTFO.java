@@ -48,12 +48,13 @@ public class OperationalTasksDetailsListenersOTFO {
                 .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         technologyLookup.setFieldValue(null);
         technologyLookup.requestComponentUpdateState();
-        if (order == null) {
-            return;
-        }
         FieldComponent productionLine = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksFields.PRODUCTION_LINE);
-        productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+        if (order == null) {
+            productionLine.setFieldValue(null);
+        } else {
+            productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+        }
         productionLine.requestComponentUpdateState();
     }
 
@@ -61,15 +62,17 @@ public class OperationalTasksDetailsListenersOTFO {
             final String[] args) {
         Entity techInstOperComp = ((LookupComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
-        if (techInstOperComp == null) {
-            return;
-        }
         FieldComponent description = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksFields.DESCRIPTION);
         FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME);
-        description.setFieldValue(techInstOperComp.getStringField(TechnologyInstanceOperCompFields.COMMENT));
-        name.setFieldValue(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(
-                OperationFields.NAME));
+        if (techInstOperComp == null) {
+            description.setFieldValue(null);
+            name.setFieldValue(null);
+        } else {
+            description.setFieldValue(techInstOperComp.getStringField(TechnologyInstanceOperCompFields.COMMENT));
+            name.setFieldValue(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(
+                    OperationFields.NAME));
+        }
         description.requestComponentUpdateState();
         name.requestComponentUpdateState();
     }

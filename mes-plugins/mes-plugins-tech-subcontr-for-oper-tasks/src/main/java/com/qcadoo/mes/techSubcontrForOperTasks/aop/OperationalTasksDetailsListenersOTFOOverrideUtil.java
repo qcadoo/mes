@@ -16,21 +16,12 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class OperationalTasksDetailsListenersOTFOOverrideUtil {
 
     public void checkIfOperationIsSubcontracted(final ViewDefinitionState viewDefinitionState) {
-        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER))
-                .getEntity();
         LookupComponent technologyLookup = (LookupComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         technologyLookup.setFieldValue(null);
         technologyLookup.requestComponentUpdateState();
-        if (order == null) {
-            return;
-        }
-        Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
-        if (techInstOperComp == null) {
-            return;
-        }
-        fillProductionLineField(viewDefinitionState, techInstOperComp, order);
+
+        fillProductionLineField(viewDefinitionState);
     }
 
     public void setOperationalNameAndDescriptionForSubcontractedOperation(final ViewDefinitionState viewDefinitionState) {
@@ -43,9 +34,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
             description.setFieldValue(null);
             name.setFieldValue(null);
         } else {
-            Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER))
-                    .getEntity();
-            fillProductionLineField(viewDefinitionState, techInstOperComp, order);
+            fillProductionLineField(viewDefinitionState);
             description.setFieldValue(techInstOperComp.getStringField(TechnologyInstanceOperCompFields.COMMENT));
             name.setFieldValue(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(
                     OperationFields.NAME));
@@ -54,15 +43,25 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
         name.requestComponentUpdateState();
     }
 
-    private void fillProductionLineField(final ViewDefinitionState viewDefinitionState, final Entity techInstOperComp,
-            final Entity order) {
+    private void fillProductionLineField(final ViewDefinitionState viewDefinitionState) {
+        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER))
+                .getEntity();
         FieldComponent productionLine = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OperationalTasksFields.PRODUCTION_LINE);
-        if (techInstOperComp.getBooleanField("isSubcontracting") || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
+        if (order == null || isSubcontracting(viewDefinitionState)) {
             productionLine.setFieldValue(null);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.DESCRIPTION))
+                    .setFieldValue(null);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME)).setFieldValue(null);
         } else {
             productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
         }
         productionLine.requestComponentUpdateState();
+    }
+
+    private boolean isSubcontracting(final ViewDefinitionState viewDefinitionState) {
+        Entity techInstOperComp = ((LookupComponent) viewDefinitionState
+                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        return techInstOperComp != null && techInstOperComp.getBooleanField("isSubcontracting");
     }
 }

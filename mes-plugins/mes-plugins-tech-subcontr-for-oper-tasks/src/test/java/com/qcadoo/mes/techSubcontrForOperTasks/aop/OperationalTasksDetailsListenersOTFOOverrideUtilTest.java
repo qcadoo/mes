@@ -70,9 +70,11 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
     @Test
     public void shouldReturnWhenTechInstOperCompIsNull() throws Exception {
         // given
+        Long productionLineId = 1L;
         when(orderLookup.getEntity()).thenReturn(order);
         when(techInstOperCompLookup.getEntity()).thenReturn(null);
-
+        when(order.getBelongsToField("productionLine")).thenReturn(productionLine);
+        when(productionLine.getId()).thenReturn(productionLineId);
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
         Mockito.verify(techInstOperCompLookup).setFieldValue(null);
@@ -81,10 +83,13 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtilTest {
     @Test
     public void shouldSetNullInProductionLineLookupWhenOperationIsNotSubcontrAndOrderProductionLineIsNull() throws Exception {
         // given
+        String name = "name";
         when(orderLookup.getEntity()).thenReturn(order);
         when(order.getBelongsToField(OrderFields.PRODUCTION_LINE)).thenReturn(null);
         when(techInstOperCompLookup.getEntity()).thenReturn(techInstOperComp);
         when(techInstOperComp.getBooleanField("isSubcontracting")).thenReturn(true);
+        when(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION)).thenReturn(operation);
+        when(operation.getStringField("name")).thenReturn(name);
 
         util.checkIfOperationIsSubcontracted(viewDefinitionState);
         // then
