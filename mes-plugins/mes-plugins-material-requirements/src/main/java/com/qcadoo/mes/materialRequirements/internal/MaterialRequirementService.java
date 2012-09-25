@@ -102,6 +102,10 @@ public class MaterialRequirementService {
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
         ComponentState name = state.getComponentByReference("name");
         ComponentState mrpAlgorithm = state.getComponentByReference("mrpAlgorithm");
         ComponentState materialRequirementComponents = state.getComponentByReference("materialRequirementComponents");
