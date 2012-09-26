@@ -26,7 +26,9 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologyGroupsList" modelName="technologyGroup" menuAccessible="true">
+	name="technologyGroupsList" 
+	modelName="technologyGroup" 
+	menuAccessible="true">
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
@@ -53,7 +55,8 @@
 					<option type="multiselect" value="true" />
 				</component>
 			</layoutElement>
-		</component>	
+		</component>
+		
 		<option type="header" value="false" />
 	</component>	
 </view>
