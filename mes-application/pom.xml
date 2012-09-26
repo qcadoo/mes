@@ -537,6 +537,31 @@
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-orc-basic</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-orc-technologies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-orc-orders</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-orc-full</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-integration-orc-warehouse</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-advanced-genealogy</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
