@@ -50,7 +50,6 @@
 				</component>	
 			</layoutElement>
 		</component>
-		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
 </view>

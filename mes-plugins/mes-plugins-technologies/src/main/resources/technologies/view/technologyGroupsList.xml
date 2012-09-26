@@ -49,11 +49,11 @@
 					<option type="correspondingView" value="technologies/technologyGroupDetails" />
 					<option type="correspondingComponent" value="form" />
 		
+					<option type="fullscreen" value="true" />
 					<option type="multiselect" value="true" />
 				</component>
 			</layoutElement>
 		</component>	
-		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>	
 </view>
