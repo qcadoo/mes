@@ -58,13 +58,11 @@
 					<layoutElement column="1" row="1">
 						<component type="calendar" name="startDate" field="startDate"
 							reference="startDate">
-							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="calendar" name="finishDate" field="finishDate"
 							reference="finishDate">
-							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">

@@ -105,7 +105,7 @@ public class MultitransferListeners {
         staffField.requestComponentUpdateState();
 
         String type = typeField.getFieldValue().toString();
-        Date time = timeConverterService.getDateFromField(timeField.getFieldValue());
+        Date time = timeConverterService.getDateTimeFromField(timeField.getFieldValue());
         Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
         Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
         Entity staff = materialFlowService.getStaffById((Long) staffField.getFieldValue());

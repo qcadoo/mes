@@ -128,7 +128,7 @@ public class TimeTechnologyInOrderService {
         } else {
             realizationTime.setFieldValue(maxPathTime);
 
-            Date dateFrom = timeConverterService.getDateFromField(startTime.getFieldValue());
+            Date dateFrom = timeConverterService.getDateTimeFromField(startTime.getFieldValue());
             Date dateTo = shiftsService.findDateToForOrder(dateFrom, maxPathTime);
 
             if (dateTo != null) {

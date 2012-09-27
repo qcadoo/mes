@@ -220,4 +220,11 @@ ALTER TABLE operationaltasks_operationaltask
       REFERENCES orders_order (id) DEFERRABLE; 
       
 -- end   
+
+-- Table operationaltasks_operationaltask
+-- change: 27.09.2012
+alter table avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN startdate TYPE date;
+alter table avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finishdate TYPE date;
+
+--end
       

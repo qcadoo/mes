@@ -28,8 +28,8 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<datetime name="startDate" />
-		<datetime name="finishDate" />
+		<date name="startDate" />
+		<date name="finishDate" />
 		<belongsTo name="order" model="order" plugin="orders" />
 		<belongsTo name="productionLine" model="productionLine"
 			plugin="productionLines" />

@@ -617,8 +617,8 @@ public class OrderService {
         if (dateTo.getFieldValue().equals("") || deadline.getFieldValue().equals("")) {
             return;
         }
-        if (timeConverterService.getDateFromField(dateTo.getFieldValue()).compareTo(
-                timeConverterService.getDateFromField(deadline.getFieldValue())) == 1) {
+        if (timeConverterService.getDateTimeFromField(dateTo.getFieldValue()).compareTo(
+                timeConverterService.getDateTimeFromField(deadline.getFieldValue())) == 1) {
             form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
         }
     }
