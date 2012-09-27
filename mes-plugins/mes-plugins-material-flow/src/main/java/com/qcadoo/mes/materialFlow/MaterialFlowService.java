@@ -198,7 +198,7 @@ public class MaterialFlowService {
             Long locationNumber = (Long) location.getFieldValue();
             Long productNumber = (Long) product.getFieldValue();
 
-            Date forDate = timeConverterService.getDateFromField(date.getFieldValue());
+            Date forDate = timeConverterService.getDateTimeFromField(date.getFieldValue());
 
             BigDecimal shouldBe = calculateShouldBeInLocation(locationNumber, productNumber, forDate);
 
