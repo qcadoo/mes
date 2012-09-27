@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="deliveries" version="1.1.8-SNAPSHOT"
+<plugin plugin="deliveries" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -26,23 +26,31 @@
 		</vendor>
 	</information>
 
+	<dependencies>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
 		
-		<model:model model="deliveries" resource="model/deliveries.xml" />
+		<model:model model="delivery" resource="model/delivery.xml" />
+		<model:model model="deliveredProduct" resource="model/deliveredProduct.xml" />
+		<model:model model="orderedProduct" resource="model/orderedProduct.xml" />
+		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
 		
-		<menu:menu-category name="deliveries" />
+		<menu:menu-category name="requirements" />
 
-		<menu:menu-item name="deliveries" category="deliveries"
+		<menu:menu-item name="deliveries" category="requirements"
 			view="deliveriesList" />
 
 		<view:view resource="view/deliveriesList.xml" />
-		<view:view resource="view/deliveriesDetails.xml" />
+		<view:view resource="view/deliveryDetails.xml" />
+		<view:view resource="view/deliveredProductDetails.xml" />
+		<view:view resource="view/orderedProductDetails.xml" />
 		
-		<view:resource uri="public/**/*" />
-		
-		<report:report-template name="sample" resource="report/sample.jrxml" />
 
 	</modules>
 

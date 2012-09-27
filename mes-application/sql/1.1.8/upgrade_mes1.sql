@@ -228,3 +228,83 @@ alter table avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finis
 
 --end
       
+      
+-- Table: deliveries_delivery
+-- change: 27.09.2012
+
+CREATE TABLE deliveries_delivery
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  "name" character varying(1024),
+  description character varying(2048),
+  state character varying(255),
+  supplier_id bigint,
+  deliverydate timestamp without time zone,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  "createuser" character varying(255),
+  updateuser character varying(255),
+  delivery_id bigint,
+  CONSTRAINT deliveries_delivery_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT basic_company_fkey FOREIGN KEY (supplier_id)
+      REFERENCES basic_company (id) DEFERRABLE
+);
+-- end
+
+-- Table: deliveries_deliverystatechange
+-- change: 27.09.2012
+CREATE TABLE deliveries_deliverystatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  status character varying(255),
+  phase integer,
+  worker character varying(255),
+  delivery_id bigint,
+  shift_id bigint,
+  CONSTRAINT deliveries_deliverystatechange_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+);
+-- end
+
+
+-- Table: deliveries_orderedproduct
+-- change: 27.09.2012
+CREATE TABLE deliveries_orderedproduct
+(
+  id bigint NOT NULL,
+  delivery_id bigint,
+  product_id bigint,
+  quantity numeric(12,5),
+  CONSTRAINT deliveries_orderedproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);
+-- end
+
+-- Table: deliveries_deliveredproduct
+-- change: 27.09.2012
+CREATE TABLE deliveries_deliveredproduct
+(
+  id bigint NOT NULL,
+  delivery_id bigint,
+  product_id bigint,
+  orderedquantity numeric(12,5),
+  deliveredquantity numeric(12,5),
+  damagedquantity numeric(12,5),
+  CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE
+);

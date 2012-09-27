@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="orderedProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="delivery" model="delivery"/>
+		<belongsTo name="product" model="product" plugin="basic"/>
+		<decimal name="orderedQuantity" />
+	</fields>
+	<hooks />
+</model>
