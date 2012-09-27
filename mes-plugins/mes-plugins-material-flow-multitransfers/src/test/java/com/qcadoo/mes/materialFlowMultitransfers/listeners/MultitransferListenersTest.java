@@ -159,7 +159,7 @@ public class MultitransferListenersTest {
         Long dateFieldValue = 123L;
 
         given(timeComp.getFieldValue()).willReturn(dateFieldValue);
-        given(timeConverterService.getDateFromField(dateFieldValue)).willReturn(time);
+        given(timeConverterService.getDateTimeFromField(dateFieldValue)).willReturn(time);
 
         given(locationFromComponent.getFieldValue()).willReturn(0L);
         given(locationToComponent.getFieldValue()).willReturn(1L);

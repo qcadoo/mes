@@ -298,7 +298,7 @@ public class OrderTimePredictionService {
             dateTo.setFieldValue(null);
         } else {
             realizationTime.setFieldValue(maxPathTime);
-            Date startTime = timeConverterService.getDateFromField(dateFrom.getFieldValue());
+            Date startTime = timeConverterService.getDateTimeFromField(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
             if (stopTime != null) {
