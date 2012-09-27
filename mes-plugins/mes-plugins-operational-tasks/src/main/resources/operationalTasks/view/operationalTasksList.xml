@@ -7,7 +7,7 @@
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="mainTabGridLayout"
-				columns="3" rows="2">
+				columns="3" rows="2" hasBorder="false">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="productIn" field="productIn"
 						reference="productIn">
