@@ -59,6 +59,7 @@
 		<string name="nodeNumber" persistent="false" />
 		<enum name="entityType" values="01particularProduct,02productsFamily"
 			default="01particularProduct" required="true"/>
+		<belongsTo name="company" model="company" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />

@@ -61,6 +61,7 @@
     <module>mes-plugins-operational-tasks</module>
     <module>mes-plugins-operational-tasks-for-orders</module>
     <module>mes-plugins-tech-subcontr-for-oper-tasks</module>
+<module>mes-plugins-deliveries</module>
   </modules>
 
 

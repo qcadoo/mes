@@ -28,8 +28,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="number" required="true" unique="true" />
-		<string name="name" required="true" default='Company'>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
 			<validatesLength max="255" />
 		</string>
 		<string name="tax" required="false" />
@@ -50,8 +52,15 @@
 		<string name="website" required="false" />
 		<string name="phone" required="false" />
 		<boolean name="owner" required="false" default="false" />
-
 		<string name="externalNumber" />
+		
+<!-- 		<manyToMany name="products" joinField="companies" model="product" -->
+<!-- 			plugin="basic" copyable="true" /> -->
+<!-- 		<manyToMany name="technologies" joinField="productionLines" model="technology" -->
+<!-- 			plugin="basic" copyable="true" /> -->
+
+		<hasMany name="products" model="product"
+			joinField="company" cascade="delete" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />

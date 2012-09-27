@@ -33,96 +33,146 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
-		<component type="form" name="company" reference="form">
-			<script>
-				<![CDATA[
-					var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy"];
-
-					var listener = {
-						onSetValue: function() {
-							var owner = #{owner}.getValue().content.value;
-							
-							if (owner == true) {	
-								disableButtons(buttonsStandard, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
- 							} else {
- 								enableButtons(buttonsStandard);
- 							}
-						}
-					};
-					
-					function disableButtons(buttonNames, message) { 
-						for (var buttonName in buttonNames) { 
-							if ( message == '') {
-								#{window}.getRibbonItem(buttonNames[buttonName]).disable();
-							} else {
-								#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+		<script>
+					<![CDATA[
+						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy"];
+	
+						var listener = {
+							onSetValue: function() {
+								var owner = #{owner}.getValue().content.value;
+								
+								if (owner == true) {	
+									disableButtons(buttonsStandard, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
+	 							} else {
+	 								enableButtons(buttonsStandard);
+	 							}
 							}
+						};
+						
+						function disableButtons(buttonNames, message) { 
+							for (var buttonName in buttonNames) { 
+								if ( message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+								}
+							} 
 						} 
-					} 
+						
+						function enableButtons(buttonNames, message) { 
+							for (var buttonName in buttonNames) { 	
+								if ( message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
+								}
+							} 
+						} 
+	
+						#{form}.addOnChangeListener(listener);
+					]]>
+				</script>
+		<windowTab name="mainTab">
+			<component type="form" name="company" reference="form">
+				
+				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="7">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="name" field="name"  />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="tax" field="tax" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="phone" field="phone" />
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="input" name="email" field="email" />
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="input" name="website" field="website" />
+					</layoutElement>
+					<layoutElement column="1" row="7">	
+						<component type="hidden" name="owner" field="owner" reference="owner" />
+					</layoutElement>
 					
-					function enableButtons(buttonNames, message) { 
-						for (var buttonName in buttonNames) { 	
-							if ( message == '') {
-								#{window}.getRibbonItem(buttonNames[buttonName]).enable();
-							} else {
-								#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
-							}
-						} 
-					} 
+					<layoutElement column="2" row="1">
+						<component type="input" name="street" field="street" />
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="input" name="house" field="house" />
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="input" name="flat" field="flat" />
+					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="input" name="zipCode" field="zipCode" />
+					</layoutElement>
+					<layoutElement column="2" row="5">
+						<component type="input" name="city" field="city" />
+					</layoutElement>
+					<layoutElement column="2" row="6">
+						<component type="input" name="state" field="state" />
+					</layoutElement>
+					<layoutElement column="2" row="7">
+						<component type="input" name="country" field="country" />
+					</layoutElement>
+	
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="' '" />
+			</component>
+		</windowTab>
+		<windowTab name="sellsTab">
 
-					#{form}.addOnChangeListener(listener);
-				]]>
-			</script>
-			<component type="gridLayout" name="gridLayout" columns="3" rows="14">
+			<component type="gridLayout" name="sellsTabGridLayout"
+				columns="2" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
-						<option type="alignment" value="right" />
+					<component type="lookup" name="productsLookup" reference="productsLookup"
+						field="#{form}.products" defaultVisible="false" persistent="false"
+						hasLabel="false">
+						
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="products" reference="products"
+						source="#{form}.products">
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="order" column="number" direction="desc" />
+
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="productsLookup" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="input" name="name" field="name"  />
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="input" name="tax" field="tax" />
-				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="input" name="street" field="street" />
-				</layoutElement>
-				<layoutElement column="1" row="5">
-					<component type="input" name="house" field="house" />
-				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="input" name="flat" field="flat" />
-				</layoutElement>
-				<layoutElement column="1" row="7">
-					<component type="input" name="zipCode" field="zipCode" />
-				</layoutElement>
-				<layoutElement column="1" row="8">
-					<component type="input" name="city" field="city" />
-				</layoutElement>
-				<layoutElement column="1" row="9">
-					<component type="input" name="state" field="state" />
-				</layoutElement>
-				<layoutElement column="1" row="10">
-					<component type="input" name="country" field="country" />
-				</layoutElement>
-				<layoutElement column="1" row="11">
-					<component type="input" name="email" field="email" />
-				</layoutElement>
-				<layoutElement column="1" row="12">
-					<component type="input" name="website" field="website" />
-				</layoutElement>
-				<layoutElement column="1" row="13">
-					<component type="input" name="phone" field="phone" />
-				</layoutElement>
-				<layoutElement column="1" row="14">	
-					<component type="hidden" name="owner" field="owner" reference="owner" />
-				</layoutElement>
+				
 			</component>
-			<option type="header" value="true" />
-			<option type="expression" value="' '" />
-		</component>
+		</windowTab>
+			
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.CompanyService" method="disableCompanyFormForOwner" />
 	</hooks>
