@@ -125,7 +125,7 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeInitalize class="com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks"
+		<beforeInitialize class="com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks"
 			method="addDiscriminatorRestrictionToProductsFamilies" />
 		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks"
 			method="generateTreeWhenIdIsSet" />
