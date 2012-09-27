@@ -183,14 +183,9 @@ public class ProductionPerShiftDetailsHooks {
         Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference("orderPlannedStartDate");
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference("orderCorrectedStartDate");
-        if (order.getField(OrderFields.DATE_FROM) != null) {
-            orderPlannedStartDate
-                    .setFieldValue(timeConverterService.setDateToField((Date) order.getField(OrderFields.DATE_FROM)));
-        }
-        if (order.getField(OrderFields.CORRECTED_DATE_FROM) != null) {
-            orderCorrectedStartDate.setFieldValue(timeConverterService.setDateToField((Date) order
-                    .getField(OrderFields.CORRECTED_DATE_FROM)));
-        }
+        orderPlannedStartDate.setFieldValue(timeConverterService.setDateToField((Date) order.getField(OrderFields.DATE_FROM)));
+        orderCorrectedStartDate.setFieldValue(timeConverterService.setDateToField((Date) order
+                .getField(OrderFields.CORRECTED_DATE_FROM)));
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
     }
