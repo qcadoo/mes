@@ -1,0 +1,113 @@
+<view name="deliveryDetails" modelName="delivery"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="deliveriesDetails" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="6">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number"
+							reference="number" />
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" field="name"
+							reference="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4" height="3">
+						<component type="textarea" name="description" field="description" />
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="supplier" reference="supplier"
+							field="supplier">
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="calendar" name="deliveryDate" field="deliveryDate"
+							reference="deliveryDate">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="3" row="1">
+						<component type="select" name="state" field="state"
+							reference="state" defaultEnabled="never" />
+					</layoutElement>
+					<layoutElement column="3" row="2">
+						<component type="input" name="deliveryDateBuffer"
+							reference="deliveryDateBuffer" defaultEnabled="never" />
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+		<windowTab name="orderedProductTab">
+			<component type="gridLayout" name="orderedProductsGridLayout"
+				columns="1" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="orderedProducts" reference="orderedProducts"
+						source="#{form}.orderedProducts" defaultEnabled="false">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" />
+						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="deliveries/orderedProductDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+
+						<option type="searchable" value="number,name,orderedQuantity,unit" />
+						<option type="orderable" value="number,name,orderedQuantity,unit" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="false" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="deliveredProductTab">
+			<component type="gridLayout" name="deliveredProductsGridLayout"
+				columns="1" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="deliveredProducts"
+						reference="deliveredProducts" source="#{form}.deliveredProducts"
+						defaultEnabled="false">
+						<option type="column" name="number" fields="product"
+							expression="#product['number']" link="true" />
+						<option type="column" name="name" fields="product"
+							expression="#product['name']" link="true" />
+						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
+						<option type="column" name="unit" fields="product"
+							expression="#product['unit']" link="false" width="70" />
+						<option type="order" column="number" direction="desc" />
+						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="searchable"
+							value="number,name,orderedQuantity,damagedQuantity,unit" />
+						<option type="orderable"
+							value="number,name,orderedQuantity,damagedQuantity,unit" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="false" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+	</component>
+</view>

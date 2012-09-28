@@ -39,7 +39,7 @@ public class ProgressForDayHooks {
     public void saveDateOfDay(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField(ProgressForDayFields.TECH_INST_OPER_COMP).getBelongsToField("order");
         Integer day = (Integer) entity.getField(ProgressForDayFields.DAY);
-        DateTime orderStartDate = new DateTime();
+        DateTime orderStartDate;
         if (entity.getBooleanField(ProgressForDayFields.CORRECTED)) {
             orderStartDate = new DateTime((Date) order.getField(OrderFields.CORRECTED_DATE_FROM));
         } else {
