@@ -21,6 +21,8 @@
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
 			cascade="delete" />
 	</fields>
-	<hooks />
+	<hooks >
+		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" method="clearStateFieldOnCopy"/>
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

@@ -31,6 +31,10 @@
 			<plugin>basic</plugin>
 			<version>[1.1.7</version>
 		</dependency>
+		<dependency>
+			<plugin>states</plugin>
+			<version>[1.1.7</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -40,6 +44,10 @@
 		<model:model model="deliveredProduct" resource="model/deliveredProduct.xml" />
 		<model:model model="orderedProduct" resource="model/orderedProduct.xml" />
 		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
+		
+		<model:model-field plugin="states" model="message">
+		    <model:belongsTo name="deliveryStateChange" plugin="deliveries" model="deliveryStateChange" />
+		</model:model-field>
 		
 		<menu:menu-category name="requirements" />
 

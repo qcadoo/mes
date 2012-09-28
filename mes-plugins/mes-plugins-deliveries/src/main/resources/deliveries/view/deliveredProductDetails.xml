@@ -9,7 +9,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
-					rows="4">
+					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">
@@ -23,14 +23,15 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="gridLayout" name="orderedQuantityGridLayout"
-							hasBorders="false" columns="3" rows="1">
-							<layoutElement column="1" row="1" width="2">
+							hasBorders="false" columns="4" rows="1">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="orderedQuantity"
-									reference="orderedQuantity" field="#{form}.orderedQuantity">
+									reference="orderedQuantity" field="#{form}.orderedQuantity" defaultEnabled="never">
 									<option type="alignment" value="right" />
+									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="4" row="1">
 								<component type="input" name="orderedQuantityUNIT"
 									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT" />
 							</layoutElement>
@@ -38,14 +39,15 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="gridLayout" name="deliveredQuantityGridLayout"
-							hasBorders="false" columns="3" rows="1">
-							<layoutElement column="1" row="1" width="2">
+							hasBorders="false" columns="4" rows="1">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="deliveredQuantity"
 									reference="deliveredQuantity" field="#{form}.deliveredQuantity">
 									<option type="alignment" value="right" />
+									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="4" row="1">
 								<component type="input" name="deliveredQuantityUNIT"
 									defaultEnabled="never" hasLabel="false" reference="deliveredQuantityUNIT" />
 							</layoutElement>
@@ -53,14 +55,15 @@
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="gridLayout" name="damagedQuantityGridLayout"
-							hasBorders="false" columns="3" rows="1">
-							<layoutElement column="1" row="1" width="2">
+							hasBorders="false" columns="4" rows="1">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="damagedQuantity"
 									reference="damagedQuantity" field="#{form}.damagedQuantity">
 									<option type="alignment" value="right" />
+									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="4" row="1">
 								<component type="input" name="damagedQuantityUNIT"
 									defaultEnabled="never" hasLabel="false" reference="damagedQuantityUNIT" />
 							</layoutElement>
