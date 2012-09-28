@@ -10,7 +10,7 @@
 
 	<name>Qcadoo MES</name>
 
-	<description />
+	<description/>
 
 	<url>https://github.com/qcadoo/mes</url>
 
@@ -31,7 +31,7 @@
 	<modules>
     	<module>mes-plugins</module>
     	<module>mes-application</module>
-	  </modules>	
+  </modules>	
 
 	<properties>
 		<qcadoo.version>1.1.8-SNAPSHOT</qcadoo.version>

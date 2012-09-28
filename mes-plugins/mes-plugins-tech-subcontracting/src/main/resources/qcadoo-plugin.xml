@@ -46,6 +46,15 @@
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
 		
+		<model:model-field model="company" plugin="basic">
+				<model:hasMany name="operations" model="operation" plugin="technologies"
+					joinField="company" cascade="delete" />
+		</model:model-field>	
+
+		<model:model-field model="operation" plugin="technologies">
+				<model:belongsTo name="company" model="company" plugin="basic"/>
+		</model:model-field>
+		
 		<model:model-enum-value plugin="materialRequirements"
 			model="materialRequirement" enum="mrpAlgorithm" value="03componentsAndSubcontractorsProducts" />
 			
@@ -64,7 +73,7 @@
 			resource="view/tabExtensions/technologyInstanceOperationComponentDetails.xml" />
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
-
+		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
 
 
 	</modules>

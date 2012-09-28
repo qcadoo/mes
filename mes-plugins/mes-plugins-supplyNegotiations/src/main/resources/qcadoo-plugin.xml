@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="deliveries" version="${qcadoo.plugin.version}"
+<plugin plugin="supplyNegotiations" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -19,49 +19,28 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Deliveries</name>
+		<name>Qcadoo MES :: Plugins :: SupplyNegotiations</name>
 		<vendor>
 			<name>Qcadoo</name>
 			<url>www.qcadoo.com</url>
 		</vendor>
 	</information>
 
-	<dependencies>
-		<dependency>
-			<plugin>basic</plugin>
-			<version>[0.4.1</version>
-		</dependency>
-	</dependencies>
 
 	<modules>
 		<localization:translation path="locales" />
 		
-		<model:model model="deliveries" resource="model/deliveries.xml" />
+		<model:model model="supplyNegotiations" resource="model/supplyNegotiations.xml" />
 		
-		<menu:menu-category name="deliveries" />
+		<menu:menu-category name="supplyNegotiations" />
 
-		<menu:menu-item name="deliveries" category="deliveries"
-			view="deliveriesList" />
-			
-		<model:model-field model="company" plugin="basic">
-				<model:hasMany name="products" model="product" plugin="basic"
-				joinField="company" cascade="delete" />
-		</model:model-field>
-				
-		<model:model-field model="product" plugin="basic">
-				<model:belongsTo name="company" model="company" plugin="basic"/>
-		</model:model-field>		
+		<menu:menu-item name="supplyNegotiations" category="supplyNegotiations"
+			view="supplyNegotiationsList" />
+
+		<view:view resource="view/supplyNegotiationsList.xml" />
+		<view:view resource="view/supplyNegotiationsDetails.xml" />
 		
-		<model:model-field model="company" plugin="basic">
-				<model:string name="buffer"></model:string>
-		</model:model-field>
-		
-		<view:view resource="view/deliveriesList.xml" />
-		<view:view resource="view/deliveriesDetails.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />
-		
+
 	</modules>
 
 </plugin>
