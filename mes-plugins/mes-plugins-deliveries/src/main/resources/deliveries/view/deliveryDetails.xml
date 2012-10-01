@@ -1,12 +1,172 @@
 <view name="deliveryDetails" modelName="delivery"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	<component type="window" name="window">
+	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="generate">
+				<bigButton name="generateOrder" icon="pdfIcon24.png"
+					state="enabled" />
+				<bigButton name="generateDelivery" icon="pdfIcon24.png"
+					state="enabled" />
+			</group>
+			<group name="status">
+				<smallButton name="accept" icon="startIcon16.png"
+					state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "draft") {
+										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept.confirm)}")) {
+											#{form}.performEvent('changeState', ['02prepared']);
+										};
+									} else if (this.state == "prepare") {
+										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder.confirm)}")) {
+											#{form}.performEvent('changeState', ['03duringCorrection']);
+										};
+									} else if (this.state == "correct") {
+										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+											#{form}.performEvent('changeState', ['05approved']);
+										};
+									} else if (this.state == "receive") {
+										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery.confirm)}")) {
+											#{form}.performEvent('changeState', ['06received']);
+										};
+									}
+								}
+							});
+							]]>
+					</script>
+				</smallButton>
+				<smallButton name="declineDelivery" icon="deleteIcon16.png"
+					state="disabled">
+					<script>
+					<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery.confirm)}")) {
+									#{form}.performEvent('changeState', ['04declined']);
+								};
+							}
+						});
+							]]>
+					</script>
+				</smallButton>
+				<smallButton name="approveDelivery" icon="acceptIcon16.png"
+					state="disabled">
+					<script>
+						<![CDATA[
+						this.addOnChangeListener({
+							onClick: function() {
+								if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+									#{form}.performEvent('changeState', ['05approved']);
+								};
+							}
+						});
+						]]>
+					</script>
+				</smallButton>
+			</group>
+			<group name="copy">
+				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
+					state="disabled" />
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
+				<script>
+					<![CDATA[
+					var save = #{window}.getRibbonItem("actions.save");
+					var saveBack = #{window}.getRibbonItem("actions.saveBack");
+					var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					var cancel = #{window}.getRibbonItem("actions.cancel");
+					var del = #{window}.getRibbonItem("actions.delete");
+					var accept = #{window}.getRibbonItem("status.accept");
+					var declineDelivery = #{window}.getRibbonItem("status.declineDelivery");
+					var approveDelivery = #{window}.getRibbonItem("status.approveDelivery");
+					var copyOrderedProductToDelivered = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							save.enable();
+							saveBack.enable();
+							saveNew.enable();
+							if (! value.content.entityId) {
+								cancel.disable();
+								del.disable();
+								accept.disable();
+								declineDelivery.disable();
+								approveDelivery.disable();
+								return;
+							}
+							cancel.enable();
+							del.enable();
+							var state = #{state}.getValue().content.value;
+							if (!state) {
+								return;
+							}
+							if (state == "01draft") {
+								accept.enable();
+								accept.state = "draft";
+								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+								accept.setIcon('startIcon16.png');
+								declineDelivery.enable();
+								declineDelivery.state = "decline";
+								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDelivery.setIcon('deleteIcon16.png');
+								approveDelivery.enable();
+								copyOrderedProductToDelivered.enable();
+							} else if (state == "02prepared") {
+								accept.enable();
+								accept.state = "prepare";
+								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+								accept.setIcon('startIcon16.png');
+								declineDelivery.enable();
+								declineDelivery.state = "decline";
+								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDelivery.setIcon('deleteIcon16.png');
+								approveDelivery.enable();
+								copyOrderedProductToDelivered.disable();
+							} else if (state == "03duringCorrection") {
+								accept.disable();
+								accept.state = "correct";
+								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+								accept.setIcon('acceptIcon16.png');
+								declineDelivery.enable();
+								declineDelivery.state = "decline";
+								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDelivery.setIcon('deleteIcon16.png');
+								approveDelivery.enable();
+								copyOrderedProductToDelivered.enable();
+							} else if (state == "05approved"){
+								accept.enable();
+								accept.state = "receive";
+								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+								accept.setIcon('acceptIcon16.png');
+								declineDelivery.enable();
+								declineDelivery.state = "decline";
+								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDelivery.setIcon('deleteIcon16.png');
+								approveDelivery.disable();
+								copyOrderedProductToDelivered.disable();
+							} else {
+								save.disable();
+								saveBack.disable();
+								saveNew.disable();
+								cancel.disable();
+								del.disable();
+								accept.disable();
+								declineDelivery.disable();
+								approveDelivery.disable();
+								copyOrderedProductToDelivered.disable();
+							}
+						}
+					});
+					]]>
+				</script>
 				<component type="gridLayout" name="gridLayout" columns="3"
 					rows="6">
 					<layoutElement column="1" row="1">
@@ -48,6 +208,8 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				<listener event="changeState"
+					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient" method="changeState" />
 			</component>
 		</windowTab>
 		<windowTab name="orderedProductTab">
@@ -110,4 +272,8 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks" method="generateAssignmentToShiftReportNumber" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks" method="changedEnabledFieldForSpecificOrderState" />
+	</hooks>
 </view>

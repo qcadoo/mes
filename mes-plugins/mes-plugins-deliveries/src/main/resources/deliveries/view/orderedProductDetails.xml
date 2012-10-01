@@ -23,14 +23,15 @@
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="gridLayout" name="gridLayoutOrderedQuantity"
-							hasBorders="false" columns="3" rows="1">
-							<layoutElement column="1" row="1" width="2">
+							hasBorders="false" columns="4" rows="1">
+							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="orderedQuantity"
 									reference="orderedQuantity" field="#{form}.orderedQuantity">
 									<option type="alignment" value="right" />
+									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
-							<layoutElement column="3" row="1">
+							<layoutElement column="4" row="1">
 								<component type="input" name="orderedQuantityUNIT"
 									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT" />
 							</layoutElement>

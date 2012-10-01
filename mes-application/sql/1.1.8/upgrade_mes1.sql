@@ -221,12 +221,14 @@ ALTER TABLE operationaltasks_operationaltask
       
 -- end   
 
--- Table operationaltasks_operationaltask
+      
+-- Table avglaborcostcalcfororder_avglaborcostcalcfororder
 -- change: 27.09.2012
-alter table avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN startdate TYPE date;
-alter table avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finishdate TYPE date;
 
---end
+ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN startdate TYPE date;
+ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finishdate TYPE date;
+
+-- end
       
       
 -- Table: deliveries_delivery
@@ -252,10 +254,12 @@ CREATE TABLE deliveries_delivery
   CONSTRAINT basic_company_fkey FOREIGN KEY (supplier_id)
       REFERENCES basic_company (id) DEFERRABLE
 );
+
 -- end
 
 -- Table: deliveries_deliverystatechange
 -- change: 27.09.2012
+
 CREATE TABLE deliveries_deliverystatechange
 (
   id bigint NOT NULL,
@@ -273,11 +277,13 @@ CREATE TABLE deliveries_deliverystatechange
   CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
       REFERENCES basic_shift (id) DEFERRABLE
 );
+
 -- end
 
 
 -- Table: deliveries_orderedproduct
 -- change: 27.09.2012
+
 CREATE TABLE deliveries_orderedproduct
 (
   id bigint NOT NULL,
@@ -290,10 +296,12 @@ CREATE TABLE deliveries_orderedproduct
   CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
 -- end
 
 -- Table: deliveries_deliveredproduct
 -- change: 27.09.2012
+
 CREATE TABLE deliveries_deliveredproduct
 (
   id bigint NOT NULL,
@@ -308,3 +316,5 @@ CREATE TABLE deliveries_deliveredproduct
   CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
+-- end
