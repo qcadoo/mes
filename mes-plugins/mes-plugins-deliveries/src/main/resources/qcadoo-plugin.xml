@@ -48,16 +48,29 @@
 			
 		<model:model-field model="company" plugin="basic">
 				<model:hasMany name="products" model="product" plugin="basic"
-				joinField="company" cascade="delete" />
+				joinField="companyProduct" cascade="delete" />
 		</model:model-field>
 				
 		<model:model-field model="product" plugin="basic">
-				<model:belongsTo name="company" model="company" plugin="basic"/>
+				<model:belongsTo name="companyProduct" model="company" plugin="basic"/>
 		</model:model-field>		
 		
 		<model:model-field model="company" plugin="basic">
-				<model:string name="buffer"></model:string>
+				<model:hasMany name="productsFamily" model="product" plugin="basic"
+				joinField="companyProductFamily" cascade="delete" />
 		</model:model-field>
+				
+		<model:model-field model="product" plugin="basic">
+				<model:belongsTo name="companyProductFamily" model="company" plugin="basic"/>
+		</model:model-field>
+		
+		<model:model-field model="company" plugin="basic">
+				<model:integer name="buffer"></model:integer>
+		</model:model-field>
+		
+		<model:model-hook model="company" plugin="basic">
+			<model:onSave class="com.qcadoo.mes.deliveries.ProductFamiliesHooks" method="checkIfProductIsFamily"/>
+		</model:model-hook>
 		
 		<view:view resource="view/deliveriesList.xml" />
 		<view:view resource="view/deliveryDetails.xml" />

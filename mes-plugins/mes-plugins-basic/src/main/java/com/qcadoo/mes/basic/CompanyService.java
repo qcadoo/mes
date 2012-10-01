@@ -34,12 +34,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CompanyService {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     @Transactional
     public Long getParameterId() {
@@ -78,5 +84,10 @@ public class CompanyService {
         if (owner != null && owner.equals(true)) {
             form.setFormEnabled(false);
         }
+    }
+
+    public void generateCompanyNumber(final ViewDefinitionState state) {
+        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
+                L_FORM, "number");
     }
 }

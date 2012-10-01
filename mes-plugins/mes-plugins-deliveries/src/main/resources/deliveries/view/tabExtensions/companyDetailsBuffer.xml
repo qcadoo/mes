@@ -11,7 +11,7 @@
 					columns="3" rows="1">
 				
 					<layoutElement column="1" row="1">
-						<component type="input" name="buffer" field="#{form}.buffer" />
+						<component type="input" name="buffer" field="#{form}.buffer" hasDescription="true"/>
 					</layoutElement>
 				
 				</component>

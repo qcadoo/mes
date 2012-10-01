@@ -47,6 +47,15 @@
 		</model:model-field>
 		
 		<model:model-field model="company" plugin="basic">
+				<model:hasMany name="operationsGroup" model="operationGroup" plugin="technologies"
+					joinField="companyOperationGroup" cascade="delete" />
+		</model:model-field>	
+
+		<model:model-field model="operationGroup" plugin="technologies">
+				<model:belongsTo name="companyOperationGroup" model="company" plugin="basic"/>
+		</model:model-field>
+		
+		<model:model-field model="company" plugin="basic">
 				<model:hasMany name="operations" model="operation" plugin="technologies"
 					joinField="company" cascade="delete" />
 		</model:model-field>	

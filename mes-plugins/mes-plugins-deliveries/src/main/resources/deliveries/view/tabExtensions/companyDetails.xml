@@ -10,6 +10,43 @@
 			<component type="gridLayout" name="sellsTabGridLayout"
 				columns="2" rows="1">
 				<layoutElement column="1" row="1">
+					<component type="lookup" name="productsFamilyLookup" reference="productsFamilyLookup"
+						field="#{form}.productsFamily" defaultVisible="false" persistent="false"
+						hasLabel="false">
+						
+						<option type="column" name="name" fields="name" link="true"
+							width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<option type="multiselect" value="true" />
+					</component>
+					<component type="grid" name="productsFamily" reference="productsFamily"
+						source="#{form}.productsFamily">
+						<option type="column" name="number" fields="number" width="50" />
+						<option type="column" name="name" fields="name" width="100" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="order" column="number" direction="desc" />
+
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
+						<option type="creatable" value="true" />
+						<option type="deletable" value="true" />
+
+						<option type="weakRelation" value="true" />
+						<option type="correspondingLookup" value="productsLookup" />
+					</component>
+				</layoutElement>
+				
+				<layoutElement column="2" row="1">
 					<component type="lookup" name="productsLookup" reference="productsLookup"
 						field="#{form}.products" defaultVisible="false" persistent="false"
 						hasLabel="false">
