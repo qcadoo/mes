@@ -318,3 +318,26 @@ CREATE TABLE deliveries_deliveredproduct
 );
 
 -- end
+
+-- Table: basic_product
+-- change: 02.10.2012
+ALTER TABLE basic_product ADD COLUMN companyproduct_id bigint;
+ALTER TABLE basic_product
+ADD CONSTRAINT companyproduct_fkey FOREIGN KEY (companyproduct_id)
+      REFERENCES basic_company (id) DEFERRABLE;
+      
+ALTER TABLE basic_product ADD COLUMN companyproductfamily_id bigint;
+
+ALTER TABLE basic_product
+ADD CONSTRAINT companyproductfamily_fkey FOREIGN KEY (companyproductfamily_id)
+      REFERENCES basic_company (id) DEFERRABLE;
+-- end
+
+-- Table: basic_company
+-- change: 02.10.2012
+ALTER TABLE basic_company ADD COLUMN buffer integer;
+-- end
+
+
+
+
