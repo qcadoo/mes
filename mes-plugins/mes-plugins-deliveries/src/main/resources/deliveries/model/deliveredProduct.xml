@@ -5,9 +5,10 @@
 	<fields>
 		<belongsTo name="delivery" model="delivery" required="true"/>
 		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<decimal name="deliveredQuantity" required="true"/>
+		<decimal name="deliveredQuantity" />
 		<decimal name="damagedQuantity"/>
 	</fields>
 	<hooks >
+		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredProductAlreadyExists"/>
 	</hooks>
 </model>

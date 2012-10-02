@@ -7,5 +7,7 @@
 		<belongsTo name="product" model="product" plugin="basic" required="true"/>
 		<decimal name="orderedQuantity"  required="true"/>
 	</fields>
-	<hooks />
+	<hooks >
+		<onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" method="checkIfOrderedProductAlreadyExists"/>
+	</hooks>
 </model>

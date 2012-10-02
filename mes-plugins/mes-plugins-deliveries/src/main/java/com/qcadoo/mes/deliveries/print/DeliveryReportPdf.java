@@ -20,10 +20,13 @@ import org.springframework.stereotype.Component;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -31,6 +34,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -49,6 +53,9 @@ public class DeliveryReportPdf extends ReportPdfView {
     private NumberService numberService;
 
     @Autowired
+    FileService fileService;
+
+    @Autowired
     private PdfHelper pdfHelper;
 
     @Autowired
@@ -57,7 +64,7 @@ public class DeliveryReportPdf extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        String documentTitle = translationService.translate("deliveries.deliveryReport.title", locale);
+        String documentTitle = translationService.translate("deliveries.deliveryReport.report.deliveredProduct.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
         pdfHelper
@@ -75,7 +82,9 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
-        return translationService.translate("deliveries.deliveryReport.report.fileName", locale);
+        return translationService.translate("deliveries.deliveryReport.report.deliveredProduct.fileName", locale,
+                delivery.getStringField(DeliveryFields.NUMBER),
+                DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Locale locale, final Entity delivery) throws DocumentException {
@@ -97,22 +106,28 @@ public class DeliveryReportPdf extends ReportPdfView {
                 delivery.getStringField(DeliveryFields.NUMBER));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("deliveries.deliveryReport.report.columnHeader.name", locale),
-                delivery.getStringField(DeliveryFields.NAME));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.description", locale),
-                delivery.getStringField(DeliveryFields.DESCRIPTION));
+                delivery.getStringField(DeliveryFields.NAME) == null ? "" : delivery.getStringField(DeliveryFields.NAME));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
+                "deliveries.deliveryReport.report.columnHeader.description", locale), delivery
+                .getStringField(DeliveryFields.DESCRIPTION) == null ? "" : delivery.getStringField(DeliveryFields.DESCRIPTION));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("deliveries.deliveryReport.report.columnHeader.deliveryDate", locale),
-                delivery.getField(DeliveryFields.DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
-                "deliveries.deliveryReport.report.columnHeader.supplier", locale),
-                delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField("name"));
+                delivery.getField(DeliveryFields.DELIVERY_DATE) == null ? "" : delivery.getField(DeliveryFields.DELIVERY_DATE));
+        pdfHelper.addTableCellAsOneColumnTable(
+                panelTable,
+                translationService.translate("deliveries.deliveryReport.report.columnHeader.supplier", locale),
+                delivery.getBelongsToField(DeliveryFields.SUPPLIER) == null ? "" : delivery.getBelongsToField(
+                        DeliveryFields.SUPPLIER).getStringField("name"));
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
         document.add(panelTable);
     }
 
     private void createTableWith(final Document document, final Locale locale, final Entity delivery) throws DocumentException {
-
+        Paragraph productTableTitle = new Paragraph(new Phrase(translationService.translate(
+                "deliveries.deliveryReport.report.deliveredProduct.products", locale), FontUtils.getDejavuBold11Dark()));
+        productTableTitle.setSpacingBefore(7f);
+        productTableTitle.setSpacingAfter(7f);
+        document.add(productTableTitle);
         List<String> resourcesTableHeader = new ArrayList<String>();
 
         resourcesTableHeader
@@ -129,10 +144,12 @@ public class DeliveryReportPdf extends ReportPdfView {
         PdfPTable resourcesTable = pdfHelper.createTableWithHeader(6, resourcesTableHeader, false);
 
         for (Map.Entry<Long, ProductWithQuantities> orderedProduct : getOrderedAndDeliveredProductsList(delivery).entrySet()) {
+            resourcesTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
             resourcesTable.addCell(new Phrase(orderedProduct.getValue().getProduct().getStringField(ProductFields.NUMBER),
                     FontUtils.getDejavuRegular9Dark()));
             resourcesTable.addCell(new Phrase(orderedProduct.getValue().getProduct().getStringField(ProductFields.NAME),
                     FontUtils.getDejavuRegular9Dark()));
+            resourcesTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             resourcesTable.addCell(new Phrase(numberService.format(orderedProduct.getValue().getOrderedQuantity()), FontUtils
                     .getDejavuRegular9Dark()));
             resourcesTable.addCell(new Phrase(numberService.format(orderedProduct.getValue().getDeliveredQuantity()), FontUtils
@@ -172,6 +189,6 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("deliveries.deliveryReport.title", locale));
+        document.addTitle(translationService.translate("deliveries.deliveryReport.report.deliveredProduct.title", locale));
     }
 }

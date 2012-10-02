@@ -169,7 +169,6 @@
 			<option type="column" name="supplier" fields="supplier"
 				expression="supplier['name']" />
 			<option type="column" name="deliveryDate" fields="deliveryDate" />
-			<option type="column" name="deliveryDate" fields="deliveryDate" />
 			<option type="column" name="state" fields="state" />
 			<option type="column" name="createDate" fields="createDate" />
 			<option type="order" column="name" direction="asc" />

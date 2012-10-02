@@ -1,5 +1,6 @@
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
@@ -55,5 +56,11 @@ public class DeliveredProductDetailsHooks {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+    }
+
+    public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
+        FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DELIVERED_QUANTITY);
+        delivedQuantity.setRequired(true);
+        delivedQuantity.requestComponentUpdateState();
     }
 }

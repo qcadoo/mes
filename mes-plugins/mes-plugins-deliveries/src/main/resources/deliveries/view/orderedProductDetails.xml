@@ -36,7 +36,9 @@
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="orderedQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT" />
+									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
 							</layoutElement>
 						</component>
 					</layoutElement>
