@@ -32,6 +32,21 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="orderProduction">
+				<bigButton name="redirectToFilteredOrderProductionList" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('redirectToFilteredOrderProductionList', []);
+									}
+								}
+							});		
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		<script>
 					<![CDATA[
@@ -77,7 +92,7 @@
 				
 				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number">
+						<component type="input" name="number" field="number" reference="number">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
@@ -125,55 +140,17 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="' '" />
+				<listener event="redirectToFilteredOrderProductionList"
+					class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners" method="redirectToFilteredOrderProductionList" />
 			</component>
 		</windowTab>
-		<windowTab name="sellsTab">
-
-			<component type="gridLayout" name="sellsTabGridLayout"
-				columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="productsLookup" reference="productsLookup"
-						field="#{form}.products" defaultVisible="false" persistent="false"
-						hasLabel="false">
-						
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
-
-						<option type="multiselect" value="true" />
-					</component>
-					<component type="grid" name="products" reference="products"
-						source="#{form}.products">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
-
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
-
-						<option type="order" column="number" direction="desc" />
-
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-
-						<option type="weakRelation" value="true" />
-						<option type="correspondingLookup" value="productsLookup" />
-					</component>
-				</layoutElement>
-				
-			</component>
-		</windowTab>
-			
+		
 	</component>
 	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.CompanyService" method="disableCompanyFormForOwner" />
+		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks" method="updateRibbonState" />
+		<beforeRender class="com.qcadoo.mes.basic.CompanyService"
+			method="generateCompanyNumber" />
 	</hooks>
 </view>

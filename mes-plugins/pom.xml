@@ -15,6 +15,7 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
+
 		<module>mes-plugins-orders</module>
 		<module>mes-plugins-basic</module>
 		<module>mes-plugins-genealogies</module>
@@ -62,6 +63,7 @@
     <module>mes-plugins-operational-tasks-for-orders</module>
     <module>mes-plugins-tech-subcontr-for-oper-tasks</module>
 <module>mes-plugins-deliveries</module>
+    <module>mes-plugins-supplyNegotiations</module>
   </modules>
 
 

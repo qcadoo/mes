@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="basic" view="companyDetails">
+	
+		<windowTab name="deliveriesTab" reference="deliveriesTab">
+			<component type="form" name="company">
+				<component type="gridLayout" name="deliveriesTabGridLayout" reference="deliveriesTabGridLayout"
+					columns="3" rows="1">
+				
+					<layoutElement column="1" row="1">
+						<component type="input" name="buffer" field="#{form}.buffer" hasDescription="true"/>
+					</layoutElement>
+				
+				</component>
+			</component>
+		</windowTab>
+</windowTabExtension>

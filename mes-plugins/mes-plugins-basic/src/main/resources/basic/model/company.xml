@@ -54,13 +54,6 @@
 		<boolean name="owner" required="false" default="false" />
 		<string name="externalNumber" />
 		
-<!-- 		<manyToMany name="products" joinField="companies" model="product" -->
-<!-- 			plugin="basic" copyable="true" /> -->
-<!-- 		<manyToMany name="technologies" joinField="productionLines" model="technology" -->
-<!-- 			plugin="basic" copyable="true" /> -->
-
-		<hasMany name="products" model="product"
-			joinField="company" cascade="delete" />
 	</fields>
 	<hooks />
 	<identifier expression="#number + ' - ' + #name" />
