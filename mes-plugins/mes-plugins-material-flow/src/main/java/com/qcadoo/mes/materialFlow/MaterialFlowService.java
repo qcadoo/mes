@@ -141,7 +141,6 @@ public class MaterialFlowService {
         SearchResult resultFrom = null;
 
         if (lastCorrectionDate == null) {
-
             resultTo = transferTo.find().add(SearchRestrictions.eq(L_LOCATION_TO_ID, locationId))
                     .add(SearchRestrictions.eq(L_PRODUCT_ID, productId)).add(SearchRestrictions.le(TIME, forDate)).list();
 
