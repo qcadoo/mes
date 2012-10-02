@@ -19,6 +19,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener
+								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+								method="fillUnitsFields" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
@@ -43,4 +46,9 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
+			method="fillUnitsFields" />
+	</hooks>
 </view>

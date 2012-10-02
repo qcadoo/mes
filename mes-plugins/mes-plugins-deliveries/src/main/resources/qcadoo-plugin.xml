@@ -39,16 +39,17 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="delivery" resource="model/delivery.xml" />
 		<model:model model="deliveredProduct" resource="model/deliveredProduct.xml" />
 		<model:model model="orderedProduct" resource="model/orderedProduct.xml" />
 		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
-		
+
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="deliveryStateChange" plugin="deliveries" model="deliveryStateChange" />
+			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
+				model="deliveryStateChange" />
 		</model:model-field>
-		
+
 		<menu:menu-category name="requirements" />
 
 		<menu:menu-item name="deliveries" category="requirements"
@@ -58,8 +59,8 @@
 		<view:view resource="view/deliveryDetails.xml" />
 		<view:view resource="view/deliveredProductDetails.xml" />
 		<view:view resource="view/orderedProductDetails.xml" />
-		
 
+		<view:resource uri="public/**/*" />
 	</modules>
 
 </plugin>

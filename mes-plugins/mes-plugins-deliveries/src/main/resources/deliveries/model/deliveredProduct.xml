@@ -3,11 +3,11 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="delivery" model="delivery"/>
-		<belongsTo name="product" model="product" plugin="basic"/>
-		<decimal name="orderedQuantity"/>
-		<decimal name="deliveredQuantity"/>
+		<belongsTo name="delivery" model="delivery" required="true"/>
+		<belongsTo name="product" model="product" plugin="basic" required="true"/>
+		<decimal name="deliveredQuantity" required="true"/>
 		<decimal name="damagedQuantity"/>
 	</fields>
-	<hooks />
+	<hooks >
+	</hooks>
 </model>

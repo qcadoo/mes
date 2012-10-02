@@ -12,4 +12,8 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_DELIVERY_STATE_CHANGE = "deliveryStateChange";
 
+    public static final String MODEL_DELIVERED_PRODUCT = "deliveredProduct";
+
+    public static final String MODEL_ORDERED_PRODUCT = "orderedProduct";
+
 }

@@ -289,7 +289,7 @@ CREATE TABLE deliveries_orderedproduct
   id bigint NOT NULL,
   delivery_id bigint,
   product_id bigint,
-  quantity numeric(12,5),
+  orderedquantity numeric(12,5),
   CONSTRAINT deliveries_orderedproduct_pkey PRIMARY KEY (id),
   CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
       REFERENCES deliveries_delivery (id) DEFERRABLE,
@@ -307,7 +307,6 @@ CREATE TABLE deliveries_deliveredproduct
   id bigint NOT NULL,
   delivery_id bigint,
   product_id bigint,
-  orderedquantity numeric(12,5),
   deliveredquantity numeric(12,5),
   damagedquantity numeric(12,5),
   CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
@@ -316,5 +315,15 @@ CREATE TABLE deliveries_deliveredproduct
   CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE
 );
+
+-- end
+
+-- Table: states_message
+-- change: 27.09.2012
+ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
+
+ALTER TABLE states_message
+  ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id)
+      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
 
 -- end
