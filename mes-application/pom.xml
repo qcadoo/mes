@@ -245,6 +245,16 @@
 			<version>1.1.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-supply-negotiations</artifactId>
+			<version>1.1.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
+			<version>1.1.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2</version>
