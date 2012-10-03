@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="supplyNegotiations" version="${qcadoo.plugin.version}"
+<plugin plugin="techSubcontrForDeliveries" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -19,16 +19,19 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Supply negotiations</name>
+		<name>MES - Technology subcontracting for deliveries</name>
 		<vendor>
-			<name>Qcadoo</name>
-			<url>www.qcadoo.com</url>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
 		</vendor>
 	</information>
 
 
 	<modules>
 		<localization:translation path="locales" />
+		
+		<view:resource uri="public/**/*" />
+		
 	</modules>
 
 </plugin>
