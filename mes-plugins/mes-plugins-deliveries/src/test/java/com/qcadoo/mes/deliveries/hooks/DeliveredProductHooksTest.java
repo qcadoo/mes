@@ -49,10 +49,15 @@ public class DeliveredProductHooksTest {
         when(entity.getBelongsToField("delivery")).thenReturn(delivery);
         when(entity.getBelongsToField("product")).thenReturn(product);
         when(dataDefinition.find()).thenReturn(builder);
+        Long id = 1L;
+        when(entity.getId()).thenReturn(id);
         SearchCriterion criterion1 = SearchRestrictions.belongsTo(DELIVERY, delivery);
         SearchCriterion criterion2 = SearchRestrictions.belongsTo(PRODUCT, product);
+        SearchCriterion criterion3 = SearchRestrictions.ne("id", id);
         when(builder.add(criterion1)).thenReturn(builder);
         when(builder.add(criterion2)).thenReturn(builder);
+        when(builder.add(criterion3)).thenReturn(builder);
+        
     }
 
     @Test
