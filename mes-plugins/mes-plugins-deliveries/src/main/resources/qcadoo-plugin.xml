@@ -54,6 +54,8 @@
 
 		<menu:menu-item name="deliveries" category="requirements"
 			view="deliveriesList" />
+		<menu:menu-item name="supplyItems" category="requirements"
+			view="supplyItems" />
 			
 		<model:model-field model="company" plugin="basic">
 				<model:hasMany name="products" model="product" plugin="basic"
@@ -85,6 +87,7 @@
 		<view:view resource="view/deliveryDetails.xml" />
 		<view:view resource="view/deliveredProductDetails.xml" />
 		<view:view resource="view/orderedProductDetails.xml" />
+		<view:view resource="view/supplyItems.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />

@@ -1,0 +1,38 @@
+<view name="supplyItems" modelName="orderedProduct" menuAccessible="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new" />
+		</ribbon>
+		<component type="grid" name="supplyItems" reference="grid">
+			<option type="column" name="deliveryDate" fields="delivery"
+				expression="#delivery['deliveryDate']" />
+			<option type="column" name="deliveryState" fields="delivery"
+				expression="'@deliveries.delivery.state.value.'+#delivery['state']" />
+			<option type="column" name="deliveryNumber" fields="delivery"
+				expression="#delivery['number']" link="true" />
+			<option type="column" name="deliveryName" fields="delivery"
+				expression="#delivery['name']" link="true" />
+			<option type="column" name="productNumber" fields="product"
+				expression="#product['number']" link="true" />
+			<option type="column" name="productName" fields="product"
+				expression="#product['name']" link="true" />
+			<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+			<option type="column" name="productUnit" fields="product"
+				expression="#product['unit']" />
+			<option type="column" name="supplier" fields="delivery"
+				expression="#delivery['supplier']==null ? '' :#delivery['supplier'].get('name')" />
+			<option type="order" column="deliveryState" direction="asc" />
+			<option type="searchable" value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
+			<option type="orderable" value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+		<hooks>
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.SupplyItemsHooks" method="addDiscriminatorRestrictionToGrid" />
+	</hooks>
+</view>
