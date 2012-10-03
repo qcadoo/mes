@@ -14,6 +14,19 @@
 	<packaging>qcadoo-plugin</packaging>
 	<name>Qcadoo MES :: Plugins :: Tech. subcontracting for deliveries</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-tech-subcontracting</artifactId>
+			<version>1.1.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-deliveries</artifactId>
+			<version>1.1.8-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
