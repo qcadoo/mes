@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="requestForQuotation" activable="true" auditable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+	
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" required="true">
+			<validatesLength max="1024" />
+		</string>
+		<string name="description" required="true">
+			<validatesLength max="2048" />
+		</string>
+		<belongsTo name="supplier" model="company" plugin="basic"/>
+		<datetime name="desiredDate" required="true"/>
+		<datetime name="creationDate"/>
+		<enum name="status"
+			values="01draft,02accepted,03declined" />
+		<hasMany name="requestForQuotationProducts" joinField="requestForQuotation" model="requestForQuotationProduct"
+			plugin="supplyNegotiations" />
+
+	</fields>
+	<hooks>
+
+	</hooks>
+	<identifier expression="#number + ' - ' + #name" />
+</model>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="supply-negotiations" version="1.1.8-SNAPSHOT"
+<plugin plugin="supplyNegotiations" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -19,7 +19,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Supply-negotiations</name>
+		<name>Qcadoo MES :: Plugins :: Supply Negotiations</name>
 		<vendor>
 			<name>Qcadoo</name>
 			<url>www.qcadoo.com</url>
@@ -28,6 +28,22 @@
 
 
 	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model model="requestForQuotation" resource="model/requestForQuotation.xml" />
+		<model:model model="requestForQuotationProduct" resource="model/requestForQuotationProduct.xml" />
+
+		<menu:menu-category name="requirements" />
+		
+		<menu:menu-item name="requestsForQuotation" category="requirements"
+			view="requestForQuotationsList" />
+		
+		<view:view resource="view/requestForQuotationDetails.xml" />
+		<view:view resource="view/requestForQuotationsList.xml" />
+		<view:view resource="view/requestForQuotationProductDetails.xml" />
+		
+
+
 
 	</modules>
 
