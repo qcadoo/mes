@@ -19,7 +19,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Supply Negotiations</name>
+		<name>Qcadoo MES :: Plugins :: Supply negotiations</name>
 		<vendor>
 			<name>Qcadoo</name>
 			<url>www.qcadoo.com</url>
@@ -42,7 +42,6 @@
 		<view:view resource="view/requestForQuotationsList.xml" />
 		<view:view resource="view/requestForQuotationProductDetails.xml" />
 		
-
 
 
 	</modules>

@@ -9,7 +9,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
-					rows="6">
+					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">

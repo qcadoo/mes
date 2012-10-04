@@ -12,8 +12,7 @@
 	<artifactId>mes-plugins-supply-negotiations</artifactId>
 
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugins :: Supply Negotiations</name>
-
+	<name>Qcadoo MES :: Plugins :: Supply negotiations</name>
 	<build>
 		<plugins>
 			<plugin>
