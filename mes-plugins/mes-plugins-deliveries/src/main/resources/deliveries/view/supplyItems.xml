@@ -11,28 +11,32 @@
 			<option type="column" name="deliveryState" fields="delivery"
 				expression="'@deliveries.delivery.state.value.'+#delivery['state']" />
 			<option type="column" name="deliveryNumber" fields="delivery"
-				expression="#delivery['number']" link="true" />
+				expression="#delivery['number']" />
 			<option type="column" name="deliveryName" fields="delivery"
-				expression="#delivery['name']" link="true" />
+				expression="#delivery['name']" />
 			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" link="true" />
+				expression="#product['number']" />
 			<option type="column" name="productName" fields="product"
-				expression="#product['name']" link="true" />
+				expression="#product['name']" />
 			<option type="column" name="orderedQuantity" fields="orderedQuantity" />
 			<option type="column" name="productUnit" fields="product"
 				expression="#product['unit']" />
 			<option type="column" name="supplier" fields="delivery"
-				expression="#delivery['supplier']==null ? '' :#delivery['supplier'].get('name')" />
-			<option type="order" column="deliveryState" direction="asc" />
-			<option type="searchable" value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
-			<option type="orderable" value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
+				expression="#delivery['supplier']==null? '' :#delivery['supplier'].get('name')" />
+			<option type="order" column="deliveryDate" direction="asc" />
+			<option type="searchable"
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
+			<option type="orderable"
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
 			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+			<option type="multiselect" value="false" />
+			<listener event="select"
+				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
+				method="redirectToDeliveryDetails" />
 		</component>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-		<hooks>
-		<beforeRender class="com.qcadoo.mes.deliveries.hooks.SupplyItemsHooks" method="addDiscriminatorRestrictionToGrid" />
+	<hooks>
 	</hooks>
 </view>
