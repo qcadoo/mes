@@ -25,6 +25,13 @@
 			<url>www.qcadoo.com</url>
 		</vendor>
 	</information>
+	
+	<dependencies>
+		<dependency>
+			<plugin>deliveries</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+	</dependencies>
 
 
 	<modules>
