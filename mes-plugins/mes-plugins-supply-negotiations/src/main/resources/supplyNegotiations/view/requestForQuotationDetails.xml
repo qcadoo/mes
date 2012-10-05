@@ -34,14 +34,12 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generateRequestForQuotation" icon="pdfIcon24.png"
-					state="enabled" action="#{form}.fireEvent(printOrderReport,pdf);" />
+					state="enabled" action="#{form}.fireEvent(printRequestForQuotationProductReport,pdf);" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="requestsForQuotation" reference="form">
-				
 				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="6">
-
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 							reference="number" />
@@ -53,7 +51,6 @@
 					<layoutElement column="1" row="4" height="3">
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
-					
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
@@ -75,23 +72,19 @@
 						<component type="input" name="deliveryDateBuffer"
 							reference="deliveryDateBuffer" defaultEnabled="never" />
 					</layoutElement>
-	
 				</component>
-<!-- 				<listener event="printRequestForQuotationProductReport" -->
-<!-- 					class="com.qcadoo.mes.requestsForQuotation.listeners.RequestForQuotationListeners" -->
-<!-- 					method="printRequestForQuotationProductReport" /> -->
+				<listener event="printRequestForQuotationProductReport"
+					class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationListeners"
+					method="printRequestForQuotationProductReport" />
 				<option type="header" value="true" />
 				<option type="expression" value="' '" />
 			</component>
 		</windowTab>
-		
 		<windowTab name="productsTab">
 			<component type="gridLayout" name="productsGridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1">
-				
 					<component type="grid" name="requestForQuotationProducts" reference="requestForQuotationProducts"
 						source="#{form}.requestForQuotationProducts" defaultEnabled="false">
-						
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" />
 						<option type="column" name="name" fields="product"
@@ -114,11 +107,9 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
 	</component>
-	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.requestsForQuotation.hooks.RequestForQuotationHooks"
+		<beforeRender class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationHooks"
 			method="setBufferForSupplier" />
 	</hooks>
 </view>
