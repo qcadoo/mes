@@ -39,9 +39,9 @@
 			<option type="column" name="name" fields="name" link="true" width="100" />
 			<option type="column" name="supplier" fields="supplier" link="true" width="100" />
 			<option type="column" name="desiredDate" fields="desiredDate" link="true" width="100" />
-			<option type="column" name="creationDate" fields="creationDate" link="true" width="100" />
-			<option type="searchable" value="number,name,supplier,desiredDate,creationDate" />
-			<option type="orderable" value="number,name,supplier,desiredDate,creationDate" />
+			<option type="column" name="createDate" fields="createDate" link="true" width="100" />
+			<option type="searchable" value="number,name,supplier,desiredDate,createDate" />
+			<option type="orderable" value="number,name,supplier,desiredDate,createDate" />
 			<option type="order" column="number" direction="asc" />
 			<option type="correspondingView" value="supplyNegotiations/requestForQuotationDetails" />
 			<option type="correspondingComponent" value="form" />

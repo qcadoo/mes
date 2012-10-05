@@ -120,5 +120,7 @@
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.requestsForQuotation.hooks.RequestForQuotationHooks"
 			method="setBufferForSupplier" />
+		<beforeRender class="com.qcadoo.mes.requestsForQuotation.RequestForQuotationService"
+			method="generateRequestForQuotationNumber" />
 	</hooks>
 </view>

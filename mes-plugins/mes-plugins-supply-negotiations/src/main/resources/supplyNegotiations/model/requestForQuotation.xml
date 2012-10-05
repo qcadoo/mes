@@ -15,11 +15,9 @@
 		</string>
 		<belongsTo name="supplier" model="company" plugin="basic"/>
 		<datetime name="desiredDate" required="true"/>
-		<datetime name="creationDate"/>
-		<enum name="status"
-			values="01draft,02accepted,03declined" />
 		<hasMany name="requestForQuotationProducts" joinField="requestForQuotation" model="requestForQuotationProduct"
 			plugin="supplyNegotiations" />
+
 
 	</fields>
 	<hooks>

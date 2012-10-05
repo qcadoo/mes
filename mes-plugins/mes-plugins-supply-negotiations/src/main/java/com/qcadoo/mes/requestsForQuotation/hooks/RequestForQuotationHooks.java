@@ -13,12 +13,13 @@ public class RequestForQuotationHooks {
 
     public void setBufferForSupplier(final ViewDefinitionState view) {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(RequestsForQuotationFields.SUPPLIER);
-        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference("deliveryDateBuffer");
+        FieldComponent deliveryDateBuffer = (FieldComponent) view
+                .getComponentByReference(RequestsForQuotationFields.DELIVERY_DATE_BUFFER);
         Entity supplier = supplierLookup.getEntity();
         if (supplier == null) {
             deliveryDateBuffer.setFieldValue(null);
         } else {
-            deliveryDateBuffer.setFieldValue(supplier.getField("buffer"));
+            deliveryDateBuffer.setFieldValue(supplier.getField(RequestsForQuotationFields.BUFFER));
         }
         deliveryDateBuffer.requestComponentUpdateState();
     }
