@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -88,17 +87,6 @@ public class DeliveryReportPdf extends ReportPdfView {
     }
 
     private void createHeaderTable(final Document document, final Locale locale, final Entity delivery) throws DocumentException {
-        String description = delivery.getStringField(DeliveryFields.DESCRIPTION);
-        boolean hasDescription = !StringUtils.isEmpty(description);
-        if (hasDescription) {
-            createPanelWithOrWithoutDescription(document, locale, delivery, true);
-        } else {
-            createPanelWithOrWithoutDescription(document, locale, delivery, false);
-        }
-    }
-
-    private void createPanelWithOrWithoutDescription(final Document document, final Locale locale, final Entity delivery,
-            final boolean withDescription) throws DocumentException {
         PdfPTable panelTable = pdfHelper.createPanelTable(3);
         panelTable.setSpacingBefore(7);
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
