@@ -47,8 +47,7 @@
 			<validatesLength max="2048" />
 		</string>
 		<hasMany name="conversionItems" joinField="product" model="conversionItem" />
-		<belongsTo name="product" model="requestForQuotation" plugin="supplyNegotiations"/>
-
+		
 		<!-- PRODUCTS FAMILY TREE -->
 		<belongsTo name="parent" model="product" />
 		<belongsTo name="child" model="product" persistent="false" />
