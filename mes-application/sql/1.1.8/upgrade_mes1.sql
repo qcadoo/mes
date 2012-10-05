@@ -370,4 +370,23 @@ CREATE TABLE qcadoocustomtranslation_customtranslation
 
 -- end
 
+-- Table: deliveries_orderedproduct
+-- change: 05.10.2012
+
+ALTER TABLE deliveries_deliveredproduct ADD COLUMN operation_id bigint;
+ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fkey
+	FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id)  DEFERRABLE;
+
+-- end
+
+-- Table: deliveries_orderedproduct
+-- change: 05.10.2012
+
+ALTER TABLE deliveries_orderedproduct ADD COLUMN operation_id bigint;
+ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
+	FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id)  DEFERRABLE;
+
+-- end
 
