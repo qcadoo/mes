@@ -246,11 +246,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-supply-negotiations</artifactId>
-			<version>1.1.8-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
 			<version>1.1.8-SNAPSHOT</version>
 		</dependency>
@@ -628,6 +623,11 @@
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-integration-orc-walusiak</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-supply-negotiations</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
 			</dependencies>
