@@ -390,3 +390,8 @@ ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
 
 -- end
 
+-- Table: avglaborcostcalcfororder_assignmentworkertoshift
+-- change: 08.10.2012
+ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedhours numeric(12,5);
+
+-- end

@@ -32,6 +32,7 @@
 			required="true" />
 		<belongsTo name="assignmentToShift" model="assignmentToShift" plugin="assignmentToShift"
 			required="true" />
+		<decimal name="workedHours"/>
 		<belongsTo name="avgLaborCostCalcForOrder" model="avgLaborCostCalcForOrder" plugin="avgLaborCostCalcForOrder"/>
 	</fields>
 	<hooks />
