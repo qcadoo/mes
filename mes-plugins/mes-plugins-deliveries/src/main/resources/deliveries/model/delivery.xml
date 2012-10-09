@@ -23,6 +23,9 @@
 	</fields>
 	<hooks >
 		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" method="clearStateFieldOnCopy"/>
+		<onCreate
+			class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+			method="setInitialState" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
