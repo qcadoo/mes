@@ -395,3 +395,45 @@ ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
 ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedhours numeric(12,5);
 
 -- end
+
+-- Table: supplynegotiations_requestforquotation
+-- change: 09.10.2012
+CREATE TABLE supplynegotiations_requestforquotation
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  "name" character varying(1024),
+  description character varying(2048),
+  supplier_id bigint,
+  desireddate date,
+  active boolean DEFAULT true,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  "createuser" character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT supplynegotiations_requestforquotation_pkey PRIMARY KEY (id),
+  CONSTRAINT requestforquotation_company_fkey FOREIGN KEY (supplier_id)
+      REFERENCES basic_company (id) DEFERRABLE
+);
+
+-- end
+
+-- Table: supplynegotiations_requestforquotationproduct
+-- change: 09.10.2012
+CREATE TABLE supplynegotiations_requestforquotationproduct
+(
+  id bigint NOT NULL,
+  requestforquotation_id bigint,
+  product_id bigint,
+  orderedquantity numeric(12,5),
+  annualvolume numeric(12,5),
+  operation_id bigint,
+  CONSTRAINT supplynegotiations_requestforquotationproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT requestforquotationproduct_requestforquotation_fkey FOREIGN KEY (requestforquotation_id)
+      REFERENCES supplynegotiations_requestforquotation (id) DEFERRABLE,
+  CONSTRAINT requestforquotationproduct_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT requestforquotationproduct_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
+);
+
