@@ -15,7 +15,6 @@
 	<name>Qcadoo MES :: Plugins</name>
 
 	<modules>
-
 		<module>mes-plugins-orders</module>
 		<module>mes-plugins-basic</module>
 		<module>mes-plugins-genealogies</module>
@@ -65,6 +64,5 @@
 <module>mes-plugins-deliveries</module>
     <module>mes-plugins-tech-subcontr-for-deliveries</module>
   </modules>
-
 
 </project>

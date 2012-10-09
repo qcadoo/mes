@@ -32,4 +32,6 @@ public final class AssignmentWorkerToShiftFields {
     public static final String WORKER = "worker";
 
     public static final String ASSIGNMENT_TO_SHIFT = "assignmentToShift";
+
+    public static final String WORKED_HOURS = "workedHours";
 }
