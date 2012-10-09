@@ -76,7 +76,7 @@
 		</model:model-field>
 		
 		<model:model-field model="company" plugin="basic">
-				<model:integer name="buffer"></model:integer>
+				<model:integer name="buffer"/>
 		</model:model-field>
 		
 		<model:model-hook model="company" plugin="basic">
