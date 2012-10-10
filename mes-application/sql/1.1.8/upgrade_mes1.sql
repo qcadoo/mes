@@ -1,5 +1,5 @@
 -- Table: productcatalognumbers_productcatalognumbers
--- change: 17.08.2012
+-- changed: 17.08.2012
 
 CREATE TABLE productcatalognumbers_productcatalognumbers
 (
@@ -18,7 +18,7 @@ CREATE TABLE productcatalognumbers_productcatalognumbers
 
 
 -- Table: basic_product
--- change: 23.08.2012
+-- changed: 23.08.2012
 
 ALTER TABLE basic_product ADD COLUMN entitytype character varying(255);
 ALTER TABLE basic_product ALTER COLUMN entitytype SET DEFAULT '01particularProduct'::character varying;
@@ -35,7 +35,7 @@ ALTER TABLE basic_product ADD CONSTRAINT basic_product_fkey
 
 
 -- Table: basic_conversion
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 CREATE TABLE basic_conversion
 (
@@ -47,7 +47,7 @@ CREATE TABLE basic_conversion
 
 
 -- Table: basic_conversionitem
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 CREATE TABLE basic_conversionitem
 (
@@ -69,7 +69,7 @@ CREATE TABLE basic_conversionitem
 
 
 -- Table: technologies_technologyoperationcomponent
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN comment character varying(2048);
 
@@ -77,7 +77,7 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN comment charact
 
 
 -- Table: technologies_technologyinstanceoperationcomponent
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN comment character varying(2048);
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachment character varying(255);
@@ -86,7 +86,7 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachm
 
 
 -- Table: technologies_operation
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_operation ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -95,7 +95,7 @@ ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT fal
 
 
 -- Table: technologies_technologyoperationcomponent
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -104,7 +104,7 @@ ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontract
 
 
 -- Table: technologies_technologyinstanceoperationcomponent
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -113,7 +113,7 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issub
 
 
 -- Table materialrequirements_materialrequirement
--- change: 12.09.2012
+-- changed: 12.09.2012
 
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN "number" character varying(256);
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN mrpalgorithm character varying(255);
@@ -128,7 +128,7 @@ ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponen
 
 
 -- Table materialrequirements_materialrequirement
--- change: 12.09.2012
+-- changed: 12.09.2012
 
 ALTER TABLE simplematerialbalance_simplematerialbalance ADD COLUMN mrpalgorithm character varying(255);
 ALTER TABLE simplematerialbalance_simplematerialbalance ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
@@ -142,7 +142,7 @@ ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN onlycompon
 
 
 -- Table operationaltasks_operationaltask
--- change: 13.09.2012
+-- changed: 13.09.2012
 
 CREATE TABLE operationaltasks_operationaltask
 (
@@ -163,7 +163,7 @@ CREATE TABLE operationaltasks_operationaltask
 
 
 -- Table: assignmenttoshift_assignmenttoshift
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN active boolean;
 ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN active SET DEFAULT true;
@@ -172,7 +172,7 @@ ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN active SET DEFAULT 
 
 
 -- Table: assignmenttoshift_assignmenttoshiftreport
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE assignmenttoshift_assignmenttoshiftreport ADD COLUMN active boolean;
 ALTER TABLE assignmenttoshift_assignmenttoshiftreport ALTER COLUMN active SET DEFAULT true;
@@ -181,7 +181,7 @@ ALTER TABLE assignmenttoshift_assignmenttoshiftreport ALTER COLUMN active SET DE
 
 
 -- Table technologies_operationgroup
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 CREATE TABLE technologies_operationgroup
 (
@@ -195,7 +195,7 @@ CREATE TABLE technologies_operationgroup
 
 
 -- Table technologies_operationgroup
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE technologies_operation ADD COLUMN operationgroup_id bigint;
 
@@ -207,7 +207,7 @@ ALTER TABLE technologies_operation
 
 
 -- Table operationaltasks_operationaltask
--- change: 20.09.2012
+-- changed: 20.09.2012
 
 ALTER TABLE operationaltasks_operationaltask ADD COLUMN technologyinstanceoperationcomponent_id bigint;
 ALTER TABLE operationaltasks_operationaltask
@@ -223,7 +223,7 @@ ALTER TABLE operationaltasks_operationaltask
 
       
 -- Table avglaborcostcalcfororder_avglaborcostcalcfororder
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN startdate TYPE date;
 ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finishdate TYPE date;
@@ -232,7 +232,7 @@ ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finis
       
       
 -- Table: deliveries_delivery
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_delivery
 (
@@ -259,7 +259,7 @@ CREATE TABLE deliveries_delivery
 
 
 -- Table: deliveries_deliverystatechange
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_deliverystatechange
 (
@@ -283,7 +283,7 @@ CREATE TABLE deliveries_deliverystatechange
 
 
 -- Table: deliveries_orderedproduct
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_orderedproduct
 (
@@ -302,7 +302,7 @@ CREATE TABLE deliveries_orderedproduct
 
 
 -- Table: deliveries_deliveredproduct
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_deliveredproduct
 (
@@ -322,7 +322,7 @@ CREATE TABLE deliveries_deliveredproduct
 
 
 -- Table: states_message
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
 
@@ -334,7 +334,7 @@ ALTER TABLE states_message
 
 
 -- Table: basic_product
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 ALTER TABLE basic_product ADD COLUMN companyproduct_id bigint;
 ALTER TABLE basic_product
@@ -351,7 +351,7 @@ ADD CONSTRAINT companyproductfamily_fkey FOREIGN KEY (companyproductfamily_id)
 
 
 -- Table: basic_company
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 ALTER TABLE basic_company ADD COLUMN buffer integer;
 
@@ -359,7 +359,7 @@ ALTER TABLE basic_company ADD COLUMN buffer integer;
 
 
 -- Table: qcadoocustomtranslation_customtranslation
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 CREATE TABLE qcadoocustomtranslation_customtranslation
 (
@@ -376,7 +376,7 @@ CREATE TABLE qcadoocustomtranslation_customtranslation
 
 
 -- Table: deliveries_orderedproduct
--- change: 05.10.2012
+-- changed: 05.10.2012
 
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN operation_id bigint;
 ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fkey
@@ -387,7 +387,7 @@ ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fk
 
 
 -- Table: deliveries_orderedproduct
--- change: 05.10.2012
+-- changed: 05.10.2012
 
 ALTER TABLE deliveries_orderedproduct ADD COLUMN operation_id bigint;
 ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
@@ -398,7 +398,7 @@ ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
 
 
 -- Table: avglaborcostcalcfororder_assignmentworkertoshift
--- change: 08.10.2012
+-- changed: 08.10.2012
 
 ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedhours numeric(12,5);
 
@@ -406,7 +406,7 @@ ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedho
 
 
 -- Table: supplynegotiations_requestforquotation
--- change: 09.10.2012
+-- changed: 09.10.2012
 
 CREATE TABLE supplynegotiations_requestforquotation
 (
@@ -430,7 +430,7 @@ CREATE TABLE supplynegotiations_requestforquotation
 
 
 -- Table: supplynegotiations_requestforquotationproduct
--- change: 09.10.2012
+-- changed: 09.10.2012
 
 CREATE TABLE supplynegotiations_requestforquotationproduct
 (
@@ -453,7 +453,7 @@ CREATE TABLE supplynegotiations_requestforquotationproduct
 
 
 -- Table: deliveries_columnfordeliveries
--- change: 10.10.2012
+-- changed: 10.10.2012
 
 CREATE TABLE deliveries_columnfordeliveries
 (
@@ -470,7 +470,7 @@ CREATE TABLE deliveries_columnfordeliveries
 
 
 -- Table: deliveries_columnfororders
--- change: 10.10.2012
+-- changed: 10.10.2012
 
 CREATE TABLE deliveries_columnfororders
 (
