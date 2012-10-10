@@ -16,4 +16,8 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_ORDERED_PRODUCT = "orderedProduct";
 
+    public static final String MODEL_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
+
+    public static final String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
+
 }

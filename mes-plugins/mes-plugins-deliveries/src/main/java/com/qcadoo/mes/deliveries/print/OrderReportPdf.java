@@ -1,7 +1,15 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
+import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
+import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.NAME;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,8 +21,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
@@ -22,13 +32,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesColumnAlignment;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -38,104 +44,132 @@ import com.qcadoo.security.api.SecurityService;
 public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private OrderColumnFetcher orderColumnFetcher;
+
+    @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberService numberService;
-
-    @Autowired
-    private PdfHelper pdfHelper;
 
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
-        String documentTitle = translationService.translate("deliveries.deliveryReport.report.orderedProduct.title", locale);
+        checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
+
+        String documentTitle = translationService.translate("deliveries.orderReport.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
         pdfHelper
                 .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
 
-        checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
-
         Long deliveryId = Long.valueOf(model.get("id").toString());
 
-        Entity delivery = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
-                .get(deliveryId);
-        createHeaderTable(document, locale, delivery);
-        createTableWith(document, locale, delivery);
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+
+        createHeaderTable(document, delivery, locale);
+        createProductsTable(document, delivery, locale);
+
         String endOfPrint = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
 
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
-        return translationService.translate("deliveries.deliveryReport.report.deliveredProduct.fileName", locale,
-                delivery.getStringField(DeliveryFields.NUMBER),
+        return translationService.translate("deliveries.orderReport.report.fileName", locale, delivery.getStringField(NUMBER),
                 DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
     }
 
-    private void createHeaderTable(final Document document, final Locale locale, final Entity order) throws DocumentException {
+    private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
         PdfPTable panelTable = pdfHelper.createPanelTable(3);
+
         panelTable.setSpacingBefore(7);
+
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.number", locale),
-                order.getStringField(DeliveryFields.NUMBER));
+                translationService.translate("deliveries.orderReport.report.columnHeader.number", locale),
+                delivery.getStringField(NUMBER));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.name", locale),
-                order.getStringField(DeliveryFields.NAME) == null ? "" : order.getStringField(DeliveryFields.NAME));
+                translationService.translate("deliveries.orderReport.report.columnHeader.name", locale),
+                (delivery.getStringField(NAME) == null) ? "" : delivery.getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.description", locale),
-                order.getStringField(DeliveryFields.DESCRIPTION) == null ? "" : order.getStringField(DeliveryFields.DESCRIPTION));
+                translationService.translate("deliveries.orderReport.report.columnHeader.description", locale),
+                (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.deliveryDate", locale),
-                order.getField(DeliveryFields.DELIVERY_DATE) == null ? "" : order.getField(DeliveryFields.DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
-                "deliveries.deliveryReport.report.columnHeader.supplier", locale), order
-                .getBelongsToField(DeliveryFields.SUPPLIER) == null ? "" : order.getBelongsToField(DeliveryFields.SUPPLIER)
-                .getStringField("name"));
+                translationService.translate("deliveries.orderReport.report.columnHeader.deliveryDate", locale),
+                (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate("deliveries.orderReport.report.columnHeader.supplier", locale),
+                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+
         document.add(panelTable);
     }
 
-    private void createTableWith(final Document document, final Locale locale, final Entity delivery) throws DocumentException {
-        Paragraph productTableTitle = new Paragraph(new Phrase(translationService.translate(
-                "deliveries.deliveryReport.report.orderedProduct.products", locale), FontUtils.getDejavuBold11Dark()));
-        productTableTitle.setSpacingBefore(7f);
-        productTableTitle.setSpacingAfter(7f);
-        document.add(productTableTitle);
-        List<String> resourcesTableHeader = new ArrayList<String>();
+    private void createProductsTable(final Document document, final Entity delivery, final Locale locale)
+            throws DocumentException {
+        List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
 
-        resourcesTableHeader.add(translationService.translate("deliveries.deliveryReport.report.ordererProduct.number", locale));
-        resourcesTableHeader.add(translationService.translate("deliveries.deliveryReport.report.ordererProduct.name", locale));
-        resourcesTableHeader.add(translationService.translate("deliveries.deliveryReport.report.ordererProduct.ordererQuantity",
-                locale));
-        resourcesTableHeader.add(translationService.translate("deliveries.deliveryReport.report.ordererProduct.unit", locale));
+        if (!columnsForOrders.isEmpty()) {
+            PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForOrders.size(),
+                    prepareProductsTableHeader(document, columnsForOrders, locale), false);
 
-        PdfPTable resourcesTable = pdfHelper.createTableWithHeader(4, resourcesTableHeader, false);
+            List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
 
-        List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
-        for (Entity orderedProduct : orderedProducts) {
-            resourcesTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-            resourcesTable.addCell(new Phrase(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(
-                    NUMBER), FontUtils.getDejavuRegular9Dark()));
-            resourcesTable.addCell(new Phrase(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(
-                    ProductFields.NAME), FontUtils.getDejavuRegular9Dark()));
-            resourcesTable.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-            resourcesTable.addCell(new Phrase(numberService.format(orderedProduct
-                    .getDecimalField(OrderedProductFields.ORDERED_QUANTITY)), FontUtils.getDejavuRegular9Dark()));
-            resourcesTable.addCell(new Phrase(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(
-                    ProductFields.UNIT), FontUtils.getDejavuRegular9Dark()));
+            Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
+                    .getOrderedProductsColumnValues(orderedProducts);
+
+            for (Entity orderedProduct : orderedProducts) {
+                Entity product = orderedProduct.getBelongsToField(PRODUCT);
+
+                for (Entity columnForOrders : columnsForOrders) {
+                    String identifier = columnForOrders.getStringField(IDENTIFIER);
+                    String alignment = columnForOrders.getStringField(ALIGNMENT);
+
+                    String value = orderedProductsColumnValues.get(product).get(identifier);
+
+                    prepareProductColumnAlignment(productsTable.getDefaultCell(),
+                            DeliveriesColumnAlignment.parseString(alignment));
+
+                    productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                }
+            }
+
+            document.add(productsTable);
+            document.add(Chunk.NEWLINE);
         }
-        document.add(resourcesTable);
+    }
+
+    private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,
+            final Locale locale) throws DocumentException {
+        document.add(new Paragraph(translationService.translate("deliveries.orderReport.report.orderedProducts.title", locale),
+                FontUtils.getDejavuBold11Dark()));
+
+        List<String> productsHeader = new ArrayList<String>();
+
+        for (Entity columnForOrders : columnsForOrders) {
+            String name = columnForOrders.getStringField(NAME);
+
+            productsHeader.add(translationService.translate(name, locale));
+        }
+
+        return productsHeader;
+    }
+
+    private void prepareProductColumnAlignment(final PdfPCell cell, final DeliveriesColumnAlignment columnAlignment) {
+        if (DeliveriesColumnAlignment.LEFT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        } else if (DeliveriesColumnAlignment.RIGHT.equals(columnAlignment)) {
+            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        }
     }
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("deliveries.deliveryReport.report.orderedProduct.title", locale));
+        document.addTitle(translationService.translate("deliveries.orderReport.report.title", locale));
     }
 
 }
