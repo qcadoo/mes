@@ -142,7 +142,7 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
         columnForDeliveries.setField(ALIGNMENT, values.get(ALIGNMENT.toLowerCase(Locale.ENGLISH)));
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for orders item {column=" + columnForDeliveries.getStringField(NAME) + "}");
+            LOG.debug("Add column for deliveries item {column=" + columnForDeliveries.getStringField(NAME) + "}");
         }
 
         columnForDeliveries = columnForDeliveries.getDataDefinition().save(columnForDeliveries);
