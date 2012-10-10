@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,7 +54,7 @@ public class ColumnFetcher {
     public Map<Entity, Map<String, String>> getOrderColumnValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
-        fetchColumnValues(orders, "columnForOrders", "getOrderValues", valuesMap);
+        fetchColumnValues(valuesMap, "columnForOrders", "getOrderValues", orders);
 
         return valuesMap;
     }
@@ -61,49 +62,49 @@ public class ColumnFetcher {
     public Map<Entity, Map<String, String>> getColumnValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
 
-        for (String columnDefinitionModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
-            fetchColumnValues(orders, columnDefinitionModel, "getValues", valuesMap);
+        for (String columnsModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
+            fetchColumnValues(valuesMap, columnsModel, "getValues", orders);
         }
 
         return valuesMap;
     }
 
     @SuppressWarnings("unchecked")
-    private void fetchColumnValues(final List<Entity> orders, final String ddModel, final String methodString,
-            final Map<Entity, Map<String, String>> valuesMap) {
-        DataDefinition dd = dataDefinitionService.get("workPlans", ddModel);
+    private void fetchColumnValues(final Map<Entity, Map<String, String>> valuesMap, final String columnsModelName,
+            final String methodName, final List<Entity> orders) {
+        DataDefinition columnsModelDD = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, columnsModelName);
 
-        List<Entity> columnDefinitions = dd.find().list().getEntities();
+        List<Entity> columnDefinitions = columnsModelDD.find().list().getEntities();
 
-        Set<String> classesStrings = new HashSet<String>();
+        Set<String> classNames = new HashSet<String>();
 
         for (Entity columnDefinition : columnDefinitions) {
-            String classString = columnDefinition.getStringField("columnFiller");
-            classesStrings.add(classString);
+            String className = columnDefinition.getStringField("columnFiller");
+            classNames.add(className);
         }
 
-        for (String classString : classesStrings) {
+        for (String className : classNames) {
             Class<?> clazz;
             try {
-                clazz = Thread.currentThread().getContextClassLoader().loadClass(classString);
+                clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
             } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Failed to find class: " + classString, e);
+                throw new IllegalStateException("Failed to find class: " + className, e);
             }
 
             Object bean = applicationContext.getBean(clazz);
 
             if (bean == null) {
-                throw new IllegalStateException("Failed to find bean for class: " + classString);
+                throw new IllegalStateException("Failed to find bean for class: " + className);
             }
 
             Method method;
 
             try {
-                method = clazz.getMethod(methodString, List.class);
+                method = clazz.getMethod(methodName, List.class);
             } catch (SecurityException e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
             } catch (NoSuchMethodException e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + classString, e);
+                throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
             }
 
             Map<Entity, Map<String, String>> values;
@@ -130,4 +131,5 @@ public class ColumnFetcher {
             }
         }
     }
+
 }

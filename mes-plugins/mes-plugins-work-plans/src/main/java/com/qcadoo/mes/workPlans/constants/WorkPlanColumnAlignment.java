@@ -26,23 +26,24 @@ package com.qcadoo.mes.workPlans.constants;
 public enum WorkPlanColumnAlignment {
     LEFT("01left"), RIGHT("02right");
 
-    private String stringValue;
+    private String alignment;
 
-    private WorkPlanColumnAlignment(final String stringValue) {
-        this.stringValue = stringValue;
+    private WorkPlanColumnAlignment(final String alignment) {
+        this.alignment = alignment;
     }
 
     public String getStringValue() {
-        return stringValue;
+        return alignment;
     }
 
-    public static WorkPlanColumnAlignment parseString(final String string) {
-        if ("01left".equals(string)) {
+    public static WorkPlanColumnAlignment parseString(final String alignment) {
+        if ("01left".equals(alignment)) {
             return LEFT;
-        } else if ("02right".equals(string)) {
+        } else if ("02right".equals(alignment)) {
             return RIGHT;
         }
 
-        throw new IllegalStateException("Unsupported column alignment: " + string);
+        throw new IllegalStateException("Unsupported column alignment '" + alignment + "'");
     }
+
 }

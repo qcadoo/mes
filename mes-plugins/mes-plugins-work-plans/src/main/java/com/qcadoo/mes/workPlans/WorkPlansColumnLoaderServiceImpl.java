@@ -55,6 +55,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoaderServiceImpl.class);
+
     private static final String L_TRUE = "true";
 
     private static final String L_COLUMN_FOR_ORDERS = "columnForOrders";
@@ -92,8 +94,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private static enum OperationType {
         ADD, DELETE;
     };
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoaderServiceImpl.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -289,7 +289,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 addWorkPlanOrderColumn(columnForOrders);
             }
         } else {
-            throw new IllegalStateException("Saved entity - columnForOrders - have validation errors - "
+            throw new IllegalStateException("Saved entity - columnForOrders - has validation errors - "
                     + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
@@ -330,7 +330,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 addOrderOperationInputColumn(columnForInputProduct);
             }
         } else {
-            throw new IllegalStateException("Saved entity - columnForInputProducts - have validation errors - "
+            throw new IllegalStateException("Saved entity - columnForInputProducts - has validation errors - "
                     + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
@@ -371,7 +371,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 addOrderOperationOutputColumn(columnForOutputProduct);
             }
         } else {
-            throw new IllegalStateException("Saved entity - columnForOutputProducts - have validation errors - "
+            throw new IllegalStateException("Saved entity - columnForOutputProducts - has validation errors - "
                     + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
         }
     }
@@ -397,7 +397,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column added to parameter order columns {column=" + parameterOrderColumn.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved entity - parameterOrderColumn - have validation errors - "
+            throw new IllegalStateException("Saved entity - parameterOrderColumn - has validation errors - "
                     + columnForOrders.toString());
         }
     }
@@ -417,7 +417,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     LOG.debug("Column added to work plan order columns {column=" + workPlanOrderColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - workPlanOrderColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - workPlanOrderColumn - has validation errors - "
                         + columnForOrders.toString());
             }
         }
@@ -438,7 +438,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column added to parameter input columns {column=" + parameterInputColumn.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved entity - parameterInputColumn - have validation errors - "
+            throw new IllegalStateException("Saved entity - parameterInputColumn - has validation errors - "
                     + columnForInputProducts.toString());
         }
     }
@@ -458,7 +458,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 LOG.debug("Column added to parameter output columns {column=" + parameterOutputColumn.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved entity - parameterOutputColumn - have validation errors - "
+            throw new IllegalStateException("Saved entity - parameterOutputColumn - has validation errors - "
                     + columnForOutputProducts.toString());
         }
     }
@@ -478,7 +478,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     LOG.debug("Column added to operation input columns {column=" + operationInputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - operationInputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - operationInputColumn - has validation errors - "
                         + columnForInputProducts.toString());
             }
         }
@@ -499,7 +499,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                     LOG.debug("Column added to operation output columns {column=" + operationOutputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - operationOutputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - operationOutputColumn - has validation errors - "
                         + columnForOutputProducts.toString());
             }
         }
@@ -523,7 +523,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                             + technologyOperationInputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - technologyOperationInputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - technologyOperationInputColumn - has validation errors - "
                         + columnForInputProducts.toString());
             }
         }
@@ -548,7 +548,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                             + technologyOperationOutputColumn.toString() + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - technologyOperationOutputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - technologyOperationOutputColumn - has validation errors - "
                         + columnForOutputProducts.toString());
             }
         }
@@ -571,7 +571,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                             + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - orderOperationInputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - orderOperationInputColumn - has validation errors - "
                         + columnForInputProducts.toString());
             }
         }
@@ -594,7 +594,7 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                             + "}");
                 }
             } else {
-                throw new IllegalStateException("Saved entity - orderOperationOutputColumn - have validation errors - "
+                throw new IllegalStateException("Saved entity - orderOperationOutputColumn - has validation errors - "
                         + columnForOutputProducts.toString());
             }
         }
@@ -660,19 +660,28 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
                 WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS);
     }
 
-    public boolean databaseHasToBePrepared() {
-        return checkIfColumnForInputProductsIsEmpty() && checkIfColumnForOutputProductsIsEmpty();
+    public boolean databaseHasToBePreparedForOrders() {
+        return checkIfColumnForOrdersAreEmpty();
     }
 
-    private boolean checkIfColumnForInputProductsIsEmpty() {
+    public boolean databaseHasToBePreparedForProducts() {
+        return checkIfColumnForInputProductsAreEmpty() && checkIfColumnForOutputProductsAreEmpty();
+    }
+
+    private boolean checkIfColumnForOrdersAreEmpty() {
+        return getColumnForOrdersDD().find().list().getTotalNumberOfEntities() == 0;
+    }
+
+    private boolean checkIfColumnForInputProductsAreEmpty() {
         return getColumnForInputProductsDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private boolean checkIfColumnForOutputProductsIsEmpty() {
+    private boolean checkIfColumnForOutputProductsAreEmpty() {
         return getColumnForOutputProductsDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
     private InputStream getXmlFile(final String plugin, final String type) throws IOException {
         return WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type + ".xml");
     }
+
 }
