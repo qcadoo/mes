@@ -320,8 +320,10 @@ CREATE TABLE deliveries_deliveredproduct
 
 -- end
 
+
 -- Table: states_message
 -- change: 27.09.2012
+
 ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
 
 ALTER TABLE states_message
@@ -329,6 +331,7 @@ ALTER TABLE states_message
       REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
 
 -- end
+
 
 -- Table: basic_product
 -- change: 02.10.2012
@@ -345,6 +348,7 @@ ADD CONSTRAINT companyproductfamily_fkey FOREIGN KEY (companyproductfamily_id)
       REFERENCES basic_company (id) DEFERRABLE;
       
 -- end
+
 
 -- Table: basic_company
 -- change: 02.10.2012
@@ -370,6 +374,7 @@ CREATE TABLE qcadoocustomtranslation_customtranslation
 
 -- end
 
+
 -- Table: deliveries_orderedproduct
 -- change: 05.10.2012
 
@@ -379,6 +384,7 @@ ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fk
       REFERENCES technologies_operation (id)  DEFERRABLE;
 
 -- end
+
 
 -- Table: deliveries_orderedproduct
 -- change: 05.10.2012
@@ -390,14 +396,18 @@ ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
 
 -- end
 
+
 -- Table: avglaborcostcalcfororder_assignmentworkertoshift
 -- change: 08.10.2012
+
 ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedhours numeric(12,5);
 
 -- end
 
+
 -- Table: supplynegotiations_requestforquotation
 -- change: 09.10.2012
+
 CREATE TABLE supplynegotiations_requestforquotation
 (
   id bigint NOT NULL,
@@ -418,8 +428,10 @@ CREATE TABLE supplynegotiations_requestforquotation
 
 -- end
 
+
 -- Table: supplynegotiations_requestforquotationproduct
 -- change: 09.10.2012
+
 CREATE TABLE supplynegotiations_requestforquotationproduct
 (
   id bigint NOT NULL,
@@ -437,3 +449,38 @@ CREATE TABLE supplynegotiations_requestforquotationproduct
       REFERENCES technologies_operation (id) DEFERRABLE
 );
 
+-- end
+
+
+-- Table: deliveries_columnfordeliveries
+-- change: 10.10.2012
+
+CREATE TABLE deliveries_columnfordeliveries
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  name character varying(1024),
+  description character varying(1024),
+  columnfiller character varying(255),
+  alignment character varying(255) DEFAULT '01left'::character varying,
+  CONSTRAINT deliveries_columnfordeliveries_pkey PRIMARY KEY (id)
+);
+
+-- end
+
+
+-- Table: deliveries_columnfororders
+-- change: 10.10.2012
+
+CREATE TABLE deliveries_columnfororders
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  name character varying(1024),
+  description character varying(1024),
+  columnfiller character varying(255),
+  alignment character varying(255) DEFAULT '01left'::character varying,
+  CONSTRAINT deliveries_columnfororders_pkey PRIMARY KEY (id)
+);
+
+-- end
