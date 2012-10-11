@@ -366,7 +366,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         BigDecimal executedOperationCycles = getNotNullBigDecimal(productionRecord.getDecimalField(EXECUTED_OPERATION_CYCLES));
 
         productionRecord.setField(MACHINE_TIME, machineTime);
-        productionRecord.setField(MACHINE_TIME, laborTime);
+        productionRecord.setField(LABOR_TIME, laborTime);
         productionRecord.setField(EXECUTED_OPERATION_CYCLES, numberService.setScale(executedOperationCycles));
 
         groupedProductionRecords.put(technologyInstanceOperationComponentId, productionRecord);

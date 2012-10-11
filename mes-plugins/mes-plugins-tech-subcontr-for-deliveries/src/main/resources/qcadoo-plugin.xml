@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="techSubcontrForDeliveries" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+	<information>
+		<name>MES - Technology subcontracting for deliveries</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>techSubcontracting</plugin>
+			<version>[1.7.0</version>
+		</dependency>
+		<dependency>
+			<plugin>deliveries</plugin>
+			<version>[1.7.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model-field model="deliveredProduct" plugin="deliveries">
+			<model:belongsTo name="operation" model="operation" plugin="technologies" />
+		</model:model-field>
+		
+		<model:model-field model="orderedProduct" plugin="deliveries">
+			<model:belongsTo name="operation" model="operation" plugin="technologies" />
+		</model:model-field>
+		
+		<view:view-tab resource="view/tabExtensions/deliveredProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderedProductDetails.xml" />
+		
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+			component="orderedProducts">
+			<view:column name="operation" fields="operation"
+				orderable="true" expression="#operation['number']" />
+		</view:view-grid-column>
+		
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+			component="deliveredProducts">
+			<view:column name="operation" fields="operation"
+				orderable="true"  expression="#operation['number']" />
+		</view:view-grid-column>
+		
+		<custom:custom class="com.qcadoo.mes.techSubcontrForDeliveries.TechSubcontrForDeliveriesOnStartupService" />
+	</modules>
+
+</plugin>

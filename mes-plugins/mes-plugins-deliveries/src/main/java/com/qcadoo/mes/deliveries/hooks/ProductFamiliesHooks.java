@@ -1,4 +1,4 @@
-package com.qcadoo.mes.deliveries;
+package com.qcadoo.mes.deliveries.hooks;
 
 import java.util.List;
 

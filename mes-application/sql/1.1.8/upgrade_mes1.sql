@@ -1,5 +1,5 @@
 -- Table: productcatalognumbers_productcatalognumbers
--- change: 17.08.2012
+-- changed: 17.08.2012
 
 CREATE TABLE productcatalognumbers_productcatalognumbers
 (
@@ -18,7 +18,7 @@ CREATE TABLE productcatalognumbers_productcatalognumbers
 
 
 -- Table: basic_product
--- change: 23.08.2012
+-- changed: 23.08.2012
 
 ALTER TABLE basic_product ADD COLUMN entitytype character varying(255);
 ALTER TABLE basic_product ALTER COLUMN entitytype SET DEFAULT '01particularProduct'::character varying;
@@ -71,7 +71,7 @@ CREATE TABLE qcadoomodel_unitconversionitem
 
 
 -- Table: technologies_technologyoperationcomponent
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN comment character varying(2048);
 
@@ -79,7 +79,7 @@ ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN comment charact
 
 
 -- Table: technologies_technologyinstanceoperationcomponent
--- change: 30.08.2012
+-- changed: 30.08.2012
 
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN comment character varying(2048);
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachment character varying(255);
@@ -88,7 +88,7 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN attachm
 
 
 -- Table: technologies_operation
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_operation ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -97,7 +97,7 @@ ALTER TABLE technologies_operation ALTER COLUMN issubcontracting SET DEFAULT fal
 
 
 -- Table: technologies_technologyoperationcomponent
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -106,7 +106,7 @@ ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN issubcontract
 
 
 -- Table: technologies_technologyinstanceoperationcomponent
--- change: 06.09.2012
+-- changed: 06.09.2012
 
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN issubcontracting boolean;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issubcontracting SET DEFAULT false;
@@ -115,7 +115,7 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN issub
 
 
 -- Table materialrequirements_materialrequirement
--- change: 12.09.2012
+-- changed: 12.09.2012
 
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN "number" character varying(256);
 ALTER TABLE materialrequirements_materialrequirement ADD COLUMN mrpalgorithm character varying(255);
@@ -130,7 +130,7 @@ ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponen
 
 
 -- Table materialrequirements_materialrequirement
--- change: 12.09.2012
+-- changed: 12.09.2012
 
 ALTER TABLE simplematerialbalance_simplematerialbalance ADD COLUMN mrpalgorithm character varying(255);
 ALTER TABLE simplematerialbalance_simplematerialbalance ALTER COLUMN mrpalgorithm SET DEFAULT '01onlyComponents'::character varying;
@@ -144,7 +144,7 @@ ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN onlycompon
 
 
 -- Table operationaltasks_operationaltask
--- change: 13.09.2012
+-- changed: 13.09.2012
 
 CREATE TABLE operationaltasks_operationaltask
 (
@@ -165,7 +165,7 @@ CREATE TABLE operationaltasks_operationaltask
 
 
 -- Table: assignmenttoshift_assignmenttoshift
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE assignmenttoshift_assignmenttoshift ADD COLUMN active boolean;
 ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN active SET DEFAULT true;
@@ -174,7 +174,7 @@ ALTER TABLE assignmenttoshift_assignmenttoshift ALTER COLUMN active SET DEFAULT 
 
 
 -- Table: assignmenttoshift_assignmenttoshiftreport
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE assignmenttoshift_assignmenttoshiftreport ADD COLUMN active boolean;
 ALTER TABLE assignmenttoshift_assignmenttoshiftreport ALTER COLUMN active SET DEFAULT true;
@@ -183,7 +183,7 @@ ALTER TABLE assignmenttoshift_assignmenttoshiftreport ALTER COLUMN active SET DE
 
 
 -- Table technologies_operationgroup
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 CREATE TABLE technologies_operationgroup
 (
@@ -197,7 +197,7 @@ CREATE TABLE technologies_operationgroup
 
 
 -- Table technologies_operationgroup
--- change: 18.09.2012
+-- changed: 18.09.2012
 
 ALTER TABLE technologies_operation ADD COLUMN operationgroup_id bigint;
 
@@ -209,7 +209,7 @@ ALTER TABLE technologies_operation
 
 
 -- Table operationaltasks_operationaltask
--- change: 20.09.2012
+-- changed: 20.09.2012
 
 ALTER TABLE operationaltasks_operationaltask ADD COLUMN technologyinstanceoperationcomponent_id bigint;
 ALTER TABLE operationaltasks_operationaltask
@@ -225,7 +225,7 @@ ALTER TABLE operationaltasks_operationaltask
 
       
 -- Table avglaborcostcalcfororder_avglaborcostcalcfororder
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN startdate TYPE date;
 ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finishdate TYPE date;
@@ -234,7 +234,7 @@ ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finis
       
       
 -- Table: deliveries_delivery
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_delivery
 (
@@ -261,7 +261,7 @@ CREATE TABLE deliveries_delivery
 
 
 -- Table: deliveries_deliverystatechange
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_deliverystatechange
 (
@@ -285,14 +285,14 @@ CREATE TABLE deliveries_deliverystatechange
 
 
 -- Table: deliveries_orderedproduct
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_orderedproduct
 (
   id bigint NOT NULL,
   delivery_id bigint,
   product_id bigint,
-  quantity numeric(12,5),
+  orderedquantity numeric(12,5),
   CONSTRAINT deliveries_orderedproduct_pkey PRIMARY KEY (id),
   CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
       REFERENCES deliveries_delivery (id) DEFERRABLE,
@@ -304,14 +304,13 @@ CREATE TABLE deliveries_orderedproduct
 
 
 -- Table: deliveries_deliveredproduct
--- change: 27.09.2012
+-- changed: 27.09.2012
 
 CREATE TABLE deliveries_deliveredproduct
 (
   id bigint NOT NULL,
   delivery_id bigint,
   product_id bigint,
-  orderedquantity numeric(12,5),
   deliveredquantity numeric(12,5),
   damagedquantity numeric(12,5),
   CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
@@ -324,8 +323,20 @@ CREATE TABLE deliveries_deliveredproduct
 -- end
 
 
+-- Table: states_message
+-- changed: 27.09.2012
+
+ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
+
+ALTER TABLE states_message
+  ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id)
+      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
+
+-- end
+
+
 -- Table: basic_product
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 ALTER TABLE basic_product ADD COLUMN companyproduct_id bigint;
 ALTER TABLE basic_product
@@ -340,8 +351,9 @@ ADD CONSTRAINT companyproductfamily_fkey FOREIGN KEY (companyproductfamily_id)
       
 -- end
 
+
 -- Table: basic_company
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 ALTER TABLE basic_company ADD COLUMN buffer integer;
 
@@ -349,7 +361,7 @@ ALTER TABLE basic_company ADD COLUMN buffer integer;
 
 
 -- Table: qcadoocustomtranslation_customtranslation
--- change: 02.10.2012
+-- changed: 02.10.2012
 
 CREATE TABLE qcadoocustomtranslation_customtranslation
 (
@@ -360,6 +372,117 @@ CREATE TABLE qcadoocustomtranslation_customtranslation
   active boolean DEFAULT false,
   locale character varying(255),
   CONSTRAINT qcadoocustomtranslation_customtranslation_pkey PRIMARY KEY (id )
+);
+
+-- end
+
+
+-- Table: deliveries_orderedproduct
+-- changed: 05.10.2012
+
+ALTER TABLE deliveries_deliveredproduct ADD COLUMN operation_id bigint;
+ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fkey
+	FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id)  DEFERRABLE;
+
+-- end
+
+
+-- Table: deliveries_orderedproduct
+-- changed: 05.10.2012
+
+ALTER TABLE deliveries_orderedproduct ADD COLUMN operation_id bigint;
+ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
+	FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id)  DEFERRABLE;
+
+-- end
+
+
+-- Table: avglaborcostcalcfororder_assignmentworkertoshift
+-- changed: 08.10.2012
+
+ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedhours numeric(12,5);
+
+-- end
+
+
+-- Table: supplynegotiations_requestforquotation
+-- changed: 09.10.2012
+
+CREATE TABLE supplynegotiations_requestforquotation
+(
+  id bigint NOT NULL,
+  "number" character varying(255),
+  "name" character varying(1024),
+  description character varying(2048),
+  supplier_id bigint,
+  desireddate date,
+  active boolean DEFAULT true,
+  createdate timestamp without time zone,
+  updatedate timestamp without time zone,
+  "createuser" character varying(255),
+  updateuser character varying(255),
+  CONSTRAINT supplynegotiations_requestforquotation_pkey PRIMARY KEY (id),
+  CONSTRAINT requestforquotation_company_fkey FOREIGN KEY (supplier_id)
+      REFERENCES basic_company (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: supplynegotiations_requestforquotationproduct
+-- changed: 09.10.2012
+
+CREATE TABLE supplynegotiations_requestforquotationproduct
+(
+  id bigint NOT NULL,
+  requestforquotation_id bigint,
+  product_id bigint,
+  orderedquantity numeric(12,5),
+  annualvolume numeric(12,5),
+  operation_id bigint,
+  CONSTRAINT supplynegotiations_requestforquotationproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT requestforquotationproduct_requestforquotation_fkey FOREIGN KEY (requestforquotation_id)
+      REFERENCES supplynegotiations_requestforquotation (id) DEFERRABLE,
+  CONSTRAINT requestforquotationproduct_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT requestforquotationproduct_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: deliveries_columnfordeliveries
+-- changed: 10.10.2012
+
+CREATE TABLE deliveries_columnfordeliveries
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  name character varying(1024),
+  description character varying(1024),
+  columnfiller character varying(255),
+  alignment character varying(255) DEFAULT '01left'::character varying,
+  CONSTRAINT deliveries_columnfordeliveries_pkey PRIMARY KEY (id)
+);
+
+-- end
+
+
+-- Table: deliveries_columnfororders
+-- changed: 10.10.2012
+
+CREATE TABLE deliveries_columnfororders
+(
+  id bigint NOT NULL,
+  identifier character varying(255),
+  name character varying(1024),
+  description character varying(1024),
+  columnfiller character varying(255),
+  alignment character varying(255) DEFAULT '01left'::character varying,
+  CONSTRAINT deliveries_columnfororders_pkey PRIMARY KEY (id)
 );
 
 -- end

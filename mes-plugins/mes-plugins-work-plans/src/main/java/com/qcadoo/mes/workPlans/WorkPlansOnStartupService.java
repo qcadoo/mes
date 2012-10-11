@@ -51,4 +51,5 @@ public class WorkPlansOnStartupService extends Module {
         workPlansColumnLoader.deleteWorkPlansColumnsForOrders();
         workPlansColumnLoader.deleteWorkPlansColumnsForProducts();
     }
+
 }

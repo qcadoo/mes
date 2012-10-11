@@ -281,27 +281,27 @@ public class ShiftsServiceImpl implements ShiftsService {
             List<ShiftHour> hoursToAdd = new ArrayList<ShiftHour>();
 
             for (ShiftHour hour : hours) {
-                if (hour.getDateFrom().after(to)) {
+                if (hour.getDateFrom().compareTo(to) >= 0) {
                     continue;
                 }
-                if (hour.getDateTo().before(from)) {
+                if (hour.getDateTo().compareTo(from) <= 0) {
                     continue;
                 }
-                if (hour.getDateTo().before(to) && hour.getDateFrom().after(from)) {
+                if (hour.getDateTo().compareTo(to) <= 0 && hour.getDateFrom().compareTo(from) >= 0) {
                     hoursToRemove.add(hour);
                     continue;
                 }
-                if (hour.getDateTo().after(to) && hour.getDateFrom().after(from)) {
+                if (hour.getDateTo().compareTo(to) >= 0 && hour.getDateFrom().compareTo(from) >= 0) {
                     hoursToRemove.add(hour);
                     hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
                     continue;
                 }
-                if (hour.getDateTo().before(to) && hour.getDateFrom().before(from)) {
+                if (hour.getDateTo().compareTo(to) <= 0 && hour.getDateFrom().compareTo(from) <= 0) {
                     hoursToRemove.add(hour);
                     hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
                     continue;
                 }
-                if (hour.getDateTo().after(to) && hour.getDateFrom().before(from)) {
+                if (hour.getDateTo().compareTo(to) >= 0 && hour.getDateFrom().compareTo(from) <= 0) {
                     hoursToRemove.add(hour);
                     hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
                     hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
@@ -457,7 +457,7 @@ public class ShiftsServiceImpl implements ShiftsService {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(dateTo);
                 cal.add(Calendar.DATE, 1);
-                this.dateTo = cal.getTime();
+                this.dateTo = new Date(cal.getTime().getTime());
             } else {
                 this.dateTo = new Date(dateTo.getTime());
             }

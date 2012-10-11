@@ -12,8 +12,10 @@ import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -32,18 +34,18 @@ public class DeliveryDetailsHooks {
                 DeliveriesConstants.MODEL_DELIVERY, L_FORM, NUMBER);
     }
 
-    public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
+    public void changedEnabledFieldForSpecificDeliveryState(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
             return;
         }
-        final Entity order = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
-                .get(form.getEntityId());
-        if (order.getStringField(STATE).equals(DeliveryState.PREPARED.getStringValue())
-                || order.getStringField(STATE).equals(DeliveryState.APPROVED.getStringValue())) {
+        final Entity delivery = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERY).get(form.getEntityId());
+        if (delivery.getStringField(STATE).equals(DeliveryState.PREPARED.getStringValue())
+                || delivery.getStringField(STATE).equals(DeliveryState.APPROVED.getStringValue())) {
             changedEnabledFields(view, false, true);
-        } else if (order.getStringField(STATE).equals(DeliveryState.DECLINED.getStringValue())
-                || order.getStringField(STATE).equals(DeliveryState.RECEIVED.getStringValue())) {
+        } else if (delivery.getStringField(STATE).equals(DeliveryState.DECLINED.getStringValue())
+                || delivery.getStringField(STATE).equals(DeliveryState.RECEIVED.getStringValue())) {
             changedEnabledFields(view, false, false);
         } else {
             changedEnabledFields(view, true, true);
@@ -60,6 +62,18 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEditable(enabledDeliveredGrid);
         orderedProducts.setEnabled(enabledFormAndOrderedProduct);
         orderedProducts.setEditable(enabledFormAndOrderedProduct);
+    }
+
+    public void setBufferForSupplier(final ViewDefinitionState view) {
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
+        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference("deliveryDateBuffer");
+        Entity supplier = supplierLookup.getEntity();
+        if (supplier == null) {
+            deliveryDateBuffer.setFieldValue(null);
+        } else {
+            deliveryDateBuffer.setFieldValue(supplier.getField("buffer"));
+        }
+        deliveryDateBuffer.requestComponentUpdateState();
     }
 
 }

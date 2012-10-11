@@ -42,4 +42,5 @@ public final class WorkPlanFields {
     public static final String DONT_PRINT_ORDERS_IN_WORK_PLANS = "dontPrintOrdersInWorkPlans";
 
     public static final String ORDERS = "orders";
+
 }

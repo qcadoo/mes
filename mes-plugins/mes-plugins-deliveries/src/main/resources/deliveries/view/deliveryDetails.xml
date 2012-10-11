@@ -6,13 +6,12 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generateOrder" icon="pdfIcon24.png"
-					state="enabled" />
+					state="enabled" action="#{form}.fireEvent(printOrderReport,pdf);" />
 				<bigButton name="generateDelivery" icon="pdfIcon24.png"
-					state="enabled" />
+					state="enabled" action="#{form}.fireEvent(printDeliveryReport,pdf);" />
 			</group>
 			<group name="status">
-				<smallButton name="accept" icon="startIcon16.png"
-					state="disabled">
+				<smallButton name="accept" icon="startIcon16.png" state="disabled">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -70,7 +69,7 @@
 			</group>
 			<group name="copy">
 				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
-					state="disabled" />
+					state="disabled"  action="#{form}.fireEvent(copyOrderedProductToDelivered);"/>
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -86,6 +85,8 @@
 					var declineDelivery = #{window}.getRibbonItem("status.declineDelivery");
 					var approveDelivery = #{window}.getRibbonItem("status.approveDelivery");
 					var copyOrderedProductToDelivered = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+					var generateOrder = #{window}.getRibbonItem("generate.generateOrder");
+					var generateDelivery = #{window}.getRibbonItem("generate.generateDelivery");
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {
@@ -100,6 +101,8 @@
 								accept.disable();
 								declineDelivery.disable();
 								approveDelivery.disable();
+								generateOrder.disable();
+								generateDelivery.disable();
 								return;
 							}
 							cancel.enable();
@@ -118,6 +121,8 @@
 								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 								declineDelivery.setIcon('deleteIcon16.png');
 								approveDelivery.enable();
+								generateOrder.enable();
+								generateDelivery.enable();
 								copyOrderedProductToDelivered.enable();
 							} else if (state == "02prepared") {
 								accept.enable();
@@ -129,6 +134,8 @@
 								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 								declineDelivery.setIcon('deleteIcon16.png');
 								approveDelivery.enable();
+								generateOrder.enable();
+								generateDelivery.enable();
 								copyOrderedProductToDelivered.disable();
 							} else if (state == "03duringCorrection") {
 								accept.disable();
@@ -141,6 +148,8 @@
 								declineDelivery.setIcon('deleteIcon16.png');
 								approveDelivery.enable();
 								copyOrderedProductToDelivered.enable();
+								generateOrder.enable();
+								generateDelivery.enable();
 							} else if (state == "05approved"){
 								accept.enable();
 								accept.state = "receive";
@@ -152,6 +161,8 @@
 								declineDelivery.setIcon('deleteIcon16.png');
 								approveDelivery.disable();
 								copyOrderedProductToDelivered.disable();
+								generateOrder.enable();
+								generateDelivery.enable();
 							} else {
 								save.disable();
 								saveBack.disable();
@@ -162,6 +173,8 @@
 								declineDelivery.disable();
 								approveDelivery.disable();
 								copyOrderedProductToDelivered.disable();
+								generateOrder.enable();
+								generateDelivery.enable();
 							}
 						}
 					});
@@ -189,6 +202,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<beforeRender
+								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsHooks"
+								method="setBufferForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -209,7 +225,17 @@
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				<listener event="changeState"
-					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient" method="changeState" />
+					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
+					method="changeState" />
+				<listener event="printDeliveryReport"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="printDeliveryReport" />
+				<listener event="printOrderReport"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="printOrderReport" />
+				<listener event="copyOrderedProductToDelivered"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="copyOrderedProductToDelivered" />
 			</component>
 		</windowTab>
 		<windowTab name="orderedProductTab">
@@ -230,12 +256,12 @@
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 
-						<option type="searchable" value="number,name,orderedQuantity,unit" />
+						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name,orderedQuantity,unit" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="false" />
+						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
@@ -251,7 +277,7 @@
 							expression="#product['number']" link="true" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
-						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+						<option type="column" name="deliveredQuantity" fields="deliveredQuantity" />
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="70" />
@@ -259,21 +285,38 @@
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						<option type="searchable"
-							value="number,name,orderedQuantity,damagedQuantity,unit" />
+						<option type="searchable" value="number,name" />
 						<option type="orderable"
 							value="number,name,orderedQuantity,damagedQuantity,unit" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="false" />
+						<option type="multiselect" value="true" />
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+		<windowTab name="historyTab">
+			<component type="gridLayout" name="loggingsGridLayout" columns="2" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.stateChanges">
+						<option type="column" name="dateAndTime" fields="dateAndTime" />
+						<option type="column" name="currentState" fields="targetState" />
+						<option type="column" name="worker" fields="worker" />
+						<option type="order" column="dateAndTime" direction="asc" />
+						<option type="searchable" value="dateAndTime,targetState,worker" />
+						<option type="orderable" value="dateAndTime,targetState,worker" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks" method="generateAssignmentToShiftReportNumber" />
-		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks" method="changedEnabledFieldForSpecificOrderState" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="generateAssignmentToShiftReportNumber" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="changedEnabledFieldForSpecificDeliveryState" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="setBufferForSupplier" />
 	</hooks>
 </view>

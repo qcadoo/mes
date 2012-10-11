@@ -120,4 +120,5 @@ public class WorkPlansServiceImpl implements WorkPlansService {
     private DataDefinition getWorkPlanDataDefinition() {
         return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN);
     }
+
 }

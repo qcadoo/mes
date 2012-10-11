@@ -41,5 +41,8 @@ public interface WorkPlansColumnLoaderService {
 
     void setTechnologyInstanceOperationComponentDefaultValues();
 
-    boolean databaseHasToBePrepared();
+    boolean databaseHasToBePreparedForOrders();
+
+    boolean databaseHasToBePreparedForProducts();
+
 }

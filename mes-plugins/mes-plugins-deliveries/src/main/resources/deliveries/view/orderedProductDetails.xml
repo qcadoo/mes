@@ -9,7 +9,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
-					rows="6">
+					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">
@@ -19,6 +19,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener
+								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+								method="fillUnitsFields" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
@@ -33,7 +36,9 @@
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="orderedQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT" />
+									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
 							</layoutElement>
 						</component>
 					</layoutElement>
@@ -43,4 +48,9 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
+			method="fillUnitsFields" />
+	</hooks>
 </view>

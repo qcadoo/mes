@@ -32,5 +32,4 @@ public class DeliveryStateChangeAspect extends AbstractStateChangeAspect {
     protected int getNumOfPhases() {
         return DeliveryStateChangePhase.getNumOfPhases();
     }
-
 }
