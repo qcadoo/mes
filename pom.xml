@@ -355,6 +355,11 @@
 		    <name>SpringSource Repository</name>
 		    <url>http://repo.springsource.org/release</url>
 		</repository>
+		<repository>
+	      	<id>com.logdigger</id>
+	      	<name>com.logdigger</name>
+	      	<url>http://maven.logdigger.com/repos </url>
+	    </repository>
 	</repositories>
 
 	<pluginRepositories>

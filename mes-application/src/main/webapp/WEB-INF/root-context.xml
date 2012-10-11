@@ -62,6 +62,10 @@
 		</property>
 	</bean>
 	
+	<bean id="logdiggerFilter" class="com.logdigger.connector.servlet.LogDiggerConnectorFilter">
+		<property name="config" value="${logdigger}" />
+	</bean>
+	
 	<task:annotation-driven executor="executor" />
 	<task:executor id="executor" rejection-policy="CALLER_RUNS" />
 
