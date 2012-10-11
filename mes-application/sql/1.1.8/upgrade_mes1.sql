@@ -41,7 +41,7 @@ CREATE TABLE qcadoomodel_globalunitconversionsaggregate
 (
   id bigint NOT NULL,
   CONSTRAINT qcadoomodel_globalunitconversionsaggregate_pkey PRIMARY KEY (id)
-)
+);
 
 -- end
 
@@ -64,8 +64,8 @@ CREATE TABLE qcadoomodel_unitconversionitem
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT qcadoomodel_unitconv_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-)
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
 
 -- end
 
@@ -328,9 +328,8 @@ CREATE TABLE deliveries_deliveredproduct
 
 ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
 
-ALTER TABLE states_message
-  ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id)
-      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
+ALTER TABLE states_message ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) 
+      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
 
 -- end
 
