@@ -34,36 +34,38 @@ ALTER TABLE basic_product ADD CONSTRAINT basic_product_fkey
 -- end
 
 
--- Table: basic_conversion
--- change: 30.08.2012
+-- Table: qcadoomodel_globalunitconversionsaggregate
+-- change: 11.10.2012
 
-CREATE TABLE basic_conversion
+CREATE TABLE qcadoomodel_globalunitconversionsaggregate
 (
   id bigint NOT NULL,
-  CONSTRAINT basic_conversion_pkey PRIMARY KEY (id )
-);
+  CONSTRAINT qcadoomodel_globalunitconversionsaggregate_pkey PRIMARY KEY (id)
+)
 
 -- end
 
 
--- Table: basic_conversionitem
--- change: 30.08.2012
+-- Table: qcadoomodel_unitconversionitem
+-- change: 11.10.2012
 
-CREATE TABLE basic_conversionitem
+CREATE TABLE qcadoomodel_unitconversionitem
 (
   id bigint NOT NULL,
   quantityfrom numeric(12,5),
   quantityto numeric(12,5),
   unitfrom character varying(255),
   unitto character varying(255),
-  conversion_id bigint,
+  globalunitconversionsaggregate_id bigint,
   product_id bigint,
-  CONSTRAINT basic_conversionitem_pkey PRIMARY KEY (id ),
-  CONSTRAINT conversionitem_conversion_fkey FOREIGN KEY (conversion_id)
-      REFERENCES basic_conversion (id) DEFERRABLE,
-  CONSTRAINT conversionitem_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
-);
+  CONSTRAINT qcadoomodel_unitconv_pkey PRIMARY KEY (id),
+  CONSTRAINT qcadoomodel_unitconv_aggregate_fkey FOREIGN KEY (globalunitconversionsaggregate_id)
+      REFERENCES qcadoomodel_globalunitconversionsaggregate (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT qcadoomodel_unitconv_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+)
 
 -- end
 
