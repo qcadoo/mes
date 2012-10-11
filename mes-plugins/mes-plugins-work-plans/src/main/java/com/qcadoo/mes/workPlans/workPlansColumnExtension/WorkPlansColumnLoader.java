@@ -34,10 +34,10 @@ import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 @Component
 public class WorkPlansColumnLoader {
 
+    private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoader.class);
+
     @Autowired
     private WorkPlansColumnLoaderService workPlansColumnLoaderService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkPlansColumnLoader.class);
 
     public void setDefaulValues() {
         if (LOG.isDebugEnabled()) {
@@ -51,7 +51,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void addWorkPlansColumnsForOrders() {
-        if (!workPlansColumnLoaderService.databaseHasToBePrepared()) {
+        if (!workPlansColumnLoaderService.databaseHasToBePreparedForOrders()) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void deleteWorkPlansColumnsForOrders() {
-        if (workPlansColumnLoaderService.databaseHasToBePrepared()) {
+        if (workPlansColumnLoaderService.databaseHasToBePreparedForOrders()) {
             return;
         }
 
@@ -75,7 +75,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void addWorkPlansColumnsForProducts() {
-        if (!workPlansColumnLoaderService.databaseHasToBePrepared()) {
+        if (!workPlansColumnLoaderService.databaseHasToBePreparedForProducts()) {
             return;
         }
 
@@ -87,7 +87,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void deleteWorkPlansColumnsForProducts() {
-        if (workPlansColumnLoaderService.databaseHasToBePrepared()) {
+        if (workPlansColumnLoaderService.databaseHasToBePreparedForProducts()) {
             return;
         }
 
@@ -97,4 +97,5 @@ public class WorkPlansColumnLoader {
 
         workPlansColumnLoaderService.clearColumnsForProducts(WorkPlansConstants.PLUGIN_IDENTIFIER);
     }
+
 }

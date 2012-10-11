@@ -27,27 +27,28 @@ public enum WorkPlanType {
     NO_DISTINCTION("01noDistinction"), BY_END_PRODUCT("02byEndProduct"), BY_WORKSTATION_TYPE("03byWorkstationType"), BY_DIVISION(
             "04byDivision");
 
-    private String stringValue;
+    private String type;
 
-    private WorkPlanType(final String stringValue) {
-        this.stringValue = stringValue;
+    private WorkPlanType(final String type) {
+        this.type = type;
     }
 
     public String getStringValue() {
-        return stringValue;
+        return type;
     }
 
-    public static WorkPlanType parseString(final String string) {
-        if ("01noDistinction".equals(string)) {
+    public static WorkPlanType parseString(final String type) {
+        if ("01noDistinction".equals(type)) {
             return NO_DISTINCTION;
-        } else if ("02byEndProduct".equals(string)) {
+        } else if ("02byEndProduct".equals(type)) {
             return BY_END_PRODUCT;
-        } else if ("03byWorkstationType".equals(string)) {
+        } else if ("03byWorkstationType".equals(type)) {
             return BY_WORKSTATION_TYPE;
-        } else if ("04byDivision".equals(string)) {
+        } else if ("04byDivision".equals(type)) {
             return BY_DIVISION;
         }
 
-        throw new IllegalStateException("Unsupported workPlan type: " + string);
+        throw new IllegalStateException("Unsupported workPlan type '" + type + "'");
     }
+
 }

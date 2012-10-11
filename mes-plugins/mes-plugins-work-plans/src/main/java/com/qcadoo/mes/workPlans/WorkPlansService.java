@@ -40,4 +40,5 @@ public interface WorkPlansService {
     List<Entity> getSelectedOrders(final Set<Long> selectedOrderIds);
 
     Entity getWorkPlan(final Long workPlanId);
+
 }

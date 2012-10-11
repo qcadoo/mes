@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
@@ -13,10 +13,10 @@
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/report
-       http://schema.qcadoo.org/modules/report.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
 	<information>
 		<name>MES - Technology subcontracting for deliveries</name>
@@ -29,11 +29,11 @@
 	<dependencies>
 		<dependency>
 			<plugin>techSubcontracting</plugin>
-			<version>[0.4.0</version>
+			<version>[1.7.0</version>
 		</dependency>
 		<dependency>
 			<plugin>deliveries</plugin>
-			<version>[0.4.0</version>
+			<version>[1.7.0</version>
 		</dependency>
 	</dependencies>
 
@@ -63,6 +63,7 @@
 				orderable="true"  expression="#operation['number']" />
 		</view:view-grid-column>
 		
+		<custom:custom class="com.qcadoo.mes.techSubcontrForDeliveries.TechSubcontrForDeliveriesOnStartupService" />
 	</modules>
 
 </plugin>
