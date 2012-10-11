@@ -12,6 +12,19 @@
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Basic</name>
+		
+	<dependencies>
+		<dependency>
+			<groupId>com.logdigger</groupId>
+			<artifactId>logdigger-connector-core</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.logdigger</groupId>
+			<artifactId>logdigger-connector-jdbc</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+	</dependencies>	
 
 	<build>
 		<plugins>
