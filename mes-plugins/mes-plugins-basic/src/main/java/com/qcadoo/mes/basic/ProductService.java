@@ -75,15 +75,15 @@ public class ProductService {
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
         if (hasUnitChangedOnUpdate(product, product.getStringField(ProductFields.UNIT))) {
-            conversionForProductUnit(productDD, product);
+            conversionForProductUnit(product);
         }
     }
 
     public void calculateConversionOnCreate(final DataDefinition productDD, final Entity product) {
-        conversionForProductUnit(productDD, product);
+        conversionForProductUnit(product);
     }
 
-    private void conversionForProductUnit(final DataDefinition dataDefinition, final Entity product) {
+    private void conversionForProductUnit(final Entity product) {
         final String productUnit = product.getStringField(ProductFields.UNIT);
         final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
         product.setField(CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
@@ -102,7 +102,7 @@ public class ProductService {
         }
 
         final Entity product = productForm.getEntity();
-        conversionForProductUnit(product.getDataDefinition(), product);
+        conversionForProductUnit(product);
         product.getDataDefinition().save(product);
         productForm.addMessage("basic.productDetails.message.getDefaultConversionsForProductSuccess", MessageType.SUCCESS);
         state.performEvent(view, "reset", new String[0]);
@@ -116,7 +116,7 @@ public class ProductService {
 
         final List<Entity> products = productsGrid.getSelectedEntities();
         for (Entity product : products) {
-            conversionForProductUnit(product.getDataDefinition(), product);
+            conversionForProductUnit(product);
             product.getDataDefinition().save(product);
         }
         productsGrid.addMessage("basic.productsList.message.getDefaultConversionsForProductsSuccess", MessageType.SUCCESS);
