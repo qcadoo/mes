@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.samples.loader;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONVERSION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_CONVERSION_ITEM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
@@ -50,6 +47,8 @@ import com.qcadoo.mes.samples.constants.SamplesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.QcadooModelConstants;
+import com.qcadoo.model.constants.UnitConversionItemFields;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
@@ -97,13 +96,14 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
             addDefaultProductionLine(values);
         } else if ("conversionItem".equals(type)) {
-            addConversion();
-            addConversionItem(values);
+            addUnitConversionAggregate();
+            addUnitConversionItem(values);
         }
     }
 
-    private void addConversion() {
-        Entity conversion = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION).create();
+    private void addUnitConversionAggregate() {
+        Entity conversion = dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
+                QcadooModelConstants.MODEL_GLOBAL_UNIT_CONVERSIONS_AGGREGATE).create();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("conversion is added");
@@ -112,18 +112,19 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         conversion.getDataDefinition().save(conversion);
     }
 
-    private void addConversionItem(final Map<String, String> values) {
-        Entity conversionItem = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION_ITEM).create();
+    private void addUnitConversionItem(final Map<String, String> values) {
+        Entity conversionItem = dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
+                QcadooModelConstants.MODEL_UNIT_CONVERSION_ITEM).create();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(" unitFrom " + values.get(L_UNIT_FROM) + " unitTo " + values.get(L_UNIT_TO) + " quantityFrom "
                     + values.get(L_QUANTITY_FROM) + " quantityTo " + values.get(L_QUANTITY_TO));
         }
-        conversionItem.setField(L_UNIT_FROM, values.get("unitfrom"));
-        conversionItem.setField(L_UNIT_TO, values.get("unitto"));
-        conversionItem.setField(L_QUANTITY_FROM, values.get("quantityfrom"));
-        conversionItem.setField(L_QUANTITY_TO, values.get("quantityto"));
-        conversionItem.setField(BASIC_MODEL_CONVERSION, getConversion());
+        conversionItem.setField(UnitConversionItemFields.UNIT_FROM, values.get("unitfrom"));
+        conversionItem.setField(UnitConversionItemFields.UNIT_TO, values.get("unitto"));
+        conversionItem.setField(UnitConversionItemFields.QUANTITY_FROM, values.get("quantityfrom"));
+        conversionItem.setField(UnitConversionItemFields.QUANTITY_TO, values.get("quantityto"));
+        conversionItem.setField(UnitConversionItemFields.GLOBAL_UNIT_CONVERSIONS_AGGREGATE, getUnitConversionAggregate());
         conversionItem.getDataDefinition().save(conversionItem);
     }
 
@@ -200,8 +201,10 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
-    protected Entity getConversion() {
-        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_CONVERSION).find().setMaxResults(1).uniqueResult();
+    protected Entity getUnitConversionAggregate() {
+        return dataDefinitionService
+                .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_GLOBAL_UNIT_CONVERSIONS_AGGREGATE).find()
+                .setMaxResults(1).uniqueResult();
     }
 
 }

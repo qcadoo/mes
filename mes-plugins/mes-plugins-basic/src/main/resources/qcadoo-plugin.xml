@@ -74,8 +74,6 @@
 		<model:model model="substituteComponent" resource="model/substituteComponent.xml" />
 		<model:model model="workstationType" resource="model/workstationType.xml" />
 		<model:model model="division" resource="model/division.xml" />
-		<model:model model="conversion" resource="model/conversion.xml" />
-		<model:model model="conversionItem" resource="model/conversionItem.xml" />
 		
 		<model:model model="parameter" resource="model/parameter.xml" />
 
@@ -83,7 +81,6 @@
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
-		<model:dictionary name="units" />
 		<model:dictionary name="reasonTypeOfChaningOrderState" />
 	
 		<menu:menu-category name="basic" />
@@ -110,8 +107,9 @@
 
 		<menu:menu-item-url name="company" category="administration"
 			url="/companyView.html" />
+			
 		<menu:menu-item-url name="conversion" category="basic"
-			url="/conversionView.html" />
+			url="/unitConversions.html" />
 
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
@@ -138,11 +136,17 @@
 
 		<view:view resource="view/companyInAdministrationDetails.xml" />
 		
-		<view:view resource="view/conversion.xml" />
-
 		<view:view-hook view="parameters" type="beforeRender"
 			plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService"
 			method="applyCurrentCurrency" />
+			
+		<model:model-field model="unitConversionItem" plugin="qcadooModel">
+			<model:belongsTo name="product" model="product" plugin="basic"/>
+		</model:model-field>
+		
+		<model:model-hook model="unitConversionItem" plugin="qcadooModel">
+			<model:validatesWith class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB" method="validateUnitOnConversionWithProduct"/>
+		</model:model-hook>
 
 		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
 	</modules>

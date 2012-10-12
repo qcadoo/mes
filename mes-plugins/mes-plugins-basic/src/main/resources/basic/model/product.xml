@@ -46,8 +46,9 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<hasMany name="conversionItems" joinField="product" model="conversionItem" />
-		
+
+		<hasMany name="conversionItems" joinField="product" model="unitConversionItem" plugin="qcadooModel" />
+
 		<!-- PRODUCTS FAMILY TREE -->
 		<belongsTo name="parent" model="product" />
 		<belongsTo name="child" model="product" persistent="false" />
@@ -62,12 +63,14 @@
 		
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfParentIsFamily" />
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
+		
+		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
+		<onCreate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionOnCreate" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

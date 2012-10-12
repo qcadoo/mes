@@ -419,6 +419,11 @@
 					<artifactId>qcadoo-plugins-plugin-management</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo</groupId>
+					<artifactId>qcadoo-plugins-unit-conversion-management</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
