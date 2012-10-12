@@ -1,6 +1,6 @@
 package com.qcadoo.mes.deliveries.constants;
 
-public class OrderedProductFields {
+public final class OrderedProductFields {
 
     private OrderedProductFields() {
 

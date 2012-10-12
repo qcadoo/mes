@@ -63,7 +63,7 @@ public class DeliveryReportPdf extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
 
-        String documentTitle = translationService.translate("deliveries.deliveryReport.report.title", locale);
+        String documentTitle = translationService.translate("deliveries.delivery.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
         pdfHelper
@@ -80,7 +80,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
-        return translationService.translate("deliveries.deliveryReport.report.fileName", locale, delivery.getStringField(NUMBER),
+        return translationService.translate("deliveries.delivery.report.fileName", locale, delivery.getStringField(NUMBER),
                 DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
     }
 
@@ -90,19 +90,19 @@ public class DeliveryReportPdf extends ReportPdfView {
         panelTable.setSpacingBefore(7);
 
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.number", locale),
+                translationService.translate("deliveries.delivery.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.name", locale),
+                translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
                 (delivery.getStringField(DeliveryFields.NAME) == null) ? "" : delivery.getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.description", locale),
+                translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
                 (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.deliveryDate", locale),
+                translationService.translate("deliveries.delivery.report.columnHeader.deliveryDate", locale),
                 (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.deliveryReport.report.columnHeader.supplier", locale),
+                translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
                 (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
 
@@ -146,8 +146,8 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForDeliveries,
             final Locale locale) throws DocumentException {
-        document.add(new Paragraph(translationService
-                .translate("deliveries.deliveryReport.report.deliveryProducts.title", locale), FontUtils.getDejavuBold11Dark()));
+        document.add(new Paragraph(translationService.translate("deliveries.delivery.report.deliveryProducts.title", locale),
+                FontUtils.getDejavuBold11Dark()));
 
         List<String> productsHeader = new ArrayList<String>();
 
@@ -170,7 +170,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("deliveries.deliveryReport.report.title", locale));
+        document.addTitle(translationService.translate("deliveries.delivery.report.title", locale));
     }
 
 }

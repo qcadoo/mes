@@ -10,18 +10,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 
 public class DeliveriesColumnLoaderServiceImplTest {
 
-    private DeliveriesColumnLoaderServiceImpl deliveriesColumnLoaderServiceImpl;
+    private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
+    private DeliveriesService deliveriesService;
 
     @Mock
     private DataDefinition columnForDeliveriesDD, columnForOrdersDD;
@@ -36,14 +34,12 @@ public class DeliveriesColumnLoaderServiceImplTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        deliveriesColumnLoaderServiceImpl = new DeliveriesColumnLoaderServiceImpl();
+        deliveriesColumnLoaderService = new DeliveriesColumnLoaderServiceImpl();
 
-        ReflectionTestUtils.setField(deliveriesColumnLoaderServiceImpl, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(deliveriesColumnLoaderService, "deliveriesService", deliveriesService);
 
-        given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES))
-                .willReturn(columnForDeliveriesDD);
-        given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS))
-                .willReturn(columnForOrdersDD);
+        given(deliveriesService.getColumnForDeliveriesDD()).willReturn(columnForDeliveriesDD);
+        given(deliveriesService.getColumnForOrdersDD()).willReturn(columnForOrdersDD);
     }
 
     @Test
@@ -54,7 +50,7 @@ public class DeliveriesColumnLoaderServiceImplTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
 
         // when
-        boolean result = deliveriesColumnLoaderServiceImpl.isColumnsForDeliveriesEmpty();
+        boolean result = deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty();
 
         // then
         assertTrue(result);
@@ -68,7 +64,7 @@ public class DeliveriesColumnLoaderServiceImplTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
 
         // when
-        boolean result = deliveriesColumnLoaderServiceImpl.isColumnsForDeliveriesEmpty();
+        boolean result = deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty();
 
         // then
         assertFalse(result);
@@ -82,7 +78,7 @@ public class DeliveriesColumnLoaderServiceImplTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(0);
 
         // when
-        boolean result = deliveriesColumnLoaderServiceImpl.isColumnsForOrdersEmpty();
+        boolean result = deliveriesColumnLoaderService.isColumnsForOrdersEmpty();
 
         // then
         assertTrue(result);
@@ -96,7 +92,7 @@ public class DeliveriesColumnLoaderServiceImplTest {
         given(searchResult.getTotalNumberOfEntities()).willReturn(1);
 
         // when
-        boolean result = deliveriesColumnLoaderServiceImpl.isColumnsForOrdersEmpty();
+        boolean result = deliveriesColumnLoaderService.isColumnsForOrdersEmpty();
 
         // then
         assertFalse(result);

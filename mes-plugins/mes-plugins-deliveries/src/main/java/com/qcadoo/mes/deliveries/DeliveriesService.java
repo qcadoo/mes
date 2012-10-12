@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries;
 
 import java.util.List;
 
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public interface DeliveriesService {
@@ -69,5 +70,40 @@ public interface DeliveriesService {
      * @return list of columns for orders
      */
     List<Entity> getColumnsForOrders();
+
+    /**
+     * Gets delivery data definition
+     * 
+     * @return delivery data definition
+     */
+    DataDefinition getDeliveryDD();
+
+    /**
+     * Gets ordered product data definition
+     * 
+     * @return ordered product data definition
+     */
+    DataDefinition getOrderedProductDD();
+
+    /**
+     * Gets delivered product data definition
+     * 
+     * @return delivered product data definition
+     */
+    DataDefinition getDeliveredProductDD();
+
+    /**
+     * Gets column for deliveries data definition
+     * 
+     * @return column for deliveries data definition
+     */
+    DataDefinition getColumnForDeliveriesDD();
+
+    /**
+     * Gets columns for orders data definition
+     * 
+     * @return column for orders data definition
+     */
+    DataDefinition getColumnForOrdersDD();
 
 }

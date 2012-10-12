@@ -1,8 +1,9 @@
 package com.qcadoo.mes.techSubcontrForDeliveries.constants;
 
-public class OrderedProductFieldsTSFD {
+public final class OrderedProductFieldsTSFD {
 
     private OrderedProductFieldsTSFD() {
+
     }
 
     public static final String OPERATION = "operation";

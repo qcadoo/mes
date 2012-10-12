@@ -1,6 +1,6 @@
 package com.qcadoo.mes.deliveries.constants;
 
-public class ColumnForDeliveriesFields {
+public final class ColumnForDeliveriesFields {
 
     private ColumnForDeliveriesFields() {
 

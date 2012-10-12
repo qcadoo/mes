@@ -3,6 +3,7 @@ package com.qcadoo.mes.deliveries.constants;
 public final class DeliveryFields {
 
     private DeliveryFields() {
+
     }
 
     public static final String NUMBER = "number";

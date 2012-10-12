@@ -9,10 +9,12 @@
 		<enum name="targetState"
 			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
 			required="true" />
-		<enum name="status" values="01inProgress,02paused,03successful,04failure" required="true"/>
+		<enum name="status" values="01inProgress,02paused,03successful,04failure"
+			required="true" />
 		<integer name="phase" />
 		<string name="worker" />
-		<hasMany name="messages" joinField="deliveryStateChange" model="message" plugin="states" cascade="delete"/> <!-- messages -->
+		<hasMany name="messages" joinField="deliveryStateChange"
+			model="message" plugin="states" cascade="delete" /> <!-- messages -->
 		<belongsTo name="delivery" model="delivery" /> <!-- owner -->
 		<belongsTo name="shift" model="shift" plugin="basic" />
 	</fields>

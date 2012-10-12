@@ -63,7 +63,7 @@ public class OrderReportPdf extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
 
-        String documentTitle = translationService.translate("deliveries.orderReport.report.title", locale);
+        String documentTitle = translationService.translate("deliveries.order.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
         pdfHelper
@@ -80,7 +80,7 @@ public class OrderReportPdf extends ReportPdfView {
 
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
-        return translationService.translate("deliveries.orderReport.report.fileName", locale, delivery.getStringField(NUMBER),
+        return translationService.translate("deliveries.order.report.fileName", locale, delivery.getStringField(NUMBER),
                 DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
     }
 
@@ -90,19 +90,19 @@ public class OrderReportPdf extends ReportPdfView {
         panelTable.setSpacingBefore(7);
 
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.number", locale),
+                translationService.translate("deliveries.order.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.name", locale),
+                translationService.translate("deliveries.order.report.columnHeader.name", locale),
                 (delivery.getStringField(NAME) == null) ? "" : delivery.getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.description", locale),
+                translationService.translate("deliveries.order.report.columnHeader.description", locale),
                 (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.deliveryDate", locale),
+                translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
                 (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.supplier", locale),
+                translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
                 (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
 
@@ -145,7 +145,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,
             final Locale locale) throws DocumentException {
-        document.add(new Paragraph(translationService.translate("deliveries.orderReport.report.orderedProducts.title", locale),
+        document.add(new Paragraph(translationService.translate("deliveries.order.report.orderedProducts.title", locale),
                 FontUtils.getDejavuBold11Dark()));
 
         List<String> productsHeader = new ArrayList<String>();
@@ -169,7 +169,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("deliveries.orderReport.report.title", locale));
+        document.addTitle(translationService.translate("deliveries.order.report.title", locale));
     }
 
 }
