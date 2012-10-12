@@ -406,53 +406,6 @@ ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedho
 -- end
 
 
--- Table: supplynegotiations_requestforquotation
--- changed: 09.10.2012
-
-CREATE TABLE supplynegotiations_requestforquotation
-(
-  id bigint NOT NULL,
-  "number" character varying(255),
-  "name" character varying(1024),
-  description character varying(2048),
-  supplier_id bigint,
-  desireddate date,
-  active boolean DEFAULT true,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  "createuser" character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT supplynegotiations_requestforquotation_pkey PRIMARY KEY (id),
-  CONSTRAINT requestforquotation_company_fkey FOREIGN KEY (supplier_id)
-      REFERENCES basic_company (id) DEFERRABLE
-);
-
--- end
-
-
--- Table: supplynegotiations_requestforquotationproduct
--- changed: 09.10.2012
-
-CREATE TABLE supplynegotiations_requestforquotationproduct
-(
-  id bigint NOT NULL,
-  requestforquotation_id bigint,
-  product_id bigint,
-  orderedquantity numeric(12,5),
-  annualvolume numeric(12,5),
-  operation_id bigint,
-  CONSTRAINT supplynegotiations_requestforquotationproduct_pkey PRIMARY KEY (id),
-  CONSTRAINT requestforquotationproduct_requestforquotation_fkey FOREIGN KEY (requestforquotation_id)
-      REFERENCES supplynegotiations_requestforquotation (id) DEFERRABLE,
-  CONSTRAINT requestforquotationproduct_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE,
-  CONSTRAINT requestforquotationproduct_operation_fkey FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id) DEFERRABLE
-);
-
--- end
-
-
 -- Table: deliveries_columnfordeliveries
 -- changed: 10.10.2012
 
@@ -483,5 +436,27 @@ CREATE TABLE deliveries_columnfororders
   alignment character varying(255) DEFAULT '01left'::character varying,
   CONSTRAINT deliveries_columnfororders_pkey PRIMARY KEY (id)
 );
+
+-- end
+
+
+-- Table: technologies_operation
+-- changed: 12.10.2012
+
+ALTER TABLE technologies_operation ADD COLUMN company_id bigint;
+ALTER TABLE technologies_operation
+  ADD CONSTRAINT operation_company_fkey FOREIGN KEY (company_id)
+      REFERENCES basic_company (id) DEFERRABLE;
+
+-- end
+
+      
+-- Table: technologies_operationgroup
+-- changed: 12.10.2012
+
+ALTER TABLE technologies_operationgroup ADD COLUMN companyoperationgroup_id bigint;
+ALTER TABLE technologies_operationgroup
+  ADD CONSTRAINT operationgroup_company_fkey FOREIGN KEY (companyoperationgroup_id)
+      REFERENCES basic_company (id) DEFERRABLE;
 
 -- end
