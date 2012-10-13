@@ -2,6 +2,12 @@ package com.qcadoo.mes.basic.logdigger;
 
 import java.util.Date;
 
+import com.logdigger.connector.AttributeProvider;
+import com.logdigger.connector.ErrorLog;
+import com.logdigger.connector.ErrorLogStore;
+import com.logdigger.connector.ResultsPage;
+import com.logdigger.jdbc.JdbcErrorLogStore;
+
 public class QcadooErrorLogStore implements ErrorLogStore {
 
     private JdbcErrorLogStore jdbcErrorLogStore;
