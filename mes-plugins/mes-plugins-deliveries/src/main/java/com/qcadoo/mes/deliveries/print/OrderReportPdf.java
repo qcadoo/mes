@@ -85,28 +85,29 @@ public class OrderReportPdf extends ReportPdfView {
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
-        PdfPTable panelTable = pdfHelper.createPanelTable(3);
+        PdfPTable headerTable = pdfHelper.createPanelTable(3);
 
-        panelTable.setSpacingBefore(7);
+        headerTable.setSpacingBefore(7);
 
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.name", locale),
                 (delivery.getStringField(NAME) == null) ? "" : delivery.getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.description", locale),
                 (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
                 (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
                 (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+        pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
 
-        document.add(panelTable);
+        document.add(headerTable);
+        document.add(Chunk.NEWLINE);
     }
 
     private void createProductsTable(final Document document, final Entity delivery, final Locale locale)

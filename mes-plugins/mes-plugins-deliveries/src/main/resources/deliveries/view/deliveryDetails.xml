@@ -196,7 +196,7 @@
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
-							<option type="column" name="name" fields="name" />
+							<option type="column" name="name" fields="name" link="true" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
 							<option type="expression"
@@ -250,14 +250,17 @@
 							expression="#product['name']" link="true" />
 						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="70" />
+							expression="#product['unit']" width="70" />
+							
+						<option type="searchable" value="number,name,orderedQuantity,unit" />
+						<option type="orderable" value="number,name,orderedQuantity,unit" />
+						
 						<option type="order" column="number" direction="desc" />
+						
 						<option type="correspondingView" value="deliveries/orderedProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name,orderedQuantity,unit" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -280,14 +283,17 @@
 						<option type="column" name="deliveredQuantity" fields="deliveredQuantity" />
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" link="false" width="70" />
+							expression="#product['unit']" width="70" />
+						
+						<option type="searchable" value="number,name,deliveredQuantity,damagedQuantity,unit" />
+						<option type="orderable" value="number,name,deliveredQuantity,damagedQuantity,unit" />
+						
 						<option type="order" column="number" direction="desc" />
+						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						<option type="searchable" value="number,name" />
-						<option type="orderable"
-							value="number,name,orderedQuantity,damagedQuantity,unit" />
+						
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
