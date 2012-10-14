@@ -21,4 +21,5 @@ public final class DeliveryFields {
     public static final String ORDERED_PRODUCTS = "orderedProducts";
 
     public static final String DELIVERED_PRODUCTS = "deliveredProducts";
+
 }
