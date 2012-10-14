@@ -10,6 +10,7 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesColumnAlignment;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -92,18 +92,36 @@ public class DeliveryReportPdf extends ReportPdfView {
         pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.delivery.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
-                (delivery.getStringField(DeliveryFields.NAME) == null) ? "" : delivery.getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
-                (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.deliveryDate", locale),
-                (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
-                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
+                    delivery.getStringField(NAME));
+        }
+        if (delivery.getStringField(DESCRIPTION) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
+                    delivery.getStringField(DESCRIPTION));
+        }
+        pdfHelper.addTableCellAsOneColumnTable(headerTable, translationService.translate(
+                "deliveries.delivery.report.columnHeader.deliveryDate", locale), (delivery.getField(DELIVERY_DATE) == null) ? ""
+                : new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        }
         pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
 
         document.add(headerTable);

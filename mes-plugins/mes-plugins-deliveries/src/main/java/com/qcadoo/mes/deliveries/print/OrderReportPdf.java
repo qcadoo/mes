@@ -1,9 +1,9 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
@@ -12,6 +12,7 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,18 +93,36 @@ public class OrderReportPdf extends ReportPdfView {
         pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.order.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.order.report.columnHeader.name", locale),
-                (delivery.getStringField(NAME) == null) ? "" : delivery.getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.order.report.columnHeader.description", locale),
-                (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
-                (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
-                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.name", locale),
+                    delivery.getStringField(NAME));
+        }
+        if (delivery.getStringField(DESCRIPTION) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.description", locale),
+                    delivery.getStringField(DESCRIPTION));
+        }
+        pdfHelper.addTableCellAsOneColumnTable(headerTable, translationService.translate(
+                "deliveries.order.report.columnHeader.deliveryDate", locale), (delivery.getField(DELIVERY_DATE) == null) ? ""
+                : new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        }
         pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
 
         document.add(headerTable);
