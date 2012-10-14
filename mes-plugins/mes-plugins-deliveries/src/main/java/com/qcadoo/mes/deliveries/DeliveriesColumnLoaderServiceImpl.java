@@ -66,22 +66,22 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     };
 
     @Override
-    public void fillColumnsForDeliveries(String plugin) {
+    public void fillColumnsForDeliveries(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_DELIVERIES, OperationType.ADD);
     }
 
     @Override
-    public void clearColumnsForDeliveries(String plugin) {
+    public void clearColumnsForDeliveries(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_DELIVERIES, OperationType.DELETE);
     }
 
     @Override
-    public void fillColumnsForOrders(String plugin) {
+    public void fillColumnsForOrders(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.ADD);
     }
 
     @Override
-    public void clearColumnsForOrders(String plugin) {
+    public void clearColumnsForOrders(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.DELETE);
     }
 

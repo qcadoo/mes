@@ -1,6 +1,5 @@
 package com.qcadoo.mes.deliveries.print;
 
-
 public class DeliveryProduct {
 
     private Long deliveredProductId;
@@ -11,7 +10,7 @@ public class DeliveryProduct {
         return deliveredProductId;
     }
 
-    public void setDeliveredProductId(Long deliveredProductId) {
+    public void setDeliveredProductId(final Long deliveredProductId) {
         this.deliveredProductId = deliveredProductId;
     }
 
@@ -19,7 +18,7 @@ public class DeliveryProduct {
         return orderedProductId;
     }
 
-    public void setOrderedProductId(Long orderedProductId) {
+    public void setOrderedProductId(final Long orderedProductId) {
         this.orderedProductId = orderedProductId;
     }
 

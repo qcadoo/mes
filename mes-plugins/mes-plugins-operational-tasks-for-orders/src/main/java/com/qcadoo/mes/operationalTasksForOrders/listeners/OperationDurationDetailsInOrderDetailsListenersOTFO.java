@@ -36,8 +36,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         List<Entity> techInstOperComps = order.getHasManyField(OrderFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
         for (Entity techInstOperComp : techInstOperComps) {
             deleteOperationalTasks(techInstOperComp);
-            createOperationalTasks(viewDefinitionState, order, techInstOperComp,
-                    techInstOperComp.getBooleanField("isSubcontracting"));
+            createOperationalTasks(order, techInstOperComp, techInstOperComp.getBooleanField("isSubcontracting"));
         }
     }
 
@@ -53,8 +52,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         }
     }
 
-    private void createOperationalTasks(final ViewDefinitionState viewDefinitionState, final Entity order,
-            final Entity techInstOperComp, final boolean isSubcontracting) {
+    private void createOperationalTasks(final Entity order, final Entity techInstOperComp, final boolean isSubcontracting) {
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
         Entity operationalTask = operationTaskDD.create();

@@ -83,7 +83,7 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         return values;
     }
 
-    private void fillOperationNumber(Map<Entity, Map<String, String>> values, final Entity product,
+    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity product,
             final DeliveryProduct deliveryProduct) {
         String operationNumber = null;
 
@@ -122,7 +122,8 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         values.get(product).put("operationNumber", operationNumber);
     }
 
-    private void fillOperationNumber(Map<Entity, Map<String, String>> values, final Entity product, final Entity orderedProduct) {
+    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity product,
+            final Entity orderedProduct) {
         String operationNumber = null;
 
         if (orderedProduct == null) {

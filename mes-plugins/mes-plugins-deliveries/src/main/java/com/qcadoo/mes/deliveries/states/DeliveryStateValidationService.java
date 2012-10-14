@@ -50,9 +50,7 @@ public class DeliveryStateValidationService {
                 deliveredProductHasNull = true;
                 listOfProductNumber.append(delivProd.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(
                         ProductFields.NUMBER));
-                listOfProductNumber.append(",");
-                listOfProductNumber.append(" ");
-
+                listOfProductNumber.append(", ");
             }
         }
         if (deliveredProductHasNull) {

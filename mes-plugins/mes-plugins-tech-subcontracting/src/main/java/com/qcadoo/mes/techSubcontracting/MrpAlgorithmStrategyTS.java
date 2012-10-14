@@ -15,12 +15,12 @@ import com.qcadoo.model.api.Entity;
 @Service("mrpAlgorithmStrategyTS")
 public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
 
-    public boolean isApplicableFor(MrpAlgorithm algorithm) {
+    public boolean isApplicableFor(final MrpAlgorithm algorithm) {
         return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(algorithm);
     }
 
-    public Map<Entity, BigDecimal> perform(Map<Entity, BigDecimal> productComponentQuantities, Set<Entity> nonComponents,
-            MrpAlgorithm algorithm, String type) {
+    public Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentQuantities,
+            final Set<Entity> nonComponents, final MrpAlgorithm algorithm, final String type) {
         Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
 
         for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
