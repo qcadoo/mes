@@ -12,14 +12,16 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+		<belongsTo name="supplier" model="company" plugin="basic" />
+		<datetime name="deliveryDate" />
+		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
+			cascade="delete" copyable="true"  />
+		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
+			cascade="delete" />
+			
 		<enum
 			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
 			name="state" default="01draft" />
-		<belongsTo name="supplier" model="company" plugin="basic" />
-		<datetime name="deliveryDate" />
-		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct" />
-		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct" />
-
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
 			cascade="delete" />
 	</fields>
