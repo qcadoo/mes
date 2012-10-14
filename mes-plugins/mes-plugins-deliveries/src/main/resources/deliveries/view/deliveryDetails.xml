@@ -1,7 +1,9 @@
 <view name="deliveryDetails" modelName="delivery"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -72,6 +74,7 @@
 					state="disabled"  action="#{form}.fireEvent(copyOrderedProductToDelivered);"/>
 			</group>
 		</ribbon>
+		
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<script>
@@ -202,13 +205,15 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<beforeRender
-								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsHooks"
+							
+							<listener
+								event="onSelectedEntityChange"
+								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 								method="setBufferForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="calendar" name="deliveryDate" field="deliveryDate"
+						<component type="calendar" name="deliveryDate" field="deliveryDate" 
 							reference="deliveryDate">
 							<option type="withTimePicker" value="true" />
 						</component>
@@ -224,6 +229,7 @@
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
@@ -238,6 +244,7 @@
 					method="copyOrderedProductToDelivered" />
 			</component>
 		</windowTab>
+		
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="1" rows="1">
@@ -269,6 +276,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="1" rows="1">
@@ -302,6 +310,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="historyTab">
 			<component type="gridLayout" name="loggingsGridLayout" columns="2" rows="1">
 				<layoutElement column="1" row="1">
@@ -316,13 +325,15 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="generateAssignmentToShiftReportNumber" />
-		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="changedEnabledFieldForSpecificDeliveryState" />
+			method="generateDeliveryNumber" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="setBufferForSupplier" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="changedEnabledFieldForSpecificDeliveryState" />
 	</hooks>
 </view>

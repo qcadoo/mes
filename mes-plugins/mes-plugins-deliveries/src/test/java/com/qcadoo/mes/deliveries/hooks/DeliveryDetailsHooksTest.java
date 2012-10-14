@@ -71,6 +71,36 @@ public class DeliveryDetailsHooksTest {
     }
 
     @Test
+    public void shouldSetBufferFromCompany() throws Exception {
+        // given
+        Integer buffer = Integer.valueOf(10);
+        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
+        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
+        when(supplierLookup.getEntity()).thenReturn(supplier);
+        when(supplier.getField("buffer")).thenReturn(buffer);
+
+        // when
+        deliveryDetailsHooks.setBufferForSupplier(view);
+
+        // then
+        verify(deliveryDateBuffer).setFieldValue(buffer);
+    }
+
+    @Test
+    public void shouldSetNullForDeliveryBufferFieldWhenSUpplierIsNotSelected() throws Exception {
+        // given
+        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
+        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
+        when(supplierLookup.getEntity()).thenReturn(null);
+
+        // when
+        deliveryDetailsHooks.setBufferForSupplier(view);
+
+        // then
+        verify(deliveryDateBuffer).setFieldValue(null);
+    }
+
+    @Test
     public void shouldReturnWhenEntityIdIsNull() throws Exception {
         // given
         when(form.getEntityId()).thenReturn(null);
@@ -85,10 +115,11 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledFormAndOrderedProduct = false;
         final boolean enabledDeliveredGrid = true;
         when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.PREPARED);
+
         // when
         deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
-        // then
 
+        // then
         verify(form).setFormEnabled(enabledFormAndOrderedProduct);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
@@ -102,10 +133,11 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledFormAndOrderedProduct = false;
         final boolean enabledDeliveredGrid = true;
         when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.APPROVED);
+
         // when
         deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
-        // then
 
+        // then
         verify(form).setFormEnabled(enabledFormAndOrderedProduct);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
@@ -119,10 +151,11 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledFormAndOrderedProduct = true;
         final boolean enabledDeliveredGrid = true;
         when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.DRAFT);
+
         // when
         deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
-        // then
 
+        // then
         verify(form).setFormEnabled(enabledFormAndOrderedProduct);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
@@ -136,10 +169,11 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledFormAndOrderedProduct = false;
         final boolean enabledDeliveredGrid = false;
         when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.DECLINED);
+
         // when
         deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
-        // then
 
+        // then
         verify(form).setFormEnabled(enabledFormAndOrderedProduct);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
@@ -149,15 +183,15 @@ public class DeliveryDetailsHooksTest {
 
     @Test
     public void shouldDisabledFieldsWhenStateIsReceived() throws Exception {
-
         // given
         final boolean enabledFormAndOrderedProduct = false;
         final boolean enabledDeliveredGrid = false;
         when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.RECEIVED);
+
         // when
         deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
-        // then
 
+        // then
         verify(form).setFormEnabled(enabledFormAndOrderedProduct);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
@@ -165,30 +199,4 @@ public class DeliveryDetailsHooksTest {
         verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
-    @Test
-    public void shouldSetBufferFromCompany() throws Exception {
-        // given
-        Integer buffer = Integer.valueOf(10);
-        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
-        when(supplierLookup.getEntity()).thenReturn(supplier);
-        when(supplier.getField("buffer")).thenReturn(buffer);
-        // when
-        deliveryDetailsHooks.setBufferForSupplier(view);
-        // then
-        verify(deliveryDateBuffer).setFieldValue(buffer);
-    }
-
-    @Test
-    public void shouldSetNullForDeliveryBufferFieldWhenSUpplierIsNotSelected() throws Exception {
-        // given
-        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
-        when(supplierLookup.getEntity()).thenReturn(null);
-
-        // when
-        deliveryDetailsHooks.setBufferForSupplier(view);
-        // then
-        verify(deliveryDateBuffer).setFieldValue(null);
-    }
 }

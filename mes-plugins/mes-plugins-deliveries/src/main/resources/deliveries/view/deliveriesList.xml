@@ -1,7 +1,9 @@
 <view name="deliveriesList" modelName="delivery" menuAccessible="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardGridTemplate" />
 			<group name="status">
@@ -62,6 +64,7 @@
 				</smallButton>
 			</group>
 		</ribbon>
+		
 		<component type="grid" name="deliveriesList" reference="grid">
 			<script>
  				<![CDATA[ 
@@ -187,6 +190,7 @@
 				class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 				method="changeState" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
