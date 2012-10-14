@@ -90,6 +90,7 @@
 					var copyOrderedProductToDelivered = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
 					var generateOrder = #{window}.getRibbonItem("generate.generateOrder");
 					var generateDelivery = #{window}.getRibbonItem("generate.generateDelivery");
+					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {
