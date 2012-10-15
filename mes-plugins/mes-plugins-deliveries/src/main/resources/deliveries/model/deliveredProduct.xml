@@ -12,5 +12,7 @@
 	<hooks>
 		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
 			method="checkIfDeliveredProductAlreadyExists" />
+		<validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
+			method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
 	</hooks>
 </model>
