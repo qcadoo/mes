@@ -54,7 +54,7 @@
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="deliveredQuantity"
-									reference="deliveredQuantity" field="#{form}.deliveredQuantity">
+									reference="deliveredQuantity" field="#{form}.deliveredQuantity" hasDescription="true">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
 								</component>
