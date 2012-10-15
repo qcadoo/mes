@@ -12,7 +12,8 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<belongsTo name="supplier" model="company" plugin="basic" />
+		<belongsTo name="supplier" model="company" plugin="basic" 
+			required="true" />
 		<datetime name="deliveryDate" />
 		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
 			cascade="delete" copyable="true"  />

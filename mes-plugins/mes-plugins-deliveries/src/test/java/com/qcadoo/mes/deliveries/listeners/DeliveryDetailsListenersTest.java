@@ -114,7 +114,7 @@ public class DeliveryDetailsListenersTest {
         deliveryDetailsListeners.printOrderReport(view, grid, args);
 
         // then
-        verify(grid).addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
+        verify(grid).addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         verify(view, never()).redirectTo("/deliveries/orderReport." + args[0] + "?id=" + stateValue, true, false);
     }
 

@@ -111,9 +111,13 @@ public class OrderReportPdf extends ReportPdfView {
                     translationService.translate("deliveries.order.report.columnHeader.description", locale),
                     delivery.getStringField(DESCRIPTION));
         }
-        pdfHelper.addTableCellAsOneColumnTable(headerTable, translationService.translate(
-                "deliveries.order.report.columnHeader.deliveryDate", locale), (delivery.getField(DELIVERY_DATE) == null) ? ""
-                : new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+        if (delivery.getField(DELIVERY_DATE) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
+                    new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+        }
         if (delivery.getStringField(NAME) == null) {
             pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
         } else {
