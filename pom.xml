@@ -358,7 +358,12 @@
 		<repository>
 	      	<id>com.logdigger</id>
 	      	<name>com.logdigger</name>
-	      	<url>http://maven.logdigger.com/repos </url>
+	      	<url>http://maven.logdigger.com/repos</url>
+	    </repository>
+	    <repository>
+	      	<id>atlassian</id>
+	      	<name>Atlassian</name>
+	      	<url>https://maven.atlassian.com/repository/public</url>
 	    </repository>
 	</repositories>
 

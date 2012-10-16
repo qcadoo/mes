@@ -24,6 +24,11 @@
 			<artifactId>logdigger-connector-jdbc</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+		<dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client</artifactId>
+            <version>0.6-m9</version>
+        </dependency>
 	</dependencies>	
 
 	<build>
