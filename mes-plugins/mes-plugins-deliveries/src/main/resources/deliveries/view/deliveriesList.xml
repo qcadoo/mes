@@ -1,7 +1,9 @@
 <view name="deliveriesList" modelName="delivery" menuAccessible="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardGridTemplate" />
 			<group name="status">
@@ -62,6 +64,7 @@
 				</smallButton>
 			</group>
 		</ribbon>
+		
 		<component type="grid" name="deliveriesList" reference="grid">
 			<script>
  				<![CDATA[ 
@@ -164,24 +167,30 @@
 					this.addOnChangeListener(listener);
 				]]>
 			</script>
-			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="number" fields="number" link="true" width="50" />
+			<option type="column" name="name" fields="name" link="true" width="100" />
 			<option type="column" name="supplier" fields="supplier"
 				expression="#supplier['name']" />
-			<option type="column" name="deliveryDate" fields="deliveryDate" />
+			<option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
 			<option type="column" name="state" fields="state" />
-			<option type="column" name="createDate" fields="createDate" />
-			<option type="order" column="name" direction="asc" />
+			<option type="column" name="createDate" fields="createDate" width="100"/>
+			
+			<option type="searchable" value="name,number,supplier,deliveryDate,state,createDate" />
+			<option type="orderable" value="name,number,supplier,deliveryDate,state,createDate" />
+			
+			<option type="order" column="number" direction="asc" />
+			
 			<option type="correspondingView" value="deliveries/deliveryDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+			
 			<listener event="changeState"
 				class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 				method="changeState" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>

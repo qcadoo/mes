@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="delivery" auditable="true"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
+<model name="delivery" auditable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="name" >
+		<string name="name">
 			<validatesLength max="1024" />
 		</string>
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		<enum values="01draft,02prepared,03duringCorrection,04declined,05approved,06received" name="state" default="01draft"/>
-		<belongsTo name="supplier" model="company" plugin="basic"/>
+		<belongsTo name="supplier" model="company" plugin="basic" 
+			required="true" />
 		<datetime name="deliveryDate" />
-		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"/>
-		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"/>
-		
+		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
+			cascade="delete" copyable="true"  />
+		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
+			cascade="delete" />
+			
+		<enum
+			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
+			name="state" default="01draft" />
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
 			cascade="delete" />
 	</fields>
-	<hooks >
-		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" method="clearStateFieldOnCopy"/>
-		<onCreate
-			class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+	<hooks>
+		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+			method="clearStateFieldOnCopy" />
+		<onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
 			method="setInitialState" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

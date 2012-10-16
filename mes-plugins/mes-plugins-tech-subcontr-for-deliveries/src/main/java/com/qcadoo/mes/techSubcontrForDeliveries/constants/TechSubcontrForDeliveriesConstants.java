@@ -1,7 +1,11 @@
 package com.qcadoo.mes.techSubcontrForDeliveries.constants;
 
-public interface TechSubcontrForDeliveriesConstants {
+public final class TechSubcontrForDeliveriesConstants {
 
-    String PLUGIN_IDENTIFIER = "techSubcontrForDeliveries";
+    private TechSubcontrForDeliveriesConstants() {
+
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "techSubcontrForDeliveries";
 
 }

@@ -40,22 +40,22 @@ public class QcadooErrorLogStore implements ErrorLogStore {
     }
 
     @Override
-    public ResultsPage<ErrorLog> findInDateRange(Date fromDate, Date toDate, int offset, int limit) {
+    public ResultsPage<ErrorLog> findInDateRange(final Date fromDate, final Date toDate, final int offset, final int limit) {
         return jdbcErrorLogStore.findInDateRange(fromDate, toDate, offset, limit);
     }
 
     @Override
-    public ResultsPage<ErrorLog> findSimilar(ErrorLog sample, int offset, int limit) {
+    public ResultsPage<ErrorLog> findSimilar(final ErrorLog sample, final int offset, final int limit) {
         return jdbcErrorLogStore.findSimilar(sample, offset, limit);
     }
 
     @Override
-    public ErrorLog getErrorLogById(String id) {
+    public ErrorLog getErrorLogById(final String id) {
         return jdbcErrorLogStore.getErrorLogById(id);
     }
 
     @Override
-    public ResultsPage<ErrorLog> getErrorLogs(int offset, int limit) {
+    public ResultsPage<ErrorLog> getErrorLogs(final int offset, final int limit) {
         return jdbcErrorLogStore.getErrorLogs(offset, limit);
     }
 
@@ -75,7 +75,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
     }
 
     @Override
-    public void init(AttributeProvider attributeProvider) {
+    public void init(final AttributeProvider attributeProvider) {
         jdbcErrorLogStore = new JdbcErrorLogStore();
         jdbcErrorLogStore.init(attributeProvider);
 
@@ -88,12 +88,12 @@ public class QcadooErrorLogStore implements ErrorLogStore {
     }
 
     @Override
-    public boolean isAvailable(Feature feature) {
+    public boolean isAvailable(final Feature feature) {
         return jdbcErrorLogStore.isAvailable(feature);
     }
 
     @Override
-    public String save(ErrorLog errorLog) {
+    public String save(final ErrorLog errorLog) {
         for (String[] ignoredError : ignoredErrors) {
             for (int i = 0; i < ignoredError.length; i++) {
                 if (ignoredError[i] == null) {

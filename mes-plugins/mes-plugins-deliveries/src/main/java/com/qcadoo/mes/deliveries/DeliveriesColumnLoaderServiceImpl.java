@@ -46,9 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -58,7 +55,7 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     private static final Logger LOG = LoggerFactory.getLogger(DeliveriesColumnLoaderServiceImpl.class);
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private DeliveriesService deliveriesService;
 
     private static final String L_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
 
@@ -69,22 +66,22 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     };
 
     @Override
-    public void fillColumnsForDeliveries(String plugin) {
+    public void fillColumnsForDeliveries(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_DELIVERIES, OperationType.ADD);
     }
 
     @Override
-    public void clearColumnsForDeliveries(String plugin) {
+    public void clearColumnsForDeliveries(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_DELIVERIES, OperationType.DELETE);
     }
 
     @Override
-    public void fillColumnsForOrders(String plugin) {
+    public void fillColumnsForOrders(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.ADD);
     }
 
     @Override
-    public void clearColumnsForOrders(String plugin) {
+    public void clearColumnsForOrders(final String plugin) {
         readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.DELETE);
     }
 
@@ -133,7 +130,7 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     }
 
     private void addColumnForDeliveries(final Map<String, String> values) {
-        Entity columnForDeliveries = getColumnForDeliveriesDD().create();
+        Entity columnForDeliveries = deliveriesService.getColumnForDeliveriesDD().create();
 
         columnForDeliveries.setField(IDENTIFIER, values.get(IDENTIFIER.toLowerCase(Locale.ENGLISH)));
         columnForDeliveries.setField(NAME, values.get(NAME.toLowerCase(Locale.ENGLISH)));
@@ -158,16 +155,16 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     }
 
     private void deleteColumnForDeliveries(final Map<String, String> values) {
-        final List<Entity> columnsForDeliveries = getColumnForDeliveriesDD().find()
+        final List<Entity> columnsForDeliveries = deliveriesService.getColumnForDeliveriesDD().find()
                 .add(SearchRestrictions.eq(IDENTIFIER, values.get(IDENTIFIER))).list().getEntities();
 
         for (Entity columnForDeliveries : columnsForDeliveries) {
-            getColumnForDeliveriesDD().delete(columnForDeliveries.getId());
+            deliveriesService.getColumnForDeliveriesDD().delete(columnForDeliveries.getId());
         }
     }
 
     private void addColumnForOrders(final Map<String, String> values) {
-        Entity columnForOrders = getColumnForOrdersDD().create();
+        Entity columnForOrders = deliveriesService.getColumnForOrdersDD().create();
 
         columnForOrders.setField(IDENTIFIER, values.get(IDENTIFIER.toLowerCase(Locale.ENGLISH)));
         columnForOrders.setField(NAME, values.get(NAME.toLowerCase(Locale.ENGLISH)));
@@ -192,28 +189,20 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     }
 
     private void deleteColumnForOrders(final Map<String, String> values) {
-        final List<Entity> columnsForOrders = getColumnForOrdersDD().find()
+        final List<Entity> columnsForOrders = deliveriesService.getColumnForOrdersDD().find()
                 .add(SearchRestrictions.eq(IDENTIFIER, values.get(IDENTIFIER))).list().getEntities();
 
         for (Entity columnForOrder : columnsForOrders) {
-            getColumnForOrdersDD().delete(columnForOrder.getId());
+            deliveriesService.getColumnForOrdersDD().delete(columnForOrder.getId());
         }
     }
 
-    private DataDefinition getColumnForDeliveriesDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES);
-    }
-
-    private DataDefinition getColumnForOrdersDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS);
-    }
-
     public boolean isColumnsForDeliveriesEmpty() {
-        return getColumnForDeliveriesDD().find().list().getTotalNumberOfEntities() == 0;
+        return deliveriesService.getColumnForDeliveriesDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
     public boolean isColumnsForOrdersEmpty() {
-        return getColumnForOrdersDD().find().list().getTotalNumberOfEntities() == 0;
+        return deliveriesService.getColumnForOrdersDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
     private InputStream getXmlFile(final String plugin, final String type) throws IOException {

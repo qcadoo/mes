@@ -52,7 +52,7 @@ public class DeliveryDetailsListeners {
 
             viewDefinitionState.redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         } else {
-            state.addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
+            state.addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         }
     }
 

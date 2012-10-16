@@ -102,19 +102,19 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         return values;
     }
 
-    private void fillProductNumber(Map<Entity, Map<String, String>> values, final Entity product) {
+    private void fillProductNumber(final Map<Entity, Map<String, String>> values, final Entity product) {
         values.get(product).put("productNumber", product.getStringField(NUMBER));
     }
 
-    private void fillProductName(Map<Entity, Map<String, String>> values, final Entity product) {
+    private void fillProductName(final Map<Entity, Map<String, String>> values, final Entity product) {
         values.get(product).put("productName", product.getStringField(NAME));
     }
 
-    private void fillProductUnit(Map<Entity, Map<String, String>> values, final Entity product) {
+    private void fillProductUnit(final Map<Entity, Map<String, String>> values, final Entity product) {
         values.get(product).put("productUnit", product.getStringField(UNIT));
     }
 
-    private void fillOrderedQuantity(Map<Entity, Map<String, String>> values, final Entity product,
+    private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
             final DeliveryProduct deliveryProduct) {
         BigDecimal orderedQuantity = null;
 
@@ -133,7 +133,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(product).put("orderedQuantity", numberService.format(orderedQuantity));
     }
 
-    private void fillDeliveredQuantity(Map<Entity, Map<String, String>> values, final Entity product,
+    private void fillDeliveredQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
             final DeliveryProduct deliveryProduct) {
         BigDecimal deliveredQuantity = null;
 
@@ -152,7 +152,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(product).put("deliveredQuantity", numberService.format(deliveredQuantity));
     }
 
-    private void fillDamagedQuantity(Map<Entity, Map<String, String>> values, final Entity product,
+    private void fillDamagedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
             final DeliveryProduct deliveryProduct) {
         BigDecimal damagedQuantity = null;
 
@@ -171,7 +171,8 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(product).put("damagedQuantity", numberService.format(damagedQuantity));
     }
 
-    private void fillOrderedQuantity(Map<Entity, Map<String, String>> values, final Entity product, final Entity orderedProduct) {
+    private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
+            final Entity orderedProduct) {
         BigDecimal orderedQuantity = null;
 
         if (orderedProduct == null) {

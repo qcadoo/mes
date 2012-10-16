@@ -38,16 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OrderColumnFetcher {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -63,10 +61,7 @@ public class OrderColumnFetcher {
     @SuppressWarnings("unchecked")
     private void fetchColumnValues(final Map<Entity, Map<String, String>> columnValues, final String methodName,
             final List<Entity> orderedProducts) {
-        DataDefinition columnsForOrdersDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS);
-
-        List<Entity> columnsForOrders = columnsForOrdersDD.find().list().getEntities();
+        List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
 
         Set<String> classNames = new HashSet<String>();
 

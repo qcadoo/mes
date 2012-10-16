@@ -1,10 +1,13 @@
 <view name="supplyItems" modelName="orderedProduct" menuAccessible="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new" />
 		</ribbon>
+		
 		<component type="grid" name="supplyItems" reference="grid">
 			<option type="column" name="deliveryDate" fields="delivery"
 				expression="#delivery['deliveryDate']" />
@@ -30,13 +33,16 @@
 				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="false" />
+			
 			<listener event="select"
 				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
 				method="redirectToDeliveryDetails" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
 	<hooks>
 	</hooks>
 </view>

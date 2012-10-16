@@ -63,4 +63,5 @@ public class DeliveredProductDetailsHooks {
         delivedQuantity.setRequired(true);
         delivedQuantity.requestComponentUpdateState();
     }
+
 }

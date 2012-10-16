@@ -2,7 +2,7 @@ package com.qcadoo.mes.deliveries.states.constants;
 
 import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
 
-public class DeliveryStateStringValues {
+public final class DeliveryStateStringValues {
 
     private DeliveryStateStringValues() {
     }

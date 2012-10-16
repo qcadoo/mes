@@ -29,9 +29,21 @@ public class DeliveryDetailsHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void generateAssignmentToShiftReportNumber(final ViewDefinitionState view) {
+    public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERY, L_FORM, NUMBER);
+    }
+
+    public void setBufferForSupplier(final ViewDefinitionState view) {
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
+        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference("deliveryDateBuffer");
+        Entity supplier = supplierLookup.getEntity();
+        if (supplier == null) {
+            deliveryDateBuffer.setFieldValue(null);
+        } else {
+            deliveryDateBuffer.setFieldValue(supplier.getField("buffer"));
+        }
+        deliveryDateBuffer.requestComponentUpdateState();
     }
 
     public void changedEnabledFieldForSpecificDeliveryState(final ViewDefinitionState view) {
@@ -62,18 +74,6 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEditable(enabledDeliveredGrid);
         orderedProducts.setEnabled(enabledFormAndOrderedProduct);
         orderedProducts.setEditable(enabledFormAndOrderedProduct);
-    }
-
-    public void setBufferForSupplier(final ViewDefinitionState view) {
-        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
-        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference("deliveryDateBuffer");
-        Entity supplier = supplierLookup.getEntity();
-        if (supplier == null) {
-            deliveryDateBuffer.setFieldValue(null);
-        } else {
-            deliveryDateBuffer.setFieldValue(supplier.getField("buffer"));
-        }
-        deliveryDateBuffer.requestComponentUpdateState();
     }
 
 }

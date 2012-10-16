@@ -10,7 +10,8 @@
 	GNU Affero General Public License for more details. You should have received 
 	a copy of the GNU Affero General Public License along with this program; 
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
-	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+	Floor, Boston, MA 02110-1301 USA 
+	*************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="productDetails" modelName="product">

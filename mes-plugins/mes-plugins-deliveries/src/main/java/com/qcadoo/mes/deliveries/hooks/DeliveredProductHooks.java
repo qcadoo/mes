@@ -3,8 +3,11 @@ package com.qcadoo.mes.deliveries.hooks;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -29,4 +32,22 @@ public class DeliveredProductHooks {
             return false;
         }
     }
+
+    public boolean checkIfDeliveredQuantityIsLessThanDamagedQuantity(final DataDefinition dataDefinition, final Entity entity) {
+        BigDecimal damagedQuantity = entity.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
+        BigDecimal deliveredQuantity = entity.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+
+        if (damagedQuantity == null || (deliveredQuantity == null && damagedQuantity == null)) {
+            return true;
+        }
+        if (damagedQuantity.compareTo(deliveredQuantity) == 1) {
+            entity.addError(dataDefinition.getField(DeliveredProductFields.DAMAGED_QUANTITY),
+                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
+            entity.addError(dataDefinition.getField(DeliveredProductFields.DELIVERED_QUANTITY),
+                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
+            return false;
+        }
+        return true;
+    }
+
 }

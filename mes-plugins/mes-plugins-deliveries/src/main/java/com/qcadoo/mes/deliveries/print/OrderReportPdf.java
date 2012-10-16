@@ -1,9 +1,9 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
@@ -12,6 +12,7 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,7 @@ public class OrderReportPdf extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
 
-        String documentTitle = translationService.translate("deliveries.orderReport.report.title", locale);
+        String documentTitle = translationService.translate("deliveries.order.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
         pdfHelper
@@ -80,33 +81,56 @@ public class OrderReportPdf extends ReportPdfView {
 
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
-        return translationService.translate("deliveries.orderReport.report.fileName", locale, delivery.getStringField(NUMBER),
+        return translationService.translate("deliveries.order.report.fileName", locale, delivery.getStringField(NUMBER),
                 DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
-        PdfPTable panelTable = pdfHelper.createPanelTable(3);
+        PdfPTable headerTable = pdfHelper.createPanelTable(3);
 
-        panelTable.setSpacingBefore(7);
+        headerTable.setSpacingBefore(7);
 
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.number", locale),
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.order.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.name", locale),
-                (delivery.getStringField(NAME) == null) ? "" : delivery.getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.description", locale),
-                (delivery.getStringField(DESCRIPTION) == null) ? "" : delivery.getStringField(DESCRIPTION));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.deliveryDate", locale),
-                (delivery.getField(DELIVERY_DATE) == null) ? "" : delivery.getField(DELIVERY_DATE));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate("deliveries.orderReport.report.columnHeader.supplier", locale),
-                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.name", locale),
+                    delivery.getStringField(NAME));
+        }
+        if (delivery.getStringField(DESCRIPTION) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.description", locale),
+                    delivery.getStringField(DESCRIPTION));
+        }
+        if (delivery.getField(DELIVERY_DATE) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
+                    new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+        }
+        if (delivery.getStringField(NAME) == null) {
+            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(
+                    headerTable,
+                    translationService.translate("deliveries.order.report.columnHeader.supplier", locale),
+                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
+                            NAME));
+        }
+        pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
 
-        document.add(panelTable);
+        document.add(headerTable);
+        document.add(Chunk.NEWLINE);
     }
 
     private void createProductsTable(final Document document, final Entity delivery, final Locale locale)
@@ -145,7 +169,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,
             final Locale locale) throws DocumentException {
-        document.add(new Paragraph(translationService.translate("deliveries.orderReport.report.orderedProducts.title", locale),
+        document.add(new Paragraph(translationService.translate("deliveries.order.report.orderedProducts.title", locale),
                 FontUtils.getDejavuBold11Dark()));
 
         List<String> productsHeader = new ArrayList<String>();
@@ -169,7 +193,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("deliveries.orderReport.report.title", locale));
+        document.addTitle(translationService.translate("deliveries.order.report.title", locale));
     }
 
 }

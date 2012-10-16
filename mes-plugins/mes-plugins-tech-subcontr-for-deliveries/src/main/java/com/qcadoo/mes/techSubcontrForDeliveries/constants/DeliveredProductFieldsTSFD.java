@@ -1,6 +1,6 @@
 package com.qcadoo.mes.techSubcontrForDeliveries.constants;
 
-public class DeliveredProductFieldsTSFD {
+public final class DeliveredProductFieldsTSFD {
 
     private DeliveredProductFieldsTSFD() {
 

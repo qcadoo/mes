@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
@@ -40,38 +41,52 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public Entity getDelivery(final Long deliveryId) {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).get(
-                deliveryId);
+        return getDeliveryDD().get(deliveryId);
     }
 
     @Override
     public Entity getOrderedProduct(final Long deliveredProductId) {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT).get(
-                deliveredProductId);
+        return getOrderedProductDD().get(deliveredProductId);
     }
 
     @Override
     public Entity getDeliveredProduct(final Long deliveredProductId) {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(
-                deliveredProductId);
+        return getDeliveredProductDD().get(deliveredProductId);
     }
 
     @Override
     public List<Entity> getColumnsForDeliveries() {
-        List<Entity> columnForDeliveries = dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES).find().list()
-                .getEntities();
-
-        return columnForDeliveries;
+        return getColumnForDeliveriesDD().find().list().getEntities();
     }
 
     @Override
     public List<Entity> getColumnsForOrders() {
-        List<Entity> columnForDeliveries = dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS).find().list()
-                .getEntities();
+        return getColumnForOrdersDD().find().list().getEntities();
+    }
 
-        return columnForDeliveries;
+    @Override
+    public DataDefinition getDeliveryDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
+    }
+
+    @Override
+    public DataDefinition getOrderedProductDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT);
+    }
+
+    @Override
+    public DataDefinition getDeliveredProductDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
+    }
+
+    @Override
+    public DataDefinition getColumnForDeliveriesDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES);
+    }
+
+    @Override
+    public DataDefinition getColumnForOrdersDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS);
     }
 
 }

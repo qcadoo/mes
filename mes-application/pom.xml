@@ -419,6 +419,11 @@
 					<artifactId>qcadoo-plugins-plugin-management</artifactId>
 					<version>${qcadoo.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo</groupId>
+					<artifactId>qcadoo-plugins-unit-conversion-management</artifactId>
+					<version>${qcadoo.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -633,6 +638,11 @@
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-supply-negotiations</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-cat-numbers-in-negot</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
 			</dependencies>

@@ -34,35 +34,37 @@ ALTER TABLE basic_product ADD CONSTRAINT basic_product_fkey
 -- end
 
 
--- Table: basic_conversion
--- changed: 30.08.2012
+-- Table: qcadoomodel_globalunitconversionsaggregate
+-- change: 11.10.2012
 
-CREATE TABLE basic_conversion
+CREATE TABLE qcadoomodel_globalunitconversionsaggregate
 (
   id bigint NOT NULL,
-  CONSTRAINT basic_conversion_pkey PRIMARY KEY (id )
+  CONSTRAINT qcadoomodel_globalunitconversionsaggregate_pkey PRIMARY KEY (id)
 );
 
 -- end
 
 
--- Table: basic_conversionitem
--- changed: 30.08.2012
+-- Table: qcadoomodel_unitconversionitem
+-- change: 11.10.2012
 
-CREATE TABLE basic_conversionitem
+CREATE TABLE qcadoomodel_unitconversionitem
 (
   id bigint NOT NULL,
   quantityfrom numeric(12,5),
   quantityto numeric(12,5),
   unitfrom character varying(255),
   unitto character varying(255),
-  conversion_id bigint,
+  globalunitconversionsaggregate_id bigint,
   product_id bigint,
-  CONSTRAINT basic_conversionitem_pkey PRIMARY KEY (id ),
-  CONSTRAINT conversionitem_conversion_fkey FOREIGN KEY (conversion_id)
-      REFERENCES basic_conversion (id) DEFERRABLE,
-  CONSTRAINT conversionitem_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
+  CONSTRAINT qcadoomodel_unitconv_pkey PRIMARY KEY (id),
+  CONSTRAINT qcadoomodel_unitconv_aggregate_fkey FOREIGN KEY (globalunitconversionsaggregate_id)
+      REFERENCES qcadoomodel_globalunitconversionsaggregate (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT qcadoomodel_unitconv_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 -- end
@@ -326,9 +328,8 @@ CREATE TABLE deliveries_deliveredproduct
 
 ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
 
-ALTER TABLE states_message
-  ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id)
-      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
+ALTER TABLE states_message ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) 
+      REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
 
 -- end
 
@@ -405,53 +406,6 @@ ALTER TABLE avglaborcostcalcfororder_assignmentworkertoshift ADD COLUMN workedho
 -- end
 
 
--- Table: supplynegotiations_requestforquotation
--- changed: 09.10.2012
-
-CREATE TABLE supplynegotiations_requestforquotation
-(
-  id bigint NOT NULL,
-  "number" character varying(255),
-  "name" character varying(1024),
-  description character varying(2048),
-  supplier_id bigint,
-  desireddate date,
-  active boolean DEFAULT true,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  "createuser" character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT supplynegotiations_requestforquotation_pkey PRIMARY KEY (id),
-  CONSTRAINT requestforquotation_company_fkey FOREIGN KEY (supplier_id)
-      REFERENCES basic_company (id) DEFERRABLE
-);
-
--- end
-
-
--- Table: supplynegotiations_requestforquotationproduct
--- changed: 09.10.2012
-
-CREATE TABLE supplynegotiations_requestforquotationproduct
-(
-  id bigint NOT NULL,
-  requestforquotation_id bigint,
-  product_id bigint,
-  orderedquantity numeric(12,5),
-  annualvolume numeric(12,5),
-  operation_id bigint,
-  CONSTRAINT supplynegotiations_requestforquotationproduct_pkey PRIMARY KEY (id),
-  CONSTRAINT requestforquotationproduct_requestforquotation_fkey FOREIGN KEY (requestforquotation_id)
-      REFERENCES supplynegotiations_requestforquotation (id) DEFERRABLE,
-  CONSTRAINT requestforquotationproduct_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE,
-  CONSTRAINT requestforquotationproduct_operation_fkey FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id) DEFERRABLE
-);
-
--- end
-
-
 -- Table: deliveries_columnfordeliveries
 -- changed: 10.10.2012
 
@@ -482,5 +436,27 @@ CREATE TABLE deliveries_columnfororders
   alignment character varying(255) DEFAULT '01left'::character varying,
   CONSTRAINT deliveries_columnfororders_pkey PRIMARY KEY (id)
 );
+
+-- end
+
+
+-- Table: technologies_operation
+-- changed: 12.10.2012
+
+ALTER TABLE technologies_operation ADD COLUMN company_id bigint;
+ALTER TABLE technologies_operation
+  ADD CONSTRAINT operation_company_fkey FOREIGN KEY (company_id)
+      REFERENCES basic_company (id) DEFERRABLE;
+
+-- end
+
+      
+-- Table: technologies_operationgroup
+-- changed: 12.10.2012
+
+ALTER TABLE technologies_operationgroup ADD COLUMN companyoperationgroup_id bigint;
+ALTER TABLE technologies_operationgroup
+  ADD CONSTRAINT operationgroup_company_fkey FOREIGN KEY (companyoperationgroup_id)
+      REFERENCES basic_company (id) DEFERRABLE;
 
 -- end

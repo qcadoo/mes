@@ -68,13 +68,12 @@ public class DeliveryDetailsListenersTest {
         // given
         String stateValue = "111";
         Mockito.when(formComponent.getFieldValue()).thenReturn(stateValue);
-        // when
 
+        // when
         deliveryDetailsListeners.printDeliveryReport(view, formComponent, args);
 
         // then
         verify(view).redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + stateValue, true, false);
-
     }
 
     @Test
@@ -82,8 +81,10 @@ public class DeliveryDetailsListenersTest {
         // given
         String stateValue = "111";
         Mockito.when(grid.getFieldValue()).thenReturn(stateValue);
+
         // when
         deliveryDetailsListeners.printDeliveryReport(view, grid, args);
+
         // then
         verify(grid).addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
         verify(view, never()).redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + stateValue, true, false);
@@ -94,8 +95,8 @@ public class DeliveryDetailsListenersTest {
         // given
         String stateValue = "111";
         Mockito.when(formComponent.getFieldValue()).thenReturn(stateValue);
-        // when
 
+        // when
         deliveryDetailsListeners.printOrderReport(view, formComponent, args);
 
         // then
@@ -108,10 +109,12 @@ public class DeliveryDetailsListenersTest {
         // given
         String stateValue = "111";
         when(grid.getFieldValue()).thenReturn(stateValue);
+
         // when
         deliveryDetailsListeners.printOrderReport(view, grid, args);
+
         // then
-        verify(grid).addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
+        verify(grid).addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         verify(view, never()).redirectTo("/deliveries/orderReport." + args[0] + "?id=" + stateValue, true, false);
     }
 
@@ -141,8 +144,10 @@ public class DeliveryDetailsListenersTest {
 
         EntityList ordereds = mockEntityList(Lists.newArrayList(ordered1, ordered2));
         when(entity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS)).thenReturn(ordereds);
+
         // when
         deliveryDetailsListeners.copyOrderedProductToDelivered(view, formComponent, args);
+
         // then
     }
 

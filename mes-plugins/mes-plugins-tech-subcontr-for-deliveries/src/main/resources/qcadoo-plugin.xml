@@ -29,11 +29,11 @@
 	<dependencies>
 		<dependency>
 			<plugin>techSubcontracting</plugin>
-			<version>[1.7.0</version>
+			<version>[1.1.7</version>
 		</dependency>
 		<dependency>
 			<plugin>deliveries</plugin>
-			<version>[1.7.0</version>
+			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
 
@@ -54,13 +54,13 @@
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="orderedProducts">
 			<view:column name="operation" fields="operation"
-				orderable="true" expression="#operation['number']" />
+				expression="#operation['number']" searchable="true" orderable="true" />
 		</view:view-grid-column>
 		
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="deliveredProducts">
 			<view:column name="operation" fields="operation"
-				orderable="true"  expression="#operation['number']" />
+				expression="#operation['number']" searchable="true" orderable="true" />
 		</view:view-grid-column>
 		
 		<custom:custom class="com.qcadoo.mes.techSubcontrForDeliveries.TechSubcontrForDeliveriesOnStartupService" />

@@ -10,4 +10,5 @@ public final class ProductCatalogNumberFields {
     public static final String COMPANY = "company";
 
     public static final String CATALOG_NUMBER = "catalogNumber";
+
 }
