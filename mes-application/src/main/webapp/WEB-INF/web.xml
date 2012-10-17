@@ -95,6 +95,20 @@
 		<url-pattern>/j_spring_security_logout</url-pattern>
 	</filter-mapping>
 	
+    <filter>
+    	<filter-name>logdiggerFilter</filter-name>
+    	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    	<init-param>
+        	<param-name>targetFilterLifecycle</param-name>
+        	<param-value>true</param-value>
+    	</init-param>
+	</filter>
+	
+    <filter-mapping>
+    	<filter-name>logdiggerFilter</filter-name>
+    	<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<filter>
 		<filter-name>staticResourcesFilter</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -126,20 +140,6 @@
         <url-pattern>*.json</url-pattern>
     </filter-mapping>
     
-    <filter>
-    	<filter-name>logdiggerFilter</filter-name>
-    	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    	<init-param>
-        	<param-name>targetFilterLifecycle</param-name>
-        	<param-value>true</param-value>
-    	</init-param>
-	</filter>
-	
-    <filter-mapping>
-    	<filter-name>logdiggerFilter</filter-name>
-    	<url-pattern>/*</url-pattern>
-	</filter-mapping>
-
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
