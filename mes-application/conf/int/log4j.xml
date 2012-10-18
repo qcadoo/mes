@@ -9,7 +9,7 @@
 	<appender name="root-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/root.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -17,7 +17,7 @@
 	<appender name="model-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/model.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -25,7 +25,7 @@
 	<appender name="plugin-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/plugin.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -33,7 +33,7 @@
 	<appender name="view-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/view.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -41,7 +41,7 @@
 	<appender name="saas-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/saas.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -49,7 +49,7 @@
 	<appender name="localization-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/localization.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -57,7 +57,7 @@
 	<appender name="security-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/security.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -65,7 +65,7 @@
 	<appender name="report-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/report.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -73,7 +73,7 @@
 	<appender name="connector-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/connector.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -81,7 +81,7 @@
 	<appender name="warn-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/warn.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<param name="Threshold" value="warn"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
@@ -90,7 +90,7 @@
 	<appender name="translation-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/translation.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
@@ -98,7 +98,7 @@
 	<appender name="performance-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/performance.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
@@ -106,7 +106,7 @@
 	<appender name="sql-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/sql.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="3" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
