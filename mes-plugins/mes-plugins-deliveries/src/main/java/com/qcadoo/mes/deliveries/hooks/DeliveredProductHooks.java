@@ -37,7 +37,7 @@ public class DeliveredProductHooks {
         BigDecimal damagedQuantity = entity.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
         BigDecimal deliveredQuantity = entity.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
-        if (damagedQuantity == null || (deliveredQuantity == null && damagedQuantity == null)) {
+        if (damagedQuantity == null || deliveredQuantity == null) {
             return true;
         }
         if (damagedQuantity.compareTo(deliveredQuantity) == 1) {

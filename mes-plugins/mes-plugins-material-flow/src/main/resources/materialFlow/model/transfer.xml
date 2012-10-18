@@ -32,7 +32,7 @@
 			<validatesLength max="255" />
 		</string>
 		<enum name="type" values="01transport,02consumption,03production" />
-		<datetime name="time" />
+		<datetime name="time" required="true" />
 		<belongsTo name="locationFrom" model="location" plugin="materialFlow" />
 		<belongsTo name="locationTo" model="location" plugin="materialFlow" />
 		<belongsTo name="product" model="product" plugin="basic"
