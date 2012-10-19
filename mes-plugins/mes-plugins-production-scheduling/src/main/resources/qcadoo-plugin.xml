@@ -65,10 +65,22 @@
 		<localization:translation path="locales" />
 
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="realizationTime" copyable="false" />
+			<model:integer name="realizationTime"/>
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
 			<model:boolean name="calculate" />
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
+			<model:boolean name="includeTpz" />
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
+			<model:boolean name="includeAdditionalTime" />
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
+			<model:integer name="machineWorkTime"  />
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
+			<model:integer name="laborWorkTime"  />
 		</model:model-field>
 		
 		<model:model-field plugin="orders" model="order">
@@ -76,7 +88,7 @@
 		</model:model-field>
 		
 		<model:model-field plugin="orders" model="order">
-			<model:datetime name="generatedEndDate" copyable="false" />
+			<model:datetime name="generatedEndDate" />
 		</model:model-field>
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />

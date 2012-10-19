@@ -24,30 +24,23 @@
 package com.qcadoo.mes.operationCostCalculations;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
 
 public class OperationsCostCalculationServiceTest {
@@ -58,42 +51,20 @@ public class OperationsCostCalculationServiceTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private Entity costCalculation, costCalculationFromDD, technology, calculationOperationComponent, techOperComp, order;
-
-    @Mock
-    private EntityTree entityTree;
+    private Entity costCalculation, techOperComp;
 
     @Mock
     private NumberService numberService;
 
     @Mock
-    private DataDefinition dataDefinition, calculationOperationComponentDD, operationComponentDD, techOperCompDD;
-
-    @Mock
-    private EntityTreeNode calculationOpComp, operationComponent;
+    private DataDefinition dataDefinition, calculationOperationComponentDD, techOperCompDD;
 
     @Mock
     private ProductQuantitiesService productQuantitiesService;
 
-    private BigDecimal expectedTotalOperationCost, numberOfOperation, quantity, pieceworkCost;
-
-    private Long costCalculationId, techOperCompId;
-
-    private Map<Entity, BigDecimal> quantities = new HashMap<Entity, BigDecimal>();
+    private BigDecimal expectedTotalOperationCost;
 
     private Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
-
-    private Map<Entity, Integer> realizationTimes = new HashMap<Entity, Integer>();
-
-    private EntityTree treeFromTechnology;
-
-    private List<EntityTreeNode> children = new LinkedList<EntityTreeNode>();
-
-    private static EntityTree mockEntityTreeIterator(List<Entity> list) {
-        EntityTree entityTree = mock(EntityTree.class);
-        when(entityTree.iterator()).thenReturn(list.iterator());
-        return entityTree;
-    }
 
     @Before
     public void init() {
@@ -112,69 +83,13 @@ public class OperationsCostCalculationServiceTest {
         when(dataDefinitionService.get("technologies", "technologyOperationComponent")).thenReturn(techOperCompDD);
 
         expectedTotalOperationCost = mock(BigDecimal.class);
-        numberOfOperation = new BigDecimal(2);
-        pieceworkCost = BigDecimal.TEN;
-        quantity = new BigDecimal(3);
-        costCalculationId = 1L;
-        quantities = new HashMap<Entity, BigDecimal>();
-        techOperCompId = 1L;
         productComponentQuantities.put(techOperComp, new BigDecimal(3));
-
-        treeFromTechnology = mockEntityTreeIterator(Arrays.asList((Entity) calculationOpComp));
 
         when(numberService.setScale(new BigDecimal(15))).thenReturn(expectedTotalOperationCost);
 
     }
 
-    @Test
-    public void shouldCalculateOperationCostForPieceworkCorrectlyFromTechnology() throws Exception {
-        // given
-
-        when(costCalculation.getStringField("calculateOperationCostsMode")).thenReturn("02piecework");
-
-        when(costCalculation.getId()).thenReturn(costCalculationId);
-        when(dataDefinition.get(costCalculationId)).thenReturn(costCalculationFromDD);
-        when(costCalculationFromDD.getTreeField("calculationOperationComponents")).thenReturn(entityTree);
-        when(entityTree.getRoot()).thenReturn(calculationOpComp);
-        when(costCalculation.getBelongsToField("technology")).thenReturn(technology);
-
-        when(technology.getTreeField("operationComponents")).thenReturn(treeFromTechnology);
-        when(calculationOperationComponentDD.create()).thenReturn(calculationOperationComponent);
-        when(treeFromTechnology.getRoot()).thenReturn(calculationOpComp);
-        when(calculationOpComp.getField("entityType")).thenReturn("operation");
-        when(calculationOpComp.getDataDefinition()).thenReturn(operationComponentDD);
-        when(operationComponentDD.getName()).thenReturn("technologyOperationComponent");
-
-        when(dataDefinition.save(costCalculation)).thenReturn(costCalculation);
-
-        when(costCalculation.getField("quantity")).thenReturn(quantity);
-
-        when(
-                productQuantitiesService.getProductComponentQuantities(Mockito.eq(technology), Mockito.eq(quantity),
-                        Mockito.anyMap())).thenReturn(quantities);
-        quantities.put(calculationOpComp, BigDecimal.ONE);
-
-        when(calculationOpComp.getChildren()).thenReturn(children);
-        when(calculationOpComp.getBelongsToField("technologyOperationComponent")).thenReturn(techOperComp);
-
-        when(techOperComp.getId()).thenReturn(techOperCompId);
-        when(techOperCompDD.get(techOperCompId)).thenReturn(techOperComp);
-
-        when(calculationOpComp.getField("numberOfOperations")).thenReturn(numberOfOperation);
-        when(calculationOpComp.getField("pieceworkCost")).thenReturn(pieceworkCost);
-        when(numberService.getMathContext()).thenReturn(MathContext.DECIMAL64);
-
-        when(operationComponentDD.save(calculationOpComp)).thenReturn(calculationOpComp);
-        when(calculationOpComp.isValid()).thenReturn(true);
-        BigDecimal quantity = new BigDecimal(15);
-        when(numberService.setScale(quantity)).thenReturn(quantity);
-        // when
-        operationCostCalculationService.calculateOperationsCost(costCalculation);
-
-        // then
-        verify(costCalculation).setField("totalPieceworkCosts", quantity);
-    }
-
+    @Ignore
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenGetIncorrectTypeOfSource() throws Exception {
         // given
@@ -187,24 +102,4 @@ public class OperationsCostCalculationServiceTest {
         operationCostCalculationService.calculateOperationsCost(wrongEntity);
     }
 
-    @Test
-    public void shouldEstimateCostCalculationForHourly() throws Exception {
-        // given
-        BigDecimal margin = BigDecimal.TEN;
-        BigDecimal plannedQuantity = BigDecimal.TEN;
-        realizationTimes.put(techOperComp, Integer.valueOf(10));
-        Long techOperCompId = 1L;
-        Integer duration = Integer.valueOf(10);
-
-        when(numberService.getMathContext()).thenReturn(MathContext.DECIMAL64);
-        when(operationComponent.getBelongsToField("technologyOperationComponent")).thenReturn(techOperComp);
-        when(techOperComp.getId()).thenReturn(techOperCompId);
-        when(techOperComp.getDataDefinition()).thenReturn(techOperCompDD);
-        when(techOperCompDD.get(techOperCompId)).thenReturn(techOperComp);
-
-        // when
-        operationCostCalculationService.estimateCostCalculationForHourlyWitoutSaving(operationComponent, margin, plannedQuantity,
-                realizationTimes);
-        // then
-    }
 }

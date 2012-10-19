@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.1.7
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.1.7 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="orderTimePrediction" menuAccessible="true" modelPlugin="orders"
@@ -37,10 +24,11 @@
 			</group>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-		<component type="gridLayout" name="gridsLayout" columns="2"
-				rows="7">
+			<component type="gridLayout" name="gridsLayout" columns="2"
+				rows="8">
 				<layoutElement column="1" row="1">
-					<component type="lookup" field="technology" name="technology" reference="technology">
+					<component type="lookup" field="technology" name="technology"
+						reference="technology">
 						<option type="required" value="true" />
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
@@ -50,7 +38,8 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService" method="fillUnitField" />
+							class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
+							method="fillUnitField" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -71,7 +60,7 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="3" row="1">
-							 <component type="select" name="operationDurationQuantityUNIT"
+							<component type="select" name="operationDurationQuantityUNIT"
 								field="#{form}.operationDurationQuantityUNIT" reference="operationDurationQuantityUNIT"
 								hasLabel="false" defaultEnabled="false" />
 						</layoutElement>
@@ -91,16 +80,49 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5">
-					<component type="calendar" name="dateTo"
-						reference="dateTo" field="generatedEndDate" defaultEnabled="false">
+					<component type="calendar" name="dateTo" reference="dateTo"
+						field="generatedEndDate" defaultEnabled="false">
 						<option type="withTimePicker" value="true" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="time" name="realizationTime"
-						reference="realizationTime" field="realizationTime"
-						hasDescription="true" required="true" defaultEnabled="false">
-						<option type="labelWidth" value="80" />
+					<component type="borderLayout" name="borderLayoutIncludedInWorkTime"
+						reference="borderLayoutIncludedInWorkTime">
+						<option type="label" value="includedInWorkTime" />
+						<component type="gridLayout" name="includedInWorkTime"
+							columns="1" rows="2">
+							<layoutElement column="1" row="1">
+								<component type="checkbox" name="includeTpz" reference="includeTpz"
+									field="#{form}.includeTpz" hasDescription="true">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime"
+									field="#{form}.includeAdditionalTime" hasDescription="true">
+								</component>
+							</layoutElement>
+						</component>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="7">
+					<component type="borderLayout" name="borderLayoutWorkTime"
+						reference="borderLayoutWorkTime">
+						<option type="label" value="workTime" />
+						<component type="gridLayout" name="workTimeGridLayout"
+							columns="1" rows="2">
+							<layoutElement column="1" row="1">
+								<component type="time" name="laborWorkTime" reference="laborWorkTime"
+									field="#{form}.laborWorkTime" hasDescription="true">
+									<option type="noHours" value="5" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="time" name="machineWorkTime" reference="machineWorkTime"
+									field="#{form}.machineWorkTime" hasDescription="true">
+									<option type="noHours" value="5" />
+								</component>
+							</layoutElement>
+						</component>
 					</component>
 				</layoutElement>
 			</component>

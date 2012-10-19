@@ -460,3 +460,12 @@ ALTER TABLE technologies_operationgroup
       REFERENCES basic_company (id) DEFERRABLE;
 
 -- end
+
+-- Table: orders_order
+-- changed: 19.10.2012
+ALTER TABLE orders_order ADD COLUMN includeadditionaltime boolean;
+ALTER TABLE orders_order ADD COLUMN includetpz boolean;
+ALTER TABLE orders_order ADD COLUMN machineworktime integer;
+ALTER TABLE orders_order ADD COLUMN laborworktime integer;
+
+--end

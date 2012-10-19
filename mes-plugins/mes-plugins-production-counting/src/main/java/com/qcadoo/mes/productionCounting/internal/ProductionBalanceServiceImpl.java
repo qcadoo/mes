@@ -71,14 +71,13 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.LABOR_UTILIZATION;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.MACHINE_UTILIZATION;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -96,10 +95,11 @@ import com.google.common.collect.Sets;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -148,7 +148,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
-    private OrderRealizationTimeService orderRealizationTimeService;
+    private OperationWorkTimeService operationWorkTimeService;
 
     @Override
     public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
@@ -697,23 +697,25 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
             plannedTimes.put(L_PLANNED_MACHINE_TIME, 0);
             plannedTimes.put(L_PLANNED_LABOR_TIME, 0);
+            Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
 
-            Map<Entity, Integer> durationOperation = orderRealizationTimeService.estimateOperationTimeConsumptions(order,
-                    (BigDecimal) order.getField(ProductionRecordFields.PLANNED_QUANTITY),
-                    productionBalance.getBooleanField(INCLUDE_TPZ), productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME),
-                    order.getBelongsToField(PRODUCTION_LINE));
+            productQuantitiesService.getProductComponentQuantities(order.getBelongsToField(OrderFields.TECHNOLOGY),
+                    order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRuns);
+
+            Map<Entity, OperationWorkTime> operationLaborAndMachineWorkTime = operationWorkTimeService
+                    .estimateOperationsWorkTimeForOrder(order, operationRuns, productionBalance.getBooleanField(INCLUDE_TPZ),
+                            productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME), order.getBelongsToField(PRODUCTION_LINE));
 
             if (isTypeOfProductionRecordingForEach(order)) {
                 countTimeOperation(productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT), plannedTimes,
-                        durationOperation.get(productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                                .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT)));
+                        operationLaborAndMachineWorkTime.get(productionRecord
+                                .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
             } else if (isTypeOfProductionRecordingCumulated(order)) {
                 EntityTree technologyInstanceOperationComponents = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
                 for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
                     countTimeOperation(technologyInstanceOperationComponent, plannedTimes,
-                            durationOperation.get(technologyInstanceOperationComponent
-                                    .getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT)));
+                            operationLaborAndMachineWorkTime.get(technologyInstanceOperationComponent));
                 }
             }
         }
@@ -722,20 +724,10 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     }
 
     private void countTimeOperation(final Entity technologyInstanceOperationComponent, final Map<String, Integer> plannedTimes,
-            final Integer durationOfOperation) {
-        BigDecimal durationOfOperationComponent = BigDecimal.valueOf(durationOfOperation);
+            final OperationWorkTime durationOfOperation) {
 
-        Integer plannedMachineTime = plannedTimes.get(L_PLANNED_MACHINE_TIME)
-                + numberService.setScale(
-                        durationOfOperationComponent.multiply(
-                                getNotNullBigDecimal(technologyInstanceOperationComponent.getDecimalField(MACHINE_UTILIZATION)),
-                                numberService.getMathContext())).intValue();
-
-        Integer plannedLaborTime = plannedTimes.get(L_PLANNED_LABOR_TIME)
-                + numberService.setScale(
-                        durationOfOperationComponent.multiply(
-                                getNotNullBigDecimal(technologyInstanceOperationComponent.getDecimalField(LABOR_UTILIZATION)),
-                                numberService.getMathContext())).intValue();
+        Integer plannedMachineTime = plannedTimes.get(L_PLANNED_MACHINE_TIME) + durationOfOperation.getMachineWorkTime();
+        Integer plannedLaborTime = plannedTimes.get(L_PLANNED_LABOR_TIME) + durationOfOperation.getLaborWorkTime();
 
         plannedTimes.put(L_PLANNED_MACHINE_TIME, plannedMachineTime);
         plannedTimes.put(L_PLANNED_LABOR_TIME, plannedLaborTime);

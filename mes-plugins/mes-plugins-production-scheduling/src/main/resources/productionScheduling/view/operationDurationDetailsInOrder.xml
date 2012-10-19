@@ -101,7 +101,7 @@
 		</ribbon>
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridsLayout" columns="3"
-				rows="7">
+				rows="8">
 				<layoutElement column="1" row="1">
 					<component type="calendar" name="startTime" reference="startTime"
 						field="dateFrom">
@@ -167,10 +167,43 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6">
-					<component type="time" name="realizationTime"
-						field="realizationTime" reference="realizationTime"
-						hasDescription="true" defaultEnabled="false">
-						<option type="labelWidth" value="80" />
+					<component type="borderLayout" name="borderLayoutIncludedInWorkTime"
+						reference="borderLayoutIncludedInWorkTime">
+						<option type="label" value="includedInWorkTime" />
+						<component type="gridLayout" name="includedInWorkTime"
+							columns="1" rows="2">
+							<layoutElement column="1" row="1">
+								<component type="checkbox" name="includeTpz" reference="includeTpz"
+									field="#{form}.includeTpz" hasDescription="true">
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime"
+									field="#{form}.includeAdditionalTime" hasDescription="true">
+								</component>
+							</layoutElement>
+						</component>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="7">
+					<component type="borderLayout" name="borderLayoutWorkTime"
+						reference="borderLayoutWorkTime">
+						<option type="label" value="workTime" />
+						<component type="gridLayout" name="workTimeGridLayout"
+							columns="1" rows="2">
+							<layoutElement column="1" row="1">
+								<component type="time" name="laborWorkTime" reference="laborWorkTime"
+									field="#{form}.laborWorkTime" hasDescription="true">
+									<option type="noHours" value="5" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2">
+								<component type="time" name="machineWorkTime" reference="machineWorkTime"
+									field="#{form}.machineWorkTime" hasDescription="true">
+									<option type="noHours" value="5" />
+								</component>
+							</layoutElement>
+						</component>
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" height="6" width="2">
