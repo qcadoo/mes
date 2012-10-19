@@ -14,7 +14,7 @@
 		</string>
 		<belongsTo name="supplier" model="company" plugin="basic" 
 			required="true" />
-		<datetime name="deliveryDate" />
+		<datetime name="deliveryDate" required="true"/>
 		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
 			cascade="delete" copyable="true"  />
 		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
