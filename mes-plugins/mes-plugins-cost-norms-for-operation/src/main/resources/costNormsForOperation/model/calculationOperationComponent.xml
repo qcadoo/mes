@@ -46,9 +46,9 @@
 		<decimal name="machineUtilization" />
 		<decimal name="laborUtilization" />
 		<decimal name="productionInOneCycle" required="true" default="1" />
-		<enum name="countRealized" values="01all,02specified" default="01all"
+		<enum name="nextOperationAfterProducedType" values="01all,02specified" default="01all"
 			required="true" />
-		<decimal name="countMachine" />
+		<decimal name="nextOperationAfterProducedQuantity" />
 		<integer name="timeNextOperation" />
 		<integer name="operationOffSet" />
 		<integer name="effectiveOperationRealizationTime" />

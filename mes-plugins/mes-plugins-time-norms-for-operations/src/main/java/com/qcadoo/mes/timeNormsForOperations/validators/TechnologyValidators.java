@@ -28,8 +28,7 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
 
 import java.util.Map;
@@ -40,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -125,15 +125,18 @@ public class TechnologyValidators {
 
     public boolean checkIfUnitMatch(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
         String productionInOneCycleUnit = technologyOperationComponent.getStringField(PRODUCTION_IN_ONE_CYCLE_UNIT);
-        String countMachineUnit = technologyOperationComponent.getStringField(COUNT_MACHINE_UNIT);
-        String countRealized = (String) technologyOperationComponent.getField(COUNT_REALIZED);
+        String nextOperationAfterProducedQuantityUnit = technologyOperationComponent
+                .getStringField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
+        String nextOperationAfterProducedType = (String) technologyOperationComponent
+                .getField(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
 
         if (productionInOneCycleUnit == null) {
             return true;
         }
 
-        if ("02specified".equals(countRealized) && !productionInOneCycleUnit.equals(countMachineUnit)) {
-            technologyOperationComponent.addError(dataDefinition.getField(COUNT_MACHINE_UNIT),
+        if ("02specified".equals(nextOperationAfterProducedType)
+                && !productionInOneCycleUnit.equals(nextOperationAfterProducedQuantityUnit)) {
+            technologyOperationComponent.addError(dataDefinition.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT),
                     "technologies.operationDetails.validate.error.UnitsNotMatch");
             return false;
         }

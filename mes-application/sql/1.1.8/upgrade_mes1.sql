@@ -469,3 +469,28 @@ ALTER TABLE orders_order ADD COLUMN machineworktime integer;
 ALTER TABLE orders_order ADD COLUMN laborworktime integer;
 
 --end
+-- Table: technologies_operation
+-- changed: 21.10.2012
+Alter TABLE  technologies_operation  RENAME countmachine  TO nextoperationafterproducedquantity;
+Alter TABLE  technologies_operation  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
+Alter TABLE  technologies_operation  RENAME countrealized    TO nextoperationafterproducedtype;
+-- end
+-- Table: technologies_technologyoperationcomponent
+-- changed: 21.10.2012
+Alter TABLE  technologies_technologyoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
+Alter TABLE  technologies_technologyoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
+Alter TABLE  technologies_technologyoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
+-- end
+-- Table: technologies_technologyinstanceoperationcomponent
+-- changed: 21.10.2012
+Alter TABLE  technologies_technologyinstanceoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
+Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
+Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
+
+-- end
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 21.10.2012
+Alter TABLE  costnormsforoperation_calculationoperationcomponent      RENAME countmachine  TO nextoperationafterproducedquantity;
+Alter TABLE  costnormsforoperation_calculationoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
+
+--end

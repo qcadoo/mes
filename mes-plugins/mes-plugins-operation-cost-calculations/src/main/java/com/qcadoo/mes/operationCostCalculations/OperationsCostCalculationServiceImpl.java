@@ -363,16 +363,18 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             final Entity costCalculation) {
         DataDefinition sourceDD = operationComponent.getDataDefinition();
 
-        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", L_PRODUCTION_IN_ONE_CYCLE, "countMachine",
-                "timeNextOperation", "operationOffSet", "effectiveOperationRealizationTime", "effectiveDateFrom",
-                "effectiveDateTo", "pieceworkCost", "laborHourlyCost", "machineHourlyCost", "numberOfOperations",
-                "totalOperationCost", "laborUtilization", "machineUtilization")) {
+        for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", L_PRODUCTION_IN_ONE_CYCLE,
+                "nextOperationAfterProducedQuantity", "timeNextOperation", "operationOffSet",
+                "effectiveOperationRealizationTime", "effectiveDateFrom", "effectiveDateTo", "pieceworkCost", "laborHourlyCost",
+                "machineHourlyCost", "numberOfOperations", "totalOperationCost", "laborUtilization", "machineUtilization")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 
         calculationOperationComponent.setField(L_OPERATION, operationComponent.getBelongsToField(L_OPERATION));
-        calculationOperationComponent.setField("countRealized", operationComponent.getField("countRealized") == null ? "01all"
-                : operationComponent.getField("countRealized"));
+        calculationOperationComponent.setField(
+                "nextOperationAfterProducedType",
+                operationComponent.getField("nextOperationAfterProducedType") == null ? "01all" : operationComponent
+                        .getField("nextOperationAfterProducedType"));
 
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
             calculationOperationComponent.setField(L_TECHNOLOGY_OPERATION_COMPONENT, operationComponent);

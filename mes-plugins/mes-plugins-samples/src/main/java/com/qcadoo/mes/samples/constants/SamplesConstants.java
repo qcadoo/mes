@@ -282,7 +282,7 @@ public final class SamplesConstants {
 
     public static final String L_OPERATION = "operation";
 
-    public static final String COUNT_REALIZED = "countRealized";
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
     public static final String TPZ = "tpz";
 

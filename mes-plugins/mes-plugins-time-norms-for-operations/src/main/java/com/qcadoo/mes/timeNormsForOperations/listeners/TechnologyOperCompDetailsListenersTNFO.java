@@ -26,9 +26,9 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.ARE_PRODUCT_QUANTITIES_DIVISIBLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.IS_TJ_DIVISIBLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
@@ -77,16 +77,16 @@ public class TechnologyOperCompDetailsListenersTNFO {
             component.setFieldValue(source.getField(fieldName));
         }
 
-        if (source.getField(COUNT_REALIZED) == null) {
-            view.getComponentByReference(COUNT_REALIZED).setFieldValue("01all");
+        if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
+            view.getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE).setFieldValue("01all");
         }
 
         if (source.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
             view.getComponentByReference(PRODUCTION_IN_ONE_CYCLE).setFieldValue("1");
         }
 
-        if (source.getField(COUNT_MACHINE) == null) {
-            view.getComponentByReference(COUNT_MACHINE).setFieldValue("0");
+        if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
+            view.getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY).setFieldValue("0");
         }
 
     }
@@ -96,31 +96,35 @@ public class TechnologyOperCompDetailsListenersTNFO {
         copyTimeNormsFromOperation(viewDefinitionState, componentState, args);
     }
 
-    public void changeCountRealizedNorm(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
+    public void changeNextOperationAfterProducedTypeNorm(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
-        countMachine.setVisible(visibilityValue);
-        countMachine.setEnabled(visibilityValue);
-        countMachineUNIT.setVisible(visibilityValue);
+        Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        nextOperationAfterProducedQuantity.setVisible(visibilityValue);
+        nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
+        nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);
 
     }
 
-    public void changeCountRealizedNormOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
+    public void changeNextOperationAfterProducedTypeNormOperation(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        Boolean visibilityValue = "02specified".equals(countRealized.getFieldValue());
-        countMachine.setVisible(visibilityValue);
-        countMachine.setEnabled(visibilityValue);
-        countMachineUNIT.setVisible(visibilityValue);
+        Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        nextOperationAfterProducedQuantity.setVisible(visibilityValue);
+        nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
+        nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);
 
     }
 
