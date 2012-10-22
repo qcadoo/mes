@@ -33,24 +33,24 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class OperationDetailsListenersTNFO {
 
-    public void changeCountRealizedOperation(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState
-                .getComponentByReference(TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT);
+    public void changeNextOperationAfterProducedTypeOperation(final ViewDefinitionState viewDefinitionState,
+            final ComponentState state, final String[] args) {
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        if (countRealized.getFieldValue().equals("02specified")) {
-            countMachine.setVisible(true);
-            countMachineUNIT.setVisible(true);
+        if (nextOperationAfterProducedType.getFieldValue().equals("02specified")) {
+            nextOperationAfterProducedQuantity.setVisible(true);
+            nextOperationAfterProducedQuantityUNIT.setVisible(true);
 
         } else {
-            countMachine.setVisible(false);
-            countMachineUNIT.setVisible(false);
+            nextOperationAfterProducedQuantity.setVisible(false);
+            nextOperationAfterProducedQuantityUNIT.setVisible(false);
         }
-        countMachine.requestComponentUpdateState();
+        nextOperationAfterProducedQuantity.requestComponentUpdateState();
     }
 
 }

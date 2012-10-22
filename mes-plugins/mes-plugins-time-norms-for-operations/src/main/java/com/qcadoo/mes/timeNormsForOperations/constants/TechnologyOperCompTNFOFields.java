@@ -35,11 +35,11 @@ public final class TechnologyOperCompTNFOFields {
 
     public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
-    public static final String COUNT_REALIZED = "countRealized";
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
-    public static final String COUNT_MACHINE = "countMachine";
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
 
-    public static final String COUNT_MACHINE_UNIT = "countMachineUNIT";
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT = "nextOperationAfterProducedQuantityUNIT";
 
     public static final String TIME_NEXT_OPERATION = "timeNextOperation";
 

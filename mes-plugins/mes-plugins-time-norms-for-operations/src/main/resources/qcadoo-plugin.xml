@@ -77,12 +77,12 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:enum values="01all,02specified" name="countRealized"
+			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
 				default="01all" required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:decimal name="countMachine" default="0"
+			<model:decimal name="nextOperationAfterProducedQuantity" default="0"
 				required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -111,7 +111,7 @@
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+			<model:dictionary name="nextOperationAfterProducedQuantityUNIT" dictionary="units" required="true"/>
 		</model:model-field>
 	
 		<model:model-field plugin="technologies"
@@ -129,12 +129,12 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-			<model:enum values="01all,02specified" name="countRealized"
+			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
 				default="01all" required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-			<model:decimal name="countMachine" default="0"
+			<model:decimal name="nextOperationAfterProducedQuantity" default="0"
 				required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -178,7 +178,7 @@
 			<model:dictionary name="productionInOneCycleUNIT" dictionary="units" required="true"/>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
-			<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+			<model:dictionary name="nextOperationAfterProducedQuantityUNIT" dictionary="units" required="true"/>
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="operation">
@@ -192,7 +192,7 @@
 				default="1" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="countMachine" default="0"
+			<model:decimal name="nextOperationAfterProducedQuantity" default="0"
 				required="true">
 				<validatesUnscaledValue max="3" />
 				<validatesScale max="5" />
@@ -213,7 +213,7 @@
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:enum values="01all,02specified" name="countRealized"
+			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
 				default="01all" required="true" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
@@ -225,7 +225,7 @@
 		</model:model-field>
 		
 		<model:model-field plugin="technologies" model="operation">
-		<model:dictionary name="countMachineUNIT" dictionary="units" required="true"/>
+		<model:dictionary name="nextOperationAfterProducedQuantityUNIT" dictionary="units" required="true"/>
 		</model:model-field>
 		
 		<model:model-hook model="technology" plugin="technologies">
@@ -291,7 +291,7 @@
 
 		<view:view-hook view="operationDetails" type="beforeRender"
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
-			method="setCountRealizedOperationValue" />
+			method="setNextOperationAfterProducedTypeOperationValue" />
 			
 		<view:view-hook view="operationDetails" type="beforeRender"
 			plugin="technologies" class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
@@ -300,7 +300,7 @@
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
-			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateCountMachineFieldStateonWindowLoad" />
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks" method="updateNextOperationAfterProducedQuantityFieldStateonWindowLoad" />
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"

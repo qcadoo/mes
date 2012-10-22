@@ -65,11 +65,11 @@ public class TechnologyModelHooksTNFO {
         if (operationComponent.getField("laborUtilization") == null) {
             operationComponent.setField("laborUtilization", BigDecimal.valueOf(1L));
         }
-        if (operationComponent.getField("countRealized") == null) {
-            operationComponent.setField("countRealized", "01all");
+        if (operationComponent.getField("nextOperationAfterProducedType") == null) {
+            operationComponent.setField("nextOperationAfterProducedType", "01all");
         }
-        if (operationComponent.getField("countMachine") == null) {
-            operationComponent.setField("countMachine", BigDecimal.ZERO);
+        if (operationComponent.getField("nextOperationAfterProducedQuantity") == null) {
+            operationComponent.setField("nextOperationAfterProducedQuantity", BigDecimal.ZERO);
         }
 
         operationComponent.getDataDefinition().save(operationComponent);

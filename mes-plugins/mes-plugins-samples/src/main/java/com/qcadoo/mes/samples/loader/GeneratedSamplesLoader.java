@@ -27,7 +27,7 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PROD
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.COUNT_REALIZED;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
@@ -242,13 +242,13 @@ public class GeneratedSamplesLoader extends AbstractSamplesLoader {
         operation.setField(TPZ, RANDOM.nextInt(1000));
         operation.setField(TJ, RANDOM.nextInt(1000));
         operation.setField("productionInOneCycle", RANDOM.nextInt(20));
-        operation.setField(COUNT_REALIZED, RANDOM.nextInt(10));
+        operation.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, RANDOM.nextInt(10));
         operation.setField("machineUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
         operation.setField("laborUtilization", numberService.setScale(new BigDecimal(RANDOM.nextDouble()).abs()));
-        operation.setField("countMachine", RANDOM.nextInt(15));
-        operation.setField(COUNT_REALIZED, "01all");
+        operation.setField("nextOperationAfterProducedQuantity", RANDOM.nextInt(15));
+        operation.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, "01all");
         operation.setField("timeNextOperation", RANDOM.nextInt(30));
-        operation.setField("countMachine", "0");
+        operation.setField("nextOperationAfterProducedQuantity", "0");
 
         if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", RANDOM.nextInt(100));
@@ -321,8 +321,8 @@ public class GeneratedSamplesLoader extends AbstractSamplesLoader {
         operationComponent.setField("machineUtilization", operation.getField("machineUtilization"));
         operationComponent.setField("laborUtilization", operation.getField("laborUtilization"));
         operationComponent.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
-        operationComponent.setField(COUNT_REALIZED, operation.getField(COUNT_REALIZED));
-        operationComponent.setField("countMachine", "0");
+        operationComponent.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, operation.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE));
+        operationComponent.setField("nextOperationAfterProducedQuantity", "0");
         operationComponent.setField("timeNextOperation", operation.getField("timeNextOperation"));
 
         operationComponent = operationComponent.getDataDefinition().save(operationComponent);
