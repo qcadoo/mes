@@ -45,6 +45,9 @@
 		<validatesWith
 			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportHooks"
 			method="checkIfIsMoreThatFiveDays" />
+		<validatesWith 
+			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportHooks" 
+			method="validateDates" />			
 		<onCopy
 			class="com.qcadoo.mes.assignmentToShift.hooks.AssignmentToShiftReportHooks"
 			method="clearGenerated" />

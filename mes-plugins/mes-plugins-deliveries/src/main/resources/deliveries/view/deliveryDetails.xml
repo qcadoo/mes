@@ -260,8 +260,8 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 							
-						<option type="searchable" value="number,name,orderedQuantity,unit" />
-						<option type="orderable" value="number,name,orderedQuantity,unit" />
+						<option type="searchable" value="number,name,unit" />
+						<option type="orderable" value="number,name,unit" />
 						
 						<option type="order" column="number" direction="desc" />
 						
@@ -294,8 +294,8 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 						
-						<option type="searchable" value="number,name,deliveredQuantity,damagedQuantity,unit" />
-						<option type="orderable" value="number,name,deliveredQuantity,damagedQuantity,unit" />
+						<option type="searchable" value="number,name,unit" />
+						<option type="orderable" value="number,name,unit" />
 						
 						<option type="order" column="number" direction="desc" />
 						

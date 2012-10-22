@@ -30,7 +30,7 @@
 	view="ordersPlanningList">
 	
 	<group name="workPlan">
-		<bigButton name="addToWorkPlan" icon="pdfIcon24.png"
+		<bigButton name="addToWorkPlan" icon="newIcon24.png"
 			action="#{grid}.fireEvent(addSelectedOrdersToWorkPlan);">
 			<script>
 				<![CDATA[
