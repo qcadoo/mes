@@ -68,20 +68,20 @@
 		<component type="grid" name="deliveriesList" reference="grid">
 			<script>
  				<![CDATA[ 
-					var deleteButton = #{window}.getRibbonItem("actions.delete");
-					var copyButton = #{window}.getRibbonItem("actions.copy");
-					var accept = #{window}.getRibbonItem("status.accept");
-					var declineDelivery = #{window}.getRibbonItem("status.declineDelivery");
-					var approveDelivery = #{window}.getRibbonItem("status.approveDelivery");
+					var deleteBtn = #{window}.getRibbonItem("actions.delete");
+					var copyBtn = #{window}.getRibbonItem("actions.copy");
+					var acceptBtn = #{window}.getRibbonItem("status.accept");
+					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
+					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								accept.disable();
-								declineDelivery.disable();
-								approveDelivery.disable();
-								deleteButton.disable();
-								copyButton.disable();
+								acceptBtn.disable();
+								declineDeliveryBtn.disable();
+								approveDeliveryBtn.disable();
+								deleteBtn.disable();
+								copyBtn.disable();
 							} else {
 								var noDifferentStates = true;
  								if(selectedEntitiesArray.length > 1)
@@ -97,69 +97,69 @@
 								} 
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var state = selectedEntitiesArray[0].fields.state;
+									
 									if (state == "01draft") {
-										accept.enable();
-										accept.state = "draft";
-										accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
-										accept.setIcon('startIcon16.png');
-										declineDelivery.enable();
-										declineDelivery.state = "decline";
-										declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDelivery.setIcon('deleteIcon16.png');
-										approveDelivery.enable();
+										deleteBtn.enable();
+										acceptBtn.enable();
+										acceptBtn.state = "draft";
+										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+										acceptBtn.setIcon('startIcon16.png');
+										declineDeliveryBtn.enable();
+										declineDeliveryBtn.state = "decline";
+										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+										declineDeliveryBtn.setIcon('deleteIcon16.png');
+										approveDeliveryBtn.enable();
 									} else if (state == "02prepared") {
-										accept.enable();
-										accept.state = "prepare";
-										accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-										accept.setIcon('startIcon16.png');
-										declineDelivery.enable();
-										declineDelivery.state = "decline";
-										declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDelivery.setIcon('deleteIcon16.png');
-										approveDelivery.enable();
+										deleteBtn.disable();
+										acceptBtn.enable();
+										acceptBtn.state = "prepare";
+										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+										acceptBtn.setIcon('startIcon16.png');
+										declineDeliveryBtn.enable();
+										declineDeliveryBtn.state = "decline";
+										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+										declineDeliveryBtn.setIcon('deleteIcon16.png');
+										approveDeliveryBtn.enable();
 									} else if (state == "03duringCorrection") {
-										accept.disable();
-										accept.state = "correct";
-										accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-										accept.setIcon('acceptIcon16.png');
-										declineDelivery.enable();
-										declineDelivery.state = "decline";
-										declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDelivery.setIcon('deleteIcon16.png');
-										approveDelivery.enable();
+										deleteBtn.disable();
+										acceptBtn.disable();
+										acceptBtn.state = "correct";
+										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+										acceptBtn.setIcon('acceptIcon16.png');
+										declineDeliveryBtn.enable();
+										declineDeliveryBtn.state = "decline";
+										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+										declineDeliveryBtn.setIcon('deleteIcon16.png');
+										approveDeliveryBtn.enable();
 									} else if (state == "05approved"){
-										accept.enable();
-										accept.state = "receive";
-										accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-										accept.setIcon('acceptIcon16.png');
-										declineDelivery.enable();
-										declineDelivery.state = "decline";
-										declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDelivery.setIcon('deleteIcon16.png');
-										approveDelivery.disable();
+										deleteBtn.disable();
+										acceptBtn.enable();
+										acceptBtn.state = "receive";
+										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+										acceptBtn.setIcon('acceptIcon16.png');
+										declineDeliveryBtn.enable();
+										declineDeliveryBtn.state = "decline";
+										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+										declineDeliveryBtn.setIcon('deleteIcon16.png');
+										approveDeliveryBtn.disable();
+									} else if (state == "06received"){
+										deleteBtn.disable();
+										acceptBtn.disable();
+										declineDeliveryBtn.disable();
+										approveDeliveryBtn.disable();
 									} else {
-										accept.disable();
-										declineDelivery.disable();
-										approveDelivery.disable();
+										deleteBtn.enable();
+										acceptBtn.disable();
+										declineDeliveryBtn.disable();
+										approveDeliveryBtn.disable();
 									}
 								} else {
-									accept.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									declineDelivery.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									approveDelivery.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 								}
-								copyButton.enable();
-								var hasClosed = false;
-								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "06received") {
-										hasClosed = true;
-										break;
-									}
-								}
-								if (hasClosed) {
-									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
-								} else {
-									deleteButton.enable();
-								}
+								copyBtn.enable();
 							}
 						}
 					}

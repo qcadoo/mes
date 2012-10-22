@@ -79,106 +79,114 @@
 			<component type="form" name="deliveriesDetails" reference="form">
 				<script>
 					<![CDATA[
-					var save = #{window}.getRibbonItem("actions.save");
-					var saveBack = #{window}.getRibbonItem("actions.saveBack");
-					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var cancel = #{window}.getRibbonItem("actions.cancel");
-					var del = #{window}.getRibbonItem("actions.delete");
-					var accept = #{window}.getRibbonItem("status.accept");
-					var declineDelivery = #{window}.getRibbonItem("status.declineDelivery");
-					var approveDelivery = #{window}.getRibbonItem("status.approveDelivery");
-					var copyOrderedProductToDelivered = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
-					var generateOrder = #{window}.getRibbonItem("generate.generateOrder");
-					var generateDelivery = #{window}.getRibbonItem("generate.generateDelivery");
+					var saveBtn = #{window}.getRibbonItem("actions.save");
+					var saveBackBtn = #{window}.getRibbonItem("actions.saveBack");
+					var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
+					var cancelBtn = #{window}.getRibbonItem("actions.cancel");
+					var deleteBtn = #{window}.getRibbonItem("actions.delete");
+					var acceptBtn = #{window}.getRibbonItem("status.accept");
+					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
+					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
+					var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
+					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (! value || ! value.content) {
 								return;
 							}
-							save.enable();
-							saveBack.enable();
-							saveNew.enable();
+							
+							saveBtn.enable();
+							saveBackBtn.enable();
+							saveNewBtn.enable();
 							if (! value.content.entityId) {
-								cancel.disable();
-								del.disable();
-								accept.disable();
-								declineDelivery.disable();
-								approveDelivery.disable();
-								generateOrder.disable();
-								generateDelivery.disable();
+								cancelBtn.disable();
+								deleteBtn.disable();
+								acceptBtn.disable();
+								declineDeliveryBtn.disable();
+								approveDeliveryBtn.disable();
+								generateOrderBtn.disable();
+								generateDeliveryBtn.disable();
 								return;
 							}
-							cancel.enable();
-							del.enable();
+							cancelBtn.enable();
+							generateOrderBtn.enable();
+							generateDeliveryBtn.enable();
+							
 							var state = #{state}.getValue().content.value;
 							if (!state) {
 								return;
 							}
+							
 							if (state == "01draft") {
-								accept.enable();
-								accept.state = "draft";
-								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
-								accept.setIcon('startIcon16.png');
-								declineDelivery.enable();
-								declineDelivery.state = "decline";
-								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDelivery.setIcon('deleteIcon16.png');
-								approveDelivery.enable();
-								generateOrder.enable();
-								generateDelivery.enable();
-								copyOrderedProductToDelivered.enable();
+								deleteBtn.enable();
+								acceptBtn.enable();
+								acceptBtn.state = "draft";
+								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+								acceptBtn.setIcon('startIcon16.png');
+								declineDeliveryBtn.enable();
+								declineDeliveryBtn.state = "decline";
+								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDeliveryBtn.setIcon('deleteIcon16.png');
+								approveDeliveryBtn.enable();
+								copyOrderedProductToDeliveredBtn.enable();
 							} else if (state == "02prepared") {
-								accept.enable();
-								accept.state = "prepare";
-								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-								accept.setIcon('startIcon16.png');
-								declineDelivery.enable();
-								declineDelivery.state = "decline";
-								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDelivery.setIcon('deleteIcon16.png');
-								approveDelivery.enable();
-								generateOrder.enable();
-								generateDelivery.enable();
-								copyOrderedProductToDelivered.disable();
+								deleteBtn.disable();
+								acceptBtn.enable();
+								acceptBtn.state = "prepare";
+								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+								acceptBtn.setIcon('startIcon16.png');
+								declineDeliveryBtn.enable();
+								declineDeliveryBtn.state = "decline";
+								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDeliveryBtn.setIcon('deleteIcon16.png');
+								approveDeliveryBtn.enable();
+								copyOrderedProductToDeliveredBtn.disable();
 							} else if (state == "03duringCorrection") {
-								accept.disable();
-								accept.state = "correct";
-								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								accept.setIcon('acceptIcon16.png');
-								declineDelivery.enable();
-								declineDelivery.state = "decline";
-								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDelivery.setIcon('deleteIcon16.png');
-								approveDelivery.enable();
-								copyOrderedProductToDelivered.enable();
-								generateOrder.enable();
-								generateDelivery.enable();
-							} else if (state == "05approved"){
-								accept.enable();
-								accept.state = "receive";
-								accept.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-								accept.setIcon('acceptIcon16.png');
-								declineDelivery.enable();
-								declineDelivery.state = "decline";
-								declineDelivery.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-								declineDelivery.setIcon('deleteIcon16.png');
-								approveDelivery.disable();
-								copyOrderedProductToDelivered.disable();
-								generateOrder.enable();
-								generateDelivery.enable();
+								deleteBtn.disable();
+								acceptBtn.disable();
+								acceptBtn.state = "correct";
+								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+								acceptBtn.setIcon('acceptIcon16.png');
+								declineDeliveryBtn.enable();
+								declineDeliveryBtn.state = "decline";
+								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDeliveryBtn.setIcon('deleteIcon16.png');
+								approveDeliveryBtn.enable();
+								copyOrderedProductToDeliveredBtn.enable();
+							} else if (state == "05approved") {
+								deleteBtn.disable();
+								acceptBtn.enable();
+								acceptBtn.state = "receive";
+								acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+								acceptBtn.setIcon('acceptIcon16.png');
+								declineDeliveryBtn.enable();
+								declineDeliveryBtn.state = "decline";
+								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+								declineDeliveryBtn.setIcon('deleteIcon16.png');
+								approveDeliveryBtn.disable();
+								copyOrderedProductToDeliveredBtn.disable();
+							} else if (state == "06received") {
+								saveBtn.disable();
+								saveBackBtn.disable();
+								saveNewBtn.disable();
+								cancelBtn.disable();
+								deleteBtn.disable();
+								acceptBtn.disable();
+								declineDeliveryBtn.disable();
+								approveDeliveryBtn.disable();
+								copyOrderedProductToDeliveredBtn.disable();
 							} else {
-								save.disable();
-								saveBack.disable();
-								saveNew.disable();
-								cancel.disable();
-								del.disable();
-								accept.disable();
-								declineDelivery.disable();
-								approveDelivery.disable();
-								copyOrderedProductToDelivered.disable();
-								generateOrder.enable();
-								generateDelivery.enable();
+								saveBtn.disable();
+								saveBackBtn.disable();
+								saveNewBtn.disable();
+								cancelBtn.disable();
+								deleteBtn.enable();
+								acceptBtn.disable();
+								declineDeliveryBtn.disable();
+								approveDeliveryBtn.disable();
+								copyOrderedProductToDeliveredBtn.disable();
 							}
 						}
 					});
