@@ -2,7 +2,6 @@ package com.qcadoo.mes.operationTimeCalculations;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -45,7 +45,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations) {
+            final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved) {
 
         MathContext mc = numberService.getMathContext();
         BigDecimal laborUtilization = operationComponent.getDecimalField("laborUtilization");
@@ -54,23 +54,28 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
 
+        Integer laborUtilizationIntValue = abstractOperationWorkTime.multiply(laborUtilization, mc).intValue();
+        Integer machinetilizationIntValue = abstractOperationWorkTime.multiply(machineUtilization, mc).intValue();
+        Integer duration = abstractOperationWorkTime.intValue();
         OperationWorkTime operationWorkTime = new OperationWorkTime();
-        operationWorkTime.setDuration(abstractOperationWorkTime.intValue());
-        operationWorkTime.setLaborWorkTime(abstractOperationWorkTime.multiply(laborUtilization, mc).intValue());
-        operationWorkTime.setMachineWorkTime(abstractOperationWorkTime.multiply(machineUtilization, mc).intValue());
-
+        operationWorkTime.setDuration(duration);
+        operationWorkTime.setLaborWorkTime(laborUtilizationIntValue);
+        operationWorkTime.setMachineWorkTime(machinetilizationIntValue);
+        if (saved) {
+            savedWorkTime(operationComponent, machinetilizationIntValue, laborUtilizationIntValue, duration);
+        }
         return operationWorkTime;
     }
 
     @Override
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Entity, Integer> workstations) {
+            final Map<Entity, Integer> workstations, final boolean saved) {
         Map<Entity, OperationWorkTime> operationsWorkTimes = new HashMap<Entity, OperationWorkTime>();
         for (Entity operationComponent : operationComponents) {
             OperationWorkTime operationWorkTime = estimateOperationWorkTime(operationComponent,
                     getOperationRuns(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
-                    getWorkstationsQuantity(workstations, operationComponent));
+                    getWorkstationsQuantity(workstations, operationComponent), saved);
             operationsWorkTimes.put(operationComponent, operationWorkTime);
         }
         return operationsWorkTimes;
@@ -78,31 +83,36 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTime(List<Entity> operationComponents,
-            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine,
+            final boolean saved) {
         Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
-        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
+        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
+                saved);
     }
 
     @Override
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order, productionLine);
-        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
+        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
+                saved);
     }
 
     @Override
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForTechnology(Entity technology,
-            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine,
+            final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromTechnology(technology, productionLine);
-        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
+        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
+                saved);
     }
 
     @Override
     public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Entity, Integer> workstations) {
+            final Map<Entity, Integer> workstations, final boolean saved) {
         OperationWorkTime totalWorkTime = new OperationWorkTime();
         Integer totalLaborWorkTime = Integer.valueOf(0);
         Integer totalMachineWorkTime = Integer.valueOf(0);
@@ -111,7 +121,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             Entity operComp = operationComponent;
             OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(operComp,
                     getOperationRuns(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
-                    workstations.get(operationComponent));
+                    getWorkstationsQuantity(workstations, operationComponent), saved);
             totalLaborWorkTime += abstractOperationWorkTime.getLaborWorkTime();
             totalMachineWorkTime += abstractOperationWorkTime.getMachineWorkTime();
             duration += abstractOperationWorkTime.getDuration();
@@ -123,41 +133,38 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return totalWorkTime;
     }
 
+    private void savedWorkTime(final Entity entity, final Integer machineWorkTime, final Integer laborWorkTime,
+            final Integer duration) {
+        DataDefinition operCompDD = entity.getDataDefinition();
+        Entity operationComponent = operCompDD.get(entity.getId());
+        operationComponent.setField("machineWorkTime", machineWorkTime);
+        operationComponent.setField("laborWorkTime", laborWorkTime);
+        operationComponent.setField("duration", duration);
+        operCompDD.save(operationComponent);
+    }
+
     @Override
     public OperationWorkTime estimateTotalWorkTime(List<Entity> operationComponents, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
         Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
-        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
+        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            boolean includeTpz, boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order, productionLine);
-        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
+
+        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     @Override
     public OperationWorkTime estimateTotalWorkTimeForTechnology(Entity technology, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine) {
+            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromTechnology(technology, productionLine);
-        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations);
-    }
-
-    @Override
-    public BigDecimal estimateNumberOfCyclesForWorkstations(final boolean isTjDivisible, final BigDecimal operationRuns,
-            final Integer workstations) {
-        MathContext mc = numberService.getMathContext();
-        BigDecimal numberOfCycles = BigDecimal.ONE;
-        BigDecimal workstationsDecimalValue = new BigDecimal(workstations);
-        if (isTjDivisible) {
-            numberOfCycles = operationRuns.divide(workstationsDecimalValue, mc);
-        } else {
-            numberOfCycles = numberOfCycles.setScale(0, RoundingMode.CEILING);
-        }
-        return numberOfCycles;
+        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     private Map<Entity, Integer> getWorkstationsMapsForOperationsComponent(final List<Entity> operationsComponents,

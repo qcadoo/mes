@@ -220,10 +220,11 @@
 									expression="#operation['name']" link="true" />
 								<option type="column" name="dateFrom" fields="effectiveDateFrom" />	
 								<option type="column" name="dateTo" fields="effectiveDateTo" />	
- 								<option type="column" name="realizationTime"
-									fields="effectiveOperationRealizationTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#effectiveOperationRealizationTime)"/>
 								<option type="column" name="workstations" fields="quantityOfWorkstationTypes" />
-								
+ 								<option type="column" name="laborWorkTime"
+									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+ 								<option type="column" name="machineWorkTime"
+									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
 								<option type="order" column="number" direction="asc" />
 								<option type="correspondingView"
 									value="technologies/technologyInstanceOperationComponentDetails" />
