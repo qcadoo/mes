@@ -104,9 +104,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Entity, Integer> workstations) {
         OperationWorkTime totalWorkTime = new OperationWorkTime();
-        Integer totalLaborWorkTime = new Integer(0);
-        Integer totalMachineWorkTime = new Integer(0);
-        Integer duration = new Integer(0);
+        Integer totalLaborWorkTime = Integer.valueOf(0);
+        Integer totalMachineWorkTime = Integer.valueOf(0);
+        Integer duration = Integer.valueOf(0);
         for (Entity operationComponent : operationComponents) {
             Entity operComp = operationComponent;
             OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(operComp,
