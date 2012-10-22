@@ -284,12 +284,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         BigDecimal pieceworkCost = getBigDecimal(calcOperComp.getField("pieceworkCost"));
         BigDecimal numberOfOperations = getBigDecimal(calcOperComp.getField("numberOfOperations"));
-        Entity techOperComp = calcOperComp.getBelongsToField("technologyOperationComponent");
-
-        // TODO mici, proxy entity thing. I think we should tweak hashCode too.
-        Long techOperCompId = techOperComp.getId();
-        techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperCompId);
 
         BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, numberService.getMathContext());
         BigDecimal operationCost = operationRuns.multiply(pieceworkCostPerOperation, numberService.getMathContext());
@@ -409,14 +403,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
     private Map<Entity, Integer> getWorkstationsMapsForOperationsComponent(final Entity costCalculation,
             final Entity productionLine) {
-        Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         Entity order = costCalculation.getBelongsToField(L_ORDER);
         if (order == null) {
-            workstations = getWorkstationsFromTechnology(costCalculation.getBelongsToField("technology"), productionLine);
+            return getWorkstationsFromTechnology(costCalculation.getBelongsToField("technology"), productionLine);
         } else {
-            workstations = getWorkstationsFromOrder(order, productionLine);
+            return getWorkstationsFromOrder(order, productionLine);
         }
-        return workstations;
     }
 
     private Map<Entity, Integer> getWorkstationsFromTechnology(final Entity technology, final Entity productionLine) {
