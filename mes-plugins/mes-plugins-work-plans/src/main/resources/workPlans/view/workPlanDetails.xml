@@ -50,6 +50,7 @@
 					var generate = #{window}.getRibbonItem("generate.generate");
 					var saveBack = #{window}.getRibbonItem("actions.saveBack");
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
+					var cancel = #{window}.getRibbonItem("actions.cancel");
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
@@ -106,6 +107,7 @@
 							generate.enable();
 							saveBack.enable();
 							saveNew.enable();
+							cancel.enable();
 							printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 							saveRibbonItem.enable();
 						} else {
@@ -113,12 +115,14 @@
 								generate.disable("#{translate(orders.ribbon.message.recordAlreadyGenerated)}");
 								saveBack.disable();
 								saveNew.disable();
+								cancel.disable();
 								printWorkPlan.enable();
 								saveRibbonItem.disable();
 							} else {	
 								generate.disable("#{translate(orders.ribbon.message.noOrders)}");
 								saveBack.disable();
 								saveNew.disable();
+								cancel.disable();
 								printWorkPlan.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 								saveRibbonItem.enable();
 							}

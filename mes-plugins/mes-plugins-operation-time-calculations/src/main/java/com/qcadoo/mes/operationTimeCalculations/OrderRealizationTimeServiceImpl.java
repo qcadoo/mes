@@ -204,8 +204,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 int childTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
                         maxForWorkstation, productComponentQuantities);
 
-                if ("02specified".equals(child.getStringField("countRealized"))) {
-                    BigDecimal quantity = child.getDecimalField("countMachine");
+                if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
+                    BigDecimal quantity = child.getDecimalField("nextOperationAfterProducedQuantity");
 
                     int childTimeTotal = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine, true);
                     int childTimeForQuantity = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine,

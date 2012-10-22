@@ -24,9 +24,9 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TIME_NEXT_OPERATION;
 
@@ -81,19 +81,22 @@ public class TechnologyOperationComponentDetailsHooks {
         }
     }
 
-    public void updateCountMachineFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
+    public void updateNextOperationAfterProducedQuantityFieldStateonWindowLoad(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        if ("02specified".equals(countRealized.getFieldValue())) {
-            countMachine.setVisible(true);
-            countMachine.setEnabled(true);
-            countMachineUNIT.setVisible(true);
-            countMachineUNIT.setEnabled(true);
+        if ("02specified".equals(nextOperationAfterProducedType.getFieldValue())) {
+            nextOperationAfterProducedQuantity.setVisible(true);
+            nextOperationAfterProducedQuantity.setEnabled(true);
+            nextOperationAfterProducedQuantityUNIT.setVisible(true);
+            nextOperationAfterProducedQuantityUNIT.setEnabled(true);
         } else {
-            countMachine.setVisible(false);
-            countMachineUNIT.setVisible(false);
+            nextOperationAfterProducedQuantity.setVisible(false);
+            nextOperationAfterProducedQuantityUNIT.setVisible(false);
 
         }
     }
@@ -103,21 +106,22 @@ public class TechnologyOperationComponentDetailsHooks {
         FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
         FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
                 .getComponentByReference(PRODUCTION_IN_ONE_CYCLE);
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
                 .getComponentByReference("areProductQuantitiesDivisible");
         FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
 
-        Object value = countRealized.getFieldValue();
+        Object value = nextOperationAfterProducedType.getFieldValue();
 
         tpzNorm.setEnabled(true);
         tjNorm.setEnabled(true);
         productionInOneCycle.setEnabled(true);
 
-        countRealized.setEnabled(true);
+        nextOperationAfterProducedType.setEnabled(true);
         if (!"02specified".equals(value)) {
-            countRealized.setFieldValue("01all");
+            nextOperationAfterProducedType.setFieldValue("01all");
         }
         timeNextOperation.setEnabled(true);
         if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
@@ -139,7 +143,7 @@ public class TechnologyOperationComponentDetailsHooks {
         // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
         // will not return null (i.e. all relations using below are mandatory on the model definition level)
         String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
-        for (String referenceName : Sets.newHashSet(COUNT_MACHINE_UNIT, "productionInOneCycleUNIT")) {
+        for (String referenceName : Sets.newHashSet(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT, "productionInOneCycleUNIT")) {
             component = (FieldComponent) view.getComponentByReference(referenceName);
             if (component == null) {
                 continue;

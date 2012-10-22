@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_MACHINE_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.COUNT_REALIZED;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,35 +41,39 @@ public class OperationDetailsHooksTNFO {
     @Autowired
     private UnitService unitService;
 
-    public void setCountRealizedOperationValue(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        if (!"02specified".equals(countRealized.getFieldValue())) {
-            countRealized.setFieldValue("01all");
+    public void setNextOperationAfterProducedTypeOperationValue(final ViewDefinitionState viewDefinitionState) {
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        if (!"02specified".equals(nextOperationAfterProducedType.getFieldValue())) {
+            nextOperationAfterProducedType.setFieldValue("01all");
 
         }
     }
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
 
-        FieldComponent countRealized = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_REALIZED);
-        FieldComponent countMachine = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE);
-        FieldComponent countMachineUNIT = (FieldComponent) viewDefinitionState.getComponentByReference(COUNT_MACHINE_UNIT);
+        FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
+        FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
+        FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
+                .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
                 .getComponentByReference("areProductQuantitiesDivisible");
         FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
 
-        countRealized.setRequired(true);
+        nextOperationAfterProducedType.setRequired(true);
 
-        if (countRealized.getFieldValue().equals("02specified")) {
-            countMachine.setVisible(true);
-            countMachine.setEnabled(true);
-            countMachineUNIT.setVisible(true);
-            countMachineUNIT.setEnabled(true);
+        if (nextOperationAfterProducedType.getFieldValue().equals("02specified")) {
+            nextOperationAfterProducedQuantity.setVisible(true);
+            nextOperationAfterProducedQuantity.setEnabled(true);
+            nextOperationAfterProducedQuantityUNIT.setVisible(true);
+            nextOperationAfterProducedQuantityUNIT.setEnabled(true);
         } else {
-            countMachine.setVisible(false);
-            countMachineUNIT.setVisible(false);
+            nextOperationAfterProducedQuantity.setVisible(false);
+            nextOperationAfterProducedQuantityUNIT.setVisible(false);
         }
-        countMachine.requestComponentUpdateState();
+        nextOperationAfterProducedQuantity.requestComponentUpdateState();
         if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
             isTjDivisible.setEnabled(true);
         }

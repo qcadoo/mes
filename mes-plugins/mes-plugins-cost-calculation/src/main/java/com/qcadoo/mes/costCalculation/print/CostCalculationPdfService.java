@@ -666,8 +666,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         }
 
-        List<Entity> calculationOperationComponents = entityTreeUtilsService.getSortedEntities(costCalculation
-                .getTreeField(CALCULATION_OPERATION_COMPONENTS));
+        List<Entity> calculationOperationComponents = costCalculation.getHasManyField(CALCULATION_OPERATION_COMPONENTS);
 
         PdfPTable operationsTable = pdfHelper.createTableWithHeader(operationsTableHeader.size(), operationsTableHeader, false);
 

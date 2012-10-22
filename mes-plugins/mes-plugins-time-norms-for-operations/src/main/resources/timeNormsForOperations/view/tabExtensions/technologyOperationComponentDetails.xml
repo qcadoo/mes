@@ -100,25 +100,25 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="3" row="3">
-				<component type="select" name="countRealized" field="#{form}.countRealized"
-					reference="countRealized" hasDescription="true" >
+				<component type="select" name="nextOperationAfterProducedType" field="#{form}.nextOperationAfterProducedType"
+					reference="nextOperationAfterProducedType" hasDescription="true" >
 					<option type="required" value="true" />
 					<option type="labelWidth" value="40" />
 					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO" method="changeCountRealizedNorm" />
+						class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO" method="changeNextOperationAfterProducedTypeNorm" />
 				</component>
 			</layoutElement>
 			<layoutElement column="3" row="4">
 				<component type="gridLayout" name="gridsLayoutUnit2" columns="3"
 					rows="1" hasBorders="false">
 					<layoutElement column="1" row="1" width="2">
-						<component type="input" name="countMachine" field="#{form}.countMachine"
-							reference="countMachine" hasDescription="false" defaultEnabled="false" defaultVisible="false" >
+						<component type="input" name="nextOperationAfterProducedQuantity" field="#{form}.nextOperationAfterProducedQuantity"
+							reference="nextOperationAfterProducedQuantity" hasDescription="false" defaultEnabled="false" defaultVisible="false" >
 							<option type="labelWidth" value="40" />
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="1">
-						<component type="select" name="countMachineUNIT" field="#{form}.countMachineUNIT" reference="countMachineUNIT" defaultVisible="false" hasLabel="false">
+						<component type="select" name="nextOperationAfterProducedQuantityUNIT" field="#{form}.nextOperationAfterProducedQuantityUNIT" reference="nextOperationAfterProducedQuantityUNIT" defaultVisible="false" hasLabel="false">
 							<option type="required" value="true" />
 						</component>
 					</layoutElement>

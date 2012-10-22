@@ -96,14 +96,14 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp1.getStringField("entityType")).thenReturn("operation");
         when(opComp2.getStringField("entityType")).thenReturn("operation");
 
-        when(opComp1.getStringField("countRealized")).thenReturn("01all");
-        when(opComp2.getStringField("countRealized")).thenReturn("01all");
+        when(opComp1.getStringField("nextOperationAfterProducedType")).thenReturn("01all");
+        when(opComp2.getStringField("nextOperationAfterProducedType")).thenReturn("01all");
 
         when(opComp1.getField("tj")).thenReturn(new Integer(1));
         when(opComp2.getField("tj")).thenReturn(new Integer(1));
 
-        when(opComp1.getField("countMachine")).thenReturn(new BigDecimal(1));
-        when(opComp2.getField("countMachine")).thenReturn(new BigDecimal(1));
+        when(opComp1.getField("nextOperationAfterProducedQuantity")).thenReturn(new BigDecimal(1));
+        when(opComp2.getField("nextOperationAfterProducedQuantity")).thenReturn(new BigDecimal(1));
 
         when(opComp1.getField("tpz")).thenReturn(new Integer(1));
         when(opComp2.getField("tpz")).thenReturn(new Integer(1));

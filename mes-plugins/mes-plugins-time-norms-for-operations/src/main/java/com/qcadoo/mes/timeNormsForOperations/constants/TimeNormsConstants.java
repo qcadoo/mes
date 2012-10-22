@@ -29,11 +29,13 @@ import com.google.common.collect.Sets;
 
 public interface TimeNormsConstants {
 
-    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "countMachineUNIT", "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "nextOperationAfterProducedType",
+            "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT", "timeNextOperation",
+            "machineUtilization", "laborUtilization", "productionInOneCycleUNIT", "areProductQuantitiesDivisible",
+            "isTjDivisible");
 
-    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "countRealized", "countMachine",
-            "countMachineUNIT", "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "nextOperationAfterProducedType",
+            "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT", "timeNextOperation",
+            "machineUtilization", "laborUtilization", "productionInOneCycleUNIT", "areProductQuantitiesDivisible",
+            "isTjDivisible");
 }

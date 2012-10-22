@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+
 @Controller
+@RequestMapping(value = DeliveriesConstants.PLUGIN_IDENTIFIER, method = RequestMethod.GET)
 public class DeliveriesController {
 
-    @RequestMapping(value = "deliveries/deliveryReport.pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "deliveryReport.pdf")
     public final ModelAndView deliveryReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
@@ -19,7 +22,7 @@ public class DeliveriesController {
         return mav;
     }
 
-    @RequestMapping(value = "deliveries/orderReport.pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "orderReport.pdf")
     public final ModelAndView orderReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 

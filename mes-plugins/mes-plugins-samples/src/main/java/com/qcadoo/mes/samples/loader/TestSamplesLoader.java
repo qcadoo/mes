@@ -371,10 +371,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             operation.setField(L_TPZ, values.get(L_TPZ));
             operation.setField("tj", values.get("tj"));
             operation.setField("productionInOneCycle", values.get("productioninonecycle"));
-            operation.setField("countRealized", values.get("countrealized"));
+            operation.setField("nextOperationAfterProducedType", values.get("nextoperationafterproducedtype"));
             operation.setField("machineUtilization", values.get("machineutilization"));
             operation.setField("laborUtilization", values.get("laborutilization"));
-            operation.setField("countMachine", values.get("countmachine"));
+            operation.setField("nextOperationAfterProducedQuantity", values.get("nextoperationafterproducedquantity"));
             operation.setField("timeNextOperation", values.get("timenextoperation"));
             operation.setField("areProductQuantitiesDivisible", false);
             operation.setField("isTjDivisible", false);
@@ -881,8 +881,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField("laborUtilization", operation.getField("laborUtilization"));
             component.setField("productionInOneCycle", operation.getField("productionInOneCycle"));
             component.setField("productionInOneCycleUNIT", values.get("productioninonecycleunit"));
-            component.setField("countRealized", operation.getField("countRealized"));
-            component.setField("countMachine", operation.getField("countMachine"));
+            component.setField("nextOperationAfterProducedType", operation.getField("nextOperationAfterProducedType"));
+            component.setField("nextOperationAfterProducedQuantity", operation.getField("nextOperationAfterProducedQuantity"));
             component.setField("areProductQuantitiesDivisible", operation.getField("areProductQuantitiesDivisible"));
             component.setField("isTjDivisible", operation.getField("isTjDivisible"));
             component.setField("timeNextOperation", operation.getField("timeNextOperation"));
