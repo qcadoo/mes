@@ -28,8 +28,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="locationFrom" model="location" plugin="materialFlow" />
-		<belongsTo name="locationTo" model="location" plugin="materialFlow" />
+		<belongsTo name="locationFrom" model="location" plugin="materialFlow" required="true" />
+		<belongsTo name="locationTo" model="location" plugin="materialFlow" required="true" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
 	</fields>
