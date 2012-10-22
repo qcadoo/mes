@@ -111,9 +111,6 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp1.getField("timeNextOperation")).thenReturn(new Integer(1));
         when(opComp2.getField("timeNextOperation")).thenReturn(new Integer(1));
 
-        when(opComp1.getField("productionInOneCycle")).thenReturn(new BigDecimal(1));
-        when(opComp2.getField("productionInOneCycle")).thenReturn(new BigDecimal(1));
-
         when(opComp2.getBelongsToField("parent")).thenReturn(opComp1);
 
         EntityList opComp1Children = mockEntityListIterator(asList((Entity) opComp2));

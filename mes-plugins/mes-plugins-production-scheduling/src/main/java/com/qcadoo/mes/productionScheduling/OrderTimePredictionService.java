@@ -70,8 +70,6 @@ public class OrderTimePredictionService {
 
     private static final String QUANTITY_COMPONENT = "quantity";
 
-    private static final String REALIZATION_TIME_COMPONENT = "realizationTime";
-
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
 
@@ -96,7 +94,6 @@ public class OrderTimePredictionService {
         if (order == null) {
             return;
         }
-
         DataDefinition dataDefinition = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
 
@@ -104,7 +101,6 @@ public class OrderTimePredictionService {
                 .list().getEntities();
 
         Date orderStartDate = null;
-
         if (order.getField(EFFECTIVE_DATE_FROM) == null) {
             if (order.getField(OrderFields.DATE_FROM) == null) {
                 return;
@@ -114,7 +110,6 @@ public class OrderTimePredictionService {
         } else {
             orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM);
         }
-
         for (Entity operation : operations) {
             Integer offset = (Integer) operation.getField("operationOffSet");
             Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
@@ -125,27 +120,20 @@ public class OrderTimePredictionService {
             if (offset == null || duration == null || duration.equals(0)) {
                 continue;
             }
-
             if (offset == 0) {
                 offset = 1;
             }
-
             Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
-
             if (dateFrom == null) {
                 continue;
             }
-
             Date dateTo = shiftsService.findDateToForOrder(orderStartDate, offset + duration);
-
             if (dateTo == null) {
                 continue;
             }
-
             operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
             operation.setField(EFFECTIVE_DATE_TO, dateTo);
         }
-
         for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
@@ -188,12 +176,14 @@ public class OrderTimePredictionService {
         Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
-        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
-                includeTpz, includeAdditionalTime, productionLine);
+        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
+                includeAdditionalTime, productionLine, true);
 
         laborWorkTime.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTime.setFieldValue(workTime.getMachineWorkTime());
-
+        laborWorkTime.requestComponentUpdateState();
+        machineWorkTime.requestComponentUpdateState();
+        order = getActualOrderWithChanges(order);
         int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, true, true, productionLine);
 
@@ -225,6 +215,10 @@ public class OrderTimePredictionService {
             }
             order.getDataDefinition().save(order);
         }
+    }
+
+    private Entity getActualOrderWithChanges(final Entity entity) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(entity.getId());
     }
 
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
@@ -273,22 +267,18 @@ public class OrderTimePredictionService {
             technologyLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
-
         if (!StringUtils.hasText((String) dateFrom.getFieldValue())) {
             dateFrom.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
-
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
             plannedQuantity.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
-
         if (productionLineLookup.getFieldValue() == null) {
             productionLineLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
-
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
@@ -319,8 +309,9 @@ public class OrderTimePredictionService {
         Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
+        boolean saved = true;
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
-                includeTpz, includeAdditionalTime, productionLine);
+                includeTpz, includeAdditionalTime, productionLine, saved);
 
         laborWorkTime.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTime.setFieldValue(workTime.getMachineWorkTime());
@@ -338,19 +329,21 @@ public class OrderTimePredictionService {
             if (stopTime != null) {
                 startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
             }
-
             if (startTime == null) {
                 dateFrom.setFieldValue(null);
             } else {
                 dateFrom.setFieldValue(orderRealizationTimeService.setDateToField(startTime));
             }
-
             if (stopTime == null) {
                 dateTo.setFieldValue(null);
             } else {
                 dateTo.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
             }
         }
+        laborWorkTime.requestComponentUpdateState();
+        machineWorkTime.requestComponentUpdateState();
+        dateFrom.requestComponentUpdateState();
+        dateTo.requestComponentUpdateState();
     }
 
     public void fillUnitField(final ViewDefinitionState viewDefinitionState) {

@@ -704,7 +704,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
             Map<Entity, OperationWorkTime> operationLaborAndMachineWorkTime = operationWorkTimeService
                     .estimateOperationsWorkTimeForOrder(order, operationRuns, productionBalance.getBooleanField(INCLUDE_TPZ),
-                            productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME), order.getBelongsToField(PRODUCTION_LINE));
+                            productionBalance.getBooleanField(INCLUDE_ADDITIONAL_TIME), order.getBelongsToField(PRODUCTION_LINE),
+                            false);
 
             if (isTypeOfProductionRecordingForEach(order)) {
                 countTimeOperation(productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT), plannedTimes,

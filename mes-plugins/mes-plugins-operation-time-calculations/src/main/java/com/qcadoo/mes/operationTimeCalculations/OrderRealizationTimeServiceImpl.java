@@ -205,14 +205,12 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         maxForWorkstation, productComponentQuantities);
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
-                    BigDecimal quantity = child.getDecimalField("nextOperationAfterProducedQuantity");
 
                     int childTimeTotal = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine, true);
-                    int childTimeForQuantity = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine,
-                            true, quantity);
+                    int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child, true,
+                            false, operationRuns, productionLine, true);
 
                     int difference = childTimeTotal - childTimeForQuantity;
-
                     childTime -= difference;
                 }
 
@@ -264,32 +262,21 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 includeAdditionalTime);
     }
 
-    private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation, final BigDecimal forQuantity) {
+    private int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
+            final boolean includeTpz, final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns,
+            final Entity productionLine, final boolean maxForWorkstation) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
-
-        Entity technologyOperationComponent = operationComponent;
-
-        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
-            technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
-                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
-        }
 
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
 
-        BigDecimal producedInOneCycle = technologyService.getProductCountForOperationComponent(operationComponent);
-        BigDecimal cycles = operationRuns.get(technologyOperationComponent);
-        BigDecimal operationProduces = cycles.multiply(producedInOneCycle, numberService.getMathContext());
+        BigDecimal nextOperationAfterProducedQuantity = operationComponent.getDecimalField("nextOperationAfterProducedQuantity");
+        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
+        BigDecimal cycles = nextOperationAfterProducedQuantity.divide(BigDecimal.valueOf(workstationsCount),
+                numberService.getMathContext());
 
-        if (forQuantity.compareTo(operationProduces) == -1) {
-            cycles = forQuantity.divide(producedInOneCycle, numberService.getMathContext());
-            if (!isTjDivisable) {
-                cycles = cycles.setScale(0, RoundingMode.CEILING);
-            }
+        if (!isTjDivisable) {
+            cycles = cycles.setScale(0, RoundingMode.CEILING);
         }
-
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
@@ -300,7 +287,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
 
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
-
         BigDecimal cyclesPerOperation = cycles;
 
         if (maxForWorkstation) {
@@ -312,7 +298,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         }
 
         int tj = getIntegerValue(operationComponent.getField("tj"));
-
         int operationTime = cyclesPerOperation.multiply(BigDecimal.valueOf(tj), numberService.getMathContext()).intValue();
 
         if (includeTpz) {

@@ -467,30 +467,52 @@ ALTER TABLE orders_order ADD COLUMN includeadditionaltime boolean;
 ALTER TABLE orders_order ADD COLUMN includetpz boolean;
 ALTER TABLE orders_order ADD COLUMN machineworktime integer;
 ALTER TABLE orders_order ADD COLUMN laborworktime integer;
-
 --end
+
 -- Table: technologies_operation
 -- changed: 21.10.2012
 Alter TABLE  technologies_operation  RENAME countmachine  TO nextoperationafterproducedquantity;
 Alter TABLE  technologies_operation  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
 Alter TABLE  technologies_operation  RENAME countrealized    TO nextoperationafterproducedtype;
 -- end
+
 -- Table: technologies_technologyoperationcomponent
 -- changed: 21.10.2012
 Alter TABLE  technologies_technologyoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
 Alter TABLE  technologies_technologyoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
 Alter TABLE  technologies_technologyoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
 -- end
+
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 21.10.2012
 Alter TABLE  technologies_technologyinstanceoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
 Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
 Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
-
 -- end
+
 -- Table: costnormsforoperation_calculationoperationcomponent
 -- changed: 21.10.2012
 Alter TABLE  costnormsforoperation_calculationoperationcomponent      RENAME countmachine  TO nextoperationafterproducedquantity;
 Alter TABLE  costnormsforoperation_calculationoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
-
 --end
+
+-- Table: technologies_technologyoperationcomponent
+-- changed: 22.10.2012
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN laborworktime integer;
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN duration integer;
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN duration SET DEFAULT 0;
+ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN machineworktime integer;
+ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
+--end 
+
+-- Table: technologies_technologyinstanceoperationcomponent
+-- changed: 22.10.2012
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN laborworktime integer;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN duration integer;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN duration SET DEFAULT 0;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN machineworktime integer;
+ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
+--end 
+
