@@ -84,10 +84,12 @@
 					var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
 					var cancelBtn = #{window}.getRibbonItem("actions.cancel");
 					var deleteBtn = #{window}.getRibbonItem("actions.delete");
+					
 					var acceptBtn = #{window}.getRibbonItem("status.accept");
 					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
 					var copyOrderedProductToDeliveredBtn = #{window}.getRibbonItem("copy.copyOrderedProductToDelivered");
+					
 					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
 					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
 					

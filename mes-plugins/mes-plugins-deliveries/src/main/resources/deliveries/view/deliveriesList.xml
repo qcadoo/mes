@@ -68,8 +68,9 @@
 		<component type="grid" name="deliveriesList" reference="grid">
 			<script>
  				<![CDATA[ 
-					var deleteBtn = #{window}.getRibbonItem("actions.delete");
 					var copyBtn = #{window}.getRibbonItem("actions.copy");
+					var deleteBtn = #{window}.getRibbonItem("actions.delete");
+					
 					var acceptBtn = #{window}.getRibbonItem("status.accept");
 					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
@@ -77,11 +78,11 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								copyBtn.disable();
+								deleteBtn.disable();
 								acceptBtn.disable();
 								declineDeliveryBtn.disable();
 								approveDeliveryBtn.disable();
-								deleteBtn.disable();
-								copyBtn.disable();
 							} else {
 								var noDifferentStates = true;
  								if(selectedEntitiesArray.length > 1)
