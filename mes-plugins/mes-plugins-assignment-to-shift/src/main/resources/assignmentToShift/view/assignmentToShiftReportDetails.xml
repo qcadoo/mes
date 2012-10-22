@@ -48,6 +48,7 @@
 						var save = #{window}.getRibbonItem("actions.save");
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var entityExists = false;
 						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generateReport");
 						var deletedRibbonItem =  #{window}.getRibbonItem("actions.delete");
@@ -73,6 +74,7 @@
 									save.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
 									saveBack.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
 									saveNew.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
+									cancel.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
 									copyRibbonItem.enable();
 									generatedRibbonItem.disable("#{translate(goodFood.goodFood.report.message.documentsWasGenerated)}");
 									deletedRibbonItem.enable();
@@ -81,6 +83,7 @@
 									save.enable();
 									saveBack.enable();
 									saveNew.enable();
+									cancel.enable();
 									copyRibbonItem.enable();
 									generatedRibbonItem.enable();
 									deletedRibbonItem.enable();
@@ -91,6 +94,7 @@
 								save.enable();
 								saveBack.enable();
 								saveNew.enable();
+								cancel.enable();
 								copyRibbonItem.enable();
 								generatedRibbonItem.disable();
 								deletedRibbonItem.disable();
