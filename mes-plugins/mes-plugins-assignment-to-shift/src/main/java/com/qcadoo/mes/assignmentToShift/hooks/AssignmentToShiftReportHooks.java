@@ -63,11 +63,11 @@ public class AssignmentToShiftReportHooks {
         assignmentToShiftReport.setField(FILE_NAME, null);
     }
     
-    public final boolean validateDates(final DataDefinition dataDefinition, final Entity assignmentToShift) {
-        Date dateFrom = (Date) assignmentToShift.getField(DATE_FROM);
-        Date dateTo = (Date) assignmentToShift.getField(DATE_TO);
+    public final boolean validateDates(final DataDefinition dataDefinition, final Entity assignmentToShiftReport) {
+        Date dateFrom = (Date) assignmentToShiftReport.getField(DATE_FROM);
+        Date dateTo = (Date) assignmentToShiftReport.getField(DATE_TO);
         if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
-        	assignmentToShift.addError(dataDefinition.getField(DATE_TO), "assignmentToShift.validate.error.badDatesOrder");
+        	assignmentToShiftReport.addError(dataDefinition.getField(DATE_TO), "assignmentToShift.assignmentToShift.report.badDatesOrder");
             return false;
         }
         else return true;

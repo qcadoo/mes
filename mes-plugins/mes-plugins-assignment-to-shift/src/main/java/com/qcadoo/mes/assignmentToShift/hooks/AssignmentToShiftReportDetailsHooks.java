@@ -29,7 +29,6 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReport
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NAME;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NUMBER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.SHIFT;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,6 +94,5 @@ public final class AssignmentToShiftReportDetailsHooks {
     private Entity getAssignmentToShiftReportFromDB(final Long assignmentToShiftReportId) {
         return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
                 AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT).get(assignmentToShiftReportId);
-    }
-
+    }       
 }
