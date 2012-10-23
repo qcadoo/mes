@@ -241,14 +241,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
     }
 
-    // FIXME MAKU we still need it?
-    private void changeAdminPassword() {
-        DataDefinition userDD = dataDefinitionService.get("qcadooSecurity", "user");
-        Entity user = userDD.find().add(SearchRestrictions.eq("userName", "admin")).setMaxResults(1).uniqueResult();
-        user.setField("password", "charon321Demo");
-        userDD.save(user);
-    }
-
     @Override
     protected void readData(final Map<String, String> values, final String type, final Element node) {
         super.readData(values, type, node);
