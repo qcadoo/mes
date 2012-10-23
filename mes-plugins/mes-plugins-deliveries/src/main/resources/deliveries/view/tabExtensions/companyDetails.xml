@@ -51,14 +51,14 @@
 						field="#{form}.products" defaultVisible="false" persistent="false"
 						hasLabel="false">
 						
-						<option type="column" name="name" fields="name" link="true"
-							width="100" />
+						<option type="column" name="name" fields="name" link="true" />
+						<option type="column" name="entityType" fields="entityType" />	
 
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+						<option type="searchable" value="number,name,entityType" />
+						<option type="orderable" value="number,name,entityType" />
 
 						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name + '&lt;/b&gt; - ' + #entityType" />
 						<option type="fieldCode" value="number" />
 
 						<option type="multiselect" value="true" />

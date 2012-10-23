@@ -246,7 +246,7 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp1, neededNumberOfCycles1, true, true,
-                workstations1);
+                workstations1, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(3960));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(360));
@@ -256,7 +256,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, true, true,
-                workstations2);
+                workstations2, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1800));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(4800));
@@ -266,7 +266,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp3, neededNumberOfCycles3, true, true,
-                workstations3);
+                workstations3, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1596));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(1396.5).intValue());
@@ -277,7 +277,7 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp1, neededNumberOfCycles1, false, true,
-                workstations1);
+                workstations1, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(2640));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(240));
@@ -287,7 +287,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, false, true,
-                workstations2);
+                workstations2, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(720));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(1920));
@@ -297,7 +297,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp3, neededNumberOfCycles3, false, true,
-                workstations3);
+                workstations3, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(636));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(556.5).intValue());
@@ -308,7 +308,7 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp1, neededNumberOfCycles1, true, false,
-                workstations1);
+                workstations1, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(2640));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(240));
@@ -318,7 +318,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutAddTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, true, false,
-                workstations2);
+                workstations2, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1440));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(3840));
@@ -328,7 +328,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutAddTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp3, neededNumberOfCycles3, true, false,
-                workstations3);
+                workstations3, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1236));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(1081).intValue());
@@ -339,7 +339,7 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp1, neededNumberOfCycles1, false, false,
-                workstations1);
+                workstations1, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1320));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(120));
@@ -349,7 +349,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzAndAddTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp2, neededNumberOfCycles2, false, false,
-                workstations2);
+                workstations2, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(360));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(960));
@@ -359,7 +359,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzAndAddTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(operComp3, neededNumberOfCycles3, false, false,
-                workstations3);
+                workstations3, false);
         // then
         assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(276));
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(241.5).intValue());
@@ -371,7 +371,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, true, true, workstations);
+                operationComponents, operationsRuns, true, true, workstations, false);
         // then
         assertEquals(3, operationDurations.values().size());
         assertEquals(new Integer(6600), operationDurations.get(operComp1).getLaborWorkTime());
@@ -390,7 +390,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, true, false, workstations);
+                operationComponents, operationsRuns, true, false, workstations, false);
         // then
         assertEquals(3, operationDurations.values().size());
         assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
@@ -409,7 +409,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, false, true, workstations);
+                operationComponents, operationsRuns, false, true, workstations, false);
         // then
         assertEquals(3, operationDurations.values().size());
         assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
@@ -429,7 +429,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, true, true,
-                workstations);
+                workstations, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(10470));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(7050));
@@ -442,7 +442,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, true, false,
-                workstations);
+                workstations, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(8430));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(5655));
@@ -455,7 +455,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationsRuns, false, true,
-                workstations);
+                workstations, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(7110));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(3210));
