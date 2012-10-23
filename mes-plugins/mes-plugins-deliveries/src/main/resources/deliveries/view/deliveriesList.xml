@@ -155,10 +155,10 @@
 										approveDeliveryBtn.disable();
 									}
 								} else {
-									deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									acceptBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									declineDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 								}
 								copyBtn.enable();
 							}
