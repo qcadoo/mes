@@ -26,11 +26,14 @@ package com.qcadoo.mes.orders.states;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,20 @@ public class OrderStateValidationService {
 
         validateTechnologyState(stateChangeContext);
         validateProductionLine(stateChangeContext);
+        validateDates(stateChangeContext);
+
+    }
+
+    public final boolean validateDates(final StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        Date startDate = (Date) stateChangeEntity.getField(START_DATE);
+        Date deadline = (Date) stateChangeEntity.getField(DEADLINE);
+        if (startDate != null && deadline != null && deadline.before(startDate)) {
+            stateChangeContext.addFieldValidationError(DEADLINE, "orders.validate.global.error.deadline");
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
