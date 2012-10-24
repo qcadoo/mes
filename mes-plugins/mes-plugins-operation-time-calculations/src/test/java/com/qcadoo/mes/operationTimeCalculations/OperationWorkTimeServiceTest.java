@@ -94,9 +94,9 @@ public class OperationWorkTimeServiceTest {
         when(operComp2.getField("tpz")).thenReturn(new Integer(900));
         when(operComp3.getField("tpz")).thenReturn(new Integer(1200));
 
-        when(operComp1.getField("additionalTime")).thenReturn(new Integer(600));
-        when(operComp2.getField("additionalTime")).thenReturn(new Integer(300));
-        when(operComp3.getField("additionalTime")).thenReturn(new Integer(450));
+        when(operComp1.getField("timeNextOperation")).thenReturn(new Integer(600));
+        when(operComp2.getField("timeNextOperation")).thenReturn(new Integer(300));
+        when(operComp3.getField("timeNextOperation")).thenReturn(new Integer(450));
 
         lu1 = new BigDecimal(2.2);
         lu2 = new BigDecimal(0.6);
