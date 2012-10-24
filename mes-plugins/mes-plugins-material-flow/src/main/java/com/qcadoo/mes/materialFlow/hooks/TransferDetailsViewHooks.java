@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlow.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
@@ -38,26 +37,28 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Component
 public class TransferDetailsViewHooks {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void checkIfTransferHasTransformations(final ViewDefinitionState view) {
-        String number = (String) view.getComponentByReference(NUMBER).getFieldValue();
+        FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (number == null) {
+        Long transferId = transferForm.getEntityId();
+        if (transferId == null) {
             return;
         }
 
         Entity transfer = dataDefinitionService
-                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER).find()
-                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+                .get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER).get(transferId);
 
         if (transfer == null) {
             return;
@@ -78,4 +79,5 @@ public class TransferDetailsViewHooks {
             staff.setEnabled(false);
         }
     }
+
 }
