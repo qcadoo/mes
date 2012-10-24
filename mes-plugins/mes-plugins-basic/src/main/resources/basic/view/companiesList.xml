@@ -42,7 +42,7 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								disableButtons(buttons);
+								disableButtons(buttonsStandard);
 							} else {
 								var owner = false;
 								

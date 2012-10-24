@@ -132,7 +132,6 @@ import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,20 +157,13 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     @Autowired
     private NumberService numberService;
 
-    @Value("${setAsDemoEnviroment}")
-    private boolean setAsDemoEnviroment;
-
     private Map<String, Entity> operationComponents = new LinkedHashMap<String, Entity>();
 
     @Override
     protected void loadData(final String locale) {
         final String dataset = "test";
 
-        if (setAsDemoEnviroment) {
-            changeAdminPassword();
-        } else {
-            readDataFromXML(dataset, "users", locale);
-        }
+        readDataFromXML(dataset, "users", locale);
 
         readDataFromXML(dataset, "dictionaries", locale);
         readDataFromXML(dataset, "defaultParameters", locale);
@@ -247,14 +239,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, L_WAGE_GROUP, locale);
         }
-    }
-
-    // FIXME MAKU we still need it?
-    private void changeAdminPassword() {
-        DataDefinition userDD = dataDefinitionService.get("qcadooSecurity", "user");
-        Entity user = userDD.find().add(SearchRestrictions.eq("userName", "admin")).setMaxResults(1).uniqueResult();
-        user.setField("password", "charon321Demo");
-        userDD.save(user);
     }
 
     @Override

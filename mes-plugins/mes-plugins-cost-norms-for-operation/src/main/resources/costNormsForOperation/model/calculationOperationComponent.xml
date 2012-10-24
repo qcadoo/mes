@@ -55,6 +55,10 @@
 		<datetime name="effectiveDateFrom" />
 		<datetime name="effectiveDateTo" />
 		<integer name="duration" default="0" />
+		<integer name="machineWorkTime" required="true"
+			default="0" />
+		<integer name="laborWorkTime" required="true"
+			default="0" />
 		<decimal name="pieces" default="0" />
 		<decimal name="operationCost" default="0">
 			<validatesRange from="0" exclusively="false" />
