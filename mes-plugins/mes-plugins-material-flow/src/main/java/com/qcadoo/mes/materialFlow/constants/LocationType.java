@@ -25,7 +25,7 @@ package com.qcadoo.mes.materialFlow.constants;
 
 public enum LocationType {
 
-    SIMPLE_CONTROL_POINT("01simpleControlPoint");
+    CONTROL_POINT("01controlPoint");
 
     private final String type;
 
@@ -38,8 +38,8 @@ public enum LocationType {
     }
 
     public static LocationType parseString(final String type) {
-        if ("01simpleControlPoint".equalsIgnoreCase(type)) {
-            return SIMPLE_CONTROL_POINT;
+        if ("01controlPoint".equalsIgnoreCase(type)) {
+            return CONTROL_POINT;
         } else {
             throw new IllegalArgumentException("Couldn't parse LocationType from string '" + type + "'");
         }
