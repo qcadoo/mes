@@ -42,8 +42,6 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-<!-- 		<hasMany name="products" joinField="product" model="product" -->
-<!-- 			plugin="basic" /> -->
 		<string name="externalNumber" />
 		<string name="description">
 			<validatesLength max="2048" />
