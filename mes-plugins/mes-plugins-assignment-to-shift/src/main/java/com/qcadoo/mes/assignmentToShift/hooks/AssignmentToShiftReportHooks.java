@@ -69,7 +69,8 @@ public class AssignmentToShiftReportHooks {
         if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
         	assignmentToShiftReport.addError(dataDefinition.getField(DATE_TO), "assignmentToShift.assignmentToShift.report.badDatesOrder");
             return false;
-        }
-        else return true;
+        } else {
+			return true;
+		}
     }    
 }

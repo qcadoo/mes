@@ -234,7 +234,7 @@ ALTER TABLE avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN finis
       
       
 -- Table: deliveries_delivery
--- changed: 27.09.2012
+-- changed: 24.10.2012
 
 CREATE TABLE deliveries_delivery
 (
@@ -251,9 +251,7 @@ CREATE TABLE deliveries_delivery
   updateuser character varying(255),
   delivery_id bigint,
   CONSTRAINT deliveries_delivery_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
-      REFERENCES deliveries_delivery (id) DEFERRABLE,
-  CONSTRAINT basic_company_fkey FOREIGN KEY (supplier_id)
+  CONSTRAINT delivery_company_fkey FOREIGN KEY (supplier_id)
       REFERENCES basic_company (id) DEFERRABLE
 );
 
@@ -261,7 +259,7 @@ CREATE TABLE deliveries_delivery
 
 
 -- Table: deliveries_deliverystatechange
--- changed: 27.09.2012
+-- changed: 24.10.2012
 
 CREATE TABLE deliveries_deliverystatechange
 (
@@ -275,49 +273,10 @@ CREATE TABLE deliveries_deliverystatechange
   delivery_id bigint,
   shift_id bigint,
   CONSTRAINT deliveries_deliverystatechange_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
+  CONSTRAINT deliverystatechange_delivery_fkey FOREIGN KEY (delivery_id)
       REFERENCES deliveries_delivery (id) DEFERRABLE,
-  CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id)
+  CONSTRAINT deliverystatechange_shift_fkey FOREIGN KEY (shift_id)
       REFERENCES basic_shift (id) DEFERRABLE
-);
-
--- end
-
-
--- Table: deliveries_orderedproduct
--- changed: 27.09.2012
-
-CREATE TABLE deliveries_orderedproduct
-(
-  id bigint NOT NULL,
-  delivery_id bigint,
-  product_id bigint,
-  orderedquantity numeric(12,5),
-  CONSTRAINT deliveries_orderedproduct_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
-      REFERENCES deliveries_delivery (id) DEFERRABLE,
-  CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
-);
-
--- end
-
-
--- Table: deliveries_deliveredproduct
--- changed: 27.09.2012
-
-CREATE TABLE deliveries_deliveredproduct
-(
-  id bigint NOT NULL,
-  delivery_id bigint,
-  product_id bigint,
-  deliveredquantity numeric(12,5),
-  damagedquantity numeric(12,5),
-  CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveries_delivery_fkey FOREIGN KEY (delivery_id)
-      REFERENCES deliveries_delivery (id) DEFERRABLE,
-  CONSTRAINT basic_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
 );
 
 -- end
@@ -328,8 +287,56 @@ CREATE TABLE deliveries_deliveredproduct
 
 ALTER TABLE states_message ADD COLUMN deliverystatechange_id bigint;
 
-ALTER TABLE states_message ADD CONSTRAINT deliveries_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) 
+ALTER TABLE states_message 
+	ADD CONSTRAINT message_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) 
       REFERENCES deliveries_deliverystatechange (id) DEFERRABLE;
+
+-- end
+
+
+-- Table: deliveries_orderedproduct
+-- changed: 24.10.2012
+
+CREATE TABLE deliveries_orderedproduct
+(
+  id bigint NOT NULL,
+  delivery_id bigint,
+  product_id bigint,
+  orderedquantity numeric(12,5),
+  operation_id bigint,
+  CONSTRAINT deliveries_orderedproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT orderedproduct_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT orderedproduct_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT orderedproduct_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: deliveries_deliveredproduct
+-- changed: 24.10.2012
+
+CREATE TABLE deliveries_deliveredproduct
+(
+  id bigint NOT NULL,
+  delivery_id bigint,
+  product_id bigint,
+  deliveredquantity numeric(12,5),
+  damagedquantity numeric(12,5),
+  operation_id bigint,
+  offer_id bigint,
+  CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveredproduct_delivery_fkey FOREIGN KEY (delivery_id)
+      REFERENCES deliveries_delivery (id) DEFERRABLE,
+  CONSTRAINT deliveredproduct_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT deliveredproduct_operation_fkey FOREIGN KEY (operation_id)
+      REFERENCES technologies_operation (id) DEFERRABLE,
+  
+);
 
 -- end
 
@@ -360,40 +367,19 @@ ALTER TABLE basic_company ADD COLUMN buffer integer;
 
 
 -- Table: qcadoocustomtranslation_customtranslation
--- changed: 02.10.2012
+-- changed: 24.10.2012
 
 CREATE TABLE qcadoocustomtranslation_customtranslation
 (
   id bigint NOT NULL,
   pluginidentifier character varying(255),
-  key character varying(255),
-  customtranslation character varying(255),
+  key character varying(1024),
+  propertiestranslation character varying(1024),
+  customtranslation character varying(1024),
   active boolean DEFAULT false,
   locale character varying(255),
-  CONSTRAINT qcadoocustomtranslation_customtranslation_pkey PRIMARY KEY (id )
+  CONSTRAINT qcadoocustomtranslation_customtranslation_pkey PRIMARY KEY (id)
 );
-
--- end
-
-
--- Table: deliveries_orderedproduct
--- changed: 05.10.2012
-
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN operation_id bigint;
-ALTER TABLE deliveries_deliveredproduct ADD CONSTRAINT technologies_operation_fkey
-	FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id)  DEFERRABLE;
-
--- end
-
-
--- Table: deliveries_orderedproduct
--- changed: 05.10.2012
-
-ALTER TABLE deliveries_orderedproduct ADD COLUMN operation_id bigint;
-ALTER TABLE deliveries_orderedproduct ADD CONSTRAINT technologies_operation_fkey
-	FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id)  DEFERRABLE;
 
 -- end
 
@@ -461,58 +447,73 @@ ALTER TABLE technologies_operationgroup
 
 -- end
 
+
 -- Table: orders_order
 -- changed: 19.10.2012
+
 ALTER TABLE orders_order ADD COLUMN includeadditionaltime boolean;
 ALTER TABLE orders_order ADD COLUMN includetpz boolean;
 ALTER TABLE orders_order ADD COLUMN machineworktime integer;
 ALTER TABLE orders_order ADD COLUMN laborworktime integer;
---end
+
+-- end
+
 
 -- Table: technologies_operation
 -- changed: 21.10.2012
-Alter TABLE  technologies_operation  RENAME countmachine  TO nextoperationafterproducedquantity;
-Alter TABLE  technologies_operation  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
-Alter TABLE  technologies_operation  RENAME countrealized    TO nextoperationafterproducedtype;
+ALTER TABLE  technologies_operation RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE  technologies_operation RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE  technologies_operation RENAME countrealized TO nextoperationafterproducedtype;
 -- end
 
 -- Table: technologies_technologyoperationcomponent
 -- changed: 21.10.2012
-Alter TABLE  technologies_technologyoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
-Alter TABLE  technologies_technologyoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
-Alter TABLE  technologies_technologyoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
+ALTER TABLE  technologies_technologyoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE  technologies_technologyoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE  technologies_technologyoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
 -- end
+
 
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 21.10.2012
-Alter TABLE  technologies_technologyinstanceoperationcomponent    RENAME countmachine  TO nextoperationafterproducedquantity;
-Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countmachineunit  TO nextoperationafterproducedquantityunit;
-Alter TABLE  technologies_technologyinstanceoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
+
+ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
+
 -- end
+
 
 -- Table: costnormsforoperation_calculationoperationcomponent
 -- changed: 21.10.2012
-Alter TABLE  costnormsforoperation_calculationoperationcomponent      RENAME countmachine  TO nextoperationafterproducedquantity;
-Alter TABLE  costnormsforoperation_calculationoperationcomponent  RENAME countrealized    TO nextoperationafterproducedtype;
---end
+
+ALTER TABLE  costnormsforoperation_calculationoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE  costnormsforoperation_calculationoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
+
+-- end
+
 
 -- Table: technologies_technologyoperationcomponent
 -- changed: 22.10.2012
+
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN laborworktime integer;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN duration integer;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN duration SET DEFAULT 0;
 ALTER TABLE technologies_technologyoperationcomponent ADD COLUMN machineworktime integer;
 ALTER TABLE technologies_technologyoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
---end 
+
+-- end 
+
 
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 22.10.2012
+
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN laborworktime integer;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN duration integer;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN duration SET DEFAULT 0;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN machineworktime integer;
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
---end 
 
+-- end
