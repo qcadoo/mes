@@ -58,55 +58,61 @@
 			view="deliveriesList" />
 		<menu:menu-item name="supplyItems" category="requirements"
 			view="supplyItems" />
-			
+
 		<model:model-field model="company" plugin="basic">
-				<model:hasMany name="products" model="product" plugin="basic"
-				joinField="companyProduct" cascade="delete" />
+			<model:hasMany name="products" model="product" plugin="basic"
+				joinField="companyProduct" cascade="nullify" />
 		</model:model-field>
-				
+
 		<model:model-field model="product" plugin="basic">
-				<model:belongsTo name="companyProduct" model="company" plugin="basic"/>
-		</model:model-field>		
-		
-		<model:model-field model="company" plugin="basic">
-				<model:hasMany name="productsFamily" model="product" plugin="basic"
-				joinField="companyProductFamily" cascade="delete" />
+			<model:belongsTo name="companyProduct" model="company"
+				plugin="basic" />
 		</model:model-field>
-				
+
+		<model:model-field model="company" plugin="basic">
+			<model:hasMany name="productsFamily" model="product"
+				plugin="basic" joinField="companyProductFamily" cascade="nullify" />
+		</model:model-field>
+
 		<model:model-field model="product" plugin="basic">
-				<model:belongsTo name="companyProductFamily" model="company" plugin="basic"/>
+			<model:belongsTo name="companyProductFamily" model="company"
+				plugin="basic" />
 		</model:model-field>
-		
+
 		<model:model-field model="company" plugin="basic">
-				<model:integer name="buffer"/>
+			<model:integer name="buffer" />
 		</model:model-field>
-		
+
 		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB" method="checkIfProductIsNotFamily"/>
+			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB"
+				method="checkIfProductIsNotFamily" />
 		</model:model-hook>
-		
+
 		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB" method="checkIfProductIsFamily"/>
+			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB"
+				method="checkIfProductIsFamily" />
 		</model:model-hook>
-		
+
 		<view:view-listener plugin="basic" view="companyDetails"
 			component="form" event="redirectToFilteredDeliveriesList"
 			class="com.qcadoo.mes.deliveries.listeners.DeliveriesListeners"
 			method="redirectToFilteredDeliveriesList" />
-		
-		<view:view-hook view="companyDetails" type="beforeRender" plugin="basic" class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" method="updateRibbonState"/>
+
+		<view:view-hook view="companyDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+			method="updateRibbonState" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
-		
+
 		<view:view resource="view/deliveriesList.xml" />
 		<view:view resource="view/deliveryDetails.xml" />
 		<view:view resource="view/deliveredProductDetails.xml" />
 		<view:view resource="view/orderedProductDetails.xml" />
 		<view:view resource="view/supplyItems.xml" />
-		
+
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />
-		
+
 		<custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService" />
 	</modules>
 

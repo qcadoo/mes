@@ -35,46 +35,58 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model-field model="operation" plugin="technologies">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		<model:model-field model="technologyOperationComponent" plugin="technologies">
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		<model:model-field model="technologyInstanceOperationComponent" plugin="technologies">
+		<model:model-field model="technologyInstanceOperationComponent"
+			plugin="technologies">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		
+
 		<model:model-field model="company" plugin="basic">
-				<model:hasMany name="operationsGroup" model="operationGroup" plugin="technologies"
-					joinField="companyOperationGroup" cascade="delete" />
-		</model:model-field>	
+			<model:hasMany name="operationsGroup" model="operationGroup"
+				plugin="technologies" joinField="companyOperationGroup" cascade="nullify" />
+		</model:model-field>
 
 		<model:model-field model="operationGroup" plugin="technologies">
-				<model:belongsTo name="companyOperationGroup" model="company" plugin="basic"/>
+			<model:belongsTo name="companyOperationGroup" model="company"
+				plugin="basic" />
 		</model:model-field>
-		
+
 		<model:model-field model="company" plugin="basic">
-				<model:hasMany name="operations" model="operation" plugin="technologies"
-					joinField="company" cascade="delete" />
-		</model:model-field>	
+			<model:hasMany name="operations" model="operation"
+				plugin="technologies" joinField="company" cascade="nullify" />
+		</model:model-field>
 
 		<model:model-field model="operation" plugin="technologies">
-				<model:belongsTo name="company" model="company" plugin="basic"/>
+			<model:belongsTo name="company" model="company"
+				plugin="basic" />
 		</model:model-field>
-		
+
 		<model:model-enum-value plugin="materialRequirements"
-			model="materialRequirement" enum="mrpAlgorithm" value="03componentsAndSubcontractorsProducts" />
-			
+			model="materialRequirement" enum="mrpAlgorithm"
+			value="03componentsAndSubcontractorsProducts" />
+
 		<model:model-enum-value plugin="simpleMaterialBalance"
-			model="simpleMaterialBalance" enum="mrpAlgorithm" value="03componentsAndSubcontractorsProducts" />
-		
-		<model:model-hook model="technologyOperationComponent" plugin="technologies">
-			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS" method="copySubstractingFieldFromLowerInstance"/>
+			model="simpleMaterialBalance" enum="mrpAlgorithm"
+			value="03componentsAndSubcontractorsProducts" />
+
+		<model:model-hook model="technologyOperationComponent"
+			plugin="technologies">
+			<model:onCreate
+				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS"
+				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
-		<model:model-hook model="technologyInstanceOperationComponent" plugin="technologies">
-			<model:onCreate class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS" method="copySubstractingFieldFromLowerInstance"/>
+		<model:model-hook model="technologyInstanceOperationComponent"
+			plugin="technologies">
+			<model:onCreate
+				class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS"
+				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
@@ -83,8 +95,6 @@
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
-
-
 	</modules>
 
 </plugin>
