@@ -517,3 +517,12 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN machine
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
 
 -- end
+
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 21.10.2012
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN machineworktime integer;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
+
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN laborworktime integer;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
+--end
