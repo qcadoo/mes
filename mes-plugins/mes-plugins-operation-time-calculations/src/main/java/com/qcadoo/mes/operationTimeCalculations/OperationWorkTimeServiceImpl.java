@@ -37,7 +37,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             abstractOperationWorkTime = abstractOperationWorkTime.add(tpz.multiply(workstationsDecimalValue, mc));
         }
         if (includeAdditionalTime) {
-            BigDecimal additionalTime = new BigDecimal(getIntegerValue(operationComponent.getField("additionalTime")));
+            BigDecimal additionalTime = new BigDecimal(getIntegerValue(operationComponent.getField("timeNextOperation")));
             abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime.multiply(workstationsDecimalValue, mc), mc);
         }
         return numberService.setScale(abstractOperationWorkTime);
