@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
@@ -61,7 +62,7 @@ public class TechnologyTreeNumberingHooks {
             return;
         }
 
-        EntityTree technologyTree = technology.getTreeField("operationComponents");
+        EntityTree technologyTree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         if (technologyTree == null || technologyTree.getRoot() == null) {
             return;
         }
@@ -75,7 +76,7 @@ public class TechnologyTreeNumberingHooks {
     }
 
     private boolean isDraftTechnology(final Entity technology) {
-        return DRAFT.getStringValue().equals(technology.getStringField("state"));
+        return DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE));
     }
 
     private void debug(final String message) {

@@ -149,7 +149,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Entity productionLine = entity.getBelongsToField(L_PRODUCTION_LINE);
             Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(costCalculation, productionLine);
             Map<Entity, OperationWorkTime> realizationTimes = operationWorkTimeService.estimateOperationsWorkTime(
-                    calculationOperationComponents, operationsRuns, includeTPZ, includeAdditionalTime, workstations, false);
+                    calculationOperationComponents, operationsRuns, includeTPZ, includeAdditionalTime, workstations, true);
 
             Map<String, BigDecimal> hourlyResultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     margin, quantity, realizationTimes);

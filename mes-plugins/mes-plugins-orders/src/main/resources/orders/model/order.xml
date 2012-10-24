@@ -106,6 +106,7 @@
 			method="createTechnologyInstanceForOrder" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="checkIfDefaultTechnologyIsDeactivated" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
