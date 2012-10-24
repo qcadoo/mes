@@ -48,7 +48,9 @@
 				</bigButton>
 			</group>
 		</ribbon>
-		<script>
+		<windowTab name="mainTab">
+			<component type="form" name="company" reference="form">
+				<script>
 					<![CDATA[
 						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy"];
 	
@@ -87,9 +89,6 @@
 						#{form}.addOnChangeListener(listener);
 					]]>
 				</script>
-		<windowTab name="mainTab">
-			<component type="form" name="company" reference="form">
-				
 				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" reference="number">

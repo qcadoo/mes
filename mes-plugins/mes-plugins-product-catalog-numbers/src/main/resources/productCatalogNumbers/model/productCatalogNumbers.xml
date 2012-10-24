@@ -3,15 +3,21 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="catalogNumber" required="true" >
+		<string name="catalogNumber" required="true">
 			<validatesLength max="256" />
 		</string>
-		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<belongsTo name="company" model="company" plugin="basic" required="true"/>
+		<belongsTo name="product" model="product" plugin="basic"
+			required="true" />
+		<belongsTo name="company" model="company" plugin="basic"
+			required="true" />
 	</fields>
-	<hooks >
-		<validatesWith class="com.qcadoo.mes.productCatalogNumbers.hooks.ProductCatalogNumbersHooks" method="checkIfExistsCatalogNumberWithProductAndCompany" />
-		<validatesWith class="com.qcadoo.mes.productCatalogNumbers.hooks.ProductCatalogNumbersHooks" method="checkIfExistsCatalogNumberWithNumberAndCompany" />
- 	</hooks>
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.productCatalogNumbers.hooks.ProductCatalogNumbersHooks"
+			method="checkIfExistsCatalogNumberWithProductAndCompany" />
+		<validatesWith
+			class="com.qcadoo.mes.productCatalogNumbers.hooks.ProductCatalogNumbersHooks"
+			method="checkIfExistsCatalogNumberWithNumberAndCompany" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #company.get('name')" />
 </model>

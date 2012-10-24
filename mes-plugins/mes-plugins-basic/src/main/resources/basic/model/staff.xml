@@ -43,7 +43,7 @@
 		<string name="phone" >
 			<validatesLength max="255" />
 		</string>
-		<belongsTo name="workFor" model="company"/>
+		<belongsTo name="workFor" model="company" />
 		<string name="post" />
 		<belongsTo name="shift" model="shift" />
 		<belongsTo name="division" model="division" />
