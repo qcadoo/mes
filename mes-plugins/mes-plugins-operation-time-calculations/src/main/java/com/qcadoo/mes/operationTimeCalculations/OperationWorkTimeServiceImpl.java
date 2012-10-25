@@ -19,6 +19,8 @@ import com.qcadoo.model.api.NumberService;
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     @Autowired
     private NumberService numberService;
 
@@ -54,15 +56,15 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
 
-        Integer laborUtilizationIntValue = abstractOperationWorkTime.multiply(laborUtilization, mc).intValue();
-        Integer machinetilizationIntValue = abstractOperationWorkTime.multiply(machineUtilization, mc).intValue();
+        Integer laborWorkTime = abstractOperationWorkTime.multiply(laborUtilization, mc).intValue();
+        Integer machineWorkTime = abstractOperationWorkTime.multiply(machineUtilization, mc).intValue();
         Integer duration = abstractOperationWorkTime.intValue();
         OperationWorkTime operationWorkTime = new OperationWorkTime();
         operationWorkTime.setDuration(duration);
-        operationWorkTime.setLaborWorkTime(laborUtilizationIntValue);
-        operationWorkTime.setMachineWorkTime(machinetilizationIntValue);
+        operationWorkTime.setLaborWorkTime(laborWorkTime);
+        operationWorkTime.setMachineWorkTime(machineWorkTime);
         if (saved) {
-            savedWorkTime(operationComponent, machinetilizationIntValue, laborUtilizationIntValue, duration);
+            savedWorkTime(operationComponent, machineWorkTime, laborWorkTime, duration);
         }
         return operationWorkTime;
     }
@@ -76,7 +78,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             OperationWorkTime operationWorkTime = estimateOperationWorkTime(operationComponent,
                     getOperationRuns(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
                     getWorkstationsQuantity(workstations, operationComponent), saved);
-            operationsWorkTimes.put(operationComponent, operationWorkTime);
+            operationsWorkTimes.put(operationComponent.getDataDefinition().get(operationComponent.getId()), operationWorkTime);
         }
         return operationsWorkTimes;
     }
@@ -94,7 +96,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
             boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
-        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order, productionLine);
+        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
                 saved);
     }
@@ -136,11 +138,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     private void savedWorkTime(final Entity entity, final Integer machineWorkTime, final Integer laborWorkTime,
             final Integer duration) {
         DataDefinition operCompDD = entity.getDataDefinition();
-        Entity operationComponent = operCompDD.get(entity.getId());
-        operationComponent.setField("machineWorkTime", machineWorkTime);
-        operationComponent.setField("laborWorkTime", laborWorkTime);
-        operationComponent.setField("duration", duration);
-        operCompDD.save(operationComponent);
+        entity.setField("machineWorkTime", machineWorkTime);
+        entity.setField("laborWorkTime", laborWorkTime);
+        entity.setField("duration", duration);
+        operCompDD.save(entity);
     }
 
     @Override
@@ -154,7 +155,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public OperationWorkTime estimateTotalWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
             boolean includeTpz, boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
-        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order, productionLine);
+        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
 
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
@@ -172,9 +173,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : operationsComponents) {
             String entityType = operComp.getDataDefinition().getName();
-            if (!"technologyOperationComponent".equals(entityType)) {
-                operComp = operComp.getBelongsToField("technologyOperationComponent").getDataDefinition()
-                        .get(operComp.getBelongsToField("technologyOperationComponent").getId());
+            if (!L_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
+                operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
+                        .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
             }
             workstations.put(operComp, productionLinesService.getWorkstationTypesCount(operComp, productionLine));
         }
@@ -189,8 +190,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Entity operComp = operationComponent;
         String entityType = operationComponent.getDataDefinition().getName();
         if (!TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
-            operComp = operComp.getBelongsToField("technologyOperationComponent").getDataDefinition()
-                    .get(operComp.getBelongsToField("technologyOperationComponent").getId());
+            operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
+                    .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
         return operationRuns.get(operComp);
     }
@@ -199,8 +200,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Entity operComp = operationComponent;
         String entityType = operationComponent.getDataDefinition().getName();
         if (!TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
-            operComp = operComp.getBelongsToField("technologyOperationComponent").getDataDefinition()
-                    .get(operComp.getBelongsToField("technologyOperationComponent").getId());
+            operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
+                    .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
         return workstations.get(operComp);
     }
@@ -213,10 +214,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return workstations;
     }
 
-    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order, final Entity productionLine) {
+    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : order.getHasManyField("technologyInstanceOperationComponents")) {
-            workstations.put(operComp.getBelongsToField("technologyOperationComponent"),
+            workstations.put(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT),
                     (Integer) operComp.getField("quantityOfWorkstationTypes"));
         }
         return workstations;

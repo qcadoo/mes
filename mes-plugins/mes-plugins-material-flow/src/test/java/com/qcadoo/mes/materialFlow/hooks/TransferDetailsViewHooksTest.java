@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlow.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
@@ -39,30 +38,30 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 public class TransferDetailsViewHooksTest {
 
     private TransferDetailsViewHooks transferDetailsViewHooks;
 
-    private static final String L_NUMBER = "000001";
+    private static final String L_FORM = "form";
 
     @Mock
     private ViewDefinitionState view;
 
     @Mock
-    private FieldComponent numberField, typeField, timeField, locationFromField, locationToField, staffField;
+    private FormComponent transferForm;
+
+    @Mock
+    private FieldComponent typeField, timeField, locationFromField, locationToField, staffField;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
@@ -72,9 +71,6 @@ public class TransferDetailsViewHooksTest {
 
     @Mock
     private Entity transfer, transformations;
-
-    @Mock
-    private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Before
     public void init() {
@@ -88,16 +84,15 @@ public class TransferDetailsViewHooksTest {
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndNumberIsNull() {
         // given
-        given(view.getComponentByReference(NUMBER)).willReturn(numberField);
+        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(typeField);
         given(view.getComponentByReference(LOCATION_FROM)).willReturn(locationFromField);
         given(view.getComponentByReference(LOCATION_TO)).willReturn(locationToField);
         given(view.getComponentByReference(STAFF)).willReturn(staffField);
 
-        given(view.getComponentByReference(TransferFields.NUMBER)).willReturn(numberField);
-
-        given(numberField.getFieldValue()).willReturn(null);
+        given(transferForm.getEntityId()).willReturn(null);
 
         // when
         transferDetailsViewHooks.checkIfTransferHasTransformations(view);
@@ -108,29 +103,24 @@ public class TransferDetailsViewHooksTest {
         verify(locationFromField, never()).setEnabled(false);
         verify(locationToField, never()).setEnabled(false);
         verify(staffField, never()).setEnabled(false);
-
     }
 
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndTransferIsNull() {
         // given
-        given(view.getComponentByReference(NUMBER)).willReturn(numberField);
+        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);
         given(view.getComponentByReference(LOCATION_FROM)).willReturn(locationFromField);
         given(view.getComponentByReference(LOCATION_TO)).willReturn(locationToField);
         given(view.getComponentByReference(STAFF)).willReturn(staffField);
 
-        given(view.getComponentByReference(TransferFields.NUMBER)).willReturn(numberField);
-
-        given(numberField.getFieldValue()).willReturn(L_NUMBER);
+        given(transferForm.getEntityId()).willReturn(1L);
 
         given(dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER))
                 .willReturn(transferDD);
-        given(transferDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(null);
+        given(transferDD.get(1L)).willReturn(null);
 
         // when
         transferDetailsViewHooks.checkIfTransferHasTransformations(view);
@@ -141,29 +131,24 @@ public class TransferDetailsViewHooksTest {
         verify(locationFromField, never()).setEnabled(false);
         verify(locationToField, never()).setEnabled(false);
         verify(staffField, never()).setEnabled(false);
-
     }
 
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndTransformationsAreNull() {
         // given
-        given(view.getComponentByReference(NUMBER)).willReturn(numberField);
+        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);
         given(view.getComponentByReference(LOCATION_FROM)).willReturn(locationFromField);
         given(view.getComponentByReference(LOCATION_TO)).willReturn(locationToField);
         given(view.getComponentByReference(STAFF)).willReturn(staffField);
 
-        given(view.getComponentByReference(TransferFields.NUMBER)).willReturn(numberField);
-
-        given(numberField.getFieldValue()).willReturn(L_NUMBER);
+        given(transferForm.getEntityId()).willReturn(1L);
 
         given(dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER))
                 .willReturn(transferDD);
-        given(transferDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(transfer);
+        given(transferDD.get(1L)).willReturn(transfer);
 
         given(transfer.getBelongsToField(TRANSFORMATIONS_CONSUMPTION)).willReturn(null);
         given(transfer.getBelongsToField(TRANSFORMATIONS_PRODUCTION)).willReturn(null);
@@ -177,29 +162,24 @@ public class TransferDetailsViewHooksTest {
         verify(locationFromField, never()).setEnabled(false);
         verify(locationToField, never()).setEnabled(false);
         verify(staffField, never()).setEnabled(false);
-
     }
 
     @Test
     public void shouldDisableFieldsWhenCheckIfTransferHasTransformationsAndTransformationsAreNull() {
         // given
-        given(view.getComponentByReference(NUMBER)).willReturn(numberField);
+        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);
         given(view.getComponentByReference(LOCATION_FROM)).willReturn(locationFromField);
         given(view.getComponentByReference(LOCATION_TO)).willReturn(locationToField);
         given(view.getComponentByReference(STAFF)).willReturn(staffField);
 
-        given(view.getComponentByReference(TransferFields.NUMBER)).willReturn(numberField);
-
-        given(numberField.getFieldValue()).willReturn(L_NUMBER);
+        given(transferForm.getEntityId()).willReturn(1L);
 
         given(dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_TRANSFER))
                 .willReturn(transferDD);
-        given(transferDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.uniqueResult()).willReturn(transfer);
+        given(transferDD.get(1L)).willReturn(transfer);
 
         given(transfer.getBelongsToField(TRANSFORMATIONS_CONSUMPTION)).willReturn(transformations);
         given(transfer.getBelongsToField(TRANSFORMATIONS_PRODUCTION)).willReturn(transformations);
@@ -213,7 +193,6 @@ public class TransferDetailsViewHooksTest {
         verify(locationFromField).setEnabled(false);
         verify(locationToField).setEnabled(false);
         verify(staffField).setEnabled(false);
-
     }
 
 }
