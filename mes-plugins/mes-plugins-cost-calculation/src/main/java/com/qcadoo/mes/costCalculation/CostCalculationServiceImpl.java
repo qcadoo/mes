@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -52,11 +53,10 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Override
     public Entity calculateTotalCost(final Entity entity) {
-        BigDecimal productionCosts;
-        BigDecimal materialCostMargin = getBigDecimal(entity.getField("materialCostMargin"));
-        BigDecimal productionCostMargin = getBigDecimal(entity.getField("productionCostMargin"));
-        BigDecimal additionalOverhead = getBigDecimal(entity.getField("additionalOverhead"));
-        BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
+        final BigDecimal productionCosts;
+        final BigDecimal materialCostMargin = getBigDecimal(entity.getField("materialCostMargin"));
+        final BigDecimal productionCostMargin = getBigDecimal(entity.getField("productionCostMargin"));
+        final BigDecimal additionalOverhead = getBigDecimal(entity.getField("additionalOverhead"));
 
         CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
                 .getStringField("calculateOperationCostsMode"));
@@ -102,9 +102,23 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         entity.setField("totalOverhead", numberService.setScale(totalOverhead));
         entity.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
         entity.setField("totalCosts", numberService.setScale(totalCosts));
-        entity.setField("totalCostPerUnit", numberService.setScale(totalCosts.divide(quantity, numberService.getMathContext())));
+
+        final BigDecimal doneQuantity = getDoneQuantity(entity);
+        if (doneQuantity != null && BigDecimal.ZERO.compareTo(doneQuantity) != 0) {
+            final BigDecimal totalCostsPerUnit = numberService.setScale(totalCosts.divide(doneQuantity,
+                    numberService.getMathContext()));
+            entity.setField("totalCostPerUnit", totalCostsPerUnit);
+        }
 
         return entity.getDataDefinition().save(entity);
+    }
+
+    private BigDecimal getDoneQuantity(final Entity costCalculation) {
+        final Entity order = costCalculation.getBelongsToField("order");
+        if (order != null) {
+            return order.getDecimalField(OrderFields.DONE_QUANTITY);
+        }
+        return null;
     }
 
     private BigDecimal getBigDecimal(final Object value) {
