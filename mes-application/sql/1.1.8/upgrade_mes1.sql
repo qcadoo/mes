@@ -536,3 +536,17 @@ ALTER TABLE technologies_operationgroup ADD COLUMN active boolean;
 ALTER TABLE technologies_operationgroup ALTER COLUMN active SET DEFAULT true;
 
 -- end
+
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 25.10.2012
+
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totalmachineoperationcostwithmargin numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totalmachineoperationcostwithmargin SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totallaboroperationcostwithmargin numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totallaboroperationcostwithmargin SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totallaboroperationcost numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totallaboroperationcost SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totalmachineoperationcost numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totalmachineoperationcost SET DEFAULT 0::numeric;
+
+--end

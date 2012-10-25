@@ -73,6 +73,16 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
+		<decimal name="totalMachineOperationCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="totalLaborOperationCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
 		<decimal name="pieceworkCost" default="0">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="7" />
@@ -84,6 +94,16 @@
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="machineHourlyCost" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="totalMachineOperationCostWithMargin" default="0">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="totalLaborOperationCostWithMargin" default="0">
 			<validatesRange from="0" exclusively="false" />
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
