@@ -186,6 +186,9 @@ public class OrderHooks {
 
     public boolean checkIfDefaultTechnologyIsDeactivated(final DataDefinition orderDD, final Entity order) {
         Entity technology = order.getBelongsToField(TECHNOLOGY);
+        if (technology == null) {
+            return true;
+        }
         if (!technology.isActive()) {
             order.addError(orderDD.getField(TECHNOLOGY), "orders.order.technology.isDeactive");
             return false;
