@@ -40,7 +40,9 @@
 		<string name="worker" />
 		<integer name="recordsNumber" />
 		<string name="description" />
-		<string name="fileName" />
+		<string name="fileName">
+			<validatesLength max="1024"/>
+		</string>
 		
 		<boolean name="printOperationNorms" default="true"/>
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"

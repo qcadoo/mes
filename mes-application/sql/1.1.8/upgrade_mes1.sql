@@ -517,3 +517,11 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ADD COLUMN machine
 ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
 
 -- end
+
+
+-- Table: productioncounting_productionbalance
+-- changed: 24.10.2012
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN filename TYPE varchar(1024);
+
+-- end
