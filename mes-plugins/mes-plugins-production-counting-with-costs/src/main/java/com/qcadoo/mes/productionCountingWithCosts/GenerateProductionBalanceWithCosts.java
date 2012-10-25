@@ -97,6 +97,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
@@ -641,31 +642,36 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     (BigDecimal) productionBalance.getField(CYCLES_COSTS), numberService.getMathContext());
         }
 
-        BigDecimal registeredTotalTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCosts.divide(
-                (BigDecimal) productionBalance.getField(QUANTITY), numberService.getMathContext());
-
         BigDecimal balanceTechnicalProductionCosts = registeredTotalTechnicalProductionCosts.subtract(
                 (BigDecimal) productionBalance.getField(TOTAL_TECHNICAL_PRODUCTION_COSTS), numberService.getMathContext());
 
-        BigDecimal balanceTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCostPerUnit
-                .subtract((BigDecimal) productionBalance.getField(TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT),
-                        numberService.getMathContext());
-
         productionBalance.setField(REGISTERED_TOTAL_TECHNICALPRODUCTION_COSTS,
                 numberService.setScale(registeredTotalTechnicalProductionCosts));
-        productionBalance.setField(REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
-                numberService.setScale(registeredTotalTechnicalProductionCostPerUnit));
+
         productionBalance.setField(BALANCE_TECHNICAL_PRODUCTION_COSTS, numberService.setScale(balanceTechnicalProductionCosts));
-        productionBalance.setField(BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT,
-                numberService.setScale(balanceTechnicalProductionCostPerUnit));
 
         BigDecimal totalCosts = registeredTotalTechnicalProductionCosts.add(
                 (BigDecimal) productionBalance.getField(TOTAL_OVERHEAD), numberService.getMathContext());
-        BigDecimal totalCostPerUnit = totalCosts.divide((BigDecimal) productionBalance.getField(QUANTITY),
-                numberService.getMathContext());
-
         productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COSTS, numberService.setScale(totalCosts));
-        productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostPerUnit));
+
+        final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
+
+        BigDecimal totalCostPerUnit = BigDecimal.ZERO;
+        BigDecimal registeredTotalTechnicalProductionCostPerUnit = BigDecimal.ZERO;
+        if (doneQuantity != null && BigDecimal.ZERO.compareTo(doneQuantity) != 0) {
+            totalCostPerUnit = totalCosts.divide(doneQuantity, numberService.getMathContext());
+            registeredTotalTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCosts.divide(doneQuantity,
+                    numberService.getMathContext());
+
+            productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostPerUnit));
+            productionBalance.setField(REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+                    numberService.setScale(registeredTotalTechnicalProductionCostPerUnit));
+
+            final BigDecimal balanceTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCostPerUnit.subtract(
+                    productionBalance.getDecimalField(TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT), numberService.getMathContext());
+            productionBalance.setField(BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+                    numberService.setScale(balanceTechnicalProductionCostPerUnit));
+        }
 
         productionBalance.getDataDefinition().save(productionBalance);
     }
