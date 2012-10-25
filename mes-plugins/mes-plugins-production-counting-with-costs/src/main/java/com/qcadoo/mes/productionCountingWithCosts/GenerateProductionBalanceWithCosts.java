@@ -49,7 +49,6 @@ import static com.qcadoo.mes.productionCountingWithCosts.constants.OperationPiec
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COSTS;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.COMPONENTS_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS;
@@ -64,7 +63,6 @@ import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBal
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.PLANNED_MACHINE_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.QUANTITY;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICALPRODUCTION_COSTS;
-import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TECHNOLOGY;
 import static com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS;
@@ -688,21 +686,24 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
 
-        BigDecimal totalCostPerUnit = BigDecimal.ZERO;
-        BigDecimal registeredTotalTechnicalProductionCostPerUnit = BigDecimal.ZERO;
         if (doneQuantity != null && BigDecimal.ZERO.compareTo(doneQuantity) != 0) {
-            totalCostPerUnit = totalCosts.divide(doneQuantity, numberService.getMathContext());
-            registeredTotalTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCosts.divide(doneQuantity,
-                    numberService.getMathContext());
+            final BigDecimal totalCostPerUnit = totalCosts.divide(doneQuantity, numberService.getMathContext());
+            final BigDecimal registeredTotalTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCosts.divide(
+                    doneQuantity, numberService.getMathContext());
 
             productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT, numberService.setScale(totalCostPerUnit));
-            productionBalance.setField(REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+            productionBalance.setField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                     numberService.setScale(registeredTotalTechnicalProductionCostPerUnit));
 
             final BigDecimal balanceTechnicalProductionCostPerUnit = registeredTotalTechnicalProductionCostPerUnit.subtract(
-                    productionBalance.getDecimalField(TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT), numberService.getMathContext());
-            productionBalance.setField(BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+                    productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT),
+                    numberService.getMathContext());
+            productionBalance.setField(ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                     numberService.setScale(balanceTechnicalProductionCostPerUnit));
+        } else {
+            productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT, null);
+            productionBalance.setField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT, null);
+            productionBalance.setField(ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT, null);
         }
 
         productionBalance.getDataDefinition().save(productionBalance);

@@ -99,6 +99,7 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -241,6 +242,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
             productionBalance = getProductionBalanceFromDB((Long) state.getFieldValue());
 
+            checkOrderDoneQuantity(state, productionBalance);
+
             try {
                 generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
@@ -254,6 +257,15 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             } catch (DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+        }
+    }
+
+    private void checkOrderDoneQuantity(final ComponentState componentState, final Entity productionBalance) {
+        final Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
+        final BigDecimal doneQuantityFromOrder = order.getDecimalField(OrderFields.DONE_QUANTITY);
+        if (doneQuantityFromOrder == null || BigDecimal.ZERO.compareTo(doneQuantityFromOrder) == 0) {
+            componentState
+                    .addMessage("productionRecord.productionBalance.report.info.orderWithoutDoneQuantity", MessageType.INFO);
         }
     }
 
