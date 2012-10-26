@@ -32,10 +32,10 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -53,6 +53,11 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     @Override
     public Entity calculateTotalCost(final Entity entity) {
+        return calculateTotalCost(entity, entity.getDecimalField(CostCalculationFields.QUANTITY));
+    }
+
+    @Override
+    public Entity calculateTotalCost(final Entity entity, final BigDecimal quantity) {
         final BigDecimal productionCosts;
         final BigDecimal materialCostMargin = getBigDecimal(entity.getField("materialCostMargin"));
         final BigDecimal productionCostMargin = getBigDecimal(entity.getField("productionCostMargin"));
@@ -103,22 +108,13 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         entity.setField("totalTechnicalProductionCosts", numberService.setScale(totalTechnicalProductionCosts));
         entity.setField("totalCosts", numberService.setScale(totalCosts));
 
-        final BigDecimal doneQuantity = getDoneQuantity(entity);
-        if (doneQuantity != null && BigDecimal.ZERO.compareTo(doneQuantity) != 0) {
-            final BigDecimal totalCostsPerUnit = numberService.setScale(totalCosts.divide(doneQuantity,
+        if (quantity != null && BigDecimal.ZERO.compareTo(quantity) != 0) {
+            final BigDecimal totalCostsPerUnit = numberService.setScale(totalCosts.divide(quantity,
                     numberService.getMathContext()));
             entity.setField("totalCostPerUnit", totalCostsPerUnit);
         }
 
         return entity.getDataDefinition().save(entity);
-    }
-
-    private BigDecimal getDoneQuantity(final Entity costCalculation) {
-        final Entity order = costCalculation.getBelongsToField("order");
-        if (order != null) {
-            return order.getDecimalField(OrderFields.DONE_QUANTITY);
-        }
-        return null;
     }
 
     private BigDecimal getBigDecimal(final Object value) {

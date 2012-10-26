@@ -101,6 +101,8 @@ import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionCountingWithCostsConstants;
+import com.qcadoo.mes.productionCountingWithCosts.materials.RegisteredMaterialCostHelper;
+import com.qcadoo.mes.productionCountingWithCosts.operations.RegisteredProductionCostHelper;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -136,6 +138,12 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
+
+    @Autowired
+    private RegisteredMaterialCostHelper registeredMaterialCostHelper;
+
+    @Autowired
+    private RegisteredProductionCostHelper registeredProductionCostHelper;
 
     @Override
     public void update(final Observable arg0, final Object arg1) {
@@ -187,7 +195,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         productionBalance.setField(TECHNOLOGY, technology);
         productionBalance.setField(PRODUCTION_LINE, productionLine);
 
-        costCalculationService.calculateTotalCost(productionBalance);
+        costCalculationService.calculateTotalCost(productionBalance, order.getDecimalField(OrderFields.DONE_QUANTITY));
 
         BigDecimal totalTechnicalProductionCosts = productionBalance.getDecimalField(TOTAL_TECHNICAL_PRODUCTION_COSTS);
         BigDecimal perUnit = totalTechnicalProductionCosts.divide(quantity, numberService.getMathContext());
@@ -683,6 +691,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         BigDecimal totalCosts = registeredTotalTechnicalProductionCosts.add(
                 (BigDecimal) productionBalance.getField(TOTAL_OVERHEAD), numberService.getMathContext());
         productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COSTS, numberService.setScale(totalCosts));
+
+        registeredMaterialCostHelper.countRegisteredMaterialMarginValue(productionBalance);
+        registeredProductionCostHelper.countRegisteredProductionMarginValue(productionBalance);
 
         final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
 
