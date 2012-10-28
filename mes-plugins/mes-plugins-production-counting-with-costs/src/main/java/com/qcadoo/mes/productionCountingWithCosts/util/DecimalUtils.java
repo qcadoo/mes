@@ -5,7 +5,7 @@ import java.math.MathContext;
 
 public final class DecimalUtils {
 
-    private static BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100L);
+    private static BigDecimal oneHundred = BigDecimal.valueOf(100L);
 
     private DecimalUtils() {
     }
@@ -19,6 +19,6 @@ public final class DecimalUtils {
     }
 
     public static BigDecimal toPercent(final BigDecimal decimalValue, final MathContext mathCntext) {
-        return nullToZero(decimalValue).divide(ONE_HUNDRED, mathCntext);
+        return nullToZero(decimalValue).divide(oneHundred, mathCntext);
     }
 }
