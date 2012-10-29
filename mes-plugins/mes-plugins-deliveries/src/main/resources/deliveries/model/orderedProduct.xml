@@ -6,7 +6,9 @@
 		<belongsTo name="delivery" model="delivery" required="true" />
 		<belongsTo name="product" model="product" plugin="basic"
 			required="true" />
-		<decimal name="orderedQuantity" required="true" />
+		<decimal name="orderedQuantity" required="true" >
+			<validatesRange from="0" exclusively="true" />
+		</decimal>
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
