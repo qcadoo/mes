@@ -31,5 +31,11 @@ public interface CostCalculationService {
 
     Entity calculateTotalCost(final Entity costCalculation);
 
-    Entity calculateTotalCost(final Entity entity, final BigDecimal quantity);
+    void calculateOperationsAndProductsCosts(final Entity entity);
+
+    void calculateTotalCosts(final Entity entity, final BigDecimal productionCosts, final BigDecimal quantity);
+
+    BigDecimal calculateProductionCost(final Entity entity);
+
+    void calculateTotalOverhead(final Entity entity);
 }

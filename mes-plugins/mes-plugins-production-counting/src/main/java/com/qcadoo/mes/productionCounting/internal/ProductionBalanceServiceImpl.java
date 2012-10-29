@@ -103,6 +103,7 @@ import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFie
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -323,12 +324,11 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes = fillProductionRecordsWithPlannedTimes(
                     productionBalance, productionRecords);
 
+            calculatePlannedTimeValues(productionBalance);
+            fillTimeValues(productionBalance, productionRecordsWithRegisteredTimes, productionRecordsWithPlannedTimes);
             if (isTypeOfProductionRecordingForEach(order)) {
-                fillTimeValues(productionBalance, productionRecordsWithRegisteredTimes, productionRecordsWithPlannedTimes);
                 fillOperationTimeComponents(productionBalance, productionRecordsWithRegisteredTimes,
                         productionRecordsWithPlannedTimes);
-            } else if (isTypeOfProductionRecordingCumulated(order)) {
-                fillTimeValues(productionBalance, productionRecordsWithRegisteredTimes, productionRecordsWithPlannedTimes);
             }
         } else if (isCalculateOperationCostModePiecework(productionBalance) && order.getBooleanField(REGISTER_PIECEWORK)) {
             fillOperationPieceworkComponents(productionBalance, productionRecordsWithRegisteredTimes);
@@ -516,41 +516,46 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if (productionBalance == null) {
             return;
         }
-
-        Integer plannedMachineTime = 0;
         Integer machineTime = 0;
-
         Integer laborTime = 0;
-        Integer plannedLaborTime = 0;
 
         if (!productionRecordsWithPlannedTimes.isEmpty()) {
             for (Map.Entry<Long, Entity> productionRecordWithRegisteredTimesEntry : productionRecordsWithRegisteredTimes
                     .entrySet()) {
-                Long technologyInstanceOperationComponentId = productionRecordWithRegisteredTimesEntry.getKey();
                 Entity productionRecordWithRegisteredTimes = productionRecordWithRegisteredTimesEntry.getValue();
-
-                plannedMachineTime += productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
-                        L_PLANNED_MACHINE_TIME);
                 machineTime += (Integer) productionRecordWithRegisteredTimes.getField(MACHINE_TIME);
-
-                plannedLaborTime += productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
-                        L_PLANNED_LABOR_TIME);
                 laborTime += (Integer) productionRecordWithRegisteredTimes.getField(LABOR_TIME);
             }
         }
 
-        Integer machineTimeBalance = machineTime - plannedMachineTime;
-        Integer laborTimeBalance = laborTime - plannedLaborTime;
+        final int machineTimeBalance = machineTime - (Integer) productionBalance.getField(PLANNED_LABOR_TIME);
+        final int laborTimeBalance = laborTime - (Integer) productionBalance.getField(PLANNED_MACHINE_TIME);
 
-        productionBalance.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
         productionBalance.setField(MACHINE_TIME, machineTime);
         productionBalance.setField(MACHINE_TIME_BALANCE, machineTimeBalance);
 
-        productionBalance.setField(PLANNED_LABOR_TIME, plannedLaborTime);
         productionBalance.setField(LABOR_TIME, laborTime);
         productionBalance.setField(LABOR_TIME_BALANCE, laborTimeBalance);
 
         productionBalance.getDataDefinition().save(productionBalance);
+    }
+
+    private void calculatePlannedTimeValues(final Entity productionBalance) {
+        final Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
+        final boolean includeTpz = productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ);
+        final boolean includeAdditionalTime = productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
+        final Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        final Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+        productQuantitiesService.getNeededProductQuantities(Lists.newArrayList(order), MrpAlgorithm.ONLY_COMPONENTS,
+                operationRuns);
+        final OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns,
+                includeTpz, includeAdditionalTime, productionLine, false);
+
+        final int plannedMachineTime = operationWorkTime.getMachineWorkTime();
+        final int plannedLaborTime = operationWorkTime.getLaborWorkTime();
+
+        productionBalance.setField(PLANNED_LABOR_TIME, plannedLaborTime);
+        productionBalance.setField(PLANNED_MACHINE_TIME, plannedMachineTime);
     }
 
     private void fillOperationTimeComponents(final Entity productionBalance,
