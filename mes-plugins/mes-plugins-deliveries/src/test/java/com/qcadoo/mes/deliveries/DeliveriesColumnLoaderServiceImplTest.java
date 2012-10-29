@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.columnExtension.ColumnExtensionService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
@@ -17,6 +19,9 @@ import com.qcadoo.model.api.search.SearchResult;
 public class DeliveriesColumnLoaderServiceImplTest {
 
     private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
+
+    @Mock
+    private ColumnExtensionService columnExtensionService;
 
     @Mock
     private DeliveriesService deliveriesService;
@@ -36,18 +41,16 @@ public class DeliveriesColumnLoaderServiceImplTest {
 
         deliveriesColumnLoaderService = new DeliveriesColumnLoaderServiceImpl();
 
+        ReflectionTestUtils.setField(deliveriesColumnLoaderService, "columnExtensionService", columnExtensionService);
         ReflectionTestUtils.setField(deliveriesColumnLoaderService, "deliveriesService", deliveriesService);
-
-        given(deliveriesService.getColumnForDeliveriesDD()).willReturn(columnForDeliveriesDD);
-        given(deliveriesService.getColumnForOrdersDD()).willReturn(columnForOrdersDD);
     }
 
     @Test
     public void shouldReturnTrueWhenIsColumnsForDeliveriesEmpty() {
         // given
-        given(columnForDeliveriesDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
+        given(
+                columnExtensionService.isColumnsEmpty(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                        DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES)).willReturn(true);
 
         // when
         boolean result = deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty();
@@ -59,9 +62,9 @@ public class DeliveriesColumnLoaderServiceImplTest {
     @Test
     public void shouldReturnFalseWhenIsColumnsForDeliveriesEmpty() {
         // given
-        given(columnForDeliveriesDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getTotalNumberOfEntities()).willReturn(1);
+        given(
+                columnExtensionService.isColumnsEmpty(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                        DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES)).willReturn(false);
 
         // when
         boolean result = deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty();
@@ -73,9 +76,9 @@ public class DeliveriesColumnLoaderServiceImplTest {
     @Test
     public void shouldReturnTrueWhenIsColumnsForOrdersEmpty() {
         // given
-        given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
+        given(
+                columnExtensionService.isColumnsEmpty(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                        DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS)).willReturn(true);
 
         // when
         boolean result = deliveriesColumnLoaderService.isColumnsForOrdersEmpty();
@@ -87,9 +90,9 @@ public class DeliveriesColumnLoaderServiceImplTest {
     @Test
     public void shouldReturnFalseWhenIsColumnsForOrdersEmpty() {
         // given
-        given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getTotalNumberOfEntities()).willReturn(1);
+        given(
+                columnExtensionService.isColumnsEmpty(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                        DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS)).willReturn(false);
 
         // when
         boolean result = deliveriesColumnLoaderService.isColumnsForOrdersEmpty();
