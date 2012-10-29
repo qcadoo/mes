@@ -84,17 +84,18 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public Map<Entity, OperationWorkTime> estimateOperationsWorkTime(List<Entity> operationComponents,
-            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine,
-            final boolean saved) {
+    public Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
+            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine, final boolean saved) {
         Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
                 saved);
     }
 
     @Override
-    public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
+    public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(final Entity order,
+            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
@@ -102,9 +103,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForTechnology(Entity technology,
-            Map<Entity, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine,
-            final boolean saved) {
+    public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForTechnology(final Entity technology,
+            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromTechnology(technology, productionLine);
         return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
@@ -145,15 +146,16 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public OperationWorkTime estimateTotalWorkTime(List<Entity> operationComponents, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
+    public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
+            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine, final boolean saved) {
         Map<Entity, Integer> workstations = getWorkstationsMapsForOperationsComponent(operationComponents, productionLine);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
     }
 
     @Override
-    public OperationWorkTime estimateTotalWorkTimeForOrder(Entity order, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
+    public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Entity, BigDecimal> operationRuns,
+            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getHasManyField("technologyInstanceOperationComponents");
         Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
 
@@ -161,8 +163,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public OperationWorkTime estimateTotalWorkTimeForTechnology(Entity technology, Map<Entity, BigDecimal> operationRuns,
-            boolean includeTpz, boolean includeAdditionalTime, Entity productionLine, final boolean saved) {
+    public OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology,
+            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         Map<Entity, Integer> workstations = getWorkstationsFromTechnology(technology, productionLine);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
