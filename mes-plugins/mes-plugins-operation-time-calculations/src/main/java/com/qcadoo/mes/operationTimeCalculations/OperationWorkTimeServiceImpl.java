@@ -196,7 +196,14 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
                     .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
-        return operationRuns.get(operComp);
+        return convertNullToZero(operationRuns.get(operComp));
+    }
+
+    private BigDecimal convertNullToZero(final BigDecimal value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        return value;
     }
 
     private Integer getWorkstationsQuantity(final Map<Entity, Integer> workstations, final Entity operationComponent) {

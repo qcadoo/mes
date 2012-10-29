@@ -190,13 +190,40 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 resultsMap.put(key, unitOperationCost);
             }
         }
-        OperationWorkTime dur = realizationTimes.get(calcOperComp);
+
+        final OperationWorkTime dur = findValueMatchingMutableEntityKey(calcOperComp, realizationTimes);
         Map<String, BigDecimal> costs = estimateHourlyCostCalculationSingleOperations(calcOperComp, dur, margin);
         savedGeneratedValues(costs, calcOperComp, true, dur, null);
 
         resultsMap.put(MACHINE_HOURLY_COST, resultsMap.get(MACHINE_HOURLY_COST).add(costs.get("operationMachineCost"), mc));
         resultsMap.put(LABOR_HOURLY_COST, resultsMap.get(LABOR_HOURLY_COST).add(costs.get("operationLaborCost"), mc));
         return resultsMap;
+    }
+
+    // FIXME MAKU & ALBR this is awful workaround for mutable keys problem - realizationTimes map should have some immutable
+    // objects in key set!!
+    @Deprecated
+    private OperationWorkTime findValueMatchingMutableEntityKey(final Entity compromisedKey,
+            final Map<Entity, OperationWorkTime> compromisedMap) {
+        final Entity foundKey = findMatchingKey(compromisedKey, compromisedMap);
+        if (foundKey == null) {
+            return null;
+        }
+        return compromisedMap.get(foundKey);
+    }
+
+    @Deprecated
+    private Entity findMatchingKey(final Entity compromisedKey, final Map<Entity, OperationWorkTime> compromisedMap) {
+        final String entityName = compromisedKey.getDataDefinition().getName();
+        final String entityPlugin = compromisedKey.getDataDefinition().getPluginIdentifier();
+        for (Entity key : compromisedMap.keySet()) {
+            final DataDefinition keyDD = key.getDataDefinition();
+            if (compromisedKey.getId().equals(key.getId()) && entityName.equals(keyDD.getName())
+                    && entityPlugin.equals(keyDD.getPluginIdentifier())) {
+                return key;
+            }
+        }
+        return null;
     }
 
     private Map<String, BigDecimal> estimateHourlyCostCalculationSingleOperations(final Entity calcOperComp,
