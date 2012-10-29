@@ -185,7 +185,8 @@ public class OrderTimePredictionService {
         machineWorkTime.requestComponentUpdateState();
         order = getActualOrderWithChanges(order);
         int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
-                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, true, true, productionLine);
+                order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, includeTpz,
+                includeAdditionalTime, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
