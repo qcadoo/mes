@@ -97,4 +97,5 @@ public class TransformationsDetailsViewHooks {
             fieldComponent.requestComponentUpdateState();
         }
     }
+
 }

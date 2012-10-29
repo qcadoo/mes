@@ -77,6 +77,12 @@
 		</model:model-hook>
 		
 		<model:model-hook plugin="materialFlow" model="transfer">
+			<model:onCreate
+				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+				method="updateDate" />
+		</model:model-hook>
+		
+		<model:model-hook plugin="materialFlow" model="transfer">
 			<model:onSave
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
 				method="manageResources" />
@@ -90,7 +96,22 @@
 		
 		<menu:menu-item name="resources" category="materialFlow"
 			view="resourcesList" />
-	
+				
+		<view:view-listener plugin="materialFlow" view="transferDetails" 
+			component="locationFrom" event="onSelectedEntityChange" 
+			class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR" 
+			method="disableDateField" />
+		
+		<view:view-listener plugin="materialFlow" view="transferDetails" 
+			component="locationTo" event="onSelectedEntityChange" 
+			class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR" 
+			method="disableDateField" />
+			
+		<view:view-hook plugin="materialFlow" view="transformationsDetails" 
+			type="beforeRender" 
+			class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR" 
+			method="disableDateField" />
+			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
 	

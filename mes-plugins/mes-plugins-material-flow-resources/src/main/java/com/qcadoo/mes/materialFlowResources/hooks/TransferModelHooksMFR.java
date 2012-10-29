@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +39,10 @@ public class TransferModelHooksMFR {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    public void updateDate(final DataDefinition transferDD, final Entity transfer) {
+        transfer.setField(TIME, new Date());
+    }
 
     public void manageResources(final DataDefinition transferDD, final Entity transfer) {
         materialFlowResourcesService.manageResources(transfer);

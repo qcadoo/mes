@@ -21,38 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowMultitransfers.hooks;
-
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-
-import java.util.Arrays;
-import java.util.List;
+package com.qcadoo.mes.materialFlowResources.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 
 @Component
-public class MultitransferViewHooks {
-
-    private static final List<String> COMPONENTS = Arrays.asList(TYPE, TIME);
+public class TransferDetailsViewHooksMFR {
 
     @Autowired
-    private MaterialFlowResourcesService materialFlorwResourcesService;
-
-    public void makeFieldsRequired(final ViewDefinitionState view) {
-        for (String componentRef : COMPONENTS) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(componentRef);
-            component.setRequired(true);
-            component.requestComponentUpdateState();
-        }
-    }
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void disableDateField(final ViewDefinitionState view) {
-        materialFlorwResourcesService.disableDateField(view);
+        materialFlowResourcesService.disableDateField(view);
     }
+
 }
