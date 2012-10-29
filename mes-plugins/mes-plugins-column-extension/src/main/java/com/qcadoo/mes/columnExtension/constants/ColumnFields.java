@@ -21,28 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans;
+package com.qcadoo.mes.columnExtension.constants;
 
-public interface WorkPlansColumnLoaderService {
+public final class ColumnFields {
 
-    void setParameterDefaultValues();
+    private ColumnFields() {
+    }
 
-    void setOperationDefaultValues();
+    public static final String IDENTIFIER = "identifier";
 
-    void setTechnologyOperationComponentDefaultValues();
+    public static final String NAME = "name";
 
-    void setTechnologyInstanceOperationComponentDefaultValues();
+    public static final String DESCRIPTION = "description";
 
-    void fillColumnsForOrders(final String plugin);
+    public static final String COLUMN_FILLER = "columnFiller";
 
-    void clearColumnsForOrders(final String plugin);
+    public static final String TYPE = "type";
 
-    void fillColumnsForProducts(final String plugin);
-
-    void clearColumnsForProducts(final String plugin);
-
-    boolean isColumnsForOrdersEmpty();
-
-    boolean isColumnsForProductsEmpty();
+    public static final String ALIGNMENT = "alignment";
 
 }

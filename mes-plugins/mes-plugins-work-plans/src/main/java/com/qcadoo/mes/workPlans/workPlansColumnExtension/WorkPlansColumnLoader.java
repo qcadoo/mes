@@ -51,7 +51,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void addWorkPlansColumnsForOrders() {
-        if (!workPlansColumnLoaderService.databaseHasToBePreparedForOrders()) {
+        if (!workPlansColumnLoaderService.isColumnsForOrdersEmpty()) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void deleteWorkPlansColumnsForOrders() {
-        if (workPlansColumnLoaderService.databaseHasToBePreparedForOrders()) {
+        if (workPlansColumnLoaderService.isColumnsForOrdersEmpty()) {
             return;
         }
 
@@ -75,7 +75,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void addWorkPlansColumnsForProducts() {
-        if (!workPlansColumnLoaderService.databaseHasToBePreparedForProducts()) {
+        if (!workPlansColumnLoaderService.isColumnsForProductsEmpty()) {
             return;
         }
 
@@ -87,7 +87,7 @@ public class WorkPlansColumnLoader {
     }
 
     public void deleteWorkPlansColumnsForProducts() {
-        if (workPlansColumnLoaderService.databaseHasToBePreparedForProducts()) {
+        if (workPlansColumnLoaderService.isColumnsForProductsEmpty()) {
             return;
         }
 

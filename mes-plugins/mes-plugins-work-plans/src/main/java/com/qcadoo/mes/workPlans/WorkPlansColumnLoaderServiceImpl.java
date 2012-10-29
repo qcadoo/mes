@@ -24,19 +24,12 @@
 package com.qcadoo.mes.workPlans;
 
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.workPlans.constants.ColumnForProductsFields.ACTIVE;
+import static com.qcadoo.mes.workPlans.constants.ColumnForProductsFields.TYPE;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +38,12 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.columnExtension.ColumnExtensionService;
+import com.qcadoo.mes.columnExtension.constants.OperationType;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderService {
@@ -62,20 +55,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     private static final String L_COLUMN_FOR_ORDERS = "columnForOrders";
 
     private static final String L_COLUMN_FOR_PRODUCTS = "columnForProducts";
-
-    private static final String L_IDENTIFIER = "identifier";
-
-    private static final String L_NAME = "name";
-
-    private static final String L_DESCRIPTION = "description";
-
-    private static final String L_COLUMNFILLER = "columnFiller";
-
-    private static final String L_TYPE = "type";
-
-    private static final String L_ALIGNMENT = "alignment";
-
-    private static final String L_ACTIVE = "active";
 
     private enum ColumnType {
         INPUT("input"), OUTPUT("output"), BOTH("both");
@@ -91,18 +70,18 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     };
 
-    private static enum OperationType {
-        ADD, DELETE;
-    };
-
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ColumnExtensionService columnExtensionService;
 
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void setParameterDefaultValues() {
         Entity parameter = parameterService.getParameter();
+
         for (String workPlanParameter : WorkPlansConstants.WORKPLAN_PARAMETERS) {
             if (workPlanParameter.equals(WorkPlansConstants.IMAGE_URL_IN_WORK_PLAN_FIELD)) {
                 continue;
@@ -187,209 +166,131 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
     }
 
     public void fillColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.ADD);
+        Map<Integer, Map<String, String>> columnsAttributes = columnExtensionService.getColumnsAttributesFromXML(plugin,
+                L_COLUMN_FOR_ORDERS);
+
+        for (Map<String, String> columnAttributes : columnsAttributes.values()) {
+            readData(L_COLUMN_FOR_ORDERS, OperationType.ADD, columnAttributes);
+        }
     }
 
     public void clearColumnsForOrders(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_ORDERS, OperationType.DELETE);
+        Map<Integer, Map<String, String>> columnsAttributes = columnExtensionService.getColumnsAttributesFromXML(plugin,
+                L_COLUMN_FOR_ORDERS);
+
+        for (Map<String, String> columnAttributes : columnsAttributes.values()) {
+            readData(L_COLUMN_FOR_ORDERS, OperationType.DELETE, columnAttributes);
+        }
     }
 
     public void fillColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.ADD);
+        Map<Integer, Map<String, String>> columnsAttributes = columnExtensionService.getColumnsAttributesFromXML(plugin,
+                L_COLUMN_FOR_PRODUCTS);
+
+        for (Map<String, String> columnAttributes : columnsAttributes.values()) {
+            readData(L_COLUMN_FOR_PRODUCTS, OperationType.ADD, columnAttributes);
+        }
     }
 
     public void clearColumnsForProducts(final String plugin) {
-        readDataFromXML(plugin, L_COLUMN_FOR_PRODUCTS, OperationType.DELETE);
-    }
+        Map<Integer, Map<String, String>> columnsAttributes = columnExtensionService.getColumnsAttributesFromXML(plugin,
+                L_COLUMN_FOR_PRODUCTS);
 
-    private void readDataFromXML(final String plugin, final String type, final OperationType operation) {
-        LOG.info("Loading test data from " + type + ".xml ...");
-
-        try {
-            SAXBuilder builder = new SAXBuilder();
-            Document document = builder.build(getXmlFile(plugin, type));
-            Element rootNode = document.getRootElement();
-            @SuppressWarnings("unchecked")
-            List<Element> list = rootNode.getChildren("row");
-
-            for (int i = 0; i < list.size(); i++) {
-                Element node = list.get(i);
-                @SuppressWarnings("unchecked")
-                List<Attribute> listOfAtribute = node.getAttributes();
-                Map<String, String> values = new HashMap<String, String>();
-
-                for (int j = 0; j < listOfAtribute.size(); j++) {
-                    values.put(listOfAtribute.get(j).getName().toLowerCase(Locale.ENGLISH), listOfAtribute.get(j).getValue());
-                }
-                readData(type, operation, values);
-            }
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (JDOMException e) {
-            LOG.error(e.getMessage(), e);
+        for (Map<String, String> columnAttributes : columnsAttributes.values()) {
+            readData(L_COLUMN_FOR_PRODUCTS, OperationType.DELETE, columnAttributes);
         }
     }
 
-    private void readData(final String type, final OperationType operation, final Map<String, String> values) {
-        if (L_COLUMN_FOR_ORDERS.equals(type)) {
+    private void readData(final String model, final OperationType operation, final Map<String, String> columnAttributes) {
+        if (L_COLUMN_FOR_ORDERS.equals(model)) {
             if (OperationType.ADD.equals(operation)) {
-                addColumnForOrders(values);
+                addColumnForOrders(columnAttributes);
             } else if (OperationType.DELETE.equals(operation)) {
-                deleteColumnForOrders(values);
+                deleteColumnForOrders(columnAttributes);
             }
-        } else if (L_COLUMN_FOR_PRODUCTS.equals(type)) {
+        } else if (L_COLUMN_FOR_PRODUCTS.equals(model)) {
             if (OperationType.ADD.equals(operation)) {
-                if (ColumnType.BOTH.getStringValue().equals(values.get(L_TYPE))) {
-                    addColumnForInputProducts(values);
-                    addColumnForOutputProducts(values);
-                } else if (ColumnType.INPUT.getStringValue().equals(values.get(L_TYPE))) {
-                    addColumnForInputProducts(values);
-                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(L_TYPE))) {
-                    addColumnForOutputProducts(values);
+                if (ColumnType.BOTH.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    addColumnForInputProducts(columnAttributes);
+                    addColumnForOutputProducts(columnAttributes);
+                } else if (ColumnType.INPUT.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    addColumnForInputProducts(columnAttributes);
+                } else if (ColumnType.OUTPUT.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    addColumnForOutputProducts(columnAttributes);
                 } else {
-                    throw new IllegalStateException("Incorrect type - " + values.get(L_TYPE));
+                    throw new IllegalStateException("Incorrect type - " + columnAttributes.get(TYPE));
                 }
             } else if (OperationType.DELETE.equals(operation)) {
-                if (ColumnType.BOTH.getStringValue().equals(values.get(L_TYPE))) {
-                    deleteColumnForInputProducts(values);
-                    deleteColumnForOutputProducts(values);
-                } else if (ColumnType.INPUT.getStringValue().equals(values.get(L_TYPE))) {
-                    deleteColumnForInputProducts(values);
-                } else if (ColumnType.OUTPUT.getStringValue().equals(values.get(L_TYPE))) {
-                    deleteColumnForOutputProducts(values);
+                if (ColumnType.BOTH.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    deleteColumnForInputProducts(columnAttributes);
+                    deleteColumnForOutputProducts(columnAttributes);
+                } else if (ColumnType.INPUT.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    deleteColumnForInputProducts(columnAttributes);
+                } else if (ColumnType.OUTPUT.getStringValue().equals(columnAttributes.get(TYPE))) {
+                    deleteColumnForOutputProducts(columnAttributes);
                 } else {
-                    throw new IllegalStateException("Incorrect type - " + values.get(L_TYPE));
+                    throw new IllegalStateException("Incorrect type - " + columnAttributes.get(TYPE));
                 }
             }
         }
     }
 
-    private void addColumnForOrders(final Map<String, String> values) {
-        Entity columnForOrders = getColumnForOrdersDD().create();
+    private void addColumnForOrders(final Map<String, String> columnAttributes) {
+        Entity columnForOrders = columnExtensionService.addColumn(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnAttributes);
 
-        columnForOrders.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
-        columnForOrders.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
-        columnForOrders.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
-        columnForOrders.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
-        columnForOrders.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for orders item {column=" + columnForOrders.getStringField(L_NAME) + "}");
-        }
-
-        columnForOrders = columnForOrders.getDataDefinition().save(columnForOrders);
-
-        if (columnForOrders.isValid()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column for input products saved {column=" + columnForOrders.toString() + "}");
-            }
-
-            if (L_TRUE.equals(values.get(L_ACTIVE))) {
-                addParameterOrderColumn(columnForOrders);
-                addWorkPlanOrderColumn(columnForOrders);
-            }
-        } else {
-            throw new IllegalStateException("Saved entity - columnForOrders - has validation errors - "
-                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
+        if (L_TRUE.equals(columnAttributes.get(ACTIVE))) {
+            addParameterOrderColumn(columnForOrders);
+            addWorkPlanOrderColumn(columnForOrders);
         }
     }
 
-    private void deleteColumnForOrders(final Map<String, String> values) {
-        final List<Entity> columnsForOrders = getColumnForOrdersDD().find()
-                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
+    private void deleteColumnForOrders(final Map<String, String> columnAttributes) {
+        columnExtensionService.deleteColumn(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS,
+                columnAttributes);
+    }
 
-        for (Entity columnForOrder : columnsForOrders) {
-            getColumnForOrdersDD().delete(columnForOrder.getId());
+    private void addColumnForInputProducts(final Map<String, String> columnAttributes) {
+        Entity columnForInputProducts = columnExtensionService.addColumn(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnAttributes);
+
+        if (L_TRUE.equals(columnAttributes.get(ACTIVE))) {
+            addParameterInputColumn(columnForInputProducts);
+            addOperationInputColumn(columnForInputProducts);
+            addTechnologyOperationInputColumn(columnForInputProducts);
+            addOrderOperationInputColumn(columnForInputProducts);
         }
     }
 
-    private void addColumnForInputProducts(final Map<String, String> values) {
-        Entity columnForInputProduct = getColumnForInputProductsDD().create();
+    private void deleteColumnForInputProducts(final Map<String, String> columnAttributes) {
+        columnExtensionService.deleteColumn(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnAttributes);
+    }
 
-        columnForInputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
-        columnForInputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
-        columnForInputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
-        columnForInputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
-        columnForInputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
+    private void addColumnForOutputProducts(final Map<String, String> columnAttributes) {
+        Entity columnForOutputProducts = columnExtensionService.addColumn(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnAttributes);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for input products item {column=" + columnForInputProduct.getStringField(L_NAME) + "}");
-        }
-
-        columnForInputProduct = columnForInputProduct.getDataDefinition().save(columnForInputProduct);
-
-        if (columnForInputProduct.isValid()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column for input products saved {column=" + columnForInputProduct.toString() + "}");
-            }
-
-            if (L_TRUE.equals(values.get(L_ACTIVE))) {
-                addParameterInputColumn(columnForInputProduct);
-                addOperationInputColumn(columnForInputProduct);
-                addTechnologyOperationInputColumn(columnForInputProduct);
-                addOrderOperationInputColumn(columnForInputProduct);
-            }
-        } else {
-            throw new IllegalStateException("Saved entity - columnForInputProducts - has validation errors - "
-                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
+        if (L_TRUE.equals(columnAttributes.get(ACTIVE))) {
+            addParameterOutputColumn(columnForOutputProducts);
+            addOperationOutputColumn(columnForOutputProducts);
+            addTechnologyOperationOutputColumn(columnForOutputProducts);
+            addOrderOperationOutputColumn(columnForOutputProducts);
         }
     }
 
-    private void deleteColumnForInputProducts(final Map<String, String> values) {
-        final List<Entity> columnsForInputProduct = getColumnForInputProductsDD().find()
-                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
-
-        for (Entity columnForInputProduct : columnsForInputProduct) {
-            getColumnForInputProductsDD().delete(columnForInputProduct.getId());
-        }
-    }
-
-    private void addColumnForOutputProducts(final Map<String, String> values) {
-        Entity columnForOutputProduct = getColumnForOutputProductsDD().create();
-
-        columnForOutputProduct.setField(L_IDENTIFIER, values.get(L_IDENTIFIER.toLowerCase(Locale.ENGLISH)));
-        columnForOutputProduct.setField(L_NAME, values.get(L_NAME.toLowerCase(Locale.ENGLISH)));
-        columnForOutputProduct.setField(L_DESCRIPTION, values.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
-        columnForOutputProduct.setField(L_COLUMNFILLER, values.get(L_COLUMNFILLER.toLowerCase(Locale.ENGLISH)));
-        columnForOutputProduct.setField(L_ALIGNMENT, values.get(L_ALIGNMENT.toLowerCase(Locale.ENGLISH)));
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Add column for output products item {column=" + columnForOutputProduct.getStringField(L_NAME) + "}");
-        }
-
-        columnForOutputProduct = columnForOutputProduct.getDataDefinition().save(columnForOutputProduct);
-
-        if (columnForOutputProduct.isValid()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Column for output products saved {column=" + columnForOutputProduct.toString() + "}");
-            }
-
-            if (L_TRUE.equals(values.get(L_ACTIVE))) {
-                addParameterOutputColumn(columnForOutputProduct);
-                addOperationOutputColumn(columnForOutputProduct);
-                addTechnologyOperationOutputColumn(columnForOutputProduct);
-                addOrderOperationOutputColumn(columnForOutputProduct);
-            }
-        } else {
-            throw new IllegalStateException("Saved entity - columnForOutputProducts - has validation errors - "
-                    + values.get(L_NAME.toUpperCase(Locale.ENGLISH)));
-        }
-    }
-
-    private void deleteColumnForOutputProducts(final Map<String, String> values) {
-        final List<Entity> columnsForOutputProduct = getColumnForOutputProductsDD().find()
-                .add(SearchRestrictions.eq(L_IDENTIFIER, values.get(L_IDENTIFIER))).list().getEntities();
-
-        for (Entity columnForOutputProduct : columnsForOutputProduct) {
-            getColumnForOutputProductsDD().delete(columnForOutputProduct.getId());
-        }
+    private void deleteColumnForOutputProducts(final Map<String, String> columnAttributes) {
+        columnExtensionService.deleteColumn(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnAttributes);
     }
 
     private void addParameterOrderColumn(final Entity columnForOrders) {
         Entity parameterOrderColumn = dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
                 WorkPlansConstants.MODEL_PARAMETER_ORDER_COLUMN).create();
+
+        parameterOrderColumn.setField(BasicConstants.MODEL_PARAMETER, parameterService.getParameter());
         parameterOrderColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
-        parameterOrderColumn.setField("parameter", parameterService.getParameter());
+
         parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
 
         if (parameterOrderColumn.isValid()) {
@@ -646,42 +547,16 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     }
 
-    private DataDefinition getColumnForOrdersDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS);
+    public boolean isColumnsForOrdersEmpty() {
+        return columnExtensionService.isColumnsEmpty(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_ORDERS);
     }
 
-    private DataDefinition getColumnForInputProductsDD() {
-        return dataDefinitionService
-                .get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS);
-    }
-
-    private DataDefinition getColumnForOutputProductsDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS);
-    }
-
-    public boolean databaseHasToBePreparedForOrders() {
-        return checkIfColumnForOrdersAreEmpty();
-    }
-
-    public boolean databaseHasToBePreparedForProducts() {
-        return checkIfColumnForInputProductsAreEmpty() && checkIfColumnForOutputProductsAreEmpty();
-    }
-
-    private boolean checkIfColumnForOrdersAreEmpty() {
-        return getColumnForOrdersDD().find().list().getTotalNumberOfEntities() == 0;
-    }
-
-    private boolean checkIfColumnForInputProductsAreEmpty() {
-        return getColumnForInputProductsDD().find().list().getTotalNumberOfEntities() == 0;
-    }
-
-    private boolean checkIfColumnForOutputProductsAreEmpty() {
-        return getColumnForOutputProductsDD().find().list().getTotalNumberOfEntities() == 0;
-    }
-
-    private InputStream getXmlFile(final String plugin, final String type) throws IOException {
-        return WorkPlansColumnLoaderServiceImpl.class.getResourceAsStream("/" + plugin + "/model/data/" + type + ".xml");
+    public boolean isColumnsForProductsEmpty() {
+        return columnExtensionService.isColumnsEmpty(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS)
+                && columnExtensionService.isColumnsEmpty(WorkPlansConstants.PLUGIN_IDENTIFIER,
+                        WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS);
     }
 
 }

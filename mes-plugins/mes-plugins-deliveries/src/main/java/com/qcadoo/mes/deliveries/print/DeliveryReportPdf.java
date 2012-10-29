@@ -110,6 +110,7 @@ public class DeliveryReportPdf extends ReportPdfView {
                     translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
                     delivery.getStringField(DESCRIPTION));
         }
+
         if (delivery.getField(DELIVERY_DATE) == null) {
             pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
         } else {
