@@ -26,6 +26,7 @@ package com.qcadoo.mes.operationTimeCalculations;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -206,9 +207,10 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
 
-                    int childTimeTotal = evaluateSingleOperationTime(child, true, false, operationRuns, productionLine, true);
-                    int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child, true,
-                            false, operationRuns, productionLine, true);
+                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
+                            productionLine, true);
+                    int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
+                            includeTpz, includeAdditionalTime, operationRuns, productionLine, true, productComponentQuantities);
 
                     int difference = childTimeTotal - childTimeForQuantity;
                     childTime -= difference;
@@ -264,21 +266,63 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
             final boolean includeTpz, final boolean includeAdditionalTime, final Map<Entity, BigDecimal> operationRuns,
-            final Entity productionLine, final boolean maxForWorkstation) {
+            final Entity productionLine, final boolean maxForWorkstation, final Map<Entity, BigDecimal> productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
-
+        BigDecimal cycles = BigDecimal.ONE;
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
-
         BigDecimal nextOperationAfterProducedQuantity = operationComponent.getDecimalField("nextOperationAfterProducedQuantity");
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
-        BigDecimal cycles = nextOperationAfterProducedQuantity.divide(BigDecimal.valueOf(workstationsCount),
-                numberService.getMathContext());
+        BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
+        Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
+
+        if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) != 1) {
+            cycles = getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
+                    productComponentQuantity, nextOperationAfterProducedQuantity);
+        } else {
+            cycles = operationRuns.get(technologyOperationComponent);
+        }
+
+        cycles = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
 
         if (!isTjDivisable) {
             cycles = cycles.setScale(0, RoundingMode.CEILING);
         }
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
+    }
+
+    private Entity getTechnologyOperationComponent(final Entity operationComponent) {
+        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
+            return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(
+                    operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
+        } else {
+            return operationComponent;
+        }
+    }
+
+    private Entity getOutputProduct(final Entity operationComponent) {
+        if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
+            Entity technologyOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
+            return productQuantitiesService.getOutputProductsFromOperataionComponent(technologyOperComp);
+        } else {
+            return productQuantitiesService.getOutputProductsFromOperataionComponent(operationComponent);
+        }
+    }
+
+    private BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(final Entity operationComponent,
+            final BigDecimal productComponentQuantity, final BigDecimal nextOperationAfterProducedQuantity) {
+        MathContext mc = numberService.getMathContext();
+        Entity technology = operationComponent.getBelongsToField("technology");
+
+        Map<Entity, BigDecimal> operationsRunsForOrderForOneProduct = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> productQuantities = productQuantitiesService.getProductComponentQuantities(technology,
+                BigDecimal.ONE, operationsRunsForOrderForOneProduct);
+        BigDecimal operationsRunsForOneMainProduct = operationsRunsForOrderForOneProduct.get(operationComponent);
+        BigDecimal quantityOutputProductProduced = productQuantities.get(getOutputProduct(operationComponent));
+        BigDecimal cycles = operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, mc).divide(
+                quantityOutputProductProduced, mc);
+        return numberService.setScale(cycles);
     }
 
     private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
