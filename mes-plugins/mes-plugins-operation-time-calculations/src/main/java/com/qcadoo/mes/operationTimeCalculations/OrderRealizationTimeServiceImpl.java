@@ -210,7 +210,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
                             productionLine, true);
                     int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
-                            includeTpz, includeAdditionalTime, operationRuns, productionLine, true, productComponentQuantities);
+                            includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
 
                     int difference = childTimeTotal - childTimeForQuantity;
                     childTime -= difference;
