@@ -113,7 +113,6 @@ public class OrderHooks {
     }
 
     private void setStartDate(final Entity entity) {
-
         if (entity.getId() == null) {
             return;
         }
@@ -165,8 +164,10 @@ public class OrderHooks {
             order.setField(START_DATE, order.getField(EFFECTIVE_DATE_FROM));
         } else if (order.getField(CORRECTED_DATE_FROM) != null) {
             order.setField(START_DATE, order.getField(CORRECTED_DATE_FROM));
-        } else {
+        } else if (order.getField(DATE_FROM) != null) {
             order.setField(START_DATE, order.getField(DATE_FROM));
+        } else {
+            order.setField(DATE_FROM, order.getField(START_DATE));
         }
     }
 
@@ -175,8 +176,10 @@ public class OrderHooks {
             order.setField(FINISH_DATE, order.getField(EFFECTIVE_DATE_TO));
         } else if (order.getField(CORRECTED_DATE_TO) != null) {
             order.setField(FINISH_DATE, order.getField(CORRECTED_DATE_TO));
-        } else {
+        } else if (order.getField(DATE_TO) != null) {
             order.setField(FINISH_DATE, order.getField(DATE_TO));
+        } else {
+            order.setField(DATE_TO, order.getField(FINISH_DATE));
         }
     }
 

@@ -1220,9 +1220,9 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         FieldDefinition dateToField = mock(FieldDefinition.class);
         Entity entity = mock(Entity.class);
-        given(entity.getField("dateFrom")).willReturn(new Date());
-        given(entity.getField("dateTo")).willReturn(new Date(System.currentTimeMillis() - 10000));
-        given(dataDefinition.getField("dateTo")).willReturn(dateToField);
+        given(entity.getField("startDate")).willReturn(new Date());
+        given(entity.getField("finishDate")).willReturn(new Date(System.currentTimeMillis() - 10000));
+        given(dataDefinition.getField("finishDate")).willReturn(dateToField);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
