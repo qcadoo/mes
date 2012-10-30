@@ -936,7 +936,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         requirement.setField(L_NAME, values.get(L_NAME));
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_WORKER, values.get(L_WORKER));
-        requirement.setField("onlyComponents", values.get("onlycomponents"));
+        requirement.setField("mrpAlgorithm", "01onlyComponents");
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_GENERATED, values.get(L_GENERATED));
         requirement.setField(L_FILE_NAME, values.get(L_FILE_NAME));
@@ -946,7 +946,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test material requirement {name=" + requirement.getField(L_NAME) + ", date="
                     + requirement.getField(L_DATE) + ", worker=" + requirement.getField(L_WORKER) + ", onlyComponents="
-                    + requirement.getField("onlyComponents") + ", generated=" + requirement.getField(L_GENERATED) + "}");
+                    + requirement.getField("mrpAlgorithm") + ", generated=" + requirement.getField(L_GENERATED) + "}");
         }
 
         dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
