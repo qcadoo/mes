@@ -64,12 +64,15 @@ public class DeliveryDetailsListeners {
         }
         Entity delivery = form.getEntity().getDataDefinition().get(form.getEntityId());
         List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+        copyOrderedProductToDelivered(delivery, orderedProducts);
+    }
 
+    private Entity copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
         // ALBR deliveredProduct has a validation so we have to delete all entities before save HM field in delivery
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
-        delivery.getDataDefinition().save(delivery);
+        return delivery.getDataDefinition().save(delivery);
     }
 
     private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts) {
