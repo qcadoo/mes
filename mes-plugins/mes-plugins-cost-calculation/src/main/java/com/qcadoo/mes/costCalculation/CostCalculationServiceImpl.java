@@ -101,6 +101,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
         entity.setField(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, numberService.setScale(productionCostMarginValue));
         entity.setField(CostCalculationFields.MATERIAL_COST_MARGIN_VALUE, numberService.setScale(materialCostMarginValue));
+        calculateTotalOverhead(entity);
     }
 
     @Override
