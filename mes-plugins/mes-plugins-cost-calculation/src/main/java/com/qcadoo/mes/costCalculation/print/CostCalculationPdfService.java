@@ -85,8 +85,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private static final String L_NOMINAL_COST = "nominalCost";
 
-    private static final String L_DURATION = "duration";
-
     private static final String L_NODE_NUMBER = "nodeNumber";
 
     private static final String L_PIECES = "pieces";
@@ -681,7 +679,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
             Integer totalMachineWorkTimeSummary = Integer.valueOf(0);
             Integer totalLaborWorkTimeSummary = Integer.valueOf(0);
-            BigDecimal totalOperationCostSummary = null;
             BigDecimal totalOperationWithMarginCostSummary = null;
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
@@ -714,12 +711,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 totalLaborWorkTimeSummary += laborWorkTime;
                 MathContext mc = numberService.getMathContext();
 
-                BigDecimal operationCost = calculationOperationComponent.getDecimalField(L_OPERATION_COST);
-                if (totalOperationCostSummary == null) {
-                    totalOperationCostSummary = operationCost;
-                } else {
-                    totalOperationCostSummary = totalOperationCostSummary.add(operationCost, mc);
-                }
                 BigDecimal totalMachineOperationCostWithMargin = calculationOperationComponent
                         .getDecimalField("totalMachineOperationCostWithMargin");
                 BigDecimal totalLaborOperationCostWithMargin = calculationOperationComponent
@@ -742,7 +733,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
             BigDecimal totalProductionCostMargin = costCalculation.getDecimalField(L_PRODUCTION_COST_MARGIN_VALUE);
 
             String totalProductionCostMarginValue = numberService.format(totalProductionCostMargin);
-            String totalOperationCostSummaryToString = numberService.format(totalOperationCostSummary);
             String totalOperationWithMarginCostSummaryToString = numberService.format(totalOperationWithMarginCostSummary);
 
             operationsTable.addCell(new Phrase(translationService.translate(
@@ -754,7 +744,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
             operationsTable.addCell(new Phrase(totalMachineHourlyCosts, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalLaborWorkTimeToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalLaborHourlyCosts, FontUtils.getDejavuRegular9Dark()));
-            operationsTable.addCell(new Phrase(totalOperationCostSummaryToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalProductionCostMarginValue, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalOperationWithMarginCostSummaryToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
