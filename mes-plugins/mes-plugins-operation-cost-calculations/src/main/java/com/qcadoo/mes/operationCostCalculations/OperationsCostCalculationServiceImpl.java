@@ -190,7 +190,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 resultsMap.put(key, unitOperationCost);
             }
         }
-        OperationWorkTime dur = realizationTimes.get(calcOperComp);
+
+        final OperationWorkTime dur = findValueMatchingMutableEntityKey(calcOperComp, realizationTimes);
         Map<String, BigDecimal> costs = estimateHourlyCostCalculationSingleOperations(calcOperComp, dur, margin);
         savedGeneratedValues(costs, calcOperComp, true, dur, null);
 
@@ -199,8 +200,36 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return resultsMap;
     }
 
+    // FIXME MAKU & ALBR this is awful workaround for mutable keys problem - realizationTimes map should have some immutable
+    // objects in key set!!
+    @Deprecated
+    private OperationWorkTime findValueMatchingMutableEntityKey(final Entity compromisedKey,
+            final Map<Entity, OperationWorkTime> compromisedMap) {
+        final Entity foundKey = findMatchingKey(compromisedKey, compromisedMap);
+        if (foundKey == null) {
+            return null;
+        }
+        return compromisedMap.get(foundKey);
+    }
+
+    @Deprecated
+    private Entity findMatchingKey(final Entity compromisedKey, final Map<Entity, OperationWorkTime> compromisedMap) {
+        final String entityName = compromisedKey.getDataDefinition().getName();
+        final String entityPlugin = compromisedKey.getDataDefinition().getPluginIdentifier();
+        for (Entity key : compromisedMap.keySet()) {
+            final DataDefinition keyDD = key.getDataDefinition();
+            if (compromisedKey.getId().equals(key.getId()) && entityName.equals(keyDD.getName())
+                    && entityPlugin.equals(keyDD.getPluginIdentifier())) {
+                return key;
+            }
+        }
+        return null;
+    }
+
     private Map<String, BigDecimal> estimateHourlyCostCalculationSingleOperations(final Entity calcOperComp,
             final OperationWorkTime dur, final BigDecimal margin) {
+
+        MathContext mc = numberService.getMathContext();
 
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
         BigDecimal hourlyMachineCost = getBigDecimal(calcOperComp.getField(MACHINE_HOURLY_COST));
@@ -209,20 +238,28 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal durationMachine = BigDecimal.valueOf(dur.getMachineWorkTime());
         BigDecimal durationLabor = BigDecimal.valueOf(dur.getLaborWorkTime());
 
-        BigDecimal durationMachineInHours = durationMachine.divide(BigDecimal.valueOf(3600), numberService.getMathContext());
-        BigDecimal durationLaborInHours = durationLabor.divide(BigDecimal.valueOf(3600), numberService.getMathContext());
+        BigDecimal durationMachineInHours = durationMachine.divide(BigDecimal.valueOf(3600), mc);
+        BigDecimal durationLaborInHours = durationLabor.divide(BigDecimal.valueOf(3600), mc);
 
-        BigDecimal operationMachineCost = durationMachineInHours.multiply(hourlyMachineCost, numberService.getMathContext());
-        BigDecimal operationLaborCost = durationLaborInHours.multiply(hourlyLaborCost, numberService.getMathContext());
+        BigDecimal operationMachineCost = durationMachineInHours.multiply(hourlyMachineCost, mc);
+        BigDecimal operationLaborCost = durationLaborInHours.multiply(hourlyLaborCost, mc);
 
-        BigDecimal operationCost = operationMachineCost.add(operationLaborCost, numberService.getMathContext());
+        BigDecimal operationMachineCostIncludeMargin = operationMachineCost.add(operationMachineCost.multiply(
+                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext()), mc);
+
+        BigDecimal operationLaborCostIncludeMargin = operationLaborCost.add(
+                operationLaborCost.multiply(margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), mc), mc);
+
+        BigDecimal operationCost = operationMachineCost.add(operationLaborCost, mc);
         BigDecimal operationMarginCost = operationCost.multiply(
-                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), numberService.getMathContext());
+                margin.divide(BigDecimal.valueOf(100), numberService.getMathContext()), mc);
 
-        results.put("operationCost", operationCost);
-        results.put("operationMarginCost", operationMarginCost);
-        results.put("operationMachineCost", operationMachineCost);
-        results.put("operationLaborCost", operationLaborCost);
+        results.put("operationCost", numberService.setScale(operationCost));
+        results.put("operationMarginCost", numberService.setScale(operationMarginCost));
+        results.put("operationMachineCost", numberService.setScale(operationMachineCost));
+        results.put("operationLaborCost", numberService.setScale(operationLaborCost));
+        results.put("operationMachineCostIncludeMargin", numberService.setScale(operationMachineCostIncludeMargin));
+        results.put("operationLaborCostIncludeMargin", numberService.setScale(operationLaborCostIncludeMargin));
         return results;
 
     }
@@ -231,6 +268,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             final OperationWorkTime dur, final BigDecimal operationRuns) {
         if (hourlyCosts) {
             calcOperComp.setField("duration", new BigDecimal(dur.getDuration(), numberService.getMathContext()));
+            calcOperComp.setField("totalMachineOperationCost", costs.get("operationMachineCost"));
+            calcOperComp.setField("totalLaborOperationCost", costs.get("operationLaborCost"));
+            calcOperComp.setField("totalLaborOperationCostWithMargin", costs.get("operationLaborCostIncludeMargin"));
+            calcOperComp.setField("totalMachineOperationCostWithMargin", costs.get("operationMachineCostIncludeMargin"));
         } else {
             calcOperComp.setField("pieces", numberService.setScale(operationRuns));
         }
@@ -360,7 +401,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         for (String fieldName : Arrays.asList("priority", "nodeNumber", "tpz", "tj", L_PRODUCTION_IN_ONE_CYCLE,
                 "nextOperationAfterProducedQuantity", "timeNextOperation", "operationOffSet",
                 "effectiveOperationRealizationTime", "effectiveDateFrom", "effectiveDateTo", "pieceworkCost", "laborHourlyCost",
-                "machineHourlyCost", "numberOfOperations", "totalOperationCost", "laborUtilization", "machineUtilization")) {
+                "machineHourlyCost", "numberOfOperations", "laborUtilization", "machineUtilization")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 

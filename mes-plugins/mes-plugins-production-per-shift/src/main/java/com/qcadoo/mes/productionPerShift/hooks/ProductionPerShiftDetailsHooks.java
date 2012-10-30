@@ -183,8 +183,9 @@ public class ProductionPerShiftDetailsHooks {
         Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference("orderPlannedStartDate");
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference("orderCorrectedStartDate");
-        orderPlannedStartDate.setFieldValue(timeConverterService.setDateToField((Date) order.getField(OrderFields.DATE_FROM)));
-        orderCorrectedStartDate.setFieldValue(timeConverterService.setDateToField((Date) order
+        orderPlannedStartDate
+                .setFieldValue(timeConverterService.setDateTimeToField((Date) order.getField(OrderFields.DATE_FROM)));
+        orderCorrectedStartDate.setFieldValue(timeConverterService.setDateTimeToField((Date) order
                 .getField(OrderFields.CORRECTED_DATE_FROM)));
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
@@ -359,7 +360,8 @@ public class ProductionPerShiftDetailsHooks {
                 if (shift == null) {
                     continue;
                 }
-                if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift)) {
+                boolean isFirstDailyProgress = dailyProgressList.get(0).equals(dailyProgress);
+                if (!checkIfShiftWorks(progressForDays, progressForDay, tioc, shift, isFirstDailyProgress)) {
                     final String shiftName = shift.getStringField(ShiftFields.NAME);
                     final String workDate = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault())
                             .format(getDateAfterStartOrderForProgress(tioc.getBelongsToField(L_ORDER), progressForDay));
@@ -371,9 +373,9 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private boolean checkIfShiftWorks(final List<Entity> progressForDays, final Entity progressForDay, final Entity tioc,
-            final Entity shift) {
+            final Entity shift, final boolean isFirstDailyProgress) {
         boolean works = false;
-        if (progressForDay.equals(progressForDays.get(0))) {
+        if (progressForDay.equals(progressForDays.get(0)) && isFirstDailyProgress) {
             Entity shiftFromDay = shiftsService.getShiftFromDateWithTime(getDateAfterStartOrderForProgress(
                     tioc.getBelongsToField(L_ORDER), progressForDay));
             if (shiftFromDay == null) {

@@ -656,10 +656,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         for (String translate : Arrays.asList("costCalculation.costCalculationDetails.report.columnHeader.level",
                 L_COST_CALCULATION_COST_CALCULATION_DETAILS_REPORT_COLUMN_HEADER_NUMBER,
-                "costCalculation.costCalculationDetails.report.columnHeader.duration",
+                "costCalculation.costCalculationDetails.report.columnHeader.machDuration",
                 "costCalculation.costCalculationDetails.report.columnHeader.machCosts",
+                "costCalculation.costCalculationDetails.report.columnHeader.labDuration",
                 "costCalculation.costCalculationDetails.report.columnHeader.labCosts",
-                "costCalculation.costCalculationDetails.report.columnHeader.operationCost",
                 "costCalculation.costCalculationDetails.report.columnHeader.margin",
                 "costCalculation.costCalculationDetails.report.columnHeader.totalCosts")) {
             operationsTableHeader.add(translationService.translate(translate, locale));
@@ -679,41 +679,30 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         if (calculationOperationComponents != null && !calculationOperationComponents.isEmpty()) {
+            Integer totalMachineWorkTimeSummary = Integer.valueOf(0);
+            Integer totalLaborWorkTimeSummary = Integer.valueOf(0);
             BigDecimal totalOperationCostSummary = null;
-            Integer totalDuration = null;
+            BigDecimal totalOperationWithMarginCostSummary = null;
+
             for (Entity calculationOperationComponent : calculationOperationComponents) {
+
+                Integer machineWorkTime = (Integer) calculationOperationComponent.getField("machineWorkTime");
+                Integer laborWorkTime = (Integer) calculationOperationComponent.getField("laborWorkTime");
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getField(L_NODE_NUMBER).toString(), FontUtils
                         .getDejavuRegular9Dark()));
 
                 operationsTable.addCell(new Phrase(calculationOperationComponent.getBelongsToField(
                         TechnologiesConstants.MODEL_OPERATION).getStringField(NUMBER), FontUtils.getDejavuRegular9Dark()));
 
-                String duration = timeConverterService.convertTimeToString((Integer) calculationOperationComponent
-                        .getField(L_DURATION));
-
-                Integer durationMs = (Integer) calculationOperationComponent.getField(L_DURATION);
-                BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
-                BigDecimal durationHours = BigDecimal.valueOf(durationMs).divide(milisecondsInHour,
-                        numberService.getMathContext());
-                BigDecimal machineUtilization = (BigDecimal) calculationOperationComponent.getField("machineUtilization");
-                BigDecimal machineHourlyCost = (BigDecimal) calculationOperationComponent.getField("machineHourlyCost");
-                BigDecimal durationOfMachine = (BigDecimal) machineUtilization.multiply(machineHourlyCost)
-                        .multiply(durationHours);
-                String durationOfMachineToString = numberService.format(durationOfMachine);
-
-                BigDecimal laborUtilization = (BigDecimal) calculationOperationComponent.getField("laborUtilization");
-                BigDecimal laborHourlyCost = (BigDecimal) calculationOperationComponent.getField("laborHourlyCost");
-                BigDecimal durationOfLabor = (BigDecimal) laborUtilization.multiply(laborHourlyCost).multiply(durationHours);
-                String durationOfLaborToString = numberService.format(durationOfLabor);
-
-                operationsTable.addCell(new Phrase(duration, FontUtils.getDejavuRegular9Dark()));
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                operationsTable.addCell(new Phrase(durationOfMachineToString, FontUtils.getDejavuRegular9Dark()));
-
-                operationsTable.addCell(new Phrase(durationOfLaborToString, FontUtils.getDejavuRegular9Dark()));
-                operationsTable.addCell(new Phrase(
-                        numberService.format(calculationOperationComponent.getField(L_OPERATION_COST)), FontUtils
-                                .getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(timeConverterService.convertTimeToString(machineWorkTime), FontUtils
+                        .getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
+                        .getField("totalMachineOperationCost")), FontUtils.getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(timeConverterService.convertTimeToString(laborWorkTime), FontUtils
+                        .getDejavuRegular9Dark()));
+                operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
+                        .getField("totalLaborOperationCost")), FontUtils.getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
                         .getField("operationMarginCost")), FontUtils.getDejavuRegular9Dark()));
                 operationsTable.addCell(new Phrase(numberService.format(calculationOperationComponent
@@ -721,41 +710,53 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
                 operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
+                totalMachineWorkTimeSummary += machineWorkTime;
+                totalLaborWorkTimeSummary += laborWorkTime;
+                MathContext mc = numberService.getMathContext();
+
                 BigDecimal operationCost = calculationOperationComponent.getDecimalField(L_OPERATION_COST);
                 if (totalOperationCostSummary == null) {
                     totalOperationCostSummary = operationCost;
                 } else {
-                    totalOperationCostSummary = totalOperationCostSummary.add(operationCost);
+                    totalOperationCostSummary = totalOperationCostSummary.add(operationCost, mc);
                 }
-                Integer durationTmp = (Integer) calculationOperationComponent.getField(L_DURATION);
-                if (totalDuration == null) {
-                    totalDuration = durationTmp;
+                BigDecimal totalMachineOperationCostWithMargin = calculationOperationComponent
+                        .getDecimalField("totalMachineOperationCostWithMargin");
+                BigDecimal totalLaborOperationCostWithMargin = calculationOperationComponent
+                        .getDecimalField("totalLaborOperationCostWithMargin");
+                BigDecimal totalOperationCostWithMargin = totalMachineOperationCostWithMargin.add(
+                        totalLaborOperationCostWithMargin, mc);
+
+                if (totalOperationWithMarginCostSummary == null) {
+                    totalOperationWithMarginCostSummary = totalOperationCostWithMargin;
                 } else {
-                    totalDuration += durationTmp;
+                    totalOperationWithMarginCostSummary = totalOperationWithMarginCostSummary.add(totalOperationCostWithMargin,
+                            mc);
                 }
-
             }
-            String totalDurationToString = timeConverterService.convertTimeToString(totalDuration);
-            String totalMachineHourlyCosts = numberService.format(costCalculation.getField(L_TOTAL_MACHINE_HOURLY_COSTS));
-            String totalLaborHourlyCosts = numberService.format(costCalculation.getField(L_TOTAL_LABOR_HOURLY_COSTS));
-            String totalmaterialCostMarginValue = numberService.format(costCalculation.getField(L_MATERIAL_COST_MARGIN_VALUE));
-            String totalOperationCostSummaryToString = numberService.format(totalOperationCostSummary);
+            String totalMachineWorkTimeToString = timeConverterService.convertTimeToString(totalMachineWorkTimeSummary);
+            String totalMachineHourlyCosts = numberService.format(costCalculation.getDecimalField("totalMachineHourlyCosts"));
+            String totalLaborWorkTimeToString = timeConverterService.convertTimeToString(totalLaborWorkTimeSummary);
+            String totalLaborHourlyCosts = numberService.format(costCalculation.getDecimalField("totalLaborHourlyCosts"));
 
-            BigDecimal totalOperationCost = totalOperationCostSummary.add(costCalculation
-                    .getDecimalField(L_MATERIAL_COST_MARGIN_VALUE));
-            String totalOperationCostToString = numberService.format(totalOperationCost);
+            BigDecimal totalProductionCostMargin = costCalculation.getDecimalField(L_PRODUCTION_COST_MARGIN_VALUE);
+
+            String totalProductionCostMarginValue = numberService.format(totalProductionCostMargin);
+            String totalOperationCostSummaryToString = numberService.format(totalOperationCostSummary);
+            String totalOperationWithMarginCostSummaryToString = numberService.format(totalOperationWithMarginCostSummary);
 
             operationsTable.addCell(new Phrase(translationService.translate(
                     "costCalculation.costCalculation.report.totalOperation", locale), FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
-            operationsTable.addCell(new Phrase(totalDurationToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            operationsTable.addCell(new Phrase(totalMachineWorkTimeToString, FontUtils.getDejavuRegular9Dark()));
 
             operationsTable.addCell(new Phrase(totalMachineHourlyCosts, FontUtils.getDejavuRegular9Dark()));
+            operationsTable.addCell(new Phrase(totalLaborWorkTimeToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalLaborHourlyCosts, FontUtils.getDejavuRegular9Dark()));
             operationsTable.addCell(new Phrase(totalOperationCostSummaryToString, FontUtils.getDejavuRegular9Dark()));
-            operationsTable.addCell(new Phrase(totalmaterialCostMarginValue, FontUtils.getDejavuRegular9Dark()));
-            operationsTable.addCell(new Phrase(totalOperationCostToString, FontUtils.getDejavuRegular9Dark()));
+            operationsTable.addCell(new Phrase(totalProductionCostMarginValue, FontUtils.getDejavuRegular9Dark()));
+            operationsTable.addCell(new Phrase(totalOperationWithMarginCostSummaryToString, FontUtils.getDejavuRegular9Dark()));
             operationsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         return operationsTable;

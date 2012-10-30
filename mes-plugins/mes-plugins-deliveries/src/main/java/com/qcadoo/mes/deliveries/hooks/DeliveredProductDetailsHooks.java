@@ -32,6 +32,7 @@ public class DeliveredProductDetailsHooks {
         FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(ORDERED_QUANTITY);
         if (product == null) {
             orderedQuantity.setFieldValue(null);
+            orderedQuantity.requestComponentUpdateState();
             return;
         }
         FormComponent form = (FormComponent) view.getComponentByReference("form");

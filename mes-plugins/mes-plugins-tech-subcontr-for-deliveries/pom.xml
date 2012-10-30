@@ -13,7 +13,7 @@
 	<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
 	<packaging>qcadoo-plugin</packaging>
 	
-	<name>Qcadoo MES :: Plugins :: Tech. subcontracting for deliveries</name>
+	<name>Qcadoo MES :: Plugins :: Technology subcontracting for deliveries</name>
 
 	<dependencies>
 		<dependency>

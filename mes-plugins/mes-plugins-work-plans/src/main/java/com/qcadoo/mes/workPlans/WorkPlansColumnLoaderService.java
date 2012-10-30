@@ -25,14 +25,6 @@ package com.qcadoo.mes.workPlans;
 
 public interface WorkPlansColumnLoaderService {
 
-    void fillColumnsForOrders(final String plugin);
-
-    void clearColumnsForOrders(final String plugin);
-
-    void fillColumnsForProducts(final String plugin);
-
-    void clearColumnsForProducts(final String plugin);
-
     void setParameterDefaultValues();
 
     void setOperationDefaultValues();
@@ -41,8 +33,16 @@ public interface WorkPlansColumnLoaderService {
 
     void setTechnologyInstanceOperationComponentDefaultValues();
 
-    boolean databaseHasToBePreparedForOrders();
+    void fillColumnsForOrders(final String plugin);
 
-    boolean databaseHasToBePreparedForProducts();
+    void clearColumnsForOrders(final String plugin);
+
+    void fillColumnsForProducts(final String plugin);
+
+    void clearColumnsForProducts(final String plugin);
+
+    boolean isColumnsForOrdersEmpty();
+
+    boolean isColumnsForProductsEmpty();
 
 }

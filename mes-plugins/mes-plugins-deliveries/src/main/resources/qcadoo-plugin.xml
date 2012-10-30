@@ -35,6 +35,10 @@
 			<plugin>states</plugin>
 			<version>[1.1.7</version>
 		</dependency>
+		<dependency>
+			<plugin>columnExtension</plugin>
+			<version>[1.1.8</version>
+		</dependency>
 	</dependencies>
 
 	<modules>

@@ -327,15 +327,13 @@ CREATE TABLE deliveries_deliveredproduct
   deliveredquantity numeric(12,5),
   damagedquantity numeric(12,5),
   operation_id bigint,
-  offer_id bigint,
   CONSTRAINT deliveries_deliveredproduct_pkey PRIMARY KEY (id),
   CONSTRAINT deliveredproduct_delivery_fkey FOREIGN KEY (delivery_id)
       REFERENCES deliveries_delivery (id) DEFERRABLE,
   CONSTRAINT deliveredproduct_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
   CONSTRAINT deliveredproduct_operation_fkey FOREIGN KEY (operation_id)
-      REFERENCES technologies_operation (id) DEFERRABLE,
-  
+      REFERENCES technologies_operation (id) DEFERRABLE
 );
 
 -- end
@@ -518,11 +516,44 @@ ALTER TABLE technologies_technologyinstanceoperationcomponent ALTER COLUMN machi
 
 -- end
 
+
+-- Table: productioncounting_productionbalance
+-- changed: 24.10.2012
+
+ALTER TABLE productioncounting_productionbalance ALTER COLUMN filename TYPE varchar(1024);
+
+-- end
+
 -- Table: costnormsforoperation_calculationoperationcomponent
 -- changed: 21.10.2012
+
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN machineworktime integer;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN machineworktime SET DEFAULT 0;
 
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN laborworktime integer;
 ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN laborworktime SET DEFAULT 0;
+
+-- end
+
+
+-- Table: technologies_operationgroup
+-- changed: 24.10.2012
+
+ALTER TABLE technologies_operationgroup ADD COLUMN active boolean;
+ALTER TABLE technologies_operationgroup ALTER COLUMN active SET DEFAULT true;
+
+-- end
+
+-- Table: costnormsforoperation_calculationoperationcomponent
+-- changed: 25.10.2012
+
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totalmachineoperationcostwithmargin numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totalmachineoperationcostwithmargin SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totallaboroperationcostwithmargin numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totallaboroperationcostwithmargin SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totallaboroperationcost numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totallaboroperationcost SET DEFAULT 0::numeric;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ADD COLUMN totalmachineoperationcost numeric(12,5);
+ALTER TABLE costnormsforoperation_calculationoperationcomponent ALTER COLUMN totalmachineoperationcost SET DEFAULT 0::numeric;
+
 --end

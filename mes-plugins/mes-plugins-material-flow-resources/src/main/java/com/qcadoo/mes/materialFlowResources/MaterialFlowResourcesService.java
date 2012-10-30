@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface MaterialFlowResourcesService {
 
@@ -52,5 +53,7 @@ public interface MaterialFlowResourcesService {
             final Date time, final BigDecimal price);
 
     BigDecimal calculatePrice(final Entity location, final Entity product);
+
+    void disableDateField(final ViewDefinitionState view);
 
 }

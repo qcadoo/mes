@@ -42,14 +42,14 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-		<hasMany name="products" joinField="product" model="product" plugin="basic"/>
 		<string name="externalNumber" />
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-
-		<hasMany name="conversionItems" joinField="product" model="unitConversionItem" plugin="qcadooModel" />
-
+	
+		<hasMany name="conversionItems" joinField="product" model="unitConversionItem"
+			plugin="qcadooModel" />
+	
 		<!-- PRODUCTS FAMILY TREE -->
 		<belongsTo name="parent" model="product" />
 		<belongsTo name="child" model="product" persistent="false" />
@@ -60,16 +60,15 @@
 		<integer name="priority" persistent="false" />
 		<string name="nodeNumber" persistent="false" />
 		<enum name="entityType" values="01particularProduct,02productsFamily"
-			default="01particularProduct" required="true"/>
-		
+			default="01particularProduct" required="true" />
 	</fields>
 	<hooks>
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfParentIsFamily" />
-		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
-		
+		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
+
 		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionOnCreate" />
 	</hooks>

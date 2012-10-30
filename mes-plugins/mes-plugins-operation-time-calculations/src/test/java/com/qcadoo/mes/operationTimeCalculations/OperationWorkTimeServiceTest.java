@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -80,6 +82,19 @@ public class OperationWorkTimeServiceTest {
         when(operComp1.getDataDefinition()).thenReturn(dataDefinition);
         when(operComp2.getDataDefinition()).thenReturn(dataDefinition);
         when(operComp3.getDataDefinition()).thenReturn(dataDefinition);
+
+        Long id1 = 1L;
+        Long id2 = 2L;
+        Long id3 = 3L;
+
+        when(operComp1.getId()).thenReturn(id1);
+        when(operComp2.getId()).thenReturn(id2);
+        when(operComp3.getId()).thenReturn(id3);
+
+        when(dataDefinition.get(id1)).thenReturn(operComp1);
+        when(dataDefinition.get(id2)).thenReturn(operComp2);
+        when(dataDefinition.get(id3)).thenReturn(operComp3);
+
         when(dataDefinition.getName()).thenReturn("technologyOperationComponent");
 
         neededNumberOfCycles1 = BigDecimal.ONE;
@@ -126,9 +141,16 @@ public class OperationWorkTimeServiceTest {
         operationsRuns.put(operComp3, new BigDecimal(7));
     }
 
-    private EntityList mockEntityList(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
+    private static EntityList mockEntityList(final List<Entity> entities) {
+        final EntityList entityList = mock(EntityList.class);
+        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
+
+            @Override
+            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
+                return ImmutableList.copyOf(entities).iterator();
+            }
+        });
+        given(entityList.isEmpty()).willReturn(entities.isEmpty());
         return entityList;
     }
 

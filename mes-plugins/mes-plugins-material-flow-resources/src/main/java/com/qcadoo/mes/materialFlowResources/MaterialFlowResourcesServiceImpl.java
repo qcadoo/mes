@@ -27,15 +27,16 @@ import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.TIME;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,9 +53,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -270,6 +277,30 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
 
         return null;
+    }
+
+    public void disableDateField(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
+        FieldComponent dateField = (FieldComponent) view.getComponentByReference(TIME);
+        LookupComponent locationFromField = (LookupComponent) view.getComponentByReference(LOCATION_FROM);
+        LookupComponent locationToField = (LookupComponent) view.getComponentByReference(LOCATION_TO);
+
+        Entity locationFrom = locationFromField.getEntity();
+        Entity locationTo = locationToField.getEntity();
+
+        if (form.getEntityId() == null) {
+            if (((locationFrom != null) && WAREHOUSE.getStringValue().equals(locationFrom.getStringField(TYPE)))
+                    || ((locationTo != null) && WAREHOUSE.getStringValue().equals(locationTo.getStringField(TYPE)))) {
+
+                String currentDate = DateFormat.getDateTimeInstance().format(new Date());
+
+                dateField.setFieldValue(currentDate);
+                dateField.setEnabled(false);
+            } else {
+                dateField.setEnabled(true);
+            }
+        }
     }
 
 }

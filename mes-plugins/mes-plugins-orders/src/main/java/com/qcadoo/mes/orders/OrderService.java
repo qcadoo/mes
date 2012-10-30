@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
+import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
@@ -302,7 +302,7 @@ public class OrderService {
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        return compareDates(dataDefinition, entity, DATE_FROM, DATE_TO);
+        return compareDates(dataDefinition, entity, START_DATE, FINISH_DATE);
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {

@@ -323,4 +323,8 @@ public class MultitransferListeners {
                 .list().getEntities();
     }
 
+    public void disableDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        materialFlowResourcesService.disableDateField(view);
+    }
+
 }

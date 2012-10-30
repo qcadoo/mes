@@ -260,7 +260,7 @@ public class TransformationsListeners {
         return false;
     }
 
-    private Entity getOperationFromId(final long id) {
+    private Entity getOperationFromId(final Long id) {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).get(id);
     }
 

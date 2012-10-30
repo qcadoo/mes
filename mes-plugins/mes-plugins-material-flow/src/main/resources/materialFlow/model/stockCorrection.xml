@@ -40,6 +40,9 @@
 		<decimal name="found" required="true" />
 		<belongsTo name="staff" model="staff" plugin="basic" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.StockCorrectionModelValidators"
+			method="validateStockCorrection" />
+	</hooks>
 	<identifier expression="#number" />
 </model>

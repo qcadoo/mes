@@ -60,7 +60,9 @@
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="productionInOneCycle" required="true"
-				default="1" />
+				default="1"  >
+				<model:validatesRange from="0" exclusively="true" />
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -81,16 +83,18 @@
 			model="technologyOperationComponent">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -130,7 +134,9 @@
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="productionInOneCycle" required="true"
-				default="1" />
+				default="1" >
+				<model:validatesRange from="0" exclusively="true" />
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
@@ -151,16 +157,18 @@
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -212,27 +220,31 @@
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="productionInOneCycle" required="true"
-				default="1" />
+				default="1"  >
+				<model:validatesRange from="0" exclusively="true" />
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<validatesUnscaledValue max="3" />
-				<validatesScale max="5" />
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
