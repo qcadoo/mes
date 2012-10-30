@@ -207,8 +207,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
 
-                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
-                            productionLine, true);
+                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, false, operationRuns, productionLine,
+                            true);
                     int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
                             includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
 
