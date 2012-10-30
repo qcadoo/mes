@@ -444,7 +444,7 @@ public class OrderService {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).add(SearchRestrictions.eq("master", true))
-                .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
+                .add(SearchRestrictions.eq("active", true)).belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
 
         SearchResult searchResult = searchCriteria.list();
 
