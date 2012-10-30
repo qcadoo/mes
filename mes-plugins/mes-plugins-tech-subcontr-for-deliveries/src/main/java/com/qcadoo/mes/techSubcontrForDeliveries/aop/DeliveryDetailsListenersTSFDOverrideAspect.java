@@ -6,7 +6,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
@@ -19,6 +21,7 @@ public class DeliveryDetailsListenersTSFDOverrideAspect {
     public void copyOrderedProductToDeliveredListenersExecution() {
     }
 
+    @RunIfEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER)
     @AfterReturning(value = "copyOrderedProductToDeliveredListenersExecution()", returning = "resultDelivery")
     public void afterCopyOrderedProductToDeliveredListenersExecution(final Entity resultDelivery) {
         deliveryDetailsListenersTSFDOverrideService.fillFieldWithOffer(resultDelivery);
