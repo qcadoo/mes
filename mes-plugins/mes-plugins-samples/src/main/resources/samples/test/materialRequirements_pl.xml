@@ -25,5 +25,5 @@
 
 -->
 <materialRequirements>
-	<row NAME="Zapotrzebowanie dla zleceń na taborety i stołki" DATE="" WORKER="" ONLYCOMPONENTS="true" GENERATED="false" FILENAME="" ORDER1="ZL-T-TAB-P4-2012.04-01" ORDER2="ZL-T-ST-P4-OP-2012.04-01" />
+	<row NAME="Zapotrzebowanie dla zleceń na taborety i stołki" NUMBER="00001" DATE="" WORKER="" ONLYCOMPONENTS="true" GENERATED="false" FILENAME="" ORDER1="ZL-T-TAB-P4-2012.04-01" ORDER2="ZL-T-ST-P4-OP-2012.04-01" />
 </materialRequirements>
