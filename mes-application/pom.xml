@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -221,32 +222,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-product-catalog-numbers</artifactId>
-			<version>1.1.8-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-tech-subcontracting</artifactId>
-			<version>1.1.8-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-operational-tasks</artifactId>
 			<version>1.1.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-operational-tasks-for-orders</artifactId>
-			<version>1.1.8-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
-			<version>1.1.8-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
 			<version>1.1.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -637,6 +618,26 @@
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-product-catalog-numbers</artifactId>
+					<version>1.1.8-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-tech-subcontracting</artifactId>
+					<version>1.1.8-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
+					<version>1.1.8-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
+					<version>1.1.8-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-tech-subcontr-for-negot</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
@@ -693,7 +694,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Users/tomcat/deploy/${profile.name}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Users/tomcat/deploy/${profile.name}.zip" />
 									</target>
 								</configuration>
 								<goals>
@@ -730,7 +732,8 @@
 								<phase>deploy</phase>
 								<configuration>
 									<target>
-										<copy file="${basedir}/target/${project.artifactId}.zip" tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
+										<copy file="${basedir}/target/${project.artifactId}.zip"
+											tofile="/Shared Items/Public/qcdmes_bin_daily_build/${package.filename}.zip" />
 									</target>
 								</configuration>
 								<goals>
