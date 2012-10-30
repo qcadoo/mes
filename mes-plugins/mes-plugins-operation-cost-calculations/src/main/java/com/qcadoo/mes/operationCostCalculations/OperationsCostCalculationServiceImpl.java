@@ -314,7 +314,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         BigDecimal operationRuns = productComponentQuantities.get(techOperComp);
         Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(calcOperComp, operationRuns, margin);
-        totalPieceworkCost = totalPieceworkCost.add(costs.get("totalOperationCost"));
+        totalPieceworkCost = totalPieceworkCost.add(costs.get("operationCost"));
         savedGeneratedValues(costs, calcOperComp, false, null, operationRuns);
         return totalPieceworkCost;
     }
