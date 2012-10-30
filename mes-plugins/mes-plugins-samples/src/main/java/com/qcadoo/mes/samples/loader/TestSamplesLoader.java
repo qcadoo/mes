@@ -934,6 +934,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity requirement = dataDefinitionService.get(SamplesConstants.MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER,
                 SamplesConstants.MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS).create();
         requirement.setField(L_NAME, values.get(L_NAME));
+        requirement.setField(L_NUMBER, values.get(L_NUMBER));
         requirement.setField(L_DATE, values.get(L_DATE));
         requirement.setField(L_WORKER, values.get(L_WORKER));
         requirement.setField("mrpAlgorithm", "01onlyComponents");
