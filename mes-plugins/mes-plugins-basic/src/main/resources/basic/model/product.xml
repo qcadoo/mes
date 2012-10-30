@@ -48,7 +48,7 @@
 		</string>
 	
 		<hasMany name="conversionItems" joinField="product" model="unitConversionItem"
-			plugin="qcadooModel" />
+			plugin="qcadooModel" cascade="delete" />
 	
 		<!-- PRODUCTS FAMILY TREE -->
 		<belongsTo name="parent" model="product" />

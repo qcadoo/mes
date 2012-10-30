@@ -28,6 +28,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +75,7 @@ public class ProductService {
     private NumberGeneratorService numberGeneratorService;
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
-        if (hasUnitChangedOnUpdate(product, product.getStringField(ProductFields.UNIT))) {
+        if (hasUnitChangedOnUpdate(product)) {
             conversionForProductUnit(product);
         }
     }
@@ -85,14 +86,21 @@ public class ProductService {
 
     private void conversionForProductUnit(final Entity product) {
         final String productUnit = product.getStringField(ProductFields.UNIT);
-        final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
-        product.setField(CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
+        if (StringUtils.isNotEmpty(productUnit)) {
+            final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
+            product.setField(CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
+        }
     }
 
-    private boolean hasUnitChangedOnUpdate(final Entity product, final String unit) {
-        Entity existingProduct = product.getDataDefinition().get(product.getId());
-        String existingProductUnit = existingProduct.getStringField(ProductFields.UNIT);
-        return !existingProductUnit.equals(unit);
+    private boolean hasUnitChangedOnUpdate(final Entity product) {
+        final Entity existingProduct = product.getDataDefinition().get(product.getId());
+        final String existingProductUnit = existingProduct.getStringField(ProductFields.UNIT);
+        final String currentUnit = product.getStringField(ProductFields.UNIT);
+        if (existingProductUnit == null) {
+            return currentUnit != null;
+        } else {
+            return !existingProductUnit.equals(currentUnit);
+        }
     }
 
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
