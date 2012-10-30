@@ -15,6 +15,11 @@
 		
 	<dependencies>
 		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-plugins-unit-conversion-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.logdigger</groupId>
 			<artifactId>logdigger-connector-core</artifactId>
 			<version>3.0.2</version>

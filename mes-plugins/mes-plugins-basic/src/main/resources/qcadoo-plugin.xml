@@ -56,6 +56,10 @@
 			<plugin>qcadooDictionaries</plugin>
 			<version>[1.1.7</version>
 		</dependency>
+		<dependency>
+			<plugin>qcadooUnitConversions</plugin>
+			<version>[1.1.8</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
