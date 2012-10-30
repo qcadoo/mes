@@ -33,6 +33,7 @@
 		<exclude within="org.objectweb.asm..*" />
 		<exclude within="javassist..*" />
 		<exclude within="net.sf.cglib..*" />
+		<exclude within="net.sf.jasperreports..*" />
 		<exclude within="com.mchange..*" />
 		<exclude within="org.hibernate..*" />
 		<exclude within="$Proxy*" />
