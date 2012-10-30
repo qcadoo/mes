@@ -817,8 +817,9 @@ public class OrderServiceTest {
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
         given(
-                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any())).belongsTo(anyString(), any())
-                        .list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any()))
+                        .add(SearchRestrictions.eq("active", any())).belongsTo(anyString(), any()).list()).willReturn(
+                searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());
@@ -949,8 +950,9 @@ public class OrderServiceTest {
         given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
                 .willReturn(dataDefinition);
         given(
-                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any())).belongsTo(anyString(), any())
-                        .list()).willReturn(searchResult);
+                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any()))
+                        .add(SearchRestrictions.eq("active", any())).belongsTo(anyString(), any()).list()).willReturn(
+                searchResult);
         given(dataDefinition.getField("master")).willReturn(masterField);
         given(dataDefinition.getField("product")).willReturn(productField);
         given(masterField.getType()).willReturn(new BooleanType());

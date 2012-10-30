@@ -122,7 +122,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     public BigDecimal calculateProductionCost(final Entity entity) {
         final CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
                 .getStringField(CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE));
-        BigDecimal productionCosts = BigDecimal.ZERO;
+        BigDecimal productionCosts = null;
         if (HOURLY.equals(operationMode)) {
             BigDecimal totalMachine = convertNullToZero(entity.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS));
             BigDecimal totalLabor = convertNullToZero(entity.getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS));

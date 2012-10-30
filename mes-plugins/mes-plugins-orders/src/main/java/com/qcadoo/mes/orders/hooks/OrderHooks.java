@@ -34,7 +34,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
@@ -186,18 +185,4 @@ public class OrderHooks {
     private Date choppingOffMiliseconds(final Object date) {
         return new Date(((Date) date).getTime() / SECOND_MILLIS);
     }
-
-    public boolean checkIfDefaultTechnologyIsDeactivated(final DataDefinition orderDD, final Entity order) {
-        Entity technology = order.getBelongsToField(TECHNOLOGY);
-        if (technology == null) {
-            return true;
-        }
-        if (!technology.isActive()) {
-            order.addError(orderDD.getField(TECHNOLOGY), "orders.order.technology.isDeactive");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
 }
