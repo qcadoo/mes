@@ -122,7 +122,7 @@ public class ColumnExtensionServiceImpl implements ColumnExtensionService {
             return column;
         } else {
             throw new IllegalStateException("Saved entity " + model + " has validation errors - "
-                    + columnAttributes.get(NAME.toUpperCase(Locale.ENGLISH)));
+                    + columnAttributes.get(IDENTIFIER.toLowerCase(Locale.ENGLISH)));
         }
     }
 
