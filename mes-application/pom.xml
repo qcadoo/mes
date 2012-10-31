@@ -618,22 +618,22 @@
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-product-catalog-numbers</artifactId>
-					<version>1.1.8-SNAPSHOT</version>
+					<version>${qcadoo.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-tech-subcontracting</artifactId>
-					<version>1.1.8-SNAPSHOT</version>
+					<version>${qcadoo.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
-					<version>1.1.8-SNAPSHOT</version>
+					<version>${qcadoo.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
-					<version>1.1.8-SNAPSHOT</version>
+					<version>${qcadoo.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.qcadoo.mes</groupId>
