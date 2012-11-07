@@ -181,9 +181,13 @@ public class ProductServiceTest {
     public void shouldDisabledFormWhenExternalNumberIsnotNull() throws Exception {
         // given
         FormComponent form = mock(FormComponent.class);
+        FieldComponent entityType = mock(FieldComponent.class);
+        FieldComponent parent = mock(FieldComponent.class);
         Long productId = 1L;
         String externalNumber = "0001";
         DataDefinition productDD = mock(DataDefinition.class);
+        when(view.getComponentByReference("parent")).thenReturn(parent);
+        when(view.getComponentByReference("entityType")).thenReturn(entityType);
         when(view.getComponentByReference("form")).thenReturn(form);
         when(form.getEntityId()).thenReturn(productId);
         when(dataDefinitionService.get("basic", "product")).thenReturn(productDD);
@@ -193,6 +197,8 @@ public class ProductServiceTest {
         productService.disableProductFormForExternalItems(view);
         // then
         verify(form).setFormEnabled(false);
+        verify(entityType).setEnabled(true);
+        verify(parent).setEnabled(true);
     }
 
     @Test

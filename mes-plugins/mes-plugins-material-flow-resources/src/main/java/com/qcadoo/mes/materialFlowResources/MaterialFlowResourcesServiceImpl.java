@@ -46,7 +46,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -68,6 +70,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
@@ -279,6 +284,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    public boolean canChangeDateWhenTransferToWarehouse() {
+        return parameterService.getParameter().getBooleanField(ParameterFieldsMFR.CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE);
+    }
+
     public void disableDateField(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -290,9 +299,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Entity locationTo = locationToField.getEntity();
 
         if (form.getEntityId() == null) {
-            if (((locationFrom != null) && WAREHOUSE.getStringValue().equals(locationFrom.getStringField(TYPE)))
-                    || ((locationTo != null) && WAREHOUSE.getStringValue().equals(locationTo.getStringField(TYPE)))) {
-
+            if (isTransferBetweenWarehouses(locationFrom, locationTo) && !canChangeDateWhenTransferToWarehouse()) {
                 String currentDate = DateFormat.getDateTimeInstance().format(new Date());
 
                 dateField.setFieldValue(currentDate);
@@ -301,6 +308,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 dateField.setEnabled(true);
             }
         }
+    }
+
+    private boolean isTransferBetweenWarehouses(final Entity locationFrom, final Entity locationTo) {
+        return ((locationFrom != null) && WAREHOUSE.getStringValue().equals(locationFrom.getStringField(TYPE)))
+                || ((locationTo != null) && WAREHOUSE.getStringValue().equals(locationTo.getStringField(TYPE)));
     }
 
 }

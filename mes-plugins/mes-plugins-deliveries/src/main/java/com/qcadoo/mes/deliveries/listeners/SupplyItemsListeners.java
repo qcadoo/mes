@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
+
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -42,8 +43,8 @@ public class SupplyItemsListeners {
         if (grid.getSelectedEntities().isEmpty()) {
             return;
         }
-        Entity orderedProducts = grid.getSelectedEntities().get(0);
-        Entity delivery = orderedProducts.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity orderedProduct = grid.getSelectedEntities().get(0);
+        Entity delivery = orderedProduct.getBelongsToField(DELIVERY);
         if (delivery == null) {
             return;
         }
@@ -54,4 +55,5 @@ public class SupplyItemsListeners {
         String url = "../page/deliveries/deliveryDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
+
 }

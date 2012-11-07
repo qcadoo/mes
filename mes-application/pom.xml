@@ -650,6 +650,11 @@
 					<artifactId>mes-commercial-plugins-cat-numbers-in-negot</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-order-supplies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>

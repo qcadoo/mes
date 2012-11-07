@@ -21,33 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.hooks;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+public final class ParameterFieldsMFR {
 
-import java.util.Date;
+    private ParameterFieldsMFR() {
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
-@Service
-public class TransferModelHooksMFR {
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
-
-    public void updateDate(final DataDefinition transferDD, final Entity transfer) {
-        if (!materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()) {
-            transfer.setField(TIME, new Date());
-        }
     }
 
-    public void manageResources(final DataDefinition transferDD, final Entity transfer) {
-        materialFlowResourcesService.manageResources(transfer);
-    }
+    public static final String CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE = "canChangeDateWhenTransferToWarehouse";
 
 }
