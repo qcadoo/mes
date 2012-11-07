@@ -54,8 +54,6 @@ public interface MaterialFlowResourcesService {
 
     BigDecimal calculatePrice(final Entity location, final Entity product);
 
-    boolean canChangeDateWhenTransferToWarehouse();
-
     void disableDateField(final ViewDefinitionState view);
 
 }

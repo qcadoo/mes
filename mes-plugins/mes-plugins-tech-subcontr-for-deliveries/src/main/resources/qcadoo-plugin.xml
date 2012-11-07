@@ -88,12 +88,6 @@
 				expression="#operation['number']" searchable="true" orderable="true" />
 		</view:view-grid-column>
 		
-		<view:view-grid-column plugin="deliveries" view="supplyItems"
-			component="grid">
-			<view:column name="operation" fields="operation"
-				expression="#operation['number']" searchable="true" orderable="true" />
-		</view:view-grid-column>
-		
 		<custom:custom class="com.qcadoo.mes.techSubcontrForDeliveries.TechSubcontrForDeliveriesOnStartupService" />
 	</modules>
 

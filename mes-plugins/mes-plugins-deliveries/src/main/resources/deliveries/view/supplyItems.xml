@@ -53,9 +53,9 @@
 				expression="#delivery['supplier']==null? '' :#delivery['supplier'].get('name')" />
 			<option type="order" column="deliveryDate" direction="asc" />
 			<option type="searchable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
 			<option type="orderable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="false" />
 			

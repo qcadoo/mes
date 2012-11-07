@@ -49,7 +49,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.model.constants.UnitConversionItemFields;
-import com.qcadoo.plugins.unitConversions.GlobalUnitConversionsAggregateService;
 import com.qcadoo.security.api.SecurityRole;
 import com.qcadoo.security.api.SecurityRolesService;
 
@@ -65,9 +64,6 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private GlobalUnitConversionsAggregateService globalUnitConversionsAggregateService;
 
     @Override
     protected void loadData(final String locale) {
@@ -100,12 +96,24 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
         } else if (L_DEFAULT_PRODUCTION_LINE.equals(type)) {
             addDefaultProductionLine(values);
         } else if ("conversionItem".equals(type)) {
+            addUnitConversionAggregate();
             addUnitConversionItem(values);
         }
     }
 
+    private void addUnitConversionAggregate() {
+        Entity conversion = dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
+                QcadooModelConstants.MODEL_GLOBAL_UNIT_CONVERSIONS_AGGREGATE).create();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("conversion is added");
+        }
+
+        conversion.getDataDefinition().save(conversion);
+    }
+
     private void addUnitConversionItem(final Map<String, String> values) {
-        final Entity conversionItem = dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
+        Entity conversionItem = dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
                 QcadooModelConstants.MODEL_UNIT_CONVERSION_ITEM).create();
 
         if (LOG.isDebugEnabled()) {
@@ -194,10 +202,9 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     }
 
     protected Entity getUnitConversionAggregate() {
-        final Long aggregateId = globalUnitConversionsAggregateService.getAggregateId();
-        return dataDefinitionService.get(QcadooModelConstants.PLUGIN_IDENTIFIER,
-                QcadooModelConstants.MODEL_GLOBAL_UNIT_CONVERSIONS_AGGREGATE).get(aggregateId);
-
+        return dataDefinitionService
+                .get(QcadooModelConstants.PLUGIN_IDENTIFIER, QcadooModelConstants.MODEL_GLOBAL_UNIT_CONVERSIONS_AGGREGATE).find()
+                .setMaxResults(1).uniqueResult();
     }
 
 }

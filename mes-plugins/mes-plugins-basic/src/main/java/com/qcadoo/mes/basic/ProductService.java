@@ -207,8 +207,7 @@ public class ProductService {
 
     public void disableProductFormForExternalItems(final ViewDefinitionState state) {
         FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
-        FieldComponent entityType = (FieldComponent) state.getComponentByReference(ProductFields.ENTITY_TYPE);
-        FieldComponent parent = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
+
         if (form.getEntityId() == null) {
             return;
         }
@@ -224,10 +223,7 @@ public class ProductService {
 
         if (externalNumber != null) {
             form.setFormEnabled(false);
-            entityType.setEnabled(true);
-            parent.setEnabled(true);
         }
-
     }
 
     public boolean clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {

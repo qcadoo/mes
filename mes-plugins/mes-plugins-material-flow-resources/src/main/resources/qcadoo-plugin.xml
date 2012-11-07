@@ -67,10 +67,6 @@
 			<model:decimal name="price" default="0" />
 		</model:model-field>
 		
-		<model:model-field plugin="basic" model="parameter">
-			<model:boolean name="canChangeDateWhenTransferToWarehouse" default="false" />
-		</model:model-field>
-		
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
    
@@ -118,8 +114,6 @@
 			
 		<view:view resource="view/resourceDetails.xml" />
 		<view:view resource="view/resourcesList.xml" />
-		
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
 	
 		<view:resource uri="public/**/*" />
 	</modules>

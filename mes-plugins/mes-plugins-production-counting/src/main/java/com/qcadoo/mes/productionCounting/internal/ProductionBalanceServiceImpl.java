@@ -528,8 +528,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             }
         }
 
-        final int machineTimeBalance = machineTime - (Integer) productionBalance.getField(PLANNED_MACHINE_TIME);
-        final int laborTimeBalance = laborTime - (Integer) productionBalance.getField(PLANNED_LABOR_TIME);
+        final int machineTimeBalance = machineTime - (Integer) productionBalance.getField(PLANNED_LABOR_TIME);
+        final int laborTimeBalance = laborTime - (Integer) productionBalance.getField(PLANNED_MACHINE_TIME);
 
         productionBalance.setField(MACHINE_TIME, machineTime);
         productionBalance.setField(MACHINE_TIME_BALANCE, machineTimeBalance);

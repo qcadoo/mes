@@ -119,7 +119,7 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
-					<component type="select" name="entityType" field="#{form}.entityType" reference="entityType"/>
+					<component type="select" name="entityType" field="#{form}.entityType" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="parent" field="#{form}.parent"
