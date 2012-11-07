@@ -41,7 +41,9 @@ public class TransferModelHooksMFR {
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void updateDate(final DataDefinition transferDD, final Entity transfer) {
-        transfer.setField(TIME, new Date());
+        if (!materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()) {
+            transfer.setField(TIME, new Date());
+        }
     }
 
     public void manageResources(final DataDefinition transferDD, final Entity transfer) {
