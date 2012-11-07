@@ -130,7 +130,11 @@
 		<view:view-hook view="companyDetails" type="beforeRender"
 			plugin="basic" class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
 			method="updateRibbonState" />
-
+			
+		<view:view-hook view="companyDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+			method="disabledGridWhenCompanyIsAnOwner" />		
+						
 		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
 
 		<view:view resource="view/deliveriesList.xml" />
