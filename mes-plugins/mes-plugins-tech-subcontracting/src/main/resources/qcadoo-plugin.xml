@@ -113,6 +113,10 @@
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
+		
+		<view:view-hook view="companyDetails" type="beforeRender"
+			plugin="basic" class="com.qcadoo.mes.techSubcontracting.hooks.CompanyDetailsHooksTS"
+			method="disabledGridWhenCompanyIsAnOwner" />		
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab

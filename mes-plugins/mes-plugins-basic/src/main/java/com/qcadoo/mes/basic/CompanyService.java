@@ -32,8 +32,10 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -65,24 +67,55 @@ public class CompanyService {
 
     }
 
-    public void disableCompanyFormForOwner(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
+    /**
+     * Whether company is an owner or not
+     * 
+     * @param form
+     *            Form to check
+     * @return Boolean value
+     */
+    public final Boolean getOwning(final FormComponent form) {
 
         if (form.getEntityId() == null) {
-            return;
+            return Boolean.FALSE;
         }
 
         Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
                 form.getEntityId());
 
         if (company == null) {
-            return;
+            return Boolean.FALSE;
         }
 
         Object owner = company.getField("owner");
+        return owner instanceof Boolean ? (Boolean) owner : Boolean.FALSE;
+    }
 
-        if (owner != null && owner.equals(true)) {
+    public void disableCompanyFormForOwner(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        Boolean owner = getOwning(form);
+
+        if (owner.booleanValue()) {
             form.setFormEnabled(false);
+        }
+    }
+
+    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state, String... references) {
+
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        Boolean owner = getOwning(form);
+
+        if (owner.booleanValue()) {
+            disableGridComponents(state, references);
+        }
+    }
+
+    private void disableGridComponents(final ViewDefinitionState state, String... references) {
+        for (String reference : references) {
+            ComponentState component = state.getComponentByReference(reference);
+            if (component instanceof GridComponent) {
+                ((GridComponent) component).setEditable(false);
+            }
         }
     }
 
