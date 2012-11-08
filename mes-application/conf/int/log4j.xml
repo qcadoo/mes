@@ -175,7 +175,7 @@
 	</logger>
 	
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="warn" />
+		<level value="info" />
 		<appender-ref ref="sql-log" />	
 	</logger>
 	
