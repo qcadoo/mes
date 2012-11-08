@@ -56,7 +56,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         MathContext mc = numberService.getMathContext();
         BigDecimal tj = BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")));
         BigDecimal abstractOperationWorkTime = tj.multiply(neededNumberOfCycles, mc);
-        BigDecimal workstationsDecimalValue = new BigDecimal(workstations);
+        BigDecimal workstationsDecimalValue = new BigDecimal(getIntegerValue(workstations));
         if (includeTpz) {
             BigDecimal tpz = new BigDecimal(getIntegerValue(operationComponent.getField("tpz")));
             abstractOperationWorkTime = abstractOperationWorkTime.add(tpz.multiply(workstationsDecimalValue, mc));
@@ -73,8 +73,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved) {
 
         MathContext mc = numberService.getMathContext();
-        BigDecimal laborUtilization = operationComponent.getDecimalField("laborUtilization");
-        BigDecimal machineUtilization = operationComponent.getDecimalField("machineUtilization");
+        BigDecimal laborUtilization = convertNullToZero(operationComponent.getDecimalField("laborUtilization"));
+        BigDecimal machineUtilization = convertNullToZero(operationComponent.getDecimalField("machineUtilization"));
 
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
@@ -251,7 +251,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : order.getHasManyField("technologyInstanceOperationComponents")) {
             workstations.put(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT),
-                    (Integer) operComp.getField("quantityOfWorkstationTypes"));
+                    getIntegerValue(operComp.getField("quantityOfWorkstationTypes")));
         }
         return workstations;
     }
