@@ -25,13 +25,16 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -76,11 +79,11 @@ public class DeliveryDetailsHooks {
         }
         final Entity delivery = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERY).get(form.getEntityId());
-        if (delivery.getStringField(STATE).equals(DeliveryState.PREPARED.getStringValue())
-                || delivery.getStringField(STATE).equals(DeliveryState.APPROVED.getStringValue())) {
+        if (PREPARED.getStringValue().equals(delivery.getStringField(STATE))
+                || APPROVED.getStringValue().equals(delivery.getStringField(STATE))) {
             changedEnabledFields(view, false, true);
-        } else if (delivery.getStringField(STATE).equals(DeliveryState.DECLINED.getStringValue())
-                || delivery.getStringField(STATE).equals(DeliveryState.RECEIVED.getStringValue())) {
+        } else if (DECLINED.getStringValue().equals(delivery.getStringField(STATE))
+                || RECEIVED.getStringValue().equals(delivery.getStringField(STATE))) {
             changedEnabledFields(view, false, false);
         } else {
             changedEnabledFields(view, true, true);
