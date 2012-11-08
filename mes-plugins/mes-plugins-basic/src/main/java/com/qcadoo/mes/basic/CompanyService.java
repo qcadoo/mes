@@ -41,95 +41,86 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class CompanyService {
 
-	private static final String L_FORM = "form";
+    private static final String L_FORM = "form";
 
-	@Autowired
-	private DataDefinitionService dataDefinitionService;
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-	@Autowired
-	private NumberGeneratorService numberGeneratorService;
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
-	@Transactional
-	public Long getParameterId() {
+    @Transactional
+    public Long getParameterId() {
 
-		DataDefinition dataDefinition = dataDefinitionService.get(
-				BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
-		Entity company = dataDefinition.find()
-				.add(SearchRestrictions.eq("owner", true)).setMaxResults(1)
-				.uniqueResult();
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+        Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
 
-		if (company == null) {
-			Entity newCompany = dataDefinition.create();
-			newCompany.setField("owner", true);
-			Entity savedCompany = dataDefinition.save(newCompany);
-			return savedCompany.getId();
+        if (company == null) {
+            Entity newCompany = dataDefinition.create();
+            newCompany.setField("owner", true);
+            Entity savedCompany = dataDefinition.save(newCompany);
+            return savedCompany.getId();
 
-		} else {
-			return company.getId();
-		}
+        } else {
+            return company.getId();
+        }
 
-	}
+    }
 
-	/**
-	 * Whether company is an owner or not
-	 * 
-	 * @param form
-	 *            Form to check
-	 * @return Boolean value
-	 */
-	public final Boolean getOwning(final FormComponent form) {
+    /**
+     * Whether company is an owner or not
+     * 
+     * @param form
+     *            Form to check
+     * @return Boolean value
+     */
+    public final Boolean getOwning(final FormComponent form) {
 
-		if (form.getEntityId() == null) {
-			return Boolean.FALSE;
-		}
+        if (form.getEntityId() == null) {
+            return Boolean.FALSE;
+        }
 
-		Entity company = dataDefinitionService.get(
-				BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY)
-				.get(form.getEntityId());
+        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
+                form.getEntityId());
 
-		if (company == null) {
-			return Boolean.FALSE;
-		}
+        if (company == null) {
+            return Boolean.FALSE;
+        }
 
-		Object owner = company.getField("owner");
-		return owner instanceof Boolean ? (Boolean) owner : Boolean.FALSE;
-	}
+        Object owner = company.getField("owner");
+        return owner instanceof Boolean ? (Boolean) owner : Boolean.FALSE;
+    }
 
-	public void disableCompanyFormForOwner(final ViewDefinitionState state) {
-		FormComponent form = (FormComponent) state
-				.getComponentByReference(L_FORM);
-		Boolean owner = getOwning(form);
+    public void disableCompanyFormForOwner(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        Boolean owner = getOwning(form);
 
-		if (owner.booleanValue()) {
-			form.setFormEnabled(false);
-		}
-	}
+        if (owner.booleanValue()) {
+            form.setFormEnabled(false);
+        }
+    }
 
-	public void disabledGridWhenCompanyIsAnOwner(
-			final ViewDefinitionState state, String... references) {
+    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state, String... references) {
 
-		FormComponent form = (FormComponent) state
-				.getComponentByReference(L_FORM);
-		Boolean owner = getOwning(form);
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        Boolean owner = getOwning(form);
 
-		if (owner.booleanValue()) {
-			disableGridComponents(state, references);
-		}
-	}
+        if (owner.booleanValue()) {
+            disableGridComponents(state, references);
+        }
+    }
 
-	private void disableGridComponents(final ViewDefinitionState state,
-			String... references) {
-		for (String reference : references) {
-			ComponentState component = state.getComponentByReference(reference);
-			if (component instanceof GridComponent) {
-				((GridComponent) component).setEditable(false);
-			}
-		}
-	}
+    private void disableGridComponents(final ViewDefinitionState state, String... references) {
+        for (String reference : references) {
+            ComponentState component = state.getComponentByReference(reference);
+            if (component instanceof GridComponent) {
+                ((GridComponent) component).setEditable(false);
+            }
+        }
+    }
 
-	public void generateCompanyNumber(final ViewDefinitionState state) {
-		numberGeneratorService.generateAndInsertNumber(state,
-				BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
-				L_FORM, "number");
-	}
+    public void generateCompanyNumber(final ViewDefinitionState state) {
+        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
+                L_FORM, "number");
+    }
 }
