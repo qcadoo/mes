@@ -142,6 +142,9 @@ public class MultitransferListeners {
         FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(LOCATION_FROM);
         FieldComponent locationToField = (FieldComponent) view.getComponentByReference(LOCATION_TO);
 
+        Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
+        Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
+
         if (typeField.getFieldValue() == null || typeField.getFieldValue().toString().isEmpty()) {
             typeField.addMessage("materialFlow.validate.global.error.fillType", MessageType.FAILURE);
 
@@ -152,6 +155,17 @@ public class MultitransferListeners {
             timeField.addMessage("materialFlow.validate.global.error.fillDate", MessageType.FAILURE);
 
             isValid = false;
+        } else {
+            Date time = timeConverterService.getDateTimeFromField(timeField.getFieldValue());
+
+            if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
+                    && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
+                    && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
+                timeField.addMessage("materialFlowResources.validate.global.error.dateLowerThanResourcesDate",
+                        MessageType.FAILURE);
+
+                isValid = false;
+            }
         }
 
         if ((locationFromField.getFieldValue() == null) && (locationToField.getFieldValue() == null)) {
@@ -172,7 +186,6 @@ public class MultitransferListeners {
             isValid = false;
         } else {
             String type = (String) typeField.getFieldValue();
-            Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
 
             for (FormComponent formComponent : formComponents) {
                 Entity productQuantity = formComponent.getEntity();

@@ -23,20 +23,23 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.constants.TransformationsFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -48,18 +51,35 @@ public class TransformationsModelValidatorsMFR {
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
-    public boolean checkIfTransfersResourcesAreValid(final DataDefinition transformationsDD, final Entity transformations) {
-        Entity locationFrom = transformations.getBelongsToField(TransformationsFields.LOCATION_FROM);
+    public boolean checkIfTransformationsDateIsValid(final DataDefinition transformationsDD, final Entity transformations) {
+        Date time = (Date) transformations.getField(TIME);
 
-        List<Entity> transfersConsumption = transformations.getHasManyField(TRANSFERS_CONSUMPTION);
-        List<Entity> transfersProduction = transformations.getHasManyField(TRANSFERS_PRODUCTION);
+        Entity locationFrom = transformations.getBelongsToField(LOCATION_FROM);
+        Entity locationTo = transformations.getBelongsToField(LOCATION_TO);
 
-        return (checkIfTransfersAreValid(transfersConsumption, CONSUMPTION.getStringValue(), locationFrom) && checkIfTransfersAreValid(
-                transfersProduction, PRODUCTION.getStringValue(), null));
+        if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
+                && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
+                && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
+            transformations.addError(transformationsDD.getField(TIME),
+                    "materialFlowResources.validate.global.error.dateLowerThanResourcesDate");
+
+            return false;
+        }
+
+        return true;
     }
 
-    private boolean checkIfTransfersAreValid(final List<Entity> transfers, final String type, final Entity locationFrom) {
+    public boolean checkIfTransfersResourcesAreValid(final DataDefinition transformationsDD, final Entity transformations) {
+        return (checkIfTransfersAreValid(transformations, CONSUMPTION.getStringValue(), TRANSFERS_CONSUMPTION) && checkIfTransfersAreValid(
+                transformations, PRODUCTION.getStringValue(), TRANSFERS_PRODUCTION));
+    }
+
+    private boolean checkIfTransfersAreValid(final Entity transformations, final String type, final String transfersName) {
         boolean isValid = true;
+
+        Entity locationFrom = transformations.getBelongsToField(LOCATION_FROM);
+
+        List<Entity> transfers = transformations.getHasManyField(transfersName);
 
         for (Entity transfer : transfers) {
             Entity product = transfer.getBelongsToField(PRODUCT);

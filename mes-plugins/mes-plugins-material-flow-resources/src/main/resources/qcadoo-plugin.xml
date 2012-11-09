@@ -73,7 +73,13 @@
 		
 		<model:model-enum-value plugin="materialFlow"
 			model="location" enum="type" value="02warehouse" />
-   
+   	
+   		<model:model-hook plugin="materialFlow" model="transfer">
+			<model:validatesWith
+				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+				method="validateTransferDate" />
+		</model:model-hook>
+		
 		<model:model-hook plugin="materialFlow" model="transfer">
 			<model:validatesWith
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
@@ -90,6 +96,12 @@
 			<model:onSave
 				class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
 				method="manageResources" />
+		</model:model-hook>
+		
+		<model:model-hook plugin="materialFlow" model="transformations">
+			<model:validatesWith
+				class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+				method="checkIfTransformationsDateIsValid" />
 		</model:model-hook>
 		
 		<model:model-hook plugin="materialFlow" model="transformations">

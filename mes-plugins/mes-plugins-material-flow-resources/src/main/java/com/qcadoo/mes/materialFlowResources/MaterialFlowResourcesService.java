@@ -56,6 +56,10 @@ public interface MaterialFlowResourcesService {
 
     boolean canChangeDateWhenTransferToWarehouse();
 
+    boolean isDateGraterThanResourcesDate(final Date time);
+
     void disableDateField(final ViewDefinitionState view);
+
+    boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo);
 
 }
