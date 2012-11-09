@@ -208,10 +208,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return workstations;
     }
 
-    private Integer getIntegerValue(final Object value) {
-        return value == null ? Integer.valueOf(0) : (Integer) value;
-    }
-
     private BigDecimal getOperationRuns(final Map<Entity, BigDecimal> operationRuns, final Entity operationComponent) {
         Entity operComp = operationComponent;
         String entityType = operationComponent.getDataDefinition().getName();
@@ -220,13 +216,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                     .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
         return convertNullToZero(operationRuns.get(operComp));
-    }
-
-    private BigDecimal convertNullToZero(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
     }
 
     private Integer getWorkstationsQuantity(final Map<Entity, Integer> workstations, final Entity operationComponent) {
@@ -254,6 +243,17 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                     getIntegerValue(operComp.getField("quantityOfWorkstationTypes")));
         }
         return workstations;
+    }
+
+    private Integer getIntegerValue(final Object value) {
+        return value == null ? Integer.valueOf(0) : (Integer) value;
+    }
+
+    private BigDecimal convertNullToZero(final BigDecimal value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        return value;
     }
 
 }
