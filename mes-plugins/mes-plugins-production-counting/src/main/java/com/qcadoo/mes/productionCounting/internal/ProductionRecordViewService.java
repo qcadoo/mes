@@ -27,9 +27,11 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.INTERRUPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.ALLOW_TO_CLOSE;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.JUST_ONE;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PRODUCTION_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
@@ -100,13 +102,7 @@ public class ProductionRecordViewService {
 
     private static final String L_LAST_RECORD = "lastRecord";
 
-    private static final String L_COMPONENT_ALLOW_TO_CLOSE = "allowToClose";
-
-    private static final String L_JUST_ONE = "justOne";
-
     private static final String L_NUMBER = "number";
-
-    private static final String L_AUTO_CLOSE_ORDER = "autoCloseOrder";
 
     private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
@@ -176,21 +172,6 @@ public class ProductionRecordViewService {
         view.getComponentByReference("isDisabled").setFieldValue(false);
     }
 
-    public void setParametersDefaultValue(final ViewDefinitionState viewDefinitionState) {
-        Entity parameter = parameterService.getParameter();
-
-        for (String componentReference : Arrays.asList(TYPE_OF_PRODUCTION_RECORDING, REGISTER_QUANTITY_IN_PRODUCT,
-                REGISTER_QUANTITY_OUT_PRODUCT, REGISTER_PRODUCTION_TIME, L_JUST_ONE, L_COMPONENT_ALLOW_TO_CLOSE,
-                L_AUTO_CLOSE_ORDER, REGISTER_PIECEWORK)) {
-            FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentReference);
-            if (parameter == null || parameter.getField(componentReference) == null) {
-                component.setFieldValue(true);
-                component.requestComponentUpdateState();
-            }
-        }
-
-    }
-
     public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FieldComponent operation = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         operation.setFieldValue("");
@@ -241,7 +222,7 @@ public class ProductionRecordViewService {
             return;
         }
 
-        Boolean autoCloseOrder = order.getBooleanField(L_AUTO_CLOSE_ORDER);
+        Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
         String orderState = order.getStringField(STATE);
         if (autoCloseOrder && "1".equals(view.getComponentByReference(L_LAST_RECORD).getFieldValue())
                 && view.getComponentByReference(L_STATE).getFieldValue().equals(ACCEPTED.getStringValue())
@@ -302,7 +283,7 @@ public class ProductionRecordViewService {
             return;
         }
         FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(L_LAST_RECORD);
-        if (order.getBooleanField(L_JUST_ONE)) {
+        if (order.getBooleanField(JUST_ONE)) {
             lastRecord.setFieldValue(true);
             lastRecord.setEnabled(false);
         } else {
@@ -320,7 +301,7 @@ public class ProductionRecordViewService {
         }
 
         for (String componentReference : Arrays.asList(REGISTER_QUANTITY_IN_PRODUCT, REGISTER_QUANTITY_OUT_PRODUCT,
-                REGISTER_PRODUCTION_TIME, L_JUST_ONE, L_COMPONENT_ALLOW_TO_CLOSE, L_AUTO_CLOSE_ORDER, REGISTER_PIECEWORK)) {
+                REGISTER_PRODUCTION_TIME, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER, REGISTER_PIECEWORK)) {
             FieldComponent component = (FieldComponent) view.getComponentByReference(componentReference);
             if (component.getFieldValue() == null) {
                 component.setFieldValue(getDefaultValueForProductionRecordFromParameter(componentReference));
@@ -347,24 +328,13 @@ public class ProductionRecordViewService {
         return parameter.getStringField(reference);
     }
 
-    public void checkOrderState(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent orderState = (FieldComponent) viewDefinitionState.getComponentByReference(L_STATE);
+    public void checkTypeOfProductionRecording(final ViewDefinitionState viewDefinitionState) {
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
-        if (ACCEPTED.getStringValue().equals(orderState.getFieldValue())
-                || IN_PROGRESS.getStringValue().equals(orderState.getFieldValue())
-                || COMPLETED.getStringValue().equals(orderState.getFieldValue())
-                || INTERRUPTED.getStringValue().equals(orderState.getFieldValue())) {
-            for (String componentName : Arrays.asList(TYPE_OF_PRODUCTION_RECORDING, REGISTER_QUANTITY_IN_PRODUCT,
-                    REGISTER_QUANTITY_OUT_PRODUCT, REGISTER_PRODUCTION_TIME, REGISTER_PIECEWORK, L_JUST_ONE,
-                    L_COMPONENT_ALLOW_TO_CLOSE, L_AUTO_CLOSE_ORDER)) {
-                FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
-                component.setEnabled(false);
-            }
-        } else if ("".equals(typeOfProductionRecording.getFieldValue())
+        if ("".equals(typeOfProductionRecording.getFieldValue())
                 || BASIC.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
             for (String componentName : Arrays.asList(REGISTER_QUANTITY_IN_PRODUCT, REGISTER_QUANTITY_OUT_PRODUCT,
-                    REGISTER_PRODUCTION_TIME, REGISTER_PIECEWORK, L_JUST_ONE, L_COMPONENT_ALLOW_TO_CLOSE, L_AUTO_CLOSE_ORDER)) {
+                    REGISTER_PRODUCTION_TIME, REGISTER_PIECEWORK, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(false);
             }
@@ -383,7 +353,7 @@ public class ProductionRecordViewService {
         if (CUMULATED.getStringValue().equals(typeOfProductionRecording.getFieldValue())
                 || FOR_EACH.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
             for (String componentName : Arrays.asList(REGISTER_QUANTITY_IN_PRODUCT, REGISTER_QUANTITY_OUT_PRODUCT,
-                    REGISTER_PRODUCTION_TIME, L_JUST_ONE, L_COMPONENT_ALLOW_TO_CLOSE, L_AUTO_CLOSE_ORDER, REGISTER_PIECEWORK)) {
+                    REGISTER_PRODUCTION_TIME, JUST_ONE, ALLOW_TO_CLOSE, AUTO_CLOSE_ORDER, REGISTER_PIECEWORK)) {
                 FieldComponent component = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
                 component.setEnabled(true);
             }

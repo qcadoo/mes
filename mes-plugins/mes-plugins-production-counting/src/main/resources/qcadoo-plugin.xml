@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="productionCounting" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -85,11 +72,9 @@
 			resource="model/balanceOperationProductInComponent.xml" />
 		<model:model model="balanceOperationProductOutComponent"
 			resource="model/balanceOperationProductOutComponent.xml" />
-		<model:model model="operationTimeComponent"
-			resource="model/operationTimeComponent.xml" />
-		<model:model model="operationPieceworkComponent"
-			resource="model/operationPieceworkComponent.xml" />
-			
+		<model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml" />
+		<model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml" />
+
 		<menu:menu-item name="productionCounting" category="ordersTracking"
 			view="productionRecordsList" />
 		<menu:menu-item name="productionBalance" category="ordersTracking"
@@ -107,7 +92,8 @@
 		<view:view resource="view/recordOperationProductOutComponentDetails.xml" />
 
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="productionRecordStateChange" plugin="productionCounting" model="productionRecordStateChange" />
+			<model:belongsTo name="productionRecordStateChange"
+				plugin="productionCounting" model="productionRecordStateChange" />
 		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 			<model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
@@ -176,18 +162,21 @@
 		</model:model-field>
 		<model:model-field model="workstationType" plugin="basic">
 			<model:hasMany name="productionRecords" model="productionRecord"
-				joinField="workstationType" plugin="productionCounting"  />
+				joinField="workstationType" plugin="productionCounting" />
 		</model:model-field>
 		<model:model-field model="division" plugin="basic">
 			<model:hasMany name="productionRecords" model="productionRecord"
 				joinField="division" plugin="productionCounting" />
 		</model:model-field>
-		
+
 		<model:model-hook model="parameter" plugin="basic">
-		    <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC" method="setParameterWithDefaultProductionCountingValues"/>
+			<model:onCreate
+				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
+				method="setParameterWithDefaultProductionCountingValues" />
 		</model:model-hook>
 		<model:model-hook model="order" plugin="orders">
-			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC" method="setOrderWithDefaultProductionCountingValues"/>
+			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
+				method="setOrderWithDefaultProductionCountingValues" />
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
@@ -195,8 +184,12 @@
 		<view:resource uri="public/**/*" />
 
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 			method="setParametersDefaultValue" />
+
+		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
+			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
@@ -204,13 +197,14 @@
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
-			method="checkOrderState" />
+			method="checkTypeOfProductionRecording" />
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="changeProducedQuantityFieldState" />
-			
-		<custom:custom class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
+
+		<custom:custom
+			class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
 	</modules>
-	
+
 </plugin>
