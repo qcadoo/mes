@@ -68,7 +68,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,
             final String sourceOfMaterialCosts) {
         checkArgument(entity != null);
-        BigDecimal quantity = getBigDecimal(entity.getField("quantity"));
+        BigDecimal quantity = convertNullToZero(entity.getField("quantity"));
 
         String calculateMaterialCostsMode = entity.getStringField("calculateMaterialCostsMode");
 
@@ -89,9 +89,9 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        BigDecimal cost = getBigDecimal(product
+        BigDecimal cost = convertNullToZero(product
                 .getField(ProductsCostFields.parseString(calculateMaterialCostsMode).getStrValue()));
-        BigDecimal costForNumber = getBigDecimal(product.getField("costForNumber"));
+        BigDecimal costForNumber = convertNullToOne(product.getDecimalField("costForNumber"));
         BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
         return costPerUnit.multiply(quantity, numberService.getMathContext());
@@ -151,11 +151,18 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         }
     }
 
-    private BigDecimal getBigDecimal(final Object value) {
+    private BigDecimal convertNullToZero(final Object value) {
         if (value == null) {
             return BigDecimal.ZERO;
         }
         return new BigDecimal(value.toString());
+    }
+
+    private BigDecimal convertNullToOne(final BigDecimal value) {
+        if (value == null) {
+            return BigDecimal.ONE;
+        }
+        return value;
     }
 
 }

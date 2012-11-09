@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -77,9 +76,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     @Autowired
     private ProductionLinesService productionLinesService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Override
     public Object setDateToField(final Date date) {
@@ -237,7 +233,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         String modelName = operationComponent.getDataDefinition().getName();
 
         if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(modelName)) {
-            return (Integer) operationComponent.getField("quantityOfWorkstationTypes");
+            return getIntegerValue(operationComponent.getField("quantityOfWorkstationTypes"));
         } else if (L_TECHNOLOGY_OPERATION_COMPONENT.equals(modelName)) {
             return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
         }
@@ -270,7 +266,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
         BigDecimal cycles = BigDecimal.ONE;
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
-        BigDecimal nextOperationAfterProducedQuantity = operationComponent.getDecimalField("nextOperationAfterProducedQuantity");
+        BigDecimal nextOperationAfterProducedQuantity = convertNullToZero(operationComponent
+                .getDecimalField("nextOperationAfterProducedQuantity"));
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
@@ -357,10 +354,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return operationTime;
     }
 
-    private Integer getIntegerValue(final Object value) {
-        return value == null ? Integer.valueOf(0) : (Integer) value;
-    }
-
     @Override
     public BigDecimal getBigDecimalFromField(final Object value, final Locale locale) {
         try {
@@ -370,5 +363,16 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         } catch (ParseException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    private Integer getIntegerValue(final Object value) {
+        return value == null ? Integer.valueOf(0) : (Integer) value;
+    }
+
+    private BigDecimal convertNullToZero(final BigDecimal value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        return value;
     }
 }
