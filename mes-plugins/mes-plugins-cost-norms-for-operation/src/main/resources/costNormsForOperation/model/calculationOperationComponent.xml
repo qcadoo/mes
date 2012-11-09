@@ -45,7 +45,7 @@
 		<boolean name="isTjDivisible" default="false"/>
 		<decimal name="machineUtilization" />
 		<decimal name="laborUtilization" />
-		<decimal name="productionInOneCycle" required="true" default="1" />
+		<decimal name="productionInOneCycle" default="1" />
 		<enum name="nextOperationAfterProducedType" values="01all,02specified" default="01all"
 			required="true" />
 		<decimal name="nextOperationAfterProducedQuantity" />
