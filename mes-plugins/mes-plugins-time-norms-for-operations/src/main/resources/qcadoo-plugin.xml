@@ -73,7 +73,7 @@
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="productionInOneCycle" required="true"
-				default="1"  >
+				default="1">
 				<model:validatesRange from="0" exclusively="true" />
 			</model:decimal>
 		</model:model-field>
@@ -147,7 +147,7 @@
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="productionInOneCycle" required="true"
-				default="1" >
+				default="1">
 				<model:validatesRange from="0" exclusively="true" />
 			</model:decimal>
 		</model:model-field>
