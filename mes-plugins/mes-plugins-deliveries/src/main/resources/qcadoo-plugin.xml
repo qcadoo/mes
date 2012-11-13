@@ -113,13 +113,13 @@
 		</model:model-field>
 
 		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB"
-				method="checkIfProductIsNotFamily" />
+			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
+				method="checkIfProductIsParticularProduct" />
 		</model:model-hook>
 
 		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksB"
-				method="checkIfProductIsFamily" />
+			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
+				method="checkIfProductIsProductsFamily" />
 		</model:model-hook>
 
 		<view:view-listener plugin="basic" view="companyDetails"
