@@ -161,7 +161,7 @@ public class MultitransferListeners {
             if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
                     && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                     && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
-                timeField.addMessage("materialFlowResources.validate.global.error.dateLowerThanResourcesDate",
+                timeField.addMessage("materialFlowResources.validate.global.error.dateEarlierThanResourcesDate",
                         MessageType.FAILURE);
 
                 isValid = false;
