@@ -61,7 +61,7 @@ public class TransformationsModelValidatorsMFR {
                 && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
             transformations.addError(transformationsDD.getField(TIME),
-                    "materialFlowResources.validate.global.error.dateLowerThanResourcesDate");
+                    "materialFlowResources.validate.global.error.dateEarlierThanResourcesDate");
 
             return false;
         }

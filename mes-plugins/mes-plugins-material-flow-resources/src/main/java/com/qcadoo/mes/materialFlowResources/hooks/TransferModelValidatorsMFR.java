@@ -56,7 +56,8 @@ public class TransferModelValidatorsMFR {
         if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
                 && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
-            transfer.addError(transferDD.getField(TIME), "materialFlowResources.validate.global.error.dateLowerThanResourcesDate");
+            transfer.addError(transferDD.getField(TIME),
+                    "materialFlowResources.validate.global.error.dateEarlierThanResourcesDate");
 
             return false;
         }
