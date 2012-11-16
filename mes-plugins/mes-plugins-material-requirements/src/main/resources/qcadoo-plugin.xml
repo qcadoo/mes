@@ -52,12 +52,12 @@
 				joinField="orders" model="materialRequirement" plugin="materialRequirements" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:enum values="01startOrder,02startOperationalTask"
+			<model:enum values="01startOrder"
 				name="inputProductsRequiredForType" />
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="parameter">
-			<model:enum values="01startOrder,02startOperationalTask"
+			<model:enum values="01startOrder"
 				name="inputProductsRequiredForType" />
 		</model:model-field>
 

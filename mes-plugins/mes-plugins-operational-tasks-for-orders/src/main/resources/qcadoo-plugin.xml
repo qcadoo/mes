@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="operationalTasksForOrders" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -60,6 +47,10 @@
 			<plugin>productionScheduling</plugin>
 			<version>[1.1.7</version>
 		</dependency>
+		<dependency>
+			<plugin>materialRequirements</plugin>
+			<version>[1.1.7</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
@@ -84,6 +75,12 @@
 				joinField="technologyInstanceOperationComponent" model="operationalTask"
 				cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
+
+		<model:model-enum-value plugin="orders" model="order"
+			value="02startOperationalTask" enum="inputProductsRequiredForType" />
+		<model:model-enum-value plugin="basic" model="parameter"
+			value="02startOperationalTask" enum="inputProductsRequiredForType" />
+			
 
 		<model:model-hook model="operationalTask" plugin="operationalTasks">
 			<model:onSave
@@ -124,7 +121,7 @@
 				orderable="true" searchable="true"
 				expression="#technologyInstanceOperationComponent['nodeNumber']" />
 			<view:column name="techInstOperCompNumber" fields="technologyInstanceOperationComponent"
-				orderable="true" 
+				orderable="true"
 				expression="#technologyInstanceOperationComponent['operation'].get('number')" />
 		</view:view-grid-column>
 
@@ -132,14 +129,14 @@
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
 			method="addDiscriminatorRestrictionToGrid" />
-			
+
 		<view:view-hook view="operationalTaskDetails" type="beforeRender"
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
-			
-		<view:view-hook view="operationDurationDetailsInOrder" type="beforeRender"
-			plugin="productionScheduling"
+
+		<view:view-hook view="operationDurationDetailsInOrder"
+			type="beforeRender" plugin="productionScheduling"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationDurationDetailsInOrderDetailsHooksOTFO"
 			method="disabledCreateButton" />
 
@@ -162,17 +159,17 @@
 			component="form" plugin="operationalTasks" event="showOperationalTasksWithOrder"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
 			method="showOperationalTasksWithOrder" />
-			
+
 		<view:view-listener view="operationDurationDetailsInOrder"
 			component="form" plugin="productionScheduling" event="createOperationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationDurationDetailsInOrderDetailsListenersOTFO"
 			method="createOperationalTasks" />
-			
+
 		<view:view-listener view="operationalTasksList"
 			component="productIn" plugin="operationalTasks" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
 			method="addDiscriminatorRestrictionToGrid" />
-			
+
 		<view:view-listener view="operationalTasksList"
 			component="productOut" plugin="operationalTasks" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
