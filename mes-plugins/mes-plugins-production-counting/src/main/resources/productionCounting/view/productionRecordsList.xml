@@ -85,26 +85,29 @@
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
-				width="300" expression="#order != null ? #order['name'] : ''" />
+				width="300" expression="#order['name']" />
 			<option type="column" name="technologyInstanceOperationComponent" fields="technologyInstanceOperationComponent"
 				link="true" width="300"
 				expression="#technologyInstanceOperationComponent != null ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''" />
 			<option type="column" name="lastRecord" fields="lastRecord"
 				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
-				width="300" expression="#shift!=null ? #shift['name'] : ''" />
+				width="300" expression="#shift['name']" />
 			<option type="column" name="dateAndTime" fields="stateChanges" expression="#stateChanges[0].getField('dateAndTime').toLocaleString()"
 				link="true" width="300" />
 			<option type="column" name="worker" fields="stateChanges" expression="#stateChanges[0].getField('worker')" link="true"
 				width="300" />
 			<option type="column" name="orderState" fields="order" hidden="true" 
-				expression="#order!=null ? #order['state'] : ''" />	
+				expression="(#order == null) ? '' : #order['state']" />	
 			<option type="column" name="state" fields="state" reference="state" />
+			
 			<option type="order" column="number" direction="asc" />
+			<option type="searchable" value="number,order,technologyInstanceOperationComponent,shift,state" />
+			<option type="orderable" value="number,order,technologyInstanceOperationComponent,shift,state" />
+			
 			<option type="correspondingView" value="productionCounting/productionRecordDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="number,order,technologyInstanceOperationComponent" />
-			<option type="orderable" value="number,order,technologyInstanceOperationComponent" />
+			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
