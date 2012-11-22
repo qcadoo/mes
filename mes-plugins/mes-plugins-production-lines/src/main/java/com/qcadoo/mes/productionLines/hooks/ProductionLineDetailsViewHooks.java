@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionLines.hooks;
 
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.NUMBER;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 
@@ -64,6 +65,6 @@ public class ProductionLineDetailsViewHooks {
 
     public void generateProductionLineNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE, "form", "number");
+                ProductionLinesConstants.MODEL_PRODUCTION_LINE, L_FORM, NUMBER);
     }
 }
