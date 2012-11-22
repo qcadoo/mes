@@ -161,7 +161,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
                     resource.getDataDefinition().delete(resource.getId());
 
-                    if (BigDecimal.ZERO.equals(quantity)) {
+                    if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                         return;
                     }
                 } else {
