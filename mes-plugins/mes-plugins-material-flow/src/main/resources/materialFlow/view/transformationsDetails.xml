@@ -66,9 +66,10 @@
 									<layoutElement column="2" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
+											
 											<option type="searchable" value="number,name" />
 											<option type="orderable" value="number,name" />
-											<option type="fullScreen" value="true" />
+											
 											<option type="expression" value="#number + ' - ' + #name" />
 											<option type="fieldCode" value="number" />
 											
@@ -93,9 +94,10 @@
 						reference="staff">
 						<option type="column" fields="name" name="name" link="true" />
 						<option type="column" fields="surname" name="surname" link="true" />
+						
 						<option type="searchable" value="number,name,surname" />
 						<option type="orderable" value="number,name,surname" />
-						<option type="fullScreen" value="true" />
+						
 						<option type="expression" value="#name + '  ' + #surname" />
 						<option type="fieldCode" value="number" />
 					</component>
@@ -105,8 +107,10 @@
 						reference="locationFrom">
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
+						
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
+						
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.materialFlow.MaterialFlowService" 
 							method="fillDefaultLocationToFieldInTransformations" />
@@ -115,8 +119,10 @@
 				<layoutElement column="2" row="3">
 					<component type="lookup" name="locationTo" field="locationTo"
 						reference="locationTo">
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
+						
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
 					</component>
@@ -125,8 +131,10 @@
 					<component type="lookup" name="operation" field="operation"
 						reference="operation">
 						<option type="column" fields="number" name="number" link="true" />
+						
 						<option type="searchable" value="name,number" />
 						<option type="orderable" value="name,number" />
+						
 						<option type="expression" value="#number" />
 						<option type="fieldCode" value="name" />
 						
@@ -150,9 +158,10 @@
 									<layoutElement column="2" row="1" width="2">
 										<component type="lookup" name="product" field="product">
 											<option type="column" fields="name" name="name" link="true" />
+											
 											<option type="searchable" value="number,name" />
 											<option type="orderable" value="number,name" />
-											<option type="fullScreen" value="true" />
+											
 											<option type="expression" value="#number + ' - ' +  #name" />
 											<option type="fieldCode" value="number" />
 											
