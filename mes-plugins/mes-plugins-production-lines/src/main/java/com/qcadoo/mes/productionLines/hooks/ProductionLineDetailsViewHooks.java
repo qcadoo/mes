@@ -24,7 +24,7 @@
 package com.qcadoo.mes.productionLines.hooks;
 
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +33,22 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class ProductionLineDetailsViewHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void disableSupportedTechnologiesGrids(final ViewDefinitionState view) {
-        ComponentState supportsAllTechnologies = view.getComponentByReference(SUPPORTSALLTECHNOLOGIES);
+        FormComponent productionLineForm = (FormComponent) view.getComponentByReference(L_FORM);
+        ComponentState supportsAllTechnologies = view.getComponentByReference(SUPPORTS_ALL_TECHNOLOGIES);
 
-        if ("1".equals(supportsAllTechnologies.getFieldValue())) {
+        if ((productionLineForm.getEntityId() == null) || "1".equals(supportsAllTechnologies.getFieldValue())) {
             view.getComponentByReference(TECHNOLOGIES).setEnabled(false);
             view.getComponentByReference(GROUPS).setEnabled(false);
         } else {

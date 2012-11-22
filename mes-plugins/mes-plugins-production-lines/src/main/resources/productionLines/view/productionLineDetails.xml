@@ -193,6 +193,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
 			method="disableSupportedTechnologiesGrids" />
-		<beforeRender class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks" method="generateProductionLineNumber" />
+		<beforeRender
+			class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
+			method="generateProductionLineNumber" />
 	</hooks>
 </view>

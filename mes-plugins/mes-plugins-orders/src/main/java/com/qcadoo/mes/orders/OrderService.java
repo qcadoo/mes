@@ -42,7 +42,7 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 
@@ -412,7 +412,7 @@ public class OrderService {
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
         Entity technology = order.getBelongsToField(TECHNOLOGY);
 
-        if ((productionLine != null) && (technology != null) && !productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)) {
+        if ((productionLine != null) && (technology != null) && !productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)) {
             Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
 
             if (technologyGroup != null) {

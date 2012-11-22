@@ -24,7 +24,7 @@
 package com.qcadoo.mes.productionLines.hooks;
 
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -36,13 +36,19 @@ import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 public class ProductionLineDetailsViewHooksTest {
+
+    private static final String L_FORM = "form";
 
     private ProductionLineDetailsViewHooks productionLinesViewHooks;
 
     @Mock
     private ViewDefinitionState view;
+
+    @Mock
+    private FormComponent productionLineForm;
 
     @Mock
     private ComponentState supportsAllTechnologies, groupsGrid, technologiesGrid;
@@ -53,7 +59,8 @@ public class ProductionLineDetailsViewHooksTest {
 
         productionLinesViewHooks = new ProductionLineDetailsViewHooks();
 
-        given(view.getComponentByReference(SUPPORTSALLTECHNOLOGIES)).willReturn(supportsAllTechnologies);
+        given(view.getComponentByReference(L_FORM)).willReturn(productionLineForm);
+        given(view.getComponentByReference(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(supportsAllTechnologies);
         given(view.getComponentByReference(TECHNOLOGIES)).willReturn(technologiesGrid);
         given(view.getComponentByReference(GROUPS)).willReturn(groupsGrid);
     }
@@ -61,6 +68,7 @@ public class ProductionLineDetailsViewHooksTest {
     @Test
     public void shouldDisableBothGridsIfTheCheckboxSupportAllTechnoogiesIsSet() {
         // given
+        given(productionLineForm.getEntityId()).willReturn(null);
         given(supportsAllTechnologies.getFieldValue()).willReturn("1");
 
         // when
@@ -74,6 +82,7 @@ public class ProductionLineDetailsViewHooksTest {
     @Test
     public void shouldEnableBothGridsIfTheCheckboxSupportAllTechnoogiesIsntSet() {
         // given
+        given(productionLineForm.getEntityId()).willReturn(1L);
         given(supportsAllTechnologies.getFieldValue()).willReturn("0");
 
         // when

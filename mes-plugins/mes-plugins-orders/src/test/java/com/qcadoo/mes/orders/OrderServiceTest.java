@@ -51,7 +51,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTSALLTECHNOLOGIES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
 import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 import static org.junit.Assert.assertFalse;
@@ -371,7 +371,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(true);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(true);
 
         // when
         orderService.checkIfProductionLineSupportsTechnology(view);
@@ -407,7 +407,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
@@ -455,7 +455,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
@@ -510,7 +510,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
@@ -587,7 +587,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(true);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(true);
 
         // when
         boolean result = orderService.checkIfProductionLineSupportsTechnology(orderDD, order);
@@ -616,7 +616,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
@@ -657,7 +657,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
@@ -705,7 +705,7 @@ public class OrderServiceTest {
         given(order.getBelongsToField(PRODUCTION_LINE)).willReturn(productionLine);
         given(order.getBelongsToField(TECHNOLOGY)).willReturn(technology);
 
-        given(productionLine.getBooleanField(SUPPORTSALLTECHNOLOGIES)).willReturn(false);
+        given(productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)).willReturn(false);
 
         given(technology.getBelongsToField(TECHNOLOGY_GROUP)).willReturn(technologyGroup);
 
