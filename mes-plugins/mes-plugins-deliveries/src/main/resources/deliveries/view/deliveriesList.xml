@@ -201,10 +201,10 @@
 			<option type="column" name="state" fields="state" />
 			<option type="column" name="createDate" fields="createDate" width="100"/>
 			
+			<option type="order" column="number" direction="asc" />
+			
 			<option type="searchable" value="name,number,supplier,deliveryDate,state,createDate" />
 			<option type="orderable" value="name,number,supplier,deliveryDate,state,createDate" />
-			
-			<option type="order" column="number" direction="asc" />
 			
 			<option type="correspondingView" value="deliveries/deliveryDetails" />
 			<option type="correspondingComponent" value="form" />

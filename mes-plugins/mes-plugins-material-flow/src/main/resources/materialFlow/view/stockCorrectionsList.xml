@@ -52,7 +52,10 @@
 			<option type="orderable" value="number,stockCorrectionDate,location,product,found,staff" />
 			
 			<option type="correspondingView" value="materialFlow/stockCorrectionDetails" /> 
-			<option type="correspondingComponent" value="form" /> 
+			<option type="correspondingComponent" value="form" />
+			
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
 		</component>
 		
 		<option type="fixedHeight" value="true" />

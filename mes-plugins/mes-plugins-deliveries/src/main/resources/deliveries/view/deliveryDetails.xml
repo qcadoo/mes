@@ -298,10 +298,10 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 							
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="searchable" value="number,name,unit" />
 						<option type="orderable" value="number,name,unit" />
-						
-						<option type="order" column="number" direction="desc" />
 						
 						<option type="correspondingView" value="deliveries/orderedProductDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -332,10 +332,10 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 						
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="searchable" value="number,name,unit" />
 						<option type="orderable" value="number,name,unit" />
-						
-						<option type="order" column="number" direction="desc" />
 						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />

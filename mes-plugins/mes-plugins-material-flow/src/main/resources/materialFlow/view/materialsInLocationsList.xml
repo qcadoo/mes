@@ -85,6 +85,7 @@
 				
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
+				
  				<listener event="printMaterialsInLocationDocuments" 
  					class="com.qcadoo.mes.materialFlow.MaterialsInLocationService" 
  					method="printMaterialsInLocationDocuments" /> 
