@@ -49,6 +49,7 @@ public class TechnologyStateChangeAspect extends AbstractStateChangeAspect {
 
     @Override
     protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
+
     }
 
     @Override

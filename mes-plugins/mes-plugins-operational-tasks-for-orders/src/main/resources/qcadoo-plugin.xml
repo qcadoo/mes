@@ -63,25 +63,26 @@
 			<model:belongsTo name="technologyInstanceOperationComponent"
 				model="technologyInstanceOperationComponent" plugin="technologies" />
 		</model:model-field>
-		<model:model-enum-value model="operationalTask"
-			plugin="operationalTasks" value="02executionOperationInOrder" enum="typeTask" />
+		<model:model-enum-value model="operationalTask" plugin="operationalTasks" 
+			value="02executionOperationInOrder" enum="typeTask" />
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="operationalTasks" joinField="order"
 				model="operationalTask" cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
+		
 		<model:model-field model="technologyInstanceOperationComponent"
 			plugin="technologies">
 			<model:hasMany name="operationalTasks"
 				joinField="technologyInstanceOperationComponent" model="operationalTask"
 				cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
-
+		
 		<model:model-enum-value plugin="orders" model="order"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
+			
 		<model:model-enum-value plugin="basic" model="parameter"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-			
-
+		
 		<model:model-hook model="operationalTask" plugin="operationalTasks">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"

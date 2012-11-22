@@ -26,6 +26,7 @@ package com.qcadoo.mes.orders.constants;
 public final class OrdersConstants {
 
     private OrdersConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "orders";
