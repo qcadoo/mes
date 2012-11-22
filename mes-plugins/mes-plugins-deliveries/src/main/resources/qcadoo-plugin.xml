@@ -81,31 +81,24 @@
 				model="deliveryStateChange" />
 		</model:model-field>
 
-		<menu:menu-category name="requirements" />
-
-		<menu:menu-item name="deliveries" category="requirements"
-			view="deliveriesList" />
-		<menu:menu-item name="supplyItems" category="requirements"
-			view="supplyItems" />
-
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="products" model="product" plugin="basic"
-				joinField="companyProduct" cascade="nullify" />
-		</model:model-field>
-
 		<model:model-field model="product" plugin="basic">
 			<model:belongsTo name="companyProduct" model="company"
 				plugin="basic" />
 		</model:model-field>
-
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="productsFamily" model="product"
-				plugin="basic" joinField="companyProductFamily" cascade="nullify" />
-		</model:model-field>
-
+	
 		<model:model-field model="product" plugin="basic">
 			<model:belongsTo name="companyProductFamily" model="company"
 				plugin="basic" />
+		</model:model-field>
+		
+		<model:model-field model="company" plugin="basic">
+			<model:hasMany name="products" model="product" plugin="basic"
+				joinField="companyProduct" cascade="nullify" />
+		</model:model-field>
+		
+		<model:model-field model="company" plugin="basic">
+			<model:hasMany name="productsFamily" model="product"
+				plugin="basic" joinField="companyProductFamily" cascade="nullify" />
 		</model:model-field>
 
 		<model:model-field model="company" plugin="basic">
@@ -121,21 +114,13 @@
 			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
 				method="checkIfProductIsProductsFamily" />
 		</model:model-hook>
+		
+		<menu:menu-category name="requirements" />
 
-		<view:view-listener plugin="basic" view="companyDetails"
-			component="form" event="redirectToFilteredDeliveriesList"
-			class="com.qcadoo.mes.deliveries.listeners.DeliveriesListeners"
-			method="redirectToFilteredDeliveriesList" />
-
-		<view:view-hook view="companyDetails" type="beforeRender"
-			plugin="basic" class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
-			method="updateRibbonState" />
-			
-		<view:view-hook view="companyDetails" type="beforeRender"
-			plugin="basic" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
-			method="disabledGridWhenCompanyIsAnOwner" />		
-						
-		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
+		<menu:menu-item name="deliveries" category="requirements"
+			view="deliveriesList" />
+		<menu:menu-item name="supplyItems" category="requirements"
+			view="supplyItems" />
 
 		<view:view resource="view/deliveriesList.xml" />
 		<view:view resource="view/deliveryDetails.xml" />
@@ -145,6 +130,21 @@
 
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />
+		
+		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
+	
+		<view:view-listener plugin="basic" view="companyDetails"
+			component="form" event="redirectToFilteredDeliveriesList"
+			class="com.qcadoo.mes.deliveries.listeners.CompanyDetailsListenersD"
+			method="redirectToFilteredDeliveriesList" />
+	
+		<view:view-hook plugin="basic" view="companyDetails"
+			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+			method="updateRibbonState" />
+	
+		<view:view-hook plugin="basic" view="companyDetails"
+			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+			method="disabledGridWhenCompanyIsAnOwner" />		
 
 		<custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService" />
 	</modules>

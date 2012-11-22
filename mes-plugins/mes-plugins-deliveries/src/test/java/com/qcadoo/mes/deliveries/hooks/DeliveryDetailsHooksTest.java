@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.APPROVED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DECLINED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DRAFT;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.PREPARED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.RECEIVED;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,13 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -46,6 +50,10 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 public class DeliveryDetailsHooksTest {
 
+    private static final String L_FORM = "form";
+
+    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
+
     private DeliveryDetailsHooks deliveryDetailsHooks;
 
     @Mock
@@ -53,6 +61,9 @@ public class DeliveryDetailsHooksTest {
 
     @Mock
     private FormComponent form;
+
+    @Mock
+    private FieldComponent stateField;
 
     @Mock
     private GridComponent deliveredProducts;
@@ -67,40 +78,29 @@ public class DeliveryDetailsHooksTest {
     private FieldComponent deliveryDateBuffer;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private DataDefinition dataDefinition;
-
-    @Mock
-    private Entity delivery, supplier;
+    private Entity supplier;
 
     @Before
     public void init() {
-        deliveryDetailsHooks = new DeliveryDetailsHooks();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(deliveryDetailsHooks, "dataDefinitionService", dataDefinitionService);
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS)).thenReturn(deliveredProducts);
-        when(view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS)).thenReturn(orderedProducts);
+        deliveryDetailsHooks = new DeliveryDetailsHooks();
 
-        when(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)).thenReturn(
-                dataDefinition);
+        when(view.getComponentByReference(L_FORM)).thenReturn(form);
 
-        Long deliveryId = 1L;
-        when(form.getEntityId()).thenReturn(deliveryId);
-        when(dataDefinition.get(deliveryId)).thenReturn(delivery);
+        when(view.getComponentByReference(STATE)).thenReturn(stateField);
+        when(view.getComponentByReference(DELIVERED_PRODUCTS)).thenReturn(deliveredProducts);
+        when(view.getComponentByReference(ORDERED_PRODUCTS)).thenReturn(orderedProducts);
     }
 
     @Test
     public void shouldSetBufferFromCompany() throws Exception {
         // given
         Integer buffer = Integer.valueOf(10);
-        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
+        when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
+        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBuffer);
         when(supplierLookup.getEntity()).thenReturn(supplier);
-        when(supplier.getField("buffer")).thenReturn(buffer);
+        when(supplier.getField(BUFFER)).thenReturn(buffer);
 
         // when
         deliveryDetailsHooks.setBufferForSupplier(view);
@@ -112,8 +112,8 @@ public class DeliveryDetailsHooksTest {
     @Test
     public void shouldSetNullForDeliveryBufferFieldWhenSUpplierIsNotSelected() throws Exception {
         // given
-        when(view.getComponentByReference(DeliveryFields.SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference("deliveryDateBuffer")).thenReturn(deliveryDateBuffer);
+        when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
+        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBuffer);
         when(supplierLookup.getEntity()).thenReturn(null);
 
         // when
@@ -126,100 +126,116 @@ public class DeliveryDetailsHooksTest {
     @Test
     public void shouldReturnWhenEntityIdIsNull() throws Exception {
         // given
+        final boolean enabledForm = true;
+        final boolean enabledOrderedGrid = false;
+        final boolean enabledDeliveredGrid = false;
         when(form.getEntityId()).thenReturn(null);
+        when(stateField.getFieldValue()).thenReturn(PREPARED);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
+
+        // then
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
+        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
     public void shouldDisabledFormAndOrderedFieldWhenStateIsPrepared() throws Exception {
         // given
-        final boolean enabledFormAndOrderedProduct = false;
+        final boolean enabledForm = false;
+        final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = true;
-        when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.PREPARED);
+        when(stateField.getFieldValue()).thenReturn(PREPARED);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
 
         // then
-        verify(form).setFormEnabled(enabledFormAndOrderedProduct);
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
-        verify(orderedProducts).setEnabled(enabledFormAndOrderedProduct);
-        verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
     @Test
     public void shouldDisabledFormAndOrderedFieldWhenStateIsApproved() throws Exception {
         // given
-        final boolean enabledFormAndOrderedProduct = false;
+        final boolean enabledForm = false;
+        final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = true;
-        when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.APPROVED);
+        when(stateField.getFieldValue()).thenReturn(APPROVED);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
 
         // then
-        verify(form).setFormEnabled(enabledFormAndOrderedProduct);
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
-        verify(orderedProducts).setEnabled(enabledFormAndOrderedProduct);
-        verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
     @Test
     public void shouldEnabledFieldsWhenStateIsDraft() throws Exception {
         // given
-        final boolean enabledFormAndOrderedProduct = true;
+        final boolean enabledForm = true;
+        final boolean enabledOrderedGrid = true;
         final boolean enabledDeliveredGrid = true;
-        when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.DRAFT);
+        when(stateField.getFieldValue()).thenReturn(DRAFT);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
 
         // then
-        verify(form).setFormEnabled(enabledFormAndOrderedProduct);
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
-        verify(orderedProducts).setEnabled(enabledFormAndOrderedProduct);
-        verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
     @Test
     public void shouldDisabledFieldsWhenStateIsDeclined() throws Exception {
         // given
-        final boolean enabledFormAndOrderedProduct = false;
+        final boolean enabledForm = false;
+        final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = false;
-        when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.DECLINED);
+        when(stateField.getFieldValue()).thenReturn(DECLINED);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
 
         // then
-        verify(form).setFormEnabled(enabledFormAndOrderedProduct);
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
-        verify(orderedProducts).setEnabled(enabledFormAndOrderedProduct);
-        verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
     @Test
     public void shouldDisabledFieldsWhenStateIsReceived() throws Exception {
         // given
-        final boolean enabledFormAndOrderedProduct = false;
+        final boolean enabledForm = false;
+        final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = false;
-        when(delivery.getStringField(DeliveryFields.STATE)).thenReturn(DeliveryStateStringValues.RECEIVED);
+        when(stateField.getFieldValue()).thenReturn(RECEIVED);
 
         // when
-        deliveryDetailsHooks.changedEnabledFieldForSpecificDeliveryState(view);
+        deliveryDetailsHooks.changeFieldsEnabledDependOnState(view);
 
         // then
-        verify(form).setFormEnabled(enabledFormAndOrderedProduct);
+        verify(form).setFormEnabled(enabledForm);
+        verify(orderedProducts).setEnabled(enabledOrderedGrid);
+        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
         verify(deliveredProducts).setEditable(enabledDeliveredGrid);
-        verify(orderedProducts).setEnabled(enabledFormAndOrderedProduct);
-        verify(orderedProducts).setEditable(enabledFormAndOrderedProduct);
     }
 
 }

@@ -33,7 +33,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -90,7 +89,7 @@ public class DeliveryDetailsListenersTest {
     public void shouldRedirectToDeliveryReportOnPrintDelivery() throws Exception {
         // given
         String stateValue = "111";
-        Mockito.when(formComponent.getFieldValue()).thenReturn(stateValue);
+        when(formComponent.getFieldValue()).thenReturn(stateValue);
 
         // when
         deliveryDetailsListeners.printDeliveryReport(view, formComponent, args);
@@ -103,7 +102,7 @@ public class DeliveryDetailsListenersTest {
     public void shouldAddMessageWhenStateIsNotFormComponentOnPrintDelivery() throws Exception {
         // given
         String stateValue = "111";
-        Mockito.when(grid.getFieldValue()).thenReturn(stateValue);
+        when(grid.getFieldValue()).thenReturn(stateValue);
 
         // when
         deliveryDetailsListeners.printDeliveryReport(view, grid, args);
@@ -117,7 +116,7 @@ public class DeliveryDetailsListenersTest {
     public void shouldRedirectToDeliveryReportOnPrintOrder() throws Exception {
         // given
         String stateValue = "111";
-        Mockito.when(formComponent.getFieldValue()).thenReturn(stateValue);
+        when(formComponent.getFieldValue()).thenReturn(stateValue);
 
         // when
         deliveryDetailsListeners.printOrderReport(view, formComponent, args);

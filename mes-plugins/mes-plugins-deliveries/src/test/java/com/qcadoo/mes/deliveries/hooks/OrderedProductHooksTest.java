@@ -103,4 +103,5 @@ public class OrderedProductHooksTest {
         // then
         Assert.assertTrue(result);
     }
+
 }

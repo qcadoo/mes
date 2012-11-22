@@ -36,7 +36,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class DeliveriesListeners {
+public class CompanyDetailsListenersD {
 
     private static final String L_FORM = "form";
 
@@ -73,4 +73,5 @@ public class DeliveriesListeners {
         String url = "../page/deliveries/deliveriesList.html";
         view.redirectTo(url, false, true, parameters);
     }
+
 }

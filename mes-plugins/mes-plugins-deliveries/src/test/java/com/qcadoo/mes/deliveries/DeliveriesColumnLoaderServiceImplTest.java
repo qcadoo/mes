@@ -35,9 +35,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchResult;
 
 public class DeliveriesColumnLoaderServiceImplTest {
 
@@ -46,18 +43,6 @@ public class DeliveriesColumnLoaderServiceImplTest {
     @Mock
     private ColumnExtensionService columnExtensionService;
 
-    @Mock
-    private DeliveriesService deliveriesService;
-
-    @Mock
-    private DataDefinition columnForDeliveriesDD, columnForOrdersDD;
-
-    @Mock
-    private SearchCriteriaBuilder searchCriteriaBuilder;
-
-    @Mock
-    private SearchResult searchResult;
-
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -65,7 +50,6 @@ public class DeliveriesColumnLoaderServiceImplTest {
         deliveriesColumnLoaderService = new DeliveriesColumnLoaderServiceImpl();
 
         ReflectionTestUtils.setField(deliveriesColumnLoaderService, "columnExtensionService", columnExtensionService);
-        ReflectionTestUtils.setField(deliveriesColumnLoaderService, "deliveriesService", deliveriesService);
     }
 
     @Test

@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
@@ -34,8 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -49,8 +51,7 @@ public class DeliveryDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -61,45 +62,48 @@ public class DeliveryDetailsHooks {
     }
 
     public void setBufferForSupplier(final ViewDefinitionState view) {
-        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
-        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference("deliveryDateBuffer");
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(SUPPLIER);
+        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference(L_DELIVERY_DATE_BUFFER);
         Entity supplier = supplierLookup.getEntity();
         if (supplier == null) {
             deliveryDateBuffer.setFieldValue(null);
         } else {
-            deliveryDateBuffer.setFieldValue(supplier.getField("buffer"));
+            deliveryDateBuffer.setFieldValue(supplier.getField(BUFFER));
         }
         deliveryDateBuffer.requestComponentUpdateState();
     }
 
-    public void changedEnabledFieldForSpecificDeliveryState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+    public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
+        String state = stateField.getFieldValue().toString();
+
         if (form.getEntityId() == null) {
-            return;
-        }
-        final Entity delivery = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERY).get(form.getEntityId());
-        if (PREPARED.getStringValue().equals(delivery.getStringField(STATE))
-                || APPROVED.getStringValue().equals(delivery.getStringField(STATE))) {
-            changedEnabledFields(view, false, true);
-        } else if (DECLINED.getStringValue().equals(delivery.getStringField(STATE))
-                || RECEIVED.getStringValue().equals(delivery.getStringField(STATE))) {
-            changedEnabledFields(view, false, false);
+            changeFieldsEnabled(view, true, false, false);
         } else {
-            changedEnabledFields(view, true, true);
+            if (PREPARED.getStringValue().equals(state) || APPROVED.getStringValue().equals(state)) {
+                changeFieldsEnabled(view, false, false, true);
+            } else if (DECLINED.getStringValue().equals(state) || RECEIVED.getStringValue().equals(state)) {
+                changeFieldsEnabled(view, false, false, false);
+            } else {
+                changeFieldsEnabled(view, true, true, true);
+            }
         }
     }
 
-    private void changedEnabledFields(final ViewDefinitionState view, final boolean enabledFormAndOrderedProduct,
+    private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledOrderedGrid,
             final boolean enabledDeliveredGrid) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
-        GridComponent orderedProducts = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
-        form.setFormEnabled(enabledFormAndOrderedProduct);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
+        GridComponent orderedProducts = (GridComponent) view.getComponentByReference(ORDERED_PRODUCTS);
+        GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DELIVERED_PRODUCTS);
+
+        form.setFormEnabled(enabledForm);
+        orderedProducts.setEnabled(enabledOrderedGrid);
+        orderedProducts.setEditable(enabledOrderedGrid);
         deliveredProducts.setEnabled(enabledDeliveredGrid);
         deliveredProducts.setEditable(enabledDeliveredGrid);
-        orderedProducts.setEnabled(enabledFormAndOrderedProduct);
-        orderedProducts.setEditable(enabledFormAndOrderedProduct);
     }
 
 }

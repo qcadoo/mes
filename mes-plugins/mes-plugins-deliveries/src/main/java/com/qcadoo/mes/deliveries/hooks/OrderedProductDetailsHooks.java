@@ -47,4 +47,5 @@ public class OrderedProductDetailsHooks {
         field.setFieldValue(unit);
         field.requestComponentUpdateState();
     }
+
 }

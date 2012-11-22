@@ -21,46 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.hooks;
+package com.qcadoo.mes.deliveries.constants;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static org.mockito.Mockito.verify;
+public final class CompanyFieldsD {
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+    private CompanyFieldsD() {
 
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
-public class DeliveryHooksTest {
-
-    private DeliveryHooks deliveryHooks;
-
-    @Mock
-    private DataDefinition deliveryDD;
-
-    @Mock
-    private Entity delivery;
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-
-        deliveryHooks = new DeliveryHooks();
     }
 
-    @Test
-    public void shouldClearStateField() throws Exception {
-        // then
+    public static final String PRODUCTS = "products";
 
-        // when
-        deliveryHooks.clearStateFieldOnCopy(deliveryDD, delivery);
+    public static final String PRODUCTS_FAMILY = "productsFamily";
 
-        // then
-        verify(delivery).setField(STATE, DeliveryStateStringValues.DRAFT);
-    }
+    public static final String BUFFER = "buffer";
 
 }

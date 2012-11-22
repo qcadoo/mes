@@ -40,4 +40,5 @@ public class DeliveryStateChangeViewClient extends AbstractStateChangeViewClient
     protected StateChangeService getStateChangeService() {
         return deliveryStateChangeService;
     }
+
 }

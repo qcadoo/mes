@@ -39,4 +39,5 @@ public class OrderedProductDetailsListeners {
     public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderedProductDetailsHooks.fillUnitsFields(view);
     }
+
 }

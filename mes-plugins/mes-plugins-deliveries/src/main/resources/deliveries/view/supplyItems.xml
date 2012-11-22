@@ -51,13 +51,16 @@
 				expression="#product['unit']" />
 			<option type="column" name="supplier" fields="delivery"
 				expression="#delivery['supplier']==null? '' :#delivery['supplier'].get('name')" />
+				
 			<option type="order" column="deliveryDate" direction="asc" />
+			
 			<option type="searchable"
 				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
 			<option type="orderable"
 				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
+				
 			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="false" />
+			<option type="multiselect" value="true" />
 			
 			<listener event="select"
 				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
@@ -68,6 +71,4 @@
 		<option type="header" value="false" />
 	</component>
 	
-	<hooks>
-	</hooks>
 </view>

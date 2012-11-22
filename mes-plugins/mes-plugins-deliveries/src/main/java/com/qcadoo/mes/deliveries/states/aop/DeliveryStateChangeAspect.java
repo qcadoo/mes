@@ -49,10 +49,12 @@ public class DeliveryStateChangeAspect extends AbstractStateChangeAspect {
 
     @Override
     protected void changeStatePhase(final StateChangeContext stateChangeContext, final int phaseNumber) {
+
     }
 
     @Override
     protected int getNumOfPhases() {
         return DeliveryStateChangePhase.getNumOfPhases();
     }
+
 }

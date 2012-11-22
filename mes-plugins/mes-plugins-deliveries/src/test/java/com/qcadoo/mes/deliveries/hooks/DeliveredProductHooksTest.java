@@ -80,7 +80,7 @@ public class DeliveredProductHooksTest {
         when(builder.add(criterion1)).thenReturn(builder);
         when(builder.add(criterion2)).thenReturn(builder);
         when(builder.add(criterion3)).thenReturn(builder);
-        
+
     }
 
     @Test
@@ -104,4 +104,5 @@ public class DeliveredProductHooksTest {
         // then
         Assert.assertTrue(result);
     }
+
 }
