@@ -224,8 +224,8 @@
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									saveNew.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
-									del.disable("#{translate(basic.product.ribbon.message.productIsExternal)}");
+									saveNew.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
+									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
 								}
 							}
 						};

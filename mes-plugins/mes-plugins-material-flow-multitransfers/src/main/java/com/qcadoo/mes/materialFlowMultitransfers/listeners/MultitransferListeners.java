@@ -61,6 +61,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Component
@@ -145,6 +146,20 @@ public class MultitransferListeners {
         Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
         Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
 
+        if (locationFrom != null) {
+            if (locationFrom.getStringField("externalNumber") != null) {
+                locationFromField.addMessage("materialFlow.validate.global.error.externalNumber", MessageType.FAILURE);
+                isValid = false;
+            }
+        }
+
+        if (locationTo != null) {
+            if (locationTo.getStringField("externalNumber") != null) {
+                locationToField.addMessage("materialFlow.validate.global.error.externalNumber", MessageType.FAILURE);
+                isValid = false;
+            }
+        }
+
         if (typeField.getFieldValue() == null || typeField.getFieldValue().toString().isEmpty()) {
             typeField.addMessage("materialFlow.validate.global.error.fillType", MessageType.FAILURE);
 
@@ -161,7 +176,7 @@ public class MultitransferListeners {
             if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
                     && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                     && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
-                timeField.addMessage("materialFlowResources.validate.global.error.dateEarlierThanResourcesDate",
+                timeField.addMessage("materialFlowResources.validate.global.error.dateLowerThanResourcesDate",
                         MessageType.FAILURE);
 
                 isValid = false;
@@ -338,6 +353,37 @@ public class MultitransferListeners {
 
     public void disableDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         materialFlowResourcesService.disableDateField(view);
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        checkIfLocationFromHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfLocationToHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(LOCATION_TO);
+        Entity location = locationLookup.getEntity();
+        if (location != null) {
+            if (location.getStringField("externalNumber") != null) {
+                locationLookup.addMessage("materialFlow.stockCorrection.error.locationHasExternalNumber",
+                        ComponentState.MessageType.FAILURE);
+            }
+        }
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(LOCATION_FROM);
+        Entity location = locationLookup.getEntity();
+        if (location != null) {
+            if (location.getStringField("externalNumber") != null) {
+                locationLookup.addMessage("materialFlow.stockCorrection.error.locationHasExternalNumber",
+                        ComponentState.MessageType.FAILURE);
+            }
+        }
     }
 
 }

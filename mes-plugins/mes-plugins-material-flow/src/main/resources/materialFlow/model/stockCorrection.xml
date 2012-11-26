@@ -43,6 +43,8 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.StockCorrectionModelValidators"
 			method="validateStockCorrection" />
+		<validatesWith class="com.qcadoo.mes.materialFlow.hooks.StockCorrectionModelValidators"
+			method="checkIfLocationHasExternalNumber" />
 	</hooks>
 	<identifier expression="#number" />
 </model>

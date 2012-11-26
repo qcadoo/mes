@@ -66,6 +66,8 @@
 						
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
+								method="checkIfLocationFromHasExternalNumber" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="5" width="5">
@@ -77,6 +79,8 @@
 						
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.hooks.TransferDetailsViewHooks"
+								method="checkIfLocationToHasExternalNumber" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="6" width="5">

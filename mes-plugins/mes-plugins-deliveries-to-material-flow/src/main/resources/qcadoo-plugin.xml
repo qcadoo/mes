@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="deliveriesToMaterialFlow" version="1.2.0-SNAPSHOT"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>Qcadoo MES :: Plugins :: Deliveries to material flow</name>
+		<vendor>
+			<name>Qcadoo</name>
+			<url>www.qcadoo.com</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>deliveries</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+		<dependency>
+			<plugin>basic</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+	
+	<modules>
+		<localization:translation path="locales" />
+		
+		<model:model-field model="delivery" plugin="deliveries">
+				<model:belongsTo name="location" model="location" plugin="materialFlow"/>
+		</model:model-field>
+		<model:model-field model="parameter" plugin="basic">
+				<model:belongsTo name="location" model="location" plugin="materialFlow"/>
+		</model:model-field>
+		
+		
+		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+	</modules>
+	
+</plugin>

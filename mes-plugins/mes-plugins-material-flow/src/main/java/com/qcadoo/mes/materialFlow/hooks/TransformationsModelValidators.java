@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
@@ -161,6 +163,27 @@ public class TransformationsModelValidators {
     private void appendErrorToModelField(final Entity entity, final String fieldName, final String messageKey) {
         FieldDefinition productInFieldDef = entity.getDataDefinition().getField(fieldName);
         entity.addError(productInFieldDef, messageKey);
+    }
+
+    public boolean checkIfLocationFromOrLocationToHasExternalNumber(final DataDefinition transformationDD,
+            final Entity transformation) {
+
+        if (transformation.getBelongsToField(LOCATION_FROM) != null) {
+            if (transformation.getBelongsToField(LOCATION_FROM).getStringField("externalNumber") != null) {
+                transformation.addError(transformationDD.getField(LOCATION_FROM),
+                        "materialFlow.validate.global.error.locationHasExternalNumber");
+                return false;
+            }
+        }
+        if (transformation.getBelongsToField(LOCATION_TO) != null) {
+            if (transformation.getBelongsToField(LOCATION_TO).getStringField("externalNumber") != null) {
+                transformation.addError(transformationDD.getField(LOCATION_TO),
+                        "materialFlow.validate.global.error.locationHasExternalNumber");
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

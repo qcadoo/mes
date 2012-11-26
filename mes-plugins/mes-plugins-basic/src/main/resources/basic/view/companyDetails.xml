@@ -143,7 +143,33 @@
 					class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners" method="redirectToFilteredOrderProductionList" />
 			</component>
 		</windowTab>
-		
+		<windowTab name="integrationTab">
+			<script>
+					<![CDATA[
+						var del = #{window}.getRibbonItem("actions.delete");
+						var saveNew = #{window}.getRibbonItem("actions.saveNew");
+						var externalNumberListener = {
+							onSetValue: function(value) {
+								
+								var externalNumber = #{externalNumber}.getValue().content.value;
+								
+								if(externalNumber != undefined && externalNumber != '') {
+									saveNew.disable("#{translate(materialFlow.location.ribbon.message.companyIsExternal)}");
+									del.disable("#{translate(materialFlow.location.ribbon.message.companyIsExternal)}");
+								}
+							}
+						};
+						#{form}.addOnChangeListener(externalNumberListener);
+					]]>
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+						reference="externalNumber" defaultEnabled="never" />
+				</layoutElement>
+			</component>
+		</windowTab>
 	</component>
 	
 	<hooks>
