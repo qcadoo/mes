@@ -21,25 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.listeners;
+package com.qcadoo.mes.deliveries.constants;
 
-import org.springframework.stereotype.Service;
+public final class ProductFieldsD {
 
-import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+    private ProductFieldsD() {
 
-@Service
-public class DeliveredProductDetailsListeners {
-
-    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
-
-    public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillUnitsFields(view);
     }
 
-    public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillOrderedQuantities(view);
-    }
+    public static final String PRODUCT_COMPANIES = "productCompanies";
+
+    public static final String PRODUCTS_FAMILY_COMPANIES = "productsFamilyCompanies";
 
 }

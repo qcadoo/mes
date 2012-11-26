@@ -247,7 +247,7 @@
 							<listener
 								event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-								method="setBufferForSupplier" />
+								method="fillBufferForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -376,7 +376,7 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="setBufferForSupplier" />
+			method="fillBufferForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="changeFieldsEnabledDependOnState" />
 	</hooks>

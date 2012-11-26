@@ -21,25 +21,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.listeners;
+package com.qcadoo.mes.deliveries;
 
-import org.springframework.stereotype.Service;
+import com.qcadoo.model.api.Entity;
 
-import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+public interface CompanyProductService {
 
-@Service
-public class DeliveredProductDetailsListeners {
-
-    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
-
-    public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillUnitsFields(view);
-    }
-
-    public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillOrderedQuantities(view);
-    }
+    /**
+     * Checks if product is not used
+     * 
+     * @param companyProduct
+     *            company product
+     * 
+     * @param companyName
+     *            belongs to product name - product
+     * 
+     * @param belongsToCompanyName
+     *            belongs to company name - company
+     * 
+     * @param hasManyName
+     *            has many name - companyProducts
+     * 
+     * @return boolean
+     * 
+     */
+    boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
+            final String belongsToCompanyName, final String hasManyName);
 
 }

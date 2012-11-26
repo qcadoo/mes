@@ -31,7 +31,7 @@ public final class CompanyFieldsD {
 
     public static final String PRODUCTS = "products";
 
-    public static final String PRODUCTS_FAMILY = "productsFamily";
+    public static final String PRODUCTS_FAMILIES = "productsFamilies";
 
     public static final String BUFFER = "buffer";
 

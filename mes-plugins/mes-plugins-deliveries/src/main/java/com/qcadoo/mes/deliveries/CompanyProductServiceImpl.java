@@ -21,43 +21,39 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.listeners;
-
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-
-import java.util.Map;
+package com.qcadoo.mes.deliveries;
 
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 
 @Service
-public class SupplyItemsListeners {
+public class CompanyProductServiceImpl implements CompanyProductService {
 
-    public void redirectToDeliveryDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+    public boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
+            final String belongsToCompanyName, final String hasManyName) {
+        if (companyProduct.getId() == null) {
+            Entity product = companyProduct.getBelongsToField(belongsToProductName);
 
-        if (grid.getSelectedEntities().isEmpty()) {
-            return;
+            if (product == null) {
+                return true;
+            } else {
+                Entity company = companyProduct.getBelongsToField(belongsToCompanyName);
+
+                if (company == null) {
+                    return true;
+                } else {
+                    SearchResult searchResult = company.getHasManyField(hasManyName).find()
+                            .add(SearchRestrictions.belongsTo(belongsToProductName, product)).list();
+
+                    return searchResult.getEntities().isEmpty();
+                }
+            }
         }
 
-        Entity orderedProduct = grid.getSelectedEntities().get(0);
-
-        Entity delivery = orderedProduct.getBelongsToField(DELIVERY);
-
-        if (delivery == null) {
-            return;
-        }
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", delivery.getId());
-
-        String url = "../page/deliveries/deliveryDetails.html";
-        view.redirectTo(url, false, true, parameters);
+        return true;
     }
 
 }

@@ -68,7 +68,9 @@
 
 	<modules>
 		<localization:translation path="locales" />
-
+	
+		<model:model model="companyProduct" resource="model/companyProduct.xml" />
+		<model:model model="companyProductsFamily" resource="model/companyProductsFamily.xml" />
 		<model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml" />
 		<model:model model="columnForOrders" resource="model/columnForOrders.xml" />
 		<model:model model="delivery" resource="model/delivery.xml" />
@@ -80,40 +82,28 @@
 			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
 				model="deliveryStateChange" />
 		</model:model-field>
-
-		<model:model-field model="product" plugin="basic">
-			<model:belongsTo name="companyProduct" model="company"
-				plugin="basic" />
-		</model:model-field>
 	
-		<model:model-field model="product" plugin="basic">
-			<model:belongsTo name="companyProductFamily" model="company"
-				plugin="basic" />
+		<model:model-field plugin="basic" model="company">
+			<model:hasMany name="products" joinField="company"
+				plugin="deliveries" model="companyProduct" cascade="delete" copyable="true" />
 		</model:model-field>
-		
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="products" model="product" plugin="basic"
-				joinField="companyProduct" cascade="nullify" />
+		<model:model-field plugin="basic" model="company">
+			<model:hasMany name="productsFamilies" joinField="company"
+				plugin="deliveries" model="companyProductsFamily" cascade="delete"
+				copyable="true" />
 		</model:model-field>
-		
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="productsFamily" model="product"
-				plugin="basic" joinField="companyProductFamily" cascade="nullify" />
-		</model:model-field>
-
-		<model:model-field model="company" plugin="basic">
+		<model:model-field plugin="basic" model="company">
 			<model:integer name="buffer" />
 		</model:model-field>
-
-		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
-				method="checkIfProductIsParticularProduct" />
-		</model:model-hook>
-
-		<model:model-hook model="company" plugin="basic">
-			<model:validatesWith class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
-				method="checkIfProductIsProductsFamily" />
-		</model:model-hook>
+	
+		<model:model-field plugin="basic" model="product">
+			<model:hasMany name="productCompanies" joinField="product"
+				plugin="deliveries" model="companyProduct" cascade="delete" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:hasMany name="productsFamilyCompanies" joinField="product"
+				plugin="deliveries" model="companyProductsFamily" cascade="delete" />
+		</model:model-field>
 		
 		<menu:menu-category name="requirements" />
 
@@ -122,6 +112,8 @@
 		<menu:menu-item name="supplyItems" category="requirements"
 			view="supplyItems" />
 
+		<view:view resource="view/companyProductDetails.xml" />
+		<view:view resource="view/companyProductsFamilyDetails.xml" />
 		<view:view resource="view/deliveriesList.xml" />
 		<view:view resource="view/deliveryDetails.xml" />
 		<view:view resource="view/deliveredProductDetails.xml" />

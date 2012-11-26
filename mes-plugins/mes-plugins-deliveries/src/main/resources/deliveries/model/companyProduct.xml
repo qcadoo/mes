@@ -24,25 +24,23 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="basic"
-	view="companyDetails">
+<model name="companyProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="company" plugin="basic" model="company"
+			required="true" />
+
+		<belongsTo name="product" plugin="basic" model="product"
+			required="true" />
+	</fields>
 	
-	<group name="suppliers">
-		<bigButton name="redirectToFilteredDeliveriesList" icon="genealogyIcon24.png">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('redirectToFilteredDeliveriesList', []);
-							}
-						}
-					});		
-				]]>
-			</script>
-		</bigButton>
-	</group>
-	
-</ribbonExtension>
+	<hooks>
+		<validatesWith 
+			class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"
+			method="checkIfProductIsParticularProduct" />
+		<validatesWith 
+			class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"
+			method="checkIfProductIsNotAlreadyUsed" />
+	</hooks>
+</model>

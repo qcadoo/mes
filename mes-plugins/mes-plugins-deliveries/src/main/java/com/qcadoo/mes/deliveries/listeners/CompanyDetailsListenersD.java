@@ -48,7 +48,6 @@ public class CompanyDetailsListenersD {
 
     public void redirectToFilteredDeliveriesList(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity company = companyForm.getEntity();

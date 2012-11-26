@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basic;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.util.List;
@@ -73,6 +74,10 @@ public class ProductService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    public boolean checkIfProductEntityTypeIsCorrect(final Entity product, final ProductFamilyElementType entityType) {
+        return entityType.getStringValue().equals(product.getStringField(ENTITY_TYPE));
+    }
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
         if (hasUnitChangedOnUpdate(product)) {

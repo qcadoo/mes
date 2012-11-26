@@ -61,25 +61,28 @@ public class DeliveryDetailsHooks {
                 DeliveriesConstants.MODEL_DELIVERY, L_FORM, NUMBER);
     }
 
-    public void setBufferForSupplier(final ViewDefinitionState view) {
+    public void fillBufferForSupplier(final ViewDefinitionState view) {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(SUPPLIER);
-        FieldComponent deliveryDateBuffer = (FieldComponent) view.getComponentByReference(L_DELIVERY_DATE_BUFFER);
+        FieldComponent deliveryDateBufferField = (FieldComponent) view.getComponentByReference(L_DELIVERY_DATE_BUFFER);
+
         Entity supplier = supplierLookup.getEntity();
+
         if (supplier == null) {
-            deliveryDateBuffer.setFieldValue(null);
+            deliveryDateBufferField.setFieldValue(null);
         } else {
-            deliveryDateBuffer.setFieldValue(supplier.getField(BUFFER));
+            deliveryDateBufferField.setFieldValue(supplier.getField(BUFFER));
         }
-        deliveryDateBuffer.requestComponentUpdateState();
+
+        deliveryDateBufferField.requestComponentUpdateState();
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
         String state = stateField.getFieldValue().toString();
 
-        if (form.getEntityId() == null) {
+        if (deliveryForm.getEntityId() == null) {
             changeFieldsEnabled(view, true, false, false);
         } else {
             if (PREPARED.getStringValue().equals(state) || APPROVED.getStringValue().equals(state)) {
@@ -94,12 +97,12 @@ public class DeliveryDetailsHooks {
 
     private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledOrderedGrid,
             final boolean enabledDeliveredGrid) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         GridComponent orderedProducts = (GridComponent) view.getComponentByReference(ORDERED_PRODUCTS);
         GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DELIVERED_PRODUCTS);
 
-        form.setFormEnabled(enabledForm);
+        deliveryForm.setFormEnabled(enabledForm);
         orderedProducts.setEnabled(enabledOrderedGrid);
         orderedProducts.setEditable(enabledOrderedGrid);
         deliveredProducts.setEnabled(enabledDeliveredGrid);

@@ -103,7 +103,7 @@ public class DeliveryDetailsHooksTest {
         when(supplier.getField(BUFFER)).thenReturn(buffer);
 
         // when
-        deliveryDetailsHooks.setBufferForSupplier(view);
+        deliveryDetailsHooks.fillBufferForSupplier(view);
 
         // then
         verify(deliveryDateBuffer).setFieldValue(buffer);
@@ -117,7 +117,7 @@ public class DeliveryDetailsHooksTest {
         when(supplierLookup.getEntity()).thenReturn(null);
 
         // when
-        deliveryDetailsHooks.setBufferForSupplier(view);
+        deliveryDetailsHooks.fillBufferForSupplier(view);
 
         // then
         verify(deliveryDateBuffer).setFieldValue(null);

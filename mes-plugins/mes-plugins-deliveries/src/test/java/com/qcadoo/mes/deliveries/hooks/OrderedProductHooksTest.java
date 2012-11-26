@@ -65,8 +65,9 @@ public class OrderedProductHooksTest {
 
     @Before
     public void init() {
-        orderedProductHooks = new OrderedProductHooks();
         MockitoAnnotations.initMocks(this);
+        orderedProductHooks = new OrderedProductHooks();
+
         PowerMockito.mockStatic(SearchRestrictions.class);
 
         when(entity.getBelongsToField("delivery")).thenReturn(delivery);
