@@ -33,7 +33,7 @@
 		<component type="gridLayout" name="gridLayout" columns="3"
 			rows="1">
 			<layoutElement column="1" row="1">
-				<component type="lookup" name="location" reference="location" field="#{form}.location">
+				<component type="lookup" name="location" reference="warehouse" field="#{form}.location">
 							<option type="column" name="name" fields="name" />
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
