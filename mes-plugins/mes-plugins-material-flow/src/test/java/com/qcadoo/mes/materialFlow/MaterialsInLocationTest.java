@@ -59,7 +59,6 @@ public class MaterialsInLocationTest {
         // then
         assertTrue(bool);
         verify(entity, Mockito.times(4)).setField(Mockito.anyString(), Mockito.any());
-
     }
 
 }

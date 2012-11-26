@@ -37,10 +37,6 @@ public interface MaterialFlowResourcesService {
 
     void manageResources(final Entity transfer);
 
-    List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product);
-
-    Map<Entity, BigDecimal> groupResourcesByProduct(final Entity location);
-
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
             final BigDecimal price, final String batch);
 
@@ -51,6 +47,12 @@ public interface MaterialFlowResourcesService {
 
     void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
             final Date time, final BigDecimal price);
+
+    List<Entity> getWarehouseLocationsFromDB();
+
+    List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product);
+
+    Map<Entity, BigDecimal> groupResourcesByProduct(final Entity location);
 
     BigDecimal calculatePrice(final Entity location, final Entity product);
 

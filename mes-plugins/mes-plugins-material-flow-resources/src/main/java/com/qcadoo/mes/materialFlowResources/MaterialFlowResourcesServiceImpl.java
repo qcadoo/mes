@@ -48,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -213,6 +214,13 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
+    @Override
+    public List<Entity> getWarehouseLocationsFromDB() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION).find()
+                .add(SearchRestrictions.eq(TYPE, WAREHOUSE.getStringValue())).list().getEntities();
+    }
+
+    @Override
     public List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product) {
         List<Entity> resources = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
@@ -285,6 +293,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    @Override
     public boolean canChangeDateWhenTransferToWarehouse() {
         return parameterService.getParameter().getBooleanField(CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE);
     }
@@ -298,6 +307,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return searchResult.getEntities().isEmpty();
     }
 
+    @Override
     public void disableDateField(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -321,6 +331,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
+    @Override
     public boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo) {
         return ((locationFrom != null) && WAREHOUSE.getStringValue().equals(locationFrom.getStringField(TYPE)))
                 || ((locationTo != null) && WAREHOUSE.getStringValue().equals(locationTo.getStringField(TYPE)));
