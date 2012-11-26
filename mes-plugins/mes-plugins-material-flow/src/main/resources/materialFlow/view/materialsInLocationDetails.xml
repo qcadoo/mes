@@ -142,14 +142,18 @@
 							expression="#location['number']" width="50" />
 						<option type="column" name="name" fields="location"
 							expression="#location['name']" />
-						<option type="order" column="number" direction="desc" />
+						
 						<option type="correspondingView" value="materialFlow/materialsInLocationComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
+						
 						<option type="height" value="200" />
 						<option type="width" value="350" />
 					</component>

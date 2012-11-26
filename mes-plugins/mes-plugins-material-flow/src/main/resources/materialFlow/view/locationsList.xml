@@ -48,7 +48,8 @@
 			<option type="correspondingView" value="materialFlow/locationDetails" /> 
 			<option type="correspondingComponent" value="form" /> 
 			
-			<option type="multiselect" value="true" /> 
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
 		</component>
 		
 		<option type="header" value="false" />

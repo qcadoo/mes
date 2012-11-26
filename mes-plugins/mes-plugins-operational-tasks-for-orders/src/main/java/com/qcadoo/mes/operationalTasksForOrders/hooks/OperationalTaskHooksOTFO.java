@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -39,7 +39,7 @@ public class OperationalTaskHooksOTFO {
         if (order == null) {
             return true;
         }
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity technology = order.getBelongsToField(TECHNOLOGY);
         if (technology == null) {
             entity.addError(dataDefinition.getField(ORDER), "operationalTasks.operationalTask.order.error.technologyIsNull");
             return false;

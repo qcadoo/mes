@@ -34,4 +34,5 @@ public class DeliveryStateChangeAspectTest {
         final Class<?> clazz = DeliveryStateChangeAspect.class;
         assertEquals("com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect", clazz.getCanonicalName());
     }
+
 }

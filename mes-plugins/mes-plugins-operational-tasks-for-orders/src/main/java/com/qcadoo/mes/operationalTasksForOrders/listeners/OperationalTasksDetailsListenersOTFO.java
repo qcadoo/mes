@@ -23,7 +23,14 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.orders.constants.OrderFields.NUMBER;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 
 import java.util.Map;
 
@@ -31,12 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
 import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -65,18 +67,16 @@ public class OperationalTasksDetailsListenersOTFO {
 
     public void setProductionLineFromOrderAndClearOperation(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
-        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER))
-                .getEntity();
+        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(ORDER)).getEntity();
         LookupComponent technologyLookup = (LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         technologyLookup.setFieldValue(null);
         technologyLookup.requestComponentUpdateState();
-        FieldComponent productionLine = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksFields.PRODUCTION_LINE);
+        FieldComponent productionLine = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCTION_LINE);
         if (order == null) {
             productionLine.setFieldValue(null);
         } else {
-            productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+            productionLine.setFieldValue(order.getBelongsToField(PRODUCTION_LINE).getId());
         }
         productionLine.requestComponentUpdateState();
     }
@@ -84,17 +84,15 @@ public class OperationalTasksDetailsListenersOTFO {
     public void setOperationalNameAndDescription(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
-        FieldComponent description = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksFields.DESCRIPTION);
-        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME);
+                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference(DESCRIPTION);
+        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(NAME);
         if (techInstOperComp == null) {
             description.setFieldValue(null);
             name.setFieldValue(null);
         } else {
-            description.setFieldValue(techInstOperComp.getStringField(TechnologyInstanceOperCompFields.COMMENT));
-            name.setFieldValue(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(
-                    OperationFields.NAME));
+            description.setFieldValue(techInstOperComp.getStringField(COMMENT));
+            name.setFieldValue(techInstOperComp.getBelongsToField(OPERATION).getStringField(NAME));
         }
         description.requestComponentUpdateState();
         name.requestComponentUpdateState();
@@ -109,7 +107,7 @@ public class OperationalTasksDetailsListenersOTFO {
             return;
         }
 
-        Entity order = operationTask.getBelongsToField("order");
+        Entity order = operationTask.getBelongsToField(ORDER);
 
         if (order == null) {
             return;
@@ -133,7 +131,7 @@ public class OperationalTasksDetailsListenersOTFO {
     }
 
     public final void showOrder(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        Entity order = ((LookupComponent) viewState.getComponentByReference(OperationalTasksOTFRFields.ORDER)).getEntity();
+        Entity order = ((LookupComponent) viewState.getComponentByReference(ORDER)).getEntity();
         if (order == null) {
             return;
         }
@@ -147,8 +145,8 @@ public class OperationalTasksDetailsListenersOTFO {
 
     public final void showOperationParameter(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
-        Entity techInstOperComp = ((LookupComponent) viewState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        Entity techInstOperComp = ((LookupComponent) viewState.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT))
+                .getEntity();
         if (techInstOperComp == null) {
             return;
         }

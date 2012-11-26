@@ -25,8 +25,6 @@ package com.qcadoo.mes.deliveries;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,17 +35,12 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 @Service
 public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoaderService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeliveriesColumnLoaderServiceImpl.class);
-
     private static final String L_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
 
     private static final String L_COLUMN_FOR_ORDERS = "columnForOrders";
 
     @Autowired
     private ColumnExtensionService columnExtensionService;
-
-    @Autowired
-    private DeliveriesService deliveriesService;
 
     @Override
     public void fillColumnsForDeliveries(final String plugin) {

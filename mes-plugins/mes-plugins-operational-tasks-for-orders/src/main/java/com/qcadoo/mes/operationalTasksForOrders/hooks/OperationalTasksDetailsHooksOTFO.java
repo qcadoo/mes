@@ -23,13 +23,18 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.TYPE_TASK;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -38,12 +43,10 @@ public class OperationalTasksDetailsHooksOTFO {
 
     public void disabledFieldWhenOrderTypeIsSelected(final ViewDefinitionState view) {
 
-        FieldComponent type = (FieldComponent) view.getComponentByReference(OperationalTasksFields.TYPE_TASK);
+        FieldComponent type = (FieldComponent) view.getComponentByReference(TYPE_TASK);
 
-        List<String> referenceBasicFields = Lists.newArrayList(OperationalTasksFields.NAME,
-                OperationalTasksFields.PRODUCTION_LINE, OperationalTasksFields.DESCRIPTION);
-        List<String> extendFields = Lists.newArrayList(OperationalTasksOTFRFields.ORDER,
-                OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+        List<String> referenceBasicFields = Lists.newArrayList(NAME, PRODUCTION_LINE, DESCRIPTION);
+        List<String> extendFields = Lists.newArrayList(ORDER, TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         if (type.getFieldValue().equals("01otherCase")) {
             changedStateField(view, referenceBasicFields, true);
             changedStateField(view, extendFields, false);

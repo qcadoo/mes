@@ -98,4 +98,5 @@ public class DeliveredProductDetailsHooksTest {
         // then
         verify(deliveredQuantityField).setRequired(true);
     }
+
 }

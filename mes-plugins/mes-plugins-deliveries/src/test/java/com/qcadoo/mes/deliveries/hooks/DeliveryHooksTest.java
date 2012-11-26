@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -39,23 +40,27 @@ public class DeliveryHooksTest {
     private DeliveryHooks deliveryHooks;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition deliveryDD;
 
     @Mock
     private Entity delivery;
 
     @Before
     public void init() {
-        deliveryHooks = new DeliveryHooks();
         MockitoAnnotations.initMocks(this);
+
+        deliveryHooks = new DeliveryHooks();
     }
 
     @Test
     public void shouldClearStateField() throws Exception {
         // then
+
         // when
-        deliveryHooks.clearStateFieldOnCopy(dataDefinition, delivery);
+        deliveryHooks.clearStateFieldOnCopy(deliveryDD, delivery);
+
         // then
-        verify(delivery).setField("state", DeliveryStateStringValues.DRAFT);
+        verify(delivery).setField(STATE, DeliveryStateStringValues.DRAFT);
     }
+
 }

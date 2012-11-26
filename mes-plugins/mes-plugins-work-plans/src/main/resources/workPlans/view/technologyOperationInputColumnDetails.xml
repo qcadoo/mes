@@ -26,14 +26,13 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="technologyOperationInputColumnDetails" 
-	modelName="technologyOperationInputColumn">
-	
+	name="technologyOperationInputColumnDetails" modelName="technologyOperationInputColumn">
+
 	<component name="window" type="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
-		
+
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="form" reference="form">
 				<script>
@@ -51,31 +50,33 @@
 						};
 						
 						#{form}.addOnChangeListener(listener);
-					]]>	 
+					]]>
 				</script>
-				<component type="gridLayout" name="technologyOperationInputColumnGridLayout" columns="4" rows="1" hasBorders="false">
+				<component type="gridLayout" name="technologyOperationInputColumnGridLayout"
+					columns="4" rows="1" hasBorders="false">
 
 					<layoutElement column="1" row="1" width="3">
-						<component type="lookup" name="columnForInputProducts" field="columnForInputProducts" reference="columnForInputProductsLookup">
-							<option type="column" name="name" fields="name" expression="'@' + #name" link="true" />
-							<option type="column" name="description" fields="description" expression="'@' + #description" />
+						<component type="lookup" name="columnForInputProducts"
+							field="columnForInputProducts" reference="columnForInputProductsLookup">
+							<option type="column" name="name" fields="name"
+								expression="'@' + #name" link="true" />
+							<option type="column" name="description" fields="description"
+								expression="'@' + #description" />
 
 							<option type="orderable" value="name,description" />
-							
+
 							<option type="expression" value="'@' + #name" />
 							<option type="fieldCode" value="identifier" />
 						</component>
 					</layoutElement>
 				</component>
-				
+
 				<option type="header" value="true" />
-				<option type="expression" value="#identifier" />
-			
+				<option type="expression" value="'@' + #columnForInputProducts[name]" />
+
 			</component>
 		</windowTab>
-		 
+		
 	</component>
-	
-	<hooks>
-	</hooks>
+
 </view>

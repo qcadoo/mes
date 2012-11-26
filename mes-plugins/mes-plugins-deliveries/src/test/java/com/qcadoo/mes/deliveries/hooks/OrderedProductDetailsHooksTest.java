@@ -83,4 +83,5 @@ public class OrderedProductDetailsHooksTest {
         // then
         Mockito.verify(unitField).setFieldValue("");
     }
+
 }

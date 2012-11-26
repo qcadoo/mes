@@ -24,11 +24,10 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="workPlanDetails"
-	modelName="workPlan">
-	
+	name="workPlanDetails" modelName="workPlan">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
@@ -160,7 +159,8 @@
 						field="type" />
 				</layoutElement>
 				<layoutElement column="2" row="1" height="5" width="2">
-					<component type="lookup" name="order" reference="orderLookup" field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+					<component type="lookup" name="order" reference="orderLookup"
+						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
 						<option type="searchable" value="number,name" />
@@ -174,25 +174,27 @@
 						reference="workPlanComponents" source="#{form}.orders">
 						<option type="column" name="number" fields="number" width="50" />
 						<option type="column" name="name" fields="name" />
-						
+
 						<option type="searchable" value="number,name" />
 						<option type="orderable" value="number,name" />
-					
+
 						<option type="order" column="number" direction="desc" />
-						
+
 						<option type="paginable" value="false" />
 						<option type="multiselect" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
-						
+
 						<option type="weakRelation" value="true" />
 						<option type="correspondingLookup" value="orderLookup" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="6" width="2">
-					<component type="gridLayout" name="doNotPrintOrdersWrapper" columns="2" rows="1" hasBorders="false">
+					<component type="gridLayout" name="doNotPrintOrdersWrapper"
+						columns="2" rows="1" hasBorders="false">
 						<layoutElement column="1" row="1" height="1" width="1">
-							<component type="checkbox" name="dontPrintOrdersInWorkPlans" field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+							<component type="checkbox" name="dontPrintOrdersInWorkPlans"
+								field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
 								<option type="labelWidth" value="50" />
 								<option type="align" value="left" />
 							</component>
@@ -200,18 +202,20 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="7" height="4" width="2">
-					<component type="grid" name="columnsForOrders" source="#{form}.workPlanOrderColumns" reference="columnsForOrders" >
-						<option type="column" name="name" fields="columnForOrders" expression="'@' + #columnForOrders.get('name')" />
-						
+					<component type="grid" name="columnsForOrders"
+						source="#{form}.workPlanOrderColumns" reference="columnsForOrders">
+						<option type="column" name="name" fields="columnForOrders"
+							expression="'@' + #columnForOrders.get('name')" link="true" />
+
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
-						
+
 						<option type="order" column="succession" direction="desc" />
-						
+
 						<option type="correspondingView" value="workPlans/workPlanOrderColumnDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
+
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -219,14 +223,14 @@
 					</component>
 				</layoutElement>
 			</component>
-			
+
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
-			
-			<listener event="printWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-				method="printWorkPlan" />
-			<listener event="generateWorkPlan" class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks"
-				method="generateWorkPlan" />
+
+			<listener event="printWorkPlan"
+				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="printWorkPlan" />
+			<listener event="generateWorkPlan"
+				class="com.qcadoo.mes.workPlans.hooks.WorkPlanViewHooks" method="generateWorkPlan" />
 		</component>
 	</component>
 	<hooks>

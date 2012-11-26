@@ -63,18 +63,6 @@ public class OrderStateValidationService {
 
     }
 
-    public final boolean validateDates(final StateChangeContext stateChangeContext) {
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
-        Date startDate = (Date) stateChangeEntity.getField(START_DATE);
-        Date deadline = (Date) stateChangeEntity.getField(DEADLINE);
-        if (startDate != null && deadline != null && deadline.before(startDate)) {
-            stateChangeContext.addFieldValidationError(DEADLINE, "orders.validate.global.error.deadline");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
         checkRequired(references, stateChangeContext);
@@ -87,7 +75,7 @@ public class OrderStateValidationService {
         checkRequired(fieldNames, stateChangeContext);
     }
 
-    public void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
+    private void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
         checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
         final Entity stateChangeEntity = stateChangeContext.getOwner();
         for (String fieldName : fieldNames) {
@@ -118,6 +106,15 @@ public class OrderStateValidationService {
         if (!orderService.checkIfProductionLineSupportsTechnology(order)) {
             stateChangeContext.addFieldValidationError(PRODUCTION_LINE,
                     "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
+        }
+    }
+
+    private void validateDates(final StateChangeContext stateChangeContext) {
+        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        Date startDate = (Date) stateChangeEntity.getField(START_DATE);
+        Date deadline = (Date) stateChangeEntity.getField(DEADLINE);
+        if (startDate != null && deadline != null && deadline.before(startDate)) {
+            stateChangeContext.addFieldValidationError(DEADLINE, "orders.validate.global.error.deadline");
         }
     }
 

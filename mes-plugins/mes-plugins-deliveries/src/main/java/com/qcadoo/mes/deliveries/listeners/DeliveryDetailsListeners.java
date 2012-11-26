@@ -24,6 +24,8 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +35,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -53,8 +53,8 @@ public class DeliveryDetailsListeners {
     @Autowired
     private DeliveryDetailsHooks deliveryDetailsHooks;
 
-    public void setBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveryDetailsHooks.setBufferForSupplier(view);
+    public void fillBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveryDetailsHooks.fillBufferForSupplier(view);
     }
 
     public final void printDeliveryReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -82,31 +82,42 @@ public class DeliveryDetailsListeners {
     public final void copyOrderedProductToDelivered(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+
         if (form.getEntityId() == null) {
             return;
         }
+
         Entity delivery = form.getEntity().getDataDefinition().get(form.getEntityId());
-        List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+
+        List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
+
         copyOrderedProductToDelivered(delivery, orderedProducts);
     }
 
     private Entity copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
         // ALBR deliveredProduct has a validation so we have to delete all entities before save HM field in delivery
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
+        delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
+        delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
+
         return delivery.getDataDefinition().save(delivery);
     }
 
     private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts) {
         List<Entity> deliveredProducts = new ArrayList<Entity>();
+
         DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
+
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProduct = deliveredProductDD.create();
-            deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+
+            deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
+
             deliveredProducts.add(deliveredProduct);
         }
+
         return deliveredProducts;
     }
+
 }

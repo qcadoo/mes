@@ -40,8 +40,8 @@ public class ParameterHooksPL {
     private DataDefinitionService dataDefinitionService;
 
     public void addFieldsForParameter(final DataDefinition dataDefinition, final Entity parameter) {
-        Entity productionLines = dataDefinitionService.get(PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
+        Entity productionLine = dataDefinitionService.get(PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
                 .find().setMaxResults(1).uniqueResult();
-        parameter.setField("defaultProductionLine", productionLines);
+        parameter.setField("defaultProductionLine", productionLine);
     }
 }

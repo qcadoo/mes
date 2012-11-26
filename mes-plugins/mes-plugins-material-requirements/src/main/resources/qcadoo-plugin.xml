@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- *************************************************************************** 
-	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
-	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
-	it and/or modify it under the terms of the GNU Affero General Public License 
-	as published by the Free Software Foundation; either version 3 of the License, 
-	or (at your option) any later version. This program is distributed in the 
-	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-	GNU Affero General Public License for more details. You should have received 
-	a copy of the GNU Affero General Public License along with this program; 
-	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
-	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0-SNAPSHOT
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
 <plugin plugin="materialRequirements" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -46,20 +59,40 @@
 		<localization:translation path="locales" />
 
 		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
-
+	
+		<model:model-field plugin="basic" model="parameter">
+			<model:enum values="01startOrder" name="inputProductsRequiredForType" />
+		</model:model-field>
+		
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="materialRequirements"
 				joinField="orders" model="materialRequirement" plugin="materialRequirements" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:enum values="01startOrder"
-				name="inputProductsRequiredForType" />
+			<model:enum values="01startOrder" name="inputProductsRequiredForType" />
 		</model:model-field>
 
-		<model:model-field plugin="basic" model="parameter">
-			<model:enum values="01startOrder"
-				name="inputProductsRequiredForType" />
-		</model:model-field>
+		<model:model-hook plugin="basic" model="parameter">
+			<model:validatesWith
+				class="com.qcadoo.mes.materialRequirements.internal.hooks.ParameterHooksMR"
+				method="checkIfInputProductsRequiredForTypeIsSelected" />
+		</model:model-hook>
+		<model:model-hook plugin="basic" model="parameter">
+			<model:onCreate
+				class="com.qcadoo.mes.materialRequirements.internal.hooks.ParameterHooksMR"
+				method="setInputProductsRequiredForTypeDefaultValue" />
+		</model:model-hook>
+
+		<model:model-hook plugin="orders" model="order">
+			<model:validatesWith
+				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
+				method="checkIfInputProductsRequiredForTypeIsSelected" />
+		</model:model-hook>
+		<model:model-hook plugin="orders" model="order">
+			<model:onCreate
+				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
+				method="setInputProductsRequiredForTypeDefaultValue" />
+		</model:model-hook>
 
 		<menu:menu-category name="requirements" />
 		<menu:menu-item name="materialRequirements" category="requirements"
@@ -68,20 +101,20 @@
 		<view:view resource="view/materialRequirementsList.xml" />
 		<view:view resource="view/materialRequirementDetails.xml" />
 
-		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/ordersParameters.xml" />
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
 
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="printMaterialReqForOrder"
-			class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
+			class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl"
 			method="printMaterialReqForOrder" />
 
 		<view:view-hook view="orderDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderDetailsHooksMR"
-			method="setInputProductsRequiredForTypeFromDefaultParameter" />
+			method="setInputProductsRequiredForTypeFromParameters" />
 
 	</modules>
 

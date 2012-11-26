@@ -65,11 +65,11 @@
 	<modules>
 		<localization:translation path="locales" />
 		
-		<model:model-field model="deliveredProduct" plugin="deliveries">
+		<model:model-field plugin="deliveries" model="deliveredProduct">
 			<model:belongsTo name="operation" model="operation" plugin="technologies" />
 		</model:model-field>
 		
-		<model:model-field model="orderedProduct" plugin="deliveries">
+		<model:model-field plugin="deliveries" model="orderedProduct">
 			<model:belongsTo name="operation" model="operation" plugin="technologies" />
 		</model:model-field>
 		
@@ -79,19 +79,19 @@
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="orderedProducts">
 			<view:column name="operation" fields="operation"
-				expression="#operation['number']" searchable="true" orderable="true" />
+				expression="#operation['number']" orderable="true" searchable="true" />
 		</view:view-grid-column>
 		
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="deliveredProducts">
 			<view:column name="operation" fields="operation"
-				expression="#operation['number']" searchable="true" orderable="true" />
+				expression="#operation['number']" orderable="true" searchable="true" />
 		</view:view-grid-column>
 		
 		<view:view-grid-column plugin="deliveries" view="supplyItems"
 			component="grid">
 			<view:column name="operation" fields="operation"
-				expression="#operation['number']" searchable="true" orderable="true" />
+				expression="#operation['number']" orderable="true" searchable="true" />
 		</view:view-grid-column>
 		
 		<custom:custom class="com.qcadoo.mes.techSubcontrForDeliveries.TechSubcontrForDeliveriesOnStartupService" />

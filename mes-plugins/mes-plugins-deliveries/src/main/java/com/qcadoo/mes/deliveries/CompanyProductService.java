@@ -21,15 +21,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.constants;
+package com.qcadoo.mes.deliveries;
 
-public final class OperationalTasksOTFRFields {
+import com.qcadoo.model.api.Entity;
 
-    private OperationalTasksOTFRFields() {
+public interface CompanyProductService {
 
-    }
+    /**
+     * Checks if product is not used
+     * 
+     * @param companyProduct
+     *            company product
+     * 
+     * @param companyName
+     *            belongs to product name - product
+     * 
+     * @param belongsToCompanyName
+     *            belongs to company name - company
+     * 
+     * @param hasManyName
+     *            has many name - companyProducts
+     * 
+     * @return boolean
+     * 
+     */
+    boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
+            final String belongsToCompanyName, final String hasManyName);
 
-    public static final String ORDER = "order";
-
-    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 }

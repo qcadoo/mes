@@ -124,7 +124,7 @@ ALTER TABLE materialrequirements_materialrequirement ALTER COLUMN mrpalgorithm S
 UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '01onlyComponents' WHERE onlyComponents = true;
 UPDATE materialrequirements_materialrequirement SET mrpalgorithm = '02allProductsIn' WHERE onlyComponents = false;
 
-ALTER TABLE  materialrequirements_materialrequirement  DROP COLUMN  onlycomponents;
+ALTER TABLE materialrequirements_materialrequirement DROP COLUMN  onlycomponents;
 
 -- end
 
@@ -138,7 +138,7 @@ ALTER TABLE simplematerialbalance_simplematerialbalance ALTER COLUMN mrpalgorith
 UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '01onlyComponents' WHERE onlyComponents = true;
 UPDATE simplematerialbalance_simplematerialbalance SET mrpalgorithm = '02allProductsIn' WHERE onlyComponents = false;
 
-ALTER TABLE  simplematerialbalance_simplematerialbalance  DROP COLUMN onlycomponents;
+ALTER TABLE simplematerialbalance_simplematerialbalance DROP COLUMN onlycomponents;
 
 -- end
 
@@ -459,25 +459,25 @@ ALTER TABLE orders_order ADD COLUMN laborworktime integer;
 
 -- Table: technologies_operation
 -- changed: 21.10.2012
-ALTER TABLE  technologies_operation RENAME countmachine TO nextoperationafterproducedquantity;
-ALTER TABLE  technologies_operation RENAME countmachineunit TO nextoperationafterproducedquantityunit;
-ALTER TABLE  technologies_operation RENAME countrealized TO nextoperationafterproducedtype;
+ALTER TABLE technologies_operation RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE technologies_operation RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE technologies_operation RENAME countrealized TO nextoperationafterproducedtype;
 -- end
 
 -- Table: technologies_technologyoperationcomponent
 -- changed: 21.10.2012
-ALTER TABLE  technologies_technologyoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
-ALTER TABLE  technologies_technologyoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
-ALTER TABLE  technologies_technologyoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
+ALTER TABLE technologies_technologyoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE technologies_technologyoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE technologies_technologyoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
 -- end
 
 
 -- Table: technologies_technologyinstanceoperationcomponent
 -- changed: 21.10.2012
 
-ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
-ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
-ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
+ALTER TABLE technologies_technologyinstanceoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE technologies_technologyinstanceoperationcomponent RENAME countmachineunit TO nextoperationafterproducedquantityunit;
+ALTER TABLE technologies_technologyinstanceoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
 
 -- end
 
@@ -485,8 +485,8 @@ ALTER TABLE  technologies_technologyinstanceoperationcomponent RENAME countreali
 -- Table: costnormsforoperation_calculationoperationcomponent
 -- changed: 21.10.2012
 
-ALTER TABLE  costnormsforoperation_calculationoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
-ALTER TABLE  costnormsforoperation_calculationoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME countmachine TO nextoperationafterproducedquantity;
+ALTER TABLE costnormsforoperation_calculationoperationcomponent RENAME countrealized TO nextoperationafterproducedtype;
 
 -- end
 

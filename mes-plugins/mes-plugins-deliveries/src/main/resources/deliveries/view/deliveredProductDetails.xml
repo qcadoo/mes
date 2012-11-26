@@ -42,8 +42,10 @@
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true" />
+							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -130,4 +132,5 @@
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
 			method="setDeliveredQuantityFieldRequired" />
 	</hooks>
+	
 </view>

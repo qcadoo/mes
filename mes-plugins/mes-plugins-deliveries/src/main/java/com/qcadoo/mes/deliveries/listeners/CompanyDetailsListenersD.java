@@ -36,7 +36,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class DeliveriesListeners {
+public class CompanyDetailsListenersD {
 
     private static final String L_FORM = "form";
 
@@ -48,7 +48,6 @@ public class DeliveriesListeners {
 
     public void redirectToFilteredDeliveriesList(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity company = companyForm.getEntity();
@@ -73,4 +72,5 @@ public class DeliveriesListeners {
         String url = "../page/deliveries/deliveriesList.html";
         view.redirectTo(url, false, true, parameters);
     }
+
 }

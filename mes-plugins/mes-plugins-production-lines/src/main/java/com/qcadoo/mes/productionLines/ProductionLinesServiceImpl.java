@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.productionLines;
 
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.QUANTITY_FOR_OTHER_WORKSTATION_TYPES;
+import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.WORKSTATION_TYPE_COMPONENTS;
+import static com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields.QUANTITY;
+import static com.qcadoo.mes.technologies.constants.OperationFields.WORKSTATION_TYPE;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,22 +39,22 @@ import com.qcadoo.model.api.Entity;
 public class ProductionLinesServiceImpl implements ProductionLinesService {
 
     public Integer getWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
-        List<Entity> workComps = productionLine.getHasManyField("workstationTypeComponents");
+        List<Entity> workstationTypeComponents = productionLine.getHasManyField(WORKSTATION_TYPE_COMPONENTS);
 
-        Entity desiredWorkstation = operationComponent.getBelongsToField("operation").getBelongsToField("workstationType");
+        Entity desiredWorkstation = operationComponent.getBelongsToField(OPERATION).getBelongsToField(WORKSTATION_TYPE);
 
         if (desiredWorkstation != null) {
-            for (Entity workComp : workComps) {
-                Entity workstation = workComp.getBelongsToField("workstationType");
+            for (Entity workstationTypeComponent : workstationTypeComponents) {
+                Entity workstation = workstationTypeComponent.getBelongsToField(WORKSTATION_TYPE);
 
                 // FIXME mici, proxy entity equals thing
                 if (desiredWorkstation.getId().equals(workstation.getId())) {
-                    return (Integer) workComp.getField("quantity");
+                    return (Integer) workstationTypeComponent.getField(QUANTITY);
                 }
             }
         }
 
-        return (Integer) productionLine.getField("quantityForOtherWorkstationTypes");
+        return (Integer) productionLine.getField(QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
     }
 
 }

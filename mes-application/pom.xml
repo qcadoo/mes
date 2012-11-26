@@ -671,6 +671,16 @@
 					<artifactId>mes-commercial-plugins-integration-urc-deliveries-to-warehouse</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-tech-subcontr-for-order-supplies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-negot-for-order-supplies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -790,10 +800,10 @@
 									<goal>upload-single</goal>
 								</goals>
 								<configuration>
-									<serverId>qcadoo-public-demo</serverId>
+									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
 									<toFile>${profile}.zip</toFile>
-									<url>scp://91.201.155.85/home/virtual/demo/deploy</url>
+									<url>scp://46.248.165.49/home/stage/deploy</url>
 								</configuration>
 							</execution>
 						</executions>

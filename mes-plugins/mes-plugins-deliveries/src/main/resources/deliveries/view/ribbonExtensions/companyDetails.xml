@@ -28,19 +28,21 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="basic"
 	view="companyDetails">
+	
 	<group name="suppliers">
 		<bigButton name="redirectToFilteredDeliveriesList" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if(window.canClose()) {
-										#{form}.performEvent('redirectToFilteredDeliveriesList', []);
-									}
-								}
-							});		
-						]]>
-					</script>
-				</bigButton>
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('redirectToFilteredDeliveriesList', []);
+							}
+						}
+					});		
+				]]>
+			</script>
+		</bigButton>
 	</group>
+	
 </ribbonExtension>

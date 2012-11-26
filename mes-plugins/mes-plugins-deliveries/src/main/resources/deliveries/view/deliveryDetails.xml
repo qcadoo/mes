@@ -193,7 +193,7 @@
 								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.disable();
-								copyOrderedProductToDeliveredBtn.disable();
+								copyOrderedProductToDeliveredBtn.enable();
 							} else if (state == "06received") {
 								saveBtn.disable();
 								saveBackBtn.disable();
@@ -236,8 +236,10 @@
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
 							<option type="column" name="name" fields="name" link="true" />
+							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -245,7 +247,7 @@
 							<listener
 								event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-								method="setBufferForSupplier" />
+								method="fillBufferForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
@@ -263,6 +265,7 @@
 							reference="deliveryDateBuffer" defaultEnabled="never" />
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				
@@ -295,10 +298,10 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 							
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="searchable" value="number,name,unit" />
 						<option type="orderable" value="number,name,unit" />
-						
-						<option type="order" column="number" direction="desc" />
 						
 						<option type="correspondingView" value="deliveries/orderedProductDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -329,10 +332,10 @@
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
 						
+						<option type="order" column="number" direction="desc" />
+						
 						<option type="searchable" value="number,name,unit" />
 						<option type="orderable" value="number,name,unit" />
-						
-						<option type="order" column="number" direction="desc" />
 						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -354,9 +357,14 @@
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
+						
 						<option type="order" column="dateAndTime" direction="asc" />
+						
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
+						
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
@@ -368,8 +376,9 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="setBufferForSupplier" />
+			method="fillBufferForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="changedEnabledFieldForSpecificDeliveryState" />
+			method="changeFieldsEnabledDependOnState" />
 	</hooks>
+	
 </view>

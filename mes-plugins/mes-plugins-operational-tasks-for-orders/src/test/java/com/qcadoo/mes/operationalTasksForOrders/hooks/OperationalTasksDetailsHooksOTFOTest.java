@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -55,11 +55,11 @@ public class OperationalTasksDetailsHooksOTFOTest {
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME)).thenReturn(nameField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.DESCRIPTION))
                 .thenReturn(descriptionField);
-        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER)).thenReturn(orderField);
+        Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksOTFOFields.ORDER)).thenReturn(orderField);
         Mockito.when(viewDefinitionState.getComponentByReference(OperationalTasksFields.PRODUCTION_LINE)).thenReturn(
                 productionLineField);
         Mockito.when(
-                viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT))
+                viewDefinitionState.getComponentByReference(OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT))
                 .thenReturn(tiocField);
     }
 
