@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.2.0-SNAPSHOT
 
     This file is part of Qcadoo.
@@ -22,23 +23,27 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
-
 -->
-<model name="location" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true" />
-		<enum name="type" values="01controlPoint" default="01controlPoint" required="true" />
-		<hasMany name="materialsInLocations" model="materialsInLocationComponent"
-			plugin="materialFlow" joinField="location" />
-		<string name="externalNumber" />
-	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="clearExternalIdOnCopy" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
-</model>
+
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="deliveries" view="deliveryDetails">
+
+	<windowTab name="locationTab" reference="locationTab">
+		<component type="gridLayout" name="gridLayout" columns="3"
+			rows="1">
+			<layoutElement column="1" row="1">
+				<component type="lookup" name="location" reference="location" field="#{form}.location">
+							<option type="column" name="name" fields="name" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+
+</windowTabExtension>

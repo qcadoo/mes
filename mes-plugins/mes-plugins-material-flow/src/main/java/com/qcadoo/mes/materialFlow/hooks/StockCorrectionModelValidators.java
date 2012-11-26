@@ -52,4 +52,13 @@ public class StockCorrectionModelValidators {
         return true;
     }
 
+    public boolean checkIfLocationHasExternalNumber(final DataDefinition stockCorrectionDD, final Entity stockCorrection) {
+        if (stockCorrection.getBelongsToField(LOCATION).getStringField("externalNumber") != null) {
+            stockCorrection.addError(stockCorrectionDD.getField(LOCATION),
+                    "materialFlow.validate.global.error.locationHasExternalNumber");
+            return false;
+        }
+        return true;
+    }
+
 }

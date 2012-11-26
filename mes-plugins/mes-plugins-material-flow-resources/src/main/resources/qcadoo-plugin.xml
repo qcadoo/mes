@@ -67,6 +67,14 @@
 			<model:decimal name="price" default="0" />
 		</model:model-field>
 		
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="resources" model="resource"
+			plugin="materialFlowResources" joinField="location" />
+		</model:model-field>
+		
+		
+			
+			
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="canChangeDateWhenTransferToWarehouse" default="false" />
 		</model:model-field>

@@ -58,6 +58,8 @@
 						<option type="fieldCode" value="name" />
 						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.MaterialFlowService"
 								method="refreshShouldBeInStockCorrectionDetails" />
+						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.materialFlow.hooks.StockCorrectionDetailsHooks"
+								method="checkIfLocationHasExternalNumber" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="4" width="5">

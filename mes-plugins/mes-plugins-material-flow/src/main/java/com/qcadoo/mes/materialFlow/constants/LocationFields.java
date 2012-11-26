@@ -29,6 +29,8 @@ public final class LocationFields {
 
     }
 
+    public static final String EXTERNAL_ID = "externalNumber";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
