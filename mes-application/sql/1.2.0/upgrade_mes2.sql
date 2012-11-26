@@ -91,3 +91,19 @@ CREATE TABLE jointable_company_operationgroup
 );
 
 -- end
+
+
+-- Table: basic_product
+-- changed: 23.11.2012
+
+UPDATE basic_product SET inputproductsrequiredfortype = '01startOrder' WHERE inputproductsrequiredfortype IS null;
+
+-- end
+
+
+-- Table: basic_product
+-- changed: 23.11.2012
+
+UPDATE orders_order SET inputproductsrequiredfortype = '01startOrder' WHERE inputproductsrequiredfortype IS null;
+
+-- end
