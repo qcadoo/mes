@@ -60,7 +60,7 @@
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 			<listener event="printMaterialRequirement"
-				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService" method="printMaterialRequirement" />
+				class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl" method="printMaterialRequirement" />
 			<script>
 				<![CDATA[
 					var xlsRibbonItem = #{window}.getRibbonItem("export.xls");
@@ -91,7 +91,7 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
+		<beforeRender class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl"
 			method="setGridGenerateButtonState" />
 	</hooks>
 </view>

@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialRequirements.internal.constants;
 public final class MaterialRequirementFields {
 
     private MaterialRequirementFields() {
+
     }
 
     public static final String NAME = "name";
@@ -39,4 +40,5 @@ public final class MaterialRequirementFields {
     public static final String GENERATED = "generated";
 
     public static final String FILE_NAME = "fileName";
+
 }

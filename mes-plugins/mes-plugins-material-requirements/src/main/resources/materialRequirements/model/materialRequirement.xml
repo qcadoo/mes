@@ -45,7 +45,7 @@
 	</fields>
 	<hooks>
 		<onCopy
-			class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementService"
+			class="com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl"
 			method="clearGeneratedOnCopy" />
 	</hooks>
 	<identifier expression="#name" />

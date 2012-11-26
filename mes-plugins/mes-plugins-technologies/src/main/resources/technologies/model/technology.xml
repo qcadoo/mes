@@ -58,8 +58,6 @@
 			method="checkTechnologyDefault" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfProductIsNotRemoved" />
-<!-- 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService" -->
-<!-- 			method="checkIfUnitSampligNrIsReq" /> -->
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
 			method="checkIfTechnologyHasAtLeastOneComponent" />
 		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
