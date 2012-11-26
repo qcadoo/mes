@@ -310,7 +310,7 @@
 		</repository>
 		<repository>
 			<id>qcadoo-snapshots-repository</id>
-			<url>http://emhyr.local/nexus/content/repositories/snapshots</url>
+			<url>http://192.168.0.4/nexus/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 				<updatePolicy>never</updatePolicy>
@@ -382,7 +382,7 @@
 		</pluginRepository>
 		<pluginRepository>
 			<id>qcadoo-snapshots-plugin-repository</id>
-			<url>http://emhyr.local/nexus/content/repositories/snapshots</url>
+			<url>http://192.168.0.4/nexus/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 				<updatePolicy>never</updatePolicy>
@@ -407,7 +407,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>qcadoo-snapshots-repository</id>
-			<url>http://emhyr.local/nexus/content/repositories/snapshots</url>
+			<url>http://192.168.0.4/nexus/content/repositories/snapshots</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
