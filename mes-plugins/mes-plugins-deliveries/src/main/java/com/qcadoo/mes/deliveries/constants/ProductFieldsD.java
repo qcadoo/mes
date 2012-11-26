@@ -23,16 +23,14 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class CompanyFieldsD {
+public final class ProductFieldsD {
 
-    private CompanyFieldsD() {
+    private ProductFieldsD() {
 
     }
 
-    public static final String PRODUCTS = "products";
+    public static final String PRODUCT_COMPANIES = "productCompanies";
 
-    public static final String PRODUCTS_FAMILIES = "productsFamilies";
-
-    public static final String BUFFER = "buffer";
+    public static final String PRODUCTS_FAMILY_COMPANIES = "productsFamilyCompanies";
 
 }

@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -84,6 +87,30 @@ public class ProductServiceTest {
         ReflectionTestUtils.setField(productService, "unitService", unitService);
         ReflectionTestUtils.setField(productService, "numberGeneratorService", numberGeneratorService);
         ReflectionTestUtils.setField(productService, "dataDefinitionService", dataDefinitionService);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
+        // given
+        when(product.getStringField(ENTITY_TYPE)).thenReturn(PARTICULAR_PRODUCT.getStringValue());
+
+        // when
+        boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PARTICULAR_PRODUCT);
+
+        // then
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
+        // given
+        when(product.getStringField(ENTITY_TYPE)).thenReturn(PARTICULAR_PRODUCT.getStringValue());
+
+        // when
+        boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PRODUCTS_FAMILY);
+
+        // then
+        assertFalse(result);
     }
 
     @Test

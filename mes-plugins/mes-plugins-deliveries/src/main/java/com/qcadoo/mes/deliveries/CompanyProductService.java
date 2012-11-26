@@ -21,18 +21,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.deliveries;
 
-public final class CompanyFieldsD {
+import com.qcadoo.model.api.Entity;
 
-    private CompanyFieldsD() {
+public interface CompanyProductService {
 
-    }
-
-    public static final String PRODUCTS = "products";
-
-    public static final String PRODUCTS_FAMILIES = "productsFamilies";
-
-    public static final String BUFFER = "buffer";
+    /**
+     * Checks if product is not used
+     * 
+     * @param companyProduct
+     *            company product
+     * 
+     * @param companyName
+     *            belongs to product name - product
+     * 
+     * @param belongsToCompanyName
+     *            belongs to company name - company
+     * 
+     * @param hasManyName
+     *            has many name - companyProducts
+     * 
+     * @return boolean
+     * 
+     */
+    boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
+            final String belongsToCompanyName, final String hasManyName);
 
 }
