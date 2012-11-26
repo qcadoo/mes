@@ -774,10 +774,10 @@
 									<goal>upload-single</goal>
 								</goals>
 								<configuration>
-									<serverId>qcadoo-public-demo</serverId>
+									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
 									<toFile>${profile}.zip</toFile>
-									<url>scp://91.201.155.85/home/virtual/demo/deploy</url>
+									<url>scp://46.248.165.49/home/stage/deploy</url>
 								</configuration>
 							</execution>
 						</executions>
