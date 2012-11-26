@@ -9,12 +9,10 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class CompanyDetailsHooksTS {
 
-	@Autowired
-	private CompanyService companyService;
+    @Autowired
+    private CompanyService companyService;
 
-	public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
-
-		companyService.disabledGridWhenCompanyIsAnOwner(state,
-				"operationsGroup", "operations");
-	}
+    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
+        companyService.disabledGridWhenCompanyIsAnOwner(state, "operationGroups", "operations");
+    }
 }
