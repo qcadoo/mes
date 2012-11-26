@@ -28,6 +28,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
 	plugin="basic"
 	view="parameters">
+	
 	<group name="parameters">
 		<bigButton name="workPlansParameters" icon="calendarIcon24.png">
 			<script>
@@ -43,4 +44,5 @@
 			</script>	
 		</bigButton>
 	</group>
+	
 </ribbonExtension>

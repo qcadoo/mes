@@ -50,7 +50,7 @@
 						<component type="grid" name="columnsForOrders"
 							source="#{form}.parameterOrderColumns" reference="columnsForOrders">
 							<option type="column" name="name" fields="columnForOrders"
-								expression="'@' + #columnForOrders.get('name')" />
+								expression="'@' + #columnForOrders.get('name')" link="true" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="order" column="succession" direction="desc" />
@@ -125,7 +125,7 @@
 					<component type="grid" name="columnsForInputProducts"
 						source="#{form}.parameterInputColumns" reference="columnsForInputProducts">
 						<option type="column" name="name" fields="columnForInputProducts"
-							expression="'@' + #columnForInputProducts.get('name')" />
+							expression="'@' + #columnForInputProducts.get('name')" link="true" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="order" column="succession" direction="desc" />
@@ -149,7 +149,7 @@
 					<component type="grid" name="columnsForOutputProducts"
 						source="#{form}.parameterOutputColumns" reference="columnsForOutputProducts">
 						<option type="column" name="name" fields="columnForOutputProducts"
-							expression="'@' + #columnForOutputProducts.get('name')" />
+							expression="'@' + #columnForOutputProducts.get('name')" link="true" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="order" column="succession" direction="desc" />

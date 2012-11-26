@@ -27,35 +27,39 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" 
-	view="technologyOperationComponentDetails">
+	plugin="technologies" view="technologyOperationComponentDetails">
 
 	<windowTab name="workPlansProductsTab" reference="workPlansProductsTab">
-		<component type="gridLayout" name="workPlansProductsGridLayout" columns="2" rows="3">
+		<component type="gridLayout" name="workPlansProductsGridLayout"
+			columns="2" rows="3">
 			<layoutElement column="1" row="1" width="2">
 				<component type="label" name="workPlansProductsTabWelcome">
 					<option type="labelStyle" value="text" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
-				<component type="checkbox" name="dontPrintInputProductsInWorkPlans" field="#{form}.dontPrintInputProductsInWorkPlans" reference="dontPrintInputProductsInWorkPlans">
+				<component type="checkbox" name="dontPrintInputProductsInWorkPlans"
+					field="#{form}.dontPrintInputProductsInWorkPlans" reference="dontPrintInputProductsInWorkPlans">
 					<option type="labelWidth" value="50" />
 					<option type="align" value="left" />
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="3">
-				<component type="grid" name="columnsForInputProducts" source="#{form}.technologyOperationInputColumns" reference="columnsForInputProducts" >
-					<option type="column" name="name" fields="columnForInputProducts" expression="'@' + #columnForInputProducts.get('name')" />
-					
+				<component type="grid" name="columnsForInputProducts"
+					source="#{form}.technologyOperationInputColumns" reference="columnsForInputProducts">
+					<option type="column" name="name" fields="columnForInputProducts"
+						expression="'@' + #columnForInputProducts.get('name')" link="true" />
+
 					<option type="searchable" value="name" />
 					<option type="orderable" value="name" />
-					
+
 					<option type="order" column="succession" direction="desc" />
-					
-					<option type="correspondingView" value="workPlans/technologyOperationInputColumnDetails" />
+
+					<option type="correspondingView"
+						value="workPlans/technologyOperationInputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
-						
+
 					<option type="creatable" value="true" />
 					<option type="deletable" value="true" />
 					<option type="fullscreen" value="true" />
@@ -63,24 +67,28 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="2">
-				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans" field="#{form}.dontPrintOutputProductsInWorkPlans" reference="dontPrintOutputProductsInWorkPlans">
+				<component type="checkbox" name="dontPrintOutputProductsInWorkPlans"
+					field="#{form}.dontPrintOutputProductsInWorkPlans" reference="dontPrintOutputProductsInWorkPlans">
 					<option type="labelWidth" value="50" />
 					<option type="align" value="left" />
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="3">
-				<component type="grid" name="columnsForOutputProducts" source="#{form}.technologyOperationOutputColumns" reference="columnsForOutputProducts" >
-					<option type="column" name="name" fields="columnForOutputProducts" expression="'@' + #columnForOutputProducts.get('name')" />
-				
+				<component type="grid" name="columnsForOutputProducts"
+					source="#{form}.technologyOperationOutputColumns" reference="columnsForOutputProducts">
+					<option type="column" name="name" fields="columnForOutputProducts"
+						expression="'@' + #columnForOutputProducts.get('name')" link="true" />
+
 					<option type="searchable" value="name" />
 					<option type="orderable" value="name" />
-					
+
 					<option type="order" column="succession" direction="desc" />
-					
-					<option type="correspondingView" value="workPlans/technologyOperationOutputColumnDetails" />
+
+					<option type="correspondingView"
+						value="workPlans/technologyOperationOutputColumnDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
-					
+
 					<option type="creatable" value="true" />
 					<option type="deletable" value="true" />
 					<option type="fullscreen" value="true" />
@@ -89,5 +97,5 @@
 			</layoutElement>
 		</component>
 	</windowTab>
-	
+
 </windowTabExtension>
