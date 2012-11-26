@@ -167,23 +167,23 @@ public class TransformationsModelValidators {
 
     public boolean checkIfLocationFromOrLocationToHasExternalNumber(final DataDefinition transformationDD,
             final Entity transformation) {
+        boolean isValid = true;
 
-        if (transformation.getBelongsToField(LOCATION_FROM) != null) {
-            if (transformation.getBelongsToField(LOCATION_FROM).getStringField("externalNumber") != null) {
-                transformation.addError(transformationDD.getField(LOCATION_FROM),
-                        "materialFlow.validate.global.error.locationHasExternalNumber");
-                return false;
-            }
-        }
-        if (transformation.getBelongsToField(LOCATION_TO) != null) {
-            if (transformation.getBelongsToField(LOCATION_TO).getStringField("externalNumber") != null) {
-                transformation.addError(transformationDD.getField(LOCATION_TO),
-                        "materialFlow.validate.global.error.locationHasExternalNumber");
-                return false;
-            }
+        if (materialFlowService.checkIfLocationHasExternalNumber(transformation.getBelongsToField(LOCATION_FROM))) {
+            transformation.addError(transformationDD.getField(LOCATION_FROM),
+                    "materialFlow.validate.global.error.locationHasExternalNumber");
+
+            isValid = false;
         }
 
-        return true;
+        if (materialFlowService.checkIfLocationHasExternalNumber(transformation.getBelongsToField(LOCATION_TO))) {
+            transformation.addError(transformationDD.getField(LOCATION_TO),
+                    "materialFlow.validate.global.error.locationHasExternalNumber");
+
+            isValid = false;
+        }
+
+        return isValid;
     }
 
 }
