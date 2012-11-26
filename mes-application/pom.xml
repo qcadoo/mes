@@ -655,6 +655,16 @@
 					<artifactId>mes-commercial-plugins-order-supplies</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-tech-subcontr-for-order-supplies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-negot-for-order-supplies</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
