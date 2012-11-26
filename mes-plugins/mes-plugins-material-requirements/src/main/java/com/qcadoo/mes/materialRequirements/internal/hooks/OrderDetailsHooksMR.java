@@ -1,12 +1,12 @@
 package com.qcadoo.mes.materialRequirements.internal.hooks;
 
+import static com.qcadoo.mes.materialRequirements.internal.constants.OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.materialRequirements.internal.InputProductsRequiredForType;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -19,20 +19,27 @@ public class OrderDetailsHooksMR {
     @Autowired
     private ParameterService parameterService;
 
-    public void setInputProductsRequiredForTypeFromDefaultParameter(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
+    public void setInputProductsRequiredForTypeFromParameters(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() != null) {
             return;
         }
+
         FieldComponent inputProductsRequiredForTypeField = (FieldComponent) view
-                .getComponentByReference("inputProductsRequiredForType");
-        Entity parameter = parameterService.getParameter();
-        String inputProductsRequiredForType = parameter.getStringField("inputProductsRequiredForType");
-        if (!StringUtils.isEmpty(inputProductsRequiredForType)) {
-            inputProductsRequiredForTypeField.setFieldValue(inputProductsRequiredForType);
-        } else {
-            inputProductsRequiredForTypeField.setFieldValue(InputProductsRequiredForType.START_ORDER.getStringValue());
+                .getComponentByReference(INPUT_PRODUCTS_REQUIRED_FOR_TYPE);
+
+        String inputProductsRequiredForType = (String) inputProductsRequiredForTypeField.getFieldValue();
+
+        if (StringUtils.isEmpty(inputProductsRequiredForType)) {
+            inputProductsRequiredForTypeField.setFieldValue(getInputProductsRequiredForType());
         }
+
         inputProductsRequiredForTypeField.requestComponentUpdateState();
     }
+
+    private String getInputProductsRequiredForType() {
+        return parameterService.getParameter().getStringField(INPUT_PRODUCTS_REQUIRED_FOR_TYPE);
+    }
+
 }

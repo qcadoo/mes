@@ -23,21 +23,12 @@
  */
 package com.qcadoo.mes.materialRequirements.internal.constants;
 
-public final class MaterialRequirementsConstants {
+public final class ParameterFieldsMR {
 
-    private MaterialRequirementsConstants() {
+    private ParameterFieldsMR() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "materialRequirements";
-
-    // MODEL
-    public static final String MODEL_MATERIAL_REQUIREMENT = "materialRequirement";
-
-    // VIEW
-
-    public static final String VIEW_MATERIAL_REQUIREMENT_DETAILS = "materialRequirementDetails";
-
-    public static final String VIEW_MATERIAL_REQUIREMENTS_LIST = "materialRequirementsList";
+    public static final String INPUT_PRODUCTS_REQUIRED_FOR_TYPE = "inputProductsRequiredForType";
 
 }

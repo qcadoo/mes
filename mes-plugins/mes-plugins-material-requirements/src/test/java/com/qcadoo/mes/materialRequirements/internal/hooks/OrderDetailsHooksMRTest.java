@@ -1,11 +1,14 @@
 package com.qcadoo.mes.materialRequirements.internal.hooks;
 
-import static org.mockito.Mockito.when;
+import static com.qcadoo.mes.materialRequirements.internal.constants.InputProductsRequiredForType.START_ORDER;
+import static com.qcadoo.mes.materialRequirements.internal.constants.OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -16,6 +19,8 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 public class OrderDetailsHooksMRTest {
+
+    private static final String L_FORM = "form";
 
     private OrderDetailsHooksMR orderDetailsHooksMR;
 
@@ -29,44 +34,50 @@ public class OrderDetailsHooksMRTest {
     private Entity parameter;
 
     @Mock
-    private FormComponent form;
+    private FormComponent orderForm;
 
     @Mock
     private FieldComponent inputProductsRequiredForTypeField;
 
     @Before
     public void init() {
-        orderDetailsHooksMR = new OrderDetailsHooksMR();
         MockitoAnnotations.initMocks(this);
+
+        orderDetailsHooksMR = new OrderDetailsHooksMR();
+
         ReflectionTestUtils.setField(orderDetailsHooksMR, "parameterService", parameterService);
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(null);
-        when(view.getComponentByReference("inputProductsRequiredForType")).thenReturn(inputProductsRequiredForTypeField);
-        when(parameterService.getParameter()).thenReturn(parameter);
+        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(orderForm.getEntityId()).willReturn(null);
+
+        given(view.getComponentByReference(INPUT_PRODUCTS_REQUIRED_FOR_TYPE)).willReturn(inputProductsRequiredForTypeField);
+
+        given(parameterService.getParameter()).willReturn(parameter);
+        given(parameter.getStringField(INPUT_PRODUCTS_REQUIRED_FOR_TYPE)).willReturn(START_ORDER.getStringValue());
     }
 
     @Test
-    public final void shouldSetToFieldValueFromParameter() {
+    public final void shouldSetInputProductsRequiredForTypeFromParameters() {
         // given
-        String inputProductsRequiredForTypeParameter = "02startOperationalTask";
-        when(parameter.getStringField("inputProductsRequiredForType")).thenReturn(inputProductsRequiredForTypeParameter);
+        given(inputProductsRequiredForTypeField.getFieldValue()).willReturn(null);
 
         // when
-        orderDetailsHooksMR.setInputProductsRequiredForTypeFromDefaultParameter(view);
+        orderDetailsHooksMR.setInputProductsRequiredForTypeFromParameters(view);
+
         // then
-        Mockito.verify(inputProductsRequiredForTypeField).setFieldValue("02startOperationalTask");
+        verify(inputProductsRequiredForTypeField).setFieldValue(START_ORDER.getStringValue());
     }
 
     @Test
-    public final void shouldSetDefaultValueWhenValueInOrderIsEmpty() {
+    public final void shouldntSetInputProductsRequiredForTypeFromParameters() {
         // given
-        when(parameter.getStringField("inputProductsRequiredForType")).thenReturn(null);
+        given(inputProductsRequiredForTypeField.getFieldValue()).willReturn(START_ORDER.getStringValue());
 
         // when
-        orderDetailsHooksMR.setInputProductsRequiredForTypeFromDefaultParameter(view);
-        // then
-        Mockito.verify(inputProductsRequiredForTypeField).setFieldValue("01startOrder");
+        orderDetailsHooksMR.setInputProductsRequiredForTypeFromParameters(view);
 
+        // then
+        verify(inputProductsRequiredForTypeField, never()).setFieldValue(START_ORDER.getStringValue());
     }
+
 }
