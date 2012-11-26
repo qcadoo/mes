@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCT_IN;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCT_OUT;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -54,8 +56,8 @@ public class OperationalTasksListOTFOHooks {
     }
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        LookupComponent productIn = (LookupComponent) view.getComponentByReference(OperationalTasksFields.PRODUCT_IN);
-        LookupComponent productOut = (LookupComponent) view.getComponentByReference(OperationalTasksFields.PRODUCT_OUT);
+        LookupComponent productIn = (LookupComponent) view.getComponentByReference(PRODUCT_IN);
+        LookupComponent productOut = (LookupComponent) view.getComponentByReference(PRODUCT_OUT);
         Entity productInEntity = productIn.getEntity();
         Entity productOutEntity = productOut.getEntity();
         if (productInEntity == null && productOutEntity == null) {
@@ -80,8 +82,7 @@ public class OperationalTasksListOTFOHooks {
         for (Entity tioc : tiocs) {
             List<Entity> tasksForTioc = dataDefinitionService
                     .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
-                    .add(SearchRestrictions.belongsTo(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, tioc))
-                    .list().getEntities();
+                    .add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, tioc)).list().getEntities();
             for (Entity taskForTioc : tasksForTioc) {
                 if (!tasks.contains(taskForTioc)) {
                     tasks.add(taskForTioc);
@@ -96,10 +97,8 @@ public class OperationalTasksListOTFOHooks {
         for (Entity operation : operations) {
             List<Entity> techInstOperComps = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                            TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
-                    .find()
-                    .add(SearchRestrictions.belongsTo(TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT, operation))
-                    .list().getEntities();
+                            TechnologiesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).find()
+                    .add(SearchRestrictions.belongsTo(TECHNOLOGY_OPERATION_COMPONENT, operation)).list().getEntities();
             for (Entity techInstOperComp : techInstOperComps) {
                 if (!tiocs.contains(techInstOperComp)) {
                     tiocs.add(techInstOperComp);

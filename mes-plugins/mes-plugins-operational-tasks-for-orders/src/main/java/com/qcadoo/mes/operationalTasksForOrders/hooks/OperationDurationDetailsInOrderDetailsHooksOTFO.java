@@ -23,10 +23,15 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.INTERRUPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
+import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -58,8 +63,8 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
     private boolean orderHasCorrectState(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
         Entity order = form.getEntity().getDataDefinition().get(form.getEntityId());
-        OrderState orderState = OrderState.parseString(order.getStringField(OrderFields.STATE));
-        return (orderState.equals(OrderState.PENDING) || orderState.equals(OrderState.ACCEPTED)
-                || orderState.equals(OrderState.IN_PROGRESS) || orderState.equals(OrderState.INTERRUPTED));
+        OrderState orderState = OrderState.parseString(order.getStringField(STATE));
+        return (orderState.equals(PENDING) || orderState.equals(ACCEPTED) || orderState.equals(IN_PROGRESS) || orderState
+                .equals(INTERRUPTED));
     }
 }
