@@ -113,6 +113,14 @@
 		<view:view-hook plugin="basic" view="companyDetails" type="beforeRender"
 			class="com.qcadoo.mes.techSubcontracting.hooks.CompanyDetailsHooksTS"
 			method="disabledGridWhenCompanyIsAnOwner" />		
+			
+		<view:view-hook plugin="materialRequirements" view="materialRequirementDetails" type="beforeRender"
+			class="com.qcadoo.mes.techSubcontracting.hooks.MaterialRequirementDetailsHooksTS"
+			method="setMrpAlgoritmValue" />	
+				
+		<view:view-hook plugin="simpleMaterialBalance" view="simpleMaterialBalanceDetails" type="beforeRender"
+			class="com.qcadoo.mes.techSubcontracting.hooks.SimpleMaterialBalanceDetailsHooksTS"
+			method="setMrpAlgoritmValue" />		
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab
