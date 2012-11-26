@@ -34,12 +34,12 @@ public class DeliveredProductDetailsListeners {
 
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
-    public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillOrderedQuantities(view);
-    }
-
     public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillUnitsFields(view);
+    }
+
+    public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillOrderedQuantities(view);
     }
 
 }

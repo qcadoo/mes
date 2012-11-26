@@ -40,11 +40,15 @@ public class SupplyItemsListeners {
 
     public void redirectToDeliveryDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+
         if (grid.getSelectedEntities().isEmpty()) {
             return;
         }
+
         Entity orderedProduct = grid.getSelectedEntities().get(0);
+
         Entity delivery = orderedProduct.getBelongsToField(DELIVERY);
+
         if (delivery == null) {
             return;
         }
