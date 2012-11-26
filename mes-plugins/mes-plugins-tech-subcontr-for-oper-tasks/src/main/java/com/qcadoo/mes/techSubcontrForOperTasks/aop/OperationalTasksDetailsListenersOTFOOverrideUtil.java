@@ -23,13 +23,17 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.NAME;
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
+import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsFieldsTS.IS_SUBCONTRACTING;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
+
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -40,7 +44,7 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
 
     public void checkIfOperationIsSubcontracted(final ViewDefinitionState viewDefinitionState) {
         LookupComponent technologyLookup = (LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         technologyLookup.setFieldValue(null);
         technologyLookup.requestComponentUpdateState();
 
@@ -49,42 +53,37 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
 
     public void setOperationalNameAndDescriptionForSubcontractedOperation(final ViewDefinitionState viewDefinitionState) {
         Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
-        FieldComponent description = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksFields.DESCRIPTION);
-        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME);
+                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        FieldComponent description = (FieldComponent) viewDefinitionState.getComponentByReference(DESCRIPTION);
+        FieldComponent name = (FieldComponent) viewDefinitionState.getComponentByReference(NAME);
         if (techInstOperComp == null) {
             description.setFieldValue(null);
             name.setFieldValue(null);
         } else {
             fillProductionLineField(viewDefinitionState);
-            description.setFieldValue(techInstOperComp.getStringField(TechnologyInstanceOperCompFields.COMMENT));
-            name.setFieldValue(techInstOperComp.getBelongsToField(TechnologyInstanceOperCompFields.OPERATION).getStringField(
-                    OperationFields.NAME));
+            description.setFieldValue(techInstOperComp.getStringField(COMMENT));
+            name.setFieldValue(techInstOperComp.getBelongsToField(OPERATION).getStringField(NAME));
         }
         description.requestComponentUpdateState();
         name.requestComponentUpdateState();
     }
 
     private void fillProductionLineField(final ViewDefinitionState viewDefinitionState) {
-        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(OperationalTasksOTFRFields.ORDER))
-                .getEntity();
-        FieldComponent productionLine = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksFields.PRODUCTION_LINE);
+        Entity order = ((LookupComponent) viewDefinitionState.getComponentByReference(ORDER)).getEntity();
+        FieldComponent productionLine = (FieldComponent) viewDefinitionState.getComponentByReference(PRODUCTION_LINE);
         if (order == null || isSubcontracting(viewDefinitionState)) {
             productionLine.setFieldValue(null);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.DESCRIPTION))
-                    .setFieldValue(null);
-            ((FieldComponent) viewDefinitionState.getComponentByReference(OperationalTasksFields.NAME)).setFieldValue(null);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(DESCRIPTION)).setFieldValue(null);
+            ((FieldComponent) viewDefinitionState.getComponentByReference(NAME)).setFieldValue(null);
         } else {
-            productionLine.setFieldValue(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+            productionLine.setFieldValue(order.getBelongsToField(PRODUCTION_LINE).getId());
         }
         productionLine.requestComponentUpdateState();
     }
 
     private boolean isSubcontracting(final ViewDefinitionState viewDefinitionState) {
         Entity techInstOperComp = ((LookupComponent) viewDefinitionState
-                .getComponentByReference(OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
-        return techInstOperComp != null && techInstOperComp.getBooleanField("isSubcontracting");
+                .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
+        return techInstOperComp != null && techInstOperComp.getBooleanField(IS_SUBCONTRACTING);
     }
 }

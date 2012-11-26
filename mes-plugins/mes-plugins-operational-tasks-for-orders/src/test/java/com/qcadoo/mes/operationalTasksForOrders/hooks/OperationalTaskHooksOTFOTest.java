@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
-import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields.ORDER;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;

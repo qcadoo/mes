@@ -53,25 +53,25 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>operationalTasksForOrders</plugin>
+			<plugin>techSubcontracting</plugin>
 			<version>[1.1.7</version>
 		</dependency>
 		<dependency>
-			<plugin>techSubcontracting</plugin>
+			<plugin>operationalTasksForOrders</plugin>
 			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
 
-
 	<modules>
 		<localization:translation path="locales" />
-
+	
 		<view:view-grid-column plugin="operationalTasks"
-			view="operationalTasksList" component="grid" >
-			<view:column name="techInstOperCompIsSubcontracting" fields="technologyInstanceOperationComponent"
-				orderable="true" expression="#technologyInstanceOperationComponent['isSubcontracting'] == '0' ? '@qcadooView.true' : '@qcadooView.false'" />
+			view="operationalTasksList" component="grid">
+			<view:column name="techInstOperCompIsSubcontracting"
+				fields="technologyInstanceOperationComponent" 
+				expression="#technologyInstanceOperationComponent['isSubcontracting'] == '0' ? '@qcadooView.true' : '@qcadooView.false'" 
+				orderable="true" />
 		</view:view-grid-column>
-
 	</modules>
 
 </plugin>

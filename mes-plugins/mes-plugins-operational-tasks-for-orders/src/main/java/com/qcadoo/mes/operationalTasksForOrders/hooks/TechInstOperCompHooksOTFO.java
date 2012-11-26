@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.DESCRIPTION;
+import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 
 import java.util.List;
@@ -31,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -61,10 +62,11 @@ public class TechInstOperCompHooksOTFO {
         DataDefinition operationalTasksDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
         List<Entity> operationalTasksList = operationalTasksDD.find()
-                .add(SearchRestrictions.belongsTo("technologyInstanceOperationComponent", techInstOperComp)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, techInstOperComp)).list()
+                .getEntities();
         for (Entity operationalTask : operationalTasksList) {
             String comment = techInstOperComp.getStringField(COMMENT) == null ? "" : techInstOperComp.getStringField(COMMENT);
-            operationalTask.setField(OperationalTasksFields.DESCRIPTION, comment);
+            operationalTask.setField(DESCRIPTION, comment);
             operationalTasksDD.save(operationalTask);
         }
     }

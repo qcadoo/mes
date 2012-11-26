@@ -60,37 +60,35 @@
 
 	<modules>
 		<localization:translation path="locales" />
-
-		<model:model-field model="operation" plugin="technologies">
+		
+		<model:model-field plugin="basic" model="company">
+			<model:manyToMany name="operations" joinField="operationCompanies" 
+				plugin="technologies" model="operation" copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="company">
+			<model:manyToMany name="operationGroups" joinField="operationGroupCompanies" 
+				plugin="technologies" model="operationGroup" copyable="true" />
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		<model:model-field model="technologyOperationComponent"
-			plugin="technologies">
+		<model:model-field plugin="technologies" model="operation">
+			<model:manyToMany name="operationCompanies" joinField="operations"
+				plugin="basic" model="company" />
+		</model:model-field>
+		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		<model:model-field model="technologyInstanceOperationComponent"
-			plugin="technologies">
+		
+		<model:model-field plugin="technologies" model="technologyInstanceOperationComponent">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="operationsGroup" model="operationGroup"
-				plugin="technologies" joinField="companyOperationGroup" cascade="nullify" />
-		</model:model-field>
-
-		<model:model-field model="operationGroup" plugin="technologies">
-			<model:belongsTo name="companyOperationGroup" model="company"
-				plugin="basic" />
-		</model:model-field>
-
-		<model:model-field model="company" plugin="basic">
-			<model:hasMany name="operations" model="operation"
-				plugin="technologies" joinField="company" cascade="nullify" />
-		</model:model-field>
-
-		<model:model-field model="operation" plugin="technologies">
-			<model:belongsTo name="company" model="company"
-				plugin="basic" />
+		
+		<model:model-field plugin="technologies" model="operationGroup">
+			<model:manyToMany name="operationGroupCompanies" joinField="operationGroups"
+				plugin="basic" model="company" />
 		</model:model-field>
 
 		<model:model-enum-value plugin="materialRequirements"
@@ -101,21 +99,19 @@
 			model="simpleMaterialBalance" enum="mrpAlgorithm"
 			value="03componentsAndSubcontractorsProducts" />
 
-		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
-		<model:model-hook model="technologyInstanceOperationComponent"
-			plugin="technologies">
+		<model:model-hook plugin="technologies" model="technologyInstanceOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
 		
-		<view:view-hook view="companyDetails" type="beforeRender"
-			plugin="basic" class="com.qcadoo.mes.techSubcontracting.hooks.CompanyDetailsHooksTS"
+		<view:view-hook plugin="basic" view="companyDetails" type="beforeRender"
+			class="com.qcadoo.mes.techSubcontracting.hooks.CompanyDetailsHooksTS"
 			method="disabledGridWhenCompanyIsAnOwner" />		
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />

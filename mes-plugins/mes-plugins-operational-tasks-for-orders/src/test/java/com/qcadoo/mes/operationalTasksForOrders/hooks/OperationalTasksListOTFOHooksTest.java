@@ -42,7 +42,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFRFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -117,7 +117,7 @@ public class OperationalTasksListOTFOHooksTest {
                         OperationalTasksConstants.MODEL_OPERATIONAL_TASK)).thenReturn(tasksDD);
         when(tasksDD.find()).thenReturn(tasksBuilder);
         SearchCriterion tasksCriterion = SearchRestrictions.belongsTo(
-                OperationalTasksOTFRFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, tioc);
+                OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT, tioc);
         when(tasksBuilder.add(tasksCriterion)).thenReturn(tasksBuilder);
         when(tasksBuilder.list()).thenReturn(tasksResult);
 
