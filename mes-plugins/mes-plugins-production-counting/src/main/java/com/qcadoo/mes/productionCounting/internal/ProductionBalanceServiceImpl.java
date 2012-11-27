@@ -725,15 +725,13 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                             false);
 
             if (isTypeOfProductionRecordingForEach(order)) {
-                countTimeOperation(productionRecord.getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT), plannedTimes,
-                        operationLaborAndMachineWorkTime.get(productionRecord
-                                .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
+                countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(productionRecord
+                        .getBelongsToField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)));
             } else if (isTypeOfProductionRecordingCumulated(order)) {
                 EntityTree technologyInstanceOperationComponents = order.getTreeField(TECHNOLOGY_INSTANCE_OPERATION_COMPONENTS);
 
                 for (Entity technologyInstanceOperationComponent : technologyInstanceOperationComponents) {
-                    countTimeOperation(technologyInstanceOperationComponent, plannedTimes,
-                            operationLaborAndMachineWorkTime.get(technologyInstanceOperationComponent));
+                    countTimeOperation(plannedTimes, operationLaborAndMachineWorkTime.get(technologyInstanceOperationComponent));
                 }
             }
         }
@@ -741,9 +739,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         return plannedTimes;
     }
 
-    private void countTimeOperation(final Entity technologyInstanceOperationComponent, final Map<String, Integer> plannedTimes,
-            final OperationWorkTime durationOfOperation) {
-
+    private void countTimeOperation(final Map<String, Integer> plannedTimes, final OperationWorkTime durationOfOperation) {
         Integer plannedMachineTime = plannedTimes.get(L_PLANNED_MACHINE_TIME) + durationOfOperation.getMachineWorkTime();
         Integer plannedLaborTime = plannedTimes.get(L_PLANNED_LABOR_TIME) + durationOfOperation.getLaborWorkTime();
 

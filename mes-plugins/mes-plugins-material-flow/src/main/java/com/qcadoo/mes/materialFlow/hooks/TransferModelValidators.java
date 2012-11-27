@@ -30,16 +30,21 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class TransferModelValidators {
 
+    @Autowired
+    private MaterialFlowService materialFlowService;
+
     public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
-        boolean validate = true;
+        boolean isValid = true;
 
         String type = transfer.getStringField(TYPE);
         Date time = (Date) transfer.getField(TIME);
@@ -49,23 +54,41 @@ public class TransferModelValidators {
         if (type == null) {
             transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
 
-            validate = false;
+            isValid = false;
         }
 
         if (time == null) {
             transfer.addError(transferDD.getField(TIME), "materialFlow.validate.global.error.fillDate");
 
-            validate = false;
+            isValid = false;
         }
 
         if (locationFrom == null && locationTo == null) {
             transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillAtLeastOneLocation");
             transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillAtLeastOneLocation");
 
-            validate = false;
+            isValid = false;
         }
 
-        return validate;
+        return isValid;
+    }
+
+    public boolean checkIfLocationFromOrLocationToHasExternalNumber(final DataDefinition transferDD, final Entity transfer) {
+        boolean isValid = true;
+
+        if (materialFlowService.checkIfLocationHasExternalNumber(transfer.getBelongsToField(LOCATION_FROM))) {
+            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.locationHasExternalNumber");
+
+            isValid = false;
+        }
+
+        if (materialFlowService.checkIfLocationHasExternalNumber(transfer.getBelongsToField(LOCATION_TO))) {
+            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.locationHasExternalNumber");
+
+            isValid = false;
+        }
+
+        return isValid;
     }
 
 }

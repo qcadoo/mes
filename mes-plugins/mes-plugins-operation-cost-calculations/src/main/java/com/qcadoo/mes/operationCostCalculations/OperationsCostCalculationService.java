@@ -37,8 +37,8 @@ public interface OperationsCostCalculationService {
 
     void calculateOperationsCost(final Entity costCalculation);
 
-    Map<String, BigDecimal> estimateCostCalculationForHourlyWitoutSaving(final EntityTreeNode operationComponent,
-            final BigDecimal margin, final BigDecimal plannedQuantity, final Map<Entity, OperationWorkTime> realizationTimes);
+    Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal margin,
+            final BigDecimal plannedQuantity, final Map<Entity, OperationWorkTime> realizationTimes);
 
     BigDecimal estimateCostCalculationForPieceWorkWithoutSaving(final EntityTreeNode operationComponent,
             final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);

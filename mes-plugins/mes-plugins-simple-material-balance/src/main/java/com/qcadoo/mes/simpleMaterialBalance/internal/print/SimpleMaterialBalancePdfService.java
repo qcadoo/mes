@@ -66,8 +66,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
 
     private static final String L_DATE = "date";
 
-    private static final String L_ONLY_COMPONENTS = "onlyComponents";
-
     private static final String L_WORKER = "worker";
 
     private static final String L_ORDER = "order";

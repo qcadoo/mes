@@ -63,24 +63,4 @@ public class TransferModelHooks {
         transfer.setField(STAFF, transformations.getBelongsToField(STAFF));
     }
 
-    public boolean checkIfLocationFromOrLocationToHasExternalNumber(final DataDefinition transferDD, final Entity transfer) {
-
-        if (transfer.getBelongsToField(LOCATION_FROM) != null) {
-            if (transfer.getBelongsToField(LOCATION_FROM).getStringField("externalNumber") != null) {
-                transfer.addError(transferDD.getField(LOCATION_FROM),
-                        "materialFlow.validate.global.error.locationHasExternalNumber");
-                return false;
-            }
-        }
-        if (transfer.getBelongsToField(LOCATION_TO) != null) {
-            if (transfer.getBelongsToField(LOCATION_TO).getStringField("externalNumber") != null) {
-                transfer.addError(transferDD.getField(LOCATION_TO),
-                        "materialFlow.validate.global.error.locationHasExternalNumber");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }

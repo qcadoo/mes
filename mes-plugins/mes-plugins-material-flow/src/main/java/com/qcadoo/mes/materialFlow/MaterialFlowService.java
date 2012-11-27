@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlow;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIALS_IN_LOCATION_COMPONENTS;
 import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIAL_FLOW_FOR_DATE;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.FOUND;
@@ -67,6 +68,7 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
@@ -454,6 +456,24 @@ public class MaterialFlowService {
         }
 
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF).get(staffId);
+    }
+
+    public boolean checkIfLocationHasExternalNumber(final Entity location) {
+        if ((location == null) || (location.getStringField(EXTERNAL_NUMBER) == null)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void checkIfLocationHasExternalNumber(final ViewDefinitionState view, final String lookupName) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(lookupName);
+        Entity location = locationLookup.getEntity();
+
+        if (checkIfLocationHasExternalNumber(location)) {
+            locationLookup.addMessage("materialFlow.validate.global.error.locationHasExternalNumber",
+                    ComponentState.MessageType.FAILURE);
+        }
     }
 
 }
