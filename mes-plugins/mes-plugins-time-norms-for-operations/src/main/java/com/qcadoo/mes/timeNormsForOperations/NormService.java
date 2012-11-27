@@ -56,7 +56,8 @@ public class NormService {
                 continue;
             }
 
-            if (timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals intentionally
+            if (timeNormsQuantity == null || timeNormsQuantity.compareTo(currentQuantity) != 0) { // Not using equals
+                                                                                                  // intentionally
                 messages.put("technologies.technology.validate.error.invalidQuantity",
                         operationComponent.getStringField("nodeNumber"));
             }
