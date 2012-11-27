@@ -148,6 +148,11 @@
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
+			
+		<view:view-hook view="operationalTaskDetails" type="beforeRender"
+			plugin="operationalTasks"
+			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
+			method="disabledButtons" />
 
 		<view:view-hook view="operationDurationDetailsInOrder"
 			type="beforeRender" plugin="productionScheduling"
@@ -158,6 +163,11 @@
 			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
+			
+		<view:view-listener view="operationalTaskDetails"
+			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
+			method="disabledButtons" />
 
 		<view:view-listener view="operationalTaskDetails"
 			component="form" plugin="operationalTasks" event="showOrder"

@@ -156,4 +156,8 @@ public class OperationalTasksDetailsListenersOTFO {
         String url = "../page/technologies/technologyInstanceOperationComponentDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
+
+    public void disabledButtons(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        detailsHooks.disabledButtons(view);
+    }
 }
