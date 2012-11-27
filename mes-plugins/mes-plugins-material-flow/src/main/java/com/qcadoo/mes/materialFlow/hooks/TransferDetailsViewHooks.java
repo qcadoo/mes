@@ -33,10 +33,12 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -48,6 +50,9 @@ public class TransferDetailsViewHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private MaterialFlowService materialFlowService;
 
     public void checkIfTransferHasTransformations(final ViewDefinitionState view) {
         FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -78,6 +83,23 @@ public class TransferDetailsViewHooks {
             locationFrom.setEnabled(false);
             staff.setEnabled(false);
         }
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        checkIfLocationFromHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfLocationToHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_TO);
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_FROM);
     }
 
 }

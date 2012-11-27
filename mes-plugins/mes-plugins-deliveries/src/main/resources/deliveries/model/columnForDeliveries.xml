@@ -45,5 +45,5 @@
 			default="01left" required="true" />
 	</fields>
 	<hooks />
-	<identifier expression="#name" />
+	<identifier expression="#identifier" />
 </model>

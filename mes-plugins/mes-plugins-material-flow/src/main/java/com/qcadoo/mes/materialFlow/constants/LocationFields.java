@@ -37,4 +37,6 @@ public final class LocationFields {
 
     public static final String MATERIALS_IN_LOCATIONS = "materialsInLocations";
 
+    public static final String EXTERNAL_NUMBER = "externalNumber";
+
 }

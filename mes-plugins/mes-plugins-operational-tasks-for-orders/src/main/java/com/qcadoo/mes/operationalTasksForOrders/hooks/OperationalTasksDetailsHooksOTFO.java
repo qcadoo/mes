@@ -35,8 +35,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class OperationalTasksDetailsHooksOTFO {
@@ -71,5 +74,25 @@ public class OperationalTasksDetailsHooksOTFO {
             field.setEnabled(enabled);
             field.requestComponentUpdateState();
         }
+    }
+
+    public void disabledButtons(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        FieldComponent typeTask = (FieldComponent) view.getComponentByReference(OperationalTasksFields.TYPE_TASK);
+        boolean isSelectedExecutionOperationInOrder = typeTask.getFieldValue().equals("02executionOperationInOrder");
+
+        RibbonActionItem showOrder = window.getRibbon().getGroupByName("order").getItemByName("showOrder");
+        showOrder.setEnabled(isSelectedExecutionOperationInOrder);
+        showOrder.requestUpdate(true);
+
+        RibbonActionItem showOperationParameter = window.getRibbon().getGroupByName("techInstOperComp")
+                .getItemByName("showOperationParameter");
+        showOperationParameter.setEnabled(isSelectedExecutionOperationInOrder);
+        showOperationParameter.requestUpdate(true);
+
+        RibbonActionItem showOperationalTasksWithOrder = window.getRibbon().getGroupByName("operationalTasksList")
+                .getItemByName("showOperationalTasksWithOrder");
+        showOperationalTasksWithOrder.setEnabled(isSelectedExecutionOperationInOrder);
+        showOperationalTasksWithOrder.requestUpdate(true);
     }
 }

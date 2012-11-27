@@ -50,7 +50,7 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    ShiftsServiceImpl shiftsService;
+    private ShiftsServiceImpl shiftsService;
 
     @Override
     @Transactional

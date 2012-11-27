@@ -56,8 +56,6 @@ public final class SimpleMaterialBalanceXlsService extends XlsDocumentService {
 
     private static final String L_DATE = "date";
 
-    private static final String L_ONLY_COMPONENTS = "onlyComponents";
-
     private static final String L_SIMPLE_MATERIAL_BALANCE_ORDERS_COMPONENTS = "simpleMaterialBalanceOrdersComponents";
 
     private static final String L_SIMPLE_MATERIAL_BALANCE_LOCATIONS_COMPONENTS = "simpleMaterialBalanceLocationsComponents";

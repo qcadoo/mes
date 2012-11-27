@@ -17,7 +17,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
+			<artifactId>mes-plugins-simple-material-balance</artifactId>
 			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

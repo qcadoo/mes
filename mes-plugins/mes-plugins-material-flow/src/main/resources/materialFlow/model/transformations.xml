@@ -51,6 +51,9 @@
 		<validatesWith
 			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
 			method="checkIfTransfersAreValid" />	
+		<validatesWith
+			class="com.qcadoo.mes.materialFlow.hooks.TransformationsModelValidators"
+			method="checkIfLocationFromOrLocationToHasExternalNumber" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

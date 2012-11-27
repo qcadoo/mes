@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.LOCATION_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
 import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TIME;
@@ -34,8 +34,11 @@ import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSF
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -47,6 +50,9 @@ public class TransformationsDetailsViewHooks {
     private static final String L_FORM = "form";
 
     private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, LOCATION_FROM, LOCATION_TO, OPERATION);
+
+    @Autowired
+    private MaterialFlowService materialFlowService;
 
     public void disableFields(final ViewDefinitionState view) {
         FormComponent transformationsForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -96,6 +102,23 @@ public class TransformationsDetailsViewHooks {
             }
             fieldComponent.requestComponentUpdateState();
         }
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        checkIfLocationFromHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfLocationToHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_TO);
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_FROM);
     }
 
 }

@@ -347,12 +347,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         if (!productionRecordsWithPlannedTimes.isEmpty()) {
             if (productionBalanceService.isTypeOfProductionRecordingForEach(order)) {
-                costs = costValueForTypeOfProductionRecordingForEach(productionBalance, productionRecordsWithRegisteredTimes,
-                        productionRecordsWithPlannedTimes);
-
+                costs = costValueForTypeOfProductionRecordingForEach(productionBalance, productionRecordsWithRegisteredTimes);
             } else if (productionBalanceService.isTypeOfProductionRecordingCumulated(order)) {
-                costs = costValueForTypeOfProductionRecordingCumulated(productionBalance, productionRecordsWithRegisteredTimes,
-                        productionRecordsWithPlannedTimes);
+                costs = costValueForTypeOfProductionRecordingCumulated(productionBalance, productionRecordsWithRegisteredTimes);
             }
         }
 
@@ -378,8 +375,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     }
 
     private Map<String, BigDecimal> costValueForTypeOfProductionRecordingForEach(final Entity productionBalance,
-            final Map<Long, Entity> productionRecordsWithRegisteredTimes,
-            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Entity> productionRecordsWithRegisteredTimes) {
         Map<String, BigDecimal> costsValues = new HashMap<String, BigDecimal>();
         BigDecimal machineCosts = BigDecimal.ZERO;
 
@@ -417,12 +413,12 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         costsValues.put("machineCosts", machineCosts);
         costsValues.put("laborCosts", laborCosts);
+
         return costsValues;
     }
 
     private Map<String, BigDecimal> costValueForTypeOfProductionRecordingCumulated(final Entity productionBalance,
-            final Map<Long, Entity> productionRecordsWithRegisteredTimes,
-            final Map<Long, Map<String, Integer>> productionRecordsWithPlannedTimes) {
+            final Map<Long, Entity> productionRecordsWithRegisteredTimes) {
         Map<String, BigDecimal> costsValues = new HashMap<String, BigDecimal>();
         BigDecimal machineCosts = BigDecimal.ZERO;
 
@@ -450,8 +446,10 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             laborCosts = laborCosts.add(averageLaborHourlyCost.multiply(laborTimeHours, numberService.getMathContext()),
                     numberService.getMathContext());
         }
+
         costsValues.put("machineCosts", machineCosts);
         costsValues.put("laborCosts", laborCosts);
+
         return costsValues;
     }
 

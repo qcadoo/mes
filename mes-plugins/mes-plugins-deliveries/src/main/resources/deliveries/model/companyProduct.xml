@@ -34,7 +34,6 @@
 		<belongsTo name="product" plugin="basic" model="product"
 			required="true" />
 	</fields>
-	
 	<hooks>
 		<validatesWith 
 			class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"

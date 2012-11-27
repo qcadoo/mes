@@ -145,6 +145,18 @@ public class MultitransferListeners {
         Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
         Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
 
+        if (materialFlowService.checkIfLocationHasExternalNumber(locationFrom)) {
+            locationFromField.addMessage("materialFlow.validate.global.error.externalNumber", MessageType.FAILURE);
+
+            isValid = false;
+        }
+
+        if (materialFlowService.checkIfLocationHasExternalNumber(locationTo)) {
+            locationToField.addMessage("materialFlow.validate.global.error.externalNumber", MessageType.FAILURE);
+
+            isValid = false;
+        }
+
         if (typeField.getFieldValue() == null || typeField.getFieldValue().toString().isEmpty()) {
             typeField.addMessage("materialFlow.validate.global.error.fillType", MessageType.FAILURE);
 
@@ -161,7 +173,7 @@ public class MultitransferListeners {
             if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
                     && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                     && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
-                timeField.addMessage("materialFlowResources.validate.global.error.dateEarlierThanResourcesDate",
+                timeField.addMessage("materialFlowResources.validate.global.error.dateLowerThanResourcesDate",
                         MessageType.FAILURE);
 
                 isValid = false;
@@ -338,6 +350,23 @@ public class MultitransferListeners {
 
     public void disableDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         materialFlowResourcesService.disableDateField(view);
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        checkIfLocationFromHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        checkIfLocationToHasExternalNumber(view);
+    }
+
+    public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_TO);
+    }
+
+    public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_FROM);
     }
 
 }

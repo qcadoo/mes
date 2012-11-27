@@ -35,7 +35,10 @@
 		<enum name="type" values="01controlPoint" default="01controlPoint" required="true" />
 		<hasMany name="materialsInLocations" model="materialsInLocationComponent"
 			plugin="materialFlow" joinField="location" />
+		<string name="externalNumber" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onCopy class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="clearExternalIdOnCopy" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
