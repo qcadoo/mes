@@ -34,15 +34,15 @@ import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSF
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 @Component
 public class TransformationsDetailsViewHooks {
@@ -50,6 +50,9 @@ public class TransformationsDetailsViewHooks {
     private static final String L_FORM = "form";
 
     private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, LOCATION_FROM, LOCATION_TO, OPERATION);
+
+    @Autowired
+    private MaterialFlowService materialFlowService;
 
     public void disableFields(final ViewDefinitionState view) {
         FormComponent transformationsForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -111,25 +114,11 @@ public class TransformationsDetailsViewHooks {
     }
 
     public void checkIfLocationToHasExternalNumber(final ViewDefinitionState view) {
-        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(LOCATION_TO);
-        Entity location = locationLookup.getEntity();
-        if (location != null) {
-            if (location.getStringField("externalNumber") != null) {
-                locationLookup.addMessage("materialFlow.validate.global.error.locationHasExternalNumber",
-                        ComponentState.MessageType.FAILURE);
-            }
-        }
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_TO);
     }
 
     public void checkIfLocationFromHasExternalNumber(final ViewDefinitionState view) {
-        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(LOCATION_FROM);
-        Entity location = locationLookup.getEntity();
-        if (location != null) {
-            if (location.getStringField("externalNumber") != null) {
-                locationLookup.addMessage("materialFlow.validate.global.error.locationHasExternalNumber",
-                        ComponentState.MessageType.FAILURE);
-            }
-        }
+        materialFlowService.checkIfLocationHasExternalNumber(view, LOCATION_FROM);
     }
 
 }

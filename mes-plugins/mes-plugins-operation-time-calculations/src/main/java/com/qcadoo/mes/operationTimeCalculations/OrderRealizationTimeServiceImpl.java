@@ -274,7 +274,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) != 1) {
             cycles = getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
-                    productComponentQuantity, nextOperationAfterProducedQuantity);
+                    nextOperationAfterProducedQuantity);
         } else {
             cycles = operationRuns.get(technologyOperationComponent);
         }
@@ -308,7 +308,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(final Entity operationComponent,
-            final BigDecimal productComponentQuantity, final BigDecimal nextOperationAfterProducedQuantity) {
+            final BigDecimal nextOperationAfterProducedQuantity) {
         MathContext mc = numberService.getMathContext();
         Entity technology = operationComponent.getBelongsToField("technology");
 

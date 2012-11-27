@@ -29,8 +29,6 @@ public final class LocationFields {
 
     }
 
-    public static final String EXTERNAL_ID = "externalNumber";
-
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
@@ -38,5 +36,7 @@ public final class LocationFields {
     public static final String TYPE = "type";
 
     public static final String MATERIALS_IN_LOCATIONS = "materialsInLocations";
+
+    public static final String EXTERNAL_NUMBER = "externalNumber";
 
 }
