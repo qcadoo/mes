@@ -44,5 +44,4 @@
 		<belongsTo name="shift" model="shift" plugin="basic" />
 	</fields>
 	<hooks />
-	<identifier expression="#number + ' - ' + #name" />
 </model>

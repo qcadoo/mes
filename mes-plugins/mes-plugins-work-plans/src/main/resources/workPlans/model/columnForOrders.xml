@@ -52,5 +52,5 @@
 			cascade="delete" />
 	</fields>
 	<hooks />
-	<identifier expression="#name" />
+	<identifier expression="#identifier" />
 </model>
