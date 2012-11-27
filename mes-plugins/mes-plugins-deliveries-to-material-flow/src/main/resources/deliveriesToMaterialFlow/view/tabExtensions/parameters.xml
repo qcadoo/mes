@@ -35,8 +35,9 @@
 			<layoutElement column="1" row="1">
 				<component type="lookup" name="location" reference="warehouse" field="#{form}.location">
 							<option type="column" name="name" fields="name" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+							<option type="column" name="type" fields="type" />
+							<option type="searchable" value="name,number,type" />
+							<option type="orderable" value="name,number,type" />
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
