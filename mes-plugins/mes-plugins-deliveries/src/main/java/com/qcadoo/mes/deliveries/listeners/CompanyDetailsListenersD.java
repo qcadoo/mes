@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -56,10 +54,10 @@ public class CompanyDetailsListenersD {
             return;
         }
 
-        String companyNumber = company.getStringField(NUMBER);
+        String supplierName = company.getStringField("name");
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("companyNumber", companyNumber);
+        filters.put("supplierName", supplierName);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -67,7 +65,7 @@ public class CompanyDetailsListenersD {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(L_GRID_OPTIONS, gridOptions);
 
-        parameters.put(L_WINDOW_ACTIVE_MENU, "deliveries.delivery");
+        parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveriesList.html";
         view.redirectTo(url, false, true, parameters);

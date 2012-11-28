@@ -195,7 +195,7 @@
 			</script>
 			<option type="column" name="number" fields="number" link="true" width="50" />
 			<option type="column" name="name" fields="name" link="true" width="100" />
-			<option type="column" name="supplier" fields="supplier"
+			<option type="column" name="supplierName" fields="supplier"
 				expression="#supplier['name']" />
 			<option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
 			<option type="column" name="state" fields="state" />
@@ -203,8 +203,8 @@
 			
 			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="name,number,supplier,deliveryDate,state,createDate" />
-			<option type="orderable" value="name,number,supplier,deliveryDate,state,createDate" />
+			<option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate" />
+			<option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate" />
 			
 			<option type="correspondingView" value="deliveries/deliveryDetails" />
 			<option type="correspondingComponent" value="form" />
