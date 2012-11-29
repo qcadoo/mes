@@ -35,7 +35,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -57,7 +56,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
-import com.qcadoo.mes.columnExtension.utils.ColumnSuccessionComparator;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
@@ -161,8 +159,6 @@ public class DeliveryReportPdf extends ReportPdfView {
     private void createProductsTable(final Document document, final Entity delivery, final Locale locale)
             throws DocumentException {
         List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
-
-        Collections.sort(columnsForDeliveries, new ColumnSuccessionComparator());
 
         if (!columnsForDeliveries.isEmpty()) {
             PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForDeliveries.size(),
