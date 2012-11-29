@@ -23,23 +23,27 @@
  */
 package com.qcadoo.mes.columnExtension.constants;
 
-public final class ColumnFields {
+public enum ColumnAlignment {
+    LEFT("01left"), RIGHT("02right");
 
-    private ColumnFields() {
+    private String alignment;
+
+    private ColumnAlignment(final String alignment) {
+        this.alignment = alignment;
     }
 
-    public static final String IDENTIFIER = "identifier";
+    public String getStringValue() {
+        return alignment;
+    }
 
-    public static final String NAME = "name";
+    public static ColumnAlignment parseString(final String alignment) {
+        if ("01left".equals(alignment)) {
+            return LEFT;
+        } else if ("02right".equals(alignment)) {
+            return RIGHT;
+        }
 
-    public static final String DESCRIPTION = "description";
-
-    public static final String COLUMN_FILLER = "columnFiller";
-
-    public static final String TYPE = "type";
-
-    public static final String ALIGNMENT = "alignment";
-
-    public static final String SUCCESSION = "succession";
+        throw new IllegalStateException("Unsupported column alignment '" + alignment + "'");
+    }
 
 }
