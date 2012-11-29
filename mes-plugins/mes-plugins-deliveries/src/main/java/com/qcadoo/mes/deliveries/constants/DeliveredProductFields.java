@@ -37,4 +37,6 @@ public final class DeliveredProductFields {
 
     public static final String DELIVERED_QUANTITY = "deliveredQuantity";
 
+    public static final String SUCCESSION = "succession";
+
 }
