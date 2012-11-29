@@ -39,4 +39,6 @@ public final class ColumnForDeliveriesFields {
 
     public static final String ALIGNMENT = "alignment";
 
+    public static final String SUCCESSION = "succession";
+
 }

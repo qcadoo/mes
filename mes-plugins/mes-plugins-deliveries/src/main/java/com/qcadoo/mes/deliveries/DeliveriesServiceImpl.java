@@ -28,10 +28,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
+import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -56,12 +59,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForDeliveries() {
-        return getColumnForDeliveriesDD().find().list().getEntities();
+        return getColumnForDeliveriesDD().find().addOrder(SearchOrders.asc(ColumnForDeliveriesFields.SUCCESSION)).list()
+                .getEntities();
     }
 
     @Override
     public List<Entity> getColumnsForOrders() {
-        return getColumnForOrdersDD().find().list().getEntities();
+        return getColumnForOrdersDD().find().addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
     }
 
     @Override

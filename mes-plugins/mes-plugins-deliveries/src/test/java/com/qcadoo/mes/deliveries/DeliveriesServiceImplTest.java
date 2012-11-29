@@ -31,6 +31,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -39,6 +40,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchResult;
 
 public class DeliveriesServiceImplTest {
@@ -174,6 +176,7 @@ public class DeliveriesServiceImplTest {
     public void shouldReturnNullWhenGetColumnsForDeliveriesIfColumnsForDeliveriesAreNull() {
         // given
         given(columnForDeliveriesDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 
@@ -188,6 +191,7 @@ public class DeliveriesServiceImplTest {
     public void shouldReturnColumnsForDeliveriesWhenGetColumnsForDeliveriesIfColumnsForDeliveriesArentNull() {
         // given
         given(columnForDeliveriesDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(columnsForDeliveries);
 
@@ -202,6 +206,7 @@ public class DeliveriesServiceImplTest {
     public void shouldReturnNullWhenGetColumnsForOrdersIfColumnsForOrdersAreNull() {
         // given
         given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(null);
 
@@ -216,6 +221,7 @@ public class DeliveriesServiceImplTest {
     public void shouldReturnColumnsForOrdersWhenGetColumnsForOrdersIfColumnsForOrdersArentNull() {
         // given
         given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.list()).willReturn(searchResult);
         given(searchResult.getEntities()).willReturn(columnsForOrders);
 
