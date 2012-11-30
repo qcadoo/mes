@@ -23,8 +23,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
+    
 -->
-
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
@@ -34,14 +34,18 @@
 		<component type="gridLayout" name="gridLayout" columns="3"
 			rows="1">
 			<layoutElement column="1" row="1">
-				<component type="lookup" name="location" reference="location" field="#{form}.location">
-							<option type="column" name="name" fields="name" />
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
-						</component>
+				<component type="lookup" name="location" reference="location"
+					field="#{form}.location">
+					<option type="column" name="name" fields="name" />
+					<option type="column" name="type" fields="type" />
+					
+					<option type="searchable" value="name,number,type" />
+					<option type="orderable" value="name,number,type" />
+					
+					<option type="expression"
+						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+				</component>
 			</layoutElement>
 		</component>
 	</windowTab>

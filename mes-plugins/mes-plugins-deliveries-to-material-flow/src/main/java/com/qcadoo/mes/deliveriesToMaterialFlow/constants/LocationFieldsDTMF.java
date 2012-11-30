@@ -1,6 +1,10 @@
 package com.qcadoo.mes.deliveriesToMaterialFlow.constants;
 
-public class LocationFieldsDTMF {
+public final class LocationFieldsDTMF {
+    
+    private LocationFieldsDTMF() {
+        
+    }
 
     public static final String LOCATION = "location";
 

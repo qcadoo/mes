@@ -1,4 +1,4 @@
-package com.qcadoo.mes.deliveriesToMaterialFlow;
+package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
 import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.LocationFieldsDTMF.LOCATION;
 import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.LocationFieldsDTMF.TYPE;
