@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="supplyParameters" modelName="parameter" modelPlugin="basic"
+	menuAccessible="true">
+
+	<component type="window" name="window">
+		<ribbon>
+			<group name="actions" hasLabel="false">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+			</group>
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="deliveriesForm" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="6">
+					<layoutElement column="1" row="1" height="2">
+						<component type="textarea" name="defaultDescription"
+							field="defaultDescription" reference="defaultDescription" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="select" name="defaultAddress" field="defaultAddress"
+							reference="defaultAddress">
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+								method="setFieldsVisibleAndRequired" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" height="2">
+						<component type="textarea" name="otherAddress"
+							field="otherAddress" reference="otherAddress" />
+					</layoutElement>
+				</component>
+				<option type="header" value="true" />
+				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+			method="setFieldsVisibleAndRequired" />
+	</hooks>
+</view>
