@@ -55,8 +55,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveriesColumnAlignment;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -179,8 +179,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
                     String value = deliveryProductsColumnValues.get(product).get(identifier);
 
-                    prepareProductColumnAlignment(productsTable.getDefaultCell(),
-                            DeliveriesColumnAlignment.parseString(alignment));
+                    prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
                     productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
                 }
@@ -207,10 +206,10 @@ public class DeliveryReportPdf extends ReportPdfView {
         return productsHeader;
     }
 
-    private void prepareProductColumnAlignment(final PdfPCell cell, final DeliveriesColumnAlignment columnAlignment) {
-        if (DeliveriesColumnAlignment.LEFT.equals(columnAlignment)) {
+    private void prepareProductColumnAlignment(final PdfPCell cell, final ColumnAlignment columnAlignment) {
+        if (ColumnAlignment.LEFT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-        } else if (DeliveriesColumnAlignment.RIGHT.equals(columnAlignment)) {
+        } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         }
     }

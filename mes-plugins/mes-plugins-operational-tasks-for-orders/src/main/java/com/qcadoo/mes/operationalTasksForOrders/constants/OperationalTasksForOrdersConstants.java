@@ -21,29 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.operationalTasksForOrders.constants;
 
-public enum DeliveriesColumnAlignment {
-    LEFT("01left"), RIGHT("02right");
+public final class OperationalTasksForOrdersConstants {
 
-    private String alignment;
+    private OperationalTasksForOrdersConstants() {
 
-    private DeliveriesColumnAlignment(final String alignment) {
-        this.alignment = alignment;
     }
 
-    public String getStringValue() {
-        return alignment;
-    }
-
-    public static DeliveriesColumnAlignment parseString(final String alignment) {
-        if ("01left".equals(alignment)) {
-            return LEFT;
-        } else if ("02right".equals(alignment)) {
-            return RIGHT;
-        }
-
-        throw new IllegalStateException("Unsupported column alignment '" + alignment + "'");
-    }
+    public static final String PLUGIN_IDENTIFIER = "operationalTasktsForOrders";
 
 }

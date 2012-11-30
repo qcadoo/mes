@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.columnExtension.constants;
 
-public final class ColumnExtension {
+public final class ColumnExtensionConstants {
 
-    private ColumnExtension() {
+    private ColumnExtensionConstants() {
     }
 
     public static final String PLUGIN_IDENTIFIER = "columnExtension";

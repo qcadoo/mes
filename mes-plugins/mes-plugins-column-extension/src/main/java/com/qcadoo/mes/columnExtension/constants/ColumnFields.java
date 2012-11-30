@@ -40,4 +40,6 @@ public final class ColumnFields {
 
     public static final String ALIGNMENT = "alignment";
 
+    public static final String SUCCESSION = "succession";
+
 }

@@ -35,4 +35,6 @@ public final class OrderedProductFields {
 
     public static final String ORDERED_QUANTITY = "orderedQuantity";
 
+    public static final String SUCCESSION = "succession";
+
 }

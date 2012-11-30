@@ -34,6 +34,8 @@
 		<decimal name="orderedQuantity" required="true" >
 			<validatesRange from="0" exclusively="true" />
 		</decimal>
+		
+		<priority name="succession" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"

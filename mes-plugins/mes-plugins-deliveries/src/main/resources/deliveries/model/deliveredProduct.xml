@@ -37,6 +37,8 @@
 		<decimal name="damagedQuantity">
 			<validatesRange from="0" />
 		</decimal>
+		
+		<priority name="succession" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
