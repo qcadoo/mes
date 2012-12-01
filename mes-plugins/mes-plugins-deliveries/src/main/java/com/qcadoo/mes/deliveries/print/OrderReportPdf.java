@@ -43,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.lowagie.text.Chunk;
@@ -82,6 +83,9 @@ public class OrderReportPdf extends ReportPdfView {
     @Autowired
     private PdfHelper pdfHelper;
 
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
+            LocaleContextHolder.getLocale());
+
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
@@ -105,7 +109,7 @@ public class OrderReportPdf extends ReportPdfView {
         pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
         return translationService.translate("deliveries.order.report.fileName", locale, delivery.getStringField(NUMBER),
-                DateUtils.REPORT_D_T_F.format((Date) delivery.getField("updateDate")));
+                getStringFromDate((Date) delivery.getField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
@@ -140,7 +144,7 @@ public class OrderReportPdf extends ReportPdfView {
         } else {
             pdfHelper.addTableCellAsOneColumnTable(headerTable,
                     translationService.translate("deliveries.order.report.columnHeader.deliveryDate", locale),
-                    new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, locale).format((Date) delivery.getField(DELIVERY_DATE)));
+                    getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
         }
         if (delivery.getStringField(NAME) == null) {
             pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
@@ -212,6 +216,10 @@ public class OrderReportPdf extends ReportPdfView {
         } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         }
+    }
+
+    private String getStringFromDate(final Date date) {
+        return simpleDateFormat.format(date);
     }
 
     @Override
