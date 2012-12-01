@@ -23,7 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
+import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
 
 import java.util.List;
 
@@ -35,33 +38,36 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class TechInstOperCompHooksPPS {
 
-    public boolean checkGrowingNumberOfDays(final DataDefinition dataDefinition, final Entity entity) {
-        List<Entity> progressForDays = entity.getHasManyField("progressForDays");
+    public boolean checkGrowingNumberOfDays(final DataDefinition technologyInstanceOperationComponentDD,
+            final Entity technologyInstanceOperationComponent) {
+        List<Entity> progressForDays = technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
         if (progressForDays.isEmpty()) {
             return true;
         }
         Integer dayNumber = Integer.valueOf(0);
         for (Entity progressForDay : progressForDays) {
-            if (progressForDay.getBooleanField("corrected") != entity.getBooleanField("hasCorrections")
-                    || progressForDay.getField("day") == null) {
+            if (progressForDay.getBooleanField(CORRECTED) != technologyInstanceOperationComponent
+                    .getBooleanField(HAS_CORRECTIONS) || progressForDay.getStringField(DAY) == null) {
                 continue;
             }
-            Integer day = Integer.valueOf(progressForDay.getField("day").toString());
+            Integer day = Integer.valueOf(progressForDay.getStringField(DAY));
             if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
             } else {
-                entity.addGlobalError("productionPerShift.progressForDay.daysIsNotInAscendingOrder", day.toString());
+                technologyInstanceOperationComponent.addGlobalError(
+                        "productionPerShift.progressForDay.daysAreNotInAscendingOrder", progressForDay.getStringField(DAY));
                 return false;
             }
         }
         return true;
     }
 
-    public boolean checkShiftsIfWorks(final DataDefinition tiocDD, final Entity tioc) {
-        List<Entity> progressForDays = tioc.getHasManyField("progressForDays");
+    public boolean checkShiftsIfWorks(final DataDefinition technologyInstanceOperationComponentDD,
+            final Entity technologyInstanceOperationComponent) {
+        List<Entity> progressForDays = technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS);
         for (Entity progressForDay : progressForDays) {
             if (progressForDay.getField(DAY) == null) {
-                tioc.addGlobalError("productionPerShift.progressForDay.dayIsNull");
+                technologyInstanceOperationComponent.addGlobalError("productionPerShift.progressForDay.dayIsNull");
                 return false;
             }
         }

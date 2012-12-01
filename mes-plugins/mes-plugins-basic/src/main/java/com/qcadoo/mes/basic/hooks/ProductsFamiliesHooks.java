@@ -87,7 +87,7 @@ public class ProductsFamiliesHooks {
 
     }
 
-    final Entity generateFormEntity(final ViewDefinitionState view) {
+    private Entity generateFormEntity(final ViewDefinitionState view) {
         DataDefinition dd = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
 
         FormComponent form = getForm(view);
@@ -116,7 +116,7 @@ public class ProductsFamiliesHooks {
         return (FormComponent) view.getComponentByReference("form");
     }
 
-    class FormValidationException extends RuntimeException {
+    private static class FormValidationException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;
 
@@ -124,4 +124,5 @@ public class ProductsFamiliesHooks {
             super(msg);
         }
     }
+
 }

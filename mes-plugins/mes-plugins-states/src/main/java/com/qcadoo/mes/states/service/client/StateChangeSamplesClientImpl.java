@@ -90,7 +90,8 @@ public class StateChangeSamplesClientImpl implements StateChangeSamplesClient {
     }
 
     private Entity performDummyChange(final Entity entity, final String targetState) {
-        entity.getDataDefinition().save(entity); // fire onUpdate hooks
+        // fire onUpdate hooks
+        entity.getDataDefinition().save(entity);
         entity.setField("state", targetState);
         return entity.getDataDefinition().save(entity);
     }

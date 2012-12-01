@@ -261,7 +261,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
 
         if (!operationComponent.getBooleanField("areProductQuantitiesDivisible")) {
-            multiplier = multiplier.setScale(0, RoundingMode.CEILING); // It's intentional to round up the operation runs
+            // It's intentional to round up the operation runs
+            multiplier = multiplier.setScale(0, RoundingMode.CEILING);
         }
 
         BigDecimal runs = multiplier;

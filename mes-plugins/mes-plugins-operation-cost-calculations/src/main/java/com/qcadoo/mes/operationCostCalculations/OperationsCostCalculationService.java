@@ -40,6 +40,6 @@ public interface OperationsCostCalculationService {
     Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode operationComponent, final BigDecimal margin,
             final BigDecimal plannedQuantity, final Map<Entity, OperationWorkTime> realizationTimes);
 
-    BigDecimal estimateCostCalculationForPieceWorkWithoutSaving(final EntityTreeNode operationComponent,
+    BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
             final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity);
 }

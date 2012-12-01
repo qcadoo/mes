@@ -52,7 +52,8 @@ public class TechnologyListenersTN {
         Entity technology = form.getEntity();
 
         if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField("state"))) {
-            return; // validation will take care of this.
+            // validation will take care of this.
+            return;
         }
 
         // FIXME mici, why would I need this? Without it operationComponents are null

@@ -72,9 +72,6 @@
 			plugin="materialFlowResources" joinField="location" />
 		</model:model-field>
 		
-		
-			
-			
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="canChangeDateWhenTransferToWarehouse" default="false" />
 		</model:model-field>

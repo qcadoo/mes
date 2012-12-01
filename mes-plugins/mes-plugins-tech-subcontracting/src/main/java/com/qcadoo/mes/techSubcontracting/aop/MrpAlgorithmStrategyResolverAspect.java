@@ -24,7 +24,6 @@
 package com.qcadoo.mes.techSubcontracting.aop;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,7 +52,7 @@ public abstract class MrpAlgorithmStrategyResolverAspect {
     public Map<Entity, BigDecimal> aroundGetProductsMethodExecution(final ProceedingJoinPoint pjp,
             final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents,
             final MrpAlgorithm algorithm, final String type) throws Throwable {
-        Map<Entity, BigDecimal> productList = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> productList = null;
         if (PluginUtils.isEnabled("techSubcontracting") && getAlgorithmService().isApplicableFor(algorithm)) {
             productList = getAlgorithmService().perform(productComponentQuantities, nonComponents, algorithm, type);
         } else {

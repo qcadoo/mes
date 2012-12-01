@@ -283,37 +283,26 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         checkArgument(calcOperComp.getDataDefinition().save(calcOperComp).isValid(), "invalid operationComponent");
     }
 
-    private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
+    public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
             final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity) {
-        return estimateCostCalculationForPieceWork(operationComponent, productComponentQuantities, margin, plannedQuantity, true);
-    }
-
-    public BigDecimal estimateCostCalculationForPieceWorkWithoutSaving(final EntityTreeNode operationComponent,
-            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity) {
-        return estimateCostCalculationForPieceWork(operationComponent, productComponentQuantities, margin, plannedQuantity, false);
-    }
-
-    private BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode calcOperComp,
-            final Map<Entity, BigDecimal> productComponentQuantities, final BigDecimal margin, final BigDecimal plannedQuantity,
-            final boolean saveValues) {
 
         BigDecimal totalPieceworkCost = BigDecimal.ZERO;
 
-        for (EntityTreeNode child : calcOperComp.getChildren()) {
+        for (EntityTreeNode child : operationComponent.getChildren()) {
             totalPieceworkCost = totalPieceworkCost.add(
                     estimateCostCalculationForPieceWork(child, productComponentQuantities, margin, plannedQuantity),
                     numberService.getMathContext());
         }
-        Entity techOperComp = calcOperComp.getBelongsToField("technologyOperationComponent");
+        Entity techOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
         // TODO mici, proxy entity thing. I think we should tweak hashCode too.
         Long techOperCompId = techOperComp.getId();
         techOperComp = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperCompId);
 
         BigDecimal operationRuns = productComponentQuantities.get(techOperComp);
-        Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(calcOperComp, operationRuns, margin);
+        Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(operationComponent, operationRuns, margin);
         totalPieceworkCost = totalPieceworkCost.add(costs.get(L_OPERATION_COST));
-        savedGeneratedValues(costs, calcOperComp, false, null, operationRuns);
+        savedGeneratedValues(costs, operationComponent, false, null, operationRuns);
         return totalPieceworkCost;
     }
 
