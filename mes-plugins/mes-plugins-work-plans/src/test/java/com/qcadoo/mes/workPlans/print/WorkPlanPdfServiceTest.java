@@ -68,6 +68,9 @@ import com.qcadoo.mes.workPlans.print.WorkPlanPdfService.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
@@ -515,6 +518,8 @@ public class WorkPlanPdfServiceTest {
         Entity prodComp2 = mock(Entity.class);
         Entity prod1 = mock(Entity.class);
         Entity prod2 = mock(Entity.class);
+        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+        SearchResult searchResult = mock(SearchResult.class);
         when(prod1.getStringField("number")).thenReturn("1");
         when(prod2.getStringField("number")).thenReturn("2");
         when(prodComp1.getBelongsToField("product")).thenReturn(prod1);
@@ -554,6 +559,11 @@ public class WorkPlanPdfServiceTest {
 
         EntityList columns = mockEntityListIterator(asList(column1, column2));
         when(operationComponent.getHasManyField("technologyOperationInputColumns")).thenReturn(columns);
+        when(columns.find()).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.list()).thenReturn(searchResult);
+        when(searchResult.getEntities()).thenReturn(columns);
+
         ProductDirection direction = ProductDirection.IN;
 
         PdfPTable table = mock(PdfPTable.class);

@@ -50,9 +50,10 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.workPlans.constants.WorkPlanColumnAlignment;
+import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
@@ -72,19 +73,19 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private static final String PRODUCT_LITERAL = "product";
 
     @Autowired
-    private SecurityService securityService;
+    private EntityTreeUtilsService entityTreeUtilsService;
+
+    @Autowired
+    private ColumnFetcher columnFetcher;
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
-    private EntityTreeUtilsService entityTreeUtilsService;
+    private SecurityService securityService;
 
     @Autowired
     private PdfHelper pdfHelper;
-
-    @Autowired
-    private ColumnFetcher columnFetcher;
 
     enum ProductDirection {
         IN, OUT;
@@ -120,8 +121,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                     String columnIdentifier = column.getStringField("identifier");
                     String value = columnValues.get(order).get(columnIdentifier);
 
-                    alignColumn(orderTable.getDefaultCell(),
-                            WorkPlanColumnAlignment.parseString(column.getStringField("alignment")));
+                    alignColumn(orderTable.getDefaultCell(), ColumnAlignment.parseString(column.getStringField("alignment")));
 
                     orderTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
                 }
@@ -353,32 +353,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return operationComponentsWithDistinction;
     }
 
-    private static final class OperationProductComponentComparator implements Comparator<Entity>, Serializable {
-
-        private static final long serialVersionUID = 2985797934972953807L;
-
-        @Override
-        public int compare(final Entity o0, final Entity o1) {
-            Entity prod0 = o0.getBelongsToField(PRODUCT_LITERAL);
-            Entity prod1 = o1.getBelongsToField(PRODUCT_LITERAL);
-            return prod0.getStringField(NUMBER_LITERAL).compareTo(prod1.getStringField(NUMBER_LITERAL));
-        }
-
-    }
-
-    private static final class ColumnSuccessionComparator implements Comparator<Entity>, Serializable {
-
-        private static final long serialVersionUID = 949475392760877515L;
-
-        @Override
-        public int compare(final Entity o1, final Entity o2) {
-            Integer o1succession = (Integer) o1.getField("succession");
-            Integer o2succession = (Integer) o2.getField("succession");
-            return o1succession.compareTo(o2succession);
-        }
-
-    }
-
     void addProductsSeries(final List<Entity> productComponentsArg, final Document document,
             final Map<Entity, Map<String, String>> columnValues, final Entity operationComponent,
             final ProductDirection direction, final Locale locale) throws DocumentException {
@@ -404,7 +378,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 String columnIdentifier = column.getStringField("identifier");
                 String value = columnValues.get(productComponent).get(columnIdentifier);
 
-                alignColumn(table.getDefaultCell(), WorkPlanColumnAlignment.parseString(column.getStringField("alignment")));
+                alignColumn(table.getDefaultCell(), ColumnAlignment.parseString(column.getStringField("alignment")));
 
                 table.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
             }
@@ -416,10 +390,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private void alignColumn(final PdfPCell cell, final WorkPlanColumnAlignment columnAlignment) {
-        if (WorkPlanColumnAlignment.LEFT.equals(columnAlignment)) {
+    private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
+        if (ColumnAlignment.LEFT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-        } else if (WorkPlanColumnAlignment.RIGHT.equals(columnAlignment)) {
+        } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         }
     }
@@ -467,12 +441,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private List<Entity> fetchOrderColumnDefinitions(final Entity workPlan) {
         List<Entity> columns = new LinkedList<Entity>();
 
-        List<Entity> columnComponents = workPlan.getHasManyField("workPlanOrderColumns");
-
-        // TODO mici, I couldnt sort, without making a new linkedList out of it
-        columnComponents = Lists.newLinkedList(columnComponents);
-
-        Collections.sort(columnComponents, new ColumnSuccessionComparator());
+        List<Entity> columnComponents = workPlan.getHasManyField("workPlanOrderColumns").find()
+                .addOrder(SearchOrders.asc("succession")).list().getEntities();
 
         for (Entity columnComponent : columnComponents) {
             Entity columnDefinition = columnComponent.getBelongsToField("columnForOrders");
@@ -486,23 +456,20 @@ public class WorkPlanPdfService extends PdfDocumentService {
     private List<Entity> fetchColumnDefinitions(final ProductDirection direction, final Entity operationComponent) {
         List<Entity> columns = new LinkedList<Entity>();
 
-        final String columnDefinitionModel;
+        String columnDefinitionModel = null;
 
         List<Entity> columnComponents;
         if (ProductDirection.IN.equals(direction)) {
-            columnComponents = operationComponent.getHasManyField("technologyOperationInputColumns");
+            columnComponents = operationComponent.getHasManyField("technologyOperationInputColumns").find()
+                    .addOrder(SearchOrders.asc("succession")).list().getEntities();
             columnDefinitionModel = "columnForInputProducts";
         } else if (ProductDirection.OUT.equals(direction)) {
-            columnComponents = operationComponent.getHasManyField("technologyOperationOutputColumns");
+            columnComponents = operationComponent.getHasManyField("technologyOperationOutputColumns").find()
+                    .addOrder(SearchOrders.asc("succession")).list().getEntities();
             columnDefinitionModel = "columnForOutputProducts";
         } else {
             throw new IllegalStateException("Wrong product direction");
         }
-
-        // TODO mici, I couldnt sort productComponents without making a new linkedList out of it
-        columnComponents = Lists.newLinkedList(columnComponents);
-
-        Collections.sort(columnComponents, new ColumnSuccessionComparator());
 
         for (Entity columnComponent : columnComponents) {
             Entity columnDefinition = columnComponent.getBelongsToField(columnDefinitionModel);
@@ -580,4 +547,18 @@ public class WorkPlanPdfService extends PdfDocumentService {
     public boolean isOutputProductTableEnabled(final Entity operationComponent) {
         return !operationComponent.getBooleanField("dontPrintOutputProductsInWorkPlans");
     }
+
+    private static final class OperationProductComponentComparator implements Comparator<Entity>, Serializable {
+
+        private static final long serialVersionUID = 2985797934972953807L;
+
+        @Override
+        public int compare(final Entity o0, final Entity o1) {
+            Entity prod0 = o0.getBelongsToField(PRODUCT_LITERAL);
+            Entity prod1 = o1.getBelongsToField(PRODUCT_LITERAL);
+            return prod0.getStringField(NUMBER_LITERAL).compareTo(prod1.getStringField(NUMBER_LITERAL));
+        }
+
+    }
+
 }
