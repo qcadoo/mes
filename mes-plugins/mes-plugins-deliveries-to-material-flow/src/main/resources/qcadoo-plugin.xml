@@ -19,7 +19,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Deliveries to material flow</name>
+		<name>MES - Deliveries to material flow</name>
 		<vendor>
 			<name>Qcadoo</name>
 			<url>www.qcadoo.com</url>
