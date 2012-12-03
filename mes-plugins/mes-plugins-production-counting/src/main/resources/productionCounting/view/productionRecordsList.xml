@@ -85,22 +85,21 @@
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
-				width="300" expression="#order['name']" />
+				width="300" expression="#order['number']" />
 			<option type="column" name="technologyInstanceOperationComponent" fields="technologyInstanceOperationComponent"
 				link="true" width="300"
 				expression="#technologyInstanceOperationComponent != null ? #technologyInstanceOperationComponent['nodeNumber'] + ' ' + #technologyInstanceOperationComponent['operation']['name'] : ''" />
-			<option type="column" name="lastRecord" fields="lastRecord"
-				expression="#lastRecord" />
 			<option type="column" name="shift" fields="shift" link="true"
-				width="300" expression="#shift['name']" />
-			<option type="column" name="dateAndTime" fields="stateChanges" expression="#stateChanges[0].getField('dateAndTime').toLocaleString()"
-				link="true" width="300" />
+				width="200" expression="#shift['name']" />
 			<option type="column" name="worker" fields="stateChanges" expression="#stateChanges[0].getField('worker')" link="true"
 				width="300" />
+			<option type="column" name="state" fields="state" reference="state" width="130"/>
+			<option type="column" name="dateAndTime" fields="stateChanges" expression="#stateChanges[0].getField('dateAndTime').toLocaleString()"
+				link="true" width="250" />
 			<option type="column" name="orderState" fields="order" hidden="true" 
 				expression="(#order == null) ? '' : #order['state']" />	
-			<option type="column" name="state" fields="state" reference="state" />
-			
+			<option type="column" name="lastRecord" fields="lastRecord"
+				expression="#lastRecord" />
 			<option type="order" column="number" direction="asc" />
 			<option type="searchable" value="number,order,technologyInstanceOperationComponent,shift,state" />
 			<option type="orderable" value="number,order,technologyInstanceOperationComponent,shift,state" />

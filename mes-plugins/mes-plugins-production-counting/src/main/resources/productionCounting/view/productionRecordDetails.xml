@@ -36,6 +36,9 @@
 				<smallButton name="cancelRecord" icon="deleteIcon16.png"
 					state="disabled" action="#{form}.changeRecordState(cancelRecord)" />
 			</group>
+			<group name="copy">
+				<bigButton name="copyPlannedQuantity" icon="copyIcon24.png"  action="#{form}.fireEvent(copyPlannedQuantity);" />
+			</group>
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="productionRecordDetails"
@@ -285,8 +288,11 @@
 					method="changeState" />
 				
 				<listener event="save"
-					class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
+					class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
 					method="closeOrder" />
+				<listener event="copyPlannedQuantity"
+					class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
+					method="copyPlannedQuantity" />
 			</component>
 		</windowTab>
 		<windowTab name="productsTab">

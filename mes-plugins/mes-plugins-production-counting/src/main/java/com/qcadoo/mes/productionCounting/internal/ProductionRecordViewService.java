@@ -25,9 +25,6 @@ package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.ALLOW_TO_CLOSE;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
@@ -37,6 +34,10 @@ import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.ORDER;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
@@ -53,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -64,9 +64,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -88,8 +86,6 @@ public class ProductionRecordViewService {
 
     private static final String L_USED_QUANTITY_UNIT = "usedQuantityUNIT";
 
-    private static final String L_ORDER = "order";
-
     private static final String L_PRODUCT = "product";
 
     private static final String L_DONE_QUANTITY = "doneQuantity";
@@ -100,17 +96,8 @@ public class ProductionRecordViewService {
 
     private static final String L_STATE = "state";
 
-    private static final String L_LAST_RECORD = "lastRecord";
-
-    private static final String L_NUMBER = "number";
-
-    private static final String L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -132,7 +119,7 @@ public class ProductionRecordViewService {
         RibbonActionItem copyButton = window.getRibbon().getGroupByName("actions").getItemByName("copy");
 
         Entity productionRecord = form.getEntity();
-        Entity order = productionRecord.getBelongsToField(L_ORDER);
+        Entity order = productionRecord.getBelongsToField(ORDER);
         if (order == null) {
             return;
         }
@@ -158,11 +145,11 @@ public class ProductionRecordViewService {
         status.setFieldValue(record.getField(L_STATE));
         status.requestComponentUpdateState();
 
-        Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
+        Entity order = ((LookupComponent) view.getComponentByReference(ORDER)).getEntity();
         String typeOfProductionRecording = order.getStringField(TYPE_OF_PRODUCTION_RECORDING);
         setTimeAndPiecworkComponentsVisible(typeOfProductionRecording, order, view);
 
-        view.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
+        view.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
                 FOR_EACH.getStringValue().equals(typeOfProductionRecording));
         view.getComponentByReference(L_RECORD_OPERATION_PRODUCT_OUT_COMPONENT).setVisible(
                 order.getBooleanField(REGISTER_QUANTITY_OUT_PRODUCT));
@@ -173,7 +160,7 @@ public class ProductionRecordViewService {
     }
 
     public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FieldComponent operation = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
+        FieldComponent operation = (FieldComponent) view.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT);
         operation.setFieldValue("");
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
@@ -201,9 +188,9 @@ public class ProductionRecordViewService {
 
     private void setTimeAndPiecworkComponentsVisible(final String recordingType, final Entity order,
             final ViewDefinitionState view) {
-        view.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
+        view.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).setVisible(
                 FOR_EACH.getStringValue().equals(recordingType));
-        ((FieldComponent) view.getComponentByReference(L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).requestComponentUpdateState();
+        ((FieldComponent) view.getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).requestComponentUpdateState();
 
         boolean registerProductionTime = order.getBooleanField(REGISTER_PRODUCTION_TIME);
         view.getComponentByReference("borderLayoutTime").setVisible(
@@ -214,66 +201,24 @@ public class ProductionRecordViewService {
                 registerPiecework && FOR_EACH.getStringValue().equals(recordingType));
     }
 
-    public void closeOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity order = getOrderFromLookup(view);
-
-        if (order == null) {
-            return;
-        }
-
-        Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
-        String orderState = order.getStringField(STATE);
-        if (autoCloseOrder && "1".equals(view.getComponentByReference(L_LAST_RECORD).getFieldValue())
-                && view.getComponentByReference(L_STATE).getFieldValue().equals(ACCEPTED.getStringValue())
-                && IN_PROGRESS.getStringValue().equals(orderState)) {
-            order.setField(STATE, COMPLETED.getStringValue());
-            dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(order);
-            Entity orderFromDB = order.getDataDefinition().get(order.getId());
-            if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-                form.addMessage("productionCounting.order.orderClosed", MessageType.INFO, false);
-            } else {
-                form.addMessage("productionCounting.order.orderCannotBeClosed", MessageType.INFO, false);
-
-                List<ErrorMessage> errors = Lists.newArrayList();
-                if (!order.getErrors().isEmpty()) {
-                    errors.addAll(order.getErrors().values());
-                }
-                if (!order.getGlobalErrors().isEmpty()) {
-                    errors.addAll(order.getGlobalErrors());
-                }
-
-                StringBuilder errorMessages = new StringBuilder();
-                for (ErrorMessage message : errors) {
-                    String translatedErrorMessage = translationService.translate(message.getMessage(), view.getLocale(),
-                            message.getVars());
-                    errorMessages.append(translatedErrorMessage);
-                    errorMessages.append(", ");
-                }
-                form.addMessage("orders.order.orderStates.error", MessageType.FAILURE, false, errorMessages.toString());
-
-            }
-        }
-    }
-
     public void fillFieldFromProduct(final ViewDefinitionState view) {
         Entity recordProduct = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity();
         recordProduct = recordProduct.getDataDefinition().get(recordProduct.getId());
         Entity product = recordProduct.getBelongsToField(L_PRODUCT);
 
-        view.getComponentByReference(L_NUMBER).setFieldValue(product.getField(L_NUMBER));
+        view.getComponentByReference(NUMBER).setFieldValue(product.getField(NUMBER));
         view.getComponentByReference(L_NAME).setFieldValue(product.getField(L_NAME));
 
         view.getComponentByReference(L_USED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
         view.getComponentByReference(L_PLANNED_QUANTITY_UNIT).setFieldValue(product.getStringField(L_UNIT));
-        for (String reference : Arrays.asList(L_NUMBER, L_NAME, L_USED_QUANTITY_UNIT, L_PLANNED_QUANTITY_UNIT)) {
+        for (String reference : Arrays.asList(NUMBER, L_NAME, L_USED_QUANTITY_UNIT, L_PLANNED_QUANTITY_UNIT)) {
             ((FieldComponent) view.getComponentByReference(reference)).requestComponentUpdateState();
         }
 
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {
-        LookupComponent lookup = (LookupComponent) view.getComponentByReference(L_ORDER);
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(ORDER);
         return lookup.getEntity();
     }
 
@@ -282,7 +227,7 @@ public class ProductionRecordViewService {
         if (order == null) {
             return;
         }
-        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(L_LAST_RECORD);
+        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(LAST_RECORD);
         if (order.getBooleanField(JUST_ONE)) {
             lastRecord.setFieldValue(true);
             lastRecord.setEnabled(false);
@@ -374,7 +319,7 @@ public class ProductionRecordViewService {
     public void setProducedQuantity(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecording = (FieldComponent) view.getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) view.getComponentByReference(L_DONE_QUANTITY);
-        String orderNumber = (String) view.getComponentByReference(L_NUMBER).getFieldValue();
+        String orderNumber = (String) view.getComponentByReference(NUMBER).getFieldValue();
         Entity order;
         List<Entity> productionCountings;
 
@@ -386,14 +331,14 @@ public class ProductionRecordViewService {
             return;
         }
         order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.eq(L_NUMBER, orderNumber)).uniqueResult();
+                .add(SearchRestrictions.eq(NUMBER, orderNumber)).uniqueResult();
         if (order == null) {
             return;
         }
         productionCountings = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.eq(L_ORDER, order)).list().getEntities();
+                .add(SearchRestrictions.eq(ORDER, order)).list().getEntities();
 
         Entity technology = order.getBelongsToField(TECHNOLOGY);
 
