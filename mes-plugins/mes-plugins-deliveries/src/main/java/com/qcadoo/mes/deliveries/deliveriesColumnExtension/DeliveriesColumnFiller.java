@@ -28,6 +28,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.SUCCESSION;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
@@ -69,13 +70,15 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
                 values.put(product, new HashMap<String, String>());
             }
 
-            fillProductNumber(values, product);
-            fillProductName(values, product);
-            fillProductUnit(values, product);
+            // TODO lupo fix problem with columns
+            // fillProductNumber(values, product);
+            // fillProductName(values, product);
+            // fillProductUnit(values, product);
 
-            fillOrderedQuantity(values, product, deliveryProduct);
-            fillDeliveredQuantity(values, product, deliveryProduct);
-            fillDamagedQuantity(values, product, deliveryProduct);
+            // fillSuccession(values, deliveryProduct);
+            // fillOrderedQuantity(values, deliveryProduct);
+            // fillDeliveredQuantity(values, deliveryProduct);
+            // fillDamagedQuantity(values, deliveryProduct);
         }
 
         return values;
@@ -86,32 +89,80 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
         for (Entity orderedProduct : orderedProducts) {
-            Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+            if (!values.containsKey(orderedProduct)) {
+                values.put(orderedProduct, new HashMap<String, String>());
             }
 
-            fillProductNumber(values, product);
-            fillProductName(values, product);
-            fillProductUnit(values, product);
+            fillProductNumber(values, orderedProduct);
+            fillProductName(values, orderedProduct);
+            fillProductUnit(values, orderedProduct);
 
-            fillOrderedQuantity(values, product, orderedProduct);
+            fillSuccession(values, orderedProduct);
+            fillOrderedQuantity(values, orderedProduct);
         }
 
         return values;
     }
 
-    private void fillProductNumber(final Map<Entity, Map<String, String>> values, final Entity product) {
-        values.get(product).put("productNumber", product.getStringField(NUMBER));
+    private void fillProductNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        String productNumber = null;
+
+        if (orderedProduct == null) {
+            productNumber = "";
+        } else {
+            Entity product = orderedProduct.getBelongsToField(PRODUCT);
+
+            productNumber = product.getStringField(NUMBER);
+        }
+
+        values.get(orderedProduct).put("productNumber", productNumber);
     }
 
-    private void fillProductName(final Map<Entity, Map<String, String>> values, final Entity product) {
-        values.get(product).put("productName", product.getStringField(NAME));
+    private void fillProductName(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        String productName = null;
+
+        if (orderedProduct == null) {
+            productName = "";
+        } else {
+            Entity product = orderedProduct.getBelongsToField(PRODUCT);
+
+            productName = product.getStringField(NAME);
+        }
+
+        values.get(orderedProduct).put("productName", productName);
     }
 
-    private void fillProductUnit(final Map<Entity, Map<String, String>> values, final Entity product) {
-        values.get(product).put("productUnit", product.getStringField(UNIT));
+    private void fillProductUnit(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        String productUnit = null;
+
+        if (orderedProduct == null) {
+            productUnit = "";
+        } else {
+            Entity product = orderedProduct.getBelongsToField(PRODUCT);
+
+            productUnit = product.getStringField(UNIT);
+        }
+
+        values.get(orderedProduct).put("productUnit", productUnit);
+    }
+
+    private void fillSuccession(final Map<Entity, Map<String, String>> values, final Entity product,
+            final DeliveryProduct deliveryProduct) {
+        Integer succession = null;
+
+        if (deliveryProduct.getDeliveredProductId() == null) {
+            succession = 0;
+        } else {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct == null) {
+                succession = 0;
+            } else {
+                succession = deliveredProduct.getIntegerField(SUCCESSION);
+            }
+        }
+
+        values.get(product).put("succession", succession.toString());
     }
 
     private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
@@ -171,8 +222,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(product).put("damagedQuantity", numberService.format(damagedQuantity));
     }
 
-    private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
-            final Entity orderedProduct) {
+    private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         BigDecimal orderedQuantity = null;
 
         if (orderedProduct == null) {
@@ -181,7 +231,19 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
         }
 
-        values.get(product).put("orderedQuantity", numberService.format(orderedQuantity));
+        values.get(orderedProduct).put("orderedQuantity", numberService.format(orderedQuantity));
+    }
+
+    private void fillSuccession(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        Integer succession = null;
+
+        if (orderedProduct == null) {
+            succession = 0;
+        } else {
+            succession = orderedProduct.getIntegerField(SUCCESSION);
+        }
+
+        values.get(orderedProduct).put("succession", succession.toString());
     }
 
 }

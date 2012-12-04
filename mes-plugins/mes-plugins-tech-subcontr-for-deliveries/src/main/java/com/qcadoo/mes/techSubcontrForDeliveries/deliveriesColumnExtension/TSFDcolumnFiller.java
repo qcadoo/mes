@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension;
 
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
 import static com.qcadoo.mes.technologies.constants.OperationFields.NUMBER;
 
@@ -71,13 +70,11 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
         for (Entity orderedProduct : orderedProducts) {
-            Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+            if (!values.containsKey(orderedProduct)) {
+                values.put(orderedProduct, new HashMap<String, String>());
             }
 
-            fillOperationNumber(values, product, orderedProduct);
+            fillOperationNumber(values, orderedProduct);
         }
 
         return values;
@@ -122,8 +119,7 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         values.get(product).put("operationNumber", operationNumber);
     }
 
-    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity product,
-            final Entity orderedProduct) {
+    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         String operationNumber = null;
 
         if (orderedProduct == null) {
@@ -138,7 +134,7 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
             }
         }
 
-        values.get(product).put("operationNumber", operationNumber);
+        values.get(orderedProduct).put("operationNumber", operationNumber);
     }
 
 }
