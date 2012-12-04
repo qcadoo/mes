@@ -139,4 +139,5 @@ public class ProductHooksTest {
         Assert.assertEquals(null, prod1.getBelongsToField("parent"));
         Assert.assertEquals(null, prod2.getBelongsToField("parent"));
     }
+
 }
