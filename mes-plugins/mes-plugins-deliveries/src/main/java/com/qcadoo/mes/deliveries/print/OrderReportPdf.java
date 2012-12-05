@@ -32,7 +32,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -175,13 +174,11 @@ public class OrderReportPdf extends ReportPdfView {
                     .getOrderedProductsColumnValues(orderedProducts);
 
             for (Entity orderedProduct : orderedProducts) {
-                Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
                 for (Entity columnForOrders : columnsForOrders) {
                     String identifier = columnForOrders.getStringField(IDENTIFIER);
                     String alignment = columnForOrders.getStringField(ALIGNMENT);
 
-                    String value = orderedProductsColumnValues.get(product).get(identifier);
+                    String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
 
                     prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 

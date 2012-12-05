@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.2.0-SNAPSHOT
  *
  * This file is part of Qcadoo.
@@ -21,10 +21,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension;
 
-import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
-import static com.qcadoo.mes.technologies.constants.OperationFields.NUMBER;
+import static com.qcadoo.mes.catNumbersInDeliveries.contants.OrderedProductFieldsCNID.PRODUCT_CATALOG_NUMBER;
+import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.CATALOG_NUMBER;
+import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.PRODUCT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
 import com.qcadoo.model.api.Entity;
 
 @Component
-public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller {
+public class CNIDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller {
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -59,7 +60,7 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
                 values.put(product, new HashMap<String, String>());
             }
 
-            fillOperationNumber(values, product, deliveryProduct);
+            fillCatalogNumber(values, product, deliveryProduct);
         }
 
         return values;
@@ -70,71 +71,74 @@ public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
         for (Entity orderedProduct : orderedProducts) {
-            if (!values.containsKey(orderedProduct)) {
-                values.put(orderedProduct, new HashMap<String, String>());
+            Entity product = orderedProduct.getBelongsToField(PRODUCT);
+
+            if (!values.containsKey(product)) {
+                values.put(product, new HashMap<String, String>());
             }
 
-            fillOperationNumber(values, orderedProduct);
+            fillCatalogNumber(values, product, orderedProduct);
         }
 
         return values;
     }
 
-    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity product,
+    private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity product,
             final DeliveryProduct deliveryProduct) {
-        String operationNumber = null;
+        String catalogNumber = null;
 
         if (deliveryProduct.getDeliveredProductId() != null) {
             Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
 
             if (deliveredProduct == null) {
-                operationNumber = "";
+                catalogNumber = "";
             } else {
-                Entity operation = deliveredProduct.getBelongsToField(OPERATION);
+                Entity productCatalogNumber = deliveredProduct.getBelongsToField(PRODUCT_CATALOG_NUMBER);
 
-                if (operation == null) {
-                    operationNumber = "";
+                if (productCatalogNumber == null) {
+                    catalogNumber = "";
                 } else {
-                    operationNumber = operation.getStringField(NUMBER);
+                    catalogNumber = productCatalogNumber.getStringField(CATALOG_NUMBER);
                 }
             }
         } else if (deliveryProduct.getOrderedProductId() != null) {
             Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
 
             if (orderedProduct == null) {
-                operationNumber = "";
+                catalogNumber = "";
             } else {
-                Entity operation = orderedProduct.getBelongsToField(OPERATION);
+                Entity productCatalogNumber = orderedProduct.getBelongsToField(PRODUCT_CATALOG_NUMBER);
 
-                if (operation == null) {
-                    operationNumber = "";
+                if (productCatalogNumber == null) {
+                    catalogNumber = "";
                 } else {
-                    operationNumber = operation.getStringField(NUMBER);
+                    catalogNumber = productCatalogNumber.getStringField(CATALOG_NUMBER);
                 }
             }
         } else {
-            operationNumber = "";
+            catalogNumber = "";
         }
 
-        values.get(product).put("operationNumber", operationNumber);
+        values.get(product).put("catalogNumber", catalogNumber);
     }
 
-    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        String operationNumber = null;
+    private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity product,
+            final Entity orderedProduct) {
+        String catalogNumber = null;
 
         if (orderedProduct == null) {
-            operationNumber = "";
+            catalogNumber = "";
         } else {
-            Entity operation = orderedProduct.getBelongsToField(OPERATION);
+            Entity productCatalogNumber = orderedProduct.getBelongsToField(PRODUCT_CATALOG_NUMBER);
 
-            if (operation == null) {
-                operationNumber = "";
+            if (productCatalogNumber == null) {
+                catalogNumber = "";
             } else {
-                operationNumber = operation.getStringField(NUMBER);
+                catalogNumber = productCatalogNumber.getStringField(CATALOG_NUMBER);
             }
         }
 
-        values.get(orderedProduct).put("operationNumber", operationNumber);
+        values.get(product).put("catalogNumber", catalogNumber);
     }
 
 }
