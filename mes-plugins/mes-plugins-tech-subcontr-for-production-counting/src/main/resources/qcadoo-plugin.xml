@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="techSubcontrForProductionCounting" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>Qcadoo MES :: Plugins :: Tech subcontr for production counting</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com</url>
+		</vendor>
+	</information>
+
+
+	<dependencies>
+		<dependency>
+			<plugin>productionCounting</plugin>
+			<version>[1.1.8</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model-field plugin="productionCounting"
+			model="productionRecord">
+			<model:belongsTo name="subcontractor" plugin="basic"
+				model="company" />
+		</model:model-field>
+
+		<view:view-tab resource="view/tabExtensions/productionRecordDetails.xml" />
+
+		<view:view-grid-column plugin="productionCounting"
+			view="productionRecordsList" component="grid">
+			<view:column name="subcontractor" fields="subcontractor"
+				expression="#subcontractor['number'] + ' ' + #subcontractor['name']"
+				orderable="true" width="200" />
+		</view:view-grid-column>
+
+		<view:view-hook view="productionRecordDetails" type="beforeRender"
+			plugin="productionCounting"
+			class="com.qcadoo.mes.techSubcontrForProductionCounting.hooks.ProductionRecordDetailsHooksTSFPC"
+			method="disabledSubcontractorFieldForState" />
+
+	</modules>
+
+</plugin>

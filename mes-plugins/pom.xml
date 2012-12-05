@@ -64,7 +64,8 @@
 		<module>mes-plugins-deliveries</module>
 		<module>mes-plugins-tech-subcontr-for-deliveries</module>
 		<module>mes-plugins-column-extension</module>
-    <module>mes-plugins-deliveries-to-material-flow</module>
+    	<module>mes-plugins-deliveries-to-material-flow</module>
+    <module>mes-plugins-tech-subcontr-for-production-counting</module>
   </modules>
 
 </project>

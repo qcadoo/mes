@@ -28,10 +28,10 @@
 					rows="6">
 					<layoutElement column="1" row="1" height="2">
 						<component type="textarea" name="defaultDescription"
-							field="defaultDescription" reference="defaultDescription" />
+							field="{form}.defaultDescription" reference="defaultDescription" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="select" name="defaultAddress" field="defaultAddress"
+						<component type="select" name="defaultAddress" field="{form}.defaultAddress"
 							reference="defaultAddress">
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
@@ -39,8 +39,41 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
-						<component type="textarea" name="otherAddress"
-							field="otherAddress" reference="otherAddress" />
+						<component type="textarea" name="otherAddress" field="{form}.otherAddress"
+							reference="otherAddress" />
+					</layoutElement>
+					<layoutElement column="2" row="1" height="6">
+						<component type="borderLayout" name="columnForOrdersBorderLayout">
+							<option type="label" value="columnForOrdersTabWelcome" />
+							<component type="gridLayout" name="columnForOrdersGridLayout"
+								columns="1" rows="4">
+								<layoutElement column="1" row="1">
+									<component type="grid" name="columnsForOrders"
+										source="#{form}.columnsForOrders" reference="columnsForOrders">
+										<option type="column" name="name" fields="columnForOrders"
+											expression="'@' + #columnForOrders.get('name')" link="true" />
+										<option type="searchable" value="name" />
+										<option type="orderable" value="name" />
+										<option type="order" column="succession" direction="desc" />
+										<option type="correspondingView" value="deliveries/orderColumnDetails" />
+										<option type="correspondingComponent" value="form" />
+										<option type="correspondingViewInModal" value="true" />
+										<option type="creatable" value="true" />
+										<option type="deletable" value="true" />
+										<option type="fullscreen" value="true" />
+										<option type="multiselect" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="checkbox" name="dontPrintOrdersInWorkPlans"
+										field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+										<option type="labelWidth" value="50" />
+										<option type="align" value="left" />
+									</component>
+
+								</layoutElement>
+							</component>
+						</component>
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
@@ -49,8 +82,7 @@
 		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
 			method="setFieldsVisibleAndRequired" />
 	</hooks>
 </view>
