@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.catNumbersInDeliveries.hooks;
 
-import static com.qcadoo.mes.catNumbersInDeliveries.contants.DeliveredProductFieldsCNID.PRODUCT_CATALOG_NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,16 +37,7 @@ public class DeliveredProductHooksCNID {
     private CatNumbersInDeliveriesService catNumbersInDeliveriesService;
 
     public void updateDeliveredProductCatalogNumber(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DELIVERY);
-        Entity supplier = delivery.getBelongsToField(SUPPLIER);
-
-        Entity product = deliveredProduct.getBelongsToField(PRODUCT);
-
-        Entity productCatalogNumber = catNumbersInDeliveriesService.getProductCatalogNumber(product, supplier);
-
-        if (productCatalogNumber != null) {
-            deliveredProduct.setField(PRODUCT_CATALOG_NUMBER, productCatalogNumber);
-        }
+        catNumbersInDeliveriesService.updateProductCatalogNumber(deliveredProduct);
     }
 
 }

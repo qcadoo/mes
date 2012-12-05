@@ -21,23 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.catNumbersInDeliveries.hooks;
+package com.qcadoo.mes.productCatalogNumbers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.catNumbersInDeliveries.CatNumbersInDeliveriesService;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-@Service
-public class OrderedProductHooksCNID {
+public interface ProductCatalogNumbersService {
 
-    @Autowired
-    private CatNumbersInDeliveriesService catNumbersInDeliveriesService;
-
-    public void updateOrderedProductCatalogNumber(final DataDefinition orderedProductDD, final Entity orderedProduct) {
-        catNumbersInDeliveriesService.updateProductCatalogNumber(orderedProduct);
-    }
+    /**
+     * Gets product catalog number for given product and supplier
+     * 
+     * @param product
+     *            product
+     * 
+     * @param supplier
+     *            supplier
+     * 
+     * @return product catalog number
+     */
+    Entity getProductCatalogNumber(final Entity product, final Entity supplier);
 
 }
