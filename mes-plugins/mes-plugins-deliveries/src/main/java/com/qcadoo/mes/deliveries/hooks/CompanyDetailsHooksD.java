@@ -26,7 +26,7 @@ public class CompanyDetailsHooksD {
     private CompanyService companyService;
 
     public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
-        companyService.disabledGridWhenCompanyIsAnOwner(state, "productFamilies", "products");
+        companyService.disabledGridWhenCompanyIsAnOwner(state, "productsFamilies", "products");
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
