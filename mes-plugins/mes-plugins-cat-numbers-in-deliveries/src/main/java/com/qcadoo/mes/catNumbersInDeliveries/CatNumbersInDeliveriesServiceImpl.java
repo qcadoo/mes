@@ -23,30 +23,72 @@
  */
 package com.qcadoo.mes.catNumbersInDeliveries;
 
-import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.COMPANY;
-import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.PRODUCT;
+import static com.qcadoo.mes.catNumbersInDeliveries.contants.DeliveredProductFieldsCNID.PRODUCT_CATALOG_NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumbersConstants;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.productCatalogNumbers.ProductCatalogNumbersService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class CatNumbersInDeliveriesServiceImpl implements CatNumbersInDeliveriesService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ProductCatalogNumbersService productCatalogNumbersService;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
 
     @Override
-    public Entity getProductCatalogNumber(final Entity product, final Entity supplier) {
-        return dataDefinitionService
-                .get(ProductCatalogNumbersConstants.PLUGIN_IDENTIFIER,
-                        ProductCatalogNumbersConstants.MODEL_PRODUCT_CATALOG_NUMBERS).find()
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).add(SearchRestrictions.belongsTo(COMPANY, supplier))
-                .setMaxResults(1).uniqueResult();
+    public void updateProductCatalogNumber(final Entity deliveryProduct) {
+        Entity delivery = deliveryProduct.getBelongsToField(DELIVERY);
+        Entity supplier = delivery.getBelongsToField(SUPPLIER);
+
+        Entity product = deliveryProduct.getBelongsToField(PRODUCT);
+
+        Entity productCatalogNumber = productCatalogNumbersService.getProductCatalogNumber(product, supplier);
+
+        if (productCatalogNumber != null) {
+            deliveryProduct.setField(PRODUCT_CATALOG_NUMBER, productCatalogNumber);
+        }
+    }
+
+    @Override
+    public void updateProductsCatalogNumbers(final Entity delivery, final String productsName) {
+        Entity supplier = delivery.getBelongsToField(SUPPLIER);
+
+        if ((delivery.getId() != null) && hasSupplierChanged(delivery.getId(), supplier)) {
+            List<Entity> deliveryProducts = delivery.getHasManyField(productsName);
+
+            if (deliveryProducts != null) {
+                for (Entity deliveryPoduct : deliveryProducts) {
+                    Entity product = deliveryPoduct.getBelongsToField(PRODUCT);
+
+                    Entity productCatalogNumber = productCatalogNumbersService.getProductCatalogNumber(product, supplier);
+
+                    if (productCatalogNumber != null) {
+                        deliveryPoduct.setField(PRODUCT_CATALOG_NUMBER, productCatalogNumber);
+
+                        deliveryPoduct.getDataDefinition().save(deliveryPoduct);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean hasSupplierChanged(final Long deliveryId, final Entity supplier) {
+        Entity existingDelivery = deliveriesService.getDelivery(deliveryId);
+
+        Entity existingSupplier = existingDelivery.getBelongsToField(SUPPLIER);
+
+        return !existingSupplier.equals(supplier);
     }
 
 }

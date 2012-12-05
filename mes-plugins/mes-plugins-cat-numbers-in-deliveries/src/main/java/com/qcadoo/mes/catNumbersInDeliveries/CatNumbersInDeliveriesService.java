@@ -28,16 +28,23 @@ import com.qcadoo.model.api.Entity;
 public interface CatNumbersInDeliveriesService {
 
     /**
-     * Gets product catalog number
+     * Updates ordered or delivered product catalog number
      * 
-     * @param product
-     *            product
+     * @param delivery
+     *            delivery
      * 
-     * @param supplier
-     *            supplier
-     * 
-     * @return product catalog number
      */
-    Entity getProductCatalogNumber(final Entity product, final Entity supplier);
+    void updateProductCatalogNumber(final Entity deliveryProduct);
+
+    /**
+     * Updated ordered or delivered products catalog numbers
+     * 
+     * @param delivery
+     *            delivery
+     * 
+     * @param productsName
+     *            orderedProducts or deliveredProcucts
+     */
+    void updateProductsCatalogNumbers(final Entity delivery, final String productsName);
 
 }
