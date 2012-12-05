@@ -28,10 +28,10 @@
 					rows="6">
 					<layoutElement column="1" row="1" height="2">
 						<component type="textarea" name="defaultDescription"
-							field="{form}.defaultDescription" reference="defaultDescription" />
+							field="#{form}.defaultDescription" reference="defaultDescription" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="select" name="defaultAddress" field="{form}.defaultAddress"
+						<component type="select" name="defaultAddress" field="#{form}.defaultAddress"
 							reference="defaultAddress">
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
@@ -39,23 +39,23 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4" height="2">
-						<component type="textarea" name="otherAddress" field="{form}.otherAddress"
-							reference="otherAddress" />
+						<component type="textarea" name="otherAddress" field="#{form}.otherAddress"
+							reference="otherAddress"  hasLabel="false"/>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="6">
+					<layoutElement column="2" row="1" width="2" height="5">
 						<component type="borderLayout" name="columnForOrdersBorderLayout">
-							<option type="label" value="columnForOrdersTabWelcome" />
+							<option type="label" value="columnForOrdersTab" />
 							<component type="gridLayout" name="columnForOrdersGridLayout"
 								columns="1" rows="4">
 								<layoutElement column="1" row="1">
-									<component type="grid" name="columnsForOrders"
-										source="#{form}.columnsForOrders" reference="columnsForOrders">
-										<option type="column" name="name" fields="columnForOrders"
-											expression="'@' + #columnForOrders.get('name')" link="true" />
+									<component type="grid" name="columnsForOrdersGrid"
+										source="#{form}.columnForOrders" reference="columnForOrders">
+										<option type="column" name="name" fields="name"
+											expression="'@' + #name" link="true" />
 										<option type="searchable" value="name" />
 										<option type="orderable" value="name" />
 										<option type="order" column="succession" direction="desc" />
-										<option type="correspondingView" value="deliveries/orderColumnDetails" />
+										<option type="correspondingView" value="deliveries/columnForOrdersDetails" />
 										<option type="correspondingComponent" value="form" />
 										<option type="correspondingViewInModal" value="true" />
 										<option type="creatable" value="true" />
@@ -65,8 +65,8 @@
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
-									<component type="checkbox" name="dontPrintOrdersInWorkPlans"
-										field="#{form}.dontPrintOrdersInWorkPlans" reference="dontPrintOrdersInWorkPlans">
+									<component type="checkbox" name="hideEmptyColumns"
+										field="#{form}.hideEmptyColumns" reference="hideEmptyColumns">
 										<option type="labelWidth" value="50" />
 										<option type="align" value="left" />
 									</component>

@@ -28,9 +28,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.OperationType;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoaderService {
@@ -41,6 +43,9 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
 
     @Autowired
     private ColumnExtensionService columnExtensionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public void fillColumnsForDeliveries(final String plugin) {
@@ -99,8 +104,11 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     }
 
     private void addColumnForDeliveries(final Map<String, String> columnAttributes) {
-        columnExtensionService.addColumn(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES,
-                columnAttributes);
+        Entity column = columnExtensionService.addColumn(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES, columnAttributes);
+        Entity parameter = parameterService.getParameter();
+        column.setField("parameter", parameter);
+        column.getDataDefinition().save(column);
     }
 
     private void deleteColumnForDeliveries(final Map<String, String> columnAttributes) {
@@ -109,8 +117,11 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
     }
 
     private void addColumnForOrders(final Map<String, String> columnAttributes) {
-        columnExtensionService.addColumn(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS,
-                columnAttributes);
+        Entity column = columnExtensionService.addColumn(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS, columnAttributes);
+        Entity parameter = parameterService.getParameter();
+        column.setField("parameter", parameter);
+        column.getDataDefinition().save(column);
     }
 
     private void deleteColumnForOrders(final Map<String, String> columnAttributes) {
