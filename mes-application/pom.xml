@@ -243,11 +243,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cat-numbers-in-deliveries</artifactId>
 			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
@@ -691,6 +686,11 @@
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-commercial-plugins-negot-for-order-supplies</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
+					<version>${qcadoo.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>

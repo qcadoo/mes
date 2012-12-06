@@ -287,9 +287,6 @@
 					class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
 					method="changeState" />
 				
-				<listener event="save"
-					class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
-					method="closeOrder" />
 				<listener event="copyPlannedQuantity"
 					class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
 					method="copyPlannedQuantity" />

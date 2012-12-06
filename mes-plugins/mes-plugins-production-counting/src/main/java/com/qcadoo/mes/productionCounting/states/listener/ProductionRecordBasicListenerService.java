@@ -23,27 +23,35 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.AUTO_CLOSE_ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LAST_RECORD;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
-import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public final class ProductionRecordBasicListenerService {
@@ -60,10 +68,14 @@ public final class ProductionRecordBasicListenerService {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private TranslationService translationService;
+
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionRecord = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionRecord, new Addition());
         setOrderDoneQuantity(productionRecord);
+        closeOrder(stateChangeContext);
     }
 
     public void onChangeFromAcceptedToDeclined(final StateChangeContext stateChangeContext) {
@@ -88,6 +100,44 @@ public final class ProductionRecordBasicListenerService {
         }
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
             stateChangeContext.addValidationError("productionCounting.record.messages.error.finalExists");
+        }
+    }
+
+    public void closeOrder(final StateChangeContext stateChangeContext) {
+        final Entity productionRecord = stateChangeContext.getOwner();
+        final Entity order = productionRecord.getBelongsToField(ORDER);
+
+        if (order == null) {
+            return;
+        }
+
+        Boolean autoCloseOrder = order.getBooleanField(AUTO_CLOSE_ORDER);
+        if (autoCloseOrder && productionRecord.getBooleanField(LAST_RECORD)) {
+            order.setField(STATE, COMPLETED.getStringValue());
+            Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).save(
+                    order);
+            if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
+                stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
+            } else {
+                stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
+
+                List<ErrorMessage> errors = Lists.newArrayList();
+                if (!order.getErrors().isEmpty()) {
+                    errors.addAll(order.getErrors().values());
+                }
+                if (!order.getGlobalErrors().isEmpty()) {
+                    errors.addAll(order.getGlobalErrors());
+                }
+
+                StringBuilder errorMessages = new StringBuilder();
+                for (ErrorMessage message : errors) {
+                    String translatedErrorMessage = translationService.translate(message.getMessage(), Locale.getDefault(),
+                            message.getVars());
+                    errorMessages.append(translatedErrorMessage);
+                    errorMessages.append(", ");
+                }
+                stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
+            }
         }
     }
 
