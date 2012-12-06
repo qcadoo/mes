@@ -38,7 +38,7 @@
 			<validatesRange from="0" />
 		</decimal>
 		
-		<priority name="succession" />
+		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"

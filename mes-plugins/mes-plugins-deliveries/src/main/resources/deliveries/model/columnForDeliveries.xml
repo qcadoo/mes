@@ -46,7 +46,7 @@
 			
 		<belongsTo name="parameter" model="parameter" plugin="basic"/>
 		
-		<priority name="succession" />
+		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks />
 	<identifier expression="#identifier" />
