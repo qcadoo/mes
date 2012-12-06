@@ -46,31 +46,27 @@
 						<component type="borderLayout" name="columnForOrdersBorderLayout">
 							<option type="label" value="columnForOrdersTab" />
 							<component type="gridLayout" name="columnForOrdersGridLayout"
-								columns="1" rows="4">
+								columns="1" rows="2">
 								<layoutElement column="1" row="1">
 									<component type="grid" name="columnsForOrdersGrid"
 										source="#{form}.columnForOrders" reference="columnForOrders">
 										<option type="column" name="name" fields="name"
-											expression="'@' + #name" link="true" />
+											expression="'@' + #name"  />
 										<option type="searchable" value="name" />
 										<option type="orderable" value="name" />
 										<option type="order" column="succession" direction="desc" />
-										<option type="correspondingView" value="deliveries/columnForOrdersDetails" />
-										<option type="correspondingComponent" value="form" />
-										<option type="correspondingViewInModal" value="true" />
-										<option type="creatable" value="true" />
-										<option type="deletable" value="true" />
+										<option type="creatable" value="false" />
+										<option type="deletable" value="false" />
 										<option type="fullscreen" value="true" />
 										<option type="multiselect" value="true" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
-									<component type="checkbox" name="hideEmptyColumns"
-										field="#{form}.hideEmptyColumns" reference="hideEmptyColumns">
+									<component type="checkbox" name="hideEmptyColumnsForOrders"
+										field="#{form}.hideEmptyColumnsForOrders" reference="hideEmptyColumnsForOrders">
 										<option type="labelWidth" value="50" />
 										<option type="align" value="left" />
 									</component>
-
 								</layoutElement>
 							</component>
 						</component>
