@@ -112,7 +112,7 @@
 				<option type="expression" value="#name" />
 				
 				<listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
-						method="getDefaultConversions" />
+					method="getDefaultConversions" />	
 			</component>
 		</windowTab>
 		<windowTab name="productFamily">
@@ -128,7 +128,7 @@
 						<option type="column" name="isParentFamily" 
 							 expression="(#entityType.equals('02productsFamily')) ? '@qcadooView.true' : '@qcadooView.false'" />
 						<option type="column" name="parent" fields="parent"
-							expression="(#parent == null) ? '' : #parent['number']" />
+							expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']" />
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
 						<option type="expression"

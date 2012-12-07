@@ -58,11 +58,15 @@
 		<tree name="productFamilyChildrenTree" joinField="parent" model="product"
 			cascade="nullify" persistent="false" />
 		<integer name="priority" persistent="false" />
-		<string name="nodeNumber" persistent="false" />
+		<string name="nodeNumber" />
 		<enum name="entityType" values="01particularProduct,02productsFamily"
 			default="01particularProduct" required="true" />
 	</fields>
 	<hooks>
+		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
+		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
+		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
+	
 		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"

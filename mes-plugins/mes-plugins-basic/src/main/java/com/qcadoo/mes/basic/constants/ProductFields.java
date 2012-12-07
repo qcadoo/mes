@@ -53,13 +53,15 @@ public final class ProductFields {
 
     public static final String PARENT = "parent";
 
+    public static final String CHILD = "child";
+
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 
     public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
 
-    public static final String PRODUCT_FAMILY_PRIORITY = "productFamilyPriority";
-
     public static final String PRIORITY = "priority";
+
+    public static final String NODE_NUMBER = "nodeNumber";
 
     public static final String ENTITY_TYPE = "entityType";
 
