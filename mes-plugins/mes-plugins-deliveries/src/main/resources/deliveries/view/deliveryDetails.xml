@@ -277,13 +277,14 @@
 						<option type="column" name="succession" fields="succession"
 							width="30" />
 						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
+							expression="#product['number']" link="true" width="80" />
 						<option type="column" name="name" fields="product"
 							expression="#product['name']" link="true" />
-						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+						<option type="column" name="orderedQuantity" fields="orderedQuantity"  width="80"/>
 						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" width="70" />
-
+							expression="#product['unit']" width="30" />
+						<option type="column" name="description" fields="description"
+							 width="140" />
 						<option type="order" column="succession" direction="asc" />
 
 						<option type="searchable" value="number,name,unit" />
