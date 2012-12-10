@@ -102,7 +102,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
         jdbcErrorLogStore = new JdbcErrorLogStore();
         jdbcErrorLogStore.init(attributeProvider);
 
-        ignoredErrors = new String[][] {};
+        ignoredErrors = new String[][] { { "com.qcadoo.mes.urcCore.IntegrationException" } };
 
         logdiggerAddress = String.valueOf(attributeProvider.getAttribute("logdiggerAddress"));
         logdiggerJira = String.valueOf(attributeProvider.getAttribute("logdiggerJira"));
