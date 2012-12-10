@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.catNumbersInDeliveries.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.catNumbersInDeliveries.CatNumbersInDeliveriesService;
@@ -32,6 +33,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class DeliveredProductHooksCNID {
 
+    @Autowired
     private CatNumbersInDeliveriesService catNumbersInDeliveriesService;
 
     public void updateDeliveredProductCatalogNumber(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
