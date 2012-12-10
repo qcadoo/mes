@@ -34,7 +34,9 @@
 		<decimal name="orderedQuantity" required="true" >
 			<validatesRange from="0" exclusively="true" />
 		</decimal>
-		<string name="description"/>
+		<string name="description">
+			<validatesLength max="2048" />
+		</string>
 		
 		<priority name="succession" scope="delivery" />
 	</fields>

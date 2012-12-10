@@ -25,8 +25,11 @@
 			<component type="form" name="orderedProduct"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2"
-					rows="5">
+					rows="4">
 					<layoutElement column="1" row="1">
+						<component type="input" name="succession" reference="succession" field="succession" defaultEnabled="never"/>
+					</layoutElement>
+					<layoutElement column="1" row="2">
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true" />
@@ -43,7 +46,7 @@
 								method="fillUnitsFields" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2">
+					<layoutElement column="1" row="3">
 						<component type="gridLayout" name="gridLayoutOrderedQuantity"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
@@ -61,7 +64,7 @@
 							</layoutElement>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1">
+					<layoutElement column="2" row="1" height="3">
 						<component type="textarea" name="description" reference="description"
 							field="description">
 						</component>
