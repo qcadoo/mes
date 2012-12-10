@@ -1,34 +1,20 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="deliveryDetails" modelName="delivery"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
+
 	<component type="window" name="window" reference="window">
-	
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -96,10 +82,10 @@
 			</group>
 			<group name="copy">
 				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
-					state="disabled"  action="#{form}.fireEvent(copyOrderedProductToDelivered);"/>
+					state="disabled" action="#{form}.fireEvent(copyOrderedProductToDelivered);" />
 			</group>
 		</ribbon>
-		
+
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesDetails" reference="form">
 				<script>
@@ -230,31 +216,32 @@
 							reference="name" />
 					</layoutElement>
 					<layoutElement column="1" row="4" height="3">
-						<component type="textarea" name="description" field="description" />
+						<component type="textarea" name="description" field="description"
+							reference="description" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
 							<option type="column" name="name" fields="name" link="true" />
-							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
-							<listener
-								event="onSelectedEntityChange"
+							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 								method="fillBufferForSupplier" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="calendar" name="deliveryDate" field="deliveryDate" 
+						<component type="calendar" name="deliveryDate" field="deliveryDate"
 							reference="deliveryDate">
 							<option type="withTimePicker" value="true" />
 						</component>
+					</layoutElement>
+					<layoutElement column="2" row="3" height="3">
+						<component type="textarea" name="deliveryAddress" field="deliveryAddress"
+							reference="deliveryAddress" />
 					</layoutElement>
 					<layoutElement column="3" row="1">
 						<component type="select" name="state" field="state"
@@ -265,10 +252,8 @@
 							reference="deliveryDateBuffer" defaultEnabled="never" />
 					</layoutElement>
 				</component>
-				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
-				
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
@@ -283,14 +268,14 @@
 					method="copyOrderedProductToDelivered" />
 			</component>
 		</windowTab>
-		
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="1" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
 						source="#{form}.orderedProducts" defaultEnabled="false">
-						<option type="column" name="succession" fields="succession" width="30" />
+						<option type="column" name="succession" fields="succession"
+							width="30" />
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" />
 						<option type="column" name="name" fields="product"
@@ -298,12 +283,12 @@
 						<option type="column" name="orderedQuantity" fields="orderedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
-							
+
 						<option type="order" column="succession" direction="asc" />
-						
+
 						<option type="searchable" value="number,name,unit" />
 						<option type="orderable" value="succession,number,name,unit" />
-						
+
 						<option type="correspondingView" value="deliveries/orderedProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
@@ -316,7 +301,6 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="1" rows="1">
@@ -324,7 +308,8 @@
 					<component type="grid" name="deliveredProducts"
 						reference="deliveredProducts" source="#{form}.deliveredProducts"
 						defaultEnabled="false">
-						<option type="column" name="succession" fields="succession" width="30" />
+						<option type="column" name="succession" fields="succession"
+							width="30" />
 						<option type="column" name="number" fields="product"
 							expression="#product['number']" link="true" />
 						<option type="column" name="name" fields="product"
@@ -333,16 +318,12 @@
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
-						
 						<option type="order" column="succession" direction="asc" />
-						
 						<option type="searchable" value="number" />
 						<option type="orderable" value="succession,number,name,unit" />
-						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -351,29 +332,25 @@
 				</layoutElement>
 			</component>
 		</windowTab>
-		
 		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout" columns="2" rows="1">
+			<component type="gridLayout" name="loggingsGridLayout"
+				columns="2" rows="1">
 				<layoutElement column="1" row="1">
-					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.stateChanges">
+					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
+						source="#{form}.stateChanges">
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
-						
 						<option type="order" column="dateAndTime" direction="asc" />
-						
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
-						
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
-		
 	</component>
-	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
@@ -381,6 +358,7 @@
 			method="fillBufferForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="changeFieldsEnabledDependOnState" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="setAddressFromParameter" />
 	</hooks>
-	
 </view>

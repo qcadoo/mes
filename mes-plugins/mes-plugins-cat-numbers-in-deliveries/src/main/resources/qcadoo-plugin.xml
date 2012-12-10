@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo Framework Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="catNumbersInDeliveries" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -61,44 +48,46 @@
 			<version>[1.1.7</version>
 		</dependency>
 	</dependencies>
-	
+
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model-field plugin="deliveries" model="orderedProduct">
 			<model:belongsTo name="productCatalogNumber" model="productCatalogNumbers"
 				plugin="productCatalogNumbers" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="deliveries" model="deliveredProduct">
 			<model:belongsTo name="productCatalogNumber" model="productCatalogNumbers"
 				plugin="productCatalogNumbers" />
 		</model:model-field>
-		
-		<view:view-grid-column plugin="deliveries"
-			view="deliveryDetails" component="orderedProducts">
+
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+			component="orderedProducts">
 			<view:column name="productCatalogNumber" fields="productCatalogNumber"
-				expression="#productCatalogNumber['catalogNumber']" orderable="true" searchable="true" />
+				expression="#productCatalogNumber['catalogNumber']" orderable="true"
+				searchable="true" />
 		</view:view-grid-column>
-		
-		<view:view-grid-column plugin="deliveries"
-			view="deliveryDetails" component="deliveredProducts">
+
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+			component="deliveredProducts">
 			<view:column name="productCatalogNumber" fields="productCatalogNumber"
-				expression="#productCatalogNumber['catalogNumber']" orderable="true" searchable="true" />
+				expression="#productCatalogNumber['catalogNumber']" orderable="true"
+				searchable="true" />
 		</view:view-grid-column>
-				
+
 		<model:model-hook plugin="deliveries" model="orderedProduct">
 			<model:onCreate
 				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.OrderedProductHooksCNID"
 				method="updateOrderedProductCatalogNumber" />
 		</model:model-hook>
-		
+
 		<model:model-hook plugin="deliveries" model="deliveredProduct">
 			<model:onCreate
 				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.DeliveredProductHooksCNID"
 				method="updateDeliveredProductCatalogNumber" />
 		</model:model-hook>
-		
+
 		<model:model-hook plugin="deliveries" model="delivery">
 			<model:onSave
 				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.DeliveryHooksCNID"
@@ -110,7 +99,20 @@
 				method="updateDeliveredProductsCatalogNumbers" />
 		</model:model-hook>
 
-		<custom:custom class="com.qcadoo.mes.catNumbersInDeliveries.CatNumbersInDeliveriesOnStartupService" />
+		<view:view-tab resource="view/tabExtensions/orderedProductDetails.xml" />
+
+		<view:view-hook view="orderedProductDetails" type="beforeRender"
+			plugin="deliveries"
+			class="com.qcadoo.mes.catNumbersInDeliveries.hooks.OrderedProductDetailsHooksCNID"
+			method="setCatalogProductNumber" />
+
+		<view:view-listener view="orderedProductDetails"
+			component="product" plugin="deliveries" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.catNumbersInDeliveries.listeners.OrderedProductListenersHooksCNID"
+			method="setCatalogProductNumber" />
+
+		<custom:custom
+			class="com.qcadoo.mes.catNumbersInDeliveries.CatNumbersInDeliveriesOnStartupService" />
 	</modules>
 
 </plugin>

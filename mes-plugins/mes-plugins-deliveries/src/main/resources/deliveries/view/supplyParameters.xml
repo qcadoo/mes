@@ -25,7 +25,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="deliveriesForm" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3"
-					rows="6">
+					rows="9">
 					<layoutElement column="1" row="1" height="2">
 						<component type="textarea" name="defaultDescription"
 							field="#{form}.defaultDescription" reference="defaultDescription" />
@@ -42,7 +42,7 @@
 						<component type="textarea" name="otherAddress" field="#{form}.otherAddress"
 							reference="otherAddress"  hasLabel="false"/>
 					</layoutElement>
-					<layoutElement column="2" row="1" width="2" height="5">
+					<layoutElement column="2" row="1" width="2" height="9">
 						<component type="borderLayout" name="columnForOrdersBorderLayout">
 							<option type="label" value="columnForOrdersTab" />
 							<component type="gridLayout" name="columnForOrdersGridLayout"

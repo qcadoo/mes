@@ -214,7 +214,7 @@ public class CompanyServiceTest {
         when(search.setMaxResults(1)).thenReturn(search);
         when(search.uniqueResult()).thenReturn(company);
         // when
-        long parameterId = companyService.getParameterId();
+        long parameterId = companyService.getCompanyId();
         // then
         Assert.assertEquals(0L, parameterId);
     }
@@ -232,7 +232,7 @@ public class CompanyServiceTest {
         when(companyDD.create()).thenReturn(company);
         when(companyDD.save(company)).thenReturn(company);
         // when
-        long parameterId = companyService.getParameterId();
+        long parameterId = companyService.getCompanyId();
         // then
         Assert.assertEquals(0L, parameterId);
     }

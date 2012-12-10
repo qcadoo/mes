@@ -48,7 +48,7 @@ public class CompanyController {
 
 	@RequestMapping(value = "companyView", method = RequestMethod.GET)
 	public ModelAndView getParameterPageView(final Locale locale) {
-		Long existingEntityId = companyService.getParameterId();
+		Long existingEntityId = companyService.getCompanyId();
 		Map<String, String> arguments = new HashMap<String, String>();
 		
 		if (existingEntityId != null) {

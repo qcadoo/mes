@@ -1,55 +1,43 @@
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <view name="orderedProductDetails" modelName="orderedProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
+
 	<component type="window" name="window">
-	
+
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveAction" />
 		</ribbon>
-		
+
 		<windowTab name="mainTab">
-			<component type="form" name="deliveriesDetails" reference="form">
-				<component type="gridLayout" name="gridLayout" columns="1"
+			<component type="form" name="orderedProduct"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true" />
-							
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+
 							<listener
 								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
 								method="fillUnitsFields" />
@@ -60,7 +48,7 @@
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="orderedQuantity"
-									reference="orderedQuantity" field="#{form}.orderedQuantity">
+									reference="orderedQuantity" field="orderedQuantity">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
 								</component>
@@ -73,19 +61,24 @@
 							</layoutElement>
 						</component>
 					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="textarea" name="description" reference="description"
+							field="description">
+						</component>
+					</layoutElement>
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
-		
+
 	</component>
-	
+
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
 			method="fillUnitsFields" />
 	</hooks>
-	
+
 </view>

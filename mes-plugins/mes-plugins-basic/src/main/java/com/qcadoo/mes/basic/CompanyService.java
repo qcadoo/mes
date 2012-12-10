@@ -50,7 +50,7 @@ public class CompanyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Transactional
-    public Long getParameterId() {
+    public Entity getCompany() {
 
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
         Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
@@ -59,12 +59,16 @@ public class CompanyService {
             Entity newCompany = dataDefinition.create();
             newCompany.setField("owner", true);
             Entity savedCompany = dataDefinition.save(newCompany);
-            return savedCompany.getId();
+            return savedCompany;
 
         } else {
-            return company.getId();
+            return company;
         }
 
+    }
+
+    public Long getCompanyId() {
+        return getCompany().getId();
     }
 
     /**

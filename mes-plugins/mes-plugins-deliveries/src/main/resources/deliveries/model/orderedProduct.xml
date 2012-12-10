@@ -34,6 +34,7 @@
 		<decimal name="orderedQuantity" required="true" >
 			<validatesRange from="0" exclusively="true" />
 		</decimal>
+		<string name="description"/>
 		
 		<priority name="succession" scope="delivery" />
 	</fields>

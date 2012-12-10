@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
@@ -37,6 +38,10 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -55,6 +60,12 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private CompanyService companyService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -109,4 +120,32 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEditable(enabledDeliveredGrid);
     }
 
+    public void setAddressFromParameter(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() != null) {
+            return;
+        }
+        Entity parameter = parameterService.getParameter();
+        FieldComponent deliveryAddress = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
+        if (parameter.getStringField("defaultAddress").equals(DefaultAddressType.OTHER.getStringValue())) {
+            deliveryAddress.setFieldValue(parameter.getStringField("otherAddress"));
+        } else {
+            deliveryAddress.setFieldValue(generateAddressFromCompany(parameter));
+        }
+    }
+
+    private String generateAddressFromCompany(final Entity parameter) {
+        StringBuffer address = new StringBuffer();
+        Entity company = companyService.getCompany();
+        address.append(company.getStringField(CompanyFields.STREET));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.NUMBER));
+        address.append("/");
+        address.append(company.getStringField(CompanyFields.FLAT));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.ZIP_CODE));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.CITY));
+        return address.toString();
+    }
 }

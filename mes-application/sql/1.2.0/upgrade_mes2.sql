@@ -107,3 +107,28 @@ UPDATE basic_product SET inputproductsrequiredfortype = '01startOrder' WHERE inp
 UPDATE orders_order SET inputproductsrequiredfortype = '01startOrder' WHERE inputproductsrequiredfortype IS null;
 
 -- end
+
+-- Table: deliveries_columnfororders
+-- changed: 6.12.2012
+ALTER TABLE deliveries_columnfororders ADD COLUMN parameter_id bigint;
+
+ALTER TABLE deliveries_columnfororders
+  ADD CONSTRAINT basic_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) DEFERRABLE;
+--end
+
+-- Table: deliveries_columnfordeliveries
+-- changed: 6.12.2012
+ALTER TABLE deliveries_columnfordeliveries ADD COLUMN parameter_id bigint;
+
+ALTER TABLE deliveries_columnfordeliveries
+  ADD CONSTRAINT basic_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) DEFERRABLE;
+--end
+
+-- Table: basic_parameter
+-- changed: 6.12.2012
+ALTER TABLE basic_parameter ADD COLUMN hideemptycolumnsfororders boolean;
+ALTER TABLE basic_parameter ALTER COLUMN hideemptycolumnsfororders SET DEFAULT false;
+
+--end

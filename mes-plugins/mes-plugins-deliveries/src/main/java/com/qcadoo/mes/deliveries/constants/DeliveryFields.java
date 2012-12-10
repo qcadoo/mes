@@ -49,4 +49,6 @@ public final class DeliveryFields {
 
     public static final String LOCATION = "location";
 
+    public static final String DELIVERY_ADDRESS = "deliveryAddress";
+
 }
