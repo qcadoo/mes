@@ -36,11 +36,11 @@
 			<layoutElement column="1" row="1">
 				<component type="lookup" name="location" reference="location"
 					field="#{form}.location">
-					<option type="column" name="name" fields="name" />
+					<option type="column" name="name" fields="name" link="true"/>
 					<option type="column" name="type" fields="type" />
 					
-					<option type="searchable" value="name,number,type" />
-					<option type="orderable" value="name,number,type" />
+					<option type="searchable" value="number,name,type" />
+					<option type="orderable" value="number,name,type" />
 					
 					<option type="expression"
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />

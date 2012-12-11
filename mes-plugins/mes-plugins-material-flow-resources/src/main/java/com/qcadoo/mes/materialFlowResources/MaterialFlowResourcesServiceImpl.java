@@ -25,13 +25,13 @@ package com.qcadoo.mes.materialFlowResources;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR.CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
@@ -332,9 +332,13 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
+    public boolean isLocationIsWarehouse(final Entity location) {
+        return ((location != null) && WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
+    }
+
+    @Override
     public boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo) {
-        return ((locationFrom != null) && WAREHOUSE.getStringValue().equals(locationFrom.getStringField(TYPE)))
-                || ((locationTo != null) && WAREHOUSE.getStringValue().equals(locationTo.getStringField(TYPE)));
+        return (isLocationIsWarehouse(locationFrom) || isLocationIsWarehouse(locationTo));
     }
 
 }

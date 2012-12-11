@@ -12,7 +12,10 @@ public class LocationModelHooks {
         if (entity == null) {
             return true;
         }
+
         entity.setField("externalNumber", null);
+
         return true;
     }
+
 }
