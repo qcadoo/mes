@@ -15,4 +15,5 @@ public class CompanyDetailsHooksTS {
     public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
         companyService.disabledGridWhenCompanyIsAnOwner(state, "operationGroups", "operations");
     }
+
 }

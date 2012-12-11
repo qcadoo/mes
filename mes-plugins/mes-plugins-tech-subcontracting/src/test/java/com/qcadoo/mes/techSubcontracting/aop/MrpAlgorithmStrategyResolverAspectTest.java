@@ -48,4 +48,5 @@ public class MrpAlgorithmStrategyResolverAspectTest {
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(Map.class, method.getReturnType());
     }
+
 }

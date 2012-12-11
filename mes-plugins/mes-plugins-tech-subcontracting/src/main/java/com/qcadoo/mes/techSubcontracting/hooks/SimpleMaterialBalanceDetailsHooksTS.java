@@ -18,4 +18,5 @@ public class SimpleMaterialBalanceDetailsHooksTS {
         mrpAlgoritm.setFieldValue("03componentsAndSubcontractorsProducts");
         mrpAlgoritm.requestComponentUpdateState();
     }
+
 }

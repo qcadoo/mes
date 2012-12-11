@@ -59,4 +59,5 @@ public class OperationalTasksDetailsListenersOTFOOverrideAspectTest {
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));
     }
+
 }

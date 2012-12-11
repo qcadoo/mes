@@ -18,4 +18,5 @@ public class MaterialRequirementDetailsHooksTS {
         mrpAlgoritm.setFieldValue("03componentsAndSubcontractorsProducts");
         mrpAlgoritm.requestComponentUpdateState();
     }
+
 }

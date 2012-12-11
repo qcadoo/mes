@@ -28,7 +28,7 @@ import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.N
 import static com.qcadoo.mes.operationalTasks.constants.OperationalTasksFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.ORDER;
 import static com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksOTFOFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsFieldsTS.IS_SUBCONTRACTING;
+import static com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.OPERATION;
 
@@ -86,4 +86,5 @@ public class OperationalTasksDetailsListenersOTFOOverrideUtil {
                 .getComponentByReference(TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)).getEntity();
         return techInstOperComp != null && techInstOperComp.getBooleanField(IS_SUBCONTRACTING);
     }
+
 }
