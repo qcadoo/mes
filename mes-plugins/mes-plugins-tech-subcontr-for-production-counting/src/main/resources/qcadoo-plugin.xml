@@ -48,8 +48,8 @@
 		<view:view-grid-column plugin="productionCounting"
 			view="productionRecordsList" component="grid">
 			<view:column name="subcontractor" fields="subcontractor"
-				expression="#subcontractor['number'] + ' ' + #subcontractor['name']"
-				orderable="true" width="200" />
+				expression="#subcontractor['number'] + ' - ' + #subcontractor['name']"
+				width="200" />
 		</view:view-grid-column>
 
 		<view:view-hook view="productionRecordDetails" type="beforeRender"
