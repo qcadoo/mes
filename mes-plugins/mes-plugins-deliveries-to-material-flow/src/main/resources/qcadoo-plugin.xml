@@ -40,15 +40,16 @@
 	<modules>
 		<localization:translation path="locales" />
 		
-		<model:model-field model="delivery" plugin="deliveries">
-				<model:belongsTo name="location" model="location" plugin="materialFlow"/>
-		</model:model-field>
 		<model:model-field model="parameter" plugin="basic">
 				<model:belongsTo name="location" model="location" plugin="materialFlow"/>
 		</model:model-field>
 		
-		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />
+		<model:model-field model="delivery" plugin="deliveries">
+				<model:belongsTo name="location" model="location" plugin="materialFlow"/>
+		</model:model-field>
+		
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />
 	</modules>
 	
 </plugin>
