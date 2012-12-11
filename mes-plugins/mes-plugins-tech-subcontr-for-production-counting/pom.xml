@@ -12,7 +12,7 @@
 
 	<artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
 	<packaging>qcadoo-plugin</packaging>
-	<name>Qcadoo MES :: Plugins :: Tech. subcontr. for production counting</name>
+	<name>Qcadoo MES :: Plugins :: Technology subcontracting for production counting</name>
 	
 	<dependencies>
 		<dependency>
@@ -21,8 +21,7 @@
 			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-		
-
+	
 	<build>
 		<plugins>
 			<plugin>

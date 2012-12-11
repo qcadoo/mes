@@ -19,7 +19,7 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
 	<information>
-		<name>Qcadoo MES :: Plugins :: Tech subcontr for production counting</name>
+		<name>MES - Technology subcontracting for production counting</name>
 		<vendor>
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com</url>
