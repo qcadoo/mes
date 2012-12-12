@@ -115,8 +115,6 @@
 		<menu:menu-item name="technologyGroups" category="technology"
 			view="technologyGroupsList" />
 		
-		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
-		
 		<view:view resource="view/operationsList.xml" />
 		<view:view resource="view/operationDetails.xml" />
 		<view:view resource="view/operationGroupsList.xml" />
@@ -132,38 +130,20 @@
 		<view:view resource="view/technologyGroupsList.xml" />
 		<view:view resource="view/technologyGroupDetails.xml" />
 		
+		<view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml" />
+		
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
 			
 		<view:resource uri="public/**/*" />
 		
 		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="addTechnologyGroup"
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
-			method="addTechnologyGroup" />
-		
-		<view:view-listener plugin="basic" view="productDetails"
 			component="form" event="showTechnologiesWithTechnologyGroup"
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
 			method="showTechnologiesWithTechnologyGroup" />
-			
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showTechnologiesWithProduct"
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
-			method="showTechnologiesWithProduct" />
-				
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showOrdersWithProductMain"
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
-			method="showOrdersWithProductMain" />
-			
-		<view:view-listener plugin="basic" view="productDetails"
-			component="form" event="showOrdersWithProductPlanned"
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
-			method="showOrdersWithProductPlanned" />
 	
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" 
-			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooks"
+			class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
 			method="updateRibbonState" />
 		
 		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
