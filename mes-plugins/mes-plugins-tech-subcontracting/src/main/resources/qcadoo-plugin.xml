@@ -101,12 +101,12 @@
 
 		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
-				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationHooksTS"
+				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationComponentHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
 		<model:model-hook plugin="technologies" model="technologyInstanceOperationComponent">
 			<model:onCreate
-				class="com.qcadoo.mes.techSubcontracting.hooks.TechInstOperCompHooksTS"
+				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyInstanceOperCompHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
 		

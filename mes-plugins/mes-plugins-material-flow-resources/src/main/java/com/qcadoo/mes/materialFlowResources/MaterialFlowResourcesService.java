@@ -62,6 +62,8 @@ public interface MaterialFlowResourcesService {
 
     void disableDateField(final ViewDefinitionState view);
 
+    boolean isLocationIsWarehouse(final Entity location);
+
     boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo);
 
 }

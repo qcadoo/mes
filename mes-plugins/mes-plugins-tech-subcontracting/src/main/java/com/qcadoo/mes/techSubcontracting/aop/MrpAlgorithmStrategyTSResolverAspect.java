@@ -41,4 +41,5 @@ public final class MrpAlgorithmStrategyTSResolverAspect extends MrpAlgorithmStra
     protected MrpAlgorithmStrategy getAlgorithmService() {
         return mrpAlgorithmStrategy;
     }
+
 }

@@ -21,14 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontracting.constants;
+package com.qcadoo.mes.techSubcontracting.hooks;
 
-public final class TechnologyInstanceOperationFieldsTS {
+import static com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 
-    private TechnologyInstanceOperationFieldsTS() {
+import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
+@Service
+public class TechnologyOperationComponentHooksTS {
+
+    public void copySubstractingFieldFromLowerInstance(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
+        Entity operation = technologyOperationComponent.getBelongsToField(OPERATION);
+        technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
     }
-
-    public static final String IS_SUBCONTRACTING = "isSubcontracting";
 
 }
