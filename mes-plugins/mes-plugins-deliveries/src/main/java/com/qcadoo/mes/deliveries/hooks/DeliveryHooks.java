@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
 
@@ -48,8 +50,10 @@ public class DeliveryHooks {
         stateChangeEntityBuilder.buildInitial(describer, assignmentToShift, DRAFT);
     }
 
-    public void clearStateFieldOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+    public void clearFieldsOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(STATE, DeliveryStateStringValues.DRAFT);
+        entity.setField(EXTERNAL_NUMBER, null);
+        entity.setField(EXTERNAL_SYNCHRONIZED, true);
     }
 
 }

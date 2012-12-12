@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
@@ -42,58 +29,98 @@
 						#{costForNumberUnit}.setEnabled(false, true); 
 					}); 
 				}); 
-			 ]]> 
+			 ]]>
 		</script>
-		<component type="gridLayout" name="gridLayout" hasBorders="false" columns="3" rows="4">
+		<component type="gridLayout" name="gridLayout" hasBorders="false"
+			columns="3" rows="4">
 			<layoutElement column="1" row="1">
-			    <component type="input" name="costForNumber" field="#{form}.costForNumber">
-			    	<option type="alignment" value="right" />
-			    </component>
-			</layoutElement>
-			<layoutElement column="2" row="1">
-			    <component type="gridLayout" name="costForNumberUnitGridLayout" hasBorders="false" columns="5" rows="1">
-			         <layoutElement column="1" row="1">
-			             <component type="input" name="costForNumberUnit" reference="costForNumberUnit" hasLabel="false" defaultEnable="false" />
-			         </layoutElement>
-			    </component>
-			</layoutElement>
-			<layoutElement column="1" row="2">
-				<component type="input" name="nominalCost" reference="nominalCost" field="#{form}.nominalCost">
-			    	<option type="alignment" value="right" />
-			    </component>
-			</layoutElement>
-			<layoutElement column="2" row="2">
-             	<component type="gridLayout" name="nominalCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-                	<layoutElement column="1" row="1">
-                		<component type="input" name="nominalCostCurrency" reference="nominalCostCurrency" hasLabel="false" defaultEnable="false" />
-                	</layoutElement>
-                </component>
-			</layoutElement>
-			<layoutElement column="1" row="3">
-				<component type="input" name="lastPurchaseCost" reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
-					<option type="alignment" value="right" />
+				<component type="gridLayout" name="costForNumberGridLayout"
+					columns="4" rows="1">
+					<layoutElement column="1" row="1" width="3">
+						<component type="input" name="costForNumber" field="#{form}.costForNumber">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="1">
+						<component type="input" name="costForNumberUnit"
+							reference="costForNumberUnit" hasLabel="false" defaultEnable="false" />
+					</layoutElement>
 				</component>
 			</layoutElement>
-			<layoutElement column="2" row="3">
-				<component type="gridLayout" name="lastPurchaseCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-					<layoutElement column="1" row="1">
-		            	<component type="input" name="lastPurchaseCostCurrency" reference="lastPurchaseCostCurrency" hasLabel="false" defaultEnable="false" />
-		            </layoutElement>
-		        </component>
-		    </layoutElement>
-		    <layoutElement column="1" row="4">
-		        <component type="input" name="averageCost" reference="averageCost" field="#{form}.averageCost">
-		        	<option type="alignment" value="right" />
-		        </component>
-		    </layoutElement>
-		    <layoutElement column="2" row="4">
-		    	<component type="gridLayout" name="averageCostCurrencyGridLayout" hasBorders="false" columns="5" rows="1">
-					<layoutElement column="1" row="1">
-						<component type="input" name="averageCostCurrency" reference="averageCostCurrency" hasLabel="false" defaultEnable="false" />
+			<layoutElement column="1" row="2">
+				<component type="gridLayout" name="nominalCostGridLayout"
+					columns="4" rows="1">
+					<layoutElement column="1" row="1" width="3">
+						<component type="input" name="nominalCost" reference="nominalCost"
+							field="#{form}.nominalCost">
+							<option type="alignment" value="right" />
+						</component>
 					</layoutElement>
+					<layoutElement column="4" row="1">
+						<component type="input" name="nominalCostCurrency"
+							reference="nominalCostCurrency" hasLabel="false" defaultEnable="false" />
+					</layoutElement>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="3" height="2">
+				<component type="borderLayout" name="purchasePriceBorderLayout">
+					<option type="label" value="purchasePriceTab" />
+					<component type="gridLayout" name="purchasePriceGridLayout"
+						columns="4" rows="2">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="lastPurchaseCost"
+								reference="lastPurchaseCost" field="#{form}.lastPurchaseCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="lastPurchaseCostCurrency"
+								reference="lastPurchaseCostCurrency" hasLabel="false"
+								defaultEnable="false" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="input" name="averageCost" reference="averageCost"
+								field="#{form}.averageCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="averageCostCurrency"
+								reference="averageCostCurrency" hasLabel="false" defaultEnable="false" />
+						</layoutElement>
+					</component>
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="3" height="2">
+				<component type="borderLayout" name="offerPriceBorderLayout">
+					<option type="label" value="offerPriceTab" />
+					<component type="gridLayout" name="offerPriceGridLayout"
+						columns="4" rows="2">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="lastOfferCost" reference="lastOfferCost"
+								field="#{form}.lastOfferCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="lastOfferCostCurrency"
+								reference="lastOfferCostCurrency" hasLabel="false"
+								defaultEnable="false" />
+						</layoutElement>
+						<layoutElement column="1" row="2">
+							<component type="input" name="averageOfferCost"
+								reference="averageOfferCost" field="#{form}.averageOfferCost">
+								<option type="alignment" value="right" />
+							</component>
+						</layoutElement>
+						<layoutElement column="4" row="2">
+							<component type="input" name="averageOfferCostCurrency"
+								reference="averageOfferCostCurrency" hasLabel="false"
+								defaultEnable="false" />
+						</layoutElement>
+					</component>
 				</component>
 			</layoutElement>
 		</component>
 	</windowTab>
-
 </windowTabExtension>
