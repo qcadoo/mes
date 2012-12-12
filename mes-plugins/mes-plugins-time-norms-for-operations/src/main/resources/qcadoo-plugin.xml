@@ -76,7 +76,7 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -84,7 +84,7 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -92,7 +92,7 @@
 		<model:model-field plugin="technologies" model="operation">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -138,7 +138,7 @@
 			model="technologyOperationComponent">
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -150,7 +150,7 @@
 			model="technologyOperationComponent">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -159,7 +159,7 @@
 			model="technologyOperationComponent">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -213,7 +213,7 @@
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
@@ -225,7 +225,7 @@
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
@@ -234,7 +234,7 @@
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesRange from="0" />
 				<model:validatesUnscaledValue max="3" />
 				<model:validatesScale max="5" />
 			</model:decimal>
