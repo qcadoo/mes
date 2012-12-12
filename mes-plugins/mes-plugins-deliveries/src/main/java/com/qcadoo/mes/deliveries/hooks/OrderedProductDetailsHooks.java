@@ -41,7 +41,7 @@ public class OrderedProductDetailsHooks {
     private DeliveriesService deliveriesService;
 
     public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("orderedQuantityUNIT");
+        List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
 
         deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
     }

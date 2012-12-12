@@ -69,7 +69,7 @@ public class DeliveredProductDetailsHooks {
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("damagedQuantityUNIT", "deliveredQuantityUNIT", "orderedQuantityUNIT");
+        List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
 
         deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
     }

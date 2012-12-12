@@ -70,8 +70,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="orderedQuantityUNIT"
-									reference="orderedQuantityUNIT" defaultEnabled="never" hasLabel="false">
+								<component type="input" name="orderedQuantityUnit"
+									reference="orderedQuantityUnit" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -88,8 +88,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="deliveredQuantityUNIT"
-									reference="deliveredQuantityUNIT" defaultEnabled="never" hasLabel="false">
+								<component type="input" name="deliveredQuantityUnit"
+									reference="deliveredQuantityUnit" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -106,8 +106,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="damagedQuantityUNIT"
-									reference="damagedQuantityUNIT" defaultEnabled="never" hasLabel="false">
+								<component type="input" name="damagedQuantityUnit"
+									reference="damagedQuantityUnit" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
