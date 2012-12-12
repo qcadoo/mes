@@ -35,6 +35,7 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -127,7 +128,8 @@ public class DeliveryDetailsHooks {
         }
         Entity parameter = parameterService.getParameter();
         FieldComponent deliveryAddress = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
-        if (parameter.getStringField("defaultAddress").equals(DefaultAddressType.OTHER.getStringValue())) {
+        String defaultAddress = parameter.getStringField("defaultAddress");
+        if (!StringUtils.isEmpty(defaultAddress) && defaultAddress.equals(DefaultAddressType.OTHER.getStringValue())) {
             deliveryAddress.setFieldValue(parameter.getStringField("otherAddress"));
         } else {
             deliveryAddress.setFieldValue(generateAddressFromCompany(parameter));

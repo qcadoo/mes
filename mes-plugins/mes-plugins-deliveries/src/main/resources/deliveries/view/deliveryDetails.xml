@@ -96,6 +96,9 @@
 					var cancelBtn = #{window}.getRibbonItem("actions.cancel");
 					var deleteBtn = #{window}.getRibbonItem("actions.delete");
 					
+					var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
+					var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
+					
 					var acceptBtn = #{window}.getRibbonItem("status.accept");
 					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
@@ -128,6 +131,7 @@
 							generateDeliveryBtn.enable();
 							
 							var state = #{state}.getValue().content.value;
+							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
 							if (!state) {
 								return;
 							}
@@ -201,6 +205,19 @@
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.disable();
 							}
+							if(externalSynchronized == '0') {
+								saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								saveBackBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								saveNewBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								cancelBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								deleteBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+							}
 						}
 					});
 					]]>
@@ -210,6 +227,8 @@
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 							reference="number" />
+						<component type="hidden" name="externalSynchronized"
+							field="externalSynchronized" reference="externalSynchronized" />
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name"

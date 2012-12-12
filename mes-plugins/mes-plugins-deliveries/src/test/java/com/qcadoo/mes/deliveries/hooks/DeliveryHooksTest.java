@@ -57,7 +57,7 @@ public class DeliveryHooksTest {
         // then
 
         // when
-        deliveryHooks.clearStateFieldOnCopy(deliveryDD, delivery);
+        deliveryHooks.clearFieldsOnCopy(deliveryDD, delivery);
 
         // then
         verify(delivery).setField(STATE, DeliveryStateStringValues.DRAFT);

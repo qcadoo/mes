@@ -67,6 +67,10 @@ public class DeliveryStateValidationService {
         final Entity stateChangeEntity = stateChangeContext.getOwner();
         List<Entity> deliveredProducts = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
         boolean deliveredProductHasNull = false;
+        if (deliveredProducts.isEmpty()) {
+            stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredProductsList.isEmpty", StateMessageType.FAILURE,
+                    false);
+        }
         StringBuffer listOfProductNumber = new StringBuffer();
         for (Entity delivProd : deliveredProducts) {
             if (delivProd.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY) == null) {

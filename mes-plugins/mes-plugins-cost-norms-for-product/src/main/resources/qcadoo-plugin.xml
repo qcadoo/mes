@@ -87,6 +87,19 @@
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
+		
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="lastOfferCost" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:decimal name="averageOfferCost" default="0">
+				<model:validatesUnscaledValue max="7" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
 
 		<view:resource uri="public/**/*" />
 
