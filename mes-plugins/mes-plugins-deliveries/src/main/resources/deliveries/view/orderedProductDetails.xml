@@ -71,8 +71,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
-								<component type="input" name="orderedQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT">
+								<component type="input" name="orderedQuantityUnit"
+									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUnit">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
