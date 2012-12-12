@@ -23,34 +23,38 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import java.util.List;
-
-import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
-@RunIfEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER)
-public class DeliveryDetailsListenersTSFDOverrideAspect {
+public class DeliveredProductHooksTSFDOverrideAspect {
 
     @Autowired
-    private DeliveryDetailsListenersTSFDOverrideUtil deliveryDetailsListenersTSFDOverrideUtil;
+    private DeliveredProductHooksTSFDOverrideUtil deliveredProductHooksTSFDOverrideUtil;
 
-    @Pointcut("execution(private void com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.copyOrderedProductToDelivered(..)) "
-            + "&& args(delivery, orderedProducts)")
-    public void copyOrderedProductToDeliveredExecution(final Entity delivery, final List<Entity> orderedProducts) {
+    @Pointcut("execution(public boolean com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks.checkIfDeliveredProductAlreadyExists(..)) "
+            + "&& args(deliveredProductDD, deliveredProduct)")
+    public void checkIfDeliveredProductAlreadyExistsExecution(final DataDefinition deliveredProductDD,
+            final Entity deliveredProduct) {
     }
 
-    @AfterReturning("copyOrderedProductToDeliveredExecution(delivery, orderedProducts)")
-    public void afterCopyOrderedProductToDeliveredExecution(final Entity delivery, final List<Entity> orderedProducts) {
-        deliveryDetailsListenersTSFDOverrideUtil.fillDeliveredProductOperation(delivery);
+    @Around("checkIfDeliveredProductAlreadyExistsExecution(deliveredProductDD, deliveredProduct)")
+    public boolean afterCopyOrderedProductToDeliveredListenersExecution(final ProceedingJoinPoint pjp,
+            final DataDefinition deliveredProductDD, final Entity deliveredProduct) throws Throwable {
+        if (deliveredProductHooksTSFDOverrideUtil.shouldOverride()) {
+            return deliveredProductHooksTSFDOverrideUtil.checkIfDeliveredProductAlreadyExists(deliveredProductDD,
+                    deliveredProduct);
+        } else {
+            return (Boolean) pjp.proceed();
+        }
     }
 
 }

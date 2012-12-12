@@ -36,8 +36,8 @@ public class OrderedProductDetailsListeners {
     @Autowired
     private OrderedProductDetailsHooks orderedProductDetailsHooks;
 
-    public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        orderedProductDetailsHooks.fillUnitsFields(view);
+    public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderedProductDetailsHooks.fillUnitFields(view);
     }
 
 }

@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface DeliveriesService {
 
@@ -105,5 +106,19 @@ public interface DeliveriesService {
      * @return column for orders data definition
      */
     DataDefinition getColumnForOrdersDD();
+
+    /**
+     * Fills unit fields
+     * 
+     * @param view
+     *            view
+     * 
+     * @param productName
+     *            product lookup reference name
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
+     */
+    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
 }

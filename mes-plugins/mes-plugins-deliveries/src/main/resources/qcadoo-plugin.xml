@@ -119,7 +119,7 @@
 			<model:enum name="defaultAddress" values="01companyAddress,02other" default="01companyAddress"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:hasMany name="columnForOrders" plugin="deliveries"
+			<model:hasMany name="columnsForOrders" plugin="deliveries"
 				model="columnForOrders" joinField="parameter" cascade="delete"
 				copyable="true" />
 		</model:model-field>

@@ -21,25 +21,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.hooks;
+package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
+import static com.qcadoo.mes.techSubcontrForDeliveries.constants.OrderedProductFieldsTSFD.OPERATION;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginStateResolver;
 
 @Service
-public class OrderedProductHooks {
+public class OrderedProductHooksTSFDOverrideUtil {
+
+    @Autowired
+    private PluginStateResolver pluginStateResolver;
+
+    public boolean shouldOverride() {
+        return pluginStateResolver.isEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
+    }
 
     public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD.find()
                 .add(SearchRestrictions.belongsTo(DELIVERY, orderedProduct.getBelongsToField(DELIVERY)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, orderedProduct.getBelongsToField(PRODUCT)));
+                .add(SearchRestrictions.belongsTo(PRODUCT, orderedProduct.getBelongsToField(PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OPERATION, orderedProduct.getBelongsToField(OPERATION)));
 
         if (orderedProduct.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProduct.getId()));

@@ -34,8 +34,8 @@ public class DeliveredProductDetailsListeners {
 
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
-    public void fillUnitsFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillUnitsFields(view);
+    public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillUnitFields(view);
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {

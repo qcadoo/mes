@@ -94,13 +94,13 @@ public class DeliveryDetailsListeners {
         copyOrderedProductToDelivered(delivery, orderedProducts);
     }
 
-    private Entity copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
+    private void copyOrderedProductToDelivered(final Entity delivery, final List<Entity> orderedProducts) {
         // ALBR deliveredProduct has a validation so we have to delete all entities before save HM field in delivery
         delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
         delivery.setField(DELIVERED_PRODUCTS, Lists.newArrayList(createDeliveredProducts(orderedProducts)));
 
-        return delivery.getDataDefinition().save(delivery);
+        delivery.getDataDefinition().save(delivery);
     }
 
     private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts) {

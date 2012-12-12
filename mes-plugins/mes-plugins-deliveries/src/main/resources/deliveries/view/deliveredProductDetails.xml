@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -35,42 +36,42 @@
 		</ribbon>
 		
 		<windowTab name="mainTab">
-			<component type="form" name="deliveriesDetails" reference="form">
+			<component type="form" name="deliveredProductDetails" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
 					rows="5">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true" />
-							
+			
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
-							
+			
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							
+			
 							<listener
 								class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
 								method="fillOrderedQuantities" />
 							<listener
 								class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-								method="fillUnitsFields" />
+								method="fillUnitFields" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="gridLayout" name="orderedQuantityGridLayout"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="orderedQuantity"
-									reference="orderedQuantity" defaultEnabled="never">
+								<component type="input" name="orderedQuantity" reference="orderedQuantity"
+									defaultEnabled="never">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="orderedQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUNIT">
+									reference="orderedQuantityUNIT" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -80,15 +81,15 @@
 						<component type="gridLayout" name="deliveredQuantityGridLayout"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveredQuantity"
-									reference="deliveredQuantity" field="#{form}.deliveredQuantity" hasDescription="true">
+								<component type="input" name="deliveredQuantity" field="#{form}.deliveredQuantity"
+									reference="deliveredQuantity" hasDescription="true">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="deliveredQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="deliveredQuantityUNIT">
+									reference="deliveredQuantityUNIT" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -98,15 +99,15 @@
 						<component type="gridLayout" name="damagedQuantityGridLayout"
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="damagedQuantity"
-									reference="damagedQuantity" field="#{form}.damagedQuantity">
+								<component type="input" name="damagedQuantity" field="#{form}.damagedQuantity"
+									reference="damagedQuantity">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="40" />
 								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="damagedQuantityUNIT"
-									defaultEnabled="never" hasLabel="false" reference="damagedQuantityUNIT">
+									reference="damagedQuantityUNIT" defaultEnabled="never" hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
 								</component>
 							</layoutElement>
@@ -127,7 +128,7 @@
 			method="fillOrderedQuantities" />
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
-			method="fillUnitsFields" />
+			method="fillUnitFields" />
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
 			method="setDeliveredQuantityFieldRequired" />
