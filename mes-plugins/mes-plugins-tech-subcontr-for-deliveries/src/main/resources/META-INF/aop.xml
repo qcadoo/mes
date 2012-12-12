@@ -27,6 +27,8 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
+		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveredProductHooksTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveryDetailsListenersTSFDOverrideAspect" />
+		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.OrderedProductHooksTSFDOverrideAspect" />
 	</aspects>
 </aspectj>

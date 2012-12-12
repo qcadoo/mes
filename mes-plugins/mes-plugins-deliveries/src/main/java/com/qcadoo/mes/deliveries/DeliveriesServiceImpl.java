@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -91,6 +96,24 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public DataDefinition getColumnForOrdersDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS);
+    }
+
+    @Override
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
+        Entity product = productLookup.getEntity();
+
+        String unit = "";
+
+        if (product != null) {
+            unit = product.getStringField(UNIT);
+        }
+
+        for (String referenceName : referenceNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
+            field.setFieldValue(unit);
+            field.requestComponentUpdateState();
+        }
     }
 
 }

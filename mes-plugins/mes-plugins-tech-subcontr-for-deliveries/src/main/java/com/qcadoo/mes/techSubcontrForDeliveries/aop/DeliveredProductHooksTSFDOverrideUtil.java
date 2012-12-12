@@ -21,29 +21,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.hooks;
+package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
+import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
 
-import java.math.BigDecimal;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginStateResolver;
 
 @Service
-public class DeliveredProductHooks {
+public class DeliveredProductHooksTSFDOverrideUtil {
+
+    @Autowired
+    private PluginStateResolver pluginStateResolver;
+
+    public boolean shouldOverride() {
+        return pluginStateResolver.isEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
+    }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = deliveredProductDD.find()
                 .add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)));
+                .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OPERATION, deliveredProduct.getBelongsToField(OPERATION)));
 
         if (deliveredProduct.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", deliveredProduct.getId()));
@@ -58,23 +66,6 @@ public class DeliveredProductHooks {
 
             return false;
         }
-    }
-
-    public boolean checkIfDeliveredQuantityIsLessThanDamagedQuantity(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct) {
-        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
-        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
-
-        if ((damagedQuantity != null) && (deliveredQuantity != null) && (damagedQuantity.compareTo(deliveredQuantity) == 1)) {
-            deliveredProduct.addError(deliveredProductDD.getField(DAMAGED_QUANTITY),
-                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
-            deliveredProduct.addError(deliveredProductDD.getField(DELIVERED_QUANTITY),
-                    "deliveries.delivedProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
-
-            return false;
-        }
-
-        return true;
     }
 
 }

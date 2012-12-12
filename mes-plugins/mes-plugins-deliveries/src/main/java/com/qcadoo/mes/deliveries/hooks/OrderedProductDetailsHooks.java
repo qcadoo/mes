@@ -23,29 +23,27 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.Entity;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class OrderedProductDetailsHooks {
 
-    public void fillUnitsFields(final ViewDefinitionState view) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PRODUCT);
-        Entity product = productLookup.getEntity();
-        String unit = "";
-        if (product != null) {
-            unit = product.getStringField(ProductFields.UNIT);
-        }
-        FieldComponent field = (FieldComponent) view.getComponentByReference("orderedQuantityUNIT");
-        field.setFieldValue(unit);
-        field.requestComponentUpdateState();
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    public void fillUnitFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("orderedQuantityUNIT");
+
+        deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
     }
 
 }

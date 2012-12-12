@@ -52,16 +52,16 @@ public class DeliveredProductHooksTest {
     private DeliveredProductHooks deliveredProductHooks;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition deliveredProductDD;
 
     @Mock
-    private Entity entity, delivery, product;
+    private Entity deliveredProduct, delivery, product;
 
     @Mock
     private FieldDefinition productField;
 
     @Mock
-    private SearchCriteriaBuilder builder;
+    private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Before
     public void init() {
@@ -69,38 +69,44 @@ public class DeliveredProductHooksTest {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(SearchRestrictions.class);
 
-        when(entity.getBelongsToField("delivery")).thenReturn(delivery);
-        when(entity.getBelongsToField("product")).thenReturn(product);
-        when(dataDefinition.find()).thenReturn(builder);
+        when(deliveredProduct.getBelongsToField(DELIVERY)).thenReturn(delivery);
+        when(deliveredProduct.getBelongsToField(PRODUCT)).thenReturn(product);
+        when(deliveredProductDD.find()).thenReturn(searchCriteriaBuilder);
         Long id = 1L;
-        when(entity.getId()).thenReturn(id);
+        when(deliveredProduct.getId()).thenReturn(id);
         SearchCriterion criterion1 = SearchRestrictions.belongsTo(DELIVERY, delivery);
         SearchCriterion criterion2 = SearchRestrictions.belongsTo(PRODUCT, product);
         SearchCriterion criterion3 = SearchRestrictions.ne("id", id);
-        when(builder.add(criterion1)).thenReturn(builder);
-        when(builder.add(criterion2)).thenReturn(builder);
-        when(builder.add(criterion3)).thenReturn(builder);
-
+        when(searchCriteriaBuilder.add(criterion1)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.add(criterion2)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.add(criterion3)).thenReturn(searchCriteriaBuilder);
+        when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
     }
 
     @Test
-    public void shouldReturnFalseAndAddErrorForEntityWhenOrderedProductAlreadyExists() throws Exception {
+    public void shouldReturnFalseAndAddErrorForEntityWhenDeliveredProductAlreadyExists() throws Exception {
         // given
-        when(builder.uniqueResult()).thenReturn(delivery);
-        when(dataDefinition.getField("product")).thenReturn(productField);
+        when(searchCriteriaBuilder.uniqueResult()).thenReturn(delivery);
+        when(deliveredProductDD.getField(PRODUCT)).thenReturn(productField);
+
         // when
-        boolean result = deliveredProductHooks.checkIfDeliveredProductAlreadyExists(dataDefinition, entity);
+        boolean result = deliveredProductHooks.checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct);
+
         // then
         Assert.assertFalse(result);
-        Mockito.verify(entity).addError(productField, "deliveries.delivedProduct.error.alreadyExists");
+
+        Mockito.verify(deliveredProduct).addError(productField, "deliveries.delivedProduct.error.alreadyExists");
     }
 
     @Test
     public void shouldReturnTrue() throws Exception {
-        when(builder.uniqueResult()).thenReturn(null);
-        when(dataDefinition.getField("product")).thenReturn(productField);
+        // given
+        when(searchCriteriaBuilder.uniqueResult()).thenReturn(null);
+        when(deliveredProductDD.getField(PRODUCT)).thenReturn(productField);
+
         // when
-        boolean result = deliveredProductHooks.checkIfDeliveredProductAlreadyExists(dataDefinition, entity);
+        boolean result = deliveredProductHooks.checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct);
+
         // then
         Assert.assertTrue(result);
     }

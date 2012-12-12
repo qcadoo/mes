@@ -29,23 +29,23 @@ import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 import org.junit.Test;
 
-import com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners;
+import com.qcadoo.mes.deliveries.hooks.OrderedProductHooks;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-public class DeliveryDetailsListenersTSFDOverrideAspectTest {
+public class OrderedProductHooksTSFDOverrideAspectTest {
 
     @Test
-    public final void checkCopyOrderedProductToDeliveredListenersExecution() throws NoSuchMethodException {
-        Class<?> clazz = DeliveryDetailsListeners.class;
-        assertEquals("com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners", clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("copyOrderedProductToDelivered", Entity.class, List.class);
+    public final void checkCheckIfOrderedProductAlreadyExistsExecution() throws NoSuchMethodException {
+        Class<?> clazz = OrderedProductHooks.class;
+        assertEquals("com.qcadoo.mes.deliveries.hooks.OrderedProductHooks", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("checkIfOrderedProductAlreadyExists", DataDefinition.class, Entity.class);
         assertNotNull(method);
-        assertTrue(Modifier.isPrivate(method.getModifiers()));
-        assertEquals(void.class, method.getReturnType());
+        assertTrue(Modifier.isPublic(method.getModifiers()));
+        assertEquals(boolean.class, method.getReturnType());
     }
 
 }
