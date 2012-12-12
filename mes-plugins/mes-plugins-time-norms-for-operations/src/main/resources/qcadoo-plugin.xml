@@ -58,10 +58,62 @@
 		</dependency>
 	</dependencies>
 
-
 	<modules>
 		<localization:translation path="locales" />
-
+		
+		<model:model-field plugin="technologies" model="operation">
+			<model:integer name="tpz" required="true" default="0" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:integer name="tj" required="true" default="0" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="productionInOneCycle" required="true"
+				default="1"  >
+				<model:validatesRange from="0" exclusively="true" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="nextOperationAfterProducedQuantity"
+				default="0" required="true">
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="machineUtilization" required="true"
+				default="1.0">
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="laborUtilization" required="true"
+				default="1.0">
+				<model:validatesRange from="0" exclusively="false" />
+				<model:validatesUnscaledValue max="3" />
+				<model:validatesScale max="5" />
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
+				default="01all" required="true" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:integer name="timeNextOperation" required="true"
+				default="0" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:dictionary name="productionInOneCycleUNIT"
+				dictionary="units" required="true" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
+				dictionary="units" required="true" />
+		</model:model-field>
+		
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:integer name="tpz" required="true" default="0" />
@@ -85,7 +137,9 @@
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:decimal name="nextOperationAfterProducedQuantity"
-				default="0" required="true" />
+				default="0" required="true">
+				<model:validatesRange from="0" exclusively="false" />
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -129,7 +183,6 @@
 			<model:integer name="laborWorkTime" required="true"
 				default="0" />
 		</model:model-field>
-
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
@@ -159,7 +212,9 @@
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
 			<model:decimal name="nextOperationAfterProducedQuantity"
-				default="0" required="true" />
+				default="0" required="true">
+				<model:validatesRange from="0" exclusively="false" />
+			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
@@ -223,58 +278,6 @@
 			model="technologyInstanceOperationComponent">
 			<model:integer name="laborWorkTime" required="true"
 				default="0" />
-		</model:model-field>
-
-		<model:model-field plugin="technologies" model="operation">
-			<model:integer name="tpz" required="true" default="0" />
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:integer name="tj" required="true" default="0" />
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="productionInOneCycle" required="true"
-				default="1"  >
-				<model:validatesRange from="0" exclusively="true" />
-			</model:decimal>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="nextOperationAfterProducedQuantity"
-				default="0" required="true">
-				<model:validatesUnscaledValue max="3" />
-				<model:validatesScale max="5" />
-			</model:decimal>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="machineUtilization" required="true"
-				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesUnscaledValue max="3" />
-				<model:validatesScale max="5" />
-			</model:decimal>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:decimal name="laborUtilization" required="true"
-				default="1.0">
-				<model:validatesRange from="0" exclusively="false" />
-				<model:validatesUnscaledValue max="3" />
-				<model:validatesScale max="5" />
-			</model:decimal>
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
-				default="01all" required="true" />
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:integer name="timeNextOperation" required="true"
-				default="0" />
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:dictionary name="productionInOneCycleUNIT"
-				dictionary="units" required="true" />
-		</model:model-field>
-		<model:model-field plugin="technologies" model="operation">
-			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
-				dictionary="units" required="true" />
 		</model:model-field>
 
 		<model:model-hook model="technology" plugin="technologies">
