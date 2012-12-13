@@ -11,9 +11,10 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public class OrderedProductListenersHooksCNID {
 
     @Autowired
-    private OrderedProductDetailsHooksCNID detailsHooksCNID;
+    private OrderedProductDetailsHooksCNID orderedProductDetailsHooksCNID;
 
     public void setCatalogProductNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        detailsHooksCNID.setCatalogProductNumber(view);
+        orderedProductDetailsHooksCNID.setCatalogProductNumber(view);
     }
+
 }
