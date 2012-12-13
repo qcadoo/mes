@@ -33,6 +33,7 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -48,14 +49,22 @@ public class ResourceModelHooks {
     }
 
     private String generateBatchForResource(final String model) {
-        String batch = "000001";
+        Entity lastBatch = getLastBatch();
 
-        Long parsedNumber = Long.parseLong(batch);
+        String batch = null;
 
-        while (batchAlreadyExist(model, batch)) {
-            parsedNumber++;
+        if (lastBatch == null) {
+            batch = "000001";
+        } else {
+            batch = lastBatch.getStringField(BATCH);
 
-            batch = String.format("%06d", parsedNumber);
+            Long parsedNumber = Long.parseLong(batch);
+
+            do {
+                parsedNumber++;
+
+                batch = String.format("%06d", parsedNumber);
+            } while (batchAlreadyExist(model, batch));
         }
 
         return batch;
@@ -65,4 +74,11 @@ public class ResourceModelHooks {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, model).find()
                 .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
     }
+
+    private Entity getLastBatch() {
+        return dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
+                .addOrder(SearchOrders.desc(BATCH)).setMaxResults(1).uniqueResult();
+    }
+
 }
