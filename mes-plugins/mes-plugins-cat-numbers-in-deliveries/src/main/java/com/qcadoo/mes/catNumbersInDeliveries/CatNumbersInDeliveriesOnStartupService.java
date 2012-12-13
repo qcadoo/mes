@@ -27,27 +27,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension.CNIDcolumnLoader;
+import com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnLoaderCNID;
 import com.qcadoo.plugin.api.Module;
 
 @Component
 public class CatNumbersInDeliveriesOnStartupService extends Module {
 
     @Autowired
-    private CNIDcolumnLoader cNIDcolumnLoader;
+    private DeliveriesColumnLoaderCNID deliveriesColumnLoaderCNID;
 
     @Transactional
     @Override
     public void multiTenantEnable() {
-        cNIDcolumnLoader.addCNIDcolumnsForDeliveries();
-        cNIDcolumnLoader.addCNIDcolumnsForOrders();
+        deliveriesColumnLoaderCNID.addColumnsForDeliveriesCNID();
+        deliveriesColumnLoaderCNID.addColumnsForOrdersCNID();
     }
 
     @Transactional
     @Override
     public void multiTenantDisable() {
-        cNIDcolumnLoader.deleteCNIDcolumnsForDeliveries();
-        cNIDcolumnLoader.deleteCNIDcolumnsForOrders();
+        deliveriesColumnLoaderCNID.deleteColumnsForDeliveriesCNID();
+        deliveriesColumnLoaderCNID.deleteColumnsForOrdersCNID();
     }
 
 }

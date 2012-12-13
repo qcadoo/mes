@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.catNumbersInDeliveries.columnExtension;
 
 import static org.mockito.Mockito.verify;
 
@@ -34,9 +34,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.deliveries.DeliveriesColumnLoaderService;
 
-public class CNIDcolumnLoaderTest {
+public class DeliveriesColumnLoaderCNIDTest {
 
-    private CNIDcolumnLoader cNIDcolumnLoader;
+    private DeliveriesColumnLoaderCNID deliveriesColumnLoaderCNID;
 
     @Mock
     private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
@@ -45,50 +45,50 @@ public class CNIDcolumnLoaderTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        cNIDcolumnLoader = new CNIDcolumnLoader();
+        deliveriesColumnLoaderCNID = new DeliveriesColumnLoaderCNID();
 
-        ReflectionTestUtils.setField(cNIDcolumnLoader, "deliveriesColumnLoaderService", deliveriesColumnLoaderService);
+        ReflectionTestUtils.setField(deliveriesColumnLoaderCNID, "deliveriesColumnLoaderService", deliveriesColumnLoaderService);
     }
 
     @Test
-    public void shouldAddCNIDcolumnsForDeliveries() {
+    public void shouldAddColumnsForDeliveriesCNID() {
         // given
 
         // when
-        cNIDcolumnLoader.addCNIDcolumnsForDeliveries();
+        deliveriesColumnLoaderCNID.addColumnsForDeliveriesCNID();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldDeleteCNIDcolumnsForDeliveries() {
+    public void shouldDeleteColumnsForDeliveriesCNID() {
         // given
 
         // when
-        cNIDcolumnLoader.deleteCNIDcolumnsForDeliveries();
+        deliveriesColumnLoaderCNID.deleteColumnsForDeliveriesCNID();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldAddCNIDcolumnsForOrders() {
+    public void shouldAddColumnsForOrdersCNID() {
         // given
 
         // when
-        cNIDcolumnLoader.addCNIDcolumnsForOrders();
+        deliveriesColumnLoaderCNID.addColumnsForOrdersCNID();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForOrders(Mockito.anyString());
     }
 
     @Test
-    public void shouldDeleteCNIDcolumnsForOrders() {
+    public void shouldDeleteColumnsForOrdersCNID() {
         // given
 
         // when
-        cNIDcolumnLoader.deleteCNIDcolumnsForOrders();
+        deliveriesColumnLoaderCNID.deleteColumnsForOrdersCNID();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForOrders(Mockito.anyString());

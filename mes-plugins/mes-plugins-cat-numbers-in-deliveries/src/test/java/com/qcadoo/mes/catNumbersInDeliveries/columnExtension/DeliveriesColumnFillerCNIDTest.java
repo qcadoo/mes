@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.2.0-SNAPSHOT
  *
  * This file is part of Qcadoo.
@@ -21,20 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.catNumbersInDeliveries.columnExtension;
 
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
-public class TSFDcolumnFillerTest {
+import com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID;
 
-    private TSFDcolumnFiller tSFDcolumnFiller;
+public class DeliveriesColumnFillerCNIDTest {
+
+    private DeliveriesColumnFillerCNID cNINcolumnFiller;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        tSFDcolumnFiller = new TSFDcolumnFiller();
+        cNINcolumnFiller = new DeliveriesColumnFillerCNID();
     }
 
 }

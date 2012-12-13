@@ -31,14 +31,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension.TSFDcolumnLoader;
+import com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnLoaderTSFD;
 
 public class TechSubcontrForDeliveriesOnStartupServiceTest {
 
     private TechSubcontrForDeliveriesOnStartupService techSubcontrForDeliveriesOnStartupService;
 
     @Mock
-    private TSFDcolumnLoader tSFDcolumnLoader;
+    private DeliveriesColumnLoaderTSFD deliveriesColumnLoaderTSFD;
 
     @Before
     public void init() {
@@ -46,7 +46,8 @@ public class TechSubcontrForDeliveriesOnStartupServiceTest {
 
         techSubcontrForDeliveriesOnStartupService = new TechSubcontrForDeliveriesOnStartupService();
 
-        ReflectionTestUtils.setField(techSubcontrForDeliveriesOnStartupService, "tSFDcolumnLoader", tSFDcolumnLoader);
+        ReflectionTestUtils.setField(techSubcontrForDeliveriesOnStartupService, "deliveriesColumnLoaderTSFD",
+                deliveriesColumnLoaderTSFD);
     }
 
     @Test
@@ -57,8 +58,8 @@ public class TechSubcontrForDeliveriesOnStartupServiceTest {
         techSubcontrForDeliveriesOnStartupService.multiTenantEnable();
 
         // then
-        verify(tSFDcolumnLoader).addTSFDcolumnsForDeliveries();
-        verify(tSFDcolumnLoader).addTSFDcolumnsForOrders();
+        verify(deliveriesColumnLoaderTSFD).addColumnsForDeliveriesTSFD();
+        verify(deliveriesColumnLoaderTSFD).addColumnsForOrdersTSFD();
     }
 
     @Test
@@ -69,8 +70,8 @@ public class TechSubcontrForDeliveriesOnStartupServiceTest {
         techSubcontrForDeliveriesOnStartupService.multiTenantDisable();
 
         // then
-        verify(tSFDcolumnLoader).deleteTSFDcolumnsForDeliveries();
-        verify(tSFDcolumnLoader).deleteTSFDcolumnsForOrders();
+        verify(deliveriesColumnLoaderTSFD).deleteColumnsForDeliveriesTSFD();
+        verify(deliveriesColumnLoaderTSFD).deleteColumnsForOrdersTSFD();
     }
 
 }

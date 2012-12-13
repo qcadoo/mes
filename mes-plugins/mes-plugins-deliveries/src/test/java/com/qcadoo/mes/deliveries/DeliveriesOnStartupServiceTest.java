@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnLoader;
+import com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnLoader;
 
 public class DeliveriesOnStartupServiceTest {
 
@@ -57,8 +57,8 @@ public class DeliveriesOnStartupServiceTest {
         deliveriesOnStartupService.multiTenantEnable();
 
         // then
-        verify(deliveriesColumnLoader).addDeliveriesColumnsForDeliveries();
-        verify(deliveriesColumnLoader).addDeliveriesColumnsForOrders();
+        verify(deliveriesColumnLoader).addColumnsForDeliveries();
+        verify(deliveriesColumnLoader).addColumnsForOrders();
     }
 
     @Test
@@ -69,8 +69,8 @@ public class DeliveriesOnStartupServiceTest {
         deliveriesOnStartupService.multiTenantDisable();
 
         // then
-        verify(deliveriesColumnLoader).deleteDeliveriesColumnsForDeliveries();
-        verify(deliveriesColumnLoader).deleteDeliveriesColumnsForOrders();
+        verify(deliveriesColumnLoader).deleteColumnsForDeliveries();
+        verify(deliveriesColumnLoader).deleteColumnsForOrders();
     }
 
 }

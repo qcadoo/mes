@@ -21,11 +21,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.catNumbersInDeliveries.columnExtension;
 
 import static com.qcadoo.mes.catNumbersInDeliveries.contants.OrderedProductFieldsCNID.PRODUCT_CATALOG_NUMBER;
 import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.CATALOG_NUMBER;
-import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumberFields.PRODUCT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,7 @@ import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
 import com.qcadoo.model.api.Entity;
 
 @Component
-public class CNIDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller {
+public class DeliveriesColumnFillerCNID implements DeliveryColumnFiller, OrderColumnFiller {
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -71,13 +70,11 @@ public class CNIDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
         for (Entity orderedProduct : orderedProducts) {
-            Entity product = orderedProduct.getBelongsToField(PRODUCT);
-
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+            if (!values.containsKey(orderedProduct)) {
+                values.put(orderedProduct, new HashMap<String, String>());
             }
 
-            fillCatalogNumber(values, product, orderedProduct);
+            fillCatalogNumber(values, orderedProduct);
         }
 
         return values;
@@ -122,8 +119,7 @@ public class CNIDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
         values.get(product).put("catalogNumber", catalogNumber);
     }
 
-    private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity product,
-            final Entity orderedProduct) {
+    private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         String catalogNumber = null;
 
         if (orderedProduct == null) {
@@ -138,7 +134,7 @@ public class CNIDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller
             }
         }
 
-        values.get(product).put("catalogNumber", catalogNumber);
+        values.get(orderedProduct).put("catalogNumber", catalogNumber);
     }
 
 }

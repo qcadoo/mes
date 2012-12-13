@@ -31,14 +31,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension.CNIDcolumnLoader;
+import com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnLoaderCNID;
 
 public class CatNumbersInDeliveriesOnStartupServiceTest {
 
     private CatNumbersInDeliveriesOnStartupService catNumbersInDeliveriesOnStartupService;
 
     @Mock
-    private CNIDcolumnLoader cNIDcolumnLoader;
+    private DeliveriesColumnLoaderCNID deliveriesColumnLoaderCNID;
 
     @Before
     public void init() {
@@ -46,7 +46,8 @@ public class CatNumbersInDeliveriesOnStartupServiceTest {
 
         catNumbersInDeliveriesOnStartupService = new CatNumbersInDeliveriesOnStartupService();
 
-        ReflectionTestUtils.setField(catNumbersInDeliveriesOnStartupService, "cNIDcolumnLoader", cNIDcolumnLoader);
+        ReflectionTestUtils.setField(catNumbersInDeliveriesOnStartupService, "deliveriesColumnLoaderCNID",
+                deliveriesColumnLoaderCNID);
     }
 
     @Test
@@ -57,8 +58,8 @@ public class CatNumbersInDeliveriesOnStartupServiceTest {
         catNumbersInDeliveriesOnStartupService.multiTenantEnable();
 
         // then
-        verify(cNIDcolumnLoader).addCNIDcolumnsForDeliveries();
-        verify(cNIDcolumnLoader).addCNIDcolumnsForOrders();
+        verify(deliveriesColumnLoaderCNID).addColumnsForDeliveriesCNID();
+        verify(deliveriesColumnLoaderCNID).addColumnsForOrdersCNID();
     }
 
     @Test
@@ -69,8 +70,8 @@ public class CatNumbersInDeliveriesOnStartupServiceTest {
         catNumbersInDeliveriesOnStartupService.multiTenantDisable();
 
         // then
-        verify(cNIDcolumnLoader).deleteCNIDcolumnsForDeliveries();
-        verify(cNIDcolumnLoader).deleteCNIDcolumnsForOrders();
+        verify(deliveriesColumnLoaderCNID).deleteColumnsForDeliveriesCNID();
+        verify(deliveriesColumnLoaderCNID).deleteColumnsForOrdersCNID();
     }
 
 }

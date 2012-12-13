@@ -24,12 +24,17 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
@@ -42,7 +47,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -121,24 +125,46 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEditable(enabledDeliveredGrid);
     }
 
-    public void setAddressFromParameter(final ViewDefinitionState view) {
+    public void fillDefaultAddress(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() != null) {
             return;
         }
+
+        FieldComponent deliveryAddressField = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
+        String deliveryAddress = (String) deliveryAddressField.getFieldValue();
+
         Entity parameter = parameterService.getParameter();
-        FieldComponent deliveryAddress = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
-        String defaultAddress = parameter.getStringField("defaultAddress");
-        if (!StringUtils.isEmpty(defaultAddress) && defaultAddress.equals(DefaultAddressType.OTHER.getStringValue())) {
-            deliveryAddress.setFieldValue(parameter.getStringField("otherAddress"));
-        } else {
-            deliveryAddress.setFieldValue(generateAddressFromCompany(parameter));
+
+        if (StringUtils.isEmpty(deliveryAddress)) {
+            if (OTHER.getStringValue().equals(parameter.getStringField(DEFAULT_ADDRESS))) {
+                deliveryAddressField.setFieldValue(parameter.getStringField(OTHER_ADDRESS));
+            } else {
+                deliveryAddressField.setFieldValue(generateAddressFromCompany());
+            }
         }
     }
 
-    private String generateAddressFromCompany(final Entity parameter) {
-        StringBuffer address = new StringBuffer();
+    public void fillDefaultDescription(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() != null) {
+            return;
+        }
+
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(DESCRIPTION);
+        String description = (String) descriptionField.getFieldValue();
+
+        Entity parameter = parameterService.getParameter();
+
+        if (StringUtils.isEmpty(description)) {
+            descriptionField.setFieldValue(parameter.getStringField(DEFAULT_DESCRIPTION));
+        }
+    }
+
+    private String generateAddressFromCompany() {
         Entity company = companyService.getCompany();
+
+        StringBuffer address = new StringBuffer();
         address.append(company.getStringField(CompanyFields.STREET));
         address.append(" ");
         address.append(company.getStringField(CompanyFields.NUMBER));
@@ -148,6 +174,8 @@ public class DeliveryDetailsHooks {
         address.append(company.getStringField(CompanyFields.ZIP_CODE));
         address.append(" ");
         address.append(company.getStringField(CompanyFields.CITY));
+
         return address.toString();
     }
+
 }

@@ -25,5 +25,5 @@
 
 -->
 <column>
-	<row IDENTIFIER="catalogNumber" NAME="deliveries.columnForOrders.name.value.catalogNumber" DESCRIPTION="deliveries.columnForOrders.description.value.catalogNumber" COLUMNFILLER="com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension.CNIDcolumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="catalogNumber" NAME="deliveries.columnForOrders.name.value.catalogNumber" DESCRIPTION="deliveries.columnForOrders.description.value.catalogNumber" COLUMNFILLER="com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID" ALIGNMENT="01left" />
 </column>
