@@ -6,6 +6,8 @@ public final class ParameterFieldsD {
 
     }
 
+    public static final String DEFAULT_DESCRIPTION = "defaultDescription";
+
     public static final String DEFAULT_ADDRESS = "defaultAddress";
 
     public static final String OTHER_ADDRESS = "otherAddress";
