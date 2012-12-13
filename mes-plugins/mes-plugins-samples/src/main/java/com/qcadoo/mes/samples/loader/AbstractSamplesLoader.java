@@ -176,6 +176,10 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
             params.setField("batchNumberRequiredInputProducts", false);
         }
 
+        if (isEnabledOrEnabling("materialRequirements")) {
+            params.setField("inputProductsRequiredForType", "01startOrder");
+        }
+
         params.getDataDefinition().save(params);
     }
 
