@@ -62,7 +62,7 @@ public class CostNormsForProductServiceTest {
     private FormComponent form;
 
     @Mock
-    private FieldComponent field1, field2, field3;
+    private FieldComponent field1, field2, field3, field4, field5;
 
     @Mock
     private Entity entity;
@@ -97,6 +97,8 @@ public class CostNormsForProductServiceTest {
         when(viewDefinitionState.getComponentByReference("nominalCostCurrency")).thenReturn(field1);
         when(viewDefinitionState.getComponentByReference("lastPurchaseCostCurrency")).thenReturn(field2);
         when(viewDefinitionState.getComponentByReference("averageCostCurrency")).thenReturn(field3);
+        when(viewDefinitionState.getComponentByReference("averageOfferCostCurrency")).thenReturn(field4);
+        when(viewDefinitionState.getComponentByReference("lastOfferCostCurrency")).thenReturn(field5);
 
         when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
         // when

@@ -111,7 +111,7 @@ public class CostNormsForProductService {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
-        clearAndDisabledFields(viewDefinitionState, fieldNames);
+        clearFields(viewDefinitionState, fieldNames);
         if (form == null || form.getEntityId() == null) {
             return;
         }
@@ -125,11 +125,10 @@ public class CostNormsForProductService {
         }
     }
 
-    private void clearAndDisabledFields(final ViewDefinitionState view, final Set<String> fieldNames) {
+    private void clearFields(final ViewDefinitionState view, final Set<String> fieldNames) {
         for (String fieldName : fieldNames) {
             FieldComponent currencyField = (FieldComponent) view.getComponentByReference(fieldName);
             currencyField.setFieldValue(L_EMPTY);
-            currencyField.setEnabled(false);
         }
     }
 

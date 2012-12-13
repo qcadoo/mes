@@ -43,7 +43,7 @@
 					</layoutElement>
 					<layoutElement column="4" row="1">
 						<component type="input" name="costForNumberUnit"
-							reference="costForNumberUnit" hasLabel="false" defaultEnable="false" />
+							reference="costForNumberUnit" hasLabel="false" defaultEnable="never" />
 					</layoutElement>
 				</component>
 			</layoutElement>
@@ -58,7 +58,7 @@
 					</layoutElement>
 					<layoutElement column="4" row="1">
 						<component type="input" name="nominalCostCurrency"
-							reference="nominalCostCurrency" hasLabel="false" defaultEnable="false" />
+							reference="nominalCostCurrency" hasLabel="false" defaultEnable="never" />
 					</layoutElement>
 				</component>
 			</layoutElement>
@@ -76,9 +76,9 @@
 						<layoutElement column="4" row="1">
 							<component type="input" name="lastPurchaseCostCurrency"
 								reference="lastPurchaseCostCurrency" hasLabel="false"
-								defaultEnable="false" />
+								defaultEnable="never" />
 						</layoutElement>
-						<layoutElement column="1" row="2">
+						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="averageCost" reference="averageCost"
 								field="#{form}.averageCost">
 								<option type="alignment" value="right" />
@@ -86,7 +86,7 @@
 						</layoutElement>
 						<layoutElement column="4" row="2">
 							<component type="input" name="averageCostCurrency"
-								reference="averageCostCurrency" hasLabel="false" defaultEnable="false" />
+								reference="averageCostCurrency" hasLabel="false" defaultEnable="never" />
 						</layoutElement>
 					</component>
 				</component>
@@ -102,12 +102,12 @@
 								<option type="alignment" value="right" />
 							</component>
 						</layoutElement>
-						<layoutElement column="4" row="1">
+						<layoutElement column="4" row="1" >
 							<component type="input" name="lastOfferCostCurrency"
 								reference="lastOfferCostCurrency" hasLabel="false"
-								defaultEnable="false" />
+								defaultEnable="never" />
 						</layoutElement>
-						<layoutElement column="1" row="2">
+						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="averageOfferCost"
 								reference="averageOfferCost" field="#{form}.averageOfferCost">
 								<option type="alignment" value="right" />
@@ -116,7 +116,7 @@
 						<layoutElement column="4" row="2">
 							<component type="input" name="averageOfferCostCurrency"
 								reference="averageOfferCostCurrency" hasLabel="false"
-								defaultEnable="false" />
+								defaultEnable="never" />
 						</layoutElement>
 					</component>
 				</component>

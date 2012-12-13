@@ -37,4 +37,8 @@ public final class ProductCostNormsFields {
 
     public static final String AVERAGE_COST = "averageCost";
 
+    public static final String AVERAGE_OFFER_COST = "averageOfferCost";
+
+    public static final String LAST_OFFER_COST = "lastOfferCost";
+
 }
