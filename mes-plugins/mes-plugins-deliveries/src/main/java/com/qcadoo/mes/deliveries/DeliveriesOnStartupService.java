@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnLoader;
+import com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnLoader;
 import com.qcadoo.plugin.api.Module;
 
 @Component
@@ -39,15 +39,15 @@ public class DeliveriesOnStartupService extends Module {
     @Transactional
     @Override
     public void multiTenantEnable() {
-        deliveriesColumnLoader.addDeliveriesColumnsForDeliveries();
-        deliveriesColumnLoader.addDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.addColumnsForDeliveries();
+        deliveriesColumnLoader.addColumnsForOrders();
     }
 
     @Transactional
     @Override
     public void multiTenantDisable() {
-        deliveriesColumnLoader.deleteDeliveriesColumnsForDeliveries();
-        deliveriesColumnLoader.deleteDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.deleteColumnsForDeliveries();
+        deliveriesColumnLoader.deleteColumnsForOrders();
     }
 
 }

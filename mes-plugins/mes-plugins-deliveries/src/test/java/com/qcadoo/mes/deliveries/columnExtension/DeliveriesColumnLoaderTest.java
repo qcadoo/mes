@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.deliveries.columnExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -53,96 +53,96 @@ public class DeliveriesColumnLoaderTest {
     }
 
     @Test
-    public void shouldAddDeliveriesColumnsForDeliveries() {
+    public void shouldAddColumnsForDeliveries() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()).willReturn(true);
 
         // when
-        deliveriesColumnLoader.addDeliveriesColumnsForDeliveries();
+        deliveriesColumnLoader.addColumnsForDeliveries();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldntAddDeliveriesColumnsForDeliveries() {
+    public void shouldntAddColumnsForDeliveries() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()).willReturn(false);
 
         // when
-        deliveriesColumnLoader.addDeliveriesColumnsForDeliveries();
+        deliveriesColumnLoader.addColumnsForDeliveries();
 
         // then
         verify(deliveriesColumnLoaderService, never()).fillColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldDeleteDeliveriesColumnsForDeliveries() {
+    public void shouldDeleteColumnsForDeliveries() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()).willReturn(false);
 
         // when
-        deliveriesColumnLoader.deleteDeliveriesColumnsForDeliveries();
+        deliveriesColumnLoader.deleteColumnsForDeliveries();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldntDeleteDeliveriesColumnsForDeliveries() {
+    public void shouldntDeleteColumnsForDeliveries() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()).willReturn(true);
 
         // when
-        deliveriesColumnLoader.deleteDeliveriesColumnsForDeliveries();
+        deliveriesColumnLoader.deleteColumnsForDeliveries();
 
         // then
         verify(deliveriesColumnLoaderService, never()).clearColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldAddDeliveriesColumnsForOrders() {
+    public void shouldAddColumnsForOrders() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForOrdersEmpty()).willReturn(true);
 
         // when
-        deliveriesColumnLoader.addDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.addColumnsForOrders();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForOrders(Mockito.anyString());
     }
 
     @Test
-    public void shouldntAddDeliveriesColumnsForOrders() {
+    public void shouldntAddColumnsForOrders() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForOrdersEmpty()).willReturn(false);
 
         // when
-        deliveriesColumnLoader.addDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.addColumnsForOrders();
 
         // then
         verify(deliveriesColumnLoaderService, never()).fillColumnsForOrders(Mockito.anyString());
     }
 
     @Test
-    public void shouldDeleteDeliveriesColumnsForOrders() {
+    public void shouldDeleteColumnsForOrders() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForOrdersEmpty()).willReturn(false);
 
         // when
-        deliveriesColumnLoader.deleteDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.deleteColumnsForOrders();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForOrders(Mockito.anyString());
     }
 
     @Test
-    public void shoulntdDeleteDeliveriesColumnsForOrders() {
+    public void shoulntdDeleteColumnsForOrders() {
         // given
         given(deliveriesColumnLoaderService.isColumnsForOrdersEmpty()).willReturn(true);
 
         // when
-        deliveriesColumnLoader.deleteDeliveriesColumnsForOrders();
+        deliveriesColumnLoader.deleteColumnsForOrders();
 
         // then
         verify(deliveriesColumnLoaderService, never()).clearColumnsForOrders(Mockito.anyString());

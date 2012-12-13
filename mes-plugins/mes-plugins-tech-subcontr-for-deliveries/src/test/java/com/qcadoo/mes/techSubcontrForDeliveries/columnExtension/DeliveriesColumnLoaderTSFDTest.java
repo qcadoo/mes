@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.techSubcontrForDeliveries.columnExtension;
 
 import static org.mockito.Mockito.verify;
 
@@ -34,9 +34,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.deliveries.DeliveriesColumnLoaderService;
 
-public class TSFDcolumnLoaderTest {
+public class DeliveriesColumnLoaderTSFDTest {
 
-    private TSFDcolumnLoader tSFDcolumnLoader;
+    private DeliveriesColumnLoaderTSFD deliveriesColumnLoaderTSFD;
 
     @Mock
     private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
@@ -45,17 +45,17 @@ public class TSFDcolumnLoaderTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        tSFDcolumnLoader = new TSFDcolumnLoader();
+        deliveriesColumnLoaderTSFD = new DeliveriesColumnLoaderTSFD();
 
-        ReflectionTestUtils.setField(tSFDcolumnLoader, "deliveriesColumnLoaderService", deliveriesColumnLoaderService);
+        ReflectionTestUtils.setField(deliveriesColumnLoaderTSFD, "deliveriesColumnLoaderService", deliveriesColumnLoaderService);
     }
 
     @Test
-    public void shouldAddTSFDcolumnsForDeliveries() {
+    public void shouldAddColumnsForDeliveriesTSFD() {
         // given
 
         // when
-        tSFDcolumnLoader.addTSFDcolumnsForDeliveries();
+        deliveriesColumnLoaderTSFD.addColumnsForDeliveriesTSFD();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForDeliveries(Mockito.anyString());
@@ -66,29 +66,29 @@ public class TSFDcolumnLoaderTest {
         // given
 
         // when
-        tSFDcolumnLoader.deleteTSFDcolumnsForDeliveries();
+        deliveriesColumnLoaderTSFD.deleteColumnsForDeliveriesTSFD();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForDeliveries(Mockito.anyString());
     }
 
     @Test
-    public void shouldAddTSFDcolumnsForOrders() {
+    public void shouldAddColumnsForOrdersTSFD() {
         // given
 
         // when
-        tSFDcolumnLoader.addTSFDcolumnsForOrders();
+        deliveriesColumnLoaderTSFD.addColumnsForOrdersTSFD();
 
         // then
         verify(deliveriesColumnLoaderService).fillColumnsForOrders(Mockito.anyString());
     }
 
     @Test
-    public void shouldDeleteTSFDcolumnsForOrders() {
+    public void shouldDeleteColumnsForOrdersTSFD() {
         // given
 
         // when
-        tSFDcolumnLoader.deleteTSFDcolumnsForOrders();
+        deliveriesColumnLoaderTSFD.deleteColumnsForOrdersTSFD();
 
         // then
         verify(deliveriesColumnLoaderService).clearColumnsForOrders(Mockito.anyString());

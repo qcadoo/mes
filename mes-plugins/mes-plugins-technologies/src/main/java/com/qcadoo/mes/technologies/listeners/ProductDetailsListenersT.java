@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.hooks;
+package com.qcadoo.mes.technologies.listeners;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
@@ -40,7 +40,7 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
-public class ProductDetailsViewHooks {
+public class ProductDetailsListenersT {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 

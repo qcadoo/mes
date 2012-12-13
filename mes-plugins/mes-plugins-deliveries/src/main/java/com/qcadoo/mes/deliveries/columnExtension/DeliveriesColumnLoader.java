@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.deliveries.columnExtension;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class DeliveriesColumnLoader {
     @Autowired
     private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
 
-    public void addDeliveriesColumnsForDeliveries() {
+    public void addColumnsForDeliveries() {
         if (!deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()) {
             return;
         }
@@ -51,7 +51,7 @@ public class DeliveriesColumnLoader {
         deliveriesColumnLoaderService.fillColumnsForDeliveries(DeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void deleteDeliveriesColumnsForDeliveries() {
+    public void deleteColumnsForDeliveries() {
         if (deliveriesColumnLoaderService.isColumnsForDeliveriesEmpty()) {
             return;
         }
@@ -63,7 +63,7 @@ public class DeliveriesColumnLoader {
         deliveriesColumnLoaderService.clearColumnsForDeliveries(DeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void addDeliveriesColumnsForOrders() {
+    public void addColumnsForOrders() {
         if (!deliveriesColumnLoaderService.isColumnsForOrdersEmpty()) {
             return;
         }
@@ -75,7 +75,7 @@ public class DeliveriesColumnLoader {
         deliveriesColumnLoaderService.fillColumnsForOrders(DeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void deleteDeliveriesColumnsForOrders() {
+    public void deleteColumnsForOrders() {
         if (deliveriesColumnLoaderService.isColumnsForOrdersEmpty()) {
             return;
         }

@@ -21,20 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.techSubcontrForDeliveries.columnExtension;
 
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
-public class DeliveriesColumnFillerTest {
+import com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnFillerTSFD;
 
-    private DeliveriesColumnFiller deliveriesColumnFiller;
+public class DeliveriesColumnFillerTSFDTest {
+
+    private DeliveriesColumnFillerTSFD deliveriesColumnFillerTSFD;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        deliveriesColumnFiller = new DeliveriesColumnFiller();
+        deliveriesColumnFillerTSFD = new DeliveriesColumnFillerTSFD();
     }
 
 }

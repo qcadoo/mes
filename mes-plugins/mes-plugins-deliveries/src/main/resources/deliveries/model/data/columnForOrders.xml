@@ -25,9 +25,9 @@
 
 -->
 <column>
-	<row IDENTIFIER="succession" NAME="deliveries.columnForOrders.name.value.succession" DESCRIPTION="deliveries.columnForOrders.description.value.succession" COLUMNFILLER="com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
-	<row IDENTIFIER="productNumber" NAME="deliveries.columnForOrders.name.value.productNumber" DESCRIPTION="deliveries.columnForOrders.description.value.productNumber" COLUMNFILLER="com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
-	<row IDENTIFIER="productName" NAME="deliveries.columnForOrders.name.value.productName" DESCRIPTION="deliveries.columnForOrders.description.value.productName" COLUMNFILLER="com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
-	<row IDENTIFIER="orderedQuantity" NAME="deliveries.columnForOrders.name.value.orderedQuantity" DESCRIPTION="deliveries.columnForOrders.description.value.orderedQuantity" COLUMNFILLER="com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
-	<row IDENTIFIER="productUnit" NAME="deliveries.columnForOrders.name.value.productUnit" DESCRIPTION="deliveries.columnForOrders.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.deliveriesColumnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="succession" NAME="deliveries.columnForOrders.name.value.succession" DESCRIPTION="deliveries.columnForOrders.description.value.succession" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="productNumber" NAME="deliveries.columnForOrders.name.value.productNumber" DESCRIPTION="deliveries.columnForOrders.description.value.productNumber" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="productName" NAME="deliveries.columnForOrders.name.value.productName" DESCRIPTION="deliveries.columnForOrders.description.value.productName" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="orderedQuantity" NAME="deliveries.columnForOrders.name.value.orderedQuantity" DESCRIPTION="deliveries.columnForOrders.description.value.orderedQuantity" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="productUnit" NAME="deliveries.columnForOrders.name.value.productUnit" DESCRIPTION="deliveries.columnForOrders.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 </column>

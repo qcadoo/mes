@@ -25,5 +25,5 @@
 
 -->
 <column>
-	<row IDENTIFIER="operationNumber" NAME="deliveries.columnForOrders.name.value.operationNumber" DESCRIPTION="deliveries.columnForOrders.description.value.operationNumber" COLUMNFILLER="com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension.TSFDcolumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="operationNumber" NAME="deliveries.columnForOrders.name.value.operationNumber" DESCRIPTION="deliveries.columnForOrders.description.value.operationNumber" COLUMNFILLER="com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnFillerTSFD" ALIGNMENT="01left" />
 </column>

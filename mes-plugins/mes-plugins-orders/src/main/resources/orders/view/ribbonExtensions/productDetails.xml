@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
+    Project: Qcadoo MES
     Version: 1.2.0-SNAPSHOT
 
     This file is part of Qcadoo.
@@ -24,6 +24,38 @@
     ***************************************************************************
 
 -->
-<column>
-	<row IDENTIFIER="catalogNumber" NAME="deliveries.columnForDeliveries.name.value.catalogNumber" DESCRIPTION="deliveries.columnForDeliveries.description.value.catalogNumber" COLUMNFILLER="com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID" ALIGNMENT="01left" />
-</column>
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="basic"
+	view="productDetails">
+	
+	<group name="orders">
+		<bigButton name="showOrdersWithProductMain" icon="genealogyIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOrdersWithProductMain', []);
+							}
+						}
+					});		
+				]]>
+			</script>
+		</bigButton>
+		<bigButton name="showOrdersWithProductPlanned" icon="genealogyIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOrdersWithProductPlanned', []);
+							}
+						}
+					});		
+				]]>
+			</script>
+		</bigButton>
+	</group>
+	
+</ribbonExtension>

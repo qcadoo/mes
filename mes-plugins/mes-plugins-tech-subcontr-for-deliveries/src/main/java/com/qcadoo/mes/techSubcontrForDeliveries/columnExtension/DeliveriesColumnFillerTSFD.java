@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.techSubcontrForDeliveries.columnExtension;
 
 import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
 import static com.qcadoo.mes.technologies.constants.OperationFields.NUMBER;
@@ -41,7 +41,7 @@ import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
 import com.qcadoo.model.api.Entity;
 
 @Component
-public class TSFDcolumnFiller implements DeliveryColumnFiller, OrderColumnFiller {
+public class DeliveriesColumnFillerTSFD implements DeliveryColumnFiller, OrderColumnFiller {
 
     @Autowired
     private DeliveriesService deliveriesService;

@@ -29,6 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="generate">
@@ -256,11 +257,14 @@
 						<component type="lookup" name="supplier" reference="supplier"
 							field="supplier">
 							<option type="column" name="name" fields="name" link="true" />
+							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 								method="fillBufferForSupplier" />
@@ -285,8 +289,10 @@
 							reference="deliveryDateBuffer" defaultEnabled="never" />
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
 					method="changeState" />
@@ -301,6 +307,7 @@
 					method="copyOrderedProductToDelivered" />
 			</component>
 		</windowTab>
+		
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="1" rows="1">
@@ -335,6 +342,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="1" rows="1">
@@ -352,12 +360,16 @@
 						<option type="column" name="damagedQuantity" fields="damagedQuantity" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" width="70" />
+							
 						<option type="order" column="succession" direction="asc" />
+						
 						<option type="searchable" value="number" />
 						<option type="orderable" value="succession,number,name,unit" />
+						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -366,6 +378,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="historyTab">
 			<component type="gridLayout" name="loggingsGridLayout"
 				columns="2" rows="1">
@@ -375,16 +388,21 @@
 						<option type="column" name="dateAndTime" fields="dateAndTime" />
 						<option type="column" name="currentState" fields="targetState" />
 						<option type="column" name="worker" fields="worker" />
+						
 						<option type="order" column="dateAndTime" direction="asc" />
+						
 						<option type="searchable" value="dateAndTime,targetState,worker" />
 						<option type="orderable" value="dateAndTime,targetState,worker" />
+						
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="generateDeliveryNumber" />
@@ -393,6 +411,9 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="changeFieldsEnabledDependOnState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="setAddressFromParameter" />
+			method="fillDefaultAddress" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="fillDefaultDescription" />
 	</hooks>
+	
 </view>

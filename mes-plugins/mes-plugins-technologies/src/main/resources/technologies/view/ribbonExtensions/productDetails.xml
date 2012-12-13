@@ -44,33 +44,5 @@
 			</script>
 		</bigButton>
 	</group>
-	<group name="orders">
-		<bigButton name="showOrdersWithProductMain" icon="genealogyIcon24.png">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('showOrdersWithProductMain', []);
-							}
-						}
-					});		
-				]]>
-			</script>
-		</bigButton>
-		<bigButton name="showOrdersWithProductPlanned" icon="genealogyIcon24.png">
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('showOrdersWithProductPlanned', []);
-							}
-						}
-					});		
-				]]>
-			</script>
-		</bigButton>
-	</group>
 	
 </ribbonExtension>

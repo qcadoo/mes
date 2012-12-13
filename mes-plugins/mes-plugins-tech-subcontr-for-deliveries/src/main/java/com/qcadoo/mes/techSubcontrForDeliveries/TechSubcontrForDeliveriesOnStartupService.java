@@ -27,27 +27,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.techSubcontrForDeliveries.deliveriesColumnExtension.TSFDcolumnLoader;
+import com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnLoaderTSFD;
 import com.qcadoo.plugin.api.Module;
 
 @Component
 public class TechSubcontrForDeliveriesOnStartupService extends Module {
 
     @Autowired
-    private TSFDcolumnLoader tSFDcolumnLoader;
+    private DeliveriesColumnLoaderTSFD deliveriesColumnLoaderTSFD;
 
     @Transactional
     @Override
     public void multiTenantEnable() {
-        tSFDcolumnLoader.addTSFDcolumnsForDeliveries();
-        tSFDcolumnLoader.addTSFDcolumnsForOrders();
+        deliveriesColumnLoaderTSFD.addColumnsForDeliveriesTSFD();
+        deliveriesColumnLoaderTSFD.addColumnsForOrdersTSFD();
     }
 
     @Transactional
     @Override
     public void multiTenantDisable() {
-        tSFDcolumnLoader.deleteTSFDcolumnsForDeliveries();
-        tSFDcolumnLoader.deleteTSFDcolumnsForOrders();
+        deliveriesColumnLoaderTSFD.deleteColumnsForDeliveriesTSFD();
+        deliveriesColumnLoaderTSFD.deleteColumnsForOrdersTSFD();
     }
 
 }

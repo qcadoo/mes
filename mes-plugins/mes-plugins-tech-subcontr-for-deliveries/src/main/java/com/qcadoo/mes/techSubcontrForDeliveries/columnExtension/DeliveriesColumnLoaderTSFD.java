@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.2.0-SNAPSHOT
  *
  * This file is part of Qcadoo.
@@ -21,54 +21,54 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.catNumbersInDeliveries.deliveriesColumnExtension;
+package com.qcadoo.mes.techSubcontrForDeliveries.columnExtension;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.catNumbersInDeliveries.contants.CatNumbersInDeliveriesConstants;
 import com.qcadoo.mes.deliveries.DeliveriesColumnLoaderService;
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 
 @Component
-public class CNIDcolumnLoader {
+public class DeliveriesColumnLoaderTSFD {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CNIDcolumnLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveriesColumnLoaderTSFD.class);
 
     @Autowired
     private DeliveriesColumnLoaderService deliveriesColumnLoaderService;
 
-    public void addCNIDcolumnsForDeliveries() {
+    public void addColumnsForDeliveriesTSFD() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Columns for deliveries table will be populated ...");
         }
 
-        deliveriesColumnLoaderService.fillColumnsForDeliveries(CatNumbersInDeliveriesConstants.PLUGIN_IDENTIFIER);
+        deliveriesColumnLoaderService.fillColumnsForDeliveries(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void deleteCNIDcolumnsForDeliveries() {
+    public void deleteColumnsForDeliveriesTSFD() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Columns for deliveries table will be unpopulated ...");
         }
 
-        deliveriesColumnLoaderService.clearColumnsForDeliveries(CatNumbersInDeliveriesConstants.PLUGIN_IDENTIFIER);
+        deliveriesColumnLoaderService.clearColumnsForDeliveries(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void addCNIDcolumnsForOrders() {
+    public void addColumnsForOrdersTSFD() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Columns for orders table will be populated ...");
         }
 
-        deliveriesColumnLoaderService.fillColumnsForOrders(CatNumbersInDeliveriesConstants.PLUGIN_IDENTIFIER);
+        deliveriesColumnLoaderService.fillColumnsForOrders(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public void deleteCNIDcolumnsForOrders() {
+    public void deleteColumnsForOrdersTSFD() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Columns for deliveries table will be unpopulated ...");
+            LOG.debug("Columns for orders table will be unpopulated ...");
         }
 
-        deliveriesColumnLoaderService.clearColumnsForOrders(CatNumbersInDeliveriesConstants.PLUGIN_IDENTIFIER);
+        deliveriesColumnLoaderService.clearColumnsForOrders(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
 }
