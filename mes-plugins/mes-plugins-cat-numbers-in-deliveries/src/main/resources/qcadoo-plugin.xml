@@ -113,14 +113,14 @@
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/orderedProductDetails.xml" />
-
-		<view:view-hook view="orderedProductDetails" type="beforeRender"
-			plugin="deliveries"
+	
+		<view:view-hook plugin="deliveries" view="orderedProductDetails"
+			type="beforeRender"
 			class="com.qcadoo.mes.catNumbersInDeliveries.hooks.OrderedProductDetailsHooksCNID"
 			method="setCatalogProductNumber" />
-
-		<view:view-listener view="orderedProductDetails"
-			component="product" plugin="deliveries" event="onSelectedEntityChange"
+	
+		<view:view-listener plugin="deliveries" view="orderedProductDetails"
+			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.catNumbersInDeliveries.listeners.OrderedProductListenersHooksCNID"
 			method="setCatalogProductNumber" />
 
