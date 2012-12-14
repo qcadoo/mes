@@ -132,3 +132,7 @@ ALTER TABLE basic_parameter ADD COLUMN hideemptycolumnsfororders boolean;
 ALTER TABLE basic_parameter ALTER COLUMN hideemptycolumnsfororders SET DEFAULT false;
 
 --end
+-- Table: basic_parameter
+-- changed: 14.12.2012
+ALTER TABLE basic_parameter ADD COLUMN additionaltextinfooter character varying(256);
+--end

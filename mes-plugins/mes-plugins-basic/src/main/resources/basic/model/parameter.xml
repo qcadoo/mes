@@ -30,6 +30,9 @@
 	<fields>
 		<belongsTo name="currency" plugin="basic" model="currency" />
 		<dictionary name="unit" dictionary="units" />
+		<string name="additionalTextInFooter">
+			<validatesLength max="256"/> 
+		</string>
 	</fields>
 	
 	<hooks>
