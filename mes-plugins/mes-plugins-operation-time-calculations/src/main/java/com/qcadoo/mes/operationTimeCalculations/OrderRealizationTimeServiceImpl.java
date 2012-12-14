@@ -193,8 +193,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
         } else if (L_OPERATION.equals(entityType)) {
-            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
-                    productionLine, maxForWorkstation);
+            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, false, operationRuns, productionLine,
+                    maxForWorkstation);
             int offset = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
@@ -265,10 +265,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final Entity productionLine, final boolean maxForWorkstation, final Map<Entity, BigDecimal> productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
         BigDecimal cycles = BigDecimal.ONE;
-        boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
         BigDecimal nextOperationAfterProducedQuantity = convertNullToZero(operationComponent
                 .getDecimalField("nextOperationAfterProducedQuantity"));
-        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
 
@@ -277,12 +275,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     nextOperationAfterProducedQuantity);
         } else {
             cycles = operationRuns.get(technologyOperationComponent);
-        }
-
-        cycles = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
-
-        if (!isTjDivisable) {
-            cycles = cycles.setScale(0, RoundingMode.CEILING);
         }
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);

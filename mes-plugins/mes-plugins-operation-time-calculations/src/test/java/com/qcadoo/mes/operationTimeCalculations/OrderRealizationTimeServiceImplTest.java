@@ -159,7 +159,7 @@ public class OrderRealizationTimeServiceImplTest {
                 includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(10, time);
+        assertEquals(8, time);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class OrderRealizationTimeServiceImplTest {
                 includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(14, time);
+        assertEquals(10, time);
     }
 
     @Test
@@ -195,7 +195,7 @@ public class OrderRealizationTimeServiceImplTest {
                 includeTpz, includeAdditionalTime, productionLine);
 
         // then
-        assertEquals(7, time);
+        assertEquals(5, time);
     }
 
     @Test
