@@ -265,10 +265,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final Entity productionLine, final boolean maxForWorkstation, final Map<Entity, BigDecimal> productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
         BigDecimal cycles = BigDecimal.ONE;
-        boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
         BigDecimal nextOperationAfterProducedQuantity = convertNullToZero(operationComponent
                 .getDecimalField("nextOperationAfterProducedQuantity"));
-        Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
 
@@ -277,12 +275,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     nextOperationAfterProducedQuantity);
         } else {
             cycles = operationRuns.get(technologyOperationComponent);
-        }
-
-        cycles = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
-
-        if (!isTjDivisable) {
-            cycles = cycles.setScale(0, RoundingMode.CEILING);
         }
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
