@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,35 +51,44 @@ public class CompanyService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    @Transactional
-    public Entity getCompany() {
-
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
-        Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
-
-        if (company == null) {
-            Entity newCompany = dataDefinition.create();
-            newCompany.setField("owner", true);
-            Entity savedCompany = dataDefinition.save(newCompany);
-            return savedCompany;
-
-        } else {
-            return company;
-        }
-
-    }
-
+    /**
+     * Returns basic company entity id for current user
+     * 
+     * @return company entity id
+     * 
+     */
     public Long getCompanyId() {
         return getCompany().getId();
     }
 
     /**
-     * Whether company is an owner or not
+     * Returns basic comapny entity for current user. If company does not exist the new company entity will be created, saved and
+     * returned.
      * 
-     * @param form
-     *            Form to check
-     * @return Boolean value
+     * @return company entity
+     * 
      */
+    @Transactional
+    public Entity getCompany() {
+        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+        Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+
+        if (company == null) {
+            company = createCompany(dataDefinition);
+        }
+
+        return company;
+    }
+
+    private Entity createCompany(final DataDefinition dataDefinition) {
+        Entity company = dataDefinition.create();
+        company.setField("owner", true);
+        company = dataDefinition.save(company);
+        checkState(company.isValid(), "Company entity has validation errors! " + company);
+
+        return company;
+    }
+
     public final Boolean getOwning(final FormComponent form) {
 
         if (form.getEntityId() == null) {
@@ -127,4 +138,5 @@ public class CompanyService {
         numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
                 L_FORM, "number");
     }
+
 }

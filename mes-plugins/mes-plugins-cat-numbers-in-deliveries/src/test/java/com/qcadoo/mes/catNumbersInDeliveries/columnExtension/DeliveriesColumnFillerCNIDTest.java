@@ -26,8 +26,6 @@ package com.qcadoo.mes.catNumbersInDeliveries.columnExtension;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID;
-
 public class DeliveriesColumnFillerCNIDTest {
 
     private DeliveriesColumnFillerCNID cNINcolumnFiller;

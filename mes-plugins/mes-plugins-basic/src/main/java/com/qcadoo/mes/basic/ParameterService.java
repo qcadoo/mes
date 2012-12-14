@@ -49,6 +49,7 @@ public class ParameterService {
      * Returns basic parameter entity id for current user
      * 
      * @return parameter entity id
+     * 
      */
     public Long getParameterId() {
         return getParameter().getId();
@@ -59,15 +60,18 @@ public class ParameterService {
      * saved and returned.
      * 
      * @return parameter entity
+     * 
      */
     @Transactional
     public Entity getParameter() {
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PARAMETER);
         Entity parameter = dataDefinition.find().setMaxResults(1).uniqueResult();
+
         if (parameter == null) {
             parameter = createParameter(dataDefinition);
         }
+
         return parameter;
     }
 
@@ -75,6 +79,7 @@ public class ParameterService {
         Entity parameter = dataDefinition.create();
         parameter = dataDefinition.save(parameter);
         checkState(parameter.isValid(), "Parameter entity has validation errors! " + parameter);
+
         return parameter;
     }
 

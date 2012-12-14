@@ -51,10 +51,10 @@ public class ParameterServiceTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition parameterDD;
 
     @Mock
-    private SearchCriteriaBuilder searchBuilder;
+    private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Before
     public final void init() {
@@ -62,10 +62,10 @@ public class ParameterServiceTest {
         parameterService = new ParameterService();
         ReflectionTestUtils.setField(parameterService, "dataDefinitionService", dataDefinitionService);
 
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER)).willReturn(dataDefinition);
-        given(dataDefinition.find()).willReturn(searchBuilder);
-        given(searchBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchBuilder);
-        given(searchBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchBuilder);
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PARAMETER)).willReturn(parameterDD);
+        given(parameterDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ParameterServiceTest {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-        given(searchBuilder.uniqueResult()).willReturn(parameter);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
 
         // when
         Long id = parameterService.getParameterId();
@@ -87,7 +87,7 @@ public class ParameterServiceTest {
         // given
         Entity parameter = Mockito.mock(Entity.class);
         given(parameter.getId()).willReturn(13L);
-        given(searchBuilder.uniqueResult()).willReturn(parameter);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(parameter);
         given(parameter.isValid()).willReturn(true);
 
         // when
@@ -102,19 +102,19 @@ public class ParameterServiceTest {
         // given
         Entity parameter = mock(Entity.class);
         given(parameter.isValid()).willReturn(true);
-        given(dataDefinition.create()).willReturn(parameter);
+        given(parameterDD.create()).willReturn(parameter);
 
         Entity savedParameter = mock(Entity.class);
         given(savedParameter.isValid()).willReturn(true);
         given(savedParameter.getId()).willReturn(15L);
 
-        given(dataDefinition.save(parameter)).willReturn(savedParameter);
+        given(parameterDD.save(parameter)).willReturn(savedParameter);
 
         // when
         Entity returnedParameter = parameterService.getParameter();
 
         // then
-        verify(dataDefinition).save(parameter);
+        verify(parameterDD).save(parameter);
         assertEquals(Long.valueOf(15L), returnedParameter.getId());
     }
 
@@ -123,12 +123,12 @@ public class ParameterServiceTest {
         // given
         Entity parameter = mock(Entity.class);
         given(parameter.isValid()).willReturn(true);
-        given(dataDefinition.create()).willReturn(parameter);
+        given(parameterDD.create()).willReturn(parameter);
 
         Entity savedParameter = mock(Entity.class);
         given(savedParameter.isValid()).willReturn(false);
 
-        given(dataDefinition.save(parameter)).willReturn(savedParameter);
+        given(parameterDD.save(parameter)).willReturn(savedParameter);
 
         // when
         parameterService.getParameter();

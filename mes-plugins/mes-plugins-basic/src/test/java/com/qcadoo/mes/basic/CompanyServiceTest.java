@@ -23,9 +23,10 @@
  */
 package com.qcadoo.mes.basic;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,12 +40,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -66,6 +67,9 @@ public class CompanyServiceTest {
     @Mock
     private Entity company;
 
+    @Mock
+    private SearchCriteriaBuilder searchCriteriaBuilder;
+
     @Before
     public final void init() {
         companyService = new CompanyService();
@@ -74,7 +78,76 @@ public class CompanyServiceTest {
 
         ReflectionTestUtils.setField(companyService, "dataDefinitionService", dataDefinitionService);
 
-        when(dataDefinitionService.get("basic", "company")).thenReturn(companyDD);
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY)).willReturn(companyDD);
+        given(companyDD.find()).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
+    }
+
+    @Test
+    public void shouldReturnExistingCompanyEntityId() throws Exception {
+        // given
+        Entity company = Mockito.mock(Entity.class);
+        given(company.getId()).willReturn(13L);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(company);
+
+        // when
+        Long id = companyService.getCompanyId();
+
+        // then
+        assertEquals(Long.valueOf(13L), id);
+    }
+
+    @Test
+    public void shouldReturnExistingCompanyEntity() throws Exception {
+        // given
+        Entity company = Mockito.mock(Entity.class);
+        given(company.getId()).willReturn(13L);
+        given(searchCriteriaBuilder.uniqueResult()).willReturn(company);
+        given(company.isValid()).willReturn(true);
+
+        // when
+        Entity existingcompany = companyService.getCompany();
+
+        // then
+        assertEquals(company, existingcompany);
+    }
+
+    @Test
+    public void shouldReturnNewCompanyEntity() throws Exception {
+        // given
+        Entity company = mock(Entity.class);
+        given(company.isValid()).willReturn(true);
+        given(companyDD.create()).willReturn(company);
+
+        Entity savedCompany = mock(Entity.class);
+        given(savedCompany.isValid()).willReturn(true);
+        given(savedCompany.getId()).willReturn(15L);
+
+        given(companyDD.save(company)).willReturn(savedCompany);
+
+        // when
+        Entity returnedcompany = companyService.getCompany();
+
+        // then
+        verify(companyDD).save(company);
+        assertEquals(Long.valueOf(15L), returnedcompany.getId());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfNewCompanyEntityIsNotValid() throws Exception {
+        // given
+        Entity company = mock(Entity.class);
+        given(company.isValid()).willReturn(true);
+        given(companyDD.create()).willReturn(company);
+
+        Entity savedCompany = mock(Entity.class);
+        given(savedCompany.isValid()).willReturn(false);
+
+        given(companyDD.save(company)).willReturn(savedCompany);
+
+        // when
+        companyService.getCompany();
     }
 
     @Test
@@ -84,9 +157,9 @@ public class CompanyServiceTest {
         final Boolean expectedOwner = Boolean.TRUE;
 
         Long companyId = 1L;
-        when(form.getEntityId()).thenReturn(companyId);
-        when(companyDD.get(companyId)).thenReturn(company);
-        when(company.getField("owner")).thenReturn(expectedOwner);
+        given(form.getEntityId()).willReturn(companyId);
+        given(companyDD.get(companyId)).willReturn(company);
+        given(company.getField("owner")).willReturn(expectedOwner);
 
         // when
         Boolean owner = companyService.getOwning(form);
@@ -102,9 +175,9 @@ public class CompanyServiceTest {
         final Boolean expectedOwner = Boolean.FALSE;
 
         Long companyId = 1L;
-        when(form.getEntityId()).thenReturn(companyId);
-        when(companyDD.get(companyId)).thenReturn(company);
-        when(company.getField("owner")).thenReturn(expectedOwner);
+        given(form.getEntityId()).willReturn(companyId);
+        given(companyDD.get(companyId)).willReturn(company);
+        given(company.getField("owner")).willReturn(expectedOwner);
 
         // when
         Boolean owner = companyService.getOwning(form);
@@ -119,10 +192,10 @@ public class CompanyServiceTest {
         FormComponent form = mock(FormComponent.class);
         Long companyId = 1L;
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(companyId);
-        when(companyDD.get(companyId)).thenReturn(company);
-        when(company.getField("owner")).thenReturn(true);
+        given(view.getComponentByReference("form")).willReturn(form);
+        given(form.getEntityId()).willReturn(companyId);
+        given(companyDD.get(companyId)).willReturn(company);
+        given(company.getField("owner")).willReturn(true);
 
         // when
         companyService.disableCompanyFormForOwner(view);
@@ -137,10 +210,10 @@ public class CompanyServiceTest {
         FormComponent form = mock(FormComponent.class);
         Long companyId = 1L;
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(companyId);
-        when(companyDD.get(companyId)).thenReturn(company);
-        when(company.getField("owner")).thenReturn(false);
+        given(view.getComponentByReference("form")).willReturn(form);
+        given(form.getEntityId()).willReturn(companyId);
+        given(companyDD.get(companyId)).willReturn(company);
+        given(company.getField("owner")).willReturn(false);
 
         // when
         companyService.disableCompanyFormForOwner(view);
@@ -160,14 +233,14 @@ public class CompanyServiceTest {
             componentsMap.put(ref, mock(GridComponent.class));
         }
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(1L);
-        when(companyDD.get(Mockito.anyLong())).thenReturn(company);
-        when(company.getField("owner")).thenReturn(true);
+        given(view.getComponentByReference("form")).willReturn(form);
+        given(form.getEntityId()).willReturn(1L);
+        given(companyDD.get(Mockito.anyLong())).willReturn(company);
+        given(company.getField("owner")).willReturn(true);
 
         for (Map.Entry<String, GridComponent> mockEntry : componentsMap.entrySet()) {
 
-            when(view.getComponentByReference(mockEntry.getKey())).thenReturn((ComponentState) mockEntry.getValue());
+            given(view.getComponentByReference(mockEntry.getKey())).willReturn((ComponentState) mockEntry.getValue());
         }
 
         // when
@@ -190,10 +263,10 @@ public class CompanyServiceTest {
             componentsMap.put(ref, mock(GridComponent.class));
         }
 
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(1L);
-        when(companyDD.get(Mockito.anyLong())).thenReturn(company);
-        when(company.getField("owner")).thenReturn(false);
+        given(view.getComponentByReference("form")).willReturn(form);
+        given(form.getEntityId()).willReturn(1L);
+        given(companyDD.get(Mockito.anyLong())).willReturn(company);
+        given(company.getField("owner")).willReturn(false);
 
         // when
         companyService.disabledGridWhenCompanyIsAnOwner(view, componentsMap.keySet().toArray(new String[0]));
@@ -202,39 +275,6 @@ public class CompanyServiceTest {
         for (GridComponent gridComponent : componentsMap.values()) {
             verify(gridComponent, Mockito.never()).setEditable(Mockito.anyBoolean());
         }
-    }
-
-    @Test
-    public void shouldReturnIdExistsEntity() throws Exception {
-        // given
-        SearchCriteriaBuilder search = Mockito.mock(SearchCriteriaBuilder.class);
-        SearchCriterion criterion = SearchRestrictions.eq("owner", true);
-        when(companyDD.find()).thenReturn(search);
-        when(search.add(criterion)).thenReturn(search);
-        when(search.setMaxResults(1)).thenReturn(search);
-        when(search.uniqueResult()).thenReturn(company);
-        // when
-        long parameterId = companyService.getCompanyId();
-        // then
-        Assert.assertEquals(0L, parameterId);
-    }
-
-    @Test
-    public void shouldReturnIdCreatedEntity() throws Exception {
-        // given
-        SearchCriteriaBuilder search = Mockito.mock(SearchCriteriaBuilder.class);
-        SearchCriterion criterion = SearchRestrictions.eq("owner", true);
-        when(companyDD.find()).thenReturn(search);
-        when(search.add(criterion)).thenReturn(search);
-        when(search.setMaxResults(1)).thenReturn(search);
-        when(search.uniqueResult()).thenReturn(null);
-
-        when(companyDD.create()).thenReturn(company);
-        when(companyDD.save(company)).thenReturn(company);
-        // when
-        long parameterId = companyService.getCompanyId();
-        // then
-        Assert.assertEquals(0L, parameterId);
     }
 
 }

@@ -128,10 +128,8 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
                     }
                 }
             } else {
-                if (checkIfEntityTypeHasChanged(product, entityType)) {
-                    if (PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
-                        updateProductFamilyChildrensNodeNumbers(product, null);
-                    }
+                if (checkIfEntityTypeHasChanged(product, entityType) && (PARTICULAR_PRODUCT.getStringValue().equals(entityType))) {
+                    updateProductFamilyChildrensNodeNumbers(product, null);
                 }
             }
         }
@@ -255,7 +253,7 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
 
         String number = nodeNumber;
         for (int i = 0; i < StringUtils.countMatches(nodeNumber, "."); i++) {
-            number = number.substring(0, number.lastIndexOf("."));
+            number = number.substring(0, number.lastIndexOf('.'));
 
             roots.add(number);
         }

@@ -26,8 +26,6 @@ package com.qcadoo.mes.techSubcontrForDeliveries.columnExtension;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnFillerTSFD;
-
 public class DeliveriesColumnFillerTSFDTest {
 
     private DeliveriesColumnFillerTSFD deliveriesColumnFillerTSFD;

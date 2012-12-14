@@ -26,8 +26,6 @@ package com.qcadoo.mes.deliveries.columnExtension;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller;
-
 public class DeliveriesColumnFillerTest {
 
     private DeliveriesColumnFiller deliveriesColumnFiller;

@@ -300,7 +300,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(techOperCompId);
 
         BigDecimal operationRuns = productComponentQuantities.get(techOperComp);
-        Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(operationComponent, operationRuns, margin);
+        Map<String, BigDecimal> costs = estimatePieceworkCostCalculationSingleOperations(operationComponent, operationRuns,
+                margin);
         totalPieceworkCost = totalPieceworkCost.add(costs.get(L_OPERATION_COST));
         savedGeneratedValues(costs, operationComponent, false, null, operationRuns);
         return totalPieceworkCost;
@@ -435,7 +436,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (order == null) {
             return getWorkstationsFromTechnology(costCalculation.getBelongsToField("technology"), productionLine);
         } else {
-            return getWorkstationsFromOrder(order, productionLine);
+            return getWorkstationsFromOrder(order);
         }
     }
 
@@ -447,7 +448,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         return workstations;
     }
 
-    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order, final Entity productionLine) {
+    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
         Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
         for (Entity operComp : order.getHasManyField("technologyInstanceOperationComponents")) {
             workstations.put(operComp.getBelongsToField("technologyOperationComponent"),
