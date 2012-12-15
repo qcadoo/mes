@@ -38,7 +38,6 @@ public class ProductDetailsHooks {
     private static final String L_FORM = "form";
 
     public void updateRibbonState(final ViewDefinitionState view) {
-
         FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity operationGroup = operationGroupForm.getEntity();

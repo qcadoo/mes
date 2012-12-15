@@ -38,7 +38,6 @@ public class CompanyDetailsHooks {
     private static final String L_FORM = "form";
 
     public void updateRibbonState(final ViewDefinitionState view) {
-
         FormComponent productionOrderGroup = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity productionOrder = productionOrderGroup.getEntity();

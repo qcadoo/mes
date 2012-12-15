@@ -213,9 +213,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             } else {
                 updateButtonState(showChangeoverNormForTechnology, true);
             }
-
         }
-
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
@@ -226,4 +224,5 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     public void showOwnLineChangeoverDurationField(final ViewDefinitionState view) {
         orderService.changeFieldState(view, OWN_LINE_CHANGEOVER, OWN_LINE_CHANGEOVER_DURATION);
     }
+
 }

@@ -57,9 +57,7 @@ public class ProductFamiliesAddProductListeners {
     }
 
     public void changeProductInLookup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         productFamiliesAddProductHooks.updateRibbonState(view);
-
     }
 
 }

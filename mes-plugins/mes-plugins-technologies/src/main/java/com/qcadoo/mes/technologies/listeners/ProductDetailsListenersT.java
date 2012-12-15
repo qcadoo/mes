@@ -35,9 +35,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ProductDetailsListenersT {
@@ -187,53 +184,6 @@ public class ProductDetailsListenersT {
 
         String url = "../page/orders/ordersPlanningList.html";
         view.redirectTo(url, false, true, parameters);
-    }
-
-    // TODO lupo fix when problem with navigation will be done
-    public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity product = productForm.getEntity();
-
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName("technologies");
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
-
-        // RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
-        RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
-                .getItemByName("showTechnologiesWithTechnologyGroup");
-        // RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
-        // .getItemByName("showTechnologiesWithProduct");
-        RibbonActionItem showOrdersWithProductMain = (RibbonActionItem) orders.getItemByName("showOrdersWithProductMain");
-        RibbonActionItem showOrdersWithProductPlanned = (RibbonActionItem) orders.getItemByName("showOrdersWithProductPlanned");
-
-        if (product.getId() != null) {
-            // updateButtonState(addTechnologyGroup, true);
-
-            Entity technologyGroup = product.getBelongsToField("technologyGroup");
-
-            if (technologyGroup == null) {
-                updateButtonState(showTechnologiesWithTechnologyGroup, false);
-            } else {
-                updateButtonState(showTechnologiesWithTechnologyGroup, true);
-            }
-
-            // updateButtonState(showTechnologiesWithProduct, true);
-            updateButtonState(showOrdersWithProductMain, true);
-            updateButtonState(showOrdersWithProductPlanned, true);
-
-            return;
-        }
-
-        // updateButtonState(addTechnologyGroup, false);
-        updateButtonState(showTechnologiesWithTechnologyGroup, false);
-        // updateButtonState(showTechnologiesWithProduct, false);
-        updateButtonState(showOrdersWithProductMain, false);
-        updateButtonState(showOrdersWithProductPlanned, false);
-    }
-
-    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
-        ribbonActionItem.setEnabled(isEnabled);
-        ribbonActionItem.requestUpdate(true);
     }
 
 }
