@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import java.util.List;
-
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -43,14 +41,14 @@ public class DeliveryDetailsListenersTSFDOverrideAspect {
     @Autowired
     private DeliveryDetailsListenersTSFDOverrideUtil deliveryDetailsListenersTSFDOverrideUtil;
 
-    @Pointcut("execution(private void com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.copyOrderedProductToDelivered(..)) "
-            + "&& args(delivery, orderedProducts)")
-    public void copyOrderedProductToDeliveredExecution(final Entity delivery, final List<Entity> orderedProducts) {
+    @Pointcut("execution(private com.qcadoo.model.api.Entity com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.createDeliveredProduct(..)) "
+            + " && args(orderedProduct)")
+    public void createDeliveredProductExecution(final Entity orderedProduct) {
     }
 
-    @AfterReturning("copyOrderedProductToDeliveredExecution(delivery, orderedProducts)")
-    public void afterCopyOrderedProductToDeliveredExecution(final Entity delivery, final List<Entity> orderedProducts) {
-        deliveryDetailsListenersTSFDOverrideUtil.fillDeliveredProductOperation(delivery);
+    @AfterReturning(value = "createDeliveredProductExecution(orderedProduct)", returning = "deliveredProduct")
+    public void afterCreateDeliveredProductExecution(final Entity orderedProduct, final Entity deliveredProduct) {
+        deliveryDetailsListenersTSFDOverrideUtil.fillDeliveredProductOperation(orderedProduct, deliveredProduct);
     }
 
 }

@@ -24,7 +24,6 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
-import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
@@ -32,9 +31,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
-import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
@@ -44,9 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.CompanyService;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -64,13 +58,10 @@ public class DeliveryDetailsHooks {
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
-    private CompanyService companyService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -125,7 +116,7 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEditable(enabledDeliveredGrid);
     }
 
-    public void fillDefaultAddress(final ViewDefinitionState view) {
+    public void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() != null) {
             return;
@@ -134,18 +125,12 @@ public class DeliveryDetailsHooks {
         FieldComponent deliveryAddressField = (FieldComponent) view.getComponentByReference(DELIVERY_ADDRESS);
         String deliveryAddress = (String) deliveryAddressField.getFieldValue();
 
-        Entity parameter = parameterService.getParameter();
-
         if (StringUtils.isEmpty(deliveryAddress)) {
-            if (OTHER.getStringValue().equals(parameter.getStringField(DEFAULT_ADDRESS))) {
-                deliveryAddressField.setFieldValue(parameter.getStringField(OTHER_ADDRESS));
-            } else {
-                deliveryAddressField.setFieldValue(generateAddressFromCompany());
-            }
+            deliveryAddressField.setFieldValue(deliveriesService.getDeliveryAddressDefaultValue());
         }
     }
 
-    public void fillDefaultDescription(final ViewDefinitionState view) {
+    public void fillDescriptionDefaultValue(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() != null) {
             return;
@@ -154,28 +139,9 @@ public class DeliveryDetailsHooks {
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(DESCRIPTION);
         String description = (String) descriptionField.getFieldValue();
 
-        Entity parameter = parameterService.getParameter();
-
         if (StringUtils.isEmpty(description)) {
-            descriptionField.setFieldValue(parameter.getStringField(DEFAULT_DESCRIPTION));
+            descriptionField.setFieldValue(deliveriesService.getDescriptionDefaultValue());
         }
-    }
-
-    private String generateAddressFromCompany() {
-        Entity company = companyService.getCompany();
-
-        StringBuffer address = new StringBuffer();
-        address.append(company.getStringField(CompanyFields.STREET));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.NUMBER));
-        address.append("/");
-        address.append(company.getStringField(CompanyFields.FLAT));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.ZIP_CODE));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.CITY));
-
-        return address.toString();
     }
 
 }

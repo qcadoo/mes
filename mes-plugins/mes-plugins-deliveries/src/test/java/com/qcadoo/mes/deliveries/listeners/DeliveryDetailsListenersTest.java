@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,10 +38,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -53,6 +52,9 @@ public class DeliveryDetailsListenersTest {
     private DeliveryDetailsListeners deliveryDetailsListeners;
 
     @Mock
+    private DeliveriesService deliveriesService;
+
+    @Mock
     private ViewDefinitionState view;
 
     @Mock
@@ -62,13 +64,10 @@ public class DeliveryDetailsListenersTest {
     private FormComponent formComponent;
 
     @Mock
-    private DataDefinition dataDefinition, ddDelivered;
+    private DataDefinition dataDefinition, deliveredProductDD;
 
     @Mock
-    private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private Entity entity, ordered1, ordered2, deliveredEntity;
+    private Entity entity, ordered1, ordered2, deliveredProduct;
 
     private String[] args = { "pdf" };
 
@@ -76,7 +75,7 @@ public class DeliveryDetailsListenersTest {
     public void init() {
         deliveryDetailsListeners = new DeliveryDetailsListeners();
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(deliveryDetailsListeners, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(deliveryDetailsListeners, "deliveriesService", deliveriesService);
     }
 
     private EntityList mockEntityList(List<Entity> list) {
@@ -160,12 +159,11 @@ public class DeliveryDetailsListenersTest {
         when(entity.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.get(entityId)).thenReturn(entity);
 
-        when(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT))
-                .thenReturn(ddDelivered);
-        when(ddDelivered.create()).thenReturn(deliveredEntity);
+        when(deliveriesService.getDeliveredProductDD()).thenReturn(deliveredProductDD);
+        when(deliveredProductDD.create()).thenReturn(deliveredProduct);
 
-        EntityList ordereds = mockEntityList(Lists.newArrayList(ordered1, ordered2));
-        when(entity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS)).thenReturn(ordereds);
+        EntityList orderedProducts = mockEntityList(Lists.newArrayList(ordered1, ordered2));
+        when(entity.getHasManyField(ORDERED_PRODUCTS)).thenReturn(orderedProducts);
 
         // when
         deliveryDetailsListeners.copyOrderedProductToDelivered(view, formComponent, args);
