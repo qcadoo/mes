@@ -19,7 +19,7 @@ public class DeliveryDetailsHooksDTMF {
     @Autowired
     private ParameterService parameterService;
 
-    public void setLocationDefaultValue(final ViewDefinitionState view) {
+    public void fillLocationDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (deliveryForm.getEntityId() != null) {

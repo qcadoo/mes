@@ -70,7 +70,7 @@
 		<view:view-hook plugin="deliveries" view="deliveryDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryDetailsHooksDTMF"
-			method="setLocationDefaultValue" />
+			method="fillLocationDefaultValue" />
 
 		<view:view-tab resource="view/tabExtensions/supplyParametersForDeliveries.xml" />
 		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />
