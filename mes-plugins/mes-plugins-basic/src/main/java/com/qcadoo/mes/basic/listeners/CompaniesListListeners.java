@@ -45,7 +45,7 @@ public class CompaniesListListeners {
         RibbonActionItem delete = actions.getItemByName("delete");
         delete.setEnabled(enabled);
         if (enabled) {
-            delete.setMessage("");
+            delete.setMessage(null);
         } else {
             delete.setMessage(translationService.translate("basic.company.isOwner", view.getLocale()));
         }

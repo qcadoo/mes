@@ -6,7 +6,7 @@ public final class CompanyFields {
 
     }
 
-    public static final String EXTERNAL_ID = "externalNumber";
+    public static final String EXTERNAL_NUMBER = "externalNumber";
 
     public static final String NUMBER = "number";
 
