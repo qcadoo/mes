@@ -81,4 +81,5 @@ public final class TechnologiesConstants {
     public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
 
     public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
+
 }
