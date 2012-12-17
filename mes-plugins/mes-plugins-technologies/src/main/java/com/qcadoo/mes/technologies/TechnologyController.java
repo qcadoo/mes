@@ -30,23 +30,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.mes.basic.CompanyService;
 
 @Controller
 public class TechnologyController {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private CompanyService companyService;
 
     @RequestMapping(value = "technologies/technologyDetailsReport.pdf", method = RequestMethod.GET)
     public final ModelAndView technologiesReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("technologiesTechnologyDetailsPdfView");
         mav.addObject("id", id);
-        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
+        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 

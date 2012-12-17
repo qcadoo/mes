@@ -23,17 +23,14 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -50,6 +47,9 @@ public class CompanyService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     /**
      * Returns basic company entity id for current user
@@ -70,23 +70,9 @@ public class CompanyService {
      */
     @Transactional
     public Entity getCompany() {
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
-        Entity company = dataDefinition.find().add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity parameter = parameterService.getParameter();
+        return parameter.getBelongsToField(ParameterFields.COMPANY);
 
-        if (company == null) {
-            company = createCompany(dataDefinition);
-        }
-
-        return company;
-    }
-
-    private Entity createCompany(final DataDefinition dataDefinition) {
-        Entity company = dataDefinition.create();
-        company.setField("owner", true);
-        company = dataDefinition.save(company);
-        checkState(company.isValid(), "Company entity has validation errors! " + company);
-
-        return company;
     }
 
     public final Boolean getOwning(final FormComponent form) {
@@ -101,9 +87,9 @@ public class CompanyService {
         if (company == null) {
             return Boolean.FALSE;
         }
-
-        Object owner = company.getField("owner");
-        return owner instanceof Boolean ? (Boolean) owner : Boolean.FALSE;
+        Entity parameter = parameterService.getParameter();
+        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+        return company.getId().equals(owner.getId());
     }
 
     public void disableCompanyFormForOwner(final ViewDefinitionState state) {

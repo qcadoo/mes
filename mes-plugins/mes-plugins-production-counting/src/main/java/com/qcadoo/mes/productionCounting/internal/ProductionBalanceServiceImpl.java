@@ -94,7 +94,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -151,6 +151,9 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Override
     public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
@@ -278,7 +281,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, DATE, localePrefix);
 
-        Entity company = getCompanyFromDB();
+        Entity company = companyService.getCompany();
 
         try {
             productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, locale);
@@ -784,12 +787,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     @Override
     public Entity getOrderFromDB(final Long orderId) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-    }
-
-    @Override
-    public Entity getCompanyFromDB() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
     }
 
     @Override

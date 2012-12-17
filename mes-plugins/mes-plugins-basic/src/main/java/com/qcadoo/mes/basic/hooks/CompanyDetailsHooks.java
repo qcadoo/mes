@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -35,13 +39,25 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class CompanyDetailsHooks {
 
+    @Autowired
+    private ParameterService parameterService;
+
     private static final String L_FORM = "form";
 
     public void updateRibbonState(final ViewDefinitionState view) {
+        disabledRedirectToFilteredOrderProductionListButton(view);
+        disabledRibbonForOwner(view);
+    }
 
-        FormComponent productionOrderGroup = (FormComponent) view.getComponentByReference(L_FORM);
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
+    }
 
-        Entity productionOrder = productionOrderGroup.getEntity();
+    private void disabledRedirectToFilteredOrderProductionListButton(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity company = form.getEntity();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
 
@@ -50,16 +66,32 @@ public class CompanyDetailsHooks {
         RibbonActionItem redirectToFilteredOrderProductionList = (RibbonActionItem) productionOrderGroups
                 .getItemByName("redirectToFilteredOrderProductionList");
 
-        if (productionOrder.getId() == null) {
+        if (company.getId() == null) {
             updateButtonState(redirectToFilteredOrderProductionList, false);
         } else {
             updateButtonState(redirectToFilteredOrderProductionList, true);
         }
     }
 
-    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
-        ribbonActionItem.setEnabled(isEnabled);
-        ribbonActionItem.requestUpdate(true);
-    }
+    private void disabledRibbonForOwner(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
+        boolean disabled = true;
+        Entity company = form.getEntity();
+        Entity parameter = parameterService.getParameter();
+        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+
+        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName("actions");
+
+        if (company.getId().equals(owner.getId())) {
+            disabled = false;
+        }
+        for (String item : Lists.newArrayList("save", "saveBack", "saveNew", "copy", "delete")) {
+            RibbonActionItem ribbonActionItem = (RibbonActionItem) actions.getItemByName(item);
+            ribbonActionItem.setEnabled(disabled);
+            ribbonActionItem.requestUpdate(true);
+        }
+
+    }
 }

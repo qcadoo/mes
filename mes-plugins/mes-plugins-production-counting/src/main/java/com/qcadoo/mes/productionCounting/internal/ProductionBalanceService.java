@@ -62,8 +62,6 @@ public interface ProductionBalanceService {
 
     Entity getOrderFromDB(final Long orderId);
 
-    Entity getCompanyFromDB();
-
     boolean isCalculateOperationCostModeHourly(final Entity productionBalance);
 
     boolean isCalculateOperationCostModePiecework(final Entity productionBalance);

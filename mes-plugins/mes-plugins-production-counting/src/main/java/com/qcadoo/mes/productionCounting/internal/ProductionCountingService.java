@@ -36,14 +36,13 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -62,6 +61,9 @@ public class ProductionCountingService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private FileService fileService;
@@ -152,8 +154,7 @@ public class ProductionCountingService {
             throws IOException, DocumentException {
         Entity productionCountingWithFileName = fileService.updateReportFileName(productionCounting, "date",
                 "productionCounting.productionCounting.report.fileName");
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity company = companyService.getCompany();
         productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());
     }
 

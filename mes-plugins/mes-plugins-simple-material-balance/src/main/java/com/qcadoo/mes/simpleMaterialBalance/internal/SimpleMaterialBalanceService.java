@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceConstants;
 import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalancePdfService;
 import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalanceXlsService;
@@ -44,7 +44,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -75,6 +74,9 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private SimpleMaterialBalancePdfService simpleMaterialBalancePdfService;
@@ -247,8 +249,7 @@ public class SimpleMaterialBalanceService {
             throws IOException, DocumentException {
         Entity simpleMaterialBalanceWithFileName = fileService.updateReportFileName(simpleMaterialBalance, "date",
                 "simpleMaterialBalance.simpleMaterialBalance.report.fileName");
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity company = companyService.getCompany();
         simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
         simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
     }

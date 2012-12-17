@@ -34,20 +34,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Controller
 public class QualityControlsController {
 
+    @Autowired
+    private CompanyService companyService;
+
     private static final String QUALITY_CONTROL_FOR = "qualityControlFor";
+
     private static final String DATE_TO = "dateTo";
+
     private static final String DATE_FROM = "dateFrom";
+
     private static final String TYPE = "type";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -58,8 +64,7 @@ public class QualityControlsController {
         mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
         mav.addObject(DATE_FROM, dateFrom);
         mav.addObject(DATE_TO, dateTo);
-        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
+        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 
@@ -79,8 +84,7 @@ public class QualityControlsController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
-        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
+        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 

@@ -38,11 +38,10 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftXlsService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -59,6 +58,9 @@ public class AssignmentToShiftReportDetailsListeners {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private AssignmentToShiftXlsService assignmentReportXlsService;
@@ -111,7 +113,7 @@ public class AssignmentToShiftReportDetailsListeners {
         Entity assignmentToShiftReportWithFileName = fileService.updateReportFileName(assignmentToShiftReport, CREATE_DATE,
                 localePrefix);
 
-        Entity company = getCompanyFromDB();
+        Entity company = companyService.getCompany();
 
         try {
             assignmentReportXlsService.generateDocument(assignmentToShiftReportWithFileName, company, locale, PageSize.A3);
@@ -131,8 +133,4 @@ public class AssignmentToShiftReportDetailsListeners {
                 AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT).get(entityId);
     }
 
-    private Entity getCompanyFromDB() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
-    }
 }

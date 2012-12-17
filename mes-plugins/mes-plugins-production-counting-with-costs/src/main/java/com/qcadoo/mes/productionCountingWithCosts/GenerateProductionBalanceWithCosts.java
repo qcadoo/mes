@@ -94,6 +94,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
@@ -148,6 +149,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     @Autowired
     private RegisteredProductionCostHelper registeredProductionCostHelper;
 
+    @Autowired
+    private CompanyService companyService;
+
     @Override
     public void update(final Observable arg0, final Object arg1) {
         // FIXME mici, well, since those observers are registered on plugin startup
@@ -171,7 +175,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
         String localePrefixToMatch = localePrefix;
 
-        Entity company = productionBalanceService.getCompanyFromDB();
+        Entity company = companyService.getCompany();
 
         try {
             productionBalanceWithCostsPdfService.generateDocument(productionBalanceWithFileName, company, locale,

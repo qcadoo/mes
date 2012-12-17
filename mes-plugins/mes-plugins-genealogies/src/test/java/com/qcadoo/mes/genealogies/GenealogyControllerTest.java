@@ -36,12 +36,10 @@ import org.mockito.Mockito;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.crud.CrudService;
 
 public class GenealogyControllerTest {
@@ -75,15 +73,11 @@ public class GenealogyControllerTest {
         // given
         GenealogyController genealogyController = new GenealogyController();
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
+        CompanyService companyService = mock(CompanyService.class);
         Entity companyEntity = mock(Entity.class);
-        Mockito.when(searchCriteriaBuilder.uniqueResult()).thenReturn(companyEntity);
-        Mockito.when(dataDefinition.find()).thenReturn(searchCriteriaBuilder);
-        Mockito.when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
-        Mockito.when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
-        Mockito.when(dataDefinitionService.get(Mockito.anyString(), Mockito.anyString())).thenReturn(dataDefinition);
         setField(genealogyController, "dataDefinitionService", dataDefinitionService);
+        setField(genealogyController, "companyService", companyService);
+        Mockito.when(companyService.getCompany()).thenReturn(companyEntity);
 
         // when
         ModelAndView mav = genealogyController.genealogyForComponentPdf("v13");
@@ -98,16 +92,10 @@ public class GenealogyControllerTest {
     public void shouldPrepareViewForProductPdf() throws Exception {
         // given
         GenealogyController genealogyController = new GenealogyController();
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        SearchCriteriaBuilder searchCriteriaBuilder = mock(SearchCriteriaBuilder.class);
         Entity companyEntity = mock(Entity.class);
-        Mockito.when(searchCriteriaBuilder.uniqueResult()).thenReturn(companyEntity);
-        Mockito.when(dataDefinition.find()).thenReturn(searchCriteriaBuilder);
-        Mockito.when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
-        Mockito.when(searchCriteriaBuilder.setMaxResults(1)).thenReturn(searchCriteriaBuilder);
-        Mockito.when(dataDefinitionService.get(Mockito.anyString(), Mockito.anyString())).thenReturn(dataDefinition);
-        setField(genealogyController, "dataDefinitionService", dataDefinitionService);
+        CompanyService companyService = mock(CompanyService.class);
+        setField(genealogyController, "companyService", companyService);
+        Mockito.when(companyService.getCompany()).thenReturn(companyEntity);
 
         // when
         ModelAndView mav = genealogyController.genealogyForProductPdf("v13");

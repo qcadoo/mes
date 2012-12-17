@@ -50,45 +50,6 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="company" reference="form">
-				<script>
-					<![CDATA[
-						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel", "actions.delete", "actions.copy"];
-	
-						var listener = {
-							onSetValue: function() {
-								var owner = #{owner}.getValue().content.value;
-								
-								if (owner == true) {	
-									disableButtons(buttonsStandard, "#{translate(basic.company.ribbon.message.companyIsOwner)}");
-	 							} else {
-	 								enableButtons(buttonsStandard);
-	 							}
-							}
-						};
-						
-						function disableButtons(buttonNames, message) { 
-							for (var buttonName in buttonNames) { 
-								if ( message == '') {
-									#{window}.getRibbonItem(buttonNames[buttonName]).disable();
-								} else {
-									#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
-								}
-							} 
-						} 
-						
-						function enableButtons(buttonNames, message) { 
-							for (var buttonName in buttonNames) { 	
-								if ( message == '') {
-									#{window}.getRibbonItem(buttonNames[buttonName]).enable();
-								} else {
-									#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
-								}
-							} 
-						} 
-	
-						#{form}.addOnChangeListener(listener);
-					]]>
-				</script>
 				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="7">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number" reference="number">
@@ -110,10 +71,6 @@
 					<layoutElement column="1" row="6">
 						<component type="input" name="website" field="website" />
 					</layoutElement>
-					<layoutElement column="1" row="7">	
-						<component type="hidden" name="owner" field="owner" reference="owner" />
-					</layoutElement>
-					
 					<layoutElement column="2" row="1">
 						<component type="input" name="street" field="street" />
 					</layoutElement>

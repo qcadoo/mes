@@ -33,6 +33,7 @@
 		<string name="additionalTextInFooter">
 			<validatesLength max="256"/> 
 		</string>
+		<belongsTo name="company" plugin="basic" model="company" />
 	</fields>
 	
 	<hooks>

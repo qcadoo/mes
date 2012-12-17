@@ -33,12 +33,11 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -56,6 +55,9 @@ public class CostCalculationReportService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private ReportService reportService;
@@ -117,8 +119,7 @@ public class CostCalculationReportService {
             DocumentException {
         Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, "date",
                 "costCalculation.costCalculation.report.fileName");
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity company = companyService.getCompany();
         costCalculationPdfService.generateDocument(costCalculationWithFileName, company, state.getLocale());
     }
 

@@ -35,10 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
@@ -55,6 +54,9 @@ public class GenealogyController {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private CompanyService companyService;
+
     @RequestMapping(value = "genealogyAttribute", method = RequestMethod.GET)
     public ModelAndView getGenealogyAttributesPageView(final Locale locale) {
 
@@ -70,8 +72,7 @@ public class GenealogyController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForComponentView");
         mav.addObject(REQUEST_PARAM_VALUE, value);
-        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
+        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 
@@ -80,8 +81,7 @@ public class GenealogyController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("genealogyForProductView");
         mav.addObject(REQUEST_PARAM_VALUE, value);
-        mav.addObject("company", dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult());
+        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 }

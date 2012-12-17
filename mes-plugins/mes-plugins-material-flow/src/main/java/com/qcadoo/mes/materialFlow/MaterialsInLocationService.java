@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.print.pdf.MaterialFlowPdfService;
 import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
@@ -53,7 +53,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -89,6 +88,9 @@ public class MaterialsInLocationService {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private CompanyService companyService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FILE_NAME, null);
@@ -261,8 +263,7 @@ public class MaterialsInLocationService {
             throws IOException, DocumentException {
         Entity materialFlowWithFileName = fileService.updateReportFileName(materialsInLocation, TIME,
                 "materialFlow.materialsInLocation.report.fileName");
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity company = companyService.getCompany();
         materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
         materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
     }

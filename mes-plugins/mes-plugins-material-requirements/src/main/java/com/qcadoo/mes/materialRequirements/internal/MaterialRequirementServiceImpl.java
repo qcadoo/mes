@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
 import com.qcadoo.mes.materialRequirements.internal.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequirementXlsService;
@@ -49,7 +49,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
@@ -92,6 +91,9 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private CompanyService companyService;
 
     public boolean checkIfInputProductsRequiredForTypeIsSelected(final DataDefinition entityDD, final Entity entity,
             final String fieldName, final String errorMessage) {
@@ -252,8 +254,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
             DocumentException {
         Entity materialRequirementWithFileName = fileService.updateReportFileName(materialRequirement, "date",
                 "materialRequirements.materialRequirement.report.fileName");
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("owner", true)).setMaxResults(1).uniqueResult();
+        Entity company = companyService.getCompany();
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
         materialRequirementXlsService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
     }
