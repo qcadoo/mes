@@ -109,9 +109,6 @@
 		<menu:menu-item-url name="systemParameters"
 			category="administration" url="/parameters.html" />
 
-		<menu:menu-item-url name="company" category="administration"
-			url="/companyView.html" />
-			
 		<menu:menu-item-url name="conversion" category="basic"
 			url="/unitConversions.html" />
 
