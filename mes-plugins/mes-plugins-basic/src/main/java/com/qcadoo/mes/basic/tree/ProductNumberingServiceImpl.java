@@ -128,8 +128,12 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
                     }
                 }
             } else {
-                if (checkIfEntityTypeHasChanged(product, entityType) && (PARTICULAR_PRODUCT.getStringValue().equals(entityType))) {
-                    updateProductFamilyChildrensNodeNumbers(product, null);
+                if (checkIfEntityTypeHasChanged(product, entityType)) {
+                    if (PRODUCTS_FAMILY.getStringValue().equals(entityType)) {
+                        generateNodeNumberForProductsFamily(product, parent);
+                    } else if (PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
+                        updateProductFamilyChildrensNodeNumbers(product, null);
+                    }
                 }
             }
         }
@@ -233,7 +237,11 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
         String productsFamilyNodeNumber = productsFamily.getStringField(NODE_NUMBER);
         String productNodeNumber = product.getStringField(NODE_NUMBER);
 
-        return productNodeNumber.startsWith(productsFamilyNodeNumber);
+        if (StringUtils.isEmpty(productNodeNumber)) {
+            return false;
+        } else {
+            return productNodeNumber.startsWith(productsFamilyNodeNumber);
+        }
     }
 
     @Override
