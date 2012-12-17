@@ -148,6 +148,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
         params.setField("currency", currency);
         params.setField("unit", values.get("unit"));
+        params.setField("company", getCompany(values.get("owner")));
 
         if (isEnabledOrEnabling("productionCounting")) {
             params.setField("registerQuantityInProduct", true);
@@ -216,4 +217,8 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         company.getDataDefinition().save(company);
     }
 
+    private Entity getCompany(final String number) {
+        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
+                .add(SearchRestrictions.eq("number", number)).uniqueResult();
+    }
 }

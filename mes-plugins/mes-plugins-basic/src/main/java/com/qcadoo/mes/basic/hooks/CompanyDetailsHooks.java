@@ -26,8 +26,8 @@ package com.qcadoo.mes.basic.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -35,12 +35,16 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CompanyDetailsHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     private static final String L_FORM = "form";
 
@@ -87,11 +91,13 @@ public class CompanyDetailsHooks {
         if (company.getId().equals(owner.getId())) {
             disabled = false;
         }
-        for (String item : Lists.newArrayList("save", "saveBack", "saveNew", "copy", "delete")) {
-            RibbonActionItem ribbonActionItem = (RibbonActionItem) actions.getItemByName(item);
-            ribbonActionItem.setEnabled(disabled);
-            ribbonActionItem.requestUpdate(true);
-        }
+        RibbonActionItem ribbonActionItem = (RibbonActionItem) actions.getItemByName("delete");
+        ribbonActionItem.setEnabled(disabled);
+        ribbonActionItem.requestUpdate(true);
+    }
 
+    public void generateCompanyNumber(final ViewDefinitionState state) {
+        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
+                L_FORM, "number");
     }
 }

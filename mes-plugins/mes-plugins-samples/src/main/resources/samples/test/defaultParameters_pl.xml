@@ -25,5 +25,5 @@
 
 -->
 <defaultParameters>
-	<row CODE="PLN" UNIT="szt" />
+	<row CODE="PLN" UNIT="szt" OWNER="1"/>
 </defaultParameters>

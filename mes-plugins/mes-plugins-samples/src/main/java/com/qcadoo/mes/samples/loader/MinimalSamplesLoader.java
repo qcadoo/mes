@@ -73,9 +73,9 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     protected void loadData(final String locale) {
         final String dataset = "minimal";
         readDataFromXML(dataset, "dictionaries", locale);
+        readDataFromXML(dataset, "company", locale);
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "shifts", locale);
-        readDataFromXML(dataset, "company", locale);
         readDataFromXML(dataset, "conversionItem", locale);
 
         if (isEnabledOrEnabling(PRODUCTION_LINES_PLUGIN_IDENTIFIER)) {
@@ -87,12 +87,12 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     protected void readData(final Map<String, String> values, final String type, final Element node) {
         if ("dictionaries".equals(type)) {
             addDictionaryItems(values);
+        } else if ("company".equals(type)) {
+            addCompany(values);
         } else if ("defaultParameters".equals(type)) {
             addParameters(values);
         } else if ("shifts".equals(type)) {
             addShifts(values);
-        } else if ("company".equals(type)) {
-            addCompany(values);
         } else if (L_PRODUCTION_LINES.equals(type)) {
             addProductionLines(values);
         } else if (L_PRODUCTION_LINES_DICTIONARY.equals(type)) {

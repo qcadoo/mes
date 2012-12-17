@@ -20,20 +20,6 @@
 			<template name="standardGridTemplate" />
 		</ribbon>
 		<component type="grid" name="companies" reference="grid">
-			<script>
-				<![CDATA[
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								return;	
-							} else {
-								#{grid}.performEvent('checkIfIsOwner', []);
-							}
-						}
-					}
-					#{grid}.addOnChangeListener(listener);
-				]]>
-			</script>
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />
 			<option type="column" name="name" fields="name" link="true"
@@ -53,7 +39,7 @@
 			<option type="correspondingComponent" value="form" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			<listener event="onSelectChange"
+			<listener event="select"
 				class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
 				method="checkIfIsOwner" />
 		</component>

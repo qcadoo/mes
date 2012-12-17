@@ -35,7 +35,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CompanyService {
@@ -44,9 +43,6 @@ public class CompanyService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private ParameterService parameterService;
@@ -92,15 +88,6 @@ public class CompanyService {
         return company.getId().equals(owner.getId());
     }
 
-    public void disableCompanyFormForOwner(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
-        Boolean owner = getOwning(form);
-
-        if (owner.booleanValue()) {
-            form.setFormEnabled(false);
-        }
-    }
-
     public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state, String... references) {
 
         FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
@@ -118,11 +105,6 @@ public class CompanyService {
                 ((GridComponent) component).setEditable(false);
             }
         }
-    }
-
-    public void generateCompanyNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
-                L_FORM, "number");
     }
 
 }

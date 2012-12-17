@@ -166,8 +166,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, "users", locale);
 
         readDataFromXML(dataset, "dictionaries", locale);
-        readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, "company", locale);
+        readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, "conversionItem", locale);

@@ -130,9 +130,8 @@
 	</component>
 	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.CompanyService" method="disableCompanyFormForOwner" />
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks" method="updateRibbonState" />
-		<beforeRender class="com.qcadoo.mes.basic.CompanyService"
+		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
 			method="generateCompanyNumber" />
 	</hooks>
 </view>
