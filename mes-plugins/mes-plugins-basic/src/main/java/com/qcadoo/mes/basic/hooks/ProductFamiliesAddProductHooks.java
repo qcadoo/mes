@@ -35,7 +35,6 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 public class ProductFamiliesAddProductHooks {
 
     public void updateRibbonState(final ViewDefinitionState view) {
-
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference("child");
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
@@ -45,7 +44,6 @@ public class ProductFamiliesAddProductHooks {
         RibbonActionItem addProduct = (RibbonActionItem) add.getItemByName("addProduct");
 
         updateButtonState(addProduct, productLookup.getFieldValue() != null);
-
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {

@@ -23,38 +23,17 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
-
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class DeliveryDetailsListenersTSFDOverrideUtil {
 
-    public void fillDeliveredProductOperation(final Entity delivery) {
-        List<Entity> deliveredProducts = delivery.getHasManyField(DELIVERED_PRODUCTS);
-
-        for (Entity deliveredProduct : deliveredProducts) {
-            Entity product = deliveredProduct.getBelongsToField(PRODUCT);
-
-            Entity orderedProduct = getOrderProduct(delivery, product);
-
-            deliveredProduct.setField(OPERATION, orderedProduct.getBelongsToField(OPERATION));
-        }
-
-        delivery.getDataDefinition().save(delivery);
-    }
-
-    private Entity getOrderProduct(final Entity delivery, final Entity product) {
-        return delivery.getHasManyField(ORDERED_PRODUCTS).find().add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .setMaxResults(1).uniqueResult();
+    public void fillDeliveredProductOperation(final Entity orderedProduct, final Entity deliveredProduct) {
+        deliveredProduct.setField(OPERATION, orderedProduct.getBelongsToField(OPERATION));
     }
 
 }

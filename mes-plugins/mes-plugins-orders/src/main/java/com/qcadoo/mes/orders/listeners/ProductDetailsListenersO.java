@@ -38,13 +38,13 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ProductDetailsListenersO {
 
-    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    private static final String L_GRID_OPTIONS = "grid.options";
+    private static final String L_FORM = "form";
 
     private static final String L_FILTERS = "filters";
 
-    private static final String L_FORM = "form";
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {

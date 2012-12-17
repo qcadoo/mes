@@ -411,9 +411,9 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="changeFieldsEnabledDependOnState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="fillDefaultAddress" />
+			method="fillDeliveryAddressDefaultValue" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="fillDefaultDescription" />
+			method="fillDescriptionDefaultValue" />
 	</hooks>
 	
 </view>

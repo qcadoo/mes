@@ -44,7 +44,7 @@
 			<model:belongsTo name="location" model="location"
 				plugin="materialFlow" />
 		</model:model-field>
-
+		
 		<model:model-field plugin="deliveries" model="delivery">
 			<model:belongsTo name="location" model="location"
 				plugin="materialFlow" />
@@ -55,12 +55,22 @@
 				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.ParameterHooksDTMF"
 				method="checkIfLocationIsWarehouse" />
 		</model:model-hook>
-
+		
+		<model:model-hook plugin="deliveries" model="delivery">
+			<model:onCreate
+				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryHooksDTMF"
+				method="setLocationDefaultValue" />
+		</model:model-hook>
 		<model:model-hook plugin="deliveries" model="delivery">
 			<model:validatesWith
 				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryHooksDTMF"
 				method="checkIfLocationIsWarehouse" />
 		</model:model-hook>
+
+		<view:view-hook plugin="deliveries" view="deliveryDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryDetailsHooksDTMF"
+			method="fillLocationDefaultValue" />
 
 		<view:view-tab resource="view/tabExtensions/supplyParametersForDeliveries.xml" />
 		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />

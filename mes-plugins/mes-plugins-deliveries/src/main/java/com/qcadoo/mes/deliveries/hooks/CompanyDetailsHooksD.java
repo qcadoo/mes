@@ -30,7 +30,6 @@ public class CompanyDetailsHooksD {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity company = companyForm.getEntity();

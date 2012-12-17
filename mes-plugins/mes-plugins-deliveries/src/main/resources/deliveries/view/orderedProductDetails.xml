@@ -39,9 +39,10 @@
 			<component type="form" name="orderedProductDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2"
-					rows="4">
+					rows="3">
 					<layoutElement column="1" row="1">
-						<component type="input" name="succession" reference="succession" field="succession" defaultEnabled="never"/>
+						<component type="input" name="succession" reference="succession"
+							field="succession" defaultEnabled="never" />
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="lookup" name="product" reference="product"

@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
@@ -31,6 +33,7 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
@@ -39,6 +42,9 @@ import com.qcadoo.model.api.Entity;
 
 @Service
 public class DeliveryHooks {
+
+    @Autowired
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
@@ -54,6 +60,22 @@ public class DeliveryHooks {
         entity.setField(STATE, DeliveryStateStringValues.DRAFT);
         entity.setField(EXTERNAL_NUMBER, null);
         entity.setField(EXTERNAL_SYNCHRONIZED, true);
+    }
+
+    public void setDeliveryAddressDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+        String deliveryAddress = delivery.getStringField(DELIVERY_ADDRESS);
+
+        if (deliveryAddress == null) {
+            delivery.setField(DELIVERY_ADDRESS, deliveriesService.getDeliveryAddressDefaultValue());
+        }
+    }
+
+    public void setDescriptionDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+        String description = delivery.getStringField(DESCRIPTION);
+
+        if (description == null) {
+            delivery.setField(DESCRIPTION, deliveriesService.getDescriptionDefaultValue());
+        }
     }
 
 }

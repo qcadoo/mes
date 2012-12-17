@@ -121,4 +121,20 @@ public interface DeliveriesService {
      */
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
+    /**
+     * Gets delivery address default value
+     * 
+     * @return delivery adresss
+     * 
+     */
+    String getDeliveryAddressDefaultValue();
+
+    /**
+     * Gets description default value
+     * 
+     * @return description
+     * 
+     */
+    String getDescriptionDefaultValue();
+
 }

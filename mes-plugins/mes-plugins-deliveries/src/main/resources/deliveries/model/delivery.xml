@@ -60,6 +60,10 @@
 	<hooks>
 		<onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
 			method="setInitialState" />
+		<onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+			method="setDeliveryAddressDefaultValue" />
+		<onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+			method="setDescriptionDefaultValue" />
 		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
 			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"

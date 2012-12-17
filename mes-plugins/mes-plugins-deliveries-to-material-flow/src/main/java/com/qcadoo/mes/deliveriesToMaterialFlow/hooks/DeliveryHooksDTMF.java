@@ -5,6 +5,7 @@ import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDT
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -13,7 +14,18 @@ import com.qcadoo.model.api.Entity;
 public class DeliveryHooksDTMF {
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    public void setLocationDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+        Entity location = delivery.getBelongsToField(LOCATION);
+
+        if (location == null) {
+            delivery.setField(LOCATION, parameterService.getParameter().getBelongsToField(LOCATION));
+        }
+    }
 
     public boolean checkIfLocationIsWarehouse(final DataDefinition deliveryDD, final Entity delivery) {
         Entity location = delivery.getBelongsToField(LOCATION);

@@ -34,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -48,7 +46,7 @@ import com.qcadoo.view.api.components.FormComponent;
 public class DeliveryDetailsListeners {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private DeliveryDetailsHooks deliveryDetailsHooks;
@@ -106,18 +104,19 @@ public class DeliveryDetailsListeners {
     private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts) {
         List<Entity> deliveredProducts = new ArrayList<Entity>();
 
-        DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
-
         for (Entity orderedProduct : orderedProducts) {
-            Entity deliveredProduct = deliveredProductDD.create();
-
-            deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
-
-            deliveredProducts.add(deliveredProduct);
+            deliveredProducts.add(createDeliveredProduct(orderedProduct));
         }
 
         return deliveredProducts;
+    }
+
+    private Entity createDeliveredProduct(final Entity orderedProduct) {
+        Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
+
+        deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
+
+        return deliveredProduct;
     }
 
 }

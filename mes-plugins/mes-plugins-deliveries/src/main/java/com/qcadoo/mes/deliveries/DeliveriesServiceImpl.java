@@ -24,12 +24,19 @@
 package com.qcadoo.mes.deliveries;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
+import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -43,6 +50,12 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -114,6 +127,41 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+    }
+
+    @Override
+    public String getDeliveryAddressDefaultValue() {
+        Entity parameter = parameterService.getParameter();
+
+        if (OTHER.getStringValue().equals(parameter.getStringField(DEFAULT_ADDRESS))) {
+            return parameter.getStringField(OTHER_ADDRESS);
+        } else {
+            return generateAddressFromCompany();
+        }
+    }
+
+    @Override
+    public String getDescriptionDefaultValue() {
+        Entity parameter = parameterService.getParameter();
+
+        return parameter.getStringField(DEFAULT_DESCRIPTION);
+    }
+
+    private String generateAddressFromCompany() {
+        Entity company = companyService.getCompany();
+
+        StringBuffer address = new StringBuffer();
+        address.append(company.getStringField(CompanyFields.STREET));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.NUMBER));
+        address.append("/");
+        address.append(company.getStringField(CompanyFields.FLAT));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.ZIP_CODE));
+        address.append(" ");
+        address.append(company.getStringField(CompanyFields.CITY));
+
+        return address.toString();
     }
 
 }
