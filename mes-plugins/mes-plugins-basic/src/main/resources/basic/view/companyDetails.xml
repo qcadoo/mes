@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="companyDetails"
-	modelName="company">
-	
+	name="companyDetails" modelName="company">
+
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="orderProduction">
-				<bigButton name="redirectToFilteredOrderProductionList" icon="genealogyIcon24.png">
+				<bigButton name="redirectToFilteredOrderProductionList"
+					icon="genealogyIcon24.png">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -50,14 +37,16 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="company" reference="form">
-				<component type="gridLayout" name="mainTabGridLayout" columns="3" rows="7">
+				<component type="gridLayout" name="mainTabGridLayout"
+					columns="3" rows="7">
 					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number" reference="number">
+						<component type="input" name="number" field="number"
+							reference="number">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="name" field="name"  />
+						<component type="input" name="name" field="name" />
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="input" name="tax" field="tax" />
@@ -92,33 +81,16 @@
 					<layoutElement column="2" row="7">
 						<component type="input" name="country" field="country" />
 					</layoutElement>
-	
+
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="' '" />
 				<listener event="redirectToFilteredOrderProductionList"
-					class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners" method="redirectToFilteredOrderProductionList" />
+					class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
+					method="redirectToFilteredOrderProductionList" />
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
-			<script>
-					<![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
-						var externalNumberListener = {
-							onSetValue: function(value) {
-								
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									saveNew.disable("#{translate(materialFlow.location.ribbon.message.companyIsExternal)}");
-									del.disable("#{translate(materialFlow.location.ribbon.message.companyIsExternal)}");
-								}
-							}
-						};
-						#{form}.addOnChangeListener(externalNumberListener);
-					]]>
-			</script>
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="1">
 				<layoutElement column="1" row="1">
@@ -128,10 +100,13 @@
 			</component>
 		</windowTab>
 	</component>
-	
+
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks" method="updateRibbonState" />
+		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
+			method="updateRibbonState" />
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
 			method="generateCompanyNumber" />
+		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
+			method="disabledFieldAndRibbonForExternalCompany" />
 	</hooks>
 </view>

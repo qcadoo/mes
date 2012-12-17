@@ -23,11 +23,16 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,6 +52,9 @@ public class CompanyDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     private static final String L_FORM = "form";
+
+    @Autowired
+    private TranslationService translationService;
 
     public void updateRibbonState(final ViewDefinitionState view) {
         disabledRedirectToFilteredOrderProductionListButton(view);
@@ -79,25 +87,53 @@ public class CompanyDetailsHooks {
 
     private void disabledRibbonForOwner(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-
-        boolean disabled = true;
+        if (form.getEntityId() == null) {
+            return;
+        }
+        boolean enabled = true;
         Entity company = form.getEntity();
         Entity parameter = parameterService.getParameter();
         Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
-        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName("actions");
 
         if (company.getId().equals(owner.getId())) {
-            disabled = false;
+            enabled = false;
         }
-        RibbonActionItem ribbonActionItem = (RibbonActionItem) actions.getItemByName("delete");
-        ribbonActionItem.setEnabled(disabled);
-        ribbonActionItem.requestUpdate(true);
+
+        disabledButton(view, "actions", "delete", enabled,
+                translationService.translate("basic.company.isOwner", view.getLocale()));
     }
 
     public void generateCompanyNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
                 L_FORM, "number");
+    }
+
+    public void disabledFieldAndRibbonForExternalCompany(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() == null) {
+            return;
+        }
+        Entity company = form.getEntity();
+        if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
+            form.setFormEnabled(false);
+            for (String reference : Arrays.asList("delete", "save", "saveNew", "saveBack", "copy")) {
+                disabledButton(view, "actions", reference, false,
+                        translationService.translate("basic.company.isExternalNumber", view.getLocale()));
+            }
+        }
+    }
+
+    private void disabledButton(final ViewDefinitionState view, final String groupName, final String buttonName,
+            final boolean enabled, final String message) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonGroup actions = (RibbonGroup) window.getRibbon().getGroupByName(groupName);
+        RibbonActionItem button = (RibbonActionItem) actions.getItemByName(buttonName);
+        button.setEnabled(enabled);
+        if (enabled) {
+            button.setMessage(null);
+        } else {
+            button.setMessage(message);
+        }
+        button.requestUpdate(true);
     }
 }
