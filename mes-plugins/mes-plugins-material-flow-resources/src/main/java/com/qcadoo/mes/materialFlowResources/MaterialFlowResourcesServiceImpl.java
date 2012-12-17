@@ -78,13 +78,30 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
-        List<Entity> resources = getResourcesForLocationAndProduct(location, product);
-
         String type = location.getStringField(TYPE);
 
         if (isTypeWarehouse(type)) {
-            if (resources == null) {
+            BigDecimal resourcesQuantity = getResourcesQuantityForLocationAndProduct(location, product);
+
+            if (resourcesQuantity == null) {
                 return false;
+            } else {
+                return (resourcesQuantity.compareTo(quantity) >= 0);
+            }
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product) {
+        String type = location.getStringField(TYPE);
+
+        if (isTypeWarehouse(type)) {
+            List<Entity> resources = getResourcesForLocationAndProduct(location, product);
+
+            if (resources == null) {
+                return null;
             } else {
                 BigDecimal resourcesQuantity = BigDecimal.ZERO;
 
@@ -92,10 +109,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                     resourcesQuantity = resourcesQuantity.add(resource.getDecimalField(QUANTITY), numberService.getMathContext());
                 }
 
-                return (resourcesQuantity.compareTo(quantity) >= 0);
+                return resourcesQuantity;
             }
         } else {
-            return true;
+            return null;
         }
     }
 
