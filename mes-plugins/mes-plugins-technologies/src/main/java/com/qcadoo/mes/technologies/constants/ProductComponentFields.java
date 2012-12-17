@@ -34,4 +34,5 @@ public final class ProductComponentFields {
     public static final String OPERATION_IN = "operationIn";
 
     public static final String OPERATION_OUT = "operationOut";
+
 }

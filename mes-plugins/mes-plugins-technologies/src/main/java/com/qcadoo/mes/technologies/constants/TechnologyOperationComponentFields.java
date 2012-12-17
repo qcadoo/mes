@@ -58,4 +58,5 @@ public final class TechnologyOperationComponentFields {
     public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
 
     public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+
 }
