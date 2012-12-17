@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
@@ -52,9 +51,6 @@ public class CompanyDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     private static final String L_FORM = "form";
-
-    @Autowired
-    private TranslationService translationService;
 
     public void updateRibbonState(final ViewDefinitionState view) {
         disabledRedirectToFilteredOrderProductionListButton(view);
@@ -99,8 +95,7 @@ public class CompanyDetailsHooks {
             enabled = false;
         }
 
-        disabledButton(view, "actions", "delete", enabled,
-                translationService.translate("basic.company.isOwner", view.getLocale()));
+        disabledButton(view, "actions", "delete", enabled, "basic.company.isOwner");
     }
 
     public void generateCompanyNumber(final ViewDefinitionState state) {
@@ -117,8 +112,7 @@ public class CompanyDetailsHooks {
         if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
             form.setFormEnabled(false);
             for (String reference : Arrays.asList("delete", "save", "saveNew", "saveBack", "copy")) {
-                disabledButton(view, "actions", reference, false,
-                        translationService.translate("basic.company.isExternalNumber", view.getLocale()));
+                disabledButton(view, "actions", reference, false, "basic.company.isExternalNumber");
             }
         }
     }
