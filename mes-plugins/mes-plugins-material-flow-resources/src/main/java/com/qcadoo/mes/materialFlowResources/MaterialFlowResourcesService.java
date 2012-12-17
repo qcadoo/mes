@@ -35,6 +35,8 @@ public interface MaterialFlowResourcesService {
 
     boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity);
 
+    BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product);
+
     void manageResources(final Entity transfer);
 
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
