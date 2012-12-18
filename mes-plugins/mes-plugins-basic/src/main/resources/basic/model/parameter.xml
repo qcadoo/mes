@@ -31,7 +31,7 @@
 		<belongsTo name="currency" plugin="basic" model="currency" />
 		<dictionary name="unit" dictionary="units" />
 		<string name="additionalTextInFooter">
-			<validatesLength max="256"/> 
+			<validatesLength max="128"/> 
 		</string>
 		<belongsTo name="company" plugin="basic" model="company" />
 	</fields>

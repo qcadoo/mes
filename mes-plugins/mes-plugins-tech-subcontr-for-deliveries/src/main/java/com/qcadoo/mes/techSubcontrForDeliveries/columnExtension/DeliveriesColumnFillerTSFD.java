@@ -29,7 +29,6 @@ import static com.qcadoo.mes.technologies.constants.OperationFields.NUMBER;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,19 +46,15 @@ public class DeliveriesColumnFillerTSFD implements DeliveryColumnFiller, OrderCo
     private DeliveriesService deliveriesService;
 
     @Override
-    public Map<Entity, Map<String, String>> getDeliveryProductsColumnValues(
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
+        Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
-        for (Entry<Entity, DeliveryProduct> productWithDeliveryProduct : productWithDeliveryProducts.entrySet()) {
-            Entity product = productWithDeliveryProduct.getKey();
-            DeliveryProduct deliveryProduct = productWithDeliveryProduct.getValue();
-
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+        for (DeliveryProduct deliveryProduct : deliveryProducts) {
+            if (!values.containsKey(deliveryProduct)) {
+                values.put(deliveryProduct, new HashMap<String, String>());
             }
 
-            fillOperationNumber(values, product, deliveryProduct);
+            fillOperationNumber(values, deliveryProduct);
         }
 
         return values;
@@ -80,8 +75,7 @@ public class DeliveriesColumnFillerTSFD implements DeliveryColumnFiller, OrderCo
         return values;
     }
 
-    private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity product,
-            final DeliveryProduct deliveryProduct) {
+    private void fillOperationNumber(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
         String operationNumber = null;
 
         if (deliveryProduct.getDeliveredProductId() != null) {
@@ -116,7 +110,7 @@ public class DeliveriesColumnFillerTSFD implements DeliveryColumnFiller, OrderCo
             operationNumber = "";
         }
 
-        values.get(product).put("operationNumber", operationNumber);
+        values.get(deliveryProduct).put("operationNumber", operationNumber);
     }
 
     private void fillOperationNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {

@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -168,20 +167,18 @@ public class DeliveryReportPdf extends ReportPdfView {
             PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForDeliveries.size(),
                     prepareProductsTableHeader(document, columnsForDeliveries, locale), false);
 
-            Map<Entity, DeliveryProduct> productWithDeliveryProducts = deliveryColumnFetcher
-                    .getProductWithDeliveryProducts(delivery);
+            List<DeliveryProduct> productWithDeliveryProducts = deliveryColumnFetcher.getProductWithDeliveryProducts(delivery);
 
-            Map<Entity, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
+            Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
                     .getDeliveryProductsColumnValues(productWithDeliveryProducts);
 
-            for (Entry<Entity, DeliveryProduct> productWithDeliveryProduct : productWithDeliveryProducts.entrySet()) {
-                Entity product = productWithDeliveryProduct.getKey();
+            for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
 
                 for (Entity columnForDeliveries : columnsForDeliveries) {
                     String identifier = columnForDeliveries.getStringField(IDENTIFIER);
                     String alignment = columnForDeliveries.getStringField(ALIGNMENT);
 
-                    String value = deliveryProductsColumnValues.get(product).get(identifier);
+                    String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
 
                     prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 

@@ -24,15 +24,14 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.COLUMN_FILLER;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,7 +41,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 
 @Service
@@ -54,8 +56,8 @@ public class DeliveryColumnFetcher {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public Map<Entity, DeliveryProduct> getProductWithDeliveryProducts(final Entity delivery) {
-        Map<Entity, DeliveryProduct> productWithDeliveryProducts = new LinkedHashMap<Entity, DeliveryProduct>();
+    public List<DeliveryProduct> getProductWithDeliveryProducts(final Entity delivery) {
+        List<DeliveryProduct> productWithDeliveryProducts = new ArrayList<DeliveryProduct>();
 
         List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
         List<Entity> deliveredProducts = delivery.getHasManyField(DELIVERED_PRODUCTS);
@@ -65,31 +67,46 @@ public class DeliveryColumnFetcher {
 
             deliveryProduct.setOrderedProductId(orderedProduct.getId());
 
-            productWithDeliveryProducts.put(orderedProduct.getBelongsToField(PRODUCT), deliveryProduct);
+            productWithDeliveryProducts.add(deliveryProduct);
         }
 
         for (Entity deliveredProduct : deliveredProducts) {
-            if (productWithDeliveryProducts.containsKey(deliveredProduct.getBelongsToField(PRODUCT))) {
-                DeliveryProduct deliveryProduct = productWithDeliveryProducts.get(deliveredProduct.getBelongsToField(PRODUCT));
-
-                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
-
-                productWithDeliveryProducts.put(deliveredProduct.getBelongsToField(PRODUCT), deliveryProduct);
-            } else {
-                DeliveryProduct deliveryProduct = new DeliveryProduct();
-
-                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
-
-                productWithDeliveryProducts.put(deliveredProduct.getBelongsToField(PRODUCT), deliveryProduct);
-            }
+            productWithDeliveryProducts = getDeliveredProductList(productWithDeliveryProducts, deliveredProduct);
         }
-
         return productWithDeliveryProducts;
     }
 
-    public Map<Entity, Map<String, String>> getDeliveryProductsColumnValues(
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts) {
-        Map<Entity, Map<String, String>> deliveryProductsColumnValues = new HashMap<Entity, Map<String, String>>();
+    private List<DeliveryProduct> getDeliveredProductList(List<DeliveryProduct> productWithDeliveryProducts,
+            final Entity deliveredProduct) {
+        List<DeliveryProduct> result = Lists.newArrayList(productWithDeliveryProducts);
+        for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
+            if (containsOrderedWithProduct(deliveryProduct, deliveredProduct)) {
+                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
+                result.add(deliveryProduct);
+            } else {
+                DeliveryProduct deliveryProductToList = new DeliveryProduct();
+                deliveryProductToList.setDeliveredProductId(deliveredProduct.getId());
+                result.add(deliveryProductToList);
+            }
+        }
+        return result;
+    }
+
+    private boolean containsOrderedWithProduct(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
+        Entity product = null;
+        if (deliveryProduct.getOrderedProductId() != null) {
+            Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
+            product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        } else {
+            Entity deliveredProductEntity = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+            product = deliveredProductEntity.getBelongsToField(DeliveredProductFields.PRODUCT);
+        }
+        return product.getId().equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId());
+    }
+
+    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
+            final List<DeliveryProduct> productWithDeliveryProducts) {
+        Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = new HashMap<DeliveryProduct, Map<String, String>>();
 
         fetchColumnValues(deliveryProductsColumnValues, "getDeliveryProductsColumnValues", productWithDeliveryProducts);
 
@@ -97,8 +114,8 @@ public class DeliveryColumnFetcher {
     }
 
     @SuppressWarnings("unchecked")
-    private void fetchColumnValues(final Map<Entity, Map<String, String>> columnValues, final String methodName,
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts) {
+    private void fetchColumnValues(final Map<DeliveryProduct, Map<String, String>> columnValues, final String methodName,
+            final List<DeliveryProduct> productWithDeliveryProducts) {
         List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
 
         Set<String> classNames = new HashSet<String>();
@@ -125,18 +142,18 @@ public class DeliveryColumnFetcher {
             Method method;
 
             try {
-                method = clazz.getMethod(methodName, Map.class);
+                method = clazz.getMethod(methodName, List.class);
             } catch (SecurityException e) {
                 throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
             } catch (NoSuchMethodException e) {
                 throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
             }
 
-            Map<Entity, Map<String, String>> values;
+            Map<DeliveryProduct, Map<String, String>> values;
 
             String invokeMethodError = "Failed to invoke column evaulator method";
             try {
-                values = (Map<Entity, Map<String, String>>) method.invoke(bean, productWithDeliveryProducts);
+                values = (Map<DeliveryProduct, Map<String, String>>) method.invoke(bean, productWithDeliveryProducts);
             } catch (IllegalArgumentException e) {
                 throw new IllegalStateException(invokeMethodError, e);
             } catch (IllegalAccessException e) {
@@ -145,7 +162,7 @@ public class DeliveryColumnFetcher {
                 throw new IllegalStateException(invokeMethodError, e);
             }
 
-            for (Entry<Entity, Map<String, String>> entry : values.entrySet()) {
+            for (Entry<DeliveryProduct, Map<String, String>> entry : values.entrySet()) {
                 if (columnValues.containsKey(entry.getKey())) {
                     for (Entry<String, String> deepEntry : entry.getValue().entrySet()) {
                         columnValues.get(entry.getKey()).put(deepEntry.getKey(), deepEntry.getValue());

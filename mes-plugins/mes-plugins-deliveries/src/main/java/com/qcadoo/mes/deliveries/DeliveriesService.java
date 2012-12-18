@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries;
 
 import java.util.List;
 
+import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -136,5 +137,12 @@ public interface DeliveriesService {
      * 
      */
     String getDescriptionDefaultValue();
+
+    /**
+     * Gets product with DeliveryProduct
+     * 
+     * @return entity
+     */
+    Entity getProduct(final DeliveryProduct deliveryProduct);
 
 }

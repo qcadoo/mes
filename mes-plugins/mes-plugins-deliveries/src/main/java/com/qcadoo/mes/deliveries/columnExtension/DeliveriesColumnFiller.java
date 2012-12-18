@@ -26,6 +26,8 @@ package com.qcadoo.mes.deliveries.columnExtension;
 import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.SUCCESSION;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
@@ -34,11 +36,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.print.DeliveryColumnFiller;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
@@ -48,34 +50,30 @@ import com.qcadoo.model.api.NumberService;
 @Component
 public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumnFiller {
 
-    // @Autowired
-    // private DeliveriesService deliveriesService;
+    @Autowired
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private NumberService numberService;
 
     @Override
-    public Map<Entity, Map<String, String>> getDeliveryProductsColumnValues(
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
+        Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
-        for (Entry<Entity, DeliveryProduct> productWithDeliveryProduct : productWithDeliveryProducts.entrySet()) {
-            Entity product = productWithDeliveryProduct.getKey();
-            // DeliveryProduct deliveryProduct = productWithDeliveryProduct.getValue();
+        for (DeliveryProduct deliveryProduct : deliveryProducts) {
 
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+            if (!values.containsKey(deliveryProduct)) {
+                values.put(deliveryProduct, new HashMap<String, String>());
             }
 
-            // TODO lupo fix problem with columns
-            // fillProductNumber(values, product);
-            // fillProductName(values, product);
-            // fillProductUnit(values, product);
+            fillProductNumber(values, deliveryProduct);
+            fillProductName(values, deliveryProduct);
+            fillProductUnit(values, deliveryProduct);
 
-            // fillSuccession(values, deliveryProduct);
-            // fillOrderedQuantity(values, deliveryProduct);
-            // fillDeliveredQuantity(values, deliveryProduct);
-            // fillDamagedQuantity(values, deliveryProduct);
+            fillSuccession(values, deliveryProduct);
+            fillOrderedQuantity(values, deliveryProduct);
+            fillDeliveredQuantity(values, deliveryProduct);
+            fillDamagedQuantity(values, deliveryProduct);
         }
 
         return values;
@@ -115,6 +113,34 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(orderedProduct).put("productNumber", productNumber);
     }
 
+    private void fillProductNumber(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        String productNumber = null;
+
+        if (deliveryProduct == null) {
+            productNumber = "";
+        } else {
+            Entity product = deliveriesService.getProduct(deliveryProduct);
+
+            productNumber = product.getStringField(NUMBER);
+        }
+
+        values.get(deliveryProduct).put("productNumber", productNumber);
+    }
+
+    private void fillProductName(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        String productName = null;
+
+        if (deliveryProduct == null) {
+            productName = "";
+        } else {
+            Entity product = deliveriesService.getProduct(deliveryProduct);
+
+            productName = product.getStringField(NAME);
+        }
+
+        values.get(deliveryProduct).put("productName", productName);
+    }
+
     private void fillProductName(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         String productName = null;
 
@@ -143,81 +169,92 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         values.get(orderedProduct).put("productUnit", productUnit);
     }
 
-    // private void fillSuccession(final Map<Entity, Map<String, String>> values, final Entity product,
-    // final DeliveryProduct deliveryProduct) {
-    // Integer succession = null;
-    //
-    // if (deliveryProduct.getDeliveredProductId() == null) {
-    // succession = 0;
-    // } else {
-    // Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-    //
-    // if (deliveredProduct == null) {
-    // succession = 0;
-    // } else {
-    // succession = deliveredProduct.getIntegerField(SUCCESSION);
-    // }
-    // }
-    //
-    // values.get(product).put("succession", succession.toString());
-    // }
+    private void fillProductUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        String productUnit = null;
 
-    // private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
-    // final DeliveryProduct deliveryProduct) {
-    // BigDecimal orderedQuantity = null;
-    //
-    // if (deliveryProduct.getOrderedProductId() == null) {
-    // orderedQuantity = BigDecimal.ZERO;
-    // } else {
-    // Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
-    //
-    // if (orderedProduct == null) {
-    // orderedQuantity = BigDecimal.ZERO;
-    // } else {
-    // orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
-    // }
-    // }
-    //
-    // values.get(product).put("orderedQuantity", numberService.format(orderedQuantity));
-    // }
+        if (deliveryProduct.getDeliveredProductId() == null) {
+            productUnit = "";
+        } else {
+            Entity product = deliveriesService.getProduct(deliveryProduct);
 
-    // private void fillDeliveredQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
-    // final DeliveryProduct deliveryProduct) {
-    // BigDecimal deliveredQuantity = null;
-    //
-    // if (deliveryProduct.getDeliveredProductId() == null) {
-    // deliveredQuantity = BigDecimal.ZERO;
-    // } else {
-    // Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-    //
-    // if (deliveredProduct == null) {
-    // deliveredQuantity = BigDecimal.ZERO;
-    // } else {
-    // deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
-    // }
-    // }
-    //
-    // values.get(product).put("deliveredQuantity", numberService.format(deliveredQuantity));
-    // }
+            productUnit = product.getStringField(UNIT);
+        }
 
-    // private void fillDamagedQuantity(final Map<Entity, Map<String, String>> values, final Entity product,
-    // final DeliveryProduct deliveryProduct) {
-    // BigDecimal damagedQuantity = null;
-    //
-    // if (deliveryProduct.getDeliveredProductId() == null) {
-    // damagedQuantity = BigDecimal.ZERO;
-    // } else {
-    // Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-    //
-    // if (deliveredProduct == null) {
-    // damagedQuantity = BigDecimal.ZERO;
-    // } else {
-    // damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
-    // }
-    // }
-    //
-    // values.get(product).put("damagedQuantity", numberService.format(damagedQuantity));
-    // }
+        values.get(deliveryProduct).put("productUnit", productUnit);
+    }
+
+    private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        Integer succession = null;
+
+        if (deliveryProduct.getDeliveredProductId() == null) {
+            succession = 0;
+        } else {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct == null) {
+                succession = 0;
+            } else {
+                succession = deliveredProduct.getIntegerField(SUCCESSION);
+            }
+        }
+
+        values.get(deliveryProduct).put("succession", succession.toString());
+    }
+
+    private void fillOrderedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal orderedQuantity = null;
+
+        if (deliveryProduct.getOrderedProductId() == null) {
+            orderedQuantity = BigDecimal.ZERO;
+        } else {
+            Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
+
+            if (orderedProduct == null) {
+                orderedQuantity = BigDecimal.ZERO;
+            } else {
+                orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
+            }
+        }
+
+        values.get(deliveryProduct).put("orderedQuantity", numberService.format(orderedQuantity));
+    }
+
+    private void fillDeliveredQuantity(final Map<DeliveryProduct, Map<String, String>> values,
+            final DeliveryProduct deliveryProduct) {
+        BigDecimal deliveredQuantity = null;
+
+        if (deliveryProduct.getDeliveredProductId() == null) {
+            deliveredQuantity = BigDecimal.ZERO;
+        } else {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct == null) {
+                deliveredQuantity = BigDecimal.ZERO;
+            } else {
+                deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
+            }
+        }
+
+        values.get(deliveryProduct).put("deliveredQuantity", numberService.format(deliveredQuantity));
+    }
+
+    private void fillDamagedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal damagedQuantity = null;
+
+        if (deliveryProduct.getDeliveredProductId() == null) {
+            damagedQuantity = BigDecimal.ZERO;
+        } else {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct == null) {
+                damagedQuantity = BigDecimal.ZERO;
+            } else {
+                damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
+            }
+        }
+
+        values.get(deliveryProduct).put("damagedQuantity", numberService.format(damagedQuantity));
+    }
 
     private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         BigDecimal orderedQuantity = null;
