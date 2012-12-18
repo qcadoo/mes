@@ -108,8 +108,12 @@ public class OrderDetailsHooks {
             changedEnabledFields(view, references, true);
         }
         if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
-            List<String> references = Arrays.asList(CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_TO);
+            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+            changedEnabledFields(view, references, true);
+        }
+        if (order.getStringField(STATE).equals(OrderState.COMPLETED.getStringValue())) {
+            List<String> references = Arrays.asList(DATE_FROM, DATE_TO);
             changedEnabledFields(view, references, true);
         }
     }
