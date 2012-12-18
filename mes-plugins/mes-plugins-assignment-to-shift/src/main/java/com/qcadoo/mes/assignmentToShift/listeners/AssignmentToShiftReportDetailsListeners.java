@@ -38,7 +38,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftXlsService;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
@@ -58,9 +57,6 @@ public class AssignmentToShiftReportDetailsListeners {
 
     @Autowired
     private ReportService reportService;
-
-    @Autowired
-    private CompanyService companyService;
 
     @Autowired
     private AssignmentToShiftXlsService assignmentReportXlsService;
@@ -113,10 +109,8 @@ public class AssignmentToShiftReportDetailsListeners {
         Entity assignmentToShiftReportWithFileName = fileService.updateReportFileName(assignmentToShiftReport, CREATE_DATE,
                 localePrefix);
 
-        Entity company = companyService.getCompany();
-
         try {
-            assignmentReportXlsService.generateDocument(assignmentToShiftReportWithFileName, company, locale, PageSize.A3);
+            assignmentReportXlsService.generateDocument(assignmentToShiftReportWithFileName, locale, PageSize.A3);
 
         } catch (IOException e) {
             throw new IllegalStateException("Problem with saving goodFood report");

@@ -32,14 +32,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.crud.CrudService;
 
 public class GenealogyControllerTest {
@@ -73,11 +70,7 @@ public class GenealogyControllerTest {
         // given
         GenealogyController genealogyController = new GenealogyController();
         DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        CompanyService companyService = mock(CompanyService.class);
-        Entity companyEntity = mock(Entity.class);
         setField(genealogyController, "dataDefinitionService", dataDefinitionService);
-        setField(genealogyController, "companyService", companyService);
-        Mockito.when(companyService.getCompany()).thenReturn(companyEntity);
 
         // when
         ModelAndView mav = genealogyController.genealogyForComponentPdf("v13");
@@ -85,17 +78,12 @@ public class GenealogyControllerTest {
         // then
         assertEquals("genealogyForComponentView", mav.getViewName());
         assertEquals("v13", mav.getModel().get("value"));
-        assertEquals(companyEntity, mav.getModel().get("company"));
     }
 
     @Test
     public void shouldPrepareViewForProductPdf() throws Exception {
         // given
         GenealogyController genealogyController = new GenealogyController();
-        Entity companyEntity = mock(Entity.class);
-        CompanyService companyService = mock(CompanyService.class);
-        setField(genealogyController, "companyService", companyService);
-        Mockito.when(companyService.getCompany()).thenReturn(companyEntity);
 
         // when
         ModelAndView mav = genealogyController.genealogyForProductPdf("v13");
@@ -103,6 +91,5 @@ public class GenealogyControllerTest {
         // then
         assertEquals("genealogyForProductView", mav.getViewName());
         assertEquals("v13", mav.getModel().get("value"));
-        assertEquals(companyEntity, mav.getModel().get("company"));
     }
 }

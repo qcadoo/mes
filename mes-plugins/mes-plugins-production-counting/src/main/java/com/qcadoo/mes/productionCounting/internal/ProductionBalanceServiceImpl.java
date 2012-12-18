@@ -94,7 +94,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -151,9 +150,6 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
-
-    @Autowired
-    private CompanyService companyService;
 
     @Override
     public void updateRecordsNumber(final DataDefinition productionBalanceDD, final Entity productionBalance) {
@@ -281,10 +277,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, DATE, localePrefix);
 
-        Entity company = companyService.getCompany();
-
         try {
-            productionBalancePdfService.generateDocument(productionBalanceWithFileName, company, locale);
+            productionBalancePdfService.generateDocument(productionBalanceWithFileName, locale);
 
             generateProductionBalance.notifyObserversThatTheBalanceIsBeingGenerated(productionBalance);
         } catch (IOException e) {

@@ -121,6 +121,7 @@ public class OrderDetailsHooksTest {
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
         Mockito.verify(reasonDateToField).setEnabled(true);
+        Mockito.verify(dateFrom).setEnabled(true);
         Mockito.verify(dateTo).setEnabled(true);
     }
 

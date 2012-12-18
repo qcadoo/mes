@@ -38,7 +38,6 @@ import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
@@ -67,16 +66,12 @@ public class WorkPlansServiceImpl implements WorkPlansService {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private CompanyService companyService;
-
     @Override
     @Transactional
     public final void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
             DocumentException {
-        Entity company = companyService.getCompany();
         Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, "date", "workPlans.workPlan.report.fileName");
-        workPlanPdfService.generateDocument(workPlanWithFilename, company, state.getLocale());
+        workPlanPdfService.generateDocument(workPlanWithFilename, state.getLocale());
     }
 
     @Override

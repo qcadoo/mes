@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.print.ProductionCountingPdfService;
 import com.qcadoo.model.api.DataDefinition;
@@ -61,9 +60,6 @@ public class ProductionCountingService {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private CompanyService companyService;
 
     @Autowired
     private FileService fileService;
@@ -154,8 +150,7 @@ public class ProductionCountingService {
             throws IOException, DocumentException {
         Entity productionCountingWithFileName = fileService.updateReportFileName(productionCounting, "date",
                 "productionCounting.productionCounting.report.fileName");
-        Entity company = companyService.getCompany();
-        productionCountingPdfService.generateDocument(productionCountingWithFileName, company, state.getLocale());
+        productionCountingPdfService.generateDocument(productionCountingWithFileName, state.getLocale());
     }
 
 }

@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import static com.qcadoo.mes.basic.constants.CompanyFields.CITY;
+import static com.qcadoo.mes.basic.constants.CompanyFields.FLAT;
+import static com.qcadoo.mes.basic.constants.CompanyFields.HOUSE;
+import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
+import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
@@ -32,12 +37,12 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -153,15 +158,34 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity company = companyService.getCompany();
 
         StringBuffer address = new StringBuffer();
-        address.append(company.getStringField(CompanyFields.STREET));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.NUMBER));
-        address.append("/");
-        address.append(company.getStringField(CompanyFields.FLAT));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.ZIP_CODE));
-        address.append(" ");
-        address.append(company.getStringField(CompanyFields.CITY));
+
+        String street = company.getStringField(STREET);
+        String house = company.getStringField(HOUSE);
+        String flat = company.getStringField(FLAT);
+        String zipCode = company.getStringField(ZIP_CODE);
+        String city = company.getStringField(CITY);
+
+        if (StringUtils.isNotEmpty(street)) {
+            address.append(street);
+            if (StringUtils.isNotEmpty(house)) {
+                address.append(" ");
+                address.append(house);
+                if (StringUtils.isNotEmpty(flat)) {
+                    address.append("/");
+                    address.append(flat);
+                }
+            }
+            if (StringUtils.isNotEmpty(city)) {
+                address.append(", ");
+            }
+        }
+        if (StringUtils.isNotEmpty(city)) {
+            if (StringUtils.isNotEmpty(zipCode)) {
+                address.append(zipCode);
+                address.append(" ");
+            }
+            address.append(city);
+        }
 
         return address.toString();
     }

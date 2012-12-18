@@ -36,6 +36,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.IN_PROGRESS;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 
@@ -126,11 +127,14 @@ public class OrderHooks {
         if (order.getField(START_DATE) != null) {
             startDateDB = choppingOffMiliseconds(order.getField(START_DATE));
         }
-        if (state.equals(PENDING.getStringValue()) && !startDate.equals(startDateDB)) {
+        if (PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             entity.setField(DATE_FROM, entity.getField(START_DATE));
         }
-        if (state.equals(ACCEPTED.getStringValue()) && !startDateDB.equals(startDate)) {
-            entity.setField(CORRECTED_DATE_FROM, entity.getField(START_DATE));
+        if (IN_PROGRESS.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
+            entity.setField(EFFECTIVE_DATE_FROM, entity.getField(START_DATE));
+        }
+        if (COMPLETED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
+            entity.setField(CORRECTED_DATE_FROM, entity.getField(DATE_FROM));
         }
     }
 
@@ -149,8 +153,14 @@ public class OrderHooks {
         if (order.getField(FINISH_DATE) != null) {
             finishDateDB = choppingOffMiliseconds(order.getField(FINISH_DATE));
         }
-        if (state.equals(PENDING.getStringValue()) && !finishDateDB.equals(finishDate)) {
+        if (PENDING.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
             entity.setField(DATE_TO, entity.getField(FINISH_DATE));
+        }
+        if (IN_PROGRESS.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
+            entity.setField(EFFECTIVE_DATE_TO, entity.getField(FINISH_DATE));
+        }
+        if (COMPLETED.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
+            entity.setField(CORRECTED_DATE_TO, entity.getField(DATE_TO));
         }
         if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
                 .equals(state)) && !finishDateDB.equals(finishDate)) {
