@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.qualityControls.constants.QualityControlsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -42,9 +41,6 @@ import com.qcadoo.model.api.Entity;
 
 @Controller
 public class QualityControlsController {
-
-    @Autowired
-    private CompanyService companyService;
 
     private static final String QUALITY_CONTROL_FOR = "qualityControlFor";
 
@@ -64,7 +60,6 @@ public class QualityControlsController {
         mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
         mav.addObject(DATE_FROM, dateFrom);
         mav.addObject(DATE_TO, dateTo);
-        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 
@@ -84,7 +79,6 @@ public class QualityControlsController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName(QUALITY_CONTROL_FOR + StringUtils.capitalize(type) + "PdfView");
         mav.addObject("entities", getQualityControlEntities(entities));
-        mav.addObject("company", companyService.getCompany());
         return mav;
     }
 

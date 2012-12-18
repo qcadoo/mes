@@ -164,9 +164,6 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         }
 
         document.add(table);
-
-        String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-        pdfHelper.addEndOfDocument(document, writer, text);
         return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
     }
 

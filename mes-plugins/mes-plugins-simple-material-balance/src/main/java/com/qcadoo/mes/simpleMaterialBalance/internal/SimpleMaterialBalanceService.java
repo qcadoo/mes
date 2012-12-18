@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceConstants;
 import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalancePdfService;
 import com.qcadoo.mes.simpleMaterialBalance.internal.print.SimpleMaterialBalanceXlsService;
@@ -74,9 +73,6 @@ public class SimpleMaterialBalanceService {
 
     @Autowired
     private SecurityService securityService;
-
-    @Autowired
-    private CompanyService companyService;
 
     @Autowired
     private SimpleMaterialBalancePdfService simpleMaterialBalancePdfService;
@@ -249,8 +245,7 @@ public class SimpleMaterialBalanceService {
             throws IOException, DocumentException {
         Entity simpleMaterialBalanceWithFileName = fileService.updateReportFileName(simpleMaterialBalance, "date",
                 "simpleMaterialBalance.simpleMaterialBalance.report.fileName");
-        Entity company = companyService.getCompany();
-        simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
-        simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, company, state.getLocale());
+        simpleMaterialBalancePdfService.generateDocument(simpleMaterialBalanceWithFileName, state.getLocale());
+        simpleMaterialBalanceXlsService.generateDocument(simpleMaterialBalanceWithFileName, state.getLocale());
     }
 }

@@ -79,8 +79,6 @@ public class GenealogyForComponentView extends ReportPdfView {
         pdfHelper
                 .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
         addTables(document, entity, locale);
-        String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-        pdfHelper.addEndOfDocument(document, writer, text);
         return translationService.translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }
 
@@ -113,8 +111,9 @@ public class GenealogyForComponentView extends ReportPdfView {
                 translationService.translate("genealogiesForComponents.productInBatch.batch.label", locale),
                 entity.getField(BATCH_FIELD));
         document.add(headerData);
-        Paragraph orderTitle = new Paragraph(new Phrase(translationService.translate(
-                "genealogiesForComponents.genealogyForComponent.report.paragrah.order", locale), FontUtils.getDejavuBold11Light()));
+        Paragraph orderTitle = new Paragraph(
+                new Phrase(translationService.translate("genealogiesForComponents.genealogyForComponent.report.paragrah.order",
+                        locale), FontUtils.getDejavuBold11Light()));
         orderTitle.setSpacingBefore(20);
         document.add(orderTitle);
         addOrderSeries(document, entity, orderHeader);

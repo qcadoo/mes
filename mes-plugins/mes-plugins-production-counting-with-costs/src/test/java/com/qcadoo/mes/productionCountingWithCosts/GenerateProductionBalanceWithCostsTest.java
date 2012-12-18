@@ -41,7 +41,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.productionCounting.internal.ProductionBalanceService;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
@@ -67,9 +66,6 @@ public class GenerateProductionBalanceWithCostsTest {
     private ProductionBalanceWithCostsPdfService productionBalanceWithCostsPdfService;
 
     @Mock
-    private CompanyService companyService;
-
-    @Mock
     private ProductionBalanceService productionBalanceService;
 
     @Mock
@@ -90,7 +86,6 @@ public class GenerateProductionBalanceWithCostsTest {
         ReflectionTestUtils.setField(generateProductionBalanceWithCosts, "productionBalanceService", productionBalanceService);
         ReflectionTestUtils.setField(generateProductionBalanceWithCosts, "productionBalanceWithCostsPdfService",
                 productionBalanceWithCostsPdfService);
-        ReflectionTestUtils.setField(generateProductionBalanceWithCosts, "companyService", companyService);
 
         given(numberService.getMathContext()).willReturn(MathContext.DECIMAL64);
         given(numberService.setScale(Mockito.any(BigDecimal.class))).willAnswer(new Answer<BigDecimal>() {
@@ -135,14 +130,13 @@ public class GenerateProductionBalanceWithCostsTest {
         Entity balanceWithFileName = mock(Entity.class);
         String localePrefix = "productionCounting.productionBalanceWithCosts.report.fileName";
         given(fileService.updateReportFileName(balance, "date", localePrefix)).willReturn(balanceWithFileName);
-        given(companyService.getCompany()).willReturn(company);
 
         // when
         generateProductionBalanceWithCosts.generateBalanceWithCostsReport(balance);
 
         // then
         verify(balance).setField("generatedWithCosts", Boolean.TRUE);
-        verify(productionBalanceWithCostsPdfService).generateDocument(balanceWithFileName, company, locale, localePrefix);
+        verify(productionBalanceWithCostsPdfService).generateDocument(balanceWithFileName, locale, localePrefix);
         verify(dataDefinition).save(balance);
     }
 }

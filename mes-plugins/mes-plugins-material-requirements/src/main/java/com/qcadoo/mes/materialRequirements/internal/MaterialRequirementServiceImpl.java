@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.materialRequirements.internal.constants.MaterialRequirementsConstants;
 import com.qcadoo.mes.materialRequirements.internal.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequirementXlsService;
@@ -92,9 +91,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    @Autowired
-    private CompanyService companyService;
-
+    @Override
     public boolean checkIfInputProductsRequiredForTypeIsSelected(final DataDefinition entityDD, final Entity entity,
             final String fieldName, final String errorMessage) {
         String inputProductsRequiredForType = entity.getStringField(fieldName);
@@ -108,6 +105,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         return true;
     }
 
+    @Override
     public void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName, final String fieldValue) {
         String inputProductsRequiredForType = entity.getStringField(fieldName);
 
@@ -254,9 +252,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
             DocumentException {
         Entity materialRequirementWithFileName = fileService.updateReportFileName(materialRequirement, "date",
                 "materialRequirements.materialRequirement.report.fileName");
-        Entity company = companyService.getCompany();
-        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
-        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, company, state.getLocale());
+        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
     }
 
     private Entity printMaterialReqForOrder(final ComponentState state) {

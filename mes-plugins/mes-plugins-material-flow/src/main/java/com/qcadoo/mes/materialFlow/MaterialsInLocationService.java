@@ -45,7 +45,6 @@ import org.springframework.util.StringUtils;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.print.pdf.MaterialFlowPdfService;
 import com.qcadoo.mes.materialFlow.print.xls.MaterialFlowXlsService;
@@ -88,9 +87,6 @@ public class MaterialsInLocationService {
 
     @Autowired
     private ReportService reportService;
-
-    @Autowired
-    private CompanyService companyService;
 
     public boolean clearGeneratedOnCopy(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(FILE_NAME, null);
@@ -263,9 +259,8 @@ public class MaterialsInLocationService {
             throws IOException, DocumentException {
         Entity materialFlowWithFileName = fileService.updateReportFileName(materialsInLocation, TIME,
                 "materialFlow.materialsInLocation.report.fileName");
-        Entity company = companyService.getCompany();
-        materialFlowPdfService.generateDocument(materialFlowWithFileName, company, state.getLocale());
-        materialFlowXlsService.generateDocument(materialFlowWithFileName, company, state.getLocale());
+        materialFlowPdfService.generateDocument(materialFlowWithFileName, state.getLocale());
+        materialFlowXlsService.generateDocument(materialFlowWithFileName, state.getLocale());
     }
 
     public void printMaterialsInLocationDocuments(final ViewDefinitionState viewDefinitionState, final ComponentState state,

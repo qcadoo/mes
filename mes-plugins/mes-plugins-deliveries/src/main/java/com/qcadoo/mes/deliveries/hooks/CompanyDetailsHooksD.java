@@ -36,10 +36,9 @@ public class CompanyDetailsHooksD {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
-        RibbonGroup suppliers = (RibbonGroup) window.getRibbon().getGroupByName(L_SUPPLIERS);
+        RibbonGroup suppliers = window.getRibbon().getGroupByName(L_SUPPLIERS);
 
-        RibbonActionItem redirectToFilteredDeliveriesList = (RibbonActionItem) suppliers
-                .getItemByName(L_REDIRECT_TO_FILTERED_DELIVERIES_LIST);
+        RibbonActionItem redirectToFilteredDeliveriesList = suppliers.getItemByName(L_REDIRECT_TO_FILTERED_DELIVERIES_LIST);
 
         if (company.getId() == null) {
             updateButtonState(redirectToFilteredDeliveriesList, false);

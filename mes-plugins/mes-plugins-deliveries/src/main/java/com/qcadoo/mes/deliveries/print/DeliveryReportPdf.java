@@ -82,7 +82,7 @@ public class DeliveryReportPdf extends ReportPdfView {
     @Autowired
     private PdfHelper pdfHelper;
 
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
 
     @Override
@@ -102,10 +102,6 @@ public class DeliveryReportPdf extends ReportPdfView {
 
         createHeaderTable(document, delivery, locale);
         createProductsTable(document, delivery, locale);
-
-        String endOfPrint = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-
-        pdfHelper.addEndOfDocument(document, writer, endOfPrint);
 
         return translationService.translate("deliveries.delivery.report.fileName", locale, delivery.getStringField(NUMBER),
                 getStringFromDate((Date) delivery.getField("updateDate")));

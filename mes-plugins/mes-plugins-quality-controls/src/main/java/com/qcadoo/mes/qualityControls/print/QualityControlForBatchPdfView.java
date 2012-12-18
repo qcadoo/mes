@@ -93,8 +93,6 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
             document.add(Chunk.NEWLINE);
             addProductSeries(document, entry, locale);
         }
-        String text = translationService.translate("qcadooReport.commons.endOfPrint.label", locale);
-        pdfHelper.addEndOfDocument(document, writer, text);
         return translationService.translate("qualityControls.qualityControlForBatch.report.fileName", locale);
     }
 
