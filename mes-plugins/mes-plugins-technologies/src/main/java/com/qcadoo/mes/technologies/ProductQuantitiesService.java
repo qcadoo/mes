@@ -125,4 +125,6 @@ public interface ProductQuantitiesService {
 
     Entity getOutputProductsFromOperataionComponent(final Entity operationComponent);
 
+    Map<Entity, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders);
+
 }
