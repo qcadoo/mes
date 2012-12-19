@@ -29,4 +29,5 @@ public final class UnitConversionItemFieldsB {
     }
 
     public static final String PRODUCT = "product";
+
 }

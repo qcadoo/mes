@@ -26,6 +26,7 @@ package com.qcadoo.mes.basicProductionCounting.constants;
 public final class BasicProductionCountingConstants {
 
     private BasicProductionCountingConstants() {
+
     }
 
     public static final String PLUGIN_IDENTIFIER = "basicProductionCounting";
@@ -35,4 +36,5 @@ public final class BasicProductionCountingConstants {
     public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "basicProductionCounting";
 
     public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "productionCounting";
+
 }
