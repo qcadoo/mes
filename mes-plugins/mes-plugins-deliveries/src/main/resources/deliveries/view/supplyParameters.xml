@@ -62,13 +62,6 @@
 							<component type="gridLayout" name="columnForOrdersGridLayout"
 								columns="1" rows="2">
 								<layoutElement column="1" row="1">
-									<component type="hidden" name="hideEmptyColumnsForOrders"
-										field="#{form}.hideEmptyColumnsForOrders" reference="hideEmptyColumnsForOrders" >
-										<option type="labelWidth" value="50" />
-										<option type="align" value="left" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
 									<component type="grid" name="columnsForOrders"
 										source="#{form}.columnsForOrders" reference="columnsForOrders">
 										<option type="column" name="name" fields="name"
@@ -83,6 +76,13 @@
 										<option type="deletable" value="false" />
 										<option type="fullscreen" value="true" />
 										<option type="multiselect" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="hidden" name="hideEmptyColumnsForOrders"
+										field="#{form}.hideEmptyColumnsForOrders" reference="hideEmptyColumnsForOrders" >
+										<option type="labelWidth" value="50" />
+										<option type="align" value="left" />
 									</component>
 								</layoutElement>
 							</component>
