@@ -185,10 +185,6 @@
 
 		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
 			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
-			method="setParametersDefaultValue" />
-
-		<view:view-hook plugin="basic" view="parameters" type="beforeRender"
-			class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
 			method="checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse" />
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender"

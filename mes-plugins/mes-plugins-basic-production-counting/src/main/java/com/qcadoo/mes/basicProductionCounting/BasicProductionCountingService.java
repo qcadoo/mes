@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -132,7 +133,7 @@ public class BasicProductionCountingService {
         String productionRecordType = orderFromDB.getStringField("typeOfProductionRecording");
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
 
-        if (("01basic".equals(productionRecordType)) && ("03inProgress".equals(orderState))) {
+        if (("01basic".equals(productionRecordType)) && (OrderStateStringValues.IN_PROGRESS.equals(orderState))) {
             grid.setEditable(true);
         } else {
             grid.setEditable(false);

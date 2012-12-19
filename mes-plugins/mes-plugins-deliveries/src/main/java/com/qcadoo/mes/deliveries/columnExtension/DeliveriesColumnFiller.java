@@ -70,7 +70,6 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillProductName(values, deliveryProduct);
             fillProductUnit(values, deliveryProduct);
 
-            fillSuccession(values, deliveryProduct);
             fillOrderedQuantity(values, deliveryProduct);
             fillDeliveredQuantity(values, deliveryProduct);
             fillDamagedQuantity(values, deliveryProduct);
@@ -181,24 +180,6 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         values.get(deliveryProduct).put("productUnit", productUnit);
-    }
-
-    private void fillSuccession(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        Integer succession = null;
-
-        if (deliveryProduct.getDeliveredProductId() == null) {
-            succession = 0;
-        } else {
-            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-
-            if (deliveredProduct == null) {
-                succession = 0;
-            } else {
-                succession = deliveredProduct.getIntegerField(SUCCESSION);
-            }
-        }
-
-        values.get(deliveryProduct).put("succession", succession.toString());
     }
 
     private void fillOrderedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {

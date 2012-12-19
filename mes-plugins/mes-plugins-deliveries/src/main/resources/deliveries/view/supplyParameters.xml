@@ -62,8 +62,8 @@
 							<component type="gridLayout" name="columnForOrdersGridLayout"
 								columns="1" rows="2">
 								<layoutElement column="1" row="1">
-									<component type="checkbox" name="hideEmptyColumnsForOrders"
-										field="#{form}.hideEmptyColumnsForOrders" reference="hideEmptyColumnsForOrders">
+									<component type="hidden" name="hideEmptyColumnsForOrders"
+										field="#{form}.hideEmptyColumnsForOrders" reference="hideEmptyColumnsForOrders" >
 										<option type="labelWidth" value="50" />
 										<option type="align" value="left" />
 									</component>
