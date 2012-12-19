@@ -1,8 +1,9 @@
 package com.qcadoo.mes.basic.constants;
 
-public class ParameterFields {
+public final class ParameterFields {
 
     private ParameterFields() {
+
     }
 
     public static final String CURRENCY = "currency";

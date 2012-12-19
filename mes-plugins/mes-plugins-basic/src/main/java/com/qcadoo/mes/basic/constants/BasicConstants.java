@@ -23,51 +23,56 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public interface BasicConstants {
+public final class BasicConstants {
 
-    String PLUGIN_IDENTIFIER = "basic";
+    private BasicConstants() {
+
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "basic";
 
     // MODEL
 
-    String MODEL_PARAMETER = "parameter";
+    public static final String MODEL_PARAMETER = "parameter";
 
-    String MODEL_PRODUCT = "product";
+    public static final String MODEL_PRODUCT = "product";
 
-    String MODEL_STAFF = "staff";
+    public static final String MODEL_STAFF = "staff";
 
-    String MODEL_SUBSTITUTE = "substitute";
+    public static final String MODEL_SUBSTITUTE = "substitute";
 
-    String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
+    public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
 
-    String MODEL_COMPANY = "company";
+    public static final String MODEL_COMPANY = "company";
 
-    String MODEL_CURRENCY = "currency";
+    public static final String MODEL_CURRENCY = "currency";
 
-    String MODEL_SHIFT = "shift";
+    public static final String MODEL_SHIFT = "shift";
 
-    String MODEL_WORKSTATION_TYPE = "workstationType";
+    public static final String MODEL_WORKSTATION_TYPE = "workstationType";
 
-    String MODEL_DIVISION = "division";
+    public static final String MODEL_DIVISION = "division";
 
     // VIEW
-    String VIEW_MACHINE_DETAILS = "machineDetails";
 
-    String VIEW_MACHINES_LIST = "machinesList";
+    public static final String VIEW_MACHINE_DETAILS = "machineDetails";
 
-    String VIEW_PARAMETERS = "parameters";
+    public static final String VIEW_MACHINES_LIST = "machinesList";
 
-    String VIEW_PRODUCT_DETAILS = "productDetails";
+    public static final String VIEW_PARAMETERS = "parameters";
 
-    String VIEW_PRODUCTS_LIST = "productsList";
+    public static final String VIEW_PRODUCT_DETAILS = "productDetails";
 
-    String VIEW_PRODUCT_SUBSTITUTE_COMPONENT_DETAILS = "productSubstituteComponentDetails";
+    public static final String VIEW_PRODUCTS_LIST = "productsList";
 
-    String VIEW_PRODUCT_SUBSTITUTE_DETAILS = "productSubstituteDetails";
+    public static final String VIEW_PRODUCT_SUBSTITUTE_COMPONENT_DETAILS = "productSubstituteComponentDetails";
 
-    String VIEW_STAFF_DETAILS = "staffDetails";
+    public static final String VIEW_PRODUCT_SUBSTITUTE_DETAILS = "productSubstituteDetails";
 
-    String VIEW_STAFFS_LIST = "staffsList";
+    public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
-    String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
+    public static final String VIEW_STAFFS_LIST = "staffsList";
+
+    public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
 
 }

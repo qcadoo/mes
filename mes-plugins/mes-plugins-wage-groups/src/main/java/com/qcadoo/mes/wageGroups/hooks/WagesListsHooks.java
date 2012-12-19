@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.CompanyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -37,9 +36,6 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class WagesListsHooks {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private CompanyService companyService;
@@ -57,4 +53,5 @@ public class WagesListsHooks {
 
         });
     }
+
 }

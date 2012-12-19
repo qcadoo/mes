@@ -36,7 +36,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
@@ -49,9 +48,6 @@ public class GenealogyController {
 
     @Autowired
     private GenealogyAttributeService genealogyService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @RequestMapping(value = "genealogyAttribute", method = RequestMethod.GET)
     public ModelAndView getGenealogyAttributesPageView(final Locale locale) {
@@ -78,4 +74,5 @@ public class GenealogyController {
         mav.addObject(REQUEST_PARAM_VALUE, value);
         return mav;
     }
+
 }

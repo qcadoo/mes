@@ -26,7 +26,6 @@ package com.qcadoo.mes.basic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -34,9 +33,6 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class StaffService {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private CompanyService companyService;
@@ -51,4 +47,5 @@ public class StaffService {
         lookup.setFieldValue(ownerCompany.getId());
         lookup.requestComponentUpdateState();
     }
+
 }
