@@ -81,6 +81,16 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
+    public Map<Entity, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders) {
+        Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Set<Entity> nonComponents = new HashSet<Entity>();
+
+        getAllQuantitiesForOrders(orders, productComponentQuantities, operationRuns, nonComponents);
+        return removeNonComponents(productComponentQuantities, nonComponents);
+    }
+
+    @Override
     public Map<Entity, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQty,
             final Map<Entity, BigDecimal> operationRuns) {
         Map<Entity, BigDecimal> productComponentQuantities = new HashMap<Entity, BigDecimal>();
@@ -371,6 +381,14 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
         return false;
 
+    }
+
+    private Map<Entity, BigDecimal> removeNonComponents(final Map<Entity, BigDecimal> productComponentQuantities,
+            final Set<Entity> nonComponents) {
+        for (Entity nonComponent : nonComponents) {
+            productComponentQuantities.remove(nonComponent);
+        }
+        return productComponentQuantities;
     }
 
 }
