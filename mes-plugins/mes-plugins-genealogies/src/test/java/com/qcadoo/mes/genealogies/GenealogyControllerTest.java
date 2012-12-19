@@ -36,7 +36,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.genealogies.constants.GenealogiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.crud.CrudService;
 
 public class GenealogyControllerTest {
@@ -69,8 +68,6 @@ public class GenealogyControllerTest {
     public void shouldPrepareViewForComponentPdf() throws Exception {
         // given
         GenealogyController genealogyController = new GenealogyController();
-        DataDefinitionService dataDefinitionService = mock(DataDefinitionService.class);
-        setField(genealogyController, "dataDefinitionService", dataDefinitionService);
 
         // when
         ModelAndView mav = genealogyController.genealogyForComponentPdf("v13");
