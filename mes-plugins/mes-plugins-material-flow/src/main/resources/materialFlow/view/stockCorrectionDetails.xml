@@ -53,7 +53,7 @@
 					<component type="lookup" name="location" field="location" reference ="location">
 					
 						<option type="searchable" value="name" />
-						<option type="orderable" value=" name" />
+						<option type="orderable" value="name" />
 						
 						<option type="expression" value="#name" />
 						<option type="fieldCode" value="name" />
