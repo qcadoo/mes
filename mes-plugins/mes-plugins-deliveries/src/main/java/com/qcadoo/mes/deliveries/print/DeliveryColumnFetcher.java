@@ -29,7 +29,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCT
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,7 +56,7 @@ public class DeliveryColumnFetcher {
     private ApplicationContext applicationContext;
 
     public List<DeliveryProduct> getProductWithDeliveryProducts(final Entity delivery) {
-        List<DeliveryProduct> productWithDeliveryProducts = new ArrayList<DeliveryProduct>();
+        Set<DeliveryProduct> productWithDeliveryProducts = new HashSet<DeliveryProduct>();
 
         List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
         List<Entity> deliveredProducts = delivery.getHasManyField(DELIVERED_PRODUCTS);
@@ -71,28 +70,27 @@ public class DeliveryColumnFetcher {
         }
 
         for (Entity deliveredProduct : deliveredProducts) {
-            productWithDeliveryProducts = getDeliveredProductList(productWithDeliveryProducts, deliveredProduct);
+            DeliveryProduct deliveryProduct = checkIfSetContainsProduct(productWithDeliveryProducts, deliveredProduct);
+            if (deliveryProduct == null) {
+                deliveryProduct = new DeliveryProduct();
+            }
+            productWithDeliveryProducts.remove(deliveryProduct);
+            deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
+            productWithDeliveryProducts.add(deliveryProduct);
         }
-        return productWithDeliveryProducts;
+        return Lists.newArrayList(productWithDeliveryProducts);
     }
 
-    private List<DeliveryProduct> getDeliveredProductList(List<DeliveryProduct> productWithDeliveryProducts,
-            final Entity deliveredProduct) {
-        List<DeliveryProduct> result = Lists.newArrayList(productWithDeliveryProducts);
+    private DeliveryProduct checkIfSetContainsProduct(Set<DeliveryProduct> productWithDeliveryProducts, Entity deliveredProduct) {
         for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
-            if (containsOrderedWithProduct(deliveryProduct, deliveredProduct)) {
-                deliveryProduct.setDeliveredProductId(deliveredProduct.getId());
-                result.add(deliveryProduct);
-            } else {
-                DeliveryProduct deliveryProductToList = new DeliveryProduct();
-                deliveryProductToList.setDeliveredProductId(deliveredProduct.getId());
-                result.add(deliveryProductToList);
+            if (compareProducts(deliveryProduct, deliveredProduct)) {
+                return deliveryProduct;
             }
         }
-        return result;
+        return null;
     }
 
-    private boolean containsOrderedWithProduct(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
+    private boolean compareProducts(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
         Entity product = null;
         if (deliveryProduct.getOrderedProductId() != null) {
             Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());

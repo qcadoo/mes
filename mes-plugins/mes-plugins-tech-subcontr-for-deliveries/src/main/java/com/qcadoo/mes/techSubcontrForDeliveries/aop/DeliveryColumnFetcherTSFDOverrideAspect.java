@@ -17,17 +17,16 @@ public class DeliveryColumnFetcherTSFDOverrideAspect {
     @Autowired
     private DeliveryColumnFetcherTSFDOverrideUtil deliveryColumnFetcherTSFDOverrideUtil;
 
-    @Pointcut("execution(private boolean com.qcadoo.mes.deliveries.print.DeliveryColumnFetcher.containsOrderedWithProduct(..)) "
+    @Pointcut("execution(private boolean com.qcadoo.mes.deliveries.print.DeliveryColumnFetcher.compareProducts(..)) "
             + "&& args(deliveryProduct, deliveredProduct)")
-    public void containsOrderedWithProduct(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
+    public void compareProducts(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
     }
 
-    @Around("containsOrderedWithProduct(deliveryProduct, deliveredProduct)")
+    @Around("compareProducts(deliveryProduct, deliveredProduct)")
     public boolean containsOrderedWithProductExecution(final ProceedingJoinPoint pjp, final DeliveryProduct deliveryProduct,
             final Entity deliveredProduct) throws Throwable {
         if (deliveryColumnFetcherTSFDOverrideUtil.shouldOverride()) {
-            return deliveryColumnFetcherTSFDOverrideUtil
-                    .containsOrderedWithProductAndOperation(deliveryProduct, deliveredProduct);
+            return deliveryColumnFetcherTSFDOverrideUtil.compareProductsAndOperation(deliveryProduct, deliveredProduct);
         } else {
             return (Boolean) pjp.proceed();
         }

@@ -49,6 +49,11 @@ public class DeliveryProduct {
     }
 
     @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1, 31).append(deliveredProductId).append(orderedProductId).toHashCode();
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
@@ -57,18 +62,8 @@ public class DeliveryProduct {
             return false;
         }
         final DeliveryProduct other = (DeliveryProduct) obj;
-        return new EqualsBuilder().append(deliveredProductId, other.getDeliveredProductId())
-                .append(orderedProductId, other.getOrderedProductId()).isEquals();
+        return new EqualsBuilder().append(deliveredProductId, other.deliveredProductId)
+                .append(deliveredProductId, other.deliveredProductId).isEquals();
     }
 
-    @Override
-    public int hashCode() {
-        if (orderedProductId == null) {
-            return new HashCodeBuilder(1, 31).append(deliveredProductId).toHashCode();
-        }
-        if (deliveredProductId == null) {
-            return new HashCodeBuilder(1, 31).append(orderedProductId).toHashCode();
-        }
-        return new HashCodeBuilder(1, 31).append(orderedProductId).append(deliveredProductId).toHashCode();
-    }
 }

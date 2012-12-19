@@ -26,7 +26,7 @@ public class DeliveryColumnFetcherTSFDOverrideUtil {
         return pluginStateResolver.isEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER);
     }
 
-    public boolean containsOrderedWithProductAndOperation(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
+    public boolean compareProductsAndOperation(final DeliveryProduct deliveryProduct, final Entity deliveredProduct) {
         Entity operation = getOperation(deliveryProduct);
         Entity product = getProduct(deliveryProduct);
         Entity deliveredOperation = deliveredProduct.getBelongsToField(DeliveredProductFieldsTSFD.OPERATION);
