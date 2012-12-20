@@ -49,6 +49,8 @@ public class QcadooErrorLogStore implements ErrorLogStore {
 
     private String[][] ignoredErrors;
 
+    private String[][] ignoredErrorMessages;
+
     private String logdiggerAddress;
 
     private String logdiggerJira;
@@ -102,7 +104,8 @@ public class QcadooErrorLogStore implements ErrorLogStore {
         jdbcErrorLogStore = new JdbcErrorLogStore();
         jdbcErrorLogStore.init(attributeProvider);
 
-        ignoredErrors = new String[][] { { "com.qcadoo.mes.urcCore.IntegrationException" } };
+        ignoredErrors = new String[][] { {} };
+        ignoredErrorMessages = new String[][] { { "org.springframework.web.util.NestedServletException: Request processing failed; nested exception is com.qcadoo.mes.urcCore.IntegrationException:" } };
 
         logdiggerAddress = String.valueOf(attributeProvider.getAttribute("logdiggerAddress"));
         logdiggerJira = String.valueOf(attributeProvider.getAttribute("logdiggerJira"));
@@ -126,6 +129,20 @@ public class QcadooErrorLogStore implements ErrorLogStore {
                     break;
                 }
                 if (i >= ignoredError.length - 1) {
+                    return null;
+                }
+            }
+        }
+
+        for (String[] ignoredErrorMessage : ignoredErrorMessages) {
+            for (int i = 0; i < ignoredErrorMessage.length; i++) {
+                if (ignoredErrorMessage[i] == null) {
+                    return null;
+                }
+                if (!errorLog.getMessage().startsWith(ignoredErrorMessage[i])) {
+                    break;
+                }
+                if (i >= ignoredErrorMessage.length - 1) {
                     return null;
                 }
             }
