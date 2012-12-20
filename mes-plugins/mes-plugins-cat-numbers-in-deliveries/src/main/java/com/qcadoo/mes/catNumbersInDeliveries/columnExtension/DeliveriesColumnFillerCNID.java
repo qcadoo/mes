@@ -29,7 +29,6 @@ import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumbe
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,19 +46,17 @@ public class DeliveriesColumnFillerCNID implements DeliveryColumnFiller, OrderCo
     private DeliveriesService deliveriesService;
 
     @Override
-    public Map<Entity, Map<String, String>> getDeliveryProductsColumnValues(
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+    public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
+            final List<DeliveryProduct> productWithDeliveryProducts) {
+        Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
-        for (Entry<Entity, DeliveryProduct> productWithDeliveryProduct : productWithDeliveryProducts.entrySet()) {
-            Entity product = productWithDeliveryProduct.getKey();
-            DeliveryProduct deliveryProduct = productWithDeliveryProduct.getValue();
+        for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
 
-            if (!values.containsKey(product)) {
-                values.put(product, new HashMap<String, String>());
+            if (!values.containsKey(deliveryProduct)) {
+                values.put(deliveryProduct, new HashMap<String, String>());
             }
 
-            fillCatalogNumber(values, product, deliveryProduct);
+            fillCatalogNumber(values, deliveryProduct);
         }
 
         return values;
@@ -80,8 +77,7 @@ public class DeliveriesColumnFillerCNID implements DeliveryColumnFiller, OrderCo
         return values;
     }
 
-    private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity product,
-            final DeliveryProduct deliveryProduct) {
+    private void fillCatalogNumber(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
         String catalogNumber = null;
 
         if (deliveryProduct.getDeliveredProductId() != null) {
@@ -116,7 +112,7 @@ public class DeliveriesColumnFillerCNID implements DeliveryColumnFiller, OrderCo
             catalogNumber = "";
         }
 
-        values.get(product).put("catalogNumber", catalogNumber);
+        values.get(deliveryProduct).put("catalogNumber", catalogNumber);
     }
 
     private void fillCatalogNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {

@@ -27,9 +27,11 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.ALIGNMENT;
 import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.IDENTIFIER;
 import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.NAME;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
@@ -39,7 +41,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -59,6 +60,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
@@ -115,41 +117,40 @@ public class DeliveryReportPdf extends ReportPdfView {
         pdfHelper.addTableCellAsOneColumnTable(headerTable,
                 translationService.translate("deliveries.delivery.report.columnHeader.number", locale),
                 delivery.getStringField(NUMBER));
-        if (delivery.getStringField(NAME) == null) {
-            pdfHelper.addTableCellAsOneColumnTable(
-                    headerTable,
-                    translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
-                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
-                            NAME));
-        } else {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                    translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
-                    delivery.getStringField(NAME));
-        }
-        if (delivery.getStringField(DESCRIPTION) == null) {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
-        } else {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                    translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
-                    delivery.getStringField(DESCRIPTION));
-        }
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
+                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.state", locale),
+                translationService.translate("deliveries.delivery.state.value." + delivery.getStringField(STATE), locale));
 
-        if (delivery.getField(DELIVERY_DATE) == null) {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
-        } else {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                    translationService.translate("deliveries.delivery.report.columnHeader.deliveryDate", locale),
-                    getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
-        }
-        if (delivery.getStringField(NAME) == null) {
-            pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
-        } else {
-            pdfHelper.addTableCellAsOneColumnTable(
-                    headerTable,
-                    translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
-                    (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(
-                            NAME));
-        }
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
+                delivery.getStringField(NAME));
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.deliveryDate", locale),
+                getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.createDate", locale),
+                getStringFromDate((Date) delivery.getField("createDate")));
+
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
+                delivery.getStringField(DESCRIPTION));
+        pdfHelper.addTableCellAsOneColumnTable(headerTable,
+                translationService.translate("deliveries.order.report.columnHeader.deliveryAddress", locale),
+                (delivery.getStringField(DELIVERY_ADDRESS) == null) ? "" : delivery.getStringField(DELIVERY_ADDRESS));
+        pdfHelper.addTableCellAsOneColumnTable(
+                headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.createOrderDate", locale),
+                (getPrepareOrderDate(delivery) == null ? "" : getStringFromDate((Date) getPrepareOrderDate(delivery).getField(
+                        "dateAndTime"))));
+        pdfHelper.addTableCellAsOneColumnTable(
+                headerTable,
+                translationService.translate("deliveries.delivery.report.columnHeader.receivedOrderDate", locale),
+                (getReceivedOrderDate(delivery) == null ? "" : getStringFromDate((Date) getReceivedOrderDate(delivery).getField(
+                        "dateAndTime"))));
+        pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
         pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
 
         document.add(headerTable);
@@ -164,20 +165,18 @@ public class DeliveryReportPdf extends ReportPdfView {
             PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForDeliveries.size(),
                     prepareProductsTableHeader(document, columnsForDeliveries, locale), false);
 
-            Map<Entity, DeliveryProduct> productWithDeliveryProducts = deliveryColumnFetcher
-                    .getProductWithDeliveryProducts(delivery);
+            List<DeliveryProduct> productWithDeliveryProducts = deliveryColumnFetcher.getProductWithDeliveryProducts(delivery);
 
-            Map<Entity, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
+            Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
                     .getDeliveryProductsColumnValues(productWithDeliveryProducts);
 
-            for (Entry<Entity, DeliveryProduct> productWithDeliveryProduct : productWithDeliveryProducts.entrySet()) {
-                Entity product = productWithDeliveryProduct.getKey();
+            for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
 
                 for (Entity columnForDeliveries : columnsForDeliveries) {
                     String identifier = columnForDeliveries.getStringField(IDENTIFIER);
                     String alignment = columnForDeliveries.getStringField(ALIGNMENT);
 
-                    String value = deliveryProductsColumnValues.get(product).get(identifier);
+                    String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
 
                     prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
 
@@ -221,6 +220,16 @@ public class DeliveryReportPdf extends ReportPdfView {
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("deliveries.delivery.report.title", locale));
+    }
+
+    private Entity getPrepareOrderDate(final Entity delivery) {
+        return delivery.getHasManyField("stateChanges").find().add(SearchRestrictions.eq("targetState", "02prepared"))
+                .add(SearchRestrictions.eq("status", "03successful")).uniqueResult();
+    }
+
+    private Entity getReceivedOrderDate(final Entity delivery) {
+        return delivery.getHasManyField("stateChanges").find().add(SearchRestrictions.eq("targetState", "06received"))
+                .add(SearchRestrictions.eq("status", "03successful")).uniqueResult();
     }
 
 }

@@ -30,6 +30,7 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
 import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
@@ -45,6 +46,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -187,4 +189,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         return address.toString();
     }
+
+    public Entity getProduct(final DeliveryProduct deliveryProduct) {
+        if (deliveryProduct.getOrderedProductId() == null) {
+            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT)
+                    .get(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
+        } else {
+            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
+                    .get(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
+        }
+    }
+
 }

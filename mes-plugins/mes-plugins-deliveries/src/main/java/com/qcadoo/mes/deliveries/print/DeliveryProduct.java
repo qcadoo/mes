@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.print;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class DeliveryProduct {
 
     private Long deliveredProductId;
@@ -43,6 +46,24 @@ public class DeliveryProduct {
 
     public void setOrderedProductId(final Long orderedProductId) {
         this.orderedProductId = orderedProductId;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1, 31).append(deliveredProductId).append(orderedProductId).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final DeliveryProduct other = (DeliveryProduct) obj;
+        return new EqualsBuilder().append(deliveredProductId, other.deliveredProductId)
+                .append(deliveredProductId, other.deliveredProductId).isEquals();
     }
 
 }

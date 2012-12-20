@@ -43,4 +43,5 @@ public class WageGroupsDetailsHooks {
         individualLaborCostUNIT.setFieldValue(currencyService.getCurrencyAlphabeticCode());
         individualLaborCostUNIT.requestComponentUpdateState();
     }
+
 }

@@ -133,8 +133,9 @@ public class OrderHooks {
         if (IN_PROGRESS.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             entity.setField(EFFECTIVE_DATE_FROM, entity.getField(START_DATE));
         }
-        if (COMPLETED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
-            entity.setField(CORRECTED_DATE_FROM, entity.getField(DATE_FROM));
+        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
+                .equals(state)) && !startDateDB.equals(startDate)) {
+            entity.setField(CORRECTED_DATE_FROM, entity.getField(START_DATE));
         }
     }
 
@@ -160,7 +161,7 @@ public class OrderHooks {
             entity.setField(EFFECTIVE_DATE_TO, entity.getField(FINISH_DATE));
         }
         if (COMPLETED.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
-            entity.setField(CORRECTED_DATE_TO, entity.getField(DATE_TO));
+            entity.setField(CORRECTED_DATE_TO, entity.getField(START_DATE));
         }
         if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
                 .equals(state)) && !finishDateDB.equals(finishDate)) {

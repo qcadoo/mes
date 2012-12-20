@@ -49,4 +49,5 @@ public class StaffHooks {
             entity.setField("laborHourlyCost", wageGroup.getField(LABOR_HOURLY_COST));
         }
     }
+
 }

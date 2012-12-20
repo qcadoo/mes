@@ -45,4 +45,5 @@ public enum ProductFamilyElementType {
 
         throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + string);
     }
+
 }

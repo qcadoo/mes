@@ -23,9 +23,8 @@
  */
 package com.qcadoo.mes.deliveries.print;
 
+import java.util.List;
 import java.util.Map;
-
-import com.qcadoo.model.api.Entity;
 
 public interface DeliveryColumnFiller {
 
@@ -35,7 +34,7 @@ public interface DeliveryColumnFiller {
      *            map of products with delivery products
      * @return the keys of the map are product entities, values are maps columnIdentifier -> columnValue
      */
-    Map<Entity, Map<String, String>> getDeliveryProductsColumnValues(
-            final Map<Entity, DeliveryProduct> productWithDeliveryProducts);
+    Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
+            final List<DeliveryProduct> productWithDeliveryProducts);
 
 }
