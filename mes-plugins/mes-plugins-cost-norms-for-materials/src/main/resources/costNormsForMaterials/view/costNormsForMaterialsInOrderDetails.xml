@@ -35,7 +35,7 @@
 		
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="costNormsForProductsGridLayout" columns="4" rows="6" hasBorders="false">
+				<component type="gridLayout" name="costNormsForProductsGridLayout" columns="4" rows="8" hasBorders="false">
 					<layoutElement column="1" row="1" width="3">
 						<component type="lookup" name="product" field="product" reference="product" defaultEnabled="false">
 							<option type="column" name="name" fields="name" link="true" width="200" />
@@ -108,6 +108,31 @@
 						<component type="gridLayout" name="costForOrderCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
 							<layoutElement column="1" row="1">
 								<component type="input" name="costForOrderCurrency" persistent="false" reference="costForOrderCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="7" width="3">
+						<component type="input" name="lastOfferCost" field="lastOfferCost" reference="lastOfferCost">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="7">
+						<component type="gridLayout" name="lastOfferCostCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="input" name="lastOfferCostCurrency" persistent="false" reference="lastOfferCostCurrency" hasLabel="false" defaultEnabled="false" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					
+					<layoutElement column="1" row="8" width="3">
+						<component type="input" name="averageOfferCost" field="averageOfferCost" reference="averageOfferCost">
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+					<layoutElement column="4" row="8">
+						<component type="gridLayout" name="averageOfferCostCurrencyGridLayout" hasBorders="false" columns="2" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="input" name="averageOfferCostCurrency" persistent="false" reference="averageOfferCostCurrency" hasLabel="false" defaultEnabled="false" />
 							</layoutElement>
 						</component>
 					</layoutElement>

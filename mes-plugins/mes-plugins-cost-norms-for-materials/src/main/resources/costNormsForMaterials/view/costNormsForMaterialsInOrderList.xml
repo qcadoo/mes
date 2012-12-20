@@ -67,12 +67,20 @@
 								expression="#costForOrder != null ? 
 								#costForOrder + ' / ' + #costForNumber + #product.get('unit') : ''" 
 								link="true" />
+							<option type="column" name="lastOfferCost" fields="lastOfferCost" 
+								expression="#lastOfferCost != null ? 
+								#lastOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" /> 
+							<option type="column" name="averageOfferCost" fields="averageOfferCost" 
+								expression="#averageOfferCost != null ? 
+								#averageOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''" 
+								link="true" />
 								
 							<option type="order" column="name" direction="asc" />
 							
 							<option type="correspondingView" value="costNormsForMaterials/costNormsForMaterialsInOrderDetails" />
 							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="true" />
+							<option type="correspondingViewInModal" value="false" />
 							
 						</component>
 					</layoutElement>

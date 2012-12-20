@@ -82,7 +82,7 @@
 		</model:model-field>
 		<model:model-field plugin="productionCounting" model="productionBalance">
 			<model:enum name="calculateMaterialCostsMode"
-				values="01nominal,02average,03lastPurchase,04costForOrder" required="true"
+				values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder" required="true"
 				default="01nominal" />
 		</model:model-field>
 		

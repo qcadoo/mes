@@ -61,6 +61,12 @@
 							<option type="column" name="averageCost" fields="product" 
 								expression="#product.get('averageCost') != null ? 
 								#product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+							<option type="column" name="lastOfferCost" fields="product" 
+								expression="#product.get('lastOfferCost') != null ? 
+								#product.get('lastOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+							<option type="column" name="averageOfferCost" fields="product" 
+								expression="#product.get('averageOfferCost') != null ? 
+								#product.get('averageOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
 								
 							<option type="order" column="name" direction="asc" />
 						</component>

@@ -37,5 +37,5 @@ public interface CostNormsForProductConstants {
             "averageCostCurrency", "averageOfferCostCurrency", "lastOfferCostCurrency");
 
     Set<String> CURRENCY_FIELDS_ORDER = Sets.newHashSet("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency",
-            "costForOrderCurrency");
+            "costForOrderCurrency", "averageOfferCostCurrency", "lastOfferCostCurrency");
 }

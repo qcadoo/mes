@@ -285,3 +285,10 @@ ALTER TABLE materialflow_location ADD COLUMN externalnumber character varying(25
 
 -- end
 
+-- Table: costnormsformaterials_technologyinstoperproductincomp
+-- changed: 20.12.2012
+ALTER TABLE  costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN averageoffercost numeric(12,5);
+ALTER TABLE basic_product ALTER COLUMN averageoffercost SET DEFAULT 0::numeric;
+ALTER TABLE  costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN lastoffercost numeric(12,5);
+ALTER TABLE basic_product ALTER COLUMN lastoffercost SET DEFAULT 0::numeric;
+-- end

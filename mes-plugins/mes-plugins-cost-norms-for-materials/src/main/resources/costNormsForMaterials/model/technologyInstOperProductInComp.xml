@@ -50,6 +50,14 @@
 			<validatesUnscaledValue max="7" />
 			<validatesScale max="5" />
 		</decimal>
+		<decimal name="lastOfferCost" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="averageOfferCost" default="0">
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
 	</fields>
 	<hooks />
 </model>

@@ -83,7 +83,7 @@ public class CostCalculationModelValidatorsTest {
     public void shouldReturnFalseWhenCurrencyGlobalIsSelected() throws Exception {
         // given
         when(costCalculation.getField("sourceOfMaterialCosts")).thenReturn("01currentGlobalDefinitionsInProduct");
-        when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn("04costForOrder");
+        when(costCalculation.getField("calculateMaterialCostsMode")).thenReturn("06costForOrder");
 
         // when
         boolean result = costCalculationModelValidators.checkIfCurrentGlobalIsSelected(dataDefinition, costCalculation);
