@@ -46,40 +46,40 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
-						<component type="input" name="name" field="name" />
+						<component type="input" name="name" field="name" reference="name"/>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="input" name="tax" field="tax" />
+						<component type="input" name="tax" field="tax" reference="tax"/>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="input" name="phone" field="phone" />
+						<component type="input" name="phone" field="phone" reference="phone"/>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="input" name="email" field="email" />
+						<component type="input" name="email" field="email" reference="email" />
 					</layoutElement>
 					<layoutElement column="1" row="6">
-						<component type="input" name="website" field="website" />
+						<component type="input" name="website" field="website" reference="website" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="input" name="street" field="street" />
+						<component type="input" name="street" field="street" reference="street"/>
 					</layoutElement>
 					<layoutElement column="2" row="2">
-						<component type="input" name="house" field="house" />
+						<component type="input" name="house" field="house" reference="house"/>
 					</layoutElement>
 					<layoutElement column="2" row="3">
-						<component type="input" name="flat" field="flat" />
+						<component type="input" name="flat" field="flat" reference="flat"/>
 					</layoutElement>
 					<layoutElement column="2" row="4">
-						<component type="input" name="zipCode" field="zipCode" />
+						<component type="input" name="zipCode" field="zipCode" reference="zipCode"/>
 					</layoutElement>
 					<layoutElement column="2" row="5">
-						<component type="input" name="city" field="city" />
+						<component type="input" name="city" field="city" reference="city" />
 					</layoutElement>
 					<layoutElement column="2" row="6">
-						<component type="input" name="state" field="state" />
+						<component type="input" name="state" field="state" reference="state"/>
 					</layoutElement>
 					<layoutElement column="2" row="7">
-						<component type="input" name="country" field="country" />
+						<component type="input" name="country" field="country" reference="country"/>
 					</layoutElement>
 
 				</component>

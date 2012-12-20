@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import static com.qcadoo.mes.basic.constants.CompanyFields.CITY;
+import static com.qcadoo.mes.basic.constants.CompanyFields.COUNTRY;
+import static com.qcadoo.mes.basic.constants.CompanyFields.EMAIL;
+import static com.qcadoo.mes.basic.constants.CompanyFields.FLAT;
+import static com.qcadoo.mes.basic.constants.CompanyFields.HOUSE;
+import static com.qcadoo.mes.basic.constants.CompanyFields.NAME;
+import static com.qcadoo.mes.basic.constants.CompanyFields.NUMBER;
+import static com.qcadoo.mes.basic.constants.CompanyFields.PHONE;
+import static com.qcadoo.mes.basic.constants.CompanyFields.STATE;
+import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
+import static com.qcadoo.mes.basic.constants.CompanyFields.TAX;
+import static com.qcadoo.mes.basic.constants.CompanyFields.WEBSITE;
+import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
+
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +49,7 @@ import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -110,11 +125,20 @@ public class CompanyDetailsHooks {
         }
         Entity company = form.getEntity();
         if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
-            form.setFormEnabled(false);
-            for (String reference : Arrays.asList("delete", "save", "saveNew", "saveBack", "copy")) {
+            for (String reference : Arrays.asList(NUMBER, NAME, CITY, COUNTRY, EMAIL, HOUSE, FLAT, PHONE, ZIP_CODE, WEBSITE, TAX,
+                    STREET, STATE)) {
+                disabledField(view, reference);
+            }
+            for (String reference : Arrays.asList("delete")) {
                 disabledButton(view, "actions", reference, false, "basic.company.isExternalNumber");
             }
         }
+    }
+
+    private void disabledField(final ViewDefinitionState view, final String reference) {
+        FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+        field.setEnabled(false);
+        field.requestComponentUpdateState();
     }
 
     private void disabledButton(final ViewDefinitionState view, final String groupName, final String buttonName,
