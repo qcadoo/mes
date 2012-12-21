@@ -255,25 +255,9 @@ ALTER TABLE basic_product ALTER COLUMN averageoffercost SET DEFAULT 0::numeric;
 
 ALTER TABLE deliveries_delivery ADD COLUMN deliveryaddress character varying(2048);
 ALTER TABLE deliveries_delivery ADD COLUMN externalnumber character varying(255);
-
--- end
-
-
--- Table: deliveries_delivery
--- changed: 19.12.2012
-
-ALTER TABLE deliveries_delivery ADD COLUMN externalnumber character varying(255);
 ALTER TABLE deliveries_delivery ADD COLUMN externalsynchronized boolean;
 ALTER TABLE deliveries_delivery ALTER COLUMN externalsynchronized SET DEFAULT true;
 ALTER TABLE deliveries_delivery ADD COLUMN targetstate character varying(255);
-
--- end
-
-
--- Table: basic_company
--- changed: 19.12.2012
-
-ALTER TABLE basic_company ADD COLUMN externalnumber character varying(255);
 
 -- end
 
@@ -289,9 +273,9 @@ ALTER TABLE materialflow_location ADD COLUMN externalnumber character varying(25
 -- Table: costnormsformaterials_technologyinstoperproductincomp
 -- changed: 20.12.2012
 
-ALTER TABLE  costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN averageoffercost numeric(12,5);
+ALTER TABLE costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN averageoffercost numeric(12,5);
 ALTER TABLE basic_product ALTER COLUMN averageoffercost SET DEFAULT 0::numeric;
-ALTER TABLE  costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN lastoffercost numeric(12,5);
+ALTER TABLE costnormsformaterials_technologyinstoperproductincomp  ADD COLUMN lastoffercost numeric(12,5);
 ALTER TABLE basic_product ALTER COLUMN lastoffercost SET DEFAULT 0::numeric;
 
 -- end
