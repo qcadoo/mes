@@ -30,6 +30,7 @@ import java.util.Date;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.states.StateChangeContext;
@@ -69,6 +70,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void performStateChange(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
         performPreValidation(stateChangeContext);
