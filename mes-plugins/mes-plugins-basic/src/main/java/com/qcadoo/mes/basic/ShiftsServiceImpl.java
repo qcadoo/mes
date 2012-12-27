@@ -166,7 +166,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
         long start = dateFrom.getTime();
         long remaining = seconds;
-        while (remaining > 0) {
+        while (remaining >= 0) {
             List<ShiftsServiceImpl.ShiftHour> hours = getHoursForAllShifts(new Date(start), new Date(start + STEP));
             for (ShiftsServiceImpl.ShiftHour hour : hours) {
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
@@ -192,7 +192,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
         long stop = dateTo.getTime();
         long remaining = seconds;
-        while (remaining > 0) {
+        while (remaining >= 0) {
             List<ShiftsServiceImpl.ShiftHour> hours = getHoursForAllShifts(new Date(stop - STEP), new Date(stop));
             for (int i = hours.size() - 1; i >= 0; i--) {
                 ShiftsServiceImpl.ShiftHour hour = hours.get(i);

@@ -104,7 +104,7 @@
 				rows="8">
 				<layoutElement column="1" row="1">
 					<component type="calendar" name="startTime" reference="startTime"
-						field="dateFrom">
+						field="startDate">
 						<option type="required" value="true" />
 						<option type="withTimePicker" value="true" />
 					</component>
@@ -152,7 +152,7 @@
 							hasBorders="false" columns="1" rows="2">
 							<layoutElement column="1" row="1">
 								<component type="calendar" name="stopTime" reference="stopTime"
-									field="dateTo">
+									field="finishDate">
 									<option type="withTimePicker" value="true" />
 								</component>
 							</layoutElement>

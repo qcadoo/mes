@@ -56,8 +56,8 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
-					<component type="calendar" name="dateFrom" reference="dateFrom"
-						field="dateFrom">
+					<component type="calendar" name="startDate" reference="startDate"
+						field="startDate">
 						<option type="required" value="true" />
 						<option type="withTimePicker" value="true" />
 					</component>
