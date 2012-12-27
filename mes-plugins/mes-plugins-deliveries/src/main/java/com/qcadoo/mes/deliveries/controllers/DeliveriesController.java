@@ -41,6 +41,7 @@ public class DeliveriesController {
 
         mav.setViewName("deliveryReportPdf");
         mav.addObject("id", id);
+
         return mav;
     }
 
@@ -50,6 +51,7 @@ public class DeliveriesController {
 
         mav.setViewName("orderReportPdf");
         mav.addObject("id", id);
+
         return mav;
     }
 
