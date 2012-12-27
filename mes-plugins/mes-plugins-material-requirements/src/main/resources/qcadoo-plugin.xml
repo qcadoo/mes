@@ -93,6 +93,11 @@
 				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
 				method="setInputProductsRequiredForTypeDefaultValue" />
 		</model:model-hook>
+		<model:model-hook plugin="orders" model="order">
+			<model:onCopy
+				class="com.qcadoo.mes.materialRequirements.internal.hooks.OrderHooksMR"
+				method="setInputProductsRequiredForTypeDefaultValueOnCopy" />
+		</model:model-hook>
 
 		<menu:menu-category name="requirements" />
 		<menu:menu-item name="materialRequirements" category="requirements"
