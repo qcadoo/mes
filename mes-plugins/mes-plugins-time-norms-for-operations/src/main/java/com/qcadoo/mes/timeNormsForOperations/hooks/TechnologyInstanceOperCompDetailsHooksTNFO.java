@@ -27,6 +27,10 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperComp
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TIME_NEXT_OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TJ;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields.TPZ;
+
+import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,52 +45,41 @@ import com.qcadoo.view.api.components.FormComponent;
 public class TechnologyInstanceOperCompDetailsHooksTNFO {
 
     public void disableComponents(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent tpz = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tj = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
-        FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
-                .getComponentByReference(PRODUCTION_IN_ONE_CYCLE);
+
+        for (String reference : Arrays.asList(TPZ, TJ, PRODUCTION_IN_ONE_CYCLE, NEXT_OPERATION_AFTER_PRODUCED_TYPE,
+                TIME_NEXT_OPERATION)) {
+            FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
+            field.setRequired(true);
+            field.requestComponentUpdateState();
+        }
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY);
         FieldComponent nextOperationAfterProducedQuantityUnit = (FieldComponent) viewDefinitionState
                 .getComponentByReference("nextOperationAfterProducedQuantityUNIT");
-        FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
                 .getComponentByReference("areProductQuantitiesDivisible");
-        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
 
-        tpz.setEnabled(true);
-        tpz.setRequired(true);
-        tj.setEnabled(true);
-        tj.setRequired(true);
-        productionInOneCycle.setEnabled(true);
-        productionInOneCycle.setRequired(true);
-        nextOperationAfterProducedType.setEnabled(true);
         nextOperationAfterProducedType.setRequired(true);
 
-        if ("02specified".equals(nextOperationAfterProducedType.getFieldValue())) {
-            nextOperationAfterProducedQuantity.setVisible(true);
-            nextOperationAfterProducedQuantity.setEnabled(true);
-            nextOperationAfterProducedQuantity.setRequired(true);
-            nextOperationAfterProducedQuantityUnit.setVisible(true);
-            if (nextOperationAfterProducedQuantity.getFieldValue() == null
-                    || !StringUtils.hasText(String.valueOf(nextOperationAfterProducedQuantity.getFieldValue()))) {
-                nextOperationAfterProducedQuantity.setFieldValue("1");
-            }
-        } else {
-            nextOperationAfterProducedQuantity.setVisible(false);
-            nextOperationAfterProducedQuantity.setRequired(false);
-            nextOperationAfterProducedQuantityUnit.setVisible(false);
+        Object nextOperationAfterProducedTypeFieldValue = nextOperationAfterProducedType.getFieldValue();
+
+        boolean visible = "02specified".equals(nextOperationAfterProducedTypeFieldValue);
+
+        nextOperationAfterProducedQuantity.setVisible(visible);
+        nextOperationAfterProducedQuantity.setRequired(visible);
+        nextOperationAfterProducedQuantityUnit.setVisible(visible);
+
+        if (nextOperationAfterProducedTypeFieldValue == null
+                || !StringUtils.hasText(String.valueOf(nextOperationAfterProducedTypeFieldValue))) {
+            nextOperationAfterProducedQuantity.setFieldValue("1");
         }
-
-        timeNextOperation.setEnabled(true);
-        timeNextOperation.setRequired(true);
-
         if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {
+            FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
             isTjDivisible.setEnabled(true);
+            isTjDivisible.requestComponentUpdateState();
         }
-
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
