@@ -103,10 +103,6 @@ public class CostNormsForProductService {
         fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_PRODUCT);
     }
 
-    public void fillCurrencyFieldsInOrder(final ViewDefinitionState viewDefinitionState) {
-        fillCurrencyFields(viewDefinitionState, CostNormsForProductConstants.CURRENCY_FIELDS_ORDER);
-    }
-
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 

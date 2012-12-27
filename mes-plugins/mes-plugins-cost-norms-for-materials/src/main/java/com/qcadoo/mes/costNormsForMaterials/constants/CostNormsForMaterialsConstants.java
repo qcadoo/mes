@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.constants;
 
+import java.util.Set;
+
+import com.google.common.collect.Sets;
+
 public interface CostNormsForMaterialsConstants {
 
     String PLUGIN_IDENTIFIER = "costNormsForMaterials";
@@ -31,4 +35,7 @@ public interface CostNormsForMaterialsConstants {
     String MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP = "technologyInstOperProductInComp";
 
     String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
+
+    Set<String> CURRENCY_FIELDS_ORDER = Sets.newHashSet("nominalCostCurrency", "lastPurchaseCostCurrency", "averageCostCurrency",
+            "costForOrderCurrency", "averageOfferCostCurrency", "lastOfferCostCurrency");
 }

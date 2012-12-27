@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <model name="order" activable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
@@ -37,16 +24,31 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+		<string name="defaultTechnology" persistent="false" />
+		<string name="commentReasonTypeCorrectionDateFrom" />
+		<string name="commentReasonTypeCorrectionDateTo" />
+		<string name="externalNumber" />
+
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
+		<datetime name="effectiveDateFrom" readonly="true" />
+		<datetime name="effectiveDateTo" readonly="true" />
+		<datetime name="deadline" />
+		<datetime name="correctedDateFrom" />
+		<datetime name="correctedDateTo" />
+		<datetime name="startDate" />
+		<datetime name="finishDate" />
+
 		<enum name="state"
 			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
 			required="true" />
 		<belongsTo name="company" plugin="basic" model="company" />
 		<belongsTo name="product" plugin="basic" model="product"
 			required="true" />
-		<string name="defaultTechnology" persistent="false" />
 		<belongsTo name="technology" plugin="technologies" model="technology" />
+		<belongsTo name="productionLine" plugin="productionLines"
+			model="productionLine" required="true" />
+
 		<decimal name="plannedQuantity" required="true">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />
@@ -57,9 +59,7 @@
 			<validatesUnscaledValue max="5" />
 			<validatesScale max="5" />
 		</decimal>
-		<datetime name="effectiveDateFrom" readonly="true" />
-		<datetime name="effectiveDateTo" readonly="true" />
-		<string name="externalNumber" />
+
 		<boolean name="externalSynchronized" default="true" />
 
 		<hasMany name="stateChanges" joinField="order" model="orderStateChange"
@@ -68,22 +68,13 @@
 		<tree name="technologyInstanceOperationComponents" copyable="true"
 			joinField="order" model="technologyInstanceOperationComponent"
 			plugin="technologies" cascade="delete" />
-		<belongsTo name="productionLine" plugin="productionLines"
-			model="productionLine" required="true" />
-		<datetime name="deadline" />
-		<datetime name="correctedDateFrom" />
-		<datetime name="correctedDateTo" />
+
 		<dictionary name="reasonTypeCorrectionDateFrom" dictionary="reasonTypeOfChaningOrderState" />
 		<dictionary name="reasonTypeCorrectionDateTo" dictionary="reasonTypeOfChaningOrderState" />
 		<dictionary name="reasonTypeDeviationsOfEffectiveStart"
 			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
 		<dictionary name="reasonTypeDeviationsOfEffectiveEnd"
 			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
-		<string name="commentReasonTypeCorrectionDateFrom" />
-		<string name="commentReasonTypeCorrectionDateTo" />
-
-		<datetime name="startDate" />
-		<datetime name="finishDate" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

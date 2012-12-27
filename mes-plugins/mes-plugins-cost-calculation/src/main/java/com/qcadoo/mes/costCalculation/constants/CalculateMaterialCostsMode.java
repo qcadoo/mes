@@ -25,7 +25,7 @@ package com.qcadoo.mes.costCalculation.constants;
 
 public enum CalculateMaterialCostsMode {
     NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST("04averageOfferCost"), LAST_OFFER_COST(
-            "05lastOfferCost"), COST_FOR_ORDER("04costForOrder");
+            "05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
 
     private final String calculateMaterialCostsMode;
 
@@ -48,7 +48,7 @@ public enum CalculateMaterialCostsMode {
             return AVERAGE_OFFER_COST;
         } else if ("05lastOfferCost".equals(string)) {
             return LAST_OFFER_COST;
-        } else if ("04costForOrder".equals(string)) {
+        } else if ("06costForOrder".equals(string)) {
             return COST_FOR_ORDER;
         }
 

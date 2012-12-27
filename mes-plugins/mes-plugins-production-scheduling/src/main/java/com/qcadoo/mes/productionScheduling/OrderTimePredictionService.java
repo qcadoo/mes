@@ -27,6 +27,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -43,7 +44,6 @@ import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -100,16 +100,7 @@ public class OrderTimePredictionService {
         List<Entity> operations = dataDefinition.find().add(SearchRestrictions.belongsTo(OrdersConstants.MODEL_ORDER, order))
                 .list().getEntities();
 
-        Date orderStartDate = null;
-        if (order.getField(EFFECTIVE_DATE_FROM) == null) {
-            if (order.getField(OrderFields.DATE_FROM) == null) {
-                return;
-            } else {
-                orderStartDate = (Date) order.getField(DATE_FROM);
-            }
-        } else {
-            orderStartDate = (Date) order.getField(EFFECTIVE_DATE_FROM);
-        }
+        Date orderStartDate = (Date) order.getField(START_DATE);
         for (Entity operation : operations) {
             Integer offset = (Integer) operation.getField("operationOffSet");
             Integer duration = (Integer) operation.getField("effectiveOperationRealizationTime");
@@ -120,10 +111,7 @@ public class OrderTimePredictionService {
             if (offset == null || duration == null || duration.equals(0)) {
                 continue;
             }
-            if (offset == 0) {
-                offset = 1;
-            }
-            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
+            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset + 1);
             if (dateFrom == null) {
                 continue;
             }

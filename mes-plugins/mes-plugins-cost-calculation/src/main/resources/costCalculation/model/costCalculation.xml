@@ -101,7 +101,7 @@
 		<enum name="sourceOfMaterialCosts" values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
 			required="true" default="01currentGlobalDefinitionsInProduct"/>
 		
-		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04costForOrder"
+		<enum name="calculateMaterialCostsMode" values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
 			required="true" default="01nominal" />
 		
 		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"

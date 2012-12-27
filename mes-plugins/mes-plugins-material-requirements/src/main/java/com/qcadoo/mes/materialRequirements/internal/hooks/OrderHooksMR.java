@@ -29,6 +29,11 @@ public class OrderHooksMR {
                 getInputProductsRequiredForType());
     }
 
+    public void setInputProductsRequiredForTypeDefaultValueOnCopy(final DataDefinition orderDD, final Entity order) {
+        materialRequirementService.setInputProductsRequiredForTypeDefaultValue(order, INPUT_PRODUCTS_REQUIRED_FOR_TYPE,
+                getInputProductsRequiredForType());
+    }
+
     private String getInputProductsRequiredForType() {
         return parameterService.getParameter().getStringField(INPUT_PRODUCTS_REQUIRED_FOR_TYPE);
     }
