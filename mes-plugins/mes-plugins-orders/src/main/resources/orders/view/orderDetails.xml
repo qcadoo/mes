@@ -366,7 +366,7 @@
 				<listener event="showOrderParameters" method="showOrderParameters"
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 				<listener event="save" class="com.qcadoo.mes.orders.OrderService"
-					method="compareDeadlineAndDateTo" />		
+					method="compareDeadlineAndDateTo" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
@@ -527,7 +527,7 @@
 				<option type="column" name="worker" fields="worker" />
 				<option type="column" name="reasonType" fields="reasonType" />
 				<option type="column" name="comment" fields="comment" />
-				<option type="order" column="dateAndTime" direction="desc" />
+				<option type="order" column="dateAndTime" direction="asc" />
 				<option type="searchable" value="dateAndTime,previousState,currentState" />
 				<option type="orderable" value="dateAndTime,previousState,currentState" />
 				<option type="correspondingView" value="orders/orderStateChangeDetails" />
@@ -535,7 +535,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
-		<script>
+			<script>
 					<![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
 						var externalNumberListener = {
@@ -550,10 +550,12 @@
 						};
 						#{form}.addOnChangeListener(externalNumberListener);
 					]]>
-				</script>
-			<component type="gridLayout" name="gridLayout" columns="3" rows="1">
+			</script>
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber" reference="externalNumber" defaultEnabled="never"/>
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+						reference="externalNumber" defaultEnabled="never" />
 				</layoutElement>
 			</component>
 		</windowTab>
