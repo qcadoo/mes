@@ -24,7 +24,8 @@
 package com.qcadoo.mes.costNormsForMaterials.constants;
 
 public enum ProductsCostFields {
-    AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder");
+    AVERAGE("averageCost"), LAST_PURCHASE("lastPurchaseCost"), NOMINAL("nominalCost"), COST_FOR_ORDER("costForOrder"), AVERAGE_OFFER_COST(
+            "averageOfferCost"), LAST_OFFER_COST("lastOfferCost");
 
     private final String strValue;
 
@@ -43,10 +44,13 @@ public enum ProductsCostFields {
             return AVERAGE;
         } else if ("03lastPurchase".equals(strValue)) {
             return LAST_PURCHASE;
-        } else if ("04costForOrder".equals(strValue)) {
+        } else if ("04averageOfferCost".equals(strValue)) {
+            return LAST_OFFER_COST;
+        } else if ("05lastOfferCost".equals(strValue)) {
+            return AVERAGE_OFFER_COST;
+        } else if ("06costForOrder".equals(strValue)) {
             return COST_FOR_ORDER;
         }
-
         throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + strValue);
     }
 

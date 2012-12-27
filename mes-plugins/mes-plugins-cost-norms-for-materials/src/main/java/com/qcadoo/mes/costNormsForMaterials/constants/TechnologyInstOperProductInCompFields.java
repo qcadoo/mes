@@ -43,4 +43,8 @@ public final class TechnologyInstOperProductInCompFields {
 
     public static final String COST_FOR_ORDER = "costForOrder";
 
+    public static final String LAST_OFFER_COST = "lastOfferCost";
+
+    public static final String AVERAGE_OFFER_COST = "averageOfferCost";
+
 }

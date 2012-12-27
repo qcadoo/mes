@@ -51,7 +51,7 @@
 								 width="100" />
 							<option type="column" name="name" fields="product"
 								expression="#product['name']"
-								width="200" />
+								width="100" />
 							<option type="column" name="nominalCost" fields="product"
 								expression="#product.get('nominalCost') != null ? 
 								#product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
