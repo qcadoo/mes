@@ -193,8 +193,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
         } else if (L_OPERATION.equals(entityType)) {
-            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, false, operationRuns, productionLine,
-                    maxForWorkstation);
+            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
+                    productionLine, maxForWorkstation);
             int offset = 0;
 
             for (Entity child : operationComponent.getHasManyField("children")) {
@@ -203,8 +203,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
 
-                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, false, operationRuns, productionLine,
-                            true);
+                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
+                            productionLine, true);
                     int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
                             includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
 
