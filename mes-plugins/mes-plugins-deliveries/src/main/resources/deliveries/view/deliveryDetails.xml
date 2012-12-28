@@ -380,7 +380,7 @@
 		</windowTab>
 		
 		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout"
+			<component type="gridLayout" name="loggingsGridLayout" 
 				columns="2" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
@@ -414,6 +414,8 @@
 			method="fillDeliveryAddressDefaultValue" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillDescriptionDefaultValue" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="filterStateChangeHistory" />
 	</hooks>
 	
 </view>

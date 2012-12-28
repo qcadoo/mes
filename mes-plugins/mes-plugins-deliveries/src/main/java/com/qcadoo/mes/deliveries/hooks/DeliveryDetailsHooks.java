@@ -35,14 +35,19 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
+import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -62,6 +67,9 @@ public class DeliveryDetailsHooks {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private StateChangeHistoryService stateChangeHistoryService;
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -142,6 +150,13 @@ public class DeliveryDetailsHooks {
         if (StringUtils.isEmpty(description)) {
             descriptionField.setFieldValue(deliveriesService.getDescriptionDefaultValue());
         }
+    }
+
+    public void filterStateChangeHistory(final ViewDefinitionState view) {
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
+        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
+                DeliveryStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
+        historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
 }

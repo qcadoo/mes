@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.states;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 
 import java.util.Arrays;
@@ -33,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
@@ -65,11 +65,10 @@ public class DeliveryStateValidationService {
     public void checkDeliveredQuantity(final StateChangeContext stateChangeContext) {
         checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
         final Entity stateChangeEntity = stateChangeContext.getOwner();
-        List<Entity> deliveredProducts = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        List<Entity> deliveredProducts = stateChangeEntity.getHasManyField(DELIVERED_PRODUCTS);
         boolean deliveredProductHasNull = false;
         if (deliveredProducts.isEmpty()) {
-            stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredProductsList.isEmpty", StateMessageType.FAILURE,
-                    false);
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredProductsList.isEmpty");
         }
         StringBuffer listOfProductNumber = new StringBuffer();
         for (Entity delivProd : deliveredProducts) {
@@ -81,6 +80,7 @@ public class DeliveryStateValidationService {
             }
         }
         if (deliveredProductHasNull) {
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired");
             stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredQuantity.isRequired", StateMessageType.FAILURE,
                     false, listOfProductNumber.toString());
         }
