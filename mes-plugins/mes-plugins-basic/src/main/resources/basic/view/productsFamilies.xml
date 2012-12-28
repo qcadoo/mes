@@ -89,7 +89,7 @@
 							<option type="correspondingView" value="basic/productDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="fullscreen" value="true" />
-							<option type="multiselect" value="true" />
+							<option type="multiselect" value="false" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1" width="2" height="6">
