@@ -58,7 +58,6 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -67,7 +66,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -76,7 +74,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
@@ -590,21 +587,6 @@ public class OrderService {
         }
 
         return true;
-    }
-
-    public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-        grid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.or(
-                        SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue()),
-                        SearchRestrictions.eq(OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue()),
-                        SearchRestrictions.eq(OrderFields.STATE, OrderState.ACCEPTED.getStringValue())));
-            }
-
-        });
     }
 
     public void compareDeadlineAndDateTo(final ViewDefinitionState view, final ComponentState state, final String[] args) {

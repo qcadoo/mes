@@ -279,6 +279,6 @@
 		<option type="header" value="false" />
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.orders.OrderService" method="addDiscriminatorRestrictionToGrid" />
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrdersPlanningListHooks" method="addDiscriminatorRestrictionToGrid" />
 	</hooks>
 </view>
