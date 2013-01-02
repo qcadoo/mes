@@ -42,8 +42,6 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService"
 			method="validateDates" />
-		<onSave class="com.qcadoo.mes.orderGroups.OrderGroupsService"
-			method="updateBelongingOrdersOrderGroupName" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

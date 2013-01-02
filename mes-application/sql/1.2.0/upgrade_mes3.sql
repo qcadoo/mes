@@ -7,3 +7,9 @@ ALTER TABLE productioncounting_productionrecord ADD COLUMN createuser character 
 ALTER TABLE productioncounting_productionrecord ADD COLUMN updateuser character varying(255);
 
 -- end
+
+-- Table: orders_order
+-- changed: 28.11.2012
+Alter table orders_order  DROP COLUMN  ordergroupname; 
+
+-- end

@@ -38,7 +38,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -367,49 +366,6 @@ public class OrderGroupsServiceTest {
     }
 
     @Ignore
-    @Test
-    public final void shouldChangeOrderGroupName() throws Exception {
-        // given
-        final String groupName = "any group name";
-        when(orderGroup.getStringField("name")).thenReturn(groupName);
-        ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
-
-        // when
-        orderGroupsService.updateOrderGroupName(dataDefinition, order);
-
-        // then
-        Mockito.verify(order, Mockito.times(1)).setField(Mockito.eq("orderGroupName"), argCaptor.capture());
-        Assert.assertEquals(groupName, argCaptor.getValue());
-    }
-
-    @Test
-    public final void shouldSetOrderGroupNameToNullIfOrderIsNotAssociatedWithAnyGroup() throws Exception {
-        // given
-        DataDefinition orderDataDefinition = mock(DataDefinition.class);
-        when(order.getBelongsToField("orderGroup")).thenReturn(null);
-        ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
-
-        // when
-        orderGroupsService.updateOrderGroupName(orderDataDefinition, order);
-
-        // then
-        Mockito.verify(order, Mockito.times(1)).setField(Mockito.eq("orderGroupName"), argCaptor.capture());
-        Assert.assertEquals(null, argCaptor.getValue());
-    }
-
-    @Test
-    public final void shouldSaveBelongingOrdersWhenSavingGroup() throws Exception {
-        // given
-        when(orderGroup.getHasManyField("orders")).thenReturn(ordersList);
-        when(order.getDataDefinition()).thenReturn(dataDefinition);
-
-        // when
-        orderGroupsService.updateBelongingOrdersOrderGroupName(dataDefinition, orderGroup);
-
-        // then
-        Mockito.verify(dataDefinition, Mockito.times(ordersList.size())).save(order);
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public final void shouldRedirectToOrdersList() throws Exception {

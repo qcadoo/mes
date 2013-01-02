@@ -155,25 +155,6 @@ public class OrderGroupsService {
         return cal.getTime().getTime();
     }
 
-    public final void updateBelongingOrdersOrderGroupName(final DataDefinition groupDataDefinition, final Entity orderGroup) {
-        List<Entity> orders = orderGroup.getHasManyField(ORDERS_FIELD);
-        if (orders == null) {
-            return;
-        }
-        for (Entity order : orders) {
-            order.setField(ORDER_GROUP_NAME_FIELD, orderGroup.getStringField(NAME_FIELD));
-            order.getDataDefinition().save(order);
-        }
-    }
-
-    public final void updateOrderGroupName(final DataDefinition orderDataDefinition, final Entity order) {
-        Entity orderGroup = order.getBelongsToField(ORDER_GROUP_FIELD);
-        if (orderGroup == null) {
-            order.setField(ORDER_GROUP_NAME_FIELD, null);
-            return;
-        }
-    }
-
     public final void showInOrdersList(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) componentState;
         Entity orderGroup = form.getEntity();

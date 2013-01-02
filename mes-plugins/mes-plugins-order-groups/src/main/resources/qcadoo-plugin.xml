@@ -76,15 +76,6 @@
 				model="orderGroup" />
 		</model:model-field>
 
-		<model:model-field plugin="orders" model="order">
-			<model:string name="orderGroupName" />
-		</model:model-field>
-
-		<model:model-hook model="order" plugin="orders">
-			<model:onSave class="com.qcadoo.mes.orderGroups.OrderGroupsService"
-				method="updateOrderGroupName" />
-		</model:model-hook>
-
 		<model:model-hook plugin="orders" model="order">
 			<model:validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService"
 				method="validateOrderDate" />
@@ -94,8 +85,8 @@
 
 		<view:view-grid-column plugin="orders" view="ordersList"
 			component="grid">
-			<view:column name="orderGroup" fields="orderGroupName"
-				orderable="true" searchable="true" link="false" width="50" />
+			<view:column name="orderGroup" fields="orderGroup"
+				orderable="true" searchable="true" width="50" expression="#orderGroup['name']"/>
 		</view:view-grid-column>
 	</modules>
 
