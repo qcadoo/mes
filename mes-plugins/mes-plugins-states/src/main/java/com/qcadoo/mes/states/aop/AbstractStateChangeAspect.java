@@ -69,7 +69,6 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         }
     }
 
-    // @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void performStateChange(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
         performPreValidation(stateChangeContext);
