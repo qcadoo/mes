@@ -81,12 +81,19 @@ public class AverageCostService {
         List<Entity> shifts = getAllShifts();
         Map<Entity, BigDecimal> workersWithHoursWorked = generateMapWorkersWithHoursWorked(days, shifts, productionLine);
         BigDecimal averageCost = countAverageCost(workersWithHoursWorked);
-
-        avgLaborCostCalcForOrder.setField(AVERAGE_LABOR_HOURLY_COST, averageCost);
-        avgLaborCostCalcForOrder.setField(AvgLaborCostCalcForOrderFields.ASSIGNMENT_WORKER_TO_SHIFTS,
-                createAssignmentWorkerToShift(workersWithHoursWorked));
-
-        return avgLaborCostCalcForOrder.getDataDefinition().save(avgLaborCostCalcForOrder);
+        if (averageCost == null) {
+            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AVERAGE_LABOR_HOURLY_COST),
+                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
+            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AvgLaborCostCalcForOrderFields.START_DATE),
+                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
+            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AvgLaborCostCalcForOrderFields.FINISH_DATE),
+                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
+        } else {
+            avgLaborCostCalcForOrder.setField(AVERAGE_LABOR_HOURLY_COST, averageCost);
+            avgLaborCostCalcForOrder.setField(AvgLaborCostCalcForOrderFields.ASSIGNMENT_WORKER_TO_SHIFTS,
+                    createAssignmentWorkerToShift(workersWithHoursWorked));
+        }
+        return avgLaborCostCalcForOrder;
     }
 
     private Map<Entity, BigDecimal> generateMapWorkersWithHoursWorked(final List<DateTime> days, final List<Entity> shifts,
@@ -121,6 +128,9 @@ public class AverageCostService {
                     .getDecimalField("laborHourlyCost").multiply(quantityOfHours);
             averageCost = averageCost.add(costOfWorkerHours);
             countHours = countHours.add(quantityOfHours);
+        }
+        if (countHours.equals(BigDecimal.ZERO)) {
+            return null;
         }
         return numberService.setScale(averageCost.divide(countHours, numberService.getMathContext()));
     }

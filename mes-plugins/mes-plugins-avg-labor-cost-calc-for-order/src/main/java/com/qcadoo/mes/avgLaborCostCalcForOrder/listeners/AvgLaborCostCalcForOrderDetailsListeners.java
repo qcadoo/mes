@@ -112,7 +112,10 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         Date start = timeConverterService.getDateFromField(startDate.getFieldValue());
         Date finish = timeConverterService.getDateFromField(finishDate.getFieldValue());
 
-        averageCostService.generateAssignmentWorkerToShiftAndAverageCost(avgLaborCostCalcForOrder, start, finish, productionLine);
+        avgLaborCostCalcForOrder = averageCostService.generateAssignmentWorkerToShiftAndAverageCost(avgLaborCostCalcForOrder,
+                start, finish, productionLine);
+        form.setEntity(avgLaborCostCalcForOrder);
+        state.performEvent(view, "save", args);
         // TODO ALBR why refresh actions on field or form doesn't work?
         averageLaborHourlyCost.setFieldValue(avgLaborCostCalcForOrder.getDecimalField(AVERAGE_LABOR_HOURLY_COST));
         averageLaborHourlyCost.requestComponentUpdateState();
