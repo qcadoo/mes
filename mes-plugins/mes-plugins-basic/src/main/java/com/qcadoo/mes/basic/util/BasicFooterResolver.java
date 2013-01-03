@@ -5,6 +5,7 @@ import static com.qcadoo.mes.basic.constants.ParameterFields.ADDITIONAL_TEXT_IN_
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.localization.api.TranslationService;
@@ -15,6 +16,7 @@ import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.FooterResolver;
 import com.qcadoo.security.api.SecurityService;
 
+@Primary
 @Component
 public class BasicFooterResolver implements FooterResolver {
 
