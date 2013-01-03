@@ -21,11 +21,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForProduct;
+package com.qcadoo.mes.costNormsForProduct.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +45,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class CostNormsForProductService {
+public class ProductDetailsHooksCNFP {
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
     private static final String L_FORM = "form";
-
-    private static final String L_NOMINAL_COST = "nominalCost";
 
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
@@ -135,7 +137,6 @@ public class CostNormsForProductService {
     }
 
     public void enabledFieldForExternalID(final ViewDefinitionState view) {
-        FieldComponent nominalCost = (FieldComponent) view.getComponentByReference(L_NOMINAL_COST);
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
@@ -149,7 +150,10 @@ public class CostNormsForProductService {
         String externalNumber = entity.getStringField("externalNumber");
 
         if (externalNumber != null) {
-            nominalCost.setEnabled(true);
+            for (String reference : Arrays.asList(NOMINAL_COST, LAST_OFFER_COST, AVERAGE_OFFER_COST)) {
+                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                field.setEnabled(true);
+            }
         }
     }
 

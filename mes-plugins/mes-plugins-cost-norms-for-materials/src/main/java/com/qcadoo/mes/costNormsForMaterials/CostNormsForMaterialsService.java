@@ -43,8 +43,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
-import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
+import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -59,7 +59,7 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class CostNormsForMaterialsService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CostNormsForProductService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProductDetailsHooksCNFP.class);
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
@@ -158,11 +158,11 @@ public class CostNormsForMaterialsService {
                 Entity product = technologyInstOperProductInComp.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
                 technologyInstOperProductInComp.setField(COST_FOR_NUMBER,
-                        product.getField(ProductCostNormsFields.COST_FOR_NUMBER));
-                technologyInstOperProductInComp.setField(NOMINAL_COST, product.getField(ProductCostNormsFields.NOMINAL_COST));
+                        product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
+                technologyInstOperProductInComp.setField(NOMINAL_COST, product.getField(ProductFieldsCNFP.NOMINAL_COST));
                 technologyInstOperProductInComp.setField(LAST_PURCHASE_COST,
-                        product.getField(ProductCostNormsFields.LAST_PURCHASE_COST));
-                technologyInstOperProductInComp.setField(AVERAGE_COST, product.getField(ProductCostNormsFields.AVERAGE_COST));
+                        product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST));
+                technologyInstOperProductInComp.setField(AVERAGE_COST, product.getField(ProductFieldsCNFP.AVERAGE_COST));
 
                 technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition().save(
                         technologyInstOperProductInComp);

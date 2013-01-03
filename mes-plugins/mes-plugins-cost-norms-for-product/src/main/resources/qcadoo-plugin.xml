@@ -106,15 +106,15 @@
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
 
 		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
 			method="fillUnitFieldInProduct" />
 
 		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
 			method="fillCurrencyFieldsInProduct" />
 
 		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.CostNormsForProductService"
+			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
 			method="enabledFieldForExternalID" />
 
 	</modules>

@@ -35,6 +35,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
+import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,12 +44,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
-public class CostNormsForProductServiceTest {
+public class ProductDetailsHooksCNFPTest {
 
     @Mock
     private ViewDefinitionState viewDefinitionState;
 
-    private CostNormsForProductService costNormsForProductService;
+    private ProductDetailsHooksCNFP costNormsForProductService;
 
     @Mock
     private DataDefinition dataDefinition;
@@ -69,7 +71,7 @@ public class CostNormsForProductServiceTest {
 
     @Before
     public void init() {
-        costNormsForProductService = new CostNormsForProductService();
+        costNormsForProductService = new ProductDetailsHooksCNFP();
 
         MockitoAnnotations.initMocks(this);
 
@@ -114,11 +116,15 @@ public class CostNormsForProductServiceTest {
         when(form.getEntityId()).thenReturn(productId);
         when(dataDefinition.get(productId)).thenReturn(entity);
         when(entity.getStringField("externalNumber")).thenReturn(externalId);
-        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST)).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_OFFER_COST)).thenReturn(field2);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_OFFER_COST)).thenReturn(field3);
         // when
         costNormsForProductService.enabledFieldForExternalID(viewDefinitionState);
         // then
         Mockito.verify(field1).setEnabled(true);
+        Mockito.verify(field2).setEnabled(true);
+        Mockito.verify(field3).setEnabled(true);
     }
 
     @Test

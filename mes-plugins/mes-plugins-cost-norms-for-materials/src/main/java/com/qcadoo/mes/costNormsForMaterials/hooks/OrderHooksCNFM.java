@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -73,13 +73,13 @@ public class OrderHooksCNFM {
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.ORDER, order);
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.PRODUCT, product);
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER,
-                            product.getDecimalField(ProductCostNormsFields.COST_FOR_NUMBER));
+                            product.getDecimalField(ProductFieldsCNFP.COST_FOR_NUMBER));
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST,
-                            product.getDecimalField(ProductCostNormsFields.NOMINAL_COST));
+                            product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST,
-                            product.getDecimalField(ProductCostNormsFields.LAST_PURCHASE_COST));
+                            product.getDecimalField(ProductFieldsCNFP.LAST_PURCHASE_COST));
                     technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST,
-                            product.getDecimalField(ProductCostNormsFields.AVERAGE_COST));
+                            product.getDecimalField(ProductFieldsCNFP.AVERAGE_COST));
 
                     technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition().save(
                             technologyInstOperProductInComp);

@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.costNormsForProduct.constants;
 
-public final class ProductCostNormsFields {
+public final class ProductFieldsCNFP {
 
-    private ProductCostNormsFields() {
+    private ProductFieldsCNFP() {
 
     }
 

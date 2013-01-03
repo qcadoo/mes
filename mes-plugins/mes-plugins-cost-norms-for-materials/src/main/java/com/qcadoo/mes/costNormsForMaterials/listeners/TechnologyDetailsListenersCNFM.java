@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields.AVERAGE_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields.COST_FOR_NUMBER;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields.LAST_PURCHASE_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductCostNormsFields.NOMINAL_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.COST_FOR_NUMBER;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,14 +5,14 @@ import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMateria
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
+import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class TechnologyInstOperProductInCompDetailsHooks {
 
     @Autowired
-    private CostNormsForProductService costNormsForProductService;
+    private ProductDetailsHooksCNFP costNormsForProductService;
 
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
