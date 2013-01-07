@@ -155,9 +155,8 @@ public class DeliveryDetailsListenersTest {
         Long entityId = 1L;
         when(view.getComponentByReference("form")).thenReturn(formComponent);
         when(formComponent.getEntityId()).thenReturn(entityId);
-        when(formComponent.getEntity()).thenReturn(entity);
+        when(deliveriesService.getDelivery(entityId)).thenReturn(entity);
         when(entity.getDataDefinition()).thenReturn(dataDefinition);
-        when(dataDefinition.get(entityId)).thenReturn(entity);
 
         when(deliveriesService.getDeliveredProductDD()).thenReturn(deliveredProductDD);
         when(deliveredProductDD.create()).thenReturn(deliveredProduct);

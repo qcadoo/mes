@@ -60,7 +60,10 @@ public class DeliveryDetailsListeners {
         if (state instanceof FormComponent) {
             state.performEvent(viewDefinitionState, "save", args);
 
-            viewDefinitionState.redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+            if (!state.isHasError()) {
+                viewDefinitionState.redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + state.getFieldValue(), true,
+                        false);
+            }
         } else {
             state.addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
         }
@@ -71,7 +74,10 @@ public class DeliveryDetailsListeners {
         if (state instanceof FormComponent) {
             state.performEvent(viewDefinitionState, "save", args);
 
-            viewDefinitionState.redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+            if (!state.isHasError()) {
+                viewDefinitionState
+                        .redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+            }
         } else {
             state.addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         }
@@ -79,13 +85,14 @@ public class DeliveryDetailsListeners {
 
     public final void copyOrderedProductToDelivered(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent deliveryForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        Long deliveryId = deliveryForm.getEntityId();
 
-        if (form.getEntityId() == null) {
+        if (deliveryId == null) {
             return;
         }
 
-        Entity delivery = form.getEntity().getDataDefinition().get(form.getEntityId());
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
 
         List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
 
