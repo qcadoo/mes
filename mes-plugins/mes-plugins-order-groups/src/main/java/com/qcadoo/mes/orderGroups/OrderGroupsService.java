@@ -68,8 +68,6 @@ public class OrderGroupsService {
 
     private static final String ORDER_GROUP_FIELD = "orderGroup";
 
-    private static final String ORDER_GROUP_NAME_FIELD = "orderGroupName";
-
     /* ****** HOOKS ******* */
 
     public final void generateNumberAndName(final ViewDefinitionState view) {
