@@ -20,4 +20,5 @@ public class ProductionRecordDetailsHooksTSFPC {
         }
         subcontractor.requestComponentUpdateState();
     }
+
 }
