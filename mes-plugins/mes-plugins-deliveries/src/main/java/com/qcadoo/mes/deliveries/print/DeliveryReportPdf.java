@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -110,51 +112,78 @@ public class DeliveryReportPdf extends ReportPdfView {
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
-        PdfPTable headerTable = pdfHelper.createPanelTable(3);
+        PdfPTable dynaminHeaderTable = pdfHelper.createPanelTable(3);
 
-        headerTable.setSpacingBefore(7);
+        dynaminHeaderTable.setSpacingBefore(7);
 
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.number", locale),
-                delivery.getStringField(NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.supplier", locale),
-                (delivery.getBelongsToField(SUPPLIER) == null) ? "" : delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.state", locale),
-                translationService.translate("deliveries.delivery.state.value." + delivery.getStringField(STATE), locale));
+        Map<String, Object> firstColumn = createFirstColumn(delivery);
+        Map<String, Object> secondColumn = createSecondColumn(delivery);
+        Map<String, Object> thirdColumn = createThirdColumn(delivery, locale);
 
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.name", locale),
-                delivery.getStringField(NAME));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.deliveryDate", locale),
-                getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.createDate", locale),
-                getStringFromDate((Date) delivery.getField("createDate")));
+        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(Integer.valueOf(firstColumn.values().size()),
+                Integer.valueOf(secondColumn.values().size()), Integer.valueOf(thirdColumn.values().size())));
 
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.description", locale),
-                delivery.getStringField(DESCRIPTION));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable,
-                translationService.translate("deliveries.order.report.columnHeader.deliveryAddress", locale),
-                (delivery.getStringField(DELIVERY_ADDRESS) == null) ? "" : delivery.getStringField(DELIVERY_ADDRESS));
-        pdfHelper.addTableCellAsOneColumnTable(
-                headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.createOrderDate", locale),
-                (getPrepareOrderDate(delivery) == null ? "" : getStringFromDate((Date) getPrepareOrderDate(delivery).getField(
-                        "dateAndTime"))));
-        pdfHelper.addTableCellAsOneColumnTable(
-                headerTable,
-                translationService.translate("deliveries.delivery.report.columnHeader.receivedOrderDate", locale),
-                (getReceivedOrderDate(delivery) == null ? "" : getStringFromDate((Date) getReceivedOrderDate(delivery).getField(
-                        "dateAndTime"))));
-        pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
-        pdfHelper.addTableCellAsOneColumnTable(headerTable, "", "");
+        for (int i = 0; i < maxSize; i++) {
+            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, firstColumn, locale);
+            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, secondColumn, locale);
+            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, thirdColumn, locale);
+        }
 
-        document.add(headerTable);
+        pdfHelper.addTableCellAsOneColumnTable(dynaminHeaderTable, "", "");
+
+        document.add(dynaminHeaderTable);
         document.add(Chunk.NEWLINE);
+    }
+
+    private Map<String, Object> createFirstColumn(final Entity delivery) {
+        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        if (delivery.getStringField(NUMBER) != null) {
+            column.put("deliveries.delivery.report.columnHeader.number", delivery.getStringField(NUMBER));
+        }
+        if (delivery.getStringField(NAME) != null) {
+            column.put("deliveries.delivery.report.columnHeader.name", delivery.getStringField(NAME));
+        }
+        if (delivery.getStringField(DESCRIPTION) != null) {
+            column.put("deliveries.delivery.report.columnHeader.description", delivery.getStringField(DESCRIPTION));
+        }
+        return column;
+    }
+
+    private Map<String, Object> createSecondColumn(final Entity delivery) {
+        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        if (delivery.getBelongsToField(SUPPLIER) != null) {
+            column.put("deliveries.delivery.report.columnHeader.supplier",
+                    delivery.getBelongsToField(SUPPLIER).getStringField(NAME));
+        }
+        if (delivery.getField(DELIVERY_DATE) != null) {
+            column.put("deliveries.delivery.report.columnHeader.deliveryDate",
+                    getStringFromDate((Date) delivery.getField(DELIVERY_DATE)));
+        }
+        if (delivery.getStringField(DELIVERY_ADDRESS) != null) {
+            column.put("deliveries.order.report.columnHeader.deliveryAddress", delivery.getStringField(DELIVERY_ADDRESS));
+        }
+        return column;
+    }
+
+    private Map<String, Object> createThirdColumn(final Entity delivery, final Locale locale) {
+        Map<String, Object> column = new LinkedHashMap<String, Object>();
+        if (delivery.getStringField(STATE) != null) {
+            column.put("deliveries.delivery.report.columnHeader.state",
+                    translationService.translate("deliveries.delivery.state.value." + delivery.getStringField(STATE), locale));
+        }
+        if (delivery.getField("createDate") != null) {
+            column.put("deliveries.delivery.report.columnHeader.createDate",
+                    getStringFromDate((Date) delivery.getField("createDate")));
+        }
+        if (getPrepareOrderDate(delivery) != null) {
+            column.put("deliveries.order.report.columnHeader.createOrderDate",
+                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+        }
+        if (getReceivedOrderDate(delivery) != null) {
+            column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
+                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+        }
+        return column;
     }
 
     private void createProductsTable(final Document document, final Entity delivery, final Locale locale)
