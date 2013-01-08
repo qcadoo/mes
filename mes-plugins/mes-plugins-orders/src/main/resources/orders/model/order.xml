@@ -27,7 +27,7 @@
 		<string name="defaultTechnology" persistent="false" />
 		<string name="commentReasonTypeCorrectionDateFrom" />
 		<string name="commentReasonTypeCorrectionDateTo" />
-		<string name="externalNumber" />
+		<string name="externalNumber" unique="true"/>
 
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />

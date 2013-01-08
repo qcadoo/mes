@@ -42,7 +42,7 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-		<string name="externalNumber" />
+		<string name="externalNumber"  unique="true"/>
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
