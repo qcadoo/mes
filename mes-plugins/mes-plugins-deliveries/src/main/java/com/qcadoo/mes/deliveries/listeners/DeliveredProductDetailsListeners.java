@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
@@ -32,6 +33,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class DeliveredProductDetailsListeners {
 
+    @Autowired
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
