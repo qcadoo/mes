@@ -47,7 +47,9 @@ public class TransferModelHooksMFR {
     }
 
     public void manageResources(final DataDefinition transferDD, final Entity transfer) {
-        materialFlowResourcesService.manageResources(transfer);
+        if (transfer.getId() == null) {
+            materialFlowResourcesService.manageResources(transfer);
+        }
     }
 
 }
