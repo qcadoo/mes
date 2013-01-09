@@ -54,7 +54,7 @@ public class ProductionLinesServiceImpl implements ProductionLinesService {
             }
         }
 
-        return (Integer) productionLine.getField(QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
+        return productionLine.getIntegerField(QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
     }
 
 }

@@ -84,7 +84,7 @@ public class ProductionLinesServiceImplTest {
     @Test
     public void shouldReturnSpecifiedQuantityIfNoWorkstationIsFound() {
         // given
-        given(productionLine.getField("quantityForOtherWorkstationTypes")).willReturn(456);
+        given(productionLine.getIntegerField("quantityForOtherWorkstationTypes")).willReturn(456);
         given(operation.getBelongsToField("workstationType")).willReturn(work3);
 
         // when
