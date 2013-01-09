@@ -141,12 +141,11 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
 
     private void updateProductFamilyChildrensNodeNumbers(final Entity product, final Entity parent) {
         List<Entity> productFamilyChildrens = product.getHasManyField(PRODUCT_FAMILY_CHILDRENS);
-        if (!productFamilyChildrens.isEmpty()) {
-            for (Entity productFamilyChildren : productFamilyChildrens) {
-                generateNodeNumber(productFamilyChildren, parent, true);
 
-                updateProductFamilyChildrensNodeNumbers(productFamilyChildren, productFamilyChildren);
-            }
+        for (Entity productFamilyChildren : productFamilyChildrens) {
+            generateNodeNumber(productFamilyChildren, parent, true);
+
+            updateProductFamilyChildrensNodeNumbers(productFamilyChildren, productFamilyChildren);
         }
     }
 
@@ -260,6 +259,7 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
         List<String> roots = Lists.newArrayList();
 
         String number = nodeNumber;
+
         for (int i = 0; i < StringUtils.countMatches(nodeNumber, "."); i++) {
             number = number.substring(0, number.lastIndexOf('.'));
 
