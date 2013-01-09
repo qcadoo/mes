@@ -101,8 +101,8 @@ public class TechInstOperCompHooksPPSTest {
     @Test
     public void shouldReturnFalseAndEntityHasErrorWhenDaysAreNotOrderDesc() {
         // given
-        String day1 = "11";
-        String day2 = "10";
+        Long day1 = 11L;
+        Long day2 = 10L;
 
         Entity pfd1 = mock(Entity.class);
         Entity pfd2 = mock(Entity.class);
@@ -112,8 +112,8 @@ public class TechInstOperCompHooksPPSTest {
         when(technologyInstanceOperationComponent.getHasManyField(PROGRESS_FOR_DAYS)).thenReturn(progressForDays);
         when(progressForDays.get(0)).thenReturn(pfd1);
         when(progressForDays.get(1)).thenReturn(pfd2);
-        when(pfd1.getStringField(DAY)).thenReturn(day1);
-        when(pfd2.getStringField(DAY)).thenReturn(day2);
+        when(pfd1.getField(DAY)).thenReturn(day1);
+        when(pfd2.getField(DAY)).thenReturn(day2);
 
         // when
         boolean result = techInstOperCompHooksPPS.checkGrowingNumberOfDays(technologyInstanceOperationComponentDD,
@@ -128,8 +128,8 @@ public class TechInstOperCompHooksPPSTest {
     @Test
     public void shouldReturnTrueWhenDaysAreOrderDesc() {
         // given
-        String day1 = "10";
-        String day2 = "11";
+        Long day1 = 10L;
+        Long day2 = 11L;
 
         Entity pfd1 = mock(Entity.class);
         Entity pfd2 = mock(Entity.class);

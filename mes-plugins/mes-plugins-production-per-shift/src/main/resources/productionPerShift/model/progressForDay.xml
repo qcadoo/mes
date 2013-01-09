@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="technologyInstanceOperationComponent" model="technologyInstanceOperationComponent" plugin="technologies" />
-		<integer name="day" />
+		<integer name="day" default="1"/>
 		<hasMany name="dailyProgress" joinField="progressForDay" model="dailyProgress" cascade="delete" copyable="true"/> 
 		<boolean name="corrected" default="false" />
 		<date name="dateOfDay"/>

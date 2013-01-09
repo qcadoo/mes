@@ -47,15 +47,15 @@ public class TechInstOperCompHooksPPS {
         Integer dayNumber = Integer.valueOf(0);
         for (Entity progressForDay : progressForDays) {
             if (progressForDay.getBooleanField(CORRECTED) != technologyInstanceOperationComponent
-                    .getBooleanField(HAS_CORRECTIONS) || progressForDay.getStringField(DAY) == null) {
+                    .getBooleanField(HAS_CORRECTIONS) || progressForDay.getField(DAY) == null) {
                 continue;
             }
-            Integer day = Integer.valueOf(progressForDay.getStringField(DAY));
+            Integer day = ((Long) progressForDay.getField(DAY)).intValue();
             if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
             } else {
                 technologyInstanceOperationComponent.addGlobalError(
-                        "productionPerShift.progressForDay.daysAreNotInAscendingOrder", progressForDay.getStringField(DAY));
+                        "productionPerShift.progressForDay.daysAreNotInAscendingOrder", progressForDay.getField(DAY).toString());
                 return false;
             }
         }

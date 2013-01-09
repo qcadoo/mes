@@ -30,15 +30,11 @@
 	modelName="productionPerShift">
 	<component type="window" name="window" reference="window">
 		<ribbon>
-			<group name="navigation">
-				<bigButton name="back" action="#{window}.performBack;"
-					icon="backIcon24.png" />
-			</group>
+			<template name="standardFormTemplate" includeItems="navigation.back"/>
 			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
 					action="#{progressForDaysADL}.fireEvent(saveProgressForDays);" />
-				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
-					action="#{window}.performRefresh;" />
+				<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;" />
 			</group>
 			<group name="progress">
 				<bigButton name="clear" icon="deleteIcon24.png" state="enabled"
@@ -218,6 +214,9 @@
 		<option type="header" value="true" />
 	</component>
 	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="fillSetRoot" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="addRootForOperation" />

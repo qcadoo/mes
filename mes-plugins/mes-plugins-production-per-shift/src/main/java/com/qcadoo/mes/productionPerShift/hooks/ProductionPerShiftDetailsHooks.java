@@ -79,6 +79,10 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class ProductionPerShiftDetailsHooks {
 
+    private static final String ORDER_CORRECTED_START_DATE = "orderCorrectedStartDate";
+
+    private static final String ORDER_PLANNED_START_DATE = "orderPlannedStartDate";
+
     private static final String L_ORDER = "order";
 
     private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
@@ -101,6 +105,12 @@ public class ProductionPerShiftDetailsHooks {
 
     @Autowired
     private TimeConverterService timeConverterService;
+
+    public void fillSetRoot(final ViewDefinitionState view) {
+        FieldComponent setRootField = (FieldComponent) view.getComponentByReference("setRoot");
+        setRootField.setFieldValue(false);
+        setRootField.requestComponentUpdateState();
+    }
 
     public void addRootForOperation(final ViewDefinitionState view) {
         FieldComponent setRootField = (FieldComponent) view.getComponentByReference("setRoot");
@@ -144,28 +154,30 @@ public class ProductionPerShiftDetailsHooks {
         if (!producesInput.getFieldValue().equals("")) {
             return;
         }
-
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         if (tioc == null) {
+            progressForDaysADL.setFieldValue(null);
             return;
+        } else {
+            String producedProduct = null;
+            Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
+            Entity prodComp = technologyService.getMainOutputProductComponent(toc);
+            Entity prod = prodComp.getBelongsToField("product");
+            producedProduct = prod.getStringField("name");
+            producesInput.setFieldValue(producedProduct);
+            fillUnitFields(viewState);
         }
-        String producedProduct = null;
-        Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
-        Entity prodComp = technologyService.getMainOutputProductComponent(toc);
-        Entity prod = prodComp.getBelongsToField("product");
-        producedProduct = prod.getStringField("name");
-        producesInput.setFieldValue(producedProduct);
-        fillUnitFields(viewState);
-
     }
 
     private void fillUnitFields(final ViewDefinitionState viewState) {
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         Entity tioc = ((LookupComponent) viewState.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         Entity toc = tioc.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);
         Entity prodComp = technologyService.getMainOutputProductComponent(toc);
         Entity prod = prodComp.getBelongsToField("product");
-        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
         for (FormComponent form : progressForDaysADL.getFormComponents()) {
             AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) form
                     .findFieldComponentByName("dailyProgressADL");
@@ -181,8 +193,8 @@ public class ProductionPerShiftDetailsHooks {
 
     public void setOrderStartDate(final ViewDefinitionState view) {
         Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
-        FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference("orderPlannedStartDate");
-        FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference("orderCorrectedStartDate");
+        FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference(ORDER_PLANNED_START_DATE);
+        FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference(ORDER_CORRECTED_START_DATE);
         orderPlannedStartDate
                 .setFieldValue(timeConverterService.setDateTimeToField((Date) order.getField(OrderFields.DATE_FROM)));
         orderCorrectedStartDate.setFieldValue(timeConverterService.setDateTimeToField((Date) order
