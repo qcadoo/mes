@@ -176,12 +176,12 @@ public class DeliveryReportPdf extends ReportPdfView {
                     getStringFromDate((Date) delivery.getField("createDate")));
         }
         if (getPrepareOrderDate(delivery) != null) {
-            column.put("deliveries.order.report.columnHeader.createOrderDate",
+            column.put("deliveries.delivery.report.columnHeader.createOrderDate",
                     getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
         }
         if (getReceivedOrderDate(delivery) != null) {
             column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
-                    getStringFromDate((Date) getPrepareOrderDate(delivery).getField("dateAndTime")));
+                    getStringFromDate((Date) getReceivedOrderDate(delivery).getField("dateAndTime")));
         }
         return column;
     }
