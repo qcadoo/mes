@@ -23,12 +23,29 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class ParameterFieldsMFR {
+public enum ChangeDateWhenTransferToWarehouseType {
 
-    private ParameterFieldsMFR() {
+    NEVER("01never"), VALIDATE_WITH_RESOURCES("02validateWithResources");
 
+    private final String changeDateWhenTransferToWarehouseType;
+
+    private ChangeDateWhenTransferToWarehouseType(final String changeDateWhenTransferToWarehouseType) {
+        this.changeDateWhenTransferToWarehouseType = changeDateWhenTransferToWarehouseType;
     }
 
-    public static final String CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE = "changeDateWhenTransferToWarehouseType";
+    public String getStringValue() {
+        return changeDateWhenTransferToWarehouseType;
+    }
+
+    public static ChangeDateWhenTransferToWarehouseType parseString(final String changeDateWhenTransferToWarehouseType) {
+        if ("01never".equalsIgnoreCase(changeDateWhenTransferToWarehouseType)) {
+            return NEVER;
+        } else if ("02validateWithResources".equalsIgnoreCase(changeDateWhenTransferToWarehouseType)) {
+            return VALIDATE_WITH_RESOURCES;
+        } else {
+            throw new IllegalArgumentException("Couldn't parse ChangeDateWhenTransferToWarehouseType from string '"
+                    + changeDateWhenTransferToWarehouseType + "'");
+        }
+    }
 
 }

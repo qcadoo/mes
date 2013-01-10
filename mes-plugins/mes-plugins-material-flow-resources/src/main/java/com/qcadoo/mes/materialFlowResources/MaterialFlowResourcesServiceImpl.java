@@ -30,7 +30,6 @@ import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
 import static com.qcadoo.mes.materialFlowResources.constants.LocationTypeMFR.WAREHOUSE;
-import static com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR.CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
@@ -49,7 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWarehouseType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -312,7 +313,19 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean canChangeDateWhenTransferToWarehouse() {
-        return parameterService.getParameter().getBooleanField(CAN_CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE);
+        String changeDateWhenTransferToWarehouseType = parameterService.getParameter().getStringField(
+                ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
+
+        return !ChangeDateWhenTransferToWarehouseType.NEVER.getStringValue().equals(changeDateWhenTransferToWarehouseType);
+    }
+
+    @Override
+    public boolean shouldValidateDateWhenTransferToWarehouse() {
+        String changeDateWhenTransferToWarehouseType = parameterService.getParameter().getStringField(
+                ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
+
+        return ChangeDateWhenTransferToWarehouseType.VALIDATE_WITH_RESOURCES.getStringValue().equals(
+                changeDateWhenTransferToWarehouseType);
     }
 
     @Override

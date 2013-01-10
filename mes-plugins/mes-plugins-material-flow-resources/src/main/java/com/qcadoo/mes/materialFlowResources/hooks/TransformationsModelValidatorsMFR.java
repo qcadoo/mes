@@ -57,7 +57,7 @@ public class TransformationsModelValidatorsMFR {
         Entity locationFrom = transformations.getBelongsToField(LOCATION_FROM);
         Entity locationTo = transformations.getBelongsToField(LOCATION_TO);
 
-        if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
+        if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
                 && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
             transformations.addError(transformationsDD.getField(TIME),
