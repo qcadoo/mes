@@ -174,7 +174,7 @@
 								declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.enable();
-								copyOrderedProductToDeliveredBtn.disable();
+								copyOrderedProductToDeliveredBtn.enable();
 							} else if (state == "03duringCorrection") {
 								deleteBtn.disable();
 								acceptBtn.disable();
