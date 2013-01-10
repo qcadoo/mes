@@ -37,4 +37,6 @@ public final class OrderedProductFields {
 
     public static final String SUCCESSION = "succession";
 
+    public static final String DESCRIPTION = "description";
+
 }

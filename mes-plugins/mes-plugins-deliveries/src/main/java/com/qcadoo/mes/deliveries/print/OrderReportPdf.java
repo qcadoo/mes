@@ -142,13 +142,13 @@ public class OrderReportPdf extends ReportPdfView {
     private Map<String, Object> createFirstColumn(final Entity delivery) {
         Map<String, Object> column = new LinkedHashMap<String, Object>();
         if (delivery.getStringField(NUMBER) != null) {
-            column.put("supplyNegotiations.offer.report.columnHeader.number", delivery.getStringField(NUMBER));
+            column.put("deliveries.delivery.report.columnHeader.number", delivery.getStringField(NUMBER));
         }
         if (delivery.getStringField(NAME) != null) {
-            column.put("supplyNegotiations.offer.report.columnHeader.name", delivery.getStringField(NAME));
+            column.put("deliveries.delivery.report.columnHeader.name", delivery.getStringField(NAME));
         }
         if (delivery.getStringField(DESCRIPTION) != null) {
-            column.put("supplyNegotiations.offer.report.columnHeader.description", delivery.getStringField(DESCRIPTION));
+            column.put("deliveries.delivery.report.columnHeader.description", delivery.getStringField(DESCRIPTION));
         }
         return column;
     }
@@ -160,9 +160,6 @@ public class OrderReportPdf extends ReportPdfView {
         }
         if (delivery.getStringField(DELIVERY_ADDRESS) != null) {
             column.put("deliveries.order.report.columnHeader.deliveryAddress", delivery.getStringField(DELIVERY_ADDRESS));
-        }
-        if (delivery.getStringField(DESCRIPTION) != null) {
-            column.put("supplyNegotiations.offer.report.columnHeader.description", delivery.getStringField(DESCRIPTION));
         }
         return column;
     }
