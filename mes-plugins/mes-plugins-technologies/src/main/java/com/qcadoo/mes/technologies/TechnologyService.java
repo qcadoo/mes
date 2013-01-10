@@ -232,9 +232,7 @@ public class TechnologyService {
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
         if (!REFERENCE_TECHNOLOGY.equals(operationComponent.getStringField(L_ENTITY_TYPE))) {
-            // inProductsGrid.setEnabled(true);
             inProductsGrid.setEditable(true);
-            // outProductsGrid.setEnabled(true);
             outProductsGrid.setEditable(true);
             return;
         }
@@ -335,9 +333,9 @@ public class TechnologyService {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
 
-    public boolean copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
+    public void copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
         if (!REFERENCE_TECHNOLOGY.equals(entity.getField(L_ENTITY_TYPE)) && entity.getField(REFERENCE_TECHNOLOGY) == null) {
-            return true;
+            return;
         }
 
         boolean copy = "02copy".equals(entity.getField(L_REFERENCE_MODE));
@@ -353,7 +351,7 @@ public class TechnologyService {
         if (cyclic) {
             entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
-            return false;
+            return;
         }
 
         if (copy) {
@@ -365,32 +363,26 @@ public class TechnologyService {
                     entity.setField(entry.getKey(), entry.getValue());
                 }
             }
-
             entity.setField(L_ENTITY_TYPE, L_OPERATION);
             entity.setField(REFERENCE_TECHNOLOGY, null);
         }
-
-        return true;
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }
-
         technologies.add(referencedTechnology.getId());
 
         for (Entity operationComponent : referencedTechnology.getTreeField(L_OPERATION_COMPONENTS)) {
             if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(L_ENTITY_TYPE))) {
                 boolean cyclic = checkForCyclicReferences(technologies,
                         operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY), false);
-
                 if (cyclic) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
