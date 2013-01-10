@@ -53,7 +53,7 @@ public class TransferModelValidatorsMFR {
         Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
         Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
 
-        if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
+        if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
                 && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
             transfer.addError(transferDD.getField(TIME),

@@ -32,8 +32,8 @@
 	<windowTab name="materialFlowResourcesTab" reference="materialFlowResourcesTab">
 		<component type="gridLayout" name="materialFlowResourcesGridLayout" columns="3" rows="1">
 			<layoutElement column="1" row="1">
-				<component type="checkbox" name="canChangeDateWhenTransferToWarehouse"
-					field="#{form}.canChangeDateWhenTransferToWarehouse" reference="canChangeDateWhenTransferToWarehouse" 
+				<component type="select" name="changeDateWhenTransferToWarehouseType"
+					field="#{form}.changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType" 
 					hasDescription="true" />
 			</layoutElement>
 		</component>

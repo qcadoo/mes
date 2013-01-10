@@ -170,7 +170,7 @@ public class MultitransferListeners {
         } else {
             Date time = timeConverterService.getDateTimeFromField(timeField.getFieldValue());
 
-            if (materialFlowResourcesService.canChangeDateWhenTransferToWarehouse()
+            if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
                     && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                     && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
                 timeField.addMessage("materialFlowResources.validate.global.error.dateLowerThanResourcesDate",

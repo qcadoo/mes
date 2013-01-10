@@ -60,6 +60,8 @@ public interface MaterialFlowResourcesService {
 
     boolean canChangeDateWhenTransferToWarehouse();
 
+    boolean shouldValidateDateWhenTransferToWarehouse();
+
     boolean isDateGraterThanResourcesDate(final Date time);
 
     void disableDateField(final ViewDefinitionState view);
