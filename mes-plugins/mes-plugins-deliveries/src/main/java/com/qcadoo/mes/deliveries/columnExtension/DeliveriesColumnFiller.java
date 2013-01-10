@@ -29,6 +29,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.SUCCESSION;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -91,6 +93,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillProductName(values, orderedProduct);
             fillProductUnit(values, orderedProduct);
 
+            fillDescription(values, orderedProduct);
             fillSuccession(values, orderedProduct);
             fillOrderedQuantity(values, orderedProduct);
         }
@@ -259,6 +262,17 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         values.get(orderedProduct).put("succession", succession.toString());
+    }
+
+    private void fillDescription(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        String description = "";
+
+        if (orderedProduct == null || StringUtils.isEmpty(orderedProduct.getStringField(DESCRIPTION))) {
+            description = "";
+        } else {
+            description = orderedProduct.getStringField(DESCRIPTION);
+        }
+        values.get(orderedProduct).put(DESCRIPTION, description);
     }
 
 }
