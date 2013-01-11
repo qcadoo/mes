@@ -248,7 +248,7 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
         String productNodeNumber = product.getStringField(NODE_NUMBER);
 
         if (StringUtils.isEmpty(productNodeNumber)) {
-            return null;
+            return Lists.newArrayList();
         } else {
             return getProductDD().find().add(SearchRestrictions.in(NODE_NUMBER, findRootsForNodeNumber(productNodeNumber)))
                     .list().getEntities();
