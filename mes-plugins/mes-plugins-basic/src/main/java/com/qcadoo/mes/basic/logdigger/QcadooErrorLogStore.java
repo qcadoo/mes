@@ -55,7 +55,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
 
     private String logdiggerJira;
 
-    private String logdiggerJirUser;
+    private String logdiggerJiraUser;
 
     private String logdiggerJiraPass;
 
@@ -109,7 +109,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
 
         logdiggerAddress = String.valueOf(attributeProvider.getAttribute("logdiggerAddress"));
         logdiggerJira = String.valueOf(attributeProvider.getAttribute("logdiggerJira"));
-        logdiggerJirUser = String.valueOf(attributeProvider.getAttribute("logdiggerJirUser"));
+        logdiggerJiraUser = String.valueOf(attributeProvider.getAttribute("logdiggerJiraUser"));
         logdiggerJiraPass = String.valueOf(attributeProvider.getAttribute("logdiggerJiraPass"));
     }
 
@@ -160,7 +160,7 @@ public class QcadooErrorLogStore implements ErrorLogStore {
                 URI jiraServerUri = new URI(logdiggerJira);
                 NullProgressMonitor progressMonitor = new NullProgressMonitor();
 
-                JiraRestClient jc = f.createWithBasicHttpAuthentication(jiraServerUri, logdiggerJirUser, logdiggerJiraPass);
+                JiraRestClient jc = f.createWithBasicHttpAuthentication(jiraServerUri, logdiggerJiraUser, logdiggerJiraPass);
 
                 IssueInputBuilder ib = new IssueInputBuilder("QCADOOCLS", (long) 1);
                 ib.setReporterName("logdigger");
