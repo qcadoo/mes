@@ -92,7 +92,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getCompanyProducts(final Entity product) {
-        return getCompanyProductDD().find().add(SearchRestrictions.eq(CompanyProductFields.PRODUCT, product)).list()
+        return getCompanyProductDD().find().add(SearchRestrictions.belongsTo(CompanyProductFields.PRODUCT, product)).list()
                 .getEntities();
     }
 
@@ -103,8 +103,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getCompanyProductsFamilies(final Entity product) {
-        return getCompanyProductsFamilyDD().find().add(SearchRestrictions.eq(CompanyProductsFamilyFields.PRODUCT, product))
-                .list().getEntities();
+        return getCompanyProductsFamilyDD().find()
+                .add(SearchRestrictions.belongsTo(CompanyProductsFamilyFields.PRODUCT, product)).list().getEntities();
     }
 
     @Override
@@ -226,13 +226,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return address.toString();
     }
 
+    @Override
     public Entity getProduct(final DeliveryProduct deliveryProduct) {
         if (deliveryProduct.getOrderedProductId() == null) {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT)
-                    .get(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
+            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
         } else {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
-                    .get(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
+            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
         }
     }
 

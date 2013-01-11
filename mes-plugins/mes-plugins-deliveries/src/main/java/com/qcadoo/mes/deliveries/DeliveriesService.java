@@ -189,9 +189,9 @@ public interface DeliveriesService {
     String getDescriptionDefaultValue();
 
     /**
-     * Gets product with DeliveryProduct
+     * Gets product for given delivery product
      * 
-     * @return entity
+     * @return deliveryProduct
      */
     Entity getProduct(final DeliveryProduct deliveryProduct);
 
