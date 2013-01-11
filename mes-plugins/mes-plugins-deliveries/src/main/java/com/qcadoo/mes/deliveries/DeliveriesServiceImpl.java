@@ -45,15 +45,12 @@ import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -91,20 +88,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public List<Entity> getCompanyProducts(final Entity product) {
-        return getCompanyProductDD().find().add(SearchRestrictions.belongsTo(CompanyProductFields.PRODUCT, product)).list()
-                .getEntities();
-    }
-
-    @Override
     public Entity getCompanyProductsFamily(final Long companyProductsFamilyId) {
         return getCompanyProductsFamilyDD().get(companyProductsFamilyId);
-    }
-
-    @Override
-    public List<Entity> getCompanyProductsFamilies(final Entity product) {
-        return getCompanyProductsFamilyDD().find()
-                .add(SearchRestrictions.belongsTo(CompanyProductsFamilyFields.PRODUCT, product)).list().getEntities();
     }
 
     @Override

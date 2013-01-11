@@ -44,7 +44,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -222,36 +221,6 @@ public class DeliveriesServiceImplTest {
     }
 
     @Test
-    public void shouldReturnNullWhenGetCompanyProductsIfCompanyProductsAreNull() {
-        // given
-        given(companyProductDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(null);
-
-        // when
-        List<Entity> result = deliveriesService.getCompanyProducts(product);
-
-        // then
-        assertEquals(null, result);
-    }
-
-    @Test
-    public void shouldReturnCompanyProductsWhenGetCompanyProductsIfCompanyProductsArentNull() {
-        // given
-        given(companyProductDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(companyProducts);
-
-        // when
-        List<Entity> result = deliveriesService.getCompanyProducts(product);
-
-        // then
-        assertEquals(companyProducts, result);
-    }
-
-    @Test
     public void shouldReturnNullWhenGetCompanyProductsFamily() {
         // given
         Long companyProductsFamilyId = null;
@@ -277,36 +246,6 @@ public class DeliveriesServiceImplTest {
 
         // then
         assertEquals(companyProductsFamily, result);
-    }
-
-    @Test
-    public void shouldReturnNullWhenGetCompanyProductFamiliesIfCompanyProductFamiliesAreNull() {
-        // given
-        given(companyProductsFamilyDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(null);
-
-        // when
-        List<Entity> result = deliveriesService.getCompanyProductsFamilies(product);
-
-        // then
-        assertEquals(null, result);
-    }
-
-    @Test
-    public void shouldReturnCompanyProductFamiliesWhenGetCompanyProductFamiliesIfCompanyProductFamiliesArentNull() {
-        // given
-        given(companyProductsFamilyDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(companyProductsFamilies);
-
-        // when
-        List<Entity> result = deliveriesService.getCompanyProductsFamilies(product);
-
-        // then
-        assertEquals(companyProductsFamilies, result);
     }
 
     @Test

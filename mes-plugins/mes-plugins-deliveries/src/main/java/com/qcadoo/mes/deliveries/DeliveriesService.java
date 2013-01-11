@@ -69,15 +69,6 @@ public interface DeliveriesService {
     Entity getCompanyProduct(final Long companyProductId);
 
     /**
-     * Gets company products for given product
-     * 
-     * @param product
-     * 
-     * @return company products
-     */
-    List<Entity> getCompanyProducts(final Entity product);
-
-    /**
      * Gets company products family
      * 
      * @param companyProductsFamilyId
@@ -85,15 +76,6 @@ public interface DeliveriesService {
      * @return company products family
      */
     Entity getCompanyProductsFamily(final Long companyProductsFamilyId);
-
-    /**
-     * Gets company products families for given product
-     * 
-     * @param product
-     * 
-     * @return company products families
-     */
-    List<Entity> getCompanyProductsFamilies(final Entity product);
 
     /**
      * Gets list of columns for deliveries
