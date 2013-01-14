@@ -165,7 +165,7 @@
 	</logger>
 	
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="connector-log" />
 	</logger>
 	
