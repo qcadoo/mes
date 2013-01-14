@@ -49,4 +49,6 @@ public final class OperationFields {
 
     public static final String PRODUCT_OUT_COMPONENTS = "productOutComponents";
 
+    public static final String OPERATION_GROUP = "operationGroup";
+
 }

@@ -225,7 +225,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT, locale);
             readDataFromXML(dataset, L_PRODUCTION_COUNTING, locale);
             readDataFromXML(dataset, L_PRODUCTION_BALANCE, locale);
-
         }
 
         if (isEnabledOrEnabling(L_ADVANCED_GENEALOGY)) {

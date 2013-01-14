@@ -31,6 +31,6 @@ public final class OperationGroupFieldsTS {
 
     public static final String IS_SUBCONTRACTING = "isSubcontracting";
 
-    public static final String COMPANIES_OPERATION_GROUPS = "companiesOperationGroups";
+    public static final String OPERATION_GROUP_COMPANIES = "operationGroupCompanies";
 
 }

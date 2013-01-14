@@ -83,6 +83,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
+    public Entity getCompanyProduct(final Long companyProductId) {
+        return getCompanyProductDD().get(companyProductId);
+    }
+
+    @Override
+    public Entity getCompanyProductsFamily(final Long companyProductsFamilyId) {
+        return getCompanyProductsFamilyDD().get(companyProductsFamilyId);
+    }
+
+    @Override
     public List<Entity> getColumnsForDeliveries() {
         return getColumnForDeliveriesDD().find().addOrder(SearchOrders.asc(ColumnForDeliveriesFields.SUCCESSION)).list()
                 .getEntities();
@@ -106,6 +116,17 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public DataDefinition getDeliveredProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
+    }
+
+    @Override
+    public DataDefinition getCompanyProductDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
+    }
+
+    @Override
+    public DataDefinition getCompanyProductsFamilyDD() {
+        return dataDefinitionService
+                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     @Override
@@ -190,13 +211,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return address.toString();
     }
 
+    @Override
     public Entity getProduct(final DeliveryProduct deliveryProduct) {
         if (deliveryProduct.getOrderedProductId() == null) {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT)
-                    .get(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
+            return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
         } else {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
-                    .get(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
+            return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
         }
     }
 

@@ -60,6 +60,24 @@ public interface DeliveriesService {
     Entity getDeliveredProduct(final Long deliveredProductId);
 
     /**
+     * Gets company product
+     * 
+     * @param companyProductId
+     * 
+     * @return company product
+     */
+    Entity getCompanyProduct(final Long companyProductId);
+
+    /**
+     * Gets company products family
+     * 
+     * @param companyProductsFamilyId
+     * 
+     * @return company products family
+     */
+    Entity getCompanyProductsFamily(final Long companyProductsFamilyId);
+
+    /**
      * Gets list of columns for deliveries
      * 
      * @return list of columns for deliveries
@@ -93,6 +111,20 @@ public interface DeliveriesService {
      * @return delivered product data definition
      */
     DataDefinition getDeliveredProductDD();
+
+    /**
+     * Gets company product data definition
+     * 
+     * @return company product data definition
+     */
+    DataDefinition getCompanyProductDD();
+
+    /**
+     * Gets company products family data definition
+     * 
+     * @return company products family data definition
+     */
+    DataDefinition getCompanyProductsFamilyDD();
 
     /**
      * Gets column for deliveries data definition
@@ -139,9 +171,9 @@ public interface DeliveriesService {
     String getDescriptionDefaultValue();
 
     /**
-     * Gets product with DeliveryProduct
+     * Gets product for given delivery product
      * 
-     * @return entity
+     * @return deliveryProduct
      */
     Entity getProduct(final DeliveryProduct deliveryProduct);
 

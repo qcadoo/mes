@@ -245,10 +245,11 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
 
     @Override
     public List<Entity> getProductRoots(final Entity product) {
+        Entity parent = product.getBelongsToField(PARENT);
         String productNodeNumber = product.getStringField(NODE_NUMBER);
 
-        if (StringUtils.isEmpty(productNodeNumber)) {
-            return null;
+        if ((parent == null) || StringUtils.isEmpty(productNodeNumber)) {
+            return Lists.newArrayList();
         } else {
             return getProductDD().find().add(SearchRestrictions.in(NODE_NUMBER, findRootsForNodeNumber(productNodeNumber)))
                     .list().getEntities();

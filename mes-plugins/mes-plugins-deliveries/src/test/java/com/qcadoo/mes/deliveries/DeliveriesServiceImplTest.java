@@ -30,9 +30,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -41,8 +45,11 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SearchRestrictions.class)
 public class DeliveriesServiceImplTest {
 
     private DeliveriesService deliveriesService;
@@ -51,16 +58,23 @@ public class DeliveriesServiceImplTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private DataDefinition deliveryDD, orderedProductDD, deliveredProductDD, columnForDeliveriesDD, columnForOrdersDD;
+    private DataDefinition deliveryDD, orderedProductDD, deliveredProductDD, companyProductDD, companyProductsFamilyDD,
+            columnForDeliveriesDD, columnForOrdersDD;
 
     @Mock
-    private Entity delivery, orderedProduct, deliveredProduct;
+    private Entity delivery, orderedProduct, deliveredProduct, companyProduct, companyProductsFamily, product;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Mock
     private SearchResult searchResult;
+
+    @Mock
+    private List<Entity> companyProducts;
+
+    @Mock
+    private List<Entity> companyProductsFamilies;
 
     @Mock
     private List<Entity> columnsForDeliveries;
@@ -82,10 +96,16 @@ public class DeliveriesServiceImplTest {
                 .willReturn(orderedProductDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT))
                 .willReturn(deliveredProductDD);
+        given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT))
+                .willReturn(companyProductDD);
+        given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY))
+                .willReturn(companyProductsFamilyDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES))
                 .willReturn(columnForDeliveriesDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS))
                 .willReturn(columnForOrdersDD);
+
+        PowerMockito.mockStatic(SearchRestrictions.class);
     }
 
     @Test
@@ -170,6 +190,62 @@ public class DeliveriesServiceImplTest {
 
         // then
         assertEquals(deliveredProduct, result);
+    }
+
+    @Test
+    public void shouldReturnNullWhenGetCompanyProduct() {
+        // given
+        Long companyProductId = null;
+
+        given(companyProductDD.get(companyProductId)).willReturn(null);
+
+        // when
+        Entity result = deliveriesService.getDeliveredProduct(companyProductId);
+
+        // then
+        assertEquals(null, result);
+    }
+
+    @Test
+    public void shouldReturnCompanyProductWhenGetCompanyProduct() {
+        // given
+        Long companyProductId = 1L;
+
+        given(companyProductDD.get(companyProductId)).willReturn(companyProduct);
+
+        // when
+        Entity result = deliveriesService.getCompanyProduct(companyProductId);
+
+        // then
+        assertEquals(companyProduct, result);
+    }
+
+    @Test
+    public void shouldReturnNullWhenGetCompanyProductsFamily() {
+        // given
+        Long companyProductsFamilyId = null;
+
+        given(companyProductsFamilyDD.get(companyProductsFamilyId)).willReturn(null);
+
+        // when
+        Entity result = deliveriesService.getDeliveredProduct(companyProductsFamilyId);
+
+        // then
+        assertEquals(null, result);
+    }
+
+    @Test
+    public void shouldReturnCompanyProductsFamilyWhenGetCompanyProductsFamily() {
+        // given
+        Long companyProductsFamilyId = 1L;
+
+        given(companyProductsFamilyDD.get(companyProductsFamilyId)).willReturn(companyProductsFamily);
+
+        // when
+        Entity result = deliveriesService.getCompanyProductsFamily(companyProductsFamilyId);
+
+        // then
+        assertEquals(companyProductsFamily, result);
     }
 
     @Test
@@ -263,6 +339,28 @@ public class DeliveriesServiceImplTest {
 
         // then
         assertEquals(deliveredProductDD, result);
+    }
+
+    @Test
+    public void shouldReturnCompanyProductDD() {
+        // given
+
+        // when
+        DataDefinition result = deliveriesService.getCompanyProductDD();
+
+        // then
+        assertEquals(companyProductDD, result);
+    }
+
+    @Test
+    public void shouldReturnCompanyProductsFamilyDD() {
+        // given
+
+        // when
+        DataDefinition result = deliveriesService.getCompanyProductsFamilyDD();
+
+        // then
+        assertEquals(companyProductsFamilyDD, result);
     }
 
     @Test

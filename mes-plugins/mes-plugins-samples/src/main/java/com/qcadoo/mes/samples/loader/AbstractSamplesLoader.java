@@ -181,6 +181,10 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
             params.setField("inputProductsRequiredForType", "01startOrder");
         }
 
+        if (isEnabledOrEnabling("materialFlowResources")) {
+            params.setField("changeDateWhenTransferToWarehouseType", "01never");
+        }
+
         params.getDataDefinition().save(params);
     }
 
