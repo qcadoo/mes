@@ -27,6 +27,7 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -56,12 +57,14 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     protected static final int DEFAULT_NUM_OF_PHASES = 2;
 
+    private static final Logger LOGGER = Logger.getLogger(StateChangeService.class);
+
     @Override
-    @Transactional(noRollbackFor = { StateChangeException.class })
     public void changeState(final StateChangeContext stateChangeContext) {
         try {
             performStateChange(stateChangeContext);
         } catch (Exception exception) {
+            LOGGER.warn("Can't perform state change", exception);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
             stateChangeContext.save();
@@ -69,6 +72,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         }
     }
 
+    @Transactional
     private void performStateChange(final StateChangeContext stateChangeContext) {
         stateChangeContext.save();
         performPreValidation(stateChangeContext);
