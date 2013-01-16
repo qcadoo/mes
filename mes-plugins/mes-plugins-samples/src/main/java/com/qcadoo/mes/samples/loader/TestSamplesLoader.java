@@ -775,15 +775,13 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity product = getProductByNumber(values.get(L_PRODUCT_NR));
 
         if (product != null) {
-            Entity defaultTechnology = getDefaultTechnologyForProduct(product);
-
             final DataDefinition technologyDD = dataDefinitionService.get(TECHNOLOGIES_PLUGIN_IDENTIFIER,
                     TECHNOLOGY_MODEL_TECHNOLOGY);
             final Entity technology = technologyDD.create();
             if (!values.get(L_DESCRIPTION).isEmpty()) {
                 technology.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
             }
-            technology.setField("master", defaultTechnology == null);
+            technology.setField("master", false);
             technology.setField(L_NAME, values.get(L_NAME));
             technology.setField(L_NUMBER, values.get("bom_nr"));
             technology.setField(BASIC_MODEL_PRODUCT, product);
