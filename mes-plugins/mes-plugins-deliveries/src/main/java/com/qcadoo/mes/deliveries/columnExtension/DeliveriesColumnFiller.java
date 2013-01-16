@@ -272,6 +272,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         } else {
             description = orderedProduct.getStringField(DESCRIPTION);
         }
+
         values.get(orderedProduct).put(DESCRIPTION, description);
     }
 
