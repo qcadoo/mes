@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,6 +123,7 @@ public class OrderTimePredictionService {
             operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
             operation.setField(EFFECTIVE_DATE_TO, dateTo);
         }
+        // TODO ALBR
         for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
@@ -150,7 +152,7 @@ public class OrderTimePredictionService {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntity().getId());
         Entity technology = order.getBelongsToField("technology");
-
+        Validate.notNull(technology, "technology is null");
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
@@ -280,7 +282,7 @@ public class OrderTimePredictionService {
 
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
-
+        Validate.notNull(technology, "technology is null");
         if (technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())
                 || technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.OUTDATED.getStringValue())) {
             technologyLookup.addMessage("productionScheduling.technology.incorrectState", MessageType.FAILURE);

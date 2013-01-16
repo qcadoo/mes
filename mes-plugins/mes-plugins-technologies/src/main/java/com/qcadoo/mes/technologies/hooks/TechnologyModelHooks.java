@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,8 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class TechnologyModelHooks {
@@ -43,6 +48,26 @@ public class TechnologyModelHooks {
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity technology) {
         stateChangeEntityBuilder.buildInitial(describer, technology, TechnologyState.DRAFT);
+    }
+
+    public void setNewMasterTechnology(final DataDefinition dataDefinition, final Entity technology) {
+        if (!technology.getBooleanField(MASTER)) {
+            return;
+        }
+        SearchCriteriaBuilder searchCriteries = dataDefinition.find();
+        searchCriteries.add(SearchRestrictions.eq(MASTER, true));
+        searchCriteries.add(SearchRestrictions.belongsTo(PRODUCT, technology.getBelongsToField(PRODUCT)));
+
+        if (technology.getId() != null) {
+            searchCriteries.add(SearchRestrictions.idNe(technology.getId()));
+        }
+
+        Entity defaultTechnology = searchCriteries.uniqueResult();
+        if (defaultTechnology == null) {
+            return;
+        }
+        defaultTechnology.setField(MASTER, false);
+        dataDefinition.save(defaultTechnology);
     }
 
 }

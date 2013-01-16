@@ -29,7 +29,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class ProductionSchedulingListeners {
+public class OrderDetailsListenersPS {
 
     public void redirectToOperationDurationDetailsInOrder(final ViewDefinitionState viewDefinitionState,
             final ComponentState triggerState, final String[] args) {
