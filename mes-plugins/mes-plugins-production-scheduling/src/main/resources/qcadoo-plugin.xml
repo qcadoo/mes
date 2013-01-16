@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0-SNAPSHOT 
+	This file is part of Qcadoo. Qcadoo is free software; you can redistribute 
+	it and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
 <plugin plugin="productionScheduling" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
@@ -65,7 +52,7 @@
 		<localization:translation path="locales" />
 
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="realizationTime"/>
+			<model:integer name="realizationTime" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
 			<model:boolean name="calculate" />
@@ -77,16 +64,17 @@
 			<model:boolean name="includeAdditionalTime" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="machineWorkTime"  />
+			<model:integer name="machineWorkTime" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
-			<model:integer name="laborWorkTime"  />
+			<model:integer name="laborWorkTime" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="orders" model="order">
-			<model:dictionary name="operationDurationQuantityUNIT" dictionary="units" required="true"/>
+			<model:dictionary name="operationDurationQuantityUNIT"
+				dictionary="units" required="true" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="orders" model="order">
 			<model:datetime name="generatedEndDate" />
 		</model:model-field>
@@ -94,16 +82,17 @@
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
 		<view:view resource="view/orderTimePrediction.xml" />
-		
+
 		<menu:menu-category name="calculations" />
-		
+
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
 			category="calculations" />
 
-		<view:view resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
+		<view:view
+			resource="view/technologyInstanceOperationProductInComponentDetails.xml" />
 		<view:view resource="view/timeTechnologyInOrderDetails.xml" />
-		<view:view resource="view/operationDurationDetailsInOrder.xml"/>
-		
+		<view:view resource="view/operationDurationDetailsInOrder.xml" />
+
 		<view:view-listener plugin="productionScheduling"
 			view="timeTechnologyInOrderDetails" component="form" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.TimeTechnologyInOrderService"
@@ -113,12 +102,16 @@
 			view="orderTimePrediction" component="window" event="changeRealizationTime"
 			class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"
 			method="changeRealizationTime" />
-			
+
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToOperationDurationDetailsInOrder"
-			class="com.qcadoo.mes.productionScheduling.listeners.ProductionSchedulingListeners"
+			class="com.qcadoo.mes.productionScheduling.listeners.OrderDetailsListenersPS"
 			method="redirectToOperationDurationDetailsInOrder" />
-		
+
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
+			method="disabledButtonOperationDuration" />
+
 	</modules>
-	
+
 </plugin>
