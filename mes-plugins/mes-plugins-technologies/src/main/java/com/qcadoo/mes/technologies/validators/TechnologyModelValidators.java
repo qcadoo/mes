@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.technologies.validators;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -48,4 +52,21 @@ public class TechnologyModelValidators {
         }
         return true;
     }
+
+    public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity technology) {
+        if (!technology.getBooleanField(MASTER)) {
+            return true;
+        }
+        if (hasInCorrectStateTechnologyForMaster(technology)) {
+            technology.addError(dataDefinition.getField(MASTER),
+                    "technologies.technology.validate.global.error.default.incorrectState");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean hasInCorrectStateTechnologyForMaster(final Entity technology) {
+        return !technology.getStringField(STATE).equals(TechnologyStateStringValues.ACCEPTED);
+    }
+
 }

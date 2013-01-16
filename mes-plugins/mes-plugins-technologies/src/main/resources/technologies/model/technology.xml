@@ -41,7 +41,7 @@
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup" 
 			lazy="false" />
 				
-		<boolean name="master" default="true" />
+		<boolean name="master" default="false" />
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
@@ -53,7 +53,7 @@
 			cascade="delete" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyModelValidators"
 			method="checkTechnologyDefault" />
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfProductIsNotRemoved" />
@@ -69,16 +69,20 @@
 			method="checkConsumingTheSameProductFromManySubOperations" />
 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyModelValidators"
 			method="checkIfTreeOperationIsValid" />	 
+			
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
 			method="setInitialState" />
+			
 		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
 			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="clearMasterOnCopy" />
 		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
 			method="switchStateToDraftOnCopy" />
-		<onSave class="com.qcadoo.mes.technologies.TechnologyService"
-			method="setFirstTechnologyAsDefault" />
+			
+		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+			method="setNewMasterTechnology" />
+			
 		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
 			method="performTreeNumbering" />
 	</hooks>
