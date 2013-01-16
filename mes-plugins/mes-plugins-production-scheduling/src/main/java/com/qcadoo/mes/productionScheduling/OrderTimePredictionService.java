@@ -109,10 +109,13 @@ public class OrderTimePredictionService {
             operation.setField(EFFECTIVE_DATE_FROM, null);
             operation.setField(EFFECTIVE_DATE_TO, null);
 
-            if (offset == null || duration == null || duration.equals(0)) {
+            if (offset == null || duration == null) {
                 continue;
             }
-            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset + 1);
+            if (duration.equals(0)) {
+                duration = duration + 1;
+            }
+            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
             if (dateFrom == null) {
                 continue;
             }
