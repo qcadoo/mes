@@ -30,11 +30,10 @@ public interface DeliveryColumnFiller {
 
     /**
      * 
-     * @param productWithDeliveryProducts
-     *            map of products with delivery products
+     * @param deliveryProducts
+     *            list of delivery products
      * @return the keys of the map are product entities, values are maps columnIdentifier -> columnValue
      */
-    Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
-            final List<DeliveryProduct> productWithDeliveryProducts);
+    Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts);
 
 }

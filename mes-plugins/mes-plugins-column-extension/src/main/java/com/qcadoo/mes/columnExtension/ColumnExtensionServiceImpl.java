@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -141,6 +143,34 @@ public class ColumnExtensionServiceImpl implements ColumnExtensionService {
 
     private DataDefinition getColumnDD(final String pluginIdentifier, final String model) {
         return dataDefinitionService.get(pluginIdentifier, model);
+    }
+
+    @Override
+    public List<Entity> filterEmptyColumns(final List<Entity> columns, final List<Entity> rows,
+            final Map<Entity, Map<String, String>> columnValues) {
+        List<Entity> filteredColumns = Lists.newArrayList();
+
+        for (Entity column : columns) {
+            String identifier = column.getStringField(IDENTIFIER);
+
+            boolean isEmpty = true;
+
+            for (Entity row : rows) {
+                String value = columnValues.get(row).get(identifier);
+
+                if (StringUtils.isNotEmpty(value)) {
+                    isEmpty = false;
+
+                    break;
+                }
+            }
+
+            if (!isEmpty) {
+                filteredColumns.add(column);
+            }
+        }
+
+        return filteredColumns;
     }
 
 }

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -191,31 +192,63 @@ public class DeliveryReportPdf extends ReportPdfView {
         List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
 
         if (!columnsForDeliveries.isEmpty()) {
-            PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForDeliveries.size(),
-                    prepareProductsTableHeader(document, columnsForDeliveries, locale), false);
-
-            List<DeliveryProduct> productWithDeliveryProducts = deliveryColumnFetcher.getProductWithDeliveryProducts(delivery);
+            List<DeliveryProduct> deliveryProducts = deliveryColumnFetcher.getDeliveryProducts(delivery);
 
             Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
-                    .getDeliveryProductsColumnValues(productWithDeliveryProducts);
+                    .getDeliveryProductsColumnValues(deliveryProducts);
+
+            List<Entity> filteredColumnsForDeliveries = filterEmptyColumns(columnsForDeliveries, deliveryProducts,
+                    deliveryProductsColumnValues);
+
+            if (!filteredColumnsForDeliveries.isEmpty()) {
+                PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForDeliveries.size(),
+                        prepareProductsTableHeader(document, filteredColumnsForDeliveries, locale), false);
+
+                for (DeliveryProduct deliveryProduct : deliveryProducts) {
+                    for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
+                        String identifier = columnForDeliveries.getStringField(IDENTIFIER);
+                        String alignment = columnForDeliveries.getStringField(ALIGNMENT);
+
+                        String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
+
+                        prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
+
+                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                    }
+                }
+
+                document.add(productsTable);
+                document.add(Chunk.NEWLINE);
+            }
+        }
+    }
+
+    private List<Entity> filterEmptyColumns(final List<Entity> columnsForDeliveries,
+            final List<DeliveryProduct> productWithDeliveryProducts,
+            final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
+        List<Entity> filteredColumns = Lists.newArrayList();
+
+        for (Entity columnForDeliveries : columnsForDeliveries) {
+            String identifier = columnForDeliveries.getStringField(IDENTIFIER);
+
+            boolean isEmpty = true;
 
             for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
+                String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
 
-                for (Entity columnForDeliveries : columnsForDeliveries) {
-                    String identifier = columnForDeliveries.getStringField(IDENTIFIER);
-                    String alignment = columnForDeliveries.getStringField(ALIGNMENT);
+                if (StringUtils.isNotEmpty(value)) {
+                    isEmpty = false;
 
-                    String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
-
-                    prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
-
-                    productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                    break;
                 }
             }
 
-            document.add(productsTable);
-            document.add(Chunk.NEWLINE);
+            if (!isEmpty) {
+                filteredColumns.add(columnForDeliveries);
+            }
         }
+
+        return filteredColumns;
     }
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForDeliveries,
