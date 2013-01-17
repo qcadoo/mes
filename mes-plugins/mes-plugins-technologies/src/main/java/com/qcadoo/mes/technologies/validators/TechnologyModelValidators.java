@@ -57,7 +57,7 @@ public class TechnologyModelValidators {
         if (!technology.getBooleanField(MASTER)) {
             return true;
         }
-        if (hasInCorrectStateTechnologyForMaster(technology)) {
+        if (!hasInCorrectStateTechnologyForMaster(technology)) {
             technology.addError(dataDefinition.getField(MASTER),
                     "technologies.technology.validate.global.error.default.incorrectState");
             return false;
@@ -66,7 +66,8 @@ public class TechnologyModelValidators {
     }
 
     private boolean hasInCorrectStateTechnologyForMaster(final Entity technology) {
-        return !technology.getStringField(STATE).equals(TechnologyStateStringValues.ACCEPTED);
+        return technology.getStringField(STATE).equals(TechnologyStateStringValues.ACCEPTED)
+                || technology.getStringField(STATE).equals(TechnologyStateStringValues.OUTDATED);
     }
 
 }
