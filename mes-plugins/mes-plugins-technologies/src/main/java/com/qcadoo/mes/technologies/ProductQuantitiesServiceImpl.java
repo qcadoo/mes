@@ -23,7 +23,8 @@
  */
 package com.qcadoo.mes.technologies;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+import static com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields.PRODUCT;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.CHILDREN;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.PARENT;
@@ -44,6 +45,7 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -386,7 +388,25 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private Map<Entity, BigDecimal> removeNonComponents(final Map<Entity, BigDecimal> productComponentQuantities,
             final Set<Entity> nonComponents) {
         for (Entity nonComponent : nonComponents) {
-            productComponentQuantities.remove(nonComponent);
+            Entity product = nonComponent.getBelongsToField("product");
+            Entity technologyOperationComponent = nonComponent.getBelongsToField("operationComponent");
+
+            List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
+                    .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
+
+            boolean isSubcontracting = false;
+            for (Entity child : children) {
+                Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                        .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
+
+                if (operationProductOutComponent != null) {
+                    isSubcontracting = true;
+                }
+            }
+
+            if (!isSubcontracting) {
+                productComponentQuantities.remove(nonComponent);
+            }
         }
         return productComponentQuantities;
     }
