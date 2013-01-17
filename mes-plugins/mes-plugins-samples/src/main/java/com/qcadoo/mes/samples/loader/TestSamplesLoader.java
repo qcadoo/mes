@@ -361,6 +361,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             operation.setField("timeNextOperation", values.get("timenextoperation"));
             operation.setField("areProductQuantitiesDivisible", false);
             operation.setField("isTjDivisible", false);
+            operation.setField("productionInOneCycleUNIT", values.get("productioninonecycleunit"));
         }
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
