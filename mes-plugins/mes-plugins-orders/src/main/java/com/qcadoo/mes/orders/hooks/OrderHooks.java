@@ -157,9 +157,6 @@ public class OrderHooks {
         if (PENDING.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
             entity.setField(DATE_TO, entity.getField(FINISH_DATE));
         }
-        if (IN_PROGRESS.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
-            entity.setField(EFFECTIVE_DATE_TO, entity.getField(FINISH_DATE));
-        }
         if (COMPLETED.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
             entity.setField(CORRECTED_DATE_TO, entity.getField(START_DATE));
         }

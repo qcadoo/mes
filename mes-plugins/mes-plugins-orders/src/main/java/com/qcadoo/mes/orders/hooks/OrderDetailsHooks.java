@@ -112,10 +112,6 @@ public class OrderDetailsHooks {
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
             changedEnabledFields(view, references, true);
         }
-        if (order.getStringField(STATE).equals(OrderState.COMPLETED.getStringValue())) {
-            List<String> references = Arrays.asList(DATE_FROM, DATE_TO);
-            changedEnabledFields(view, references, true);
-        }
     }
 
     private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
