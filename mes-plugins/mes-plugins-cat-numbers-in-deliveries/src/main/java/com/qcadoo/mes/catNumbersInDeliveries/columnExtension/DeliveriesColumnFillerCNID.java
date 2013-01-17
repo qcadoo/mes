@@ -47,10 +47,10 @@ public class DeliveriesColumnFillerCNID implements DeliveryColumnFiller, OrderCo
 
     @Override
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
-            final List<DeliveryProduct> productWithDeliveryProducts) {
+            final List<DeliveryProduct> deliveryProducts) {
         Map<DeliveryProduct, Map<String, String>> values = new HashMap<DeliveryProduct, Map<String, String>>();
 
-        for (DeliveryProduct deliveryProduct : productWithDeliveryProducts) {
+        for (DeliveryProduct deliveryProduct : deliveryProducts) {
 
             if (!values.containsKey(deliveryProduct)) {
                 values.put(deliveryProduct, new HashMap<String, String>());

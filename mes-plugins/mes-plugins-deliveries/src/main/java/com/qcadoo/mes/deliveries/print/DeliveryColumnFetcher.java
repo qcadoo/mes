@@ -55,7 +55,7 @@ public class DeliveryColumnFetcher {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public List<DeliveryProduct> getProductWithDeliveryProducts(final Entity delivery) {
+    public List<DeliveryProduct> getDeliveryProducts(final Entity delivery) {
         Set<DeliveryProduct> productWithDeliveryProducts = new HashSet<DeliveryProduct>();
 
         List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
@@ -103,17 +103,17 @@ public class DeliveryColumnFetcher {
     }
 
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(
-            final List<DeliveryProduct> productWithDeliveryProducts) {
+            final List<DeliveryProduct> deliveryProducts) {
         Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = new HashMap<DeliveryProduct, Map<String, String>>();
 
-        fetchColumnValues(deliveryProductsColumnValues, "getDeliveryProductsColumnValues", productWithDeliveryProducts);
+        fetchColumnValues(deliveryProductsColumnValues, "getDeliveryProductsColumnValues", deliveryProducts);
 
         return deliveryProductsColumnValues;
     }
 
     @SuppressWarnings("unchecked")
     private void fetchColumnValues(final Map<DeliveryProduct, Map<String, String>> columnValues, final String methodName,
-            final List<DeliveryProduct> productWithDeliveryProducts) {
+            final List<DeliveryProduct> deliveryProducts) {
         List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
 
         Set<String> classNames = new HashSet<String>();
@@ -151,7 +151,7 @@ public class DeliveryColumnFetcher {
 
             String invokeMethodError = "Failed to invoke column evaulator method";
             try {
-                values = (Map<DeliveryProduct, Map<String, String>>) method.invoke(bean, productWithDeliveryProducts);
+                values = (Map<DeliveryProduct, Map<String, String>>) method.invoke(bean, deliveryProducts);
             } catch (IllegalArgumentException e) {
                 throw new IllegalStateException(invokeMethodError, e);
             } catch (IllegalAccessException e) {

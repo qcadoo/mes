@@ -109,10 +109,13 @@ public class OrderTimePredictionService {
             operation.setField(EFFECTIVE_DATE_FROM, null);
             operation.setField(EFFECTIVE_DATE_TO, null);
 
-            if (offset == null || duration == null || duration.equals(0)) {
+            if (offset == null || duration == null) {
                 continue;
             }
-            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset + 1);
+            if (duration.equals(0)) {
+                duration = duration + 1;
+            }
+            Date dateFrom = shiftsService.findDateToForOrder(orderStartDate, offset);
             if (dateFrom == null) {
                 continue;
             }
@@ -123,6 +126,7 @@ public class OrderTimePredictionService {
             operation.setField(EFFECTIVE_DATE_FROM, dateFrom);
             operation.setField(EFFECTIVE_DATE_TO, dateTo);
         }
+        // TODO ALBR
         for (Entity operation : operations) {
             dataDefinition.save(operation);
         }
@@ -140,10 +144,14 @@ public class OrderTimePredictionService {
     public void generateRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FieldComponent startTimeField = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
+        if (!StringUtils.hasText((String) startTimeField.getFieldValue())) {
+            startTimeField.addMessage("productionScheduling.error.fieldRequired", MessageType.FAILURE);
+            return;
+        }
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
-        FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference("startTime");
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
@@ -155,9 +163,6 @@ public class OrderTimePredictionService {
         BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
                 viewDefinitionState.getLocale());
 
-        FieldComponent laborWorkTime = (FieldComponent) viewDefinitionState.getComponentByReference("laborWorkTime");
-        FieldComponent machineWorkTime = (FieldComponent) viewDefinitionState.getComponentByReference("machineWorkTime");
-
         Boolean includeTpz = "1".equals(viewDefinitionState.getComponentByReference("includeTpz").getFieldValue());
         Boolean includeAdditionalTime = "1".equals(viewDefinitionState.getComponentByReference("includeAdditionalTime")
                 .getFieldValue());
@@ -167,11 +172,8 @@ public class OrderTimePredictionService {
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
                 includeAdditionalTime, productionLine, true);
+        fillWorkTimeFields(viewDefinitionState, workTime);
 
-        laborWorkTime.setFieldValue(workTime.getLaborWorkTime());
-        machineWorkTime.setFieldValue(workTime.getMachineWorkTime());
-        laborWorkTime.requestComponentUpdateState();
-        machineWorkTime.requestComponentUpdateState();
         order = getActualOrderWithChanges(order);
         int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
                 order.getTreeField("technologyInstanceOperationComponents").getRoot(), quantity, includeTpz,
@@ -186,25 +188,31 @@ public class OrderTimePredictionService {
             Date startTime = (Date) order.getField(DATE_FROM);
             Date stopTime = (Date) order.getField(DATE_TO);
             if (startTime == null) {
-                dateFrom.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
+                startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
                 Date generatedStopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
                 if (generatedStopTime == null) {
                     form.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
                 } else {
                     if (stopTime == null) {
-                        order.setField(DATE_TO, orderRealizationTimeService.setDateToField(generatedStopTime));
-                        dateTo.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                         generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                     }
                     order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
                     scheduleOrder(order.getId());
                 }
-                dateTo.requestComponentUpdateState();
                 generatedEndDate.requestComponentUpdateState();
             }
             order.getDataDefinition().save(order);
         }
+    }
+
+    private void fillWorkTimeFields(final ViewDefinitionState view, final OperationWorkTime workTime) {
+        FieldComponent laborWorkTime = (FieldComponent) view.getComponentByReference("laborWorkTime");
+        FieldComponent machineWorkTime = (FieldComponent) view.getComponentByReference("machineWorkTime");
+        laborWorkTime.setFieldValue(workTime.getLaborWorkTime());
+        machineWorkTime.setFieldValue(workTime.getMachineWorkTime());
+        laborWorkTime.requestComponentUpdateState();
+        machineWorkTime.requestComponentUpdateState();
     }
 
     private Entity getActualOrderWithChanges(final Entity entity) {

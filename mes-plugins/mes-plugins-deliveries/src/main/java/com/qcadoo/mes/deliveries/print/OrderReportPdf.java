@@ -60,6 +60,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
@@ -77,6 +78,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private OrderColumnFetcher orderColumnFetcher;
+
+    @Autowired
+    private ColumnExtensionService columnExtensionService;
 
     @Autowired
     private TranslationService translationService;
@@ -185,29 +189,34 @@ public class OrderReportPdf extends ReportPdfView {
         List<Entity> columnsForOrders = deliveriesService.getColumnsForOrders();
 
         if (!columnsForOrders.isEmpty()) {
-            PdfPTable productsTable = pdfHelper.createTableWithHeader(columnsForOrders.size(),
-                    prepareProductsTableHeader(document, columnsForOrders, locale), false);
-
             List<Entity> orderedProducts = delivery.getHasManyField(ORDERED_PRODUCTS);
 
             Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
                     .getOrderedProductsColumnValues(orderedProducts);
 
-            for (Entity orderedProduct : orderedProducts) {
-                for (Entity columnForOrders : columnsForOrders) {
-                    String identifier = columnForOrders.getStringField(IDENTIFIER);
-                    String alignment = columnForOrders.getStringField(ALIGNMENT);
+            List<Entity> filteredColumnsForOrders = columnExtensionService.filterEmptyColumns(columnsForOrders, orderedProducts,
+                    orderedProductsColumnValues);
 
-                    String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
+            if (!filteredColumnsForOrders.isEmpty()) {
+                PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForOrders.size(),
+                        prepareProductsTableHeader(document, filteredColumnsForOrders, locale), false);
 
-                    prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
+                for (Entity orderedProduct : orderedProducts) {
+                    for (Entity columnForOrders : filteredColumnsForOrders) {
+                        String identifier = columnForOrders.getStringField(IDENTIFIER);
+                        String alignment = columnForOrders.getStringField(ALIGNMENT);
 
-                    productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                        String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
+
+                        prepareProductColumnAlignment(productsTable.getDefaultCell(), ColumnAlignment.parseString(alignment));
+
+                        productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
+                    }
                 }
-            }
 
-            document.add(productsTable);
-            document.add(Chunk.NEWLINE);
+                document.add(productsTable);
+                document.add(Chunk.NEWLINE);
+            }
         }
     }
 

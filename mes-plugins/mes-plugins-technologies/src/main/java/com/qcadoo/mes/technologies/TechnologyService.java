@@ -27,6 +27,7 @@ import static com.qcadoo.mes.technologies.constants.OperationFields.ATTACHMENT;
 import static com.qcadoo.mes.technologies.constants.OperationFields.COMMENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
@@ -106,8 +107,6 @@ public class TechnologyService {
 
     private static final String L_TECHNOLOGY = "technology";
 
-    private static final String L_MASTER = "master";
-
     private static final String L_OPERATION = "operation";
 
     private static final String L_OPERATION_COMPONENT = "operationComponent";
@@ -180,37 +179,8 @@ public class TechnologyService {
     }
 
     public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(L_MASTER, false);
+        entity.setField(MASTER, false);
         return true;
-    }
-
-    public void setFirstTechnologyAsDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if ((Boolean) entity.getField(L_MASTER)) {
-            return;
-        }
-        SearchCriteriaBuilder searchCriteria = dataDefinition.find();
-        searchCriteria.add(SearchRestrictions.belongsTo(L_PRODUCT, entity.getBelongsToField(L_PRODUCT)));
-        entity.setField(L_MASTER, searchCriteria.list().getTotalNumberOfEntities() == 0);
-    }
-
-    public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity entity) {
-        if (!entity.getBooleanField(L_MASTER)) {
-            return true;
-        }
-
-        SearchCriteriaBuilder searchCriteries = dataDefinition.find();
-        searchCriteries.add(SearchRestrictions.eq(L_MASTER, true));
-        searchCriteries.add(SearchRestrictions.belongsTo(L_PRODUCT, entity.getBelongsToField(L_PRODUCT)));
-
-        if (entity.getId() != null) {
-            searchCriteries.add(SearchRestrictions.idNe(entity.getId()));
-        }
-
-        if (searchCriteries.list().getTotalNumberOfEntities() == 0) {
-            return true;
-        }
-        entity.addError(dataDefinition.getField(L_MASTER), "orders.validate.global.error.default");
-        return false;
     }
 
     public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,

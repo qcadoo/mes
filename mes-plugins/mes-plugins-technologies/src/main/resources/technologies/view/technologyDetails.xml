@@ -79,7 +79,7 @@
 				</script>
 				<component type="gridLayout" name="gridsLayout" columns="3" rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
-						<component type="checkbox" name="master" field="master" reference="master" />
+						<component type="checkbox" name="master" field="master" reference="master" hasDescription="true"/>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number" reference="number" hasDescription="true">
@@ -146,7 +146,8 @@
 								var isChecked = state == "05checked";
 								
 								#{window}.setEnabled(isDraft, true);
-								#{master}.setEnabled(isDraft || isAccepted, true);
+								#{master}.setEnabled(isDraft, false);
+								#{master}.setEnabled(isAccepted, true);
 								
 								var toggleRibbonItems = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"]; 
 								for (var elementKey in toggleRibbonItems) {

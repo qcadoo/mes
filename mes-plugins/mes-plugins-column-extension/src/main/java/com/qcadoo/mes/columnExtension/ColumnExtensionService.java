@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.columnExtension;
 
+import java.util.List;
 import java.util.Map;
 
 import com.qcadoo.model.api.Entity;
@@ -74,5 +75,23 @@ public interface ColumnExtensionService {
      * @return boolean
      */
     boolean isColumnsEmpty(final String pluginIdentifier, final String model);
+
+    /**
+     * Filters empty columns
+     * 
+     * @param columns
+     *            columns
+     * 
+     * @param rows
+     *            rows
+     * 
+     * @param columnValues
+     *            column values
+     * 
+     * @return filtered empty columns
+     * 
+     */
+    List<Entity> filterEmptyColumns(final List<Entity> columns, final List<Entity> rows,
+            final Map<Entity, Map<String, String>> columnValues);
 
 }
