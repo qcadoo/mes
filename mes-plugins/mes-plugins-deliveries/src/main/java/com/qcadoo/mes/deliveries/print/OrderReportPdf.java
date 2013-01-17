@@ -194,7 +194,7 @@ public class OrderReportPdf extends ReportPdfView {
             Map<Entity, Map<String, String>> orderedProductsColumnValues = orderColumnFetcher
                     .getOrderedProductsColumnValues(orderedProducts);
 
-            List<Entity> filteredColumnsForOrders = columnExtensionService.filterEmptyColumns(columnsForOrders, orderedProducts,
+            List<Entity> filteredColumnsForOrders = getOrderReportColumns(columnsForOrders, orderedProducts,
                     orderedProductsColumnValues);
 
             if (!filteredColumnsForOrders.isEmpty()) {
@@ -218,6 +218,11 @@ public class OrderReportPdf extends ReportPdfView {
                 document.add(Chunk.NEWLINE);
             }
         }
+    }
+
+    private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,
+            final Map<Entity, Map<String, String>> orderedProductsColumnValues) {
+        return columnExtensionService.filterEmptyColumns(columnsForOrders, orderedProducts, orderedProductsColumnValues);
     }
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,
