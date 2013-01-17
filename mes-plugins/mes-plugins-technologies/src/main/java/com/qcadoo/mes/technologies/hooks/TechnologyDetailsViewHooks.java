@@ -62,10 +62,10 @@ public class TechnologyDetailsViewHooks {
     public void setTreeTabEditable(final ViewDefinitionState view) {
         final boolean treeTabShouldBeEnabled = TechnologyState.DRAFT.equals(getTechnologyState(view))
                 && technologyIsAlreadySaved(view);
-        for (String componentReference : Sets
-                .newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE, TECHNOLOGY_TREE_REFERENCE)) {
-            view.getComponentByReference(componentReference).setEnabled(treeTabShouldBeEnabled);
+        for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
+            ((GridComponent) view.getComponentByReference(componentReference)).setEditable(treeTabShouldBeEnabled);
         }
+        view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE).setEnabled(treeTabShouldBeEnabled);
     }
 
     private boolean technologyIsAlreadySaved(final ViewDefinitionState view) {
