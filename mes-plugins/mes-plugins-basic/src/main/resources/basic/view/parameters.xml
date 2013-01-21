@@ -74,4 +74,8 @@
 			</component>
 		</windowTab>
 	</component>
+	
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.CurrencyViewService" method="applyCurrentCurrency" />
+	</hooks>
 </view>
