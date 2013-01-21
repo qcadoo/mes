@@ -134,10 +134,6 @@
 		<view:view resource="view/divisionDetails.xml" />
 
 		<view:view resource="view/parameters.xml" />
-
-		<view:view-hook view="parameters" type="beforeRender"
-			plugin="basic" class="com.qcadoo.mes.basic.CurrencyViewService"
-			method="applyCurrentCurrency" />
 			
 		<model:model-field model="unitConversionItem" plugin="qcadooModel">
 			<model:belongsTo name="product" model="product" plugin="basic"/>
