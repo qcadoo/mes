@@ -272,7 +272,7 @@
 					</layoutElement>
 					<layoutElement column="2" row="2">
 						<component type="calendar" name="deliveryDate" field="deliveryDate"
-							reference="deliveryDate">
+							reference="deliveryDate" hasDescription="true">
 							<option type="withTimePicker" value="true" />
 						</component>
 					</layoutElement>
