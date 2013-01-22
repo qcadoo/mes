@@ -152,7 +152,6 @@ public class OrderTimePredictionService {
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference("plannedQuantity");
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
         FieldComponent generatedEndDate = (FieldComponent) viewDefinitionState.getComponentByReference("generatedEndDate");
-        FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference("stopTime");
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
 
@@ -254,7 +253,6 @@ public class OrderTimePredictionService {
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-
         FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
         FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
