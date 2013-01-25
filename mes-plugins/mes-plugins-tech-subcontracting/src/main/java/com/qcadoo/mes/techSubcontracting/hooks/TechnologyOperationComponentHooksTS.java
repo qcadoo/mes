@@ -37,7 +37,9 @@ public class TechnologyOperationComponentHooksTS {
     public void copySubstractingFieldFromLowerInstance(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
         Entity operation = technologyOperationComponent.getBelongsToField(OPERATION);
-        technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
+        if (operation != null) {
+            technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
+        }
     }
 
 }
