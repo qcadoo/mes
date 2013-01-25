@@ -21,85 +21,54 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.hooks;
+package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ORDERED_QUANTITY;
+import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.plugin.api.PluginStateResolver;
 
 @Service
-public class DeliveredProductDetailsHooks {
-
-    private static final String L_FORM = "form";
+public class DeliveredProductDetailsHooksTSFDOverrideUtil {
 
     @Autowired
-    private NumberService numberService;
+    private PluginStateResolver pluginStateResolver;
 
     @Autowired
     private DeliveriesService deliveriesService;
 
-    public void fillOrderedQuantities(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity deliveredProduct = deliveredProductForm.getEntity();
-
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PRODUCT);
-        Entity product = productLookup.getEntity();
-
-        FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(ORDERED_QUANTITY);
-
-        if (product == null) {
-            orderedQuantity.setFieldValue(null);
-        } else {
-            orderedQuantity.setFieldValue(numberService.format(getOrderedProductQuantity(deliveredProduct)));
-        }
-
-        orderedQuantity.requestComponentUpdateState();
+    public boolean shouldOverride(final Entity deliveredProduct) {
+        return pluginStateResolver.isEnabled(TechSubcontrForDeliveriesConstants.PLUGIN_IDENTIFIER)
+                && (deliveredProduct.getBelongsToField(OPERATION) != null);
     }
 
-    private BigDecimal getOrderedProductQuantity(final Entity deliveredProduct) {
+    public BigDecimal getOrderedProductQuantityWithOperation(final Entity deliveredProduct) {
         Entity delivery = deliveredProduct.getBelongsToField(DELIVERY);
         Entity product = deliveredProduct.getBelongsToField(PRODUCT);
+        Entity operation = deliveredProduct.getBelongsToField(OPERATION);
 
         BigDecimal orderedQuantity = null;
 
         Entity orderedProduct = deliveriesService.getOrderedProductDD().find()
                 .add(SearchRestrictions.belongsTo(DELIVERY, delivery)).add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.belongsTo(OPERATION, operation)).setMaxResults(1).uniqueResult();
 
         if (orderedProduct != null) {
             orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
         }
 
         return orderedQuantity;
-    }
-
-    public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
-
-        deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
-    }
-
-    public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
-        FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DELIVERED_QUANTITY);
-        delivedQuantity.setRequired(true);
-        delivedQuantity.requestComponentUpdateState();
     }
 
 }

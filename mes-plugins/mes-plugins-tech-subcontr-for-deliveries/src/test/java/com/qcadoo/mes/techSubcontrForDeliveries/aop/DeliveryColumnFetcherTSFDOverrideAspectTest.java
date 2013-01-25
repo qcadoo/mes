@@ -16,7 +16,7 @@ import com.qcadoo.model.api.Entity;
 public class DeliveryColumnFetcherTSFDOverrideAspectTest {
 
     @Test
-    public final void checkContainsOrderedWithProductAlreadyExistsExecution() throws NoSuchMethodException {
+    public final void checkCompareProductsExecution() throws NoSuchMethodException {
         Class<?> clazz = DeliveryColumnFetcher.class;
         assertEquals("com.qcadoo.mes.deliveries.print.DeliveryColumnFetcher", clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("compareProducts", DeliveryProduct.class, Entity.class);
@@ -24,4 +24,5 @@ public class DeliveryColumnFetcherTSFDOverrideAspectTest {
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(boolean.class, method.getReturnType());
     }
+
 }

@@ -47,7 +47,7 @@ public class DeliveredProductHooksTSFDOverrideAspect {
     }
 
     @Around("checkIfDeliveredProductAlreadyExistsExecution(deliveredProductDD, deliveredProduct)")
-    public boolean afterCopyOrderedProductToDeliveredListenersExecution(final ProceedingJoinPoint pjp,
+    public boolean aroundCheckIfDeliveredProductAlreadyExistsExecution(final ProceedingJoinPoint pjp,
             final DataDefinition deliveredProductDD, final Entity deliveredProduct) throws Throwable {
         if (deliveredProductHooksTSFDOverrideUtil.shouldOverride()) {
             return deliveredProductHooksTSFDOverrideUtil.checkIfDeliveredProductAlreadyExists(deliveredProductDD,

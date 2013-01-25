@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
+import java.math.BigDecimal;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,28 +32,27 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Aspect
 @Configurable
-public class OrderedProductHooksTSFDOverrideAspect {
+public class DeliveredProductDetailsHooksTSFDOverrideAspect {
 
     @Autowired
-    private OrderedProductHooksTSFDOverrideUtil orderedProductHooksTSFDOverrideUtil;
+    private DeliveredProductDetailsHooksTSFDOverrideUtil deliveredProductDetialsHooksTSFDOverrideUtil;
 
-    @Pointcut("execution(public boolean com.qcadoo.mes.deliveries.hooks.OrderedProductHooks.checkIfOrderedProductAlreadyExists(..)) "
-            + "&& args(orderedProductDD, orderedProduct)")
-    public void checkIfOrderedProductAlreadyExistsExecution(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+    @Pointcut("execution(private java.math.BigDecimal com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks.getOrderedProductQuantity(..)) "
+            + "&& args(deliveredProduct)")
+    public void getOrderedProductQuantityExecution(final Entity deliveredProduct) {
     }
 
-    @Around("checkIfOrderedProductAlreadyExistsExecution(orderedProductDD, orderedProduct)")
-    public boolean aroundCheckIfOrderedProductAlreadyExistsExecution(final ProceedingJoinPoint pjp,
-            final DataDefinition orderedProductDD, final Entity orderedProduct) throws Throwable {
-        if (orderedProductHooksTSFDOverrideUtil.shouldOverride()) {
-            return orderedProductHooksTSFDOverrideUtil.checkIfOrderedProductAlreadyExists(orderedProductDD, orderedProduct);
+    @Around("getOrderedProductQuantityExecution(deliveredProduct)")
+    public BigDecimal aroundGetOrderedProductQuantityExecution(final ProceedingJoinPoint pjp, final Entity deliveredProduct)
+            throws Throwable {
+        if (deliveredProductDetialsHooksTSFDOverrideUtil.shouldOverride(deliveredProduct)) {
+            return deliveredProductDetialsHooksTSFDOverrideUtil.getOrderedProductQuantityWithOperation(deliveredProduct);
         } else {
-            return (Boolean) pjp.proceed();
+            return (BigDecimal) pjp.proceed();
         }
     }
 
