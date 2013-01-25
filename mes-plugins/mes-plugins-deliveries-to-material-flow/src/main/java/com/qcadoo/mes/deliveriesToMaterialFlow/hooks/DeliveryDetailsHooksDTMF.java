@@ -26,13 +26,16 @@ public class DeliveryDetailsHooksDTMF {
             return;
         }
 
-        Entity parameter = parameterService.getParameter();
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(LOCATION);
         Entity location = locationField.getEntity();
 
         if (location == null) {
-            locationField.setFieldValue(parameter.getBelongsToField(LOCATION).getId());
-            locationField.requestComponentUpdateState();
+            Entity defaultLocation = parameterService.getParameter().getBelongsToField(LOCATION);
+
+            if (defaultLocation != null) {
+                locationField.setFieldValue(defaultLocation.getId());
+                locationField.requestComponentUpdateState();
+            }
         }
     }
 
