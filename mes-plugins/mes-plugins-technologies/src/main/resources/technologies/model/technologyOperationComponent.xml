@@ -38,7 +38,7 @@
 		<priority name="priority" scope="parent" />
 		<string name="nodeNumber" />
 		<belongsTo name="referenceTechnology" model="technology" />
-		<enum name="referenceMode" values="01reference,02copy" default="01reference"
+		<enum name="referenceMode" values="01reference,02copy" default="02copy"
 			persistent="false" />
 			
 		<string name="comment">
