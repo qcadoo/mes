@@ -17,6 +17,36 @@
 	<component type="window" name="window" reference="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
+				<group name="status">
+				<smallButton name="acceptRecord" icon="startIcon16.png"
+					state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productionCounting.productionRecordsList.window.ribbon.status.acceptRecord.confirm)}")) {
+										#{grid}.performEvent('changeState', ['02accepted']);
+									};
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+				<smallButton name="cancelRecord" icon="deleteIcon16.png"
+					state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productionCounting.productionRecordsList.window.ribbon.status.declineRecord.confirm)}")) {
+										#{grid}.performEvent('changeState', ['03declined']);
+									};
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+			</group>
 		</ribbon>
 		<component type="grid" name="productionRecordsList"
 			reference="grid">
@@ -24,6 +54,8 @@
 			<![CDATA[ 
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var acceptRecord = #{window}.getRibbonItem("status.acceptRecord");
+					var cancelRecord = #{window}.getRibbonItem("status.cancelRecord");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -32,7 +64,45 @@
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								copyButton.disable();
+								acceptRecord.disable();
+								cancelRecord.disable();
 							}else{
+								var noDifferentStates = true;
+								
+								if(selectedEntitiesArray.length > 1)
+								{
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+											noDifferentStates = false;
+											break;
+										}
+									}
+								} 
+								
+								
+								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+									var state = selectedEntitiesArray[0].fields.state;
+									
+									if (state == "01draft") {
+											acceptRecord.enable();
+											cancelRecord.enable();
+										} else if (state == "02accepted") {
+											deleteButton.disable();
+											cancelRecord.enable();
+										} else if ((state == "03declined")) {
+											deleteButton.enable();
+										} else{
+											cancelRecord.enable();
+										}
+									
+									
+									} else {
+									acceptRecord.disable("#{translate(productionCounting.productionRecordsList.ribbon.message.productionRecordWithDifferentStatesSelected)}");
+									cancelRecord.disable("#{translate(productionCounting.productionRecordsList.ribbon.message.productionRecordWithDifferentStatesSelected)}");
+								}
+								
+								
+								
 								for (var i in selectedEntitiesArray) {
 									console.log(selectedEntitiesArray[i].fields);
 									
@@ -69,6 +139,9 @@
 		
 				]]>
 			</script>
+			<listener event="changeState"
+				class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
+				method="changeState" />
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
 			<option type="column" name="order" fields="order" link="true"
