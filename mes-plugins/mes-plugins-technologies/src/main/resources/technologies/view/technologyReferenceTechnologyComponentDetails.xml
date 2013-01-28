@@ -51,7 +51,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="select" name="referenceMode" field="referenceMode"
-						reference="referenceMode">
+						reference="referenceMode" defaultEnabled="false">
 						<option type="required" value="true" />
 					</component>
 				</layoutElement>
