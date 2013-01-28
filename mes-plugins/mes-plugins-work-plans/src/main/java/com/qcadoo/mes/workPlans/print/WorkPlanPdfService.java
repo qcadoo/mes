@@ -28,19 +28,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -132,15 +131,33 @@ public class WorkPlanPdfService extends PdfDocumentService {
         }
     }
 
-    void addOperations(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
-        Map<Entity, Entity> operationComponent2order = new HashMap<Entity, Entity>();
+    private Map<Long, Entity> buildEntityId2EntityMap(final Iterable<Entity> entities) {
+        final Map<Long, Entity> entityId2EntityMap = Maps.newHashMap();
+        for (final Entity entity : entities) {
+            entityId2EntityMap.put(entity.getId(), entity);
+        }
+        return entityId2EntityMap;
+    }
 
-        List<Entity> orders = workPlan.getManyToManyField("orders");
+    private void addOperations(final Document document, final Entity workPlan, final Locale locale) throws DocumentException {
+        final List<Entity> orders = workPlan.getManyToManyField("orders");
+        final boolean haveManyOrders = orders.size() > 1;
+        final Map<Long, Entity> orderId2Order = buildEntityId2EntityMap(orders);
+        final Map<Long, Map<Entity, Map<String, String>>> orderId2columnValues = columnFetcher.getColumnValues(orders);
 
-        Map<Entity, Map<String, String>> columnValues = columnFetcher.getColumnValues(orders);
+        for (final Entry<Long, Map<PrioritizedString, List<Entity>>> orderId2OpComponentsMapEntry : getOrderIdToOperationComponentsMap(
+                workPlan, locale).entrySet()) {
+            final Long orderId = orderId2OpComponentsMapEntry.getKey();
+            final Entity order = orderId2Order.get(orderId);
+            addOperationsForSpecifiedOrder(document, orderId2OpComponentsMapEntry.getValue(), orderId2columnValues.get(orderId),
+                    order, haveManyOrders, locale);
+        }
+    }
 
-        for (Entry<PrioritizedString, List<Entity>> entry : getOperationComponentsWithDistinction(workPlan,
-                operationComponent2order, locale).entrySet()) {
+    private void addOperationsForSpecifiedOrder(final Document document,
+            final Map<PrioritizedString, List<Entity>> orderOpComponentsMap, final Map<Entity, Map<String, String>> columnValues,
+            final Entity order, final boolean haveManyOrders, final Locale locale) throws DocumentException {
+        for (Entry<PrioritizedString, List<Entity>> entry : orderOpComponentsMap.entrySet()) {
             document.newPage();
 
             document.add(new Paragraph(entry.getKey().getString(), FontUtils.getDejavuBold11Dark()));
@@ -148,8 +165,8 @@ public class WorkPlanPdfService extends PdfDocumentService {
             for (Entity operationComponent : entry.getValue()) {
                 PdfPTable operationTable = pdfHelper.createPanelTable(3);
                 addOperationInfoToTheOperationHeader(operationTable, operationComponent, locale);
-                if (orders.size() > 1 && isOrderInfoEnabled(operationComponent)) {
-                    addOrderInfoToTheOperationHeader(operationTable, operationComponent2order.get(operationComponent), locale);
+                if (haveManyOrders && isOrderInfoEnabled(operationComponent)) {
+                    addOrderInfoToTheOperationHeader(operationTable, order, locale);
                 }
 
                 if (isWorkstationInfoEnabled(operationComponent)) {
@@ -307,15 +324,15 @@ public class WorkPlanPdfService extends PdfDocumentService {
         return title;
     }
 
-    private void fetchOperationComponentsFromTechnology(final Entity technology, final Entity workPlan, final Entity order,
-            final Locale locale, final Map<Entity, Entity> opComps2Order, final Map<PrioritizedString, List<Entity>> opComps) {
+    private Map<PrioritizedString, List<Entity>> fetchOperationComponentsFromTechnology(final Entity technology,
+            final Entity workPlan, final Entity order, final Locale locale) {
         List<Entity> operationComponents = entityTreeUtilsService.getSortedEntities(technology
                 .getTreeField("operationComponents"));
-
+        final Map<PrioritizedString, List<Entity>> opComps = Maps.newTreeMap();
         for (Entity operationComponent : operationComponents) {
             if ("referenceTechnology".equals(operationComponent.getStringField("entityType"))) {
                 Entity refTech = operationComponent.getBelongsToField("referenceTechnology");
-                fetchOperationComponentsFromTechnology(refTech, workPlan, order, locale, opComps2Order, opComps);
+                opComps.putAll(fetchOperationComponentsFromTechnology(refTech, workPlan, order, locale));
                 continue;
             }
 
@@ -329,14 +346,14 @@ public class WorkPlanPdfService extends PdfDocumentService {
                 opComps.put(title, new ArrayList<Entity>());
             }
 
-            opComps2Order.put(operationComponent, order);
             opComps.get(title).add(operationComponent);
         }
+        return opComps;
     }
 
-    Map<PrioritizedString, List<Entity>> getOperationComponentsWithDistinction(final Entity workPlan,
-            final Map<Entity, Entity> operationComponent2order, final Locale locale) {
-        Map<PrioritizedString, List<Entity>> operationComponentsWithDistinction = new TreeMap<PrioritizedString, List<Entity>>();
+    private Map<Long, Map<PrioritizedString, List<Entity>>> getOrderIdToOperationComponentsMap(final Entity workPlan,
+            final Locale locale) {
+        final Map<Long, Map<PrioritizedString, List<Entity>>> order2opComps = Maps.newTreeMap();
 
         List<Entity> orders = workPlan.getManyToManyField("orders");
 
@@ -345,12 +362,10 @@ public class WorkPlanPdfService extends PdfDocumentService {
             if (technology == null) {
                 continue;
             }
-
-            fetchOperationComponentsFromTechnology(technology, workPlan, order, locale, operationComponent2order,
-                    operationComponentsWithDistinction);
+            order2opComps.put(order.getId(), fetchOperationComponentsFromTechnology(technology, workPlan, order, locale));
         }
 
-        return operationComponentsWithDistinction;
+        return order2opComps;
     }
 
     void addProductsSeries(final List<Entity> productComponentsArg, final Document document,
