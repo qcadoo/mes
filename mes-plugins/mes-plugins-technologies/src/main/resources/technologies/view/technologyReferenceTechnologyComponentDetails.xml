@@ -34,7 +34,7 @@
 			<template name="standardFormTemplate" excludeItems="actions.save, actions.copy, actions.saveNew"/>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
+			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technology" reference="technology"
