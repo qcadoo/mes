@@ -51,6 +51,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Simple production counting just using the production progress table which shows the current quantities of used and produced products.</description>
 	</information>
 
 	<dependencies>

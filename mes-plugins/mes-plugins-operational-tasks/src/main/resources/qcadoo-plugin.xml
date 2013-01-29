@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Detailed production plan on the operation and workstation level.</description>
 	</information>
 
 	<dependencies>

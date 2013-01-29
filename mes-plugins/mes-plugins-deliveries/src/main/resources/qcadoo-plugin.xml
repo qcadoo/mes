@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Define when and what products will arrive from you suppliers.</description>
 	</information>
 
 	<dependencies>

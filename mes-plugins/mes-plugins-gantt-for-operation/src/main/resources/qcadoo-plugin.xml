@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Visualizes the results of orders time consumption calculation on a Gantt chart.</description>
 	</information>
 
 	<dependencies>

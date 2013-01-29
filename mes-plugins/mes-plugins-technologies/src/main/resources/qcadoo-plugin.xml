@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>A tree of operations which defines the manufacturing process.</description>
 	</information>
 
 	<dependencies>

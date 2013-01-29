@@ -46,6 +46,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Calculate the estimated cost of a production order.</description>
 	</information>
 
 	<dependencies>

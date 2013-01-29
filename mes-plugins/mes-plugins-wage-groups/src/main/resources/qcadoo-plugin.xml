@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Lets you define wage groups for workers.</description>
 	</information>
 	<dependencies>
 		<dependency>

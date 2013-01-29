@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Basic data like products, people, shifts, companies, etc.</description>
 	</information>
 
 	<dependencies>

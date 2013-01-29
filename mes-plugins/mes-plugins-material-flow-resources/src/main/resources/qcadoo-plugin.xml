@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com</url>
 		</vendor>
+		<description>Adds the warehouse location type which can handle resource management.</description>
 	</information>
 
 	<dependencies>

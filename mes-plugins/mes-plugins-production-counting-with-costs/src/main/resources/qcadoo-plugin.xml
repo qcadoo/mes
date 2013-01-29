@@ -51,6 +51,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds monetary information to the production balance report and technical production cost summary.</description>
 	</information>
 
 	<dependencies>

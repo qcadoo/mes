@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Warns you if you'll try to create an order for a quantity below the affordability level.</description>
 	</information>
 
 	<dependencies>

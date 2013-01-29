@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Integrates operational tasks with production orders.</description>
 	</information>
 
 	<dependencies>

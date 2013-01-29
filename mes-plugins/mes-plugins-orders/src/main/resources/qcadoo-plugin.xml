@@ -51,6 +51,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Production orders and the general production plan.</description>
 	</information>
 
 	<dependencies>

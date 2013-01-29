@@ -24,6 +24,8 @@
 package com.qcadoo.mes.productionCounting.internal;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
+import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.PIECEWORK;
 import static com.qcadoo.mes.productionCounting.internal.constants.OrderFieldsPC.REGISTER_PIECEWORK;
@@ -36,7 +38,6 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.GENERATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_TPZ;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.NAME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRINT_OPERATION_NORMS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
@@ -47,11 +48,17 @@ import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProduct
 import static com.qcadoo.mes.productionCounting.states.constants.ProductionRecordState.ACCEPTED;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -78,6 +85,8 @@ public class ProductionBalanceViewService {
 
     private static final String L_OPERATIONS_PIECEWORK_GRID = "operationsPieceworkGrid";
 
+    private static final String L_EMPTY_NUMBER = "";
+
     private static final List<String> FIELDS_AND_CHECKBOXES = Arrays.asList(ORDER, NAME, DESCRIPTION, PRINT_OPERATION_NORMS,
             CALCULATE_OPERATION_COST_MODE, INCLUDE_TPZ, INCLUDE_ADDITIONAL_TIME);
 
@@ -94,6 +103,9 @@ public class ProductionBalanceViewService {
 
     @Autowired
     private ProductionBalanceService productionBalanceService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -271,5 +283,45 @@ public class ProductionBalanceViewService {
                 ((FieldComponent) viewDefinitionState.getComponentByReference(componentReference)).requestComponentUpdateState();
             }
         }
+    }
+
+    public void setDefaultNameUsingOrder(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        if (!(component instanceof FieldComponent)) {
+            return;
+        }
+
+        FieldComponent orderField = (FieldComponent) view.getComponentByReference(ORDER);
+        FieldComponent name = (FieldComponent) view.getComponentByReference(NAME);
+
+        if (orderField.getFieldValue() == null || StringUtils.hasText((String) name.getFieldValue())) {
+            return;
+        }
+
+        Entity orderEntity = getOrderById((Long) orderField.getFieldValue());
+
+        if (orderEntity == null) {
+            return;
+        }
+
+        Locale locale = component.getLocale();
+        name.setFieldValue(makeDefaultName(orderEntity, locale));
+    }
+
+    public String makeDefaultName(final Entity orderEntity, final Locale locale) {
+
+        String orderNumber = L_EMPTY_NUMBER;
+        if (orderEntity != null) {
+            orderNumber = orderEntity.getStringField(FIELD_NUMBER);
+        }
+
+        Calendar cal = Calendar.getInstance(locale);
+        cal.setTime(new Date());
+
+        return translationService.translate("productionCounting.productionBalance.name.default", locale, orderNumber,
+                cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private Entity getOrderById(final Long id) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
     }
 }

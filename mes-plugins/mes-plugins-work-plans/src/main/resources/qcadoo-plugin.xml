@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Print work plan which will give your workers a detailed instruction that operations are to be executed on the specified orders.</description>
 	</information>
 
 	<dependencies>

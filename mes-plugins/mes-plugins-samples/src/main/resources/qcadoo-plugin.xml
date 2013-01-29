@@ -41,6 +41,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Example production data for the plugins which are turned on by default in qcadoo MES Community Edition.</description>
 	</information>
 
 	<dependencies>

@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Visualizes the production orders schedule on a Gantt chart.</description>
 	</information>
 
 	<dependencies>

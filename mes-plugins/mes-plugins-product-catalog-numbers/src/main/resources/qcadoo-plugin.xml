@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited </name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Define what catalog numbers do suppliers have for certain products.</description>
 	</information>
 	<dependencies>
 		<dependency>
