@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Add a table to the production order which shows the cost norms of all operations in its tehnology.</description>
 	</information>
 	<dependencies>
 		<dependency>

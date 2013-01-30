@@ -49,7 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
-		<description>Calculate the orders average labor work costs from the worker assigment to shifts plan.</description>
+		<description>Calculate the orders average labor work costs from the worker assignment to shifts plan.</description>
 	</information>
 
 	<dependencies>

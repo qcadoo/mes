@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds cost norms do product.</description>
 	</information>
 
 	<dependencies>

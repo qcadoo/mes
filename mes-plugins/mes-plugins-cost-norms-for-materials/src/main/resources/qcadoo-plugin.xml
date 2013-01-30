@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds the capability do enter the costs of products used in a specific order.</description>
 	</information>
 	<dependencies>
 		<dependency>
