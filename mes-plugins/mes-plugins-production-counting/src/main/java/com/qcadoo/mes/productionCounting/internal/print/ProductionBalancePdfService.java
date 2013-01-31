@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.internal.print;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.productionCounting.internal.constants.BalanceOperationProductInComponentFields.PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode.HOURLY;
 import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.CYCLES;
 import static com.qcadoo.mes.productionCounting.internal.constants.OperationPieceworkComponentFields.CYCLES_BALANCE;
@@ -40,7 +41,6 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBal
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.INCLUDE_TPZ;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.NAME;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.ORDER;
-import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.PRODUCT;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields.RECORDS_NUMBER;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 
@@ -64,6 +64,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.internal.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.Entity;
@@ -177,8 +178,8 @@ public class ProductionBalancePdfService extends PdfDocumentService {
                 FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.product", locale),
-                productionBalance.getBelongsToField(PRODUCT).getStringField(NAME), null, FontUtils.getDejavuBold9Dark(),
-                FontUtils.getDejavuBold9Dark(), null);
+                productionBalance.getBelongsToField(ORDER).getBelongsToField(OrderFields.PRODUCT).getStringField(NAME), null,
+                FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuBold9Dark(), null);
         addTableCellAsTable(leftPanel,
                 translationService.translate("productionCounting.productionBalance.report.panel.numberOfRecords", locale),
                 productionBalance.getField(RECORDS_NUMBER).toString(), null, FontUtils.getDejavuBold9Dark(),
