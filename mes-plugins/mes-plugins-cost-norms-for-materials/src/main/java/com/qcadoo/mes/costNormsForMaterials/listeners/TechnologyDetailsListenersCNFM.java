@@ -66,7 +66,7 @@ public class TechnologyDetailsListenersCNFM {
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("technology.id", technologyId);
+        parameters.put("form.id", technologyId);
 
         String url = "../page/costNormsForMaterials/costNormsForMaterialsInTechnologyList.html";
         viewState.redirectTo(url, false, true, parameters);
