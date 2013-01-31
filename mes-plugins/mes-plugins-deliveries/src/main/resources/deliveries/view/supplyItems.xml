@@ -62,7 +62,7 @@
 				
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
-			
+			<criteriaModifier class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveryCriteriaModifiers" method="showActiveSupplyItems" />
 			<listener event="select"
 				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
 				method="redirectToDeliveryDetails" />
@@ -71,5 +71,4 @@
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	
 </view>
