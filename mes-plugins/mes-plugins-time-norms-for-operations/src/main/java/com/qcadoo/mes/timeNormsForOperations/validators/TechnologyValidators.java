@@ -157,7 +157,7 @@ public class TechnologyValidators {
         }
 
         final Entity outputProduct = productQuantitiyService
-                .getOutputProductsFromOperataionComponent(technologyOperationComponent);
+                .getOutputProductsFromOperationComponent(technologyOperationComponent);
         if (outputProduct != null) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
@@ -185,7 +185,7 @@ public class TechnologyValidators {
         final Entity technologyOperationComponent = technologyInstanceOperationComponent
                 .getBelongsToField("technologyOperationComponent");
         final Entity outputProduct = productQuantitiyService
-                .getOutputProductsFromOperataionComponent(technologyOperationComponent);
+                .getOutputProductsFromOperationComponent(technologyOperationComponent);
         if (outputProduct != null) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {

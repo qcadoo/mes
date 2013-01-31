@@ -293,9 +293,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private Entity getOutputProduct(final Entity operationComponent) {
         if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
             Entity technologyOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
-            return productQuantitiesService.getOutputProductsFromOperataionComponent(technologyOperComp);
+            return productQuantitiesService.getOutputProductsFromOperationComponent(technologyOperComp);
         } else {
-            return productQuantitiesService.getOutputProductsFromOperataionComponent(operationComponent);
+            return productQuantitiesService.getOutputProductsFromOperationComponent(operationComponent);
         }
     }
 

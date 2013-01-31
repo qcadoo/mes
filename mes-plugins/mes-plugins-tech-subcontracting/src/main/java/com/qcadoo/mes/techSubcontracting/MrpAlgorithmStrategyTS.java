@@ -29,50 +29,45 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.MrpAlgorithmStrategy;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 
 @Service("mrpAlgorithmStrategyTS")
 public class MrpAlgorithmStrategyTS implements MrpAlgorithmStrategy {
 
-    public boolean isApplicableFor(final MrpAlgorithm algorithm) {
-        return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(algorithm);
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
+    public boolean isApplicableFor(final MrpAlgorithm mrpAlgorithm) {
+        return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.equals(mrpAlgorithm);
     }
 
-    public Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentQuantities,
-            final Set<Entity> nonComponents, final MrpAlgorithm algorithm, final String type) {
-        Map<Entity, BigDecimal> productQuantities = new HashMap<Entity, BigDecimal>();
+    public Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentWithQuantities,
+            final Set<Entity> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
+        Map<Entity, BigDecimal> productWithQuantities = new HashMap<Entity, BigDecimal>();
 
-        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            if (type.equals(productComponentQuantity.getKey().getDataDefinition().getName())) {
-                if (nonComponents.contains(productComponentQuantity.getKey())) {
+        for (Entry<Entity, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
+            if (operationProductComponentModelName.equals(productComponentWithQuantity.getKey().getDataDefinition().getName())) {
+                if (nonComponents.contains(productComponentWithQuantity.getKey())) {
                     continue;
                 }
-                addProductQuantitiesToList(productComponentQuantity, productQuantities);
+
+                productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
             } else {
-                Entity operation = productComponentQuantity.getKey().getBelongsToField("operationComponent");
+                Entity operation = productComponentWithQuantity.getKey().getBelongsToField("operationComponent");
+
                 if (operation.getBooleanField("isSubcontracting")) {
-                    addProductQuantitiesToList(productComponentQuantity, productQuantities);
+                    productQuantitiesService.addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
                 }
             }
         }
-        return productQuantities;
-    }
 
-    private void addProductQuantitiesToList(final Entry<Entity, BigDecimal> productComponentQuantity,
-            final Map<Entity, BigDecimal> productQuantities) {
-        Entity product = productComponentQuantity.getKey().getBelongsToField("product");
-        BigDecimal newQty = productComponentQuantity.getValue();
-
-        BigDecimal oldQty = productQuantities.get(product);
-        if (oldQty != null) {
-            newQty = newQty.add(oldQty);
-
-        }
-        productQuantities.put(product, newQty);
+        return productWithQuantities;
     }
 
 }
