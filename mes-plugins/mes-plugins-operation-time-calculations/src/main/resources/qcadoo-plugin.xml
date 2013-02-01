@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Algorithms for time calculations of technology on the operation level.</description>
 	</information>
 	
 	<dependencies>
