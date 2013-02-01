@@ -63,4 +63,12 @@ public interface MaterialRequirementService {
      */
     void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName, final String fieldValue);
 
+    /**
+     * Gets default MRP Algorithm
+     * 
+     * @return mrpAlgorithm
+     * 
+     */
+    String getDefaultMrpAlgorithm();
+
 }

@@ -27,6 +27,7 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
+		<aspect name="com.qcadoo.mes.techSubcontracting.aop.MaterialRequirementServiceImplTSOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontracting.aop.MrpAlgorithmStrategyTSResolverAspect" />
 	</aspects>
 </aspectj>

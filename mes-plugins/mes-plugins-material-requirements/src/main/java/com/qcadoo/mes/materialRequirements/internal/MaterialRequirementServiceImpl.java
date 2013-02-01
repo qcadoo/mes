@@ -44,6 +44,7 @@ import com.qcadoo.mes.materialRequirements.internal.print.xls.MaterialRequiremen
 import com.qcadoo.mes.orders.util.OrderHelperService;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.mes.orders.util.RibbonReportService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -259,7 +260,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     private Entity printMaterialReqForOrder(final ComponentState state) {
 
         Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
-        entityFieldsMap.put("mrpAlgorithm", "02allProductsIn");
+        entityFieldsMap.put("mrpAlgorithm", getDefaultMrpAlgorithm());
 
         entityFieldsMap.put("number", numberGeneratorService.generateNumber(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT));
@@ -278,6 +279,11 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
         return orderReportService.printForOrder(state, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, entityFieldsMap, orderValidator);
+    }
+
+    @Override
+    public String getDefaultMrpAlgorithm() {
+        return MrpAlgorithm.ONLY_COMPONENTS.getStringValue();
     }
 
 }
