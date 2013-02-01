@@ -40,10 +40,11 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 public class MrpAlgorithmStrategyResolverAspectTest {
 
     @Test
-    public final void checGetProductsPointcutDefinition() throws NoSuchMethodException {
+    public final void checkGetProductsPointcutDefinition() throws NoSuchMethodException {
         Class<?> clazz = ProductQuantitiesServiceImpl.class;
         assertEquals("com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl", clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("getProducts", Map.class, Set.class, MrpAlgorithm.class, String.class);
+        final Method method = clazz.getDeclaredMethod("getProductWithQuantities", Map.class, Set.class, MrpAlgorithm.class,
+                String.class);
         assertNotNull(method);
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(Map.class, method.getReturnType());

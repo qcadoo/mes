@@ -32,8 +32,9 @@ import com.qcadoo.model.api.Entity;
 
 public interface MrpAlgorithmStrategy {
 
-    boolean isApplicableFor(final MrpAlgorithm algorithm);
+    boolean isApplicableFor(final MrpAlgorithm mrpAlgorithm);
 
-    Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents,
-            MrpAlgorithm algorithm, final String type);
+    Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentWithQuantities,
+            final Set<Entity> nonComponents, MrpAlgorithm mrAlgorithm, final String operationProductComponentModelName);
+
 }
