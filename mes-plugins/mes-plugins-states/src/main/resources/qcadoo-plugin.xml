@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Common functionality for state changing entities.</description>
 	</information>
 	
 	<dependencies>

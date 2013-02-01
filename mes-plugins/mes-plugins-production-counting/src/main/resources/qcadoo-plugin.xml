@@ -36,7 +36,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
-		<description>Use production records to track how much products did you realy produce/use and how much work did you put into them. Sum them all up and analyse in the production balance report.</description>
+		<description>Use production records to track how much products did you really produce/use and how much work did you put into them. Sum them all up and analyse in the production balance report.</description>
 	</information>
 
 	<dependencies>

@@ -46,6 +46,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://qcadoo.com/</url>
 		</vendor>
+		<description>Simple stoppages tracking. Will be replaces by a more advanced plugin in the future.</description>
 	</information>
 
 	<dependencies>
