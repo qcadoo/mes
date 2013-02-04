@@ -193,9 +193,7 @@ public class OrderTimePredictionService {
                 if (generatedStopTime == null) {
                     form.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
                 } else {
-                    if (stopTime == null) {
-                        generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
-                    }
+                    generatedEndDate.setFieldValue(orderRealizationTimeService.setDateToField(generatedStopTime));
                     order.setField("generatedEndDate", orderRealizationTimeService.setDateToField(generatedStopTime));
                     scheduleOrder(order.getId());
                 }
