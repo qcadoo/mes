@@ -38,7 +38,9 @@
 		</string>
 		<datetime name="date" />
 		<string name="worker" />
-		<integer name="recordsNumber" />
+		<integer name="recordsNumber">
+			<validatesRange from="0" />
+		</integer>
 		<string name="description" />
 		<string name="fileName">
 			<validatesLength max="1024"/>

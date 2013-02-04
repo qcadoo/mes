@@ -141,6 +141,11 @@
 			component="form" event="showTechnologiesWithTechnologyGroup"
 			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
 			method="showTechnologiesWithTechnologyGroup" />
+		
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showTechnologiesWithProduct"
+			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+			method="showTechnologiesWithProduct" />
 	
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" 

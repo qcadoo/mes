@@ -48,8 +48,8 @@ public class ProductDetailsViewHooksT {
         // RibbonActionItem addTechnologyGroup = (RibbonActionItem) technologies.getItemByName("addTechnologyGroup");
         RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
                 .getItemByName("showTechnologiesWithTechnologyGroup");
-        // RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
-        // .getItemByName("showTechnologiesWithProduct");
+        RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
+                .getItemByName("showTechnologiesWithProduct");
 
         if (product.getId() != null) {
             // updateButtonState(addTechnologyGroup, true);
@@ -62,14 +62,14 @@ public class ProductDetailsViewHooksT {
                 updateButtonState(showTechnologiesWithTechnologyGroup, true);
             }
 
-            // updateButtonState(showTechnologiesWithProduct, true);
+            updateButtonState(showTechnologiesWithProduct, true);
 
             return;
         }
 
         // updateButtonState(addTechnologyGroup, false);
         updateButtonState(showTechnologiesWithTechnologyGroup, false);
-        // updateButtonState(showTechnologiesWithProduct, false);
+        updateButtonState(showTechnologiesWithProduct, false);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
