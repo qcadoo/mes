@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
@@ -60,7 +61,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderTimePredictionService {
@@ -82,9 +82,6 @@ public class OrderTimePredictionService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
@@ -317,7 +314,7 @@ public class OrderTimePredictionService {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
             dateTo.setFieldValue(null);
         } else {
-            Date startTime = timeConverterService.getDateTimeFromField(dateFrom.getFieldValue());
+            Date startTime = DateUtils.parseDate(dateFrom.getFieldValue());
             Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
 
             if (stopTime != null) {

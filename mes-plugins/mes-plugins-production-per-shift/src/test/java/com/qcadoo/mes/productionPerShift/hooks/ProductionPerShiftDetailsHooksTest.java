@@ -70,7 +70,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.TimeConverterService;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductionPerShiftDetailsHooksTest {
@@ -81,7 +80,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private ViewDefinitionState view;
 
     @Mock
-    private ComponentState lookup, producesInput;
+    private ComponentState producesInput;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
@@ -118,9 +117,6 @@ public class ProductionPerShiftDetailsHooksTest {
     private TechnologyService technologyService;
 
     @Mock
-    private TimeConverterService timeConverterService;
-
-    @Mock
     private LookupComponent lookupComponent;
 
     @Mock
@@ -146,7 +142,6 @@ public class ProductionPerShiftDetailsHooksTest {
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(hooks, "technologyService", technologyService);
         ReflectionTestUtils.setField(hooks, "helper", helper);
-        ReflectionTestUtils.setField(hooks, "timeConverterService", timeConverterService);
         ReflectionTestUtils.setField(hooks, "shiftsService", shiftsService);
 
         when(dataDefinitionService.get("orders", "order")).thenReturn(orderDD);

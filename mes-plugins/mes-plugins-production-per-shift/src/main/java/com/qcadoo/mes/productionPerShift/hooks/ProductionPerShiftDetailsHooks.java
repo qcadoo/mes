@@ -74,7 +74,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
@@ -102,9 +101,6 @@ public class ProductionPerShiftDetailsHooks {
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     public void fillSetRoot(final ViewDefinitionState view) {
         FieldComponent setRootField = (FieldComponent) view.getComponentByReference("setRoot");
@@ -195,10 +191,8 @@ public class ProductionPerShiftDetailsHooks {
         Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference(ORDER_PLANNED_START_DATE);
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference(ORDER_CORRECTED_START_DATE);
-        orderPlannedStartDate
-                .setFieldValue(timeConverterService.setDateTimeToField((Date) order.getField(OrderFields.DATE_FROM)));
-        orderCorrectedStartDate.setFieldValue(timeConverterService.setDateTimeToField((Date) order
-                .getField(OrderFields.CORRECTED_DATE_FROM)));
+        orderPlannedStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.DATE_FROM)));
+        orderCorrectedStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.CORRECTED_DATE_FROM)));
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
     }

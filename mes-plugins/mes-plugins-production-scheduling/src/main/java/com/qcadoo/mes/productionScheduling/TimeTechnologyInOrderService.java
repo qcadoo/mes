@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -41,7 +42,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class TimeTechnologyInOrderService {
@@ -64,9 +64,6 @@ public class TimeTechnologyInOrderService {
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -128,7 +125,7 @@ public class TimeTechnologyInOrderService {
         } else {
             realizationTime.setFieldValue(maxPathTime);
 
-            Date dateFrom = timeConverterService.getDateTimeFromField(startTime.getFieldValue());
+            Date dateFrom = DateUtils.parseDate(startTime.getFieldValue());
             Date dateTo = shiftsService.findDateToForOrder(dateFrom, maxPathTime);
 
             if (dateTo != null) {

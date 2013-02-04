@@ -38,6 +38,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.AverageCostService;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderConstants;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields;
@@ -52,7 +53,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class AvgLaborCostCalcForOrderDetailsListeners {
@@ -62,9 +62,6 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
 
     @Autowired
     private AverageCostService averageCostService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     public void setAvgLaborCostCalcForGivenOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (args.length < 2) {
@@ -109,8 +106,8 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         LookupComponent lookup = (LookupComponent) view.getComponentByReference("productionLine");
         Entity productionLine = lookup.getEntity();
 
-        Date start = timeConverterService.getDateFromField(startDate.getFieldValue());
-        Date finish = timeConverterService.getDateFromField(finishDate.getFieldValue());
+        Date start = DateUtils.parseDate(startDate.getFieldValue());
+        Date finish = DateUtils.parseDate(finishDate.getFieldValue());
 
         avgLaborCostCalcForOrder = averageCostService.generateAssignmentWorkerToShiftAndAverageCost(avgLaborCostCalcForOrder,
                 start, finish, productionLine);

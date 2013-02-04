@@ -46,6 +46,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowMultitransfers.constants.MaterialFlowMultitransfersConstants;
@@ -61,7 +62,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Component
 public class MultitransferListeners {
@@ -80,9 +80,6 @@ public class MultitransferListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     @Transactional
     public void createMultitransfer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -105,7 +102,7 @@ public class MultitransferListeners {
         staffField.requestComponentUpdateState();
 
         String type = typeField.getFieldValue().toString();
-        Date time = timeConverterService.getDateTimeFromField(timeField.getFieldValue());
+        Date time = DateUtils.parseDate(timeField.getFieldValue());
         Entity locationFrom = materialFlowService.getLocationById((Long) locationFromField.getFieldValue());
         Entity locationTo = materialFlowService.getLocationById((Long) locationToField.getFieldValue());
         Entity staff = materialFlowService.getStaffById((Long) staffField.getFieldValue());
@@ -168,7 +165,7 @@ public class MultitransferListeners {
 
             isValid = false;
         } else {
-            Date time = timeConverterService.getDateTimeFromField(timeField.getFieldValue());
+            Date time = DateUtils.parseDate(timeField.getFieldValue());
 
             if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
                     && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
