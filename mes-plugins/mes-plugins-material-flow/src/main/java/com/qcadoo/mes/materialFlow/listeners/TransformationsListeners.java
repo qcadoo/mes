@@ -48,6 +48,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -56,6 +57,8 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Component
 public class TransformationsListeners {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private MaterialFlowService materialFlowService;
@@ -141,23 +144,24 @@ public class TransformationsListeners {
                 operation.getHasManyField(PRODUCT_OUT_COMPONENTS).find().createAlias(PRODUCT, PRODUCT)
                         .addOrder(SearchOrders.asc(PRODUCT + "." + NAME)).list().getEntities(), consumptionComponents);
 
+        boolean modified = false;
         if (!consumptionComponents.isEmpty()) {
+            modified = true;
             transfersConsumption.setFieldValue(consumptionComponents);
         }
 
         if (!productionComponents.isEmpty()) {
+            modified = true;
             transfersProduction.setFieldValue(productionComponents);
         }
 
-        // TODO mici, consider adding those messages after fixing: SC#QCADOO-243
-        // if (modified) {
-        // view.getComponentByReference("form").addMessage("materialFlow.transformations.productsLoaded.success",
-        // MessageType.SUCCESS);
-        // } else {
-        // view.getComponentByReference("form").addMessage("materialFlow.transformations.productsLoaded.failure",
-        // MessageType.FAILURE);
-        // }
-
+        if (modified) {
+            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.productsLoaded.success",
+                    MessageType.SUCCESS);
+        } else {
+            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.productsLoaded.failure",
+                    MessageType.FAILURE);
+        }
     }
 
     private List<Entity> getTransfersFromProducts(final List<Entity> productComponents, final List<Entity> transfers) {
