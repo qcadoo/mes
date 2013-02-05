@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialRequirements.internal;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -69,6 +70,6 @@ public interface MaterialRequirementService {
      * @return mrpAlgorithm
      * 
      */
-    String getDefaultMrpAlgorithm();
+    MrpAlgorithm getDefaultMrpAlgorithm();
 
 }

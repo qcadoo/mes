@@ -260,7 +260,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     private Entity printMaterialReqForOrder(final ComponentState state) {
 
         Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
-        entityFieldsMap.put("mrpAlgorithm", getDefaultMrpAlgorithm());
+        entityFieldsMap.put("mrpAlgorithm", getDefaultMrpAlgorithm().getStringValue());
 
         entityFieldsMap.put("number", numberGeneratorService.generateNumber(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT));
@@ -282,8 +282,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     }
 
     @Override
-    public String getDefaultMrpAlgorithm() {
-        return MrpAlgorithm.ONLY_COMPONENTS.getStringValue();
+    public MrpAlgorithm getDefaultMrpAlgorithm() {
+        return MrpAlgorithm.ONLY_COMPONENTS;
     }
 
 }
