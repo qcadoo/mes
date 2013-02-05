@@ -15,4 +15,8 @@ public class ProductCriteriaModifiers {
         scb.add(SearchRestrictions.eq(ENTITY_TYPE, ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()));
     }
 
+    public void showParticularProductOnly(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));
+    }
+
 }

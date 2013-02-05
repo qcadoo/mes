@@ -59,13 +59,14 @@
 						<component type="lookup" name="product" field="product"
 							reference="product">
 							<option type="column" name="name" fields="name" link="true" />
-							<option type="column" name="entityType" fields="entityType" />
 							
-							<option type="searchable" value="number,name,entityType" />
-							<option type="orderable" value="number,name,entityType" />
+							<option type="searchable" value="number,name" />
+							<option type="orderable" value="number,name" />
 
 							<option type="expression" value="#number + ' - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+ 								method="showProductFamilyOnly" />
 						</component>
 					</layoutElement>
 				</component>
