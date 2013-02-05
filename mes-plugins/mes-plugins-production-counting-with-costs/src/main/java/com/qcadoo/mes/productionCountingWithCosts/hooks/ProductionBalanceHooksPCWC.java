@@ -42,4 +42,5 @@ public class ProductionBalanceHooksPCWC {
             entity.setField(reference, null);
         }
     }
+
 }

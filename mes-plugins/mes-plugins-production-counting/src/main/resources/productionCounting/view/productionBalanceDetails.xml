@@ -139,7 +139,7 @@
 								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 								method="fillProductAndRecordsNumber" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
-								method="setDefaultNameUsingOrder" />	
+								method="setDefaultNameUsingOrder" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
