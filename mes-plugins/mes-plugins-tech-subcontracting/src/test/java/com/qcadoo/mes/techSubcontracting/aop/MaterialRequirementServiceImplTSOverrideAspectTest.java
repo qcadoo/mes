@@ -33,6 +33,7 @@ import java.lang.reflect.Modifier;
 import org.junit.Test;
 
 import com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 
 public class MaterialRequirementServiceImplTSOverrideAspectTest {
 
@@ -43,7 +44,7 @@ public class MaterialRequirementServiceImplTSOverrideAspectTest {
         final Method method = clazz.getDeclaredMethod("getDefaultMrpAlgorithm");
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));
-        assertEquals(String.class, method.getReturnType());
+        assertEquals(MrpAlgorithm.class, method.getReturnType());
     }
 
 }
