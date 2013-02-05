@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -41,12 +42,12 @@ public class MaterialRequirementServiceImplTSOverrideAspect {
     @Autowired
     private MaterialRequirementServiceImplTSOverrideUtil materialRequirementServiceImplTSOverrideUtil;
 
-    @Pointcut("execution(public java.lang.String com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl.getDefaultMrpAlgorithm(..))")
+    @Pointcut("execution(public com.qcadoo.mes.technologies.constants.MrpAlgorithm com.qcadoo.mes.materialRequirements.internal.MaterialRequirementServiceImpl.getDefaultMrpAlgorithm(..))")
     public void getDefaultMrpAlgorithmExecution() {
     }
 
     @Around("getDefaultMrpAlgorithmExecution()")
-    public String aroundGetDefaultMrpAlgorithmExecution(final ProceedingJoinPoint pjp) {
+    public MrpAlgorithm aroundGetDefaultMrpAlgorithmExecution(final ProceedingJoinPoint pjp) {
         return materialRequirementServiceImplTSOverrideUtil.getDefaultMrpAlgorithm();
     }
 

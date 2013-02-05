@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.2.0-SNAPSHOT
  *
  * This file is part of Qcadoo.
@@ -23,15 +23,30 @@
  */
 package com.qcadoo.mes.techSubcontracting.aop;
 
-import org.springframework.stereotype.Service;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.Set;
 
-@Service
-public class MaterialRequirementServiceImplTSOverrideUtil {
+import org.junit.Test;
 
-    public MrpAlgorithm getDefaultMrpAlgorithm() {
-        return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
+import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
+
+public class ProductQuantitiesServiceImplTSOverrideAspectTest {
+
+    @Test
+    public final void checkGetProductComponentWithQuantitiesWithoutNonComponentsExecution() throws NoSuchMethodException {
+        Class<?> clazz = ProductQuantitiesServiceImpl.class;
+        assertEquals("com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("getProductComponentWithQuantitiesWithoutNonComponents", Map.class,
+                Set.class);
+        assertNotNull(method);
+        assertTrue(Modifier.isPrivate(method.getModifiers()));
+        assertEquals(Map.class, method.getReturnType());
     }
 
 }
