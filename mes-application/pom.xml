@@ -706,6 +706,11 @@
 					<artifactId>mes-commercial-plugins-integration-orc-order-supplies</artifactId>
 					<version>${mes.commercial.plugins.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.qcadoo.mes</groupId>
+					<artifactId>mes-commercial-plugins-negot-for-order-supplies-with-tech-subcontr</artifactId>
+					<version>${mes.commercial.plugins.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
