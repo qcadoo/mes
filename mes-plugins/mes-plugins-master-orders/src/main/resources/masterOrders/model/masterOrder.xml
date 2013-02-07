@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="masterOrder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="number" required="true" unique="true">
+			<validatesLength max="255" />
+		</string>
+		<string name="name" >
+			<validatesLength max="1024" />
+		</string>
+		<string name="description">
+			<validatesLength max="2048" />
+		</string>
+		<string name="externalNumber" unique="true"/>
+		<string name="defaultTechnology" persistent="false" />
+
+		<datetime name="deadline" />
+		
+		<boolean name="addMasterPrefixToNumber" />
+		
+		<decimal name="masterOrderQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="cumulatedOrderQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts" />
+		<dictionary name="masterOrderState" dictionary="masterOrderState" />
+
+		<belongsTo name="company" plugin="basic" model="company" />
+		<belongsTo name="product" plugin="basic" model="product" />
+		<belongsTo name="technology" plugin="technologies" model="technology" />
+
+		<boolean name="externalSynchronized" default="true" />
+		
+		<hasMany name="orders" joinField="masterOrder" model="order" plugin="orders" cascade="nullify"/>
+		
+		<hasMany name="masterOrderProducts" joinField="masterOrder" model="masterOrderProduct" />
+
+	</fields>
+	<hooks/>
+</model>

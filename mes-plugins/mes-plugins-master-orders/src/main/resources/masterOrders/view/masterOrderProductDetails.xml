@@ -1,0 +1,78 @@
+<view name="masterOrderProductDetails" modelName="masterOrderProduct"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	<component type="window" name="window">
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack" />
+		</ribbon>
+		<windowTab name="mainTab">
+			<component type="form" name="masterOrderProductDetails"
+				reference="form">
+				<component type="gridLayout" name="gridLayout" columns="1"
+					rows="5">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="product" reference="product"
+							field="product" hasDescription="true">
+							<option type="column" name="name" fields="name" link="true"
+								width="200" />
+							<option type="column" name="ean" fields="ean" />
+							<option type="searchable" value="name,ean" />
+							<option type="orderable" value="name,ean" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="defaultTechnology"
+							reference="defaultTechnology" field="defaultTechnology"
+							defaultEnabled="never" />
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="technology" reference="technology"
+							field="technology" source="#{product}.technologies"
+							hasDescription="true">
+							<option type="column" name="name" fields="name" link="true"
+								width="300" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
+							<option type="expression"
+								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="borderLayout" name="productQuantity">
+							<option type="label" value="productQuantityLabel" />
+							<component type="gridLayout" name="productQuantityGridLayout"
+								columns="4" rows="2" reference="productQuantityGridLayout"
+								hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="masterOrderQuantity"
+										field="masterOrderQuantity" reference="masterOrderQuantity" />
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="masterOrderQuantityUnit"
+										reference="masterOrderQuantityUnit" hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" width="3">
+									<component type="input" name="cumulatedOrderQuantity"
+										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
+										 />
+								</layoutElement>
+								<layoutElement column="4" row="2">
+									<component type="input" name="cumulatedOrderQuantityUnit"
+										reference="cumulatedOrderQuantityUnit" hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
+				</component>
+			</component>
+		</windowTab>
+	</component>
+</view>
