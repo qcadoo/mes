@@ -30,8 +30,8 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 @Service
 public class MaterialRequirementServiceImplTSOverrideUtil {
 
-    public String getDefaultMrpAlgorithm() {
-        return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS.getStringValue();
+    public MrpAlgorithm getDefaultMrpAlgorithm() {
+        return MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
     }
 
 }

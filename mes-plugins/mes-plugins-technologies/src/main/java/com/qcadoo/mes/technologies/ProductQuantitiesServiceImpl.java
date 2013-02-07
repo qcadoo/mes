@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.technologies;
 
-import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.QUANTITY;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT;
@@ -54,7 +53,6 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -93,7 +91,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(orders,
                 operationRuns, nonComponents);
 
-        return removeNonComponents(productComponentWithQuantities, nonComponents);
+        return getProductComponentWithQuantitiesWithoutNonComponents(productComponentWithQuantities, nonComponents);
     }
 
     @Override
@@ -254,8 +252,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 if (operationProductOutComponent.getBelongsToField(PRODUCT).getId().equals(technologyProduct.getId())) {
                     BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent);
 
-                    multiplyProductQuantitiesAndAddOperationRuns(operationComponent, givenQuantity, outQuantity, productComponentWithQuantities,
-                            operationRuns);
+                    multiplyProductQuantitiesAndAddOperationRuns(operationComponent, givenQuantity, outQuantity,
+                            productComponentWithQuantities, operationRuns);
 
                     break;
                 }
@@ -272,8 +270,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent);
                         BigDecimal inQuantity = productComponentWithQuantities.get(operationProductInComponent);
 
-                        multiplyProductQuantitiesAndAddOperationRuns(operationComponent, inQuantity, outQuantity, productComponentWithQuantities,
-                                operationRuns);
+                        multiplyProductQuantitiesAndAddOperationRuns(operationComponent, inQuantity, outQuantity,
+                                productComponentWithQuantities, operationRuns);
 
                         break;
                     }
@@ -291,8 +289,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    private void multiplyProductQuantitiesAndAddOperationRuns(final Entity operationComponent, final BigDecimal needed, final BigDecimal actual,
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Map<Entity, BigDecimal> operationRuns) {
+    private void multiplyProductQuantitiesAndAddOperationRuns(final Entity operationComponent, final BigDecimal needed,
+            final BigDecimal actual, final Map<Entity, BigDecimal> productComponentWithQuantities,
+            final Map<Entity, BigDecimal> operationRuns) {
         BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
 
         if (!operationComponent.getBooleanField(ARE_PRODUCT_QUANTITIES_DIVISIBLE)) {
@@ -384,31 +383,13 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         productWithQuantities.put(product, newQuantity);
     }
 
-    private Map<Entity, BigDecimal> removeNonComponents(final Map<Entity, BigDecimal> productComponentQuantities,
-            final Set<Entity> nonComponents) {
+    private Map<Entity, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
+            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents) {
         for (Entity nonComponent : nonComponents) {
-            Entity product = nonComponent.getBelongsToField(PRODUCT);
-            Entity technologyOperationComponent = nonComponent.getBelongsToField(OPERATION_COMPONENT);
-
-            List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
-                    .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();
-
-            boolean isSubcontracting = false;
-            for (Entity child : children) {
-                Entity operationProductOutComponent = child.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
-
-                if (operationProductOutComponent != null) {
-                    isSubcontracting = true;
-                }
-            }
-
-            if (!isSubcontracting) {
-                productComponentQuantities.remove(nonComponent);
-            }
+            productComponentWithQuantities.remove(nonComponent);
         }
 
-        return productComponentQuantities;
+        return productComponentWithQuantities;
     }
 
     @Override

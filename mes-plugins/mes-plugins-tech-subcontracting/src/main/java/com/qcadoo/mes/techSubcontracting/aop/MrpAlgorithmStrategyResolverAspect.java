@@ -54,17 +54,13 @@ public abstract class MrpAlgorithmStrategyResolverAspect {
     public Map<Entity, BigDecimal> aroundGetProductsMethodExecution(final ProceedingJoinPoint pjp,
             final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents,
             final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) throws Throwable {
-        Map<Entity, BigDecimal> productWithQuantities = null;
-
         if (PluginUtils.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER)
                 && getAlgorithmService().isApplicableFor(mrpAlgorithm)) {
-            productWithQuantities = getAlgorithmService().perform(productComponentWithQuantities, nonComponents, mrpAlgorithm,
+            return getAlgorithmService().perform(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                     operationProductComponentModelName);
         } else {
-            productWithQuantities = (Map<Entity, BigDecimal>) pjp.proceed();
+            return (Map<Entity, BigDecimal>) pjp.proceed();
         }
-
-        return productWithQuantities;
     }
 
 }

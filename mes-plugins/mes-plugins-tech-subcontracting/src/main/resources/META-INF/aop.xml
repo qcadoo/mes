@@ -29,5 +29,6 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.techSubcontracting.aop.MaterialRequirementServiceImplTSOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontracting.aop.MrpAlgorithmStrategyTSResolverAspect" />
+		<aspect name="com.qcadoo.mes.techSubcontracting.aop.ProductQuantitiesServiceImplTSOverrideAspect" />
 	</aspects>
 </aspectj>

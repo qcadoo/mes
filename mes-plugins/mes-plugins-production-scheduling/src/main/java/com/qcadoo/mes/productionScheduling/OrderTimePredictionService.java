@@ -182,7 +182,6 @@ public class OrderTimePredictionService {
         } else {
             order.setField("realizationTime", maxPathTime);
             Date startTime = (Date) order.getField(DATE_FROM);
-            Date stopTime = (Date) order.getField(DATE_TO);
             if (startTime == null) {
                 startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
