@@ -50,6 +50,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -105,20 +106,22 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     public void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        Entity shift = form.getEntity();
         for (String day : WEEK_DAYS) {
-            updateDayFieldState(day, viewDefinitionState);
+            updateDayFieldState(day, viewDefinitionState, shift);
         }
     }
 
-    public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState) {
-        FieldComponent mondayWorking = (FieldComponent) viewDefinitionState.getComponentByReference(day + WORKING_LITERAL);
-        FieldComponent mondayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
-        if (mondayWorking.getFieldValue().equals("0")) {
-            mondayHours.setEnabled(false);
-            mondayHours.setRequired(false);
+    public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState, final Entity shift) {
+
+        FieldComponent dayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
+        if (!shift.getBooleanField(day + WORKING_LITERAL)) {
+            dayHours.setEnabled(false);
+            dayHours.setRequired(false);
         } else {
-            mondayHours.setEnabled(true);
-            mondayHours.setRequired(true);
+            dayHours.setEnabled(true);
+            dayHours.setRequired(true);
         }
     }
 
