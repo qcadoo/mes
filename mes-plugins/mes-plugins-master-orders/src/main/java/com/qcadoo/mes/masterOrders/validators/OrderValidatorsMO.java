@@ -39,9 +39,13 @@ public class OrderValidatorsMO {
             return isValid;
         }
         if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
-            isValid = checkTechnologyAndProductFieldForOneProductType(orderDD, order, masterOrder);
+            if (!checkTechnologyAndProductFieldForOneProductType(orderDD, order, masterOrder)) {
+                isValid = false;
+            }
         } else {
-            isValid = checkIfExistsMasterOrderWithTechAndProduct(orderDD, order, masterOrder);
+            if (checkIfExistsMasterOrderWithTechAndProduct(orderDD, order, masterOrder)) {
+                isValid = false;
+            }
         }
         if (!isValid) {
             addErrorToEntity(orderDD, order, masterOrder, TECHNOLOGY);
@@ -50,7 +54,6 @@ public class OrderValidatorsMO {
         if (!checkCompanyAndDeadline(orderDD, order, masterOrder)) {
             isValid = false;
         }
-        ;
         return isValid;
     }
 
@@ -88,7 +91,7 @@ public class OrderValidatorsMO {
 
     private boolean checkIfExistsMasterOrderWithTechAndProduct(final DataDefinition orderDD, final Entity order,
             final Entity masterOrder) {
-        List<Entity> masterOrdersWithProductAndTechnology = orderDD.find()
+        List<Entity> masterOrdersWithProductAndTechnology = masterOrder.getDataDefinition().find()
                 .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
                 .add(SearchRestrictions.belongsTo(TECHNOLOGY, order.getBelongsToField(TECHNOLOGY))).list().getEntities();
         return masterOrdersWithProductAndTechnology.isEmpty();
@@ -97,7 +100,7 @@ public class OrderValidatorsMO {
     private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder, final String reference) {
         Entity fieldFromMaster = masterOrder.getBelongsToField(reference);
         Entity fieldFromOrder = order.getBelongsToField(reference);
-        if (fieldFromMaster == null && fieldFromOrder == null) {
+        if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
             return true;
         }
         if (fieldFromMaster != null && fieldFromOrder != null && fieldFromOrder.getId().equals(fieldFromMaster.getId())) {
@@ -109,11 +112,12 @@ public class OrderValidatorsMO {
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
         Date deadlineFromMaster = (Date) masterOrder.getField(DEADLINE);
         Date deadlineFromOrder = (Date) order.getField(DEADLINE);
-        if (deadlineFromMaster == null && deadlineFromOrder == null) {
+        if ((deadlineFromMaster == null && deadlineFromOrder == null)
+                || (deadlineFromMaster == null && deadlineFromOrder != null)) {
             return true;
         }
         if ((deadlineFromMaster != null && deadlineFromOrder == null)
-                || (deadlineFromMaster == null && deadlineFromOrder != null)) {
+                || (deadlineFromMaster != null && deadlineFromOrder == null)) {
             return false;
         }
         if (deadlineFromOrder.equals(deadlineFromMaster)) {

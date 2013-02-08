@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
+import static com.qcadoo.mes.basic.constants.ParameterFields.COMPANY;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,36 +73,36 @@ public class CompanyService {
 
     }
 
-    public final Boolean getOwning(final FormComponent form) {
-
-        if (form.getEntityId() == null) {
+    public final Boolean isCompanyOwner(final Entity company) {
+        if (company.getId() == null) {
             return Boolean.FALSE;
         }
 
-        Entity company = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
-                form.getEntityId());
+        Entity companyFromDB = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY).get(
+                company.getId());
 
-        if (company == null) {
+        if (companyFromDB == null) {
             return Boolean.FALSE;
         }
+
         Entity parameter = parameterService.getParameter();
-        Entity owner = parameter.getBelongsToField(ParameterFields.COMPANY);
-        return company.getId().equals(owner.getId());
+        Entity owner = parameter.getBelongsToField(COMPANY);
+
+        return companyFromDB.getId().equals(owner.getId());
     }
 
-    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state, String... references) {
+    public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view, final String... references) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Boolean isOwner = isCompanyOwner(companyForm.getEntity());
 
-        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
-        Boolean owner = getOwning(form);
-
-        if (owner.booleanValue()) {
-            disableGridComponents(state, references);
+        if (isOwner) {
+            disableGridComponents(view, references);
         }
     }
 
-    private void disableGridComponents(final ViewDefinitionState state, String... references) {
+    private void disableGridComponents(final ViewDefinitionState view, final String... references) {
         for (String reference : references) {
-            ComponentState component = state.getComponentByReference(reference);
+            ComponentState component = view.getComponentByReference(reference);
             if (component instanceof GridComponent) {
                 ((GridComponent) component).setEditable(false);
             }

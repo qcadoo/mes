@@ -1,8 +1,6 @@
 package com.qcadoo.mes.masterOrders.validators;
 
 import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -38,7 +36,7 @@ public class OrderValidatorsMOTest {
     private OrderValidatorsMO orderValidatorsMO;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition orderDD, masterDD;
 
     @Mock
     private TranslationService translationService;
@@ -64,10 +62,12 @@ public class OrderValidatorsMOTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(orderValidatorsMO, "translationService", translationService);
-        when(order.getDataDefinition()).thenReturn(dataDefinition);
-        when(dataDefinition.getField(OrderFields.PRODUCT)).thenReturn(productDD);
-        when(dataDefinition.getField(OrderFields.TECHNOLOGY)).thenReturn(technologyDD);
-        when(dataDefinition.getField(OrderFields.COMPANY)).thenReturn(companyDD);
+        when(order.getDataDefinition()).thenReturn(orderDD);
+        when(orderDD.getField(OrderFields.PRODUCT)).thenReturn(productDD);
+        when(orderDD.getField(OrderFields.TECHNOLOGY)).thenReturn(technologyDD);
+        when(orderDD.getField(OrderFields.COMPANY)).thenReturn(companyDD);
+
+        when(masterOrder.getDataDefinition()).thenReturn(masterDD);
 
         PowerMockito.mockStatic(SearchRestrictions.class);
     }
@@ -78,7 +78,7 @@ public class OrderValidatorsMOTest {
         when(order.getBelongsToField(MASTER_ORDER)).thenReturn(null);
 
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(dataDefinition, order);
+        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
         // then
         Assert.assertEquals(true, result);
     }
@@ -89,7 +89,7 @@ public class OrderValidatorsMOTest {
         when(order.getStringField(MASTER_ORDER)).thenReturn("01undefined");
 
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(dataDefinition, order);
+        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
         // then
         Assert.assertEquals(true, result);
     }
@@ -110,7 +110,7 @@ public class OrderValidatorsMOTest {
         when(productMO.getId()).thenReturn(masterProductId);
         when(product.getId()).thenReturn(orderProductId);
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(dataDefinition, order);
+        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
         // then
         Assert.assertEquals(false, result);
     }
@@ -123,17 +123,14 @@ public class OrderValidatorsMOTest {
         when(order.getBelongsToField(OrderFields.PRODUCT)).thenReturn(product);
         when(order.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology);
 
-        SearchCriterion criterion = SearchRestrictions.belongsTo(PRODUCT, product);
-        SearchCriterion criterion2 = SearchRestrictions.belongsTo(TECHNOLOGY, technology);
-
-        when(dataDefinition.find()).thenReturn(searchCriteriaBuilder);
+        when(masterDD.find()).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).thenReturn(searchCriteriaBuilder);
         when(searchCriteriaBuilder.list()).thenReturn(searchResult);
 
         when(searchResult.getEntities()).thenReturn(masterOrders);
         when(masterOrders.isEmpty()).thenReturn(false);
 
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(dataDefinition, order);
+        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
         // then
         Assert.assertEquals(false, result);
 
@@ -171,7 +168,7 @@ public class OrderValidatorsMOTest {
         when(company.getId()).thenReturn(orderCompanyId);
 
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(dataDefinition, order);
+        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
         // then
         Assert.assertEquals(true, result);
 

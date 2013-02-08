@@ -7,6 +7,7 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
@@ -22,7 +23,8 @@ public class MasterOrderDetailsHooks {
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view) {
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
         Object masterOrderTypeValue = masterOrderType.getFieldValue();
-        if (masterOrderTypeValue == null || masterOrderTypeValue.equals(MasterOrderType.UNDEFINED.getStringValue())) {
+        if (masterOrderTypeValue == null || StringUtils.isEmpty(masterOrderTypeValue.toString())
+                || masterOrderTypeValue.equals(MasterOrderType.UNDEFINED.getStringValue())) {
             invisibleFields(view, false, false);
         } else if (masterOrderTypeValue.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             invisibleFields(view, true, false);

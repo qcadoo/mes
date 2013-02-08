@@ -71,6 +71,9 @@
 		<onCopy 
 			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
 			method="setInitialState" />
+		<onCopy 
+			class="com.qcadoo.mes.productionCounting.hooks.ProductionRecordModelHooks" 
+			method="clearLaborAndMachineTime" />
 		<onSave
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordService"
 			method="generateData" />

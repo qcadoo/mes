@@ -9,7 +9,7 @@
 			<component type="form" name="masterOrderProductDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
-					rows="5">
+					rows="4">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" reference="product"
 							field="product" hasDescription="true">

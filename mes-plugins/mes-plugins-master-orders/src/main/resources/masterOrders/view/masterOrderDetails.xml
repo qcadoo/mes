@@ -15,7 +15,7 @@
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2">
+					<layoutElement column="1" row="2" height="2">
 						<component type="textarea" name="name" field="name"
 							reference="name" />
 					</layoutElement>

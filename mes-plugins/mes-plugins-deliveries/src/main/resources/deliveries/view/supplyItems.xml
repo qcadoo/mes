@@ -38,7 +38,7 @@
 			<option type="column" name="deliveryDate" fields="delivery"
 				expression="#delivery['deliveryDate']" />
 			<option type="column" name="deliveryState" fields="delivery"
-				expression="'@deliveries.delivery.state.value.'+#delivery['state']" />
+				expression="'@deliveries.delivery.state.value.' + #delivery['state']" />
 			<option type="column" name="deliveryNumber" fields="delivery"
 				expression="#delivery['number']" />
 			<option type="column" name="deliveryName" fields="delivery"
@@ -51,14 +51,14 @@
 			<option type="column" name="productUnit" fields="product"
 				expression="#product['unit']" />
 			<option type="column" name="supplier" fields="delivery"
-				expression="#delivery['supplier']==null? '' :#delivery['supplier'].get('name')" />
+				expression="(#delivery['supplier'] == null) ? '' : #delivery['supplier'].get('name')" />
 				
 			<option type="order" column="deliveryDate" direction="asc" />
 			
 			<option type="searchable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplier" />
 			<option type="orderable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,supplier" />
+				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplier" />
 				
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
