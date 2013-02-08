@@ -1,11 +1,14 @@
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -25,8 +28,17 @@ public class CompanyDetailsHooksD {
     @Autowired
     private CompanyService companyService;
 
-    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
-        companyService.disabledGridWhenCompanyIsAnOwner(state, "productsFamilies", "products");
+    public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view) {
+        companyService.disabledGridWhenCompanyIsOwner(view, "productsFamilies", "products");
+    }
+
+    public void disableBufferWhenCompanyIsOwner(final ViewDefinitionState view) {
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Boolean isOwner = companyService.isCompanyOwner(companyForm.getEntity());
+
+        FieldComponent buffer = (FieldComponent) view.getComponentByReference(BUFFER);
+
+        buffer.setEnabled(!isOwner);
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {

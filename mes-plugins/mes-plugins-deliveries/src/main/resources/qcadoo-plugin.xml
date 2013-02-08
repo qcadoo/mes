@@ -166,7 +166,11 @@
 	
 		<view:view-hook plugin="basic" view="companyDetails"
 			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
-			method="disabledGridWhenCompanyIsAnOwner" />		
+			method="disabledGridWhenCompanyIsOwner" />
+			
+		<view:view-hook plugin="basic" view="companyDetails"
+			type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+			method="disableBufferWhenCompanyIsOwner" />
 
 		<custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService" />
 	</modules>

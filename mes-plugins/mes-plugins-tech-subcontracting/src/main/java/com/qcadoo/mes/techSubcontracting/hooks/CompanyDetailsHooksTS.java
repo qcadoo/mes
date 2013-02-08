@@ -12,8 +12,8 @@ public class CompanyDetailsHooksTS {
     @Autowired
     private CompanyService companyService;
 
-    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState state) {
-        companyService.disabledGridWhenCompanyIsAnOwner(state, "operationGroups", "operations");
+    public void disabledGridWhenCompanyIsAnOwner(final ViewDefinitionState view) {
+        companyService.disabledGridWhenCompanyIsOwner(view, "operationGroups", "operations");
     }
 
 }
