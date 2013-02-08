@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.LABOR_TIME;
+import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.MACHINE_TIME;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +44,13 @@ public class ProductionRecordModelHooks {
     @Autowired
     private ProductionRecordStateChangeDescriber describer;
 
-    public void setInitialState(final DataDefinition dataDefinition, final Entity productionRecord) {
+    public void setInitialState(final DataDefinition productionRecordDD, final Entity productionRecord) {
         stateChangeEntityBuilder.buildInitial(describer, productionRecord, ProductionRecordState.DRAFT);
     }
+
+    public void clearLaborAndMachineTime(final DataDefinition productionRecordDD, final Entity productionRecord) {
+        productionRecord.setField(LABOR_TIME, 0);
+        productionRecord.setField(MACHINE_TIME, 0);
+    }
+
 }
