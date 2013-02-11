@@ -42,7 +42,7 @@ public class ResourceModelValidators {
 
             if (!"02warehouse".equals(type)) {
                 resource.addError(resourceDD.getField(LOCATION),
-                        "materialFlowResources.validate.global.error.locationIsNotWaregouse");
+                        "materialFlowResources.validate.global.error.locationIsNotWarehouse");
 
                 return false;
             }
