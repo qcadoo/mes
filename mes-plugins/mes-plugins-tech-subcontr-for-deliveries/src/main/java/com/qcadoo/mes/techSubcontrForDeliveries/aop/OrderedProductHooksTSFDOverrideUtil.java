@@ -62,7 +62,8 @@ public class OrderedProductHooksTSFDOverrideUtil {
         if (orderedProductFromDB == null) {
             return true;
         } else {
-            orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.alreadyExists");
+            orderedProduct.addError(orderedProductDD.getField(PRODUCT),
+                    "deliveries.orderedProduct.error.productWithOperationAlreadyExists");
 
             return false;
         }
