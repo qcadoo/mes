@@ -51,7 +51,7 @@
 			<option type="column" name="productUnit" fields="product"
 				expression="#product['unit']" />
 			<option type="column" name="supplier" fields="delivery"
-				expression="(#delivery['supplier'] == null) ? '' : #delivery['supplier'].get('name')" />
+				expression="#delivery.get('supplier')?.get('name')" />
 				
 			<option type="order" column="deliveryDate" direction="asc" />
 			
