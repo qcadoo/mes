@@ -1,6 +1,7 @@
 package com.qcadoo.mes.masterOrders.validators;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -28,37 +30,29 @@ public class OrderValidatorsMO {
     @Autowired
     private TranslationService translationService;
 
-    public boolean checkOrderFieldWithMasterOrders(final DataDefinition orderDD, final Entity order) {
+    public boolean checkOrderNumber(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
+        if (masterOrder == null) {
+            return true;
+        }
+        if (!masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
+            return true;
+        }
+        String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
+        String orderNumber = order.getStringField(OrderFields.NUMBER);
+        if (!orderNumber.startsWith(masterOrderNumber)) {
+            order.addError(orderDD.getField(OrderFields.NUMBER), "masterOrders.order.number.numberHasNotPreffix");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkCompanyAndDeadline(final DataDefinition orderDD, final Entity order) {
         boolean isValid = true;
+        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
         if (masterOrder == null) {
             return isValid;
         }
-        String masterOrderType = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE);
-        if (masterOrderType == null || masterOrderType.equals(MasterOrderType.UNDEFINED.getStringValue())) {
-            return isValid;
-        }
-        if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
-            if (!checkTechnologyAndProductFieldForOneProductType(orderDD, order, masterOrder)) {
-                isValid = false;
-            }
-        } else {
-            if (checkIfExistsMasterOrderWithTechAndProduct(orderDD, order, masterOrder)) {
-                isValid = false;
-            }
-        }
-        if (!isValid) {
-            addErrorToEntity(orderDD, order, masterOrder, TECHNOLOGY);
-            addErrorToEntity(orderDD, order, masterOrder, PRODUCT);
-        }
-        if (!checkCompanyAndDeadline(orderDD, order, masterOrder)) {
-            isValid = false;
-        }
-        return isValid;
-    }
-
-    private boolean checkCompanyAndDeadline(final DataDefinition orderDD, final Entity order, final Entity masterOrder) {
-        boolean isValid = true;
         if (!checkIfBelongToFieldIsTheSame(order, masterOrder, COMPANY)) {
             Entity company = masterOrder.getBelongsToField(COMPANY);
             order.addError(orderDD.getField(COMPANY), "masterOrders.order.masterOrder.company.fieldIsNotTheSame",
@@ -73,6 +67,32 @@ public class OrderValidatorsMO {
                     deadline == null ? translationService.translate("masterOrders.order.masterOrder.deadline.hasNotDeadline",
                             Locale.getDefault()) : deadline.toString());
             isValid = false;
+        }
+        return isValid;
+    }
+
+    public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
+        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
+        boolean isValid = true;
+        if (masterOrder == null) {
+            return isValid;
+        }
+        String masterOrderType = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE);
+        if (masterOrderType == null) {
+            return isValid;
+        }
+        if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+            if (!checkTechnologyAndProductFieldForOneProductType(orderDD, order, masterOrder)) {
+                isValid = false;
+            }
+        } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+            if (checkIfExistsMasterOrderWithTechAndProduct(orderDD, order, masterOrder)) {
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            addErrorToEntity(orderDD, order, masterOrder, TECHNOLOGY);
+            addErrorToEntity(orderDD, order, masterOrder, PRODUCT);
         }
         return isValid;
     }

@@ -44,5 +44,8 @@
 		<hasMany name="masterOrderProducts" joinField="masterOrder" model="masterOrderProduct" />
 
 	</fields>
-	<hooks/>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators" method="checkIfCanChangedCompany"/>
+		<validatesWith class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators" method="checkIfCanChangedDeadline"/>
+	</hooks>
 </model>

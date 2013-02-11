@@ -78,7 +78,7 @@ public class OrderValidatorsMOTest {
         when(order.getBelongsToField(MASTER_ORDER)).thenReturn(null);
 
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
+        boolean result = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
         // then
         Assert.assertEquals(true, result);
     }
@@ -89,7 +89,7 @@ public class OrderValidatorsMOTest {
         when(order.getStringField(MASTER_ORDER)).thenReturn("01undefined");
 
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
+        boolean result = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
         // then
         Assert.assertEquals(true, result);
     }
@@ -110,7 +110,7 @@ public class OrderValidatorsMOTest {
         when(productMO.getId()).thenReturn(masterProductId);
         when(product.getId()).thenReturn(orderProductId);
         // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
+        boolean result = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
         // then
         Assert.assertEquals(false, result);
     }
@@ -130,47 +130,10 @@ public class OrderValidatorsMOTest {
         when(searchResult.getEntities()).thenReturn(masterOrders);
         when(masterOrders.isEmpty()).thenReturn(false);
 
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
-        // then
-        Assert.assertEquals(false, result);
-
-    }
-
-    @Test
-    public final void shouldReturnTrueWhenAllOfFieldsIsTheSame() {
-        Long orderProductId = 1L;
-        Long masterProductId = 1L;
-        Long orderTechnologyId = 1L;
-        Long masterTechnologyId = 1L;
-        Long orderCompanyId = 1L;
-        Long masterCompanyId = 1L;
-        // given
-        when(order.getBelongsToField(MASTER_ORDER)).thenReturn(masterOrder);
-        when(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).thenReturn("02oneProduct");
-        when(masterOrder.getBelongsToField(MasterOrderFields.PRODUCT)).thenReturn(productMO);
-        when(order.getBelongsToField(OrderFields.PRODUCT)).thenReturn(product);
-
-        when(productMO.getId()).thenReturn(masterProductId);
-        when(product.getId()).thenReturn(orderProductId);
-
-        when(order.getBelongsToField(MASTER_ORDER)).thenReturn(masterOrder);
-        when(masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY)).thenReturn(technologyMO);
-        when(order.getBelongsToField(OrderFields.TECHNOLOGY)).thenReturn(technology);
-
-        when(technologyMO.getId()).thenReturn(masterTechnologyId);
-        when(technology.getId()).thenReturn(orderTechnologyId);
-
-        when(order.getBelongsToField(MASTER_ORDER)).thenReturn(masterOrder);
-        when(masterOrder.getBelongsToField(MasterOrderFields.COMPANY)).thenReturn(companyMO);
-        when(order.getBelongsToField(OrderFields.COMPANY)).thenReturn(company);
-
-        when(companyMO.getId()).thenReturn(masterCompanyId);
-        when(company.getId()).thenReturn(orderCompanyId);
-
-        // when
-        boolean result = orderValidatorsMO.checkOrderFieldWithMasterOrders(orderDD, order);
+        boolean result = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
         // then
         Assert.assertEquals(true, result);
 
     }
+
 }
