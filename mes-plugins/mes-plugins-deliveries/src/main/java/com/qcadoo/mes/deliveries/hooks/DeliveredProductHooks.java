@@ -54,7 +54,7 @@ public class DeliveredProductHooks {
         if (deliveredProductFromDB == null) {
             return true;
         } else {
-            deliveredProduct.addError(deliveredProductDD.getField(PRODUCT), "deliveries.delivedProduct.error.alreadyExists");
+            deliveredProduct.addError(deliveredProductDD.getField(PRODUCT), "deliveries.deliveredProduct.error.alreadyExists");
 
             return false;
         }
