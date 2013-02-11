@@ -47,5 +47,6 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators" method="checkIfCanChangedCompany"/>
 		<validatesWith class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators" method="checkIfCanChangedDeadline"/>
+		<validatesWith class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators" method="checkIfMasterOrderHaveOrderWithWrongName"/>
 	</hooks>
 </model>

@@ -289,7 +289,7 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="changeOrderProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
 								method="fillProductUnit" />

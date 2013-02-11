@@ -16,4 +16,8 @@ public class MasterOrderDetailsListeners {
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
     }
+
+    public void fillUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        masterOrderDetailsHooks.fillUnitField(view);
+    }
 }

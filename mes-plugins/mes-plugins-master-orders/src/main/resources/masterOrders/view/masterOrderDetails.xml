@@ -78,6 +78,8 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange" method="fillUnitField"
+							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
@@ -196,5 +198,12 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="hideFieldDependOnMasterOrderType" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="fillUnitField" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="generateMasterOrderNumer" />
+			
 	</hooks>
 </view>

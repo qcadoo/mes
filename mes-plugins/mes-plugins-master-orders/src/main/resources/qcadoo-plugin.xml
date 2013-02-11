@@ -52,6 +52,10 @@
 			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
 				method="checkCompanyAndDeadline" />
 		</model:model-hook>
+		<model:model-hook model="order" plugin="orders">
+			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+				method="checkOrderNumber" />
+		</model:model-hook>
 
 		<menu:menu-item name="masterOrders" category="orders"
 			view="masterOrdersList" />

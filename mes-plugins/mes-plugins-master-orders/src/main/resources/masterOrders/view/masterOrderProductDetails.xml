@@ -21,6 +21,8 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange" method="fillUnitField"
+								class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
@@ -59,8 +61,7 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="cumulatedOrderQuantity"
-										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-										 />
+										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity" />
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="cumulatedOrderQuantityUnit"
@@ -75,4 +76,9 @@
 			</component>
 		</windowTab>
 	</component>
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
+			method="fillUnitField" />
+	</hooks>
 </view>

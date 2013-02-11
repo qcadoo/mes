@@ -41,7 +41,8 @@ public class OrderValidatorsMO {
         String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
         String orderNumber = order.getStringField(OrderFields.NUMBER);
         if (!orderNumber.startsWith(masterOrderNumber)) {
-            order.addError(orderDD.getField(OrderFields.NUMBER), "masterOrders.order.number.numberHasNotPreffix");
+            order.addError(orderDD.getField(OrderFields.NUMBER), "masterOrders.order.number.numberHasNotPreffix",
+                    masterOrderNumber);
             return false;
         }
         return true;

@@ -27,10 +27,13 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,6 +41,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class OrderDetailsListeners {
@@ -48,6 +52,9 @@ public class OrderDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     public void showOrderParameters(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Long orderId = (Long) componentState.getFieldValue();
@@ -89,6 +96,22 @@ public class OrderDetailsListeners {
             copyDate(view, CORRECTED_DATE_TO, DATE_TO);
         }
 
+    }
+
+    public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        LookupComponent productLookup = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCT);
+        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
+        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
+
+        Entity product = productLookup.getEntity();
+        defaultTechnology.setFieldValue("");
+        technology.setFieldValue(null);
+        if (product != null) {
+            Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+            if (defaultTechnologyEntity != null) {
+                technology.setFieldValue(defaultTechnologyEntity.getId());
+            }
+        }
     }
 
     private Entity getOrderFromForm(final Long id) {

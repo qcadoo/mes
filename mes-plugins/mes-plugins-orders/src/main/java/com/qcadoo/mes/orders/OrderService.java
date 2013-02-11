@@ -68,13 +68,13 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -98,6 +98,9 @@ public class OrderService {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
@@ -180,7 +183,7 @@ public class OrderService {
     public String makeDefaultName(final Entity productEntity, Entity technologyEntity, final Locale locale) {
 
         if (technologyEntity == null) {
-            technologyEntity = getDefaultTechnology(productEntity.getId());
+            technologyEntity = technologyServiceO.getDefaultTechnology(productEntity);
         }
 
         String technologyNumber = L_EMPTY_NUMBER;
@@ -204,26 +207,6 @@ public class OrderService {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(id);
     }
 
-    public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
-        if (!(state instanceof FieldComponent)) {
-            return;
-        }
-        FieldComponent product = (FieldComponent) state;
-        FieldComponent technology = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY);
-        FieldComponent defaultTechnology = (FieldComponent) viewDefinitionState.getComponentByReference("defaultTechnology");
-
-        defaultTechnology.setFieldValue("");
-        technology.setFieldValue(null);
-
-        if (product.getFieldValue() != null) {
-            Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
-
-            if (defaultTechnologyEntity != null) {
-                technology.setFieldValue(defaultTechnologyEntity.getId());
-            }
-        }
-    }
-
     public void setAndDisableState(final ViewDefinitionState state) {
         FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
         FieldComponent orderState = (FieldComponent) state.getComponentByReference(STATE);
@@ -243,11 +226,12 @@ public class OrderService {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState state) {
-        FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
+        LookupComponent productField = (LookupComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
 
-        if (product.getFieldValue() != null) {
-            Entity defaultTechnologyEntity = getDefaultTechnology((Long) product.getFieldValue());
+        Entity product = productField.getEntity();
+        if (product != null) {
+            Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
             if (defaultTechnologyEntity != null) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
                         state.getLocale());
@@ -431,22 +415,6 @@ public class OrderService {
         }
 
         return true;
-    }
-
-    private Entity getDefaultTechnology(final Long selectedProductId) {
-        DataDefinition instructionDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-
-        SearchCriteriaBuilder searchCriteria = instructionDD.find().setMaxResults(1).add(SearchRestrictions.eq("master", true))
-                .add(SearchRestrictions.eq("active", true)).belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
-
-        SearchResult searchResult = searchCriteria.list();
-
-        if (searchResult.getTotalNumberOfEntities() == 1) {
-            return searchResult.getEntities().get(0);
-        } else {
-            return null;
-        }
     }
 
     private boolean hasAnyTechnologies(final Long selectedProductId) {

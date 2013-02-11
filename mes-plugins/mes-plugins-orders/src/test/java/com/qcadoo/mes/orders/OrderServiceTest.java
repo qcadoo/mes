@@ -103,6 +103,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @RunWith(PowerMockRunner.class)
@@ -127,12 +128,15 @@ public class OrderServiceTest {
 
     private ParameterService parameterService;
 
+    private TechnologyServiceO technologyServiceO;
+
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         translationService = mock(TranslationService.class);
         numberGeneratorService = mock(NumberGeneratorService.class);
         parameterService = mock(ParameterService.class);
+        technologyServiceO = mock(TechnologyServiceO.class);
         ExpressionService expressionService = mock(ExpressionService.class);
         orderService = new OrderService();
         setField(orderService, "dataDefinitionService", dataDefinitionService);
@@ -140,6 +144,7 @@ public class OrderServiceTest {
         setField(orderService, "numberGeneratorService", numberGeneratorService);
         setField(orderService, "expressionService", expressionService);
         setField(orderService, "parameterService", parameterService);
+        setField(orderService, "technologyServiceO", technologyServiceO);
     }
 
     @Test
@@ -750,93 +755,6 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldChangeOrderProductToNull() throws Exception {
-        // given
-        FieldComponent product = mock(FieldComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-        FieldComponent defaultTechnology = mock(FieldComponent.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(null);
-
-        // when
-        orderService.changeOrderProduct(viewDefinitionState, product, new String[0]);
-
-        // then
-        verify(defaultTechnology).setFieldValue("");
-        verify(technology).setFieldValue(null);
-    }
-
-    @Test
-    public void shouldChangeOrderProductWithoutDefaultTechnology() throws Exception {
-        // given
-        SearchResult searchResult = mock(SearchResult.class);
-        FieldComponent product = mock(FieldComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-        FieldComponent defaultTechnology = mock(FieldComponent.class);
-        FieldDefinition masterField = mock(FieldDefinition.class);
-        FieldDefinition productField = mock(FieldDefinition.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(13L);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
-        given(dataDefinition.getField("master")).willReturn(masterField);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(masterField.getType()).willReturn(new BooleanType());
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
-
-        // when
-        orderService.changeOrderProduct(viewDefinitionState, product, new String[0]);
-
-        // then
-        verify(defaultTechnology).setFieldValue("");
-        verify(technology).setFieldValue(null);
-    }
-
-    @Test
-    public void shouldChangeOrderProductWithDefaultTechnology() throws Exception {
-        // given
-        SearchResult searchResult = mock(SearchResult.class);
-        Entity entity = mock(Entity.class);
-        FieldComponent product = mock(FieldComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-        FieldComponent defaultTechnology = mock(FieldComponent.class);
-        FieldDefinition masterField = mock(FieldDefinition.class);
-        FieldDefinition productField = mock(FieldDefinition.class);
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(13L);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any()))
-                        .add(SearchRestrictions.eq("active", any())).belongsTo(anyString(), any()).list()).willReturn(
-                searchResult);
-        given(dataDefinition.getField("master")).willReturn(masterField);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(masterField.getType()).willReturn(new BooleanType());
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(1);
-        given(searchResult.getEntities()).willReturn(Collections.singletonList(entity));
-        given(entity.getId()).willReturn(117L);
-
-        // when
-        orderService.changeOrderProduct(viewDefinitionState, product, new String[0]);
-
-        // then
-        verify(defaultTechnology).setFieldValue("");
-        verify(technology).setFieldValue(117L);
-    }
-
-    @Test
     public void shouldSetAndDisableState() throws Exception {
         // given
         FormComponent form = mock(FormComponent.class);
@@ -888,12 +806,12 @@ public class OrderServiceTest {
     @Test
     public void shouldNotFillDefaultTechnologyIfThereIsNoProduct() throws Exception {
         // given
-        FieldComponent product = mock(FieldComponent.class);
+        LookupComponent product = mock(LookupComponent.class);
         FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(null);
+        given(product.getEntity()).willReturn(null);
 
         // when
         orderService.fillDefaultTechnology(viewDefinitionState);
@@ -905,26 +823,16 @@ public class OrderServiceTest {
     @Test
     public void shouldNotFillDefaultTechnologyIfThereIsNoDefaultTechnology() throws Exception {
         // given
-        FieldComponent product = mock(FieldComponent.class);
+        LookupComponent productField = mock(LookupComponent.class);
         FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
+
+        Entity product = mock(Entity.class);
+        given(viewDefinitionState.getComponentByReference("product")).willReturn(productField);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(117L);
+        given(productField.getEntity()).willReturn(product);
 
-        FieldDefinition masterField = mock(FieldDefinition.class);
-        FieldDefinition productField = mock(FieldDefinition.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(dataDefinition.find().setMaxResults(1).list()).willReturn(searchResult);
-        given(dataDefinition.getField("master")).willReturn(masterField);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(masterField.getType()).willReturn(new BooleanType());
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(0);
-
+        given(technologyServiceO.getDefaultTechnology(product)).willReturn(null);
         // when
         orderService.fillDefaultTechnology(viewDefinitionState);
 
@@ -935,31 +843,18 @@ public class OrderServiceTest {
     @Test
     public void shouldFillDefaultTechnology() throws Exception {
         // given
-        FieldComponent product = mock(FieldComponent.class);
+        LookupComponent productField = mock(LookupComponent.class);
         FieldComponent defaultTechnology = mock(FieldComponent.class);
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
+
+        Entity product = mock(Entity.class);
+        Entity technologyEntity = mock(Entity.class);
+        given(viewDefinitionState.getComponentByReference("product")).willReturn(productField);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
-        given(product.getFieldValue()).willReturn(117L);
+        given(productField.getEntity()).willReturn(product);
 
-        Entity entity = mock(Entity.class);
-        FieldDefinition masterField = mock(FieldDefinition.class);
-        FieldDefinition productField = mock(FieldDefinition.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
-        SearchResult searchResult = mock(SearchResult.class);
-        given(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY))
-                .willReturn(dataDefinition);
-        given(
-                dataDefinition.find().setMaxResults(1).add(SearchRestrictions.eq("master", any()))
-                        .add(SearchRestrictions.eq("active", any())).belongsTo(anyString(), any()).list()).willReturn(
-                searchResult);
-        given(dataDefinition.getField("master")).willReturn(masterField);
-        given(dataDefinition.getField("product")).willReturn(productField);
-        given(masterField.getType()).willReturn(new BooleanType());
-        given(productField.getType()).willReturn(new StringType());
-        given(searchResult.getTotalNumberOfEntities()).willReturn(1);
-        given(searchResult.getEntities()).willReturn(Collections.singletonList(entity));
-
+        given(technologyServiceO.getDefaultTechnology(product)).willReturn(technologyEntity);
+        given(technologyEntity.getId()).willReturn(7L);
         // when
         orderService.fillDefaultTechnology(viewDefinitionState);
 
