@@ -95,7 +95,7 @@ public class DeliveredProductHooksTest {
         // then
         Assert.assertFalse(result);
 
-        Mockito.verify(deliveredProduct).addError(productField, "deliveries.delivedProduct.error.alreadyExists");
+        Mockito.verify(deliveredProduct).addError(productField, "deliveries.deliveredProduct.error.alreadyExists");
     }
 
     @Test
