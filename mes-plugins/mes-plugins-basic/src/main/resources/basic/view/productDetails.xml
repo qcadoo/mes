@@ -32,7 +32,7 @@
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="conversions">
-				<bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
+				<bigButton name="getDefaultConversions" icon="downloadIcon24.png">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
