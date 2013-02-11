@@ -218,14 +218,12 @@
 			<script>
 					<![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var externalNumberListener = {
 							onSetValue: function(value) {
 								
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									saveNew.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
 									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
 								}
 							}
