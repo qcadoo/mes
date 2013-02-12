@@ -34,6 +34,7 @@
 			<validatesLength max="128"/> 
 		</string>
 		<belongsTo name="company" plugin="basic" model="company" />
+		<hasMany name="reportColumnWidths" joinField="parameter" model="reportColumnWidth"/>
 	</fields>
 	
 	<hooks>

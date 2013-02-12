@@ -53,6 +53,8 @@ public final class BasicConstants {
 
     public static final String MODEL_DIVISION = "division";
 
+    public static final String MODEL_REPORT_COLUMN_WIDTH = "reportColumnWidth";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";

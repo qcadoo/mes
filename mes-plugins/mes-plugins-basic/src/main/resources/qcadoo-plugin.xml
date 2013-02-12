@@ -83,6 +83,8 @@
 		<model:model model="parameter" resource="model/parameter.xml" />
 
 		<model:model model="currency" resource="model/currency.xml" />
+		
+		<model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml" />
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
@@ -113,6 +115,7 @@
 		<menu:menu-item-url name="conversion" category="basic"
 			url="/unitConversions.html" />
 
+		<view:view resource="view/reportColumnWidthDetails.xml" />
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
