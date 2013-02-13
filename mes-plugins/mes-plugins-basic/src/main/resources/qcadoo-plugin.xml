@@ -147,7 +147,7 @@
 			<model:validatesWith class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB" method="validateUnitOnConversionWithProduct"/>
 		</model:model-hook>
 
-		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
+		<custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService" />
 	</modules>
 
 </plugin>

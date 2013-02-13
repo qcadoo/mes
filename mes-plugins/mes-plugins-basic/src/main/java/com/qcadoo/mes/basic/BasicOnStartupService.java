@@ -21,29 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.basic;
 
-public enum ProductFamilyElementType {
-    PARTICULAR_PRODUCT("01particularProduct"), PRODUCTS_FAMILY("02productsFamily");
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-    private final String productFamilyElementType;
+import com.qcadoo.plugin.api.Module;
 
-    private ProductFamilyElementType(final String type) {
-        this.productFamilyElementType = type;
-    }
+@Component
+public class BasicOnStartupService extends Module {
 
-    public String getStringValue() {
-        return productFamilyElementType;
-    }
+    @Autowired
+    private CurrencyLoader currencyLoader;
 
-    public static ProductFamilyElementType parseString(final String productFamilyElementType) {
-        if ("01particularProduct".equals(productFamilyElementType)) {
-            return PARTICULAR_PRODUCT;
-        } else if ("02productsFamily".equals(productFamilyElementType)) {
-            return PRODUCTS_FAMILY;
-        }
+    @Autowired
+    private ReportColumnWidthLoader reportColumnWidthLoader;
 
-        throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + productFamilyElementType);
+    @Override
+    @Transactional
+    public void multiTenantEnable() {
+        currencyLoader.loadCurrencies();
+        reportColumnWidthLoader.loadReportColumnWidths();
     }
 
 }
