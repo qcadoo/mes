@@ -31,7 +31,7 @@
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
-				<bigButton name="addProduct" icon="generateIcon24.png"
+				<bigButton name="addProduct" icon="newIcon24.png"
 					state="enabled" action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
 				</bigButton>
 			</group>
