@@ -23,27 +23,27 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public enum ProductFamilyElementType {
-    PARTICULAR_PRODUCT("01particularProduct"), PRODUCTS_FAMILY("02productsFamily");
+public enum CharType {
+    SMALL_CHARS("01smallChars"), LARGE_CHARS("02largeChars");
 
-    private final String productFamilyElementType;
+    private final String charType;
 
-    private ProductFamilyElementType(final String type) {
-        this.productFamilyElementType = type;
+    private CharType(final String type) {
+        this.charType = type;
     }
 
     public String getStringValue() {
-        return productFamilyElementType;
+        return charType;
     }
 
-    public static ProductFamilyElementType parseString(final String productFamilyElementType) {
-        if ("01particularProduct".equals(productFamilyElementType)) {
-            return PARTICULAR_PRODUCT;
-        } else if ("02productsFamily".equals(productFamilyElementType)) {
-            return PRODUCTS_FAMILY;
+    public static CharType parseString(final String charType) {
+        if ("01smallChars".equals(charType)) {
+            return SMALL_CHARS;
+        } else if ("02largeChars".equals(charType)) {
+            return LARGE_CHARS;
         }
 
-        throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + productFamilyElementType);
+        throw new IllegalStateException("Unsupported CharType: " + charType);
     }
 
 }

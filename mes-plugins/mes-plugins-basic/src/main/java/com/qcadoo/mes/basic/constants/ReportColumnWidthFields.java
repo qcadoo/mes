@@ -31,11 +31,12 @@ public final class ReportColumnWidthFields {
 
     public static final String IDENTIFIER = "identifier";
 
+    public static final String NAME = "name";
+
     public static final String WIDTH = "width";
 
     public static final String CHAR_TYPE = "charType";
 
-    public static final String SMALL_CHARS = "01smallChars";
+    public static final String PARAMETER = "parameter";
 
-    public static final String LARGE_CHARS = "02largeChars";
 }

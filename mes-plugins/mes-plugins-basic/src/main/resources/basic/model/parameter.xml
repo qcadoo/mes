@@ -31,13 +31,15 @@
 		<belongsTo name="currency" plugin="basic" model="currency" />
 		<dictionary name="unit" dictionary="units" />
 		<string name="additionalTextInFooter">
-			<validatesLength max="128"/> 
+			<validatesLength max="128" />
 		</string>
 		<belongsTo name="company" plugin="basic" model="company" />
-		<hasMany name="reportColumnWidths" joinField="parameter" model="reportColumnWidth"/>
+		<hasMany name="reportColumnWidths" joinField="parameter"
+			model="reportColumnWidth" cascade="delete" copyable="true" />
 	</fields>
-	
+
 	<hooks>
-		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks" method="setDefaultCurrency" />
+		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
+			method="setDefaultCurrency" />
 	</hooks>
 </model>

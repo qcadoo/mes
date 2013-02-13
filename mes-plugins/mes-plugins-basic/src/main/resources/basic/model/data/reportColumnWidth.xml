@@ -24,23 +24,9 @@
     ***************************************************************************
 
 -->
-<model name="reportColumnWidth" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="identifier" />
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<integer name="width" required="true">
-			<validatesRange from="0" exclusively="true" />
-		</integer>
-		<enum name="charType" values="01smallChars,02largeChars"
-			required="true" />
-		<belongsTo name="parameter" model="parameter" required="true" />
-	</fields>
-	<hooks>
-
-	</hooks>
-	<identifier expression="#identifier + ' - ' + #width" />
-</model>
+<reportColumnWidth>
+	<row IDENTIFIER="productUnit" NAME="basic.reportColumnWidth.name.value.Unit"  WIDTH="4" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="currency" NAME="basic.reportColumnWidth.name.value.Currency" WIDTH="3" CHARTYPE="02largeChars" />
+	<row IDENTIFIER="number" NAME="basic.reportColumnWidth.name.value.Number" WIDTH="12" CHARTYPE="02largeChars" />
+	<row IDENTIFIER="succession" NAME="basic.reportColumnWidth.name.value.Lp"  WIDTH="3" CHARTYPE="02largeChars" />
+</reportColumnWidth>
