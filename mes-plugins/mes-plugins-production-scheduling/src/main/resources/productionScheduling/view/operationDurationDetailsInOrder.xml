@@ -193,13 +193,13 @@
 							columns="1" rows="2">
 							<layoutElement column="1" row="1">
 								<component type="time" name="laborWorkTime" reference="laborWorkTime"
-									field="#{form}.laborWorkTime" hasDescription="true">
+									field="#{form}.laborWorkTime" hasDescription="true" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="time" name="machineWorkTime" reference="machineWorkTime"
-									field="#{form}.machineWorkTime" hasDescription="true">
+									field="#{form}.machineWorkTime" hasDescription="true" defaultEnabled="false">
 									<option type="noHours" value="5" />
 								</component>
 							</layoutElement>
