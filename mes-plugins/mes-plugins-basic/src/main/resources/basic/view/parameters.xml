@@ -66,8 +66,24 @@
 		</windowTab>
 		<windowTab name="reportTab" reference="reportTab">
 			<component type="gridLayout" name="reportGridLayout"
-				columns="3" rows="3">
-				<layoutElement column="1" row="1" height="3">
+				columns="3" rows="5">
+				<layoutElement column="1" row="1" height="5">
+					<component type="grid" name="reportColumnsWidths" reference="reportColumnsWidths"
+						defaultEnabled="false" source="#{form}.reportColumnWidths">
+						<option type="column" name="name" fields="name" expression="'@' + #name" 
+							link="true" width="100" />
+						<option type="column" name="width" fields="width"
+							width="100" />
+						<option type="column" name="charType" fields="charType"/>
+						<option type="order" column="identifier" direction="desc" />
+						<option type="correspondingView" value="basic/reportColumnWidthDetails" />
+						<option type="correspondingComponent" value="form" />
+						<option type="correspondingViewInModal" value="true" />
+						<option type="paginable" value="false" />
+						<option type="fullscreen" value="true" />
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" height="3">
 					<component type="textarea" name="additionalTextInFooter"
 						field="#{form}.additionalTextInFooter" reference="additionalTextInFooter" />
 				</layoutElement>

@@ -60,6 +60,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
@@ -71,6 +72,8 @@ import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "deliveryReportPdf")
 public class DeliveryReportPdf extends ReportPdfView {
+
+    private static final Integer REPORT_WIDTH = 515;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -86,6 +89,9 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Autowired
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
@@ -201,8 +207,15 @@ public class DeliveryReportPdf extends ReportPdfView {
                     deliveryProductsColumnValues);
 
             if (!filteredColumnsForDeliveries.isEmpty()) {
+
+                List<String> columnsName = new ArrayList<String>();
+                for (Entity entity : filteredColumnsForDeliveries) {
+                    columnsName.add(entity.getStringField(IDENTIFIER));
+                }
+
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForDeliveries.size(),
-                        prepareProductsTableHeader(document, filteredColumnsForDeliveries, locale), false);
+                        prepareProductsTableHeader(document, filteredColumnsForDeliveries, locale), false,
+                        pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName));
 
                 for (DeliveryProduct deliveryProduct : deliveryProducts) {
                     for (Entity columnForDeliveries : filteredColumnsForDeliveries) {

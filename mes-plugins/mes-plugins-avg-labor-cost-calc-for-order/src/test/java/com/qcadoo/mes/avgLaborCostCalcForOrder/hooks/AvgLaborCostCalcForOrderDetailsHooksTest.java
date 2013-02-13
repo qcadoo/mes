@@ -1,0 +1,89 @@
+package com.qcadoo.mes.avgLaborCostCalcForOrder.hooks;
+
+import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
+import static org.mockito.Mockito.when;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
+
+public class AvgLaborCostCalcForOrderDetailsHooksTest {
+
+    private AvgLaborCostCalcForOrderDetailsHooks orderDetailsHooks;
+
+    @Mock
+    private ViewDefinitionState view;
+
+    @Mock
+    private FieldComponent averageLaborHourlyCost;
+
+    @Mock
+    private WindowComponentState window;
+
+    @Mock
+    private Ribbon ribbon;
+
+    @Mock
+    private RibbonGroup hourlyCostNorms;
+
+    @Mock
+    private RibbonActionItem copyToOperationsNorms;
+
+    @Before
+    public void init() {
+        orderDetailsHooks = new AvgLaborCostCalcForOrderDetailsHooks();
+        MockitoAnnotations.initMocks(this);
+
+        when(view.getComponentByReference("window")).thenReturn((ComponentState) window);
+        when(window.getRibbon()).thenReturn(ribbon);
+        when(ribbon.getGroupByName("hourlyCostNorms")).thenReturn(hourlyCostNorms);
+        when(window.getRibbon().getGroupByName("hourlyCostNorms").getItemByName("copyToOperationsNorms")).thenReturn(
+                copyToOperationsNorms);
+        when(view.getComponentByReference(AVERAGE_LABOR_HOURLY_COST)).thenReturn(averageLaborHourlyCost);
+
+    }
+
+    @Test
+    public void shouldEnabledButtonForCopyNorms() throws Exception {
+        // given
+        String averageLaborHourlyCostValue = "50";
+
+        when(averageLaborHourlyCost.getFieldValue()).thenReturn(averageLaborHourlyCostValue);
+
+        // when
+        orderDetailsHooks.enabledButtonForCopyNorms(view);
+
+        // then
+        Mockito.verify(copyToOperationsNorms).setEnabled(true);
+    }
+
+    @Test
+    public void shouldDisbaleButtonForCopyNorms() throws Exception {
+        // given
+        String averageLaborHourlyCostValue = "";
+
+        when(averageLaborHourlyCost.getFieldValue()).thenReturn(averageLaborHourlyCostValue);
+
+        // when
+        orderDetailsHooks.enabledButtonForCopyNorms(view);
+
+        // then
+        Mockito.verify(copyToOperationsNorms).setEnabled(false);
+    }
+
+    @After
+    public void flush() {
+
+    }
+}
