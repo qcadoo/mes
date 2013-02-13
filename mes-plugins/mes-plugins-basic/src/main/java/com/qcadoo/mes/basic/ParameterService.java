@@ -47,7 +47,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterService {
 
-    private static final Integer SMALL_CHAR_IN_PIXEL = 10;
+    private static final Integer SMALL_CHAR_IN_PIXEL = 9;
 
     private static final Integer LARGE_CHAR_IN_PIXEL = 11;
 

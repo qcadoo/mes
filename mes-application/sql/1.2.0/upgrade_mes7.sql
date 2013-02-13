@@ -10,8 +10,10 @@ CREATE TABLE basic_reportcolumnwidth
   chartype character varying(255),
   parameter_id bigint,
   CONSTRAINT basic_reportcolumnwidth_pkey PRIMARY KEY (id),
-  CONSTRAINT fk922b286b479bb3a8 FOREIGN KEY (parameter_id)
+  CONSTRAINT basic_parameter_fkey FOREIGN KEY (parameter_id)
       REFERENCES basic_parameter (id) deferrable
 );
+
+--end
 
 --end
