@@ -189,13 +189,11 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         BigDecimal orderedQuantity = null;
 
         if (deliveryProduct.getOrderedProductId() == null) {
-            orderedQuantity = BigDecimal.ZERO;
+            orderedQuantity = null;
         } else {
             Entity orderedProduct = deliveriesService.getOrderedProduct(deliveryProduct.getOrderedProductId());
 
-            if (orderedProduct == null) {
-                orderedQuantity = BigDecimal.ZERO;
-            } else {
+            if (orderedProduct != null) {
                 orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
             }
         }
@@ -207,14 +205,10 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             final DeliveryProduct deliveryProduct) {
         BigDecimal deliveredQuantity = null;
 
-        if (deliveryProduct.getDeliveredProductId() == null) {
-            deliveredQuantity = BigDecimal.ZERO;
-        } else {
+        if (deliveryProduct.getDeliveredProductId() != null) {
             Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
 
-            if (deliveredProduct == null) {
-                deliveredQuantity = BigDecimal.ZERO;
-            } else {
+            if (deliveredProduct != null) {
                 deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
             }
         }
@@ -225,14 +219,10 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     private void fillDamagedQuantity(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
         BigDecimal damagedQuantity = null;
 
-        if (deliveryProduct.getDeliveredProductId() == null) {
-            damagedQuantity = BigDecimal.ZERO;
-        } else {
+        if (deliveryProduct.getDeliveredProductId() != null) {
             Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
 
-            if (deliveredProduct == null) {
-                damagedQuantity = BigDecimal.ZERO;
-            } else {
+            if (deliveredProduct != null) {
                 damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
             }
         }
@@ -243,9 +233,7 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
     private void fillOrderedQuantity(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
         BigDecimal orderedQuantity = null;
 
-        if (orderedProduct == null) {
-            orderedQuantity = BigDecimal.ZERO;
-        } else {
+        if (orderedProduct != null) {
             orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
         }
 

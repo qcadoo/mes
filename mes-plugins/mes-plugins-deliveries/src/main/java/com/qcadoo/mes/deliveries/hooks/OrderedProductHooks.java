@@ -50,7 +50,7 @@ public class OrderedProductHooks {
         if (orderedProductFromDB == null) {
             return true;
         } else {
-            orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.alreadyExists");
+            orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.productAlreadyExists");
 
             return false;
         }
