@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<artifactId>mes-plugins-cost-calculation</artifactId>
@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-materials</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-operation-cost-calculations</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 
