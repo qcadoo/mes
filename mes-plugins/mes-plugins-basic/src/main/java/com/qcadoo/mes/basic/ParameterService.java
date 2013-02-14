@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CharType;
 import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -104,7 +105,7 @@ public class ParameterService {
 
         for (Entity reportColumnWidth : reportColumnWidths) {
 
-            if (ReportColumnWidthFields.SMALL_CHARS.equals(reportColumnWidth.getStringField(ReportColumnWidthFields.CHAR_TYPE))) {
+            if (CharType.SMALL_CHARS.getStringValue().equals(reportColumnWidth.getStringField(ReportColumnWidthFields.CHAR_TYPE))) {
                 converterValue = SMALL_CHAR_IN_PIXEL;
             } else {
                 converterValue = LARGE_CHAR_IN_PIXEL;
@@ -116,5 +117,4 @@ public class ParameterService {
 
         return reportColumnWidthsMap;
     }
-
 }

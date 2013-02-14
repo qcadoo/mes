@@ -42,7 +42,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginStateResolver;
 
 @Service
-public final class ProductQuantitiesServiceImplTSOverrideUtil {
+public class ProductQuantitiesServiceImplTSOverrideUtil {
 
     @Autowired
     private PluginStateResolver pluginStateResolver;
