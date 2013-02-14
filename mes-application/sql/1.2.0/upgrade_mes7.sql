@@ -15,5 +15,3 @@ CREATE TABLE basic_reportcolumnwidth
 );
 
 --end
-
---end

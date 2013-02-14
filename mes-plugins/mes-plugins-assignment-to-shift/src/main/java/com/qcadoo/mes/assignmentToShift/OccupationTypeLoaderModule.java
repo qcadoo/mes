@@ -132,7 +132,7 @@ public class OccupationTypeLoaderModule extends Module {
         return getDictionaryItemDataDefinition()
                 .find()
                 .add(SearchRestrictions.or(SearchRestrictions.eq(L_TECHNICAL_CODE, "01workForLine"),
-                        SearchRestrictions.eq(L_TECHNICAL_CODE, "04otherCase"))).list().getTotalNumberOfEntities() == 0;
+                        SearchRestrictions.eq(L_TECHNICAL_CODE, "02otherCase"))).list().getTotalNumberOfEntities() == 0;
     }
 
     private DataDefinition getDictionaryItemDataDefinition() {
