@@ -67,6 +67,7 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
@@ -212,7 +213,8 @@ public class OrderReportPdf extends ReportPdfView {
 
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForOrders.size(),
                         prepareProductsTableHeader(document, filteredColumnsForOrders, locale), false,
-                        pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName));
+                        pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
+                        HeaderAlignment.CENTER);
 
                 for (Entity orderedProduct : orderedProducts) {
                     for (Entity columnForOrders : filteredColumnsForOrders) {
