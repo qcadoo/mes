@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-deliveries</artifactId>
@@ -17,17 +17,17 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
     		<artifactId>mes-plugins-basic</artifactId>
-    		<version>1.2.0</version>
+    		<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
     		<artifactId>mes-plugins-states</artifactId>
-    		<version>1.2.0</version>
+    		<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-column-extension</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
