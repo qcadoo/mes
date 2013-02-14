@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mes-plugins-cost-norms-for-operation-in-order</artifactId>
@@ -28,12 +28,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-cost-norms-for-operation</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
