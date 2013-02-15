@@ -66,6 +66,7 @@ public class ParameterServiceTest {
         given(parameterDD.find()).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.add(Mockito.any(SearchCriterion.class))).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.setMaxResults(Mockito.anyInt())).willReturn(searchCriteriaBuilder);
+        given(searchCriteriaBuilder.setCacheable(Mockito.anyBoolean())).willReturn(searchCriteriaBuilder);
     }
 
     @Test
