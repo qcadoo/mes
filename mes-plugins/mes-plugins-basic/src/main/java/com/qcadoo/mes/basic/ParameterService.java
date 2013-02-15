@@ -76,7 +76,7 @@ public class ParameterService {
     public Entity getParameter() {
         DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PARAMETER);
-        Entity parameter = dataDefinition.find().setMaxResults(1).uniqueResult();
+        Entity parameter = dataDefinition.find().setMaxResults(1).setCacheable(true).uniqueResult();
 
         if (parameter == null) {
             parameter = createParameter(dataDefinition);

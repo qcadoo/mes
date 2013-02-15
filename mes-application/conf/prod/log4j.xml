@@ -106,6 +106,14 @@
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
 	</appender>
+	<appender name="cache-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/cache.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %m%n" />
+		</layout>
+	</appender>
 	
 	<logger name="com.qcadoo.mes">
 		<level value="info" />
@@ -172,6 +180,11 @@
 	<logger name="org.hibernate.SQL" additivity="false">
 		<level value="info" />
 		<appender-ref ref="sql-log" />	
+	</logger>
+	
+	<logger name="org.hibernate.cache" additivity="false">
+		<level value="info" />
+		<appender-ref ref="cache-log" />	
 	</logger>
 	
 	<logger name="PERFORMANCE" additivity="false">
