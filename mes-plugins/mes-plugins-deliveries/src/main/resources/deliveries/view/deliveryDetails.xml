@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -302,7 +302,7 @@
 				</component>
 				
 				<option type="header" value="true" />
-				<option type="expression" value="#name" />
+				<option type="expression" value="#number" />
 				
 				<listener event="changeState"
 					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
@@ -338,8 +338,8 @@
 							 width="140" />
 						<option type="order" column="succession" direction="asc" />
 
-						<option type="searchable" value="number,name,unit" />
-						<option type="orderable" value="succession,number,name,unit" />
+						<option type="searchable" value="number,name,orderedQuantity,unit" />
+						<option type="orderable" value="succession,number,name,orderedQuantity,unit" />
 
 						<option type="correspondingView" value="deliveries/orderedProductDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -374,8 +374,8 @@
 							
 						<option type="order" column="succession" direction="asc" />
 						
-						<option type="searchable" value="number" />
-						<option type="orderable" value="succession,number,name,unit" />
+						<option type="searchable" value="number,name,unit,deliveredQuantity,damagedQuantity" />
+						<option type="orderable" value="succession,number,name,unit,deliveredQuantity,damagedQuantity" />
 						
 						<option type="correspondingView" value="deliveries/deliveredProductDetails" />
 						<option type="correspondingComponent" value="form" />

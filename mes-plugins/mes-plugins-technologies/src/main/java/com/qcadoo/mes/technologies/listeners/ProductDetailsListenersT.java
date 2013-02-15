@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -123,66 +123,6 @@ public class ProductDetailsListenersT {
         parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
 
         String url = "../page/technologies/technologiesList.html";
-        view.redirectTo(url, false, true, parameters);
-    }
-
-    public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity product = productForm.getEntity();
-
-        if (product.getId() == null) {
-            return;
-        }
-
-        String productNumber = product.getStringField(NUMBER);
-
-        if (productNumber == null) {
-            return;
-        }
-
-        Map<String, String> filters = Maps.newHashMap();
-        filters.put("productNumber", productNumber);
-
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put(L_FILTERS, filters);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
-
-        String url = "../page/orders/ordersList.html";
-        view.redirectTo(url, false, true, parameters);
-    }
-
-    public final void showOrdersWithProductPlanned(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity product = productForm.getEntity();
-
-        if (product.getId() == null) {
-            return;
-        }
-
-        String productNumber = product.getStringField(NUMBER);
-
-        if (productNumber == null) {
-            return;
-        }
-
-        Map<String, String> filters = Maps.newHashMap();
-        filters.put("productNumber", productNumber);
-
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put(L_FILTERS, filters);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrdersPlanning");
-
-        String url = "../page/orders/ordersPlanningList.html";
         view.redirectTo(url, false, true, parameters);
     }
 

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -36,7 +36,7 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="5">
 				<layoutElement column="1" row="1">
-					<component type="input" name="number" field="number">
+					<component type="input" name="number" field="number" reference="number">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
@@ -98,6 +98,8 @@
 		</component>
 	</component>
 	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.StaffService"
+			method="generateStaffNumber" />
 		<beforeRender class="com.qcadoo.mes.basic.StaffService" method="setOwnerCompany"/>
 	</hooks>
 </view>

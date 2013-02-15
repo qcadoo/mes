@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -42,7 +42,7 @@ public class ResourceModelValidators {
 
             if (!"02warehouse".equals(type)) {
                 resource.addError(resourceDD.getField(LOCATION),
-                        "materialFlowResources.validate.global.error.locationIsNotWaregouse");
+                        "materialFlowResources.validate.global.error.locationIsNotWarehouse");
 
                 return false;
             }

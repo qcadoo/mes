@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -36,8 +36,21 @@ public class TechnologyOperationComponentHooksTS {
 
     public void copySubstractingFieldFromLowerInstance(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
+        if (!shouldCopyFromLowerInstance(technologyOperationComponent)) {
+            return;
+        }
         Entity operation = technologyOperationComponent.getBelongsToField(OPERATION);
-        technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
+        if (operation != null) {
+            technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
+        }
+    }
+
+    private boolean shouldCopyFromLowerInstance(final Entity technologyOperationComponent) {
+        // we can't use here getBooleanField() method!!!!
+        if (technologyOperationComponent.getField(IS_SUBCONTRACTING) != null) {
+            return false;
+        }
+        return true;
     }
 
 }

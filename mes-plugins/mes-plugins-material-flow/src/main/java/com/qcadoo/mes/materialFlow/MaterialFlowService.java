@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -53,6 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
@@ -70,7 +71,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class MaterialFlowService {
@@ -114,9 +114,6 @@ public class MaterialFlowService {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     public BigDecimal calculateShouldBeInLocation(final Long locationId, final Long productId, final Date forDate) {
         BigDecimal countProductIn = BigDecimal.ZERO;
@@ -199,7 +196,7 @@ public class MaterialFlowService {
             Long locationNumber = (Long) location.getFieldValue();
             Long productNumber = (Long) product.getFieldValue();
 
-            Date forDate = timeConverterService.getDateTimeFromField(date.getFieldValue());
+            Date forDate = DateUtils.parseDate(date.getFieldValue());
 
             BigDecimal shouldBe = calculateShouldBeInLocation(locationNumber, productNumber, forDate);
 

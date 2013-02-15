@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="costNormsForMaterialsInTechnologyList" modelPlugin="technologies" modelName="operationProductInComponent">
+	name="costNormsForMaterialsInTechnologyList" modelPlugin="technologies" modelName="technology">
 
 	<component type="window" name="window" reference="window">
 		
@@ -35,7 +35,6 @@
 		</ribbon>
 		
 		<windowTab name="mainTab" reference="mainTab">
-			<component type="form" name="technologies" reference="technology" />
 			
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="1" rows="2">

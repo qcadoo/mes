@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -32,8 +32,9 @@ import com.qcadoo.model.api.Entity;
 
 public interface MrpAlgorithmStrategy {
 
-    boolean isApplicableFor(final MrpAlgorithm algorithm);
+    boolean isApplicableFor(final MrpAlgorithm mrpAlgorithm);
 
-    Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentQuantities, final Set<Entity> nonComponents,
-            MrpAlgorithm algorithm, final String type);
+    Map<Entity, BigDecimal> perform(final Map<Entity, BigDecimal> productComponentWithQuantities,
+            final Set<Entity> nonComponents, MrpAlgorithm mrAlgorithm, final String operationProductComponentModelName);
+
 }

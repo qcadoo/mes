@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -52,6 +52,8 @@ public final class BasicConstants {
     public static final String MODEL_WORKSTATION_TYPE = "workstationType";
 
     public static final String MODEL_DIVISION = "division";
+
+    public static final String MODEL_REPORT_COLUMN_WIDTH = "reportColumnWidth";
 
     // VIEW
 

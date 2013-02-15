@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -293,9 +293,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     private Entity getOutputProduct(final Entity operationComponent) {
         if (L_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition().getName())) {
             Entity technologyOperComp = operationComponent.getBelongsToField("technologyOperationComponent");
-            return productQuantitiesService.getOutputProductsFromOperataionComponent(technologyOperComp);
+            return productQuantitiesService.getOutputProductsFromOperationComponent(technologyOperComp);
         } else {
-            return productQuantitiesService.getOutputProductsFromOperataionComponent(operationComponent);
+            return productQuantitiesService.getOutputProductsFromOperationComponent(operationComponent);
         }
     }
 

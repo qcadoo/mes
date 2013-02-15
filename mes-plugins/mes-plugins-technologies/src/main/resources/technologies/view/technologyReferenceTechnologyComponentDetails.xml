@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -34,7 +34,7 @@
 			<template name="standardFormTemplate" excludeItems="actions.save, actions.copy, actions.saveNew"/>
 		</ribbon>
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
+			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technology" reference="technology"
@@ -51,7 +51,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="select" name="referenceMode" field="referenceMode"
-						reference="referenceMode">
+						reference="referenceMode" defaultEnabled="false">
 						<option type="required" value="true" />
 					</component>
 				</layoutElement>

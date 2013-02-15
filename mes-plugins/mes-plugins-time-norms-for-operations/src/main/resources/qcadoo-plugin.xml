@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds time norms to operations.</description>
 	</information>
 
 	<dependencies>
@@ -332,7 +333,12 @@
 				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
 				method="checkIfUnitsInInstanceTechnologyMatch" />
 		</model:model-hook>
-
+		
+		<model:model-hook model="technology" plugin="technologies">
+			<model:validatesWith
+				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
+				method="checkOperationOutputQuantities" />
+		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab
@@ -359,7 +365,6 @@
 			plugin="technologies"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
 			method="setDefaultUnit" />
-
 
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
@@ -388,7 +393,6 @@
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyInstanceOperCompDetailsListenersTNFO"
 			method="copyTimeNormsFromTechnology" />
 
-
 		<view:view-listener component="form"
 			event="copyTimeNormsFromOperation" plugin="technologies"
 			view="technologyOperationComponentDetails"
@@ -399,11 +403,7 @@
 			component="form" event="save"
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyListenersTN"
 			method="checkOperationOutputQuantities" />
-		<model:model-hook model="technology" plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkOperationOutputQuantities" />
-		</model:model-hook>
+		
 		<view:view-hook view="technologyOperationComponentDetails"
 			type="beforeRender" plugin="technologies"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"

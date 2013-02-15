@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>A tree of operations which defines the manufacturing process.</description>
 	</information>
 
 	<dependencies>
@@ -140,6 +141,11 @@
 			component="form" event="showTechnologiesWithTechnologyGroup"
 			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
 			method="showTechnologiesWithTechnologyGroup" />
+		
+		<view:view-listener plugin="basic" view="productDetails"
+			component="form" event="showTechnologiesWithProduct"
+			class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+			method="showTechnologiesWithProduct" />
 	
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" 

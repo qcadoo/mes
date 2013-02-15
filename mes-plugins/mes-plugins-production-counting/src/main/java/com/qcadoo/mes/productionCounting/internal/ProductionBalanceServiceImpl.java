@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -156,7 +156,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Entity order = productionBalance.getBelongsToField(MODEL_ORDER);
 
         if ((order != null) && !isTypeOfProductionRecordingBasic(order)) {
-            Integer recordsNumber = dataDefinitionService
+            int recordsNumber = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_RECORD)
                     .find().add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
                     .add(SearchRestrictions.belongsTo(ORDER, order)).list().getEntities().size();

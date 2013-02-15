@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -37,6 +37,19 @@
 						onClick: function() {
 							if(window.canClose()) {
 								#{form}.performEvent('showTechnologiesWithTechnologyGroup', []);
+							}
+						}
+					});		
+				]]>
+			</script>
+		</bigButton>
+		<bigButton name="showTechnologiesWithProduct" icon="genealogyIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showTechnologiesWithProduct', []);
 							}
 						}
 					});		

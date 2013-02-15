@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -62,7 +62,8 @@ public class OrderedProductHooksTSFDOverrideUtil {
         if (orderedProductFromDB == null) {
             return true;
         } else {
-            orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.alreadyExists");
+            orderedProduct.addError(orderedProductDD.getField(PRODUCT),
+                    "deliveries.orderedProduct.error.productWithOperationAlreadyExists");
 
             return false;
         }

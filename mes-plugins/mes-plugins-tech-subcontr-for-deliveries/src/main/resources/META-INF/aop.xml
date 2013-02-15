@@ -3,7 +3,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -27,6 +27,7 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 	<aspects>
+		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveredProductDetailsHooksTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveredProductHooksTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveryDetailsListenersTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.OrderedProductHooksTSFDOverrideAspect" />

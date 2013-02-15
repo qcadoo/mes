@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -46,7 +46,7 @@ public class OrderedProductHooksTSFDOverrideAspect {
     }
 
     @Around("checkIfOrderedProductAlreadyExistsExecution(orderedProductDD, orderedProduct)")
-    public boolean afterCopyOrderedProductToDeliveredListenersExecution(final ProceedingJoinPoint pjp,
+    public boolean aroundCheckIfOrderedProductAlreadyExistsExecution(final ProceedingJoinPoint pjp,
             final DataDefinition orderedProductDD, final Entity orderedProduct) throws Throwable {
         if (orderedProductHooksTSFDOverrideUtil.shouldOverride()) {
             return orderedProductHooksTSFDOverrideUtil.checkIfOrderedProductAlreadyExists(orderedProductDD, orderedProduct);

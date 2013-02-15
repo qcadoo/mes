@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -31,31 +31,31 @@
 		<string name="name" required="true" unique="true">
 			<validatesLength max="1024" />
 		</string>
-		<boolean name="mondayWorking" default="true" required="true" />
+		<boolean name="mondayWorking" default="true" />
 		<string name="mondayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="tuesdayWorking" default="true" required="true" />
+		<boolean name="tuesdayWorking" default="true" />
 		<string name="tuesdayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="wensdayWorking" default="true" required="true" />
+		<boolean name="wensdayWorking" default="true" />
 		<string name="wensdayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="thursdayWorking" default="true" required="true" />
+		<boolean name="thursdayWorking" default="true" />
 		<string name="thursdayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="fridayWorking" default="true" required="true" />
+		<boolean name="fridayWorking" default="true" />
 		<string name="fridayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="saturdayWorking" default="false" required="true" />
+		<boolean name="saturdayWorking" default="false" />
 		<string name="saturdayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<boolean name="sundayWorking" default="false" required="true" />
+		<boolean name="sundayWorking" default="false" />
 		<string name="sundayHours" required="false">
 			<validatesLength max="255" />
 		</string>

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -60,18 +60,22 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
+import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "orderReportPdf")
 public class OrderReportPdf extends ReportPdfView {
+
+    private static final Integer REPORT_WIDTH = 515;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -93,6 +97,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
@@ -198,8 +205,16 @@ public class OrderReportPdf extends ReportPdfView {
                     orderedProductsColumnValues);
 
             if (!filteredColumnsForOrders.isEmpty()) {
+
+                List<String> columnsName = new ArrayList<String>();
+                for (Entity entity : filteredColumnsForOrders) {
+                    columnsName.add(entity.getStringField(IDENTIFIER));
+                }
+
                 PdfPTable productsTable = pdfHelper.createTableWithHeader(filteredColumnsForOrders.size(),
-                        prepareProductsTableHeader(document, filteredColumnsForOrders, locale), false);
+                        prepareProductsTableHeader(document, filteredColumnsForOrders, locale), false,
+                        pdfHelper.getReportColumnWidths(REPORT_WIDTH, parameterService.getReportColumnWidths(), columnsName),
+                        HeaderAlignment.CENTER);
 
                 for (Entity orderedProduct : orderedProducts) {
                     for (Entity columnForOrders : filteredColumnsForOrders) {

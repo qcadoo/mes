@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -56,6 +56,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -75,7 +76,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderService {
@@ -92,9 +92,6 @@ public class OrderService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private TimeConverterService timeConverterService;
 
     @Autowired
     private ExpressionService expressionService;
@@ -594,13 +591,11 @@ public class OrderService {
         if (form.getEntityId() == null) {
             return;
         }
-        FieldComponent dateTo = (FieldComponent) view.getComponentByReference("dateTo");
-        FieldComponent deadline = (FieldComponent) view.getComponentByReference("deadline");
-        if (dateTo.getFieldValue().equals("") || deadline.getFieldValue().equals("")) {
-            return;
-        }
-        if (timeConverterService.getDateTimeFromField(dateTo.getFieldValue()).compareTo(
-                timeConverterService.getDateTimeFromField(deadline.getFieldValue())) == 1) {
+        FieldComponent dateToComponent = (FieldComponent) view.getComponentByReference("dateTo");
+        FieldComponent deadlineComponent = (FieldComponent) view.getComponentByReference("deadline");
+        Date dateTo = DateUtils.parseDate(dateToComponent.getFieldValue());
+        Date deadline = DateUtils.parseDate(deadlineComponent.getFieldValue());
+        if (dateTo != null && deadline != null && dateTo.compareTo(deadline) > 0) {
             form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
         }
     }

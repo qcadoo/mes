@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -26,16 +26,23 @@ package com.qcadoo.mes.basic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class StaffService {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    private static final String L_FORM = "form";
 
     public void setOwnerCompany(final ViewDefinitionState view) {
         FieldComponent lookup = (FieldComponent) view.getComponentByReference("workFor");
@@ -46,6 +53,11 @@ public class StaffService {
         }
         lookup.setFieldValue(ownerCompany.getId());
         lookup.requestComponentUpdateState();
+    }
+
+    public void generateStaffNumber(final ViewDefinitionState state) {
+        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF,
+                L_FORM, "number");
     }
 
 }

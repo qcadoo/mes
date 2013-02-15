@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
-    Version: 1.2.0-SNAPSHOT
+    Project: Qcadoo MES
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -23,7 +22,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
-    
+
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"

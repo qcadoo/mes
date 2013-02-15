@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -42,7 +42,7 @@
 			cascade="delete" copyable="true" />
 		<hasMany name="substituteComponents" model="substituteComponent"
 			joinField="product" cascade="nullify" />
-		<string name="externalNumber"  unique="true"/>
+		<string name="externalNumber" unique="true" />
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>

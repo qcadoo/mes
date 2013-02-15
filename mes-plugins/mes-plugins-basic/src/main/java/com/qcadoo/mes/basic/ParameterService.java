@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -25,11 +25,17 @@ package com.qcadoo.mes.basic;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CharType;
+import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,6 +47,10 @@ import com.qcadoo.model.api.Entity;
  */
 @Service
 public class ParameterService {
+
+    private static final Integer SMALL_CHAR_IN_PIXEL = 9;
+
+    private static final Integer LARGE_CHAR_IN_PIXEL = 11;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -81,5 +91,30 @@ public class ParameterService {
         checkState(parameter.isValid(), "Parameter entity has validation errors! " + parameter);
 
         return parameter;
+    }
+
+    public Map<String, Integer> getReportColumnWidths() {
+        int converterValue = 0;
+
+        Map<String, Integer> reportColumnWidthsMap = new HashMap<String, Integer>();
+
+        DataDefinition reportColumnWidthDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_REPORT_COLUMN_WIDTH);
+
+        List<Entity> reportColumnWidths = reportColumnWidthDD.find().list().getEntities();
+
+        for (Entity reportColumnWidth : reportColumnWidths) {
+
+            if (CharType.SMALL_CHARS.getStringValue().equals(reportColumnWidth.getStringField(ReportColumnWidthFields.CHAR_TYPE))) {
+                converterValue = SMALL_CHAR_IN_PIXEL;
+            } else {
+                converterValue = LARGE_CHAR_IN_PIXEL;
+            }
+
+            reportColumnWidthsMap.put(reportColumnWidth.getStringField(ReportColumnWidthFields.IDENTIFIER),
+                    reportColumnWidth.getIntegerField(ReportColumnWidthFields.WIDTH) * converterValue);
+        }
+
+        return reportColumnWidthsMap;
     }
 }

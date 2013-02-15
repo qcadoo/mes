@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
-    Version: 1.2.0-SNAPSHOT
+    Project: Qcadoo MES
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -23,7 +22,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
-    
+
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
@@ -37,14 +36,16 @@
 				<component type="lookup" name="location" reference="warehouse"
 					field="#{form}.location">
 					<option type="column" name="name" fields="name" link="true" />
-					<option type="column" name="type" fields="type" />
 					
-					<option type="searchable" value="number,name,type" />
-					<option type="orderable" value="number,name,type" />
+					<option type="searchable" value="number,name" />
+					<option type="orderable" value="number,name" />
 					
 					<option type="expression"
 						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 					<option type="fieldCode" value="number" />
+					
+					<criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiers"
+						method="showWarehousesOnly" />
 				</component>
 			</layoutElement>
 		</component>

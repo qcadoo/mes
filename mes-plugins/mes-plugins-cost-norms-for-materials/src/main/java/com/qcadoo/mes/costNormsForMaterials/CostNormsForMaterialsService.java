@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -77,7 +77,7 @@ public class CostNormsForMaterialsService {
 
         GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
 
-        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference("technology");
+        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference("form");
 
         if ((technology == null) || (technology.getEntityId() == null)) {
             return;
@@ -157,8 +157,7 @@ public class CostNormsForMaterialsService {
             for (Entity technologyInstOperProductInComp : technologyInstOperProductInComps) {
                 Entity product = technologyInstOperProductInComp.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-                technologyInstOperProductInComp.setField(COST_FOR_NUMBER,
-                        product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
+                technologyInstOperProductInComp.setField(COST_FOR_NUMBER, product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
                 technologyInstOperProductInComp.setField(NOMINAL_COST, product.getField(ProductFieldsCNFP.NOMINAL_COST));
                 technologyInstOperProductInComp.setField(LAST_PURCHASE_COST,
                         product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST));

@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -95,7 +95,7 @@ public class OrderedProductHooksTest {
         // then
         Assert.assertFalse(result);
 
-        Mockito.verify(orderedProduct).addError(productField, "deliveries.orderedProduct.error.alreadyExists");
+        Mockito.verify(orderedProduct).addError(productField, "deliveries.orderedProduct.error.productAlreadyExists");
     }
 
     @Test

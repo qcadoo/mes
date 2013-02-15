@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -91,7 +91,7 @@ public class ProductDetailsViewHooksTTest {
 
         // given(technologies.getItemByName("addTechnologyGroup")).willReturn(addTechnologyGroup);
         given(technologies.getItemByName("showTechnologiesWithTechnologyGroup")).willReturn(showTechnologiesWithTechnologyGroup);
-        // given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
+        given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
 
         // when
         productDetailsViewHooksT.updateRibbonState(view);
@@ -99,7 +99,7 @@ public class ProductDetailsViewHooksTTest {
         // then
         // verify(addTechnologyGroup).setEnabled(false);
         verify(showTechnologiesWithTechnologyGroup).setEnabled(false);
-        // verify(showTechnologiesWithProduct).setEnabled(false);
+        verify(showTechnologiesWithProduct).setEnabled(false);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ProductDetailsViewHooksTTest {
 
         // given(technologies.getItemByName("addTechnologyGroup")).willReturn(addTechnologyGroup);
         given(technologies.getItemByName("showTechnologiesWithTechnologyGroup")).willReturn(showTechnologiesWithTechnologyGroup);
-        // given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
+        given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
 
         // when
         productDetailsViewHooksT.updateRibbonState(view);
@@ -125,7 +125,7 @@ public class ProductDetailsViewHooksTTest {
         // then
         // verify(addTechnologyGroup).setEnabled(true);
         verify(showTechnologiesWithTechnologyGroup).setEnabled(false);
-        // verify(showTechnologiesWithProduct).setEnabled(true);
+        verify(showTechnologiesWithProduct).setEnabled(true);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ProductDetailsViewHooksTTest {
 
         // given(technologies.getItemByName("addTechnologyGroup")).willReturn(addTechnologyGroup);
         given(technologies.getItemByName("showTechnologiesWithTechnologyGroup")).willReturn(showTechnologiesWithTechnologyGroup);
-        // given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
+        given(technologies.getItemByName("showTechnologiesWithProduct")).willReturn(showTechnologiesWithProduct);
 
         // when
         productDetailsViewHooksT.updateRibbonState(view);
@@ -151,7 +151,7 @@ public class ProductDetailsViewHooksTTest {
         // then
         // verify(addTechnologyGroup).setEnabled(true);
         verify(showTechnologiesWithTechnologyGroup).setEnabled(true);
-        // verify(showTechnologiesWithProduct).setEnabled(true);
+        verify(showTechnologiesWithProduct).setEnabled(true);
     }
 
 }

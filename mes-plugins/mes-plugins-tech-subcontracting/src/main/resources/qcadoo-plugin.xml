@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds the support for subcontractors to technologies.</description>
 	</information>
 
 	<dependencies>
@@ -104,6 +105,7 @@
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationComponentHooksTS"
 				method="copySubstractingFieldFromLowerInstance" />
 		</model:model-hook>
+		
 		<model:model-hook plugin="technologies" model="technologyInstanceOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyInstanceOperCompHooksTS"

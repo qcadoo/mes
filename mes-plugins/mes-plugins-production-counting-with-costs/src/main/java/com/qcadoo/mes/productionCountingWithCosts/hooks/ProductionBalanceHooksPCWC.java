@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -42,4 +42,5 @@ public class ProductionBalanceHooksPCWC {
             entity.setField(reference, null);
         }
     }
+
 }

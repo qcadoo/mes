@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -24,7 +24,6 @@
     ***************************************************************************
 
 -->
-
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
@@ -36,7 +35,7 @@
 				reference="deliveriesTabGridLayout" columns="3" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="input" name="buffer" field="#{form}.buffer"
-						hasDescription="true" />
+						reference="buffer" hasDescription="true" />
 				</layoutElement>
 			</component>
 		</component>

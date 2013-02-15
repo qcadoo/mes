@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -59,14 +61,17 @@ public class ColumnFetcher {
         return valuesMap;
     }
 
-    public Map<Entity, Map<String, String>> getColumnValues(final List<Entity> orders) {
-        Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
-
-        for (String columnsModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
-            fetchColumnValues(valuesMap, columnsModel, "getValues", orders);
+    public Map<Long, Map<Entity, Map<String, String>>> getColumnValues(final List<Entity> orders) {
+        final Map<Long, Map<Entity, Map<String, String>>> order2opColumnValues = Maps.newHashMap();
+        for (final Entity order : orders) {
+            Map<Entity, Map<String, String>> valuesMap = new HashMap<Entity, Map<String, String>>();
+            for (final String columnsModel : Arrays.asList("columnForInputProducts", "columnForOutputProducts")) {
+                fetchColumnValues(valuesMap, columnsModel, "getValues", Lists.newArrayList(order));
+            }
+            order2opColumnValues.put(order.getId(), valuesMap);
         }
 
-        return valuesMap;
+        return order2opColumnValues;
     }
 
     @SuppressWarnings("unchecked")

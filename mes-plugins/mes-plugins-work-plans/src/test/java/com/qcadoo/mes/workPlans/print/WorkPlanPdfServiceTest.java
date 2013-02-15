@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -90,6 +90,8 @@ public class WorkPlanPdfServiceTest {
     private static final String BY_END_PRODUCT = "By end product";
 
     private static final String NO_DISTINCTION = "No distinction";
+
+    private static final String GET_ORDER_OP_COMS_MAP_METHOD_NAME = "getOrderIdToOperationComponentsMap";
 
     private static final int NUM_OF_UNIQUE_OPERATIONS = 5;
 
@@ -179,6 +181,9 @@ public class WorkPlanPdfServiceTest {
 
         Entity order1 = mock(Entity.class);
         Entity order2 = mock(Entity.class);
+
+        when(order1.getId()).thenReturn(1L);
+        when(order2.getId()).thenReturn(2L);
 
         when(order1.getStringField("number")).thenReturn("1");
         when(order2.getStringField("number")).thenReturn("2");
@@ -281,27 +286,8 @@ public class WorkPlanPdfServiceTest {
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
 
         // when
-        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
-                workPlan, operationComponent2order, locale);
-
-        // then
-        isDistinct(operationComponents);
-    }
-
-    @Test
-    public void shouldTraverseTechnologyTreeEvenThroughReferenedTechnologies() {
-        // given
-        when(workPlan.getStringField("type")).thenReturn(WorkPlanType.NO_DISTINCTION.getStringValue());
-        when(op5Comp.getStringField("entityType")).thenReturn("referenceTechnology");
-
-        Entity refTech = mock(Entity.class);
-        EntityTree refTechOps = mockEntityTreeIterator(asList(op6Comp));
-        when(op5Comp.getBelongsToField("referenceTechnology")).thenReturn(refTech);
-        when(refTech.getTreeField("operationComponents")).thenReturn(refTechOps);
-
-        // when
-        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
-                workPlan, operationComponent2order, locale);
+        Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
+                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -313,8 +299,8 @@ public class WorkPlanPdfServiceTest {
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_WORKSTATION_TYPE.getStringValue());
 
         // when
-        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
-                workPlan, operationComponent2order, locale);
+        Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
+                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -326,8 +312,8 @@ public class WorkPlanPdfServiceTest {
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_DIVISION.getStringValue());
 
         // when
-        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
-                workPlan, operationComponent2order, locale);
+        Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
+                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -339,8 +325,8 @@ public class WorkPlanPdfServiceTest {
         when(workPlan.getStringField("type")).thenReturn(WorkPlanType.BY_END_PRODUCT.getStringValue());
 
         // when
-        Map<PrioritizedString, List<Entity>> operationComponents = workPlanPdfService.getOperationComponentsWithDistinction(
-                workPlan, operationComponent2order, locale);
+        Map<Long, Map<PrioritizedString, List<Entity>>> operationComponents = ReflectionTestUtils.invokeMethod(
+                workPlanPdfService, GET_ORDER_OP_COMS_MAP_METHOD_NAME, workPlan, locale);
 
         // then
         isDistinct(operationComponents);
@@ -589,10 +575,12 @@ public class WorkPlanPdfServiceTest {
         }
     }
 
-    private void isDistinct(final Map<PrioritizedString, List<Entity>> map) {
-        List<Entity> opComponents = Lists.newArrayList();
-        for (List<Entity> opComponent : map.values()) {
-            opComponents.addAll(opComponent);
+    private void isDistinct(final Map<Long, Map<PrioritizedString, List<Entity>>> orderId2OpComponentsMap) {
+        final List<Entity> opComponents = Lists.newArrayList();
+        for (final Map<PrioritizedString, List<Entity>> opComponentsMap : orderId2OpComponentsMap.values()) {
+            for (List<Entity> opComponent : opComponentsMap.values()) {
+                opComponents.addAll(opComponent);
+            }
         }
         Assert.assertEquals(NUM_OF_UNIQUE_OPERATIONS, Sets.newHashSet(opComponents).size());
     }

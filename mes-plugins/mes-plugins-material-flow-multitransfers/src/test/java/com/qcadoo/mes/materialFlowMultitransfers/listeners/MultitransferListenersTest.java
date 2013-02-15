@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -37,7 +37,6 @@ import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -60,7 +59,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.TimeConverterService;
 
 public class MultitransferListenersTest {
 
@@ -71,14 +69,8 @@ public class MultitransferListenersTest {
     @Mock
     private MaterialFlowService materialFlowService;
 
-    // @Mock
-    // private MaterialFlowResourceService materialFlowResourceService;
-
     @Mock
     private DataDefinitionService dataDefinitionService;
-
-    @Mock
-    private TimeConverterService timeConverterService;
 
     @Mock
     private DataDefinition staffDD, locationDD;
@@ -108,9 +100,6 @@ public class MultitransferListenersTest {
     private FormComponent form;
 
     @Mock
-    private Date time;
-
-    @Mock
     private Entity template;
 
     private static final String L_UNIT = "szt";
@@ -129,7 +118,6 @@ public class MultitransferListenersTest {
         ReflectionTestUtils.setField(multitransferListeners, "materialFlowService", materialFlowService);
         // ReflectionTestUtils.setField(multitransferListeners, "materialFlowResourceService", materialFlowResourceService);
         ReflectionTestUtils.setField(multitransferListeners, "dataDefinitionService", dataDefinitionService);
-        ReflectionTestUtils.setField(multitransferListeners, "timeConverterService", timeConverterService);
 
         given(view.getComponentByReference(L_FORM)).willReturn(form);
 
@@ -159,7 +147,6 @@ public class MultitransferListenersTest {
         Long dateFieldValue = 123L;
 
         given(timeComp.getFieldValue()).willReturn(dateFieldValue);
-        given(timeConverterService.getDateTimeFromField(dateFieldValue)).willReturn(time);
 
         given(locationFromComponent.getFieldValue()).willReturn(0L);
         given(locationToComponent.getFieldValue()).willReturn(1L);
@@ -204,8 +191,6 @@ public class MultitransferListenersTest {
     @Test
     public void shouldDownloadProductsFromTemplates() {
         // given
-        List<Entity> templates = Arrays.asList(template);
-
         given(template.getBelongsToField(PRODUCT)).willReturn(product);
         given(
                 dataDefinitionService.get(MaterialFlowMultitransfersConstants.PLUGIN_IDENTIFIER,

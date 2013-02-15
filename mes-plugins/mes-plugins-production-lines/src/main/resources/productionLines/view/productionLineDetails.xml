@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -56,7 +56,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="select" name="place" field="place"
-							reference="productionLinePlaces" />
+							reference="productionLinePlaces" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1" height="2">
 						<component type="textarea" name="description" field="description" />

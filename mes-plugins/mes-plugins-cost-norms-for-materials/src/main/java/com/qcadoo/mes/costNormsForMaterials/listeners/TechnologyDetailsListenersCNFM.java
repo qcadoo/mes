@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -66,7 +66,7 @@ public class TechnologyDetailsListenersCNFM {
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("technology.id", technologyId);
+        parameters.put("form.id", technologyId);
 
         String url = "../page/costNormsForMaterials/costNormsForMaterialsInTechnologyList.html";
         viewState.redirectTo(url, false, true, parameters);

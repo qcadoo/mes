@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -136,7 +136,7 @@ public class TechnologyValidatorsTest {
         // given
         given(techOpComponent.getId()).willReturn(1L);
         given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
-        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
 
@@ -152,7 +152,7 @@ public class TechnologyValidatorsTest {
         // given
         given(techOpComponent.getId()).willReturn(1L);
         given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
-        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
 
@@ -224,7 +224,7 @@ public class TechnologyValidatorsTest {
         given(techInstanceOpComponent.getId()).willReturn(1L);
         given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
                 SOME_UNIT);
-        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
 
@@ -245,7 +245,7 @@ public class TechnologyValidatorsTest {
         given(techInstanceOpComponent.getId()).willReturn(1L);
         given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(
                 SOME_UNIT);
-        given(productQuantitiesService.getOutputProductsFromOperataionComponent(techOpComponent)).willReturn(outputProduct);
+        given(productQuantitiesService.getOutputProductsFromOperationComponent(techOpComponent)).willReturn(outputProduct);
         given(outputProduct.getBelongsToField(TechnologyFields.PRODUCT)).willReturn(product);
         given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
 

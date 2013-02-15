@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -134,10 +134,11 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
 								method="fillProductAndRecordsNumber" />
+							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.productionCounting.internal.ProductionBalanceViewService"
+								method="setDefaultNameUsingOrder" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">

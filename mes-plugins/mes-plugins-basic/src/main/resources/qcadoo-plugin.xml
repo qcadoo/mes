@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -49,6 +49,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Basic data like products, people, shifts, companies, etc.</description>
 	</information>
 
 	<dependencies>
@@ -82,6 +83,8 @@
 		<model:model model="parameter" resource="model/parameter.xml" />
 
 		<model:model model="currency" resource="model/currency.xml" />
+		
+		<model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml" />
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
@@ -112,6 +115,7 @@
 		<menu:menu-item-url name="conversion" category="basic"
 			url="/unitConversions.html" />
 
+		<view:view resource="view/reportColumnWidthDetails.xml" />
 		<view:view resource="view/companiesList.xml" />
 		<view:view resource="view/companyDetails.xml" />
 		<view:view resource="view/staffsList.xml" />
@@ -143,7 +147,7 @@
 			<model:validatesWith class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB" method="validateUnitOnConversionWithProduct"/>
 		</model:model-hook>
 
-		<custom:custom class="com.qcadoo.mes.basic.CurrencyLoaderModule" />
+		<custom:custom class="com.qcadoo.mes.basic.BasicOnStartupService" />
 	</modules>
 
 </plugin>

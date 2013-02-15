@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.2.0-SNAPSHOT
+ * Version: 1.2.0
  *
  * This file is part of Qcadoo.
  *
@@ -26,24 +26,24 @@ package com.qcadoo.mes.basic.constants;
 public enum ProductFamilyElementType {
     PARTICULAR_PRODUCT("01particularProduct"), PRODUCTS_FAMILY("02productsFamily");
 
-    private final String type;
+    private final String productFamilyElementType;
 
     private ProductFamilyElementType(final String type) {
-        this.type = type;
+        this.productFamilyElementType = type;
     }
 
     public String getStringValue() {
-        return type;
+        return productFamilyElementType;
     }
 
-    public static ProductFamilyElementType parseString(final String string) {
-        if ("01particularProduct".equals(string)) {
+    public static ProductFamilyElementType parseString(final String productFamilyElementType) {
+        if ("01particularProduct".equals(productFamilyElementType)) {
             return PARTICULAR_PRODUCT;
-        } else if ("02productsFamily".equals(string)) {
+        } else if ("02productsFamily".equals(productFamilyElementType)) {
             return PRODUCTS_FAMILY;
         }
 
-        throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + string);
+        throw new IllegalStateException("Unsupported ElementHierarchyInFamilyEnumStringValue: " + productFamilyElementType);
     }
 
 }

@@ -4,7 +4,7 @@
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
     Project: Qcadoo MES
-    Version: 1.2.0-SNAPSHOT
+    Version: 1.2.0
 
     This file is part of Qcadoo.
 
@@ -125,8 +125,6 @@
 					<component type="lookup" name="parent" field="#{form}.parent"
 						reference="parent">
 						<option type="column" name="name" fields="name" link="true" />
-						<option type="column" name="isParentFamily" 
-							 expression="(#entityType.equals('02productsFamily')) ? '@qcadooView.true' : '@qcadooView.false'" />
 						<option type="column" name="parent" fields="parent"
 							expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']" />
 						<option type="searchable" value="name" />
@@ -134,6 +132,9 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
+						
+						<criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+ 						method="showProductFamilyOnly" />
 					</component>
 				</layoutElement>
 			</component>
@@ -217,14 +218,12 @@
 			<script>
 					<![CDATA[
 						var del = #{window}.getRibbonItem("actions.delete");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var externalNumberListener = {
 							onSetValue: function(value) {
 								
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									saveNew.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
 									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
 								}
 							}
