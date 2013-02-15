@@ -260,17 +260,4 @@ public class ProductService {
         }
     }
 
-    public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
-        Entity parent = product.getBelongsToField(ProductFields.PARENT);
-        if (parent == null) {
-            return true;
-        }
-        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
-            return true;
-        } else {
-            product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.parentIsNotFamily");
-            return false;
-        }
-    }
-
 }

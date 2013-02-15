@@ -63,18 +63,22 @@
 			default="01particularProduct" required="true" />
 	</fields>
 	<hooks>
-		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
-		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
-		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
-	
-		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
-		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
-		<validatesWith class="com.qcadoo.mes.basic.ProductService"
+		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+			method="checkIfNotBelongsToSameFamily" />
+		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="checkIfParentIsFamily" />
-		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
-
-		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
+			
+		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
+		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionOnCreate" />
+		
+		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
+		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
+		
+		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
+		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
+	
+		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
