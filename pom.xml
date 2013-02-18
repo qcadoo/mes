@@ -221,7 +221,27 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>		
+			<plugin>
+        		<groupId>org.codehaus.mojo</groupId>
+        		<artifactId>buildnumber-maven-plugin</artifactId>
+        		<version>1.1</version>
+        		<executions>
+          			<execution>
+            			<phase>validate</phase>
+            			<goals>
+              				<goal>create</goal>
+            			</goals>
+          			</execution>
+        		</executions>
+        		<configuration>
+            		<revisionOnScmFailure/>
+           			<format>{0,date,yyyy_MM_dd_HH}</format>
+          			<items>
+            			<item>timestamp</item>
+          			</items>
+        		</configuration>
+      		</plugin>	
 		</plugins>
 		<resources>
 			<resource>
@@ -229,6 +249,7 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>qcadoo-plugin.xml</include>
+					<include>**/*.jsp</include>
 				</includes>
 			</resource>
 			<resource>
@@ -236,6 +257,7 @@
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>qcadoo-plugin.xml</exclude>
+					<exclude>**/*.jsp</exclude>
 				</excludes>
 			</resource>
 		</resources>
