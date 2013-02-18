@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="masterOrderProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="product" plugin="basic" model="product"
+			required="true" />
+		<belongsTo name="technology" plugin="technologies" model="technology" />
+
+		<belongsTo name="masterOrder" model="masterOrder" />
+
+		<decimal name="masterOrderQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		<decimal name="cumulatedOrderQuantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+
+		<string name="defaultTechnology" persistent="false" />
+	</fields>
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
+			method="checkIfEntityAlreadyExistsForProductAndMasterOrder" />
+	</hooks>
+</model>

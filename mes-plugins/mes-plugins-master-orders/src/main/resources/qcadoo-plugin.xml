@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin plugin="masterOrders" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/report
+       http://schema.qcadoo.org/modules/report.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd">
+
+	<information>
+		<name>Qcadoo MES :: Plugins :: Master orders</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>orders</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model model="masterOrder" resource="model/masterOrder.xml" />
+		<model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml" />
+	
+		<model:model-field model="order" plugin="orders">
+			<model:belongsTo name="masterOrder" model="masterOrder"
+				plugin="masterOrders" lazy="true" />
+		</model:model-field>
+		
+		<model:model-hook model="order" plugin="orders">
+			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+				method="checkProductAndTechnology" />
+		</model:model-hook>
+		<model:model-hook model="order" plugin="orders">
+			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+				method="checkCompanyAndDeadline" />
+		</model:model-hook>
+		<model:model-hook model="order" plugin="orders">
+			<model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
+				method="checkOrderNumber" />
+		</model:model-hook>
+
+		<menu:menu-item name="masterOrders" category="orders"
+			view="masterOrdersList" />
+
+		<view:view resource="view/masterOrdersList.xml" />
+		<view:view resource="view/masterOrderDetails.xml" />
+		<view:view resource="view/masterOrderProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+
+	</modules>
+
+</plugin>

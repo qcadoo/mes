@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+	plugin="orders" view="orderDetails">
+
+	<windowTab name="masterOrderTab" reference="masterOrderTab">
+		<component type="gridLayout" name="gridLayout" columns="3"
+			rows="1">
+			<layoutElement column="1" row="1">
+				<component type="lookup" name="masterOrder" field="#{form}.masterOrder">
+					<option type="column" name="name" fields="name" link="true" width="200" />
+					<option type="column" name="deadline" fields="deadline"  width="100" />
+					<option type="searchable" value="number,name,deadline" />
+					<option type="orderable" value="number,name,deadline" />
+					<option type="expression" value="#number" />
+					<option type="fieldCode" value="number" />
+				</component>
+			</layoutElement>
+		</component>
+	</windowTab>
+
+</windowTabExtension>

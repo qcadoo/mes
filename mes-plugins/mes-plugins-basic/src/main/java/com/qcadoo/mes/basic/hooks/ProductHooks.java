@@ -32,6 +32,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.tree.ProductNumberingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -70,6 +72,32 @@ public class ProductHooks {
         for (Entity entity : productsWithFamily) {
             entity.setField("parent", null);
             productDD.save(entity);
+        }
+    }
+
+    public boolean checkIfNotBelongsToSameFamily(final DataDefinition productDD, final Entity product) {
+        Entity parent = product.getBelongsToField(PARENT);
+
+        if ((parent != null) && product.getId().equals(parent.getId())) {
+            product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+        if (parent == null) {
+            return true;
+        }
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
+            return true;
+        } else {
+            product.addError(productDD.getField(PARENT), "basic.product.parent.parentIsNotFamily");
+
+            return false;
         }
     }
 
