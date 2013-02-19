@@ -137,7 +137,7 @@
 		<level value="error" />
 	</logger>
 	
-	<logger name="com.qcadoo.mes">
+	<logger name="com.qcadoo.mes.integration">
 		<level value="debug" />
 		<appender-ref ref="connector-log" />
 	</logger>
