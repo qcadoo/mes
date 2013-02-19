@@ -172,8 +172,8 @@
 		<appender-ref ref="report-log" />
 	</logger>
 	
-	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+	<logger name="com.qcadoo.mes.integration">
+		<level value="info" />
 		<appender-ref ref="connector-log" />
 	</logger>
 	
