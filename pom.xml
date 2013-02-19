@@ -225,9 +225,9 @@
 			<plugin>
         		<groupId>org.codehaus.mojo</groupId>
         		<artifactId>buildnumber-maven-plugin</artifactId>
-        		<version>1.1</version>
+        		<version>1.2</version>
         		<executions>
-          			<execution>
+        		    <execution>
             			<phase>validate</phase>
             			<goals>
               				<goal>create</goal>
@@ -235,10 +235,15 @@
           			</execution>
         		</executions>
         		<configuration>
+        		    <getRevisionOnlyOnce/>
             		<revisionOnScmFailure/>
-           			<format>{0,date,yyyy_MM_dd_HH}</format>
-          			<items>
+            		<timestampFormat>{0,date,yyyy_MM_dd_HH_mm}</timestampFormat>
+            		<timestampPropertyName>buildNumber</timestampPropertyName>
+            		<buildNumberPropertyName>buildRevision</buildNumberPropertyName>
+            		<format>{1}</format>
+            		<items>
             			<item>timestamp</item>
+            			<item>scmVersion</item>
           			</items>
         		</configuration>
       		</plugin>	

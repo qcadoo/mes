@@ -384,24 +384,12 @@
 						<configuration>
 							<target>
 								<mkdir dir="${basedir}/target/classes" />
-								<exec executable="git" outputproperty="build.revision">
-									<arg value="rev-list" />
-									<arg value="--max-count=1" />
-									<arg value="--all" />
-								</exec>
-								<tstamp>
-									<format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" />
-								</tstamp>
-								<property name="build.number" value="-" />
 								<echo file="${basedir}/target/classes/build.properties">
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime =
-									${build.time}
-									buildNumber = ${build.number}
-									buildRevision =
-									${build.revision}
+									buildTime = ${buildNumber}
+									buildRevision = ${buildRevision}
 								</echo>
 							</target>
 						</configuration>
