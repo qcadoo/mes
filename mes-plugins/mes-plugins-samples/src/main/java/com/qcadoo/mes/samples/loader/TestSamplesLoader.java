@@ -813,6 +813,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 technology.setField("minimalQuantity", values.get("minimal"));
             }
 
+            if (isEnabledOrEnabling(SamplesConstants.L_GOOD_FOOD)) {
+                technology.setField("formula", "123");
+            }
+
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Add test technology {id=" + technology.getId() + ", name=" + technology.getField(L_NAME) + ", "
                         + L_NUMBER + "=" + technology.getField(L_NUMBER) + ", technology product="
