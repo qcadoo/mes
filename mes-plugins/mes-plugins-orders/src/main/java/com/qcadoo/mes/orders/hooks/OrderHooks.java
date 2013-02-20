@@ -193,4 +193,18 @@ public class OrderHooks {
     private Date choppingOffMiliseconds(final Object date) {
         return new Date(((Date) date).getTime() / SECOND_MILLIS);
     }
+
+    public boolean validateDates(final DataDefinition orderDD, final Entity order) {
+        Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+        Date effectiveDateTo = (Date) order.getField(EFFECTIVE_DATE_TO);
+
+        if ((effectiveDateFrom != null) && (effectiveDateTo != null) && effectiveDateTo.before(effectiveDateFrom)) {
+            order.addError(orderDD.getField(EFFECTIVE_DATE_TO), "orders.validate.global.error.effectiveDateTo");
+
+            return false;
+        }
+
+        return true;
+    }
+
 }
