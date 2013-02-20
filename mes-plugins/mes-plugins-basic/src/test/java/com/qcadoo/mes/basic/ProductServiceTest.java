@@ -154,18 +154,6 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void shouldClearExternalIdOnCopy() throws Exception {
-        // given
-
-        // when
-        boolean result = productService.clearExternalIdOnCopy(dataDefinition, entity);
-        // then
-        assertTrue(result);
-
-        Mockito.verify(entity).setField("externalNumber", null);
-    }
-
-    @Test
     public void shouldReturnFalseWhenSubstituteDoesnotExists() throws Exception {
         // given
         DataDefinition substituteDD = Mockito.mock(DataDefinition.class);
