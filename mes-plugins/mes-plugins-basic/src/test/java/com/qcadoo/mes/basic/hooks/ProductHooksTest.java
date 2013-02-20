@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -138,6 +139,18 @@ public class ProductHooksTest {
         // then
         Assert.assertEquals(null, prod1.getBelongsToField("parent"));
         Assert.assertEquals(null, prod2.getBelongsToField("parent"));
+    }
+
+    @Test
+    public void shouldClearExternalIdOnCopy() throws Exception {
+        // given
+
+        // when
+        hooks.clearExternalIdOnCopy(dataDefinition, entity);
+
+        // then
+
+        Mockito.verify(entity).setField("externalNumber", null);
     }
 
 }

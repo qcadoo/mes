@@ -67,6 +67,8 @@
 			method="checkIfNotBelongsToSameFamily" />
 		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="checkIfParentIsFamily" />
+		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+			method="checkIfEanValueIsNumerical" />
 			
 		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
@@ -76,8 +78,9 @@
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
 		
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
-		<onCopy class="com.qcadoo.mes.basic.ProductService" method="clearExternalIdOnCopy" />
-	
+		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy" />
+		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy" />
+		
 		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

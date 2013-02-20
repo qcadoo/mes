@@ -235,14 +235,6 @@ public class ProductService {
 
     }
 
-    public boolean clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity == null) {
-            return true;
-        }
-        entity.setField("externalNumber", null);
-        return true;
-    }
-
     public void fillUnit(final ViewDefinitionState view) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
 
