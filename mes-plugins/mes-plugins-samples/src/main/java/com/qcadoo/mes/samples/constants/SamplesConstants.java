@@ -256,6 +256,8 @@ public final class SamplesConstants {
 
     public static final String L_QUALITYCONTROLTYPE_3 = "qualitycontroltype";
 
+    public static final String L_GOOD_FOOD = "goodFood";
+
     public static final String L_ORDER_NR = "order_nr";
 
     public static final String L_PLANNED_QUANTITY = "plannedQuantity";
