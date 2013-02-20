@@ -89,5 +89,9 @@
 				orderable="true" searchable="true" width="50" expression="#orderGroup['name']"/>
 		</view:view-grid-column>
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

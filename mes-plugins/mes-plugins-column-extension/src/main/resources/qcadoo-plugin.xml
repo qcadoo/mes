@@ -37,6 +37,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<license>AGPL</license>
 	</information>
 
 	<modules>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="masterOrders" version="${qcadoo.plugin.version}"
+<plugin plugin="masterOrders" group="planning" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -24,6 +24,8 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Higher level order which many production orders must fulfill. Master orders often represent actual orders for clients for many products.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -66,5 +68,9 @@
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

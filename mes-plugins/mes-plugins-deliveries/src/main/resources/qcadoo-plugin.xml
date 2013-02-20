@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="deliveries" version="${qcadoo.plugin.version}"
+<plugin plugin="deliveries" group="supplies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Define when and what products will arrive from you suppliers.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -174,5 +175,9 @@
 
 		<custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

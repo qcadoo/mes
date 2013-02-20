@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="ganttForOperations" version="${qcadoo.plugin.version}"
+<plugin plugin="ganttForOperations" group="planning" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Visualizes the results of orders time consumption calculation on a Gantt chart.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -73,5 +74,9 @@
 		<view:view-hook view="operationDurationDetailsInOrder" type="beforeRender" plugin="productionScheduling" 
 		    	class="com.qcadoo.mes.ganttForOperations.GanttOperationService" method="disableCalendarButtonWhenRealizationTimeNotGenerated"/>
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

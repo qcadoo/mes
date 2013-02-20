@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionPerShift" version="${qcadoo.plugin.version}"
+<plugin plugin="productionPerShift" group="planning" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Lets you define how many products should be outputted in a production order in the following shifts.</description>
+		<license>AGPL</license>
 	</information>
 
 
@@ -100,5 +101,9 @@
 			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 			method="redirectToProductionPerShift" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

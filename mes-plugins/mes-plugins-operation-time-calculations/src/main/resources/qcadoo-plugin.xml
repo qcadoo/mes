@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="operationTimeCalculations" version="${qcadoo.plugin.version}"
+<plugin plugin="operationTimeCalculations" group="calculations" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Algorithms for time calculations of technology on the operation level.</description>
+		<license>AGPL</license>
 	</information>
 	
 	<dependencies>

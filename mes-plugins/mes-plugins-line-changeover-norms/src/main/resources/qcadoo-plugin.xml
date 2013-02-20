@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<plugin plugin="lineChangeoverNorms" version="${qcadoo.plugin.version}"
+
+<plugin plugin="lineChangeoverNorms" group="technologies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +51,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Lets you define changeover norms for production lines from one technology to another.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -76,5 +78,9 @@
 		<view:view resource="view/matchingChangeoverNormsDetails.xml" />
 		
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

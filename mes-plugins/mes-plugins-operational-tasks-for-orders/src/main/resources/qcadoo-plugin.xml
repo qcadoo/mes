@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<plugin plugin="operationalTasksForOrders" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<plugin plugin="operationalTasksForOrders" group="planning"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
@@ -50,6 +38,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Integrates operational tasks with production orders.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -77,26 +66,26 @@
 			<model:belongsTo name="technologyInstanceOperationComponent"
 				model="technologyInstanceOperationComponent" plugin="technologies" />
 		</model:model-field>
-		<model:model-enum-value model="operationalTask" plugin="operationalTasks" 
-			value="02executionOperationInOrder" enum="typeTask" />
+		<model:model-enum-value model="operationalTask"
+			plugin="operationalTasks" value="02executionOperationInOrder" enum="typeTask" />
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="operationalTasks" joinField="order"
 				model="operationalTask" cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
-		
+
 		<model:model-field model="technologyInstanceOperationComponent"
 			plugin="technologies">
 			<model:hasMany name="operationalTasks"
 				joinField="technologyInstanceOperationComponent" model="operationalTask"
 				cascade="delete" plugin="operationalTasks" />
 		</model:model-field>
-		
+
 		<model:model-enum-value plugin="basic" model="parameter"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-			
+
 		<model:model-enum-value plugin="orders" model="order"
 			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-		
+
 		<model:model-hook model="operationalTask" plugin="operationalTasks">
 			<model:onSave
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO"
@@ -149,7 +138,7 @@
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
-			
+
 		<view:view-hook view="operationalTaskDetails" type="beforeRender"
 			plugin="operationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksDetailsHooksOTFO"
@@ -164,7 +153,7 @@
 			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
 			method="disabledFieldWhenOrderTypeIsSelected" />
-			
+
 		<view:view-listener view="operationalTaskDetails"
 			component="typeTask" plugin="operationalTasks" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksDetailsListenersOTFO"
@@ -200,5 +189,10 @@
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListOTFOHooks"
 			method="addDiscriminatorRestrictionToGrid" />
 	</modules>
+	
+	<features>
+		<end-user />
+		<internal-integration/>
+	</features>
 
 </plugin>

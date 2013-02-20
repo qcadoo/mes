@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="basicProductionCounting" version="${qcadoo.plugin.version}"
+<plugin plugin="basicProductionCounting" group="tracking" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -52,6 +52,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Simple production counting just using the production progress table which shows the current quantities of used and produced products.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -86,5 +87,9 @@
 		<view:resource uri="public/**/*" />
 		
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>
