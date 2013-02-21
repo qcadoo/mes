@@ -59,7 +59,6 @@ public class OrderStateValidationService {
 
         validateTechnologyState(stateChangeContext);
         validateProductionLine(stateChangeContext);
-        validateDates(stateChangeContext);
 
     }
 

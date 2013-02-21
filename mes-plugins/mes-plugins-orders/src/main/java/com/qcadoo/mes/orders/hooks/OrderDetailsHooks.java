@@ -50,6 +50,7 @@ import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STAT
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -64,6 +66,7 @@ import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -177,5 +180,19 @@ public class OrderDetailsHooks {
         refresh.requestUpdate(true);
         back.requestUpdate(true);
         form.setFormEnabled(false);
+    }
+
+    public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+        Date startDate = DateUtils.parseDate(startDateComponent.getFieldValue());
+        Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+        if (startDate != null && deadlineDate != null && deadlineDate.before(startDate)) {
+            form.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
+        }
     }
 }
