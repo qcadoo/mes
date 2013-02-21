@@ -78,12 +78,14 @@ public class ProductHooks {
     }
 
     public boolean checkIfNotBelongsToSameFamily(final DataDefinition productDD, final Entity product) {
-        Entity parent = product.getBelongsToField(PARENT);
+        if (product.getId() != null) {
+            Entity parent = product.getBelongsToField(PARENT);
 
-        if ((parent != null) && product.getId().equals(parent.getId())) {
-            product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
+            if ((parent != null) && product.getId().equals(parent.getId())) {
+                product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
 
-            return false;
+                return false;
+            }
         }
 
         return true;
