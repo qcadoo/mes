@@ -204,24 +204,6 @@ public class OrderStateValidationServiceTest {
     }
 
     @Test
-    public void shouldPerformValidationAcceptedFailOnDates() throws Exception {
-        // given
-        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
-        given(order.getField(DEADLINE)).willReturn(new Date(System.currentTimeMillis() - 10000));
-        given(order.getField(START_DATE)).willReturn(new Date());
-
-        given(orderService.checkIfProductionLineSupportsTechnology(order)).willReturn(true);
-
-        // when
-        orderStateValidationService.validationOnAccepted(stateChangeContext);
-
-        // then
-        verify(stateChangeContext, never()).addFieldValidationError(TECHNOLOGY, L_TECHNOLOGY_WRONG_STATE);
-        verify(stateChangeContext, never()).addFieldValidationError(PRODUCTION_LINE, L_PRODUCTION_LINE_DOESNT_SUPPORT_TECHNOLOGY);
-        verify(stateChangeContext).addFieldValidationError(DEADLINE, L_WRONG_DEADLINE);
-    }
-
-    @Test
     public void shouldPerformValidationInProgressFail() throws Exception {
         // given
         given(order.getField(Mockito.anyString())).willReturn(null);
