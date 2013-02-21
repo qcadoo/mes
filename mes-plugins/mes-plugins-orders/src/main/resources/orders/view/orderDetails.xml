@@ -183,6 +183,7 @@
 							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
 							declineOrder.setIcon('deleteIcon16.png');
 							interruptOrder.disable();
+							del.disable();
 						} else if (state == "03inProgress") {
 							acceptOrder.enable();
 							acceptOrder.state = "finish";
@@ -193,6 +194,15 @@
 							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 							declineOrder.setIcon('deleteIcon16.png');
 							interruptOrder.enable();
+							del.disable();
+						} else if (state == "05declined"){
+							save.disable();
+							saveBack.disable();
+							saveNew.disable();
+							cancel.disable();
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable();
 						} else if (state == "06interrupted"){
 							acceptOrder.enable();
 							acceptOrder.state = "restart";
@@ -203,6 +213,7 @@
 							declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 							declineOrder.setIcon('deleteIcon16.png');
 							interruptOrder.disable();
+							del.disable();
 						} else {
 							save.disable();
 							saveBack.disable();
