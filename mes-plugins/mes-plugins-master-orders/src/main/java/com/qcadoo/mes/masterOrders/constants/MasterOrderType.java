@@ -14,15 +14,16 @@ public enum MasterOrderType {
         return masterOrderType;
     }
 
-    public static MasterOrderType parseString(final String string) {
-        if ("01undefined".equals(string)) {
+    public static MasterOrderType parseString(final String masterOrderType) {
+        if ("01undefined".equals(masterOrderType)) {
             return UNDEFINED;
-        } else if ("02oneProduct".equals(string)) {
+        } else if ("02oneProduct".equals(masterOrderType)) {
             return ONE_PRODUCT;
-        } else if ("03manyProducts".equals(string)) {
+        } else if ("03manyProducts".equals(masterOrderType)) {
             return MANY_PRODUCTS;
         }
 
-        throw new IllegalStateException("Unsupported masterOrderType: " + string);
+        throw new IllegalStateException("Unsupported masterOrderType: " + masterOrderType);
     }
+
 }
