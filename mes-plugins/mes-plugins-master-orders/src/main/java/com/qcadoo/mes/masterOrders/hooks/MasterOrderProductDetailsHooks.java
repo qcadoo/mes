@@ -26,6 +26,6 @@ public class MasterOrderProductDetailsHooks {
             field.setFieldValue(product.getStringField(ProductFields.UNIT));
             field.requestComponentUpdateState();
         }
-
     }
+
 }

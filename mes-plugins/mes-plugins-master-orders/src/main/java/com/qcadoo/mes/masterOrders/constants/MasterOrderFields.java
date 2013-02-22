@@ -1,6 +1,6 @@
 package com.qcadoo.mes.masterOrders.constants;
 
-public class MasterOrderFields {
+public final class MasterOrderFields {
 
     private MasterOrderFields() {
 

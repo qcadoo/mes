@@ -24,11 +24,11 @@
     ***************************************************************************
 
 -->
-
-<plugin plugin="lineChangeoverNorms" group="technologies" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<plugin plugin="lineChangeoverNorms" group="technologies"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
@@ -63,22 +63,22 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="lineChangeoverNorms" resource="model/lineChangeoverNorms.xml" />
-		
+
 		<menu:menu-category name="calculations" />
-		
+
 		<menu:menu-item name="lineChangeoverNorms" category="technology"
 			view="lineChangeoverNormsList" />
-		<menu:menu-item name="matchingChangeoverNorms" category="calculations"
-			view="matchingChangeoverNormsDetails" />
-		
+		<menu:menu-item name="matchingChangeoverNorms"
+			category="calculations" view="matchingChangeoverNormsDetails" />
+
 		<view:view resource="view/lineChangeoverNormsList.xml" />
 		<view:view resource="view/lineChangeoverNormsDetails.xml" />
 		<view:view resource="view/matchingChangeoverNormsDetails.xml" />
-		
+
 	</modules>
-	
+
 	<features>
 		<end-user />
 	</features>
