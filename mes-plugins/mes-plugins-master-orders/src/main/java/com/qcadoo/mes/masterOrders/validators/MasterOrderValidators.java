@@ -87,4 +87,5 @@ public class MasterOrderValidators {
     private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {
         return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find().list().getEntities().isEmpty();
     }
+
 }

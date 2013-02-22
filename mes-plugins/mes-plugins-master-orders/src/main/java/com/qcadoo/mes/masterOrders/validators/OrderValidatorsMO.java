@@ -158,4 +158,5 @@ public class OrderValidatorsMO {
         return entity == null ? translationService.translate("masterOrders.order.masterOrder.hasNot" + fieldName,
                 Locale.getDefault()) : entity.getStringField(NUMBER) + " - " + entity.getStringField(NAME);
     }
+
 }
