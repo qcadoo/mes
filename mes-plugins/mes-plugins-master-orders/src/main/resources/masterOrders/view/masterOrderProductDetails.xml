@@ -1,10 +1,13 @@
 <view name="masterOrderProductDetails" modelName="masterOrderProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack" />
 		</ribbon>
+		
 		<windowTab name="mainTab">
 			<component type="form" name="masterOrderProductDetails"
 				reference="form">
@@ -16,11 +19,14 @@
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
+							
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							
 							<listener event="onSelectedEntityChange" method="fillUnitField"
 								class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners" />
 						</component>
@@ -36,8 +42,10 @@
 							hasDescription="true">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
+								
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -45,7 +53,6 @@
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="borderLayout" name="productQuantity">
-							<option type="label" value="productQuantityLabel" />
 							<component type="gridLayout" name="productQuantityGridLayout"
 								columns="4" rows="2" reference="productQuantityGridLayout"
 								hasBorders="false">
@@ -70,15 +77,20 @@
 									</component>
 								</layoutElement>
 							</component>
+							
+							<option type="label" value="productQuantityLabel" />
 						</component>
 					</layoutElement>
 				</component>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
 			method="fillUnitField" />
 	</hooks>
+	
 </view>
