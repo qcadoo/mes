@@ -58,7 +58,7 @@
 			</component>
 		</windowTab>
 		<windowTab name="productsTab">
-			<component type="gridLayout" name="gridLayout" columns="3"
+			<component type="gridLayout" name="gridLayout" reference="productsTabGridLayout" columns="3"
 				rows="7">
 				<layoutElement column="1" row="1">
 					<component type="select" name="masterOrderType"
@@ -135,7 +135,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1" width="2" height="5">
-					<component type="grid" name="products" reference="grid"
+					<component type="grid" name="products" reference="productsGrid"
 						source="#{form}.masterOrderProducts">
 						<option type="column" name="productNumber" fields="product"
 							link="true" expression="#product['number']" />
@@ -183,11 +183,11 @@
 			</component>
 		</windowTab>
 		<windowTab name="integrationTab">
-			<component type="gridLayout" name="gridLayoutIntegration"
+			<component type="gridLayout" name="gridLayoutIntegration" reference="gridLayoutIntegration"
 				columns="3" rows="6">
 				<layoutElement column="1" row="1">
 					<component type="input" name="externalNumber" field="externalNumber"
-						reference="externalNumber">
+						reference="externalNumber" disable="never">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>

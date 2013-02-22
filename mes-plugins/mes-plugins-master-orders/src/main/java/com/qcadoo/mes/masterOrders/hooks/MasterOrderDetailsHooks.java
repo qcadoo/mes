@@ -56,7 +56,7 @@ public class MasterOrderDetailsHooks {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
-        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference("grid");
+        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference("productsGrid");
         masterOrderProducts.setVisible(visibleGrid);
         ComponentState borderLayoutProductQuantity = view.getComponentByReference("borderLayoutProductQuantity");
         borderLayoutProductQuantity.setVisible(visibleFields);
