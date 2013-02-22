@@ -40,7 +40,9 @@
 
 		<model:model model="masterOrder" resource="model/masterOrder.xml" />
 		<model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml" />
-	
+				
+		<model:dictionary name="masterOrderState" />
+		
 		<model:model-field model="order" plugin="orders">
 			<model:belongsTo name="masterOrder" model="masterOrder"
 				plugin="masterOrders" lazy="true" />
@@ -65,6 +67,7 @@
 		<view:view resource="view/masterOrdersList.xml" />
 		<view:view resource="view/masterOrderDetails.xml" />
 		<view:view resource="view/masterOrderProductDetails.xml" />
+		
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
 	</modules>
