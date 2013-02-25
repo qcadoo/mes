@@ -12,4 +12,5 @@ public class MasterOrderHooks {
     public void setExternalSynchronizedField(final DataDefinition dataDefinition, final Entity masterOrder) {
         masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
     }
+
 }

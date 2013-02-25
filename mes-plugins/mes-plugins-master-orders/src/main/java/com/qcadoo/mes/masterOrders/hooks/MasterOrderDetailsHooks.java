@@ -40,6 +40,7 @@ public class MasterOrderDetailsHooks {
     public void hideFieldDependOnMasterOrderType(final ViewDefinitionState view) {
         FieldComponent masterOrderType = (FieldComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE);
         Object masterOrderTypeValue = masterOrderType.getFieldValue();
+
         if (masterOrderTypeValue == null || StringUtils.isEmpty(masterOrderTypeValue.toString())
                 || masterOrderTypeValue.equals(MasterOrderType.UNDEFINED.getStringValue())) {
             setFieldsVisibility(view, false, false);
@@ -56,8 +57,10 @@ public class MasterOrderDetailsHooks {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
+
         GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference("productsGrid");
         masterOrderProducts.setVisible(visibleGrid);
+
         ComponentState borderLayoutProductQuantity = view.getComponentByReference("borderLayoutProductQuantity");
         borderLayoutProductQuantity.setVisible(visibleFields);
     }
@@ -65,14 +68,18 @@ public class MasterOrderDetailsHooks {
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+
         if (product == null) {
             return;
         }
+
         String unit = product.getStringField(UNIT);
+
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
     }
+
 }

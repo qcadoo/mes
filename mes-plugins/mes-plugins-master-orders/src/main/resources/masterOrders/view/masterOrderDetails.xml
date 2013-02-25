@@ -35,7 +35,7 @@
 					<layoutElement column="2" row="2">
 						<component type="lookup" name="company" reference="company"
 							field="company" hasDescription="true">
-							<option type="column" name="name" fields="name" />
+							<option type="column" name="name" fields="name" link="true" />
 							
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
@@ -177,11 +177,25 @@
 		</windowTab>
 		
 		<windowTab name="ordersTab">
+			<component type="lookup" name="ordersLookup" reference="ordersLookup"
+				field="#{form}.orders" defaultVisible="false" persistent="false"
+				hasLabel="false">
+				<option type="column" name="name" fields="name" link="true" />
+
+				<option type="searchable" value="number,name" />
+				<option type="orderable" value="number,name" />
+
+				<option type="expression"
+					value="#number + ' - ' + #name" />
+				<option type="fieldCode" value="number" />
+
+				<option type="multiselect" value="true" />
+			</component>
 			<component type="grid" name="orders" reference="ordersGrid"
 				source="#{form}.orders">
-				<option type="column" name="number" fields="number" link="true" />
+				<option type="column" name="number" fields="number" />
 				<option type="column" name="productNumber" fields="product"
-					link="true" expression="#product['number']" />
+					expression="#product['number']" />
 				<option type="column" name="technologyNumber" fields="technology"
 					expression="#technology['number']" />
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
@@ -197,9 +211,9 @@
 					value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate" />
 				<option type="orderable"
 					value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate" />
-					
-				<option type="correspondingView" value="orders/orderDetails" />
-				<option type="correspondingComponent" value="form" />
+				
+				<option type="weakRelation" value="true" />
+				<option type="correspondingLookup" value="ordersLookup" />
 				
 				<option type="deletable" value="true" />
 				<option type="creatable" value="true" />

@@ -20,4 +20,5 @@ public class MasterOrderDetailsListeners {
     public void fillUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderDetailsHooks.fillUnitField(view);
     }
+
 }

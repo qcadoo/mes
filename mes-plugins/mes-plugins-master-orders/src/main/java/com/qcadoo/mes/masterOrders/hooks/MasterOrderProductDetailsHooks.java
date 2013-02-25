@@ -18,9 +18,11 @@ public class MasterOrderProductDetailsHooks {
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+
         if (product == null) {
             return;
         }
+
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(product.getStringField(ProductFields.UNIT));
