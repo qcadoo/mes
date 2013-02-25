@@ -1,6 +1,6 @@
 package com.qcadoo.mes.masterOrders.constants;
 
-public class MasterOrderFields {
+public final class MasterOrderFields {
 
     private MasterOrderFields() {
 
@@ -37,4 +37,5 @@ public class MasterOrderFields {
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String ORDERS = "orders";
+
 }

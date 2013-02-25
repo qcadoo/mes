@@ -1,5 +1,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
@@ -14,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
@@ -42,21 +42,21 @@ public class MasterOrderDetailsHooks {
         Object masterOrderTypeValue = masterOrderType.getFieldValue();
         if (masterOrderTypeValue == null || StringUtils.isEmpty(masterOrderTypeValue.toString())
                 || masterOrderTypeValue.equals(MasterOrderType.UNDEFINED.getStringValue())) {
-            invisibleFields(view, false, false);
+            setFieldsVisibility(view, false, false);
         } else if (masterOrderTypeValue.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
-            invisibleFields(view, true, false);
+            setFieldsVisibility(view, true, false);
         } else {
-            invisibleFields(view, false, true);
+            setFieldsVisibility(view, false, true);
         }
     }
 
-    private void invisibleFields(final ViewDefinitionState view, final boolean visibleFields, final boolean visibleGrid) {
+    public void setFieldsVisibility(final ViewDefinitionState view, final boolean visibleFields, final boolean visibleGrid) {
         for (String reference : Arrays.asList(TECHNOLOGY, PRODUCT, DEFAULT_TECHNOLOGY, MASTER_ORDER_QUANTITY,
                 CUMULATED_ORDER_QUANTITY)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
-        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference("grid");
+        GridComponent masterOrderProducts = (GridComponent) view.getComponentByReference("productsGrid");
         masterOrderProducts.setVisible(visibleGrid);
         ComponentState borderLayoutProductQuantity = view.getComponentByReference("borderLayoutProductQuantity");
         borderLayoutProductQuantity.setVisible(visibleFields);
@@ -68,7 +68,7 @@ public class MasterOrderDetailsHooks {
         if (product == null) {
             return;
         }
-        String unit = product.getStringField(ProductFields.UNIT);
+        String unit = product.getStringField(UNIT);
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
