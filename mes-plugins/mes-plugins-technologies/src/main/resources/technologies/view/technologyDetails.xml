@@ -273,7 +273,7 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						<option type="paginable" value="false" />
+						<option type="paginable" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
@@ -297,7 +297,7 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						<option type="paginable" value="false" />
+						<option type="paginable" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
