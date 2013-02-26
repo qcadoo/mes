@@ -273,11 +273,12 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						<option type="paginable" value="true" />
+						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
+						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="5" height="4">
@@ -297,11 +298,12 @@
 						<option type="correspondingViewInModal" value="true" />
 						<option type="searchable" value="number,name,quantity,unit" />
 						<option type="orderable" value="number,name,quantity,unit" />
-						<option type="paginable" value="true" />
+						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
+						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
 			</component>

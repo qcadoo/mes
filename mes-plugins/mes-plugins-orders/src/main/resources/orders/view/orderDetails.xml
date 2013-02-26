@@ -376,8 +376,6 @@
 					method="changeState" />
 				<listener event="showOrderParameters" method="showOrderParameters"
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
-				<listener event="save" class="com.qcadoo.mes.orders.OrderService"
-					method="compareDeadlineAndDateTo" />
 			</component>
 		</windowTab>
 		<windowTab name="detailsTab">
@@ -602,5 +600,7 @@
 			method="disabledRibbonWhenOrderIsSynchronized" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="compareDeadlineAndEndDate" />
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+			method="compareDeadlineAndStartDate" />
 	</hooks>
 </view>

@@ -38,4 +38,5 @@ public final class MasterOrderFields {
 
     public static final String ORDERS = "orders";
 
+    public static final String MASTER_ORDER_PRODUCTS = "masterOrderProducts";
 }

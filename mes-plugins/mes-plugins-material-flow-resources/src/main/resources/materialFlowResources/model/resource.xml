@@ -41,8 +41,8 @@
 		<validatesWith
 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
 			method="checkIfLocationIsWarehouse" />
-		<onCreate
-			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
-			method="generateBatch" />
+<!-- 		<onCreate -->
+<!-- 			class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" -->
+<!-- 			method="generateBatch" /> -->
 	</hooks>
 </model>
