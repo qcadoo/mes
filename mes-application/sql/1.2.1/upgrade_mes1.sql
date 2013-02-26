@@ -82,3 +82,19 @@ ALTER TABLE orders_order
 ALTER TABLE orders_order DROP COLUMN batchnumber;
 
 -- end
+
+
+-- Table: orders_order
+-- changed: 26.02.2013
+
+ALTER TABLE orders_order DROP COLUMN ordergroup_id;
+
+-- end
+
+
+-- Table: ordergroups_ordergroup
+-- changed: 26.02.2013
+
+DROP TABLE ordergroups_ordergroup;
+
+-- end
