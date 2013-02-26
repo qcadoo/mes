@@ -74,3 +74,11 @@ ALTER TABLE orders_order
       REFERENCES masterorders_masterorder (id) DEFERRABLE;
 
 -- end
+
+
+-- Table: orders_order
+-- changed: 26.02.2013
+
+ALTER TABLE orders_order DROP COLUMN batchnumber;
+
+-- end
