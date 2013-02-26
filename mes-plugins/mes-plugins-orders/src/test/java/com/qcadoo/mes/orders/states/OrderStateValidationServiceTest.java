@@ -27,6 +27,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
@@ -59,6 +60,8 @@ public class OrderStateValidationServiceTest {
     private static final String L_TECHNOLOGY_WRONG_STATE = "orders.validate.technology.error.wrongState.accepted";
 
     private static final String L_WRONG_DEADLINE = "orders.validate.global.error.deadline";
+
+    private static final String L_WRONG_EFFECTIVE_DATE_TO = "orders.validate.global.error.effectiveDateTo";
 
     private OrderStateValidationService orderStateValidationService;
 
@@ -140,12 +143,14 @@ public class OrderStateValidationServiceTest {
     public void shouldPerformValidationCompleted() throws Exception {
         // given
         given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(new Date(System.currentTimeMillis() - 10000));
 
         // when
         orderStateValidationService.validationOnCompleted(stateChangeContext);
 
         // then
         verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_WRONG_EFFECTIVE_DATE_TO));
     }
 
     @Test
@@ -246,6 +251,21 @@ public class OrderStateValidationServiceTest {
         for (String field : Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY)) {
             verify(stateChangeContext).addFieldValidationError(field, L_MISSING_MESSAGE);
         }
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_WRONG_EFFECTIVE_DATE_TO));
+    }
+
+    @Test
+    public void shouldPerformValidationCompletedFailOnEffectiveDateTo() throws Exception {
+        // given
+        given(order.getField(Mockito.anyString())).willReturn("fieldValue");
+        given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(new Date(System.currentTimeMillis() + 10000));
+
+        // when
+        orderStateValidationService.validationOnCompleted(stateChangeContext);
+
+        // then
+        verify(stateChangeContext, never()).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_MISSING_MESSAGE));
+        verify(stateChangeContext).addFieldValidationError(Mockito.anyString(), Mockito.eq(L_WRONG_EFFECTIVE_DATE_TO));
     }
 
     private void stubTechnologyField(final Entity value) {

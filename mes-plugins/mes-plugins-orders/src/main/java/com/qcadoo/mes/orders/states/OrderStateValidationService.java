@@ -27,10 +27,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +72,7 @@ public class OrderStateValidationService {
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
         final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
         checkRequired(fieldNames, stateChangeContext);
+        validateDates(stateChangeContext);
     }
 
     private void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
@@ -104,4 +108,18 @@ public class OrderStateValidationService {
                     "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
         }
     }
+
+    public void validateDates(final StateChangeContext stateChangeContext) {
+        checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
+
+        final Entity order = stateChangeContext.getOwner();
+
+        Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+        Date effectiveDateTo = new Date();
+
+        if ((effectiveDateFrom != null) && (effectiveDateTo != null) && effectiveDateTo.before(effectiveDateFrom)) {
+            stateChangeContext.addFieldValidationError(EFFECTIVE_DATE_TO, "orders.validate.global.error.effectiveDateTo");
+        }
+    }
+
 }
