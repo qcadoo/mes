@@ -187,12 +187,28 @@ public class OrderDetailsHooks {
         if (form.getEntityId() == null) {
             return;
         }
-        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+        Date finishDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
+        Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+        if (finishDate != null && deadlineDate != null && deadlineDate.before(finishDate)) {
+            form.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
+        }
+    }
+
+    public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(DATE_FROM);
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
         FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
         Date startDate = DateUtils.parseDate(startDateComponent.getFieldValue());
+        Date finidhDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
         Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
-        if (startDate != null && deadlineDate != null && deadlineDate.before(startDate)) {
-            form.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
+        if (startDate != null && deadlineDate != null && finidhDate == null && deadlineDate.before(startDate)) {
+            form.addMessage("orders.validate.global.error.deadlineBeforeStartDate", MessageType.INFO, false);
         }
     }
 }

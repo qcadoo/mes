@@ -56,7 +56,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -70,7 +69,6 @@ import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -552,20 +550,6 @@ public class OrderService {
         }
 
         return true;
-    }
-
-    public void compareDeadlineAndDateTo(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form.getEntityId() == null) {
-            return;
-        }
-        FieldComponent dateToComponent = (FieldComponent) view.getComponentByReference("dateTo");
-        FieldComponent deadlineComponent = (FieldComponent) view.getComponentByReference("deadline");
-        Date dateTo = DateUtils.parseDate(dateToComponent.getFieldValue());
-        Date deadline = DateUtils.parseDate(deadlineComponent.getFieldValue());
-        if (dateTo != null && deadline != null && dateTo.compareTo(deadline) > 0) {
-            form.addMessage("orders.order.plannedDateToShouldLaterThanDeadline", MessageType.INFO, false);
-        }
     }
 
     public void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
