@@ -19,11 +19,13 @@ public class MasterOrderProductValidators {
         List<Entity> masterOrderProductList = masterOrderProductDD.find()
                 .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
                 .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT))).list().getEntities();
+
         if (masterOrderProductList.isEmpty()) {
             return true;
         } else {
             masterOrderProduct.addError(masterOrderProductDD.getField(PRODUCT),
                     "masterOrders.masterOrderProduct.alreadyExistsForProductAndMasterOrder");
+
             return false;
         }
     }
