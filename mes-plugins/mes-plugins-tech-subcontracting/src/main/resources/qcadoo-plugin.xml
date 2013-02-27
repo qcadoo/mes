@@ -130,6 +130,12 @@
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
+		
+		<view:view-listener view="technologyOperationComponentDetails"
+			component="operation" plugin="technologies" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.techSubcontracting.TechSubcontractingService"
+			method="inheritSubcontractingValue" />
+			
 	</modules>
 	
 	<features>
