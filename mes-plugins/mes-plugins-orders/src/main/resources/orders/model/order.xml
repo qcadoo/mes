@@ -100,20 +100,20 @@
 			method="checkChosenTechnologyState" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkIfProductionLineSupportsTechnology" />
-		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
-		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
-		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
-			method="createTechnologyInstanceForOrder" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired" />
+		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="setInitialState" />
+		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
+		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
+		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
+			method="createTechnologyInstanceForOrder" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
+		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
