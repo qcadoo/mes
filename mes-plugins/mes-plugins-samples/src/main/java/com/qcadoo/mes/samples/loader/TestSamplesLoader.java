@@ -64,7 +64,6 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION_COMPONENT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_GROUPS;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_NR;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_STATE;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PLANNED_QUANTITY;
@@ -190,9 +189,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (isEnabledOrEnabling(ORDERS_PLUGIN_IDENTIFIER)) {
             readDataFromXML(dataset, ORDERS_PLUGIN_IDENTIFIER, locale);
-            if (isEnabledOrEnabling(L_ORDER_GROUPS)) {
-                readDataFromXML(dataset, L_ORDER_GROUPS, locale);
-            }
         }
 
         if (isEnabledOrEnabling(L_COST_CALCULATION)) {
@@ -266,8 +262,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addWorkstationType(values);
         } else if (L_DIVISION.equals(type)) {
             addDivision(values);
-        } else if (L_ORDER_GROUPS.equals(type)) {
-            addOrderGroup(values);
         } else if (L_COST_CALCULATION.equals(type)) {
             addCostCalculation(values);
         } else if (L_LOCATION.equals(type)) {
@@ -469,26 +463,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             return;
         }
         getStateChangeSamplesClient().changeState(technology, TECHNOLOGY_STATE_ACCEPTED);
-    }
-
-    private void addOrderGroup(final Map<String, String> values) {
-        Entity orderGroup = dataDefinitionService.get(L_ORDER_GROUPS, "orderGroup").create();
-        orderGroup.setField(L_NUMBER, values.get(L_NUMBER));
-        orderGroup.setField(L_NAME, values.get(L_NAME));
-
-        Entity order3 = getOrderByNumber(values.get("order3"));
-        Entity order2 = getOrderByNumber(values.get("order2"));
-
-        orderGroup.setField(L_DATE_TO, order3.getField(L_DATE_TO));
-        orderGroup.setField(L_DATE_FROM, order2.getField(L_DATE_FROM));
-
-        orderGroup = orderGroup.getDataDefinition().save(orderGroup);
-
-        order3.setField("orderGroup", orderGroup);
-        order2.setField("orderGroup", orderGroup);
-
-        order3.getDataDefinition().save(order3);
-        order2.getDataDefinition().save(order2);
     }
 
     private void addOrder(final Map<String, String> values) {
