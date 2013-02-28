@@ -57,9 +57,6 @@
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangedDeadline" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfMasterOrderHaveOrderWithWrongName" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
