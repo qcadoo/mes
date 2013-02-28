@@ -44,8 +44,8 @@
 
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
-		<datetime name="effectiveDateFrom" readonly="true" />
-		<datetime name="effectiveDateTo" readonly="true" />
+		<datetime name="effectiveDateFrom" />
+		<datetime name="effectiveDateTo" />
 		<datetime name="deadline" />
 		<datetime name="correctedDateFrom" />
 		<datetime name="correctedDateTo" />
