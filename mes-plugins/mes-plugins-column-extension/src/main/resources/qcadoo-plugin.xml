@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="columnExtension" version="${qcadoo.plugin.version}"
+<plugin plugin="columnExtension" version="${qcadoo.plugin.version}" group="supplies"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
@@ -37,6 +37,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Plugin responsible for adding column extensions for dynamicaly generated pdf documents.</description>
 		<license>AGPL</license>
 	</information>
 
