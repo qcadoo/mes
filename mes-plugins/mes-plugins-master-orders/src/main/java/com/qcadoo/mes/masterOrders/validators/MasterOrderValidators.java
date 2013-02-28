@@ -12,6 +12,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 @Service
 public class MasterOrderValidators {
@@ -62,22 +63,17 @@ public class MasterOrderValidators {
         return true;
     }
 
-    public boolean checkIfMasterOrderHaveOrderWithWrongName(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        if (masterOrder.getId() == null) {
+    public boolean checkIfMasterOrderHaveOrderWithWrongName(final DataDefinition masterOrderDD,
+            final FieldDefinition fieldDefinition, final Entity masterOrder, final Object prefixMasterOrderDB,
+            final Object prefixMasterOrder) {
+
+        if (!(!(Boolean) prefixMasterOrderDB && (Boolean) prefixMasterOrder)) {
             return true;
         }
 
         List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
 
         if (orders.isEmpty()) {
-            return true;
-        }
-
-        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
-        boolean prefixMasterOrderDB = masterOrderFromDB.getBooleanField(MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER);
-        boolean prefixMasterOrder = masterOrder.getBooleanField(MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER);
-
-        if (!(!prefixMasterOrderDB && prefixMasterOrder)) {
             return true;
         }
 
@@ -102,6 +98,18 @@ public class MasterOrderValidators {
         }
 
         return isValid;
+    }
+
+    public boolean checkIfCanMakeChanges(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        Long masterOrderId = masterOrder.getId();
+        if (masterOrderId == null) {
+            return true;
+        }
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrderId);
+        if (!masterOrderFromDB.equals(masterOrder)) {
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {

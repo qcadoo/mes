@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -31,6 +32,9 @@ public class MasterOrderDetailsHooks {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private OrderService orderService;
 
     public void generateMasterOrderNumer(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER, "form",
@@ -80,6 +84,10 @@ public class MasterOrderDetailsHooks {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+    }
+
+    public void fillDefaultTechnology(final ViewDefinitionState view) {
+        orderService.fillDefaultTechnology(view);
     }
 
 }
