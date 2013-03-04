@@ -1,7 +1,7 @@
 <view name="masterOrderProductDetails" modelName="masterOrderProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
-	
+
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack" />
@@ -63,7 +63,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="cumulatedOrderQuantity"
-										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity" />
+										field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
+										defaultEnabled="never" />
 								</layoutElement>
 								<layoutElement column="4" row="2">
 									<component type="input" name="cumulatedOrderQuantityUnit"
@@ -86,5 +87,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
 			method="fillDefaultTechnology" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
+			method="showErrorWhenCumulatedQuantity" />
 	</hooks>
 </view>

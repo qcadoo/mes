@@ -50,10 +50,13 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanMakeChanges" />
+			method="checkIfCanChangedCompany" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedCompany" />
+			method="checkIfCanChangedProduct" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangedTechnology" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangedDeadline" />
