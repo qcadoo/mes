@@ -24,8 +24,7 @@
     ***************************************************************************
 
 -->
-<staff>
-	<row ID="01" NAME="John" SURNAME="Smith" POST="Carpenter" WAGE_GROUP="LEAD" />
-	<row ID="02" NAME="Mark" SURNAME="Johnson" POST="Carpenter" WAGE_GROUP="SEN" />
-	<row ID="03" NAME="Andrew" SURNAME="Jones" POST="Manager" WAGE_GROUP="NE" />
-</staff>
+<companyProductsFamily>
+	<row COMPANY="2" PRODUCT="DREW-SUR" />
+	<row COMPANY="3" PRODUCT="EL-DOD" />
+</companyProductsFamily>

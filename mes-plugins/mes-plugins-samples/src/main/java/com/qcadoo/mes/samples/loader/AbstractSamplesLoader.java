@@ -225,4 +225,5 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
                 .add(SearchRestrictions.eq("number", number)).uniqueResult();
     }
+
 }

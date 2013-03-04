@@ -169,6 +169,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, "company", locale);
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
+        if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
+            readDataFromXML(dataset, L_WAGE_GROUP, locale);
+        }
         readDataFromXML(dataset, BASIC_MODEL_STAFF, locale);
         readDataFromXML(dataset, "conversionItem", locale);
         readDataFromXML(dataset, PRODUCTS_PLUGIN_IDENTIFIER, locale);
@@ -235,9 +238,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             }
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
-        if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
-            readDataFromXML(dataset, L_WAGE_GROUP, locale);
-        }
+
+        readDataFromXML(dataset, "companyProductsFamily", locale);
     }
 
     @Override
@@ -307,7 +309,18 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addProductionBalance(values);
         } else if (L_WAGE_GROUP.equals(type)) {
             addWageGroups(values);
+        } else if ("companyProductsFamily".equals(type)) {
+            addCompanyProductsFamily(values);
         }
+    }
+
+    private void addCompanyProductsFamily(final Map<String, String> values) {
+        Entity companyProductsFamily = dataDefinitionService.get("deliveries", "companyProductsFamily").create();
+
+        companyProductsFamily.setField("company", getCompany(values.get("company")));
+        companyProductsFamily.setField("product", getProductByNumber(values.get("product")));
+
+        dataDefinitionService.get("deliveries", "companyProductsFamily").save(companyProductsFamily);
     }
 
     private void addWorkstationType(final Map<String, String> values) {
@@ -331,15 +344,20 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity staff = dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).create();
 
         LOG.debug("id: " + values.get("id") + " name " + values.get(L_NAME) + " " + L_SURNAME + " " + values.get(L_SURNAME)
-                + " post " + values.get("post"));
+                + " post " + values.get("post") + " wage_group " + values.get("wage_group"));
         staff.setField(L_NUMBER, values.get("id"));
         staff.setField(L_NAME, values.get(L_NAME));
         staff.setField(L_SURNAME, values.get(L_SURNAME));
         staff.setField("post", values.get("post"));
 
+        if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
+            Entity wageGroup = getWageGroup(values.get("wage_group"));
+            staff.setField("wageGroup", wageGroup);
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test staff item {staff=" + staff.getField(L_NAME) + ", " + L_SURNAME + "= "
-                    + staff.getField(L_SURNAME) + "}");
+                    + staff.getField(L_SURNAME) + ", " + "wageGroup" + "= " + staff.getField("wageGroup") + "}");
         }
         dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
     }
@@ -365,7 +383,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
-
+        if (isEnabledOrEnabling("techSubcontracting")) {
+            if (!values.get("operationcompanies").isEmpty()) {
+                operation.setField("operationCompanies", Lists.newArrayList(getCompany(values.get("operationcompanies"))));
+            }
+        }
         if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
             operation.setField("machineHourlyCost", values.get("machinehourlycost"));
@@ -398,7 +420,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (!values.get("typeofproduct").isEmpty()) {
             product.setField("globalTypeOfMaterial", values.get("typeofproduct"));
         }
-        product.setField("entityType", "01particularProduct");
+        if (!values.get("parent").isEmpty()) {
+            product.setField("parent", getProductByNumber(values.get("parent")));
+        }
+        product.setField("entityType", values.get("entitytype"));
         product.setField("unit", values.get("unit"));
 
         if (isEnabledOrEnabling("costNormsForProduct")) {
@@ -712,9 +737,18 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         location.setField(L_NUMBER, values.get(L_NUMBER));
         location.setField(L_NAME, values.get(L_NAME));
-        location.setField(L_TYPE, values.get(L_TYPE));
 
-        location.getDataDefinition().save(location);
+        if ("02warehouse".equals(values.get(L_TYPE))) {
+            if (isEnabledOrEnabling("materialFlowResources")) {
+                location.setField(L_TYPE, values.get(L_TYPE));
+                location.getDataDefinition().save(location);
+            }
+        } else {
+            location.setField(L_TYPE, values.get(L_TYPE));
+            location.getDataDefinition().save(location);
+
+        }
+
     }
 
     private void addResource(final Map<String, String> values) {
@@ -880,6 +914,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
+        if (isEnabledOrEnabling("techSubcontracting")) {
+            if (!values.get("issubcontracting").isEmpty()) {
+                component.setField("isSubcontracting", true);
+            }
+        }
+
         component = techOperCompDD.save(component);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test operation component {technology="
@@ -1205,11 +1245,21 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .setMaxResults(1).uniqueResult();
     }
 
+    private Entity getWageGroup(final String number) {
+        return dataDefinitionService.get("wageGroups", "wageGroup").find().add(SearchRestrictions.eq(L_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
     private Entity getRandomProduct() {
         Long total = (long) dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find().list()
                 .getTotalNumberOfEntities();
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_PRODUCT).find()
                 .setFirstResult(RANDOM.nextInt(total.intValue())).setMaxResults(1).list().getEntities().get(0);
+    }
+
+    private Entity getCompany(final String number) {
+        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
+                .add(SearchRestrictions.eq("number", number)).uniqueResult();
     }
 
     private DateFormat getDateFormat() {
