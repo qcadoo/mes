@@ -14,6 +14,7 @@ import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -21,10 +22,15 @@ public class MasterOrderProductValidators {
 
     public boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
-        List<Entity> masterOrderProductList = masterOrderProductDD.find()
-                .add(SearchRestrictions.ne("id", masterOrderProduct.getId()))
+        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
                 .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT))).list().getEntities();
+                .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT)));
+
+        Long masterOrderId = masterOrderProduct.getId();
+        if (masterOrderId != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", masterOrderId));
+        }
+        List<Entity> masterOrderProductList = searchCriteriaBuilder.list().getEntities();
 
         if (masterOrderProductList.isEmpty()) {
             return true;

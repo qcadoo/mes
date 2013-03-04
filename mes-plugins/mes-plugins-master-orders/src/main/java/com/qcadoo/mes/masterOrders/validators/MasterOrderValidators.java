@@ -151,12 +151,12 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
+
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity productFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        if (product.getId().equals(productFromDB.getId())
-                || !masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
-                        MasterOrderType.ONE_PRODUCT.getStringValue())
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())
+                || product.getId().equals(productFromDB.getId())
                 || masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).isEmpty()) {
             return true;
         }

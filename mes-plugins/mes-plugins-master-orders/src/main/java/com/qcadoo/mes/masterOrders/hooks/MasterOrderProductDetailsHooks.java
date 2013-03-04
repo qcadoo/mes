@@ -58,8 +58,8 @@ public class MasterOrderProductDetailsHooks {
                 MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             return;
         }
-        BigDecimal cumulatedQuantity = masterOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
-        BigDecimal masterQuantity = masterOrder.getDecimalField(MASTER_ORDER_QUANTITY);
+        BigDecimal cumulatedQuantity = masterProductOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
+        BigDecimal masterQuantity = masterProductOrder.getDecimalField(MASTER_ORDER_QUANTITY);
 
         if (cumulatedQuantity != null && masterQuantity != null && cumulatedQuantity.compareTo(masterQuantity) == -1) {
             form.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO, false);
