@@ -104,27 +104,29 @@ public class OrderValidatorsMO {
 
         String masterOrderType = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE);
 
-        if (masterOrderType == null) {
+        if (masterOrderType == null || masterOrderType.equals(MasterOrderType.UNDEFINED.getStringValue())) {
             return isValid;
         }
 
         if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             if (!checkTechnologyAndProductFieldForOneProductType(order, masterOrder)) {
                 isValid = false;
+                Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
+                Entity product = masterOrder.getBelongsToField(PRODUCT);
+                order.addError(orderDD.getField(TECHNOLOGY), "masterOrders.order.masterOrder." + TECHNOLOGY + ""
+                        + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
+                order.addError(orderDD.getField(PRODUCT),
+                        "masterOrders.order.masterOrder." + PRODUCT + "" + ".fieldIsNotTheSame",
+                        createInfoAboutEntity(product, PRODUCT));
             }
         } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             if (checkIfExistsMasterOrderWithTechAndProduct(order, masterOrder)) {
                 isValid = false;
+                order.addError(orderDD.getField(TECHNOLOGY), "masterOrders.order.masterOrder." + TECHNOLOGY
+                        + ".masterOrderProductDoesnotExists");
+                order.addError(orderDD.getField(PRODUCT), "masterOrders.order.masterOrder." + PRODUCT
+                        + ".masterOrderProductDoesnotExists");
             }
-        }
-
-        if (!isValid) {
-            Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
-            Entity product = masterOrder.getBelongsToField(PRODUCT);
-            order.addError(orderDD.getField(TECHNOLOGY), "masterOrders.order.masterOrder." + TECHNOLOGY + ""
-                    + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
-            order.addError(orderDD.getField(PRODUCT), "masterOrders.order.masterOrder." + PRODUCT + "" + ".fieldIsNotTheSame",
-                    createInfoAboutEntity(product, PRODUCT));
         }
 
         return isValid;
@@ -151,6 +153,12 @@ public class OrderValidatorsMO {
                 .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
                 .add(SearchRestrictions.belongsTo(TECHNOLOGY, order.getBelongsToField(TECHNOLOGY))).list().getEntities();
 
+        if (masterOrderProductsWithProductAndTechnology.isEmpty()) {
+            masterOrderProductsWithProductAndTechnology = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                    .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
+                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder)).list().getEntities();
+        }
         return masterOrderProductsWithProductAndTechnology.isEmpty();
     }
 
