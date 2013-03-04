@@ -148,11 +148,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-order-groups</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-counting</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
@@ -254,6 +249,11 @@
 		<dependency>
 			<groupId>com.qcadoo</groupId>
 			<artifactId>qcadoo-plugins-unit-conversion-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-commons</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>

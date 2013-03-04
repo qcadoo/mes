@@ -180,8 +180,6 @@ public final class SamplesConstants {
 
     public static final String L_BOM_ID = "bom_id";
 
-    public static final String L_ORDER_GROUPS = "orderGroups";
-
     public static final String L_COST_CALCULATION = "costCalculation";
 
     public static final String L_MATERIAL_FLOW = "materialFlow";

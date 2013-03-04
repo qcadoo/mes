@@ -91,6 +91,8 @@
 						
 						<listener event="onSelectedEntityChange" method="fillUnitField"
 							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
+						<listener event="onSelectedEntityChange" method="fillDefaultTechnology"
+							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
@@ -134,7 +136,7 @@
 							<layoutElement column="1" row="2" width="3">
 								<component type="input" name="cumulatedOrderQuantity"
 									field="#{form}.cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-									defaultVisible="false" />
+									defaultVisible="false" defaultEnabled="never"/>
 							</layoutElement>
 							<layoutElement column="4" row="2">
 								<component type="input" name="cumulatedOrderQuantityUnit"
@@ -162,8 +164,8 @@
 							
 						<option type="order" column="number" direction="asc" />
 						
-						<option type="searchable" value="number,name" />
-						<option type="orderable" value="number,name" />
+						<option type="searchable" value="productNumber,productName,masterOrderQuantity,productUnit" />
+						<option type="orderable" value="productNumber,productName,masterOrderQuantity,productUnit" />
 						
 						<option type="correspondingView" value="masterOrders/masterOrderProductDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -224,8 +226,8 @@
 			<component type="gridLayout" name="gridLayoutIntegration" reference="gridLayoutIntegration"
 				columns="3" rows="6">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="externalNumber"
-						reference="externalNumber" disable="never">
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+						reference="externalNumber" defaultEnabled="never">
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
@@ -244,6 +246,12 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="generateMasterOrderNumer" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="fillDefaultTechnology" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="showErrorWhenCumulatedQuantity" />
 	</hooks>
 	
 </view>

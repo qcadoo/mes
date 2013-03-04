@@ -40,7 +40,6 @@
 		<module>mes-plugins-cost-norms-for-product</module>
 		<module>mes-plugins-cost-calculation</module>
 		<module>mes-plugins-simple-material-balance</module>
-		<module>mes-plugins-order-groups</module>
 		<module>mes-plugins-production-counting</module>
 		<module>mes-plugins-production-counting-with-costs</module>
 		<module>mes-plugins-basic-production-counting</module>

@@ -21,4 +21,8 @@ public class MasterOrderDetailsListeners {
         masterOrderDetailsHooks.fillUnitField(view);
     }
 
+    public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        masterOrderDetailsHooks.fillDefaultTechnology(view);
+    }
+
 }

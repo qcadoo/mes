@@ -110,8 +110,10 @@ public class CurrencyLoader {
         currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
 
         currency = currencyDataDefinition.save(currency);
-        if (currency.isValid() && LOG.isDebugEnabled()) {
-            LOG.debug("Currency saved {currency=" + currency.toString() + "}");
+        if (currency.isValid()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Currency saved {currency=" + currency.toString() + "}");
+            }
         } else {
             throw new IllegalStateException("Saved currency entity have validation errors - "
                     + values.get(CURRENCY.toLowerCase(Locale.ENGLISH)));

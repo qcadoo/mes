@@ -20,10 +20,10 @@
 		<boolean name="addMasterPrefixToNumber" />
 
 		<decimal name="masterOrderQuantity">
-			<validatesRange from="0" exclusively="true" />
+			<validatesRange from="0" />
 		</decimal>
-		<decimal name="cumulatedOrderQuantity">
-			<validatesRange from="0" exclusively="true" />
+		<decimal name="cumulatedOrderQuantity" persistent="false">
+			<validatesRange from="0" />
 		</decimal>
 
 		<enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
@@ -49,11 +49,24 @@
 			method="checkIfCanChangedCompany" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfCanChangedDeadline" />
+			method="checkIfCanChangeMasterOrderPreffixField" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-			method="checkIfMasterOrderHaveOrderWithWrongName" />
+			method="checkIsProductSelected" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangedProduct" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangedTechnology" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangedDeadline" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="setExternalSynchronizedField" />
+		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+			method="countCumulatedOrderQuantity" />
+		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+			method="changedDeadlineInOrder" />
 	</hooks>
 </model>
