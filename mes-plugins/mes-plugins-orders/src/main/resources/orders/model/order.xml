@@ -98,8 +98,6 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkChosenTechnologyState" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfProductionLineSupportsTechnology" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"

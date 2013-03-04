@@ -40,11 +40,6 @@ import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.states.constants.OrderState.DECLINED;
-import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.GROUPS;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.SUPPORTS_ALL_TECHNOLOGIES;
-import static com.qcadoo.mes.productionLines.constants.ProductionLineFields.TECHNOLOGIES;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.TECHNOLOGY_GROUP;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -352,73 +347,11 @@ public class OrderService {
         }
     }
 
-    public void checkIfProductionLineSupportsTechnology(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        checkIfProductionLineSupportsTechnology(view);
-    }
-
-    public void checkIfProductionLineSupportsTechnology(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
-        Entity order = orderForm.getEntity();
-
-        String state = order.getStringField(STATE);
-
-        if (PENDING.getStringValue().equals(state) && !checkIfProductionLineSupportsTechnology(order)) {
-            FieldComponent productionLineLookup = (FieldComponent) view.getComponentByReference("productionLine");
-
-            productionLineLookup.addMessage("orders.order.productionLine.error.productionLineDoesntSupportTechnology",
-                    ComponentState.MessageType.FAILURE);
-        }
-    }
-
-    public boolean checkIfProductionLineSupportsTechnology(final DataDefinition orderDD, final Entity order) {
-        String state = order.getStringField(STATE);
-
-        if (PENDING.getStringValue().equals(state) && !checkIfProductionLineSupportsTechnology(order)) {
-            order.addError(orderDD.getField(PRODUCTION_LINE),
-                    "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
-
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkIfProductionLineSupportsTechnology(final Entity order) {
-        Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
-        Entity technology = order.getBelongsToField(TECHNOLOGY);
-
-        if ((productionLine != null) && (technology != null) && !productionLine.getBooleanField(SUPPORTS_ALL_TECHNOLOGIES)) {
-            Entity technologyGroup = technology.getBelongsToField(TECHNOLOGY_GROUP);
-
-            if (technologyGroup != null) {
-                List<Entity> productionLineGroups = productionLine.getManyToManyField(GROUPS);
-
-                for (Entity productionLineGroup : productionLineGroups) {
-                    if (productionLineGroup.equals(technologyGroup)) {
-                        return true;
-                    }
-                }
-            }
-
-            List<Entity> productionLineTechnologies = productionLine.getManyToManyField(TECHNOLOGIES);
-
-            for (Entity productionLineTechnology : productionLineTechnologies) {
-                if (productionLineTechnology.equals(technology)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
     private boolean hasAnyTechnologies(final Long selectedProductId) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
+        // TODO DEV_TEAM change this criteria to projection using count(*). This will enable us to avoid unnecessary mapping.
         SearchCriteriaBuilder searchCriteria = technologyDD.find().setMaxResults(1)
                 .belongsTo(BASIC_MODEL_PRODUCT, selectedProductId);
 
