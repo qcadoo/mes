@@ -51,8 +51,7 @@ public class MasterOrderProductValidators {
         Entity technologyFromDB = masterProductOrderDB.getBelongsToField(MasterOrderFields.TECHNOLOGY);
         Entity productFromDB = masterProductOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity technology = masterProductOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        if (technology == null
-                || (technology != null && technologyFromDB != null && technology.getId().equals(technologyFromDB.getId()))) {
+        if (technology == null || (technologyFromDB != null && technology.getId().equals(technologyFromDB.getId()))) {
             return true;
         }
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
@@ -87,7 +86,7 @@ public class MasterOrderProductValidators {
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity productFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        if (product == null || (product != null && productFromDB != null && product.getId().equals(productFromDB.getId()))) {
+        if (product == null || (productFromDB != null && product.getId().equals(productFromDB.getId()))) {
             return true;
         }
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
