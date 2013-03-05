@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -20,10 +22,15 @@ public class MasterOrderProductValidators {
 
     public boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
-        List<Entity> masterOrderProductList = masterOrderProductDD.find()
-                .add(SearchRestrictions.ne("id", masterOrderProduct.getId()))
+        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
                 .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT))).list().getEntities();
+                .add(SearchRestrictions.belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT)));
+
+        Long masterOrderId = masterOrderProduct.getId();
+        if (masterOrderId != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", masterOrderId));
+        }
+        List<Entity> masterOrderProductList = searchCriteriaBuilder.list().getEntities();
 
         if (masterOrderProductList.isEmpty()) {
             return true;
@@ -54,14 +61,17 @@ public class MasterOrderProductValidators {
         }
 
         List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.TECHNOLOGY, technology))
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, productFromDB)).list().getEntities();
         boolean isValid = true;
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
         for (Entity order : orders) {
-            isValid = false;
-            orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-            orderNumberListWitkWrongNumer.append(", ");
+            Entity technologyFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            if ((technologyFromOrder != null && technology != null && !(technologyFromOrder.getId().equals(technology.getId())))
+                    || (technologyFromOrder == null && technology != null)) {
+                isValid = false;
+                orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
+                orderNumberListWitkWrongNumer.append(", ");
+            }
         }
         if (!isValid) {
             masterProductOrder.addError(masterProductOrderDD.getField(MasterOrderFields.TECHNOLOGY),
@@ -85,6 +95,7 @@ public class MasterOrderProductValidators {
             return true;
         }
         List<Entity> orders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.belongsTo(OrderFieldsMO.MASTER_ORDER, masterOrder))
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, productFromDB)).list().getEntities();
         boolean isValid = true;
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();

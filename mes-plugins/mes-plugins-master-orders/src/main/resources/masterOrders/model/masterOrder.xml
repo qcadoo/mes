@@ -17,11 +17,7 @@
 
 		<datetime name="deadline" />
 
-		<boolean name="addMasterPrefixToNumber">
-			<validatesWith
-				class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-				method="checkIfMasterOrderHaveOrderWithWrongName" />
-		</boolean>
+		<boolean name="addMasterPrefixToNumber" />
 
 		<decimal name="masterOrderQuantity">
 			<validatesRange from="0" />
@@ -53,6 +49,12 @@
 			method="checkIfCanChangedCompany" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangeMasterOrderPreffixField" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIsProductSelected" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangedProduct" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
@@ -64,5 +66,7 @@
 			method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="countCumulatedOrderQuantity" />
+		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+			method="changedDeadlineInOrder" />
 	</hooks>
 </model>

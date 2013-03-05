@@ -1,7 +1,9 @@
 package com.qcadoo.mes.masterOrders.validators;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 
 import java.util.Date;
 import java.util.List;
@@ -11,9 +13,10 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class MasterOrderValidators {
@@ -60,15 +63,19 @@ public class MasterOrderValidators {
 
             return false;
         }
-
         return true;
     }
 
-    public boolean checkIfMasterOrderHaveOrderWithWrongName(final DataDefinition masterOrderDD,
-            final FieldDefinition fieldDefinition, final Entity masterOrder, final Object prefixMasterOrderDB,
-            final Object prefixMasterOrder) {
+    public boolean checkIfCanChangeMasterOrderPreffixField(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        if (masterOrder.getId() == null) {
+            return true;
+        }
 
-        if (prefixMasterOrderDB == null || (!(!(Boolean) prefixMasterOrderDB && (Boolean) prefixMasterOrder))) {
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
+        Boolean prefixMasterOrder = masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
+        Boolean prefixMasterOrderDB = masterOrderFromDB.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
+
+        if (prefixMasterOrderDB == null || (!(!prefixMasterOrderDB && prefixMasterOrder))) {
             return true;
         }
 
@@ -102,7 +109,9 @@ public class MasterOrderValidators {
     }
 
     private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {
-        return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find().list().getEntities().isEmpty();
+        return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities()
+                .isEmpty();
     }
 
     public boolean checkIfCanChangedTechnology(final DataDefinition masterOrderDD, final Entity masterOrder) {
@@ -142,32 +151,44 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
+
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity productFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        if ((product == null && productFromDB == null)
-                || (product != null && productFromDB != null && product.getId().equals(productFromDB.getId()))) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())
+                || product.getId().equals(productFromDB.getId())
+                || masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).isEmpty()) {
             return true;
         }
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+        List<Entity> orders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.belongsTo(PRODUCT, productFromDB)).list().getEntities();
+        if (orders.isEmpty()) {
             return true;
         }
-        List<Entity> orders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS);
+
         boolean isValid = true;
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
         for (Entity order : orders) {
-            Entity productFromOrder = order.getBelongsToField(OrderFields.PRODUCT);
-            if ((productFromOrder != null && product != null && !(productFromOrder.getId().equals(product.getId())))
-                    || (productFromOrder == null && product != null)) {
-                isValid = false;
-                orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-                orderNumberListWitkWrongNumer.append(", ");
-            }
-            if (!isValid) {
-                masterOrder.addError(masterOrderDD.getField(MasterOrderFields.PRODUCT),
-                        "masterOrders.masterOrder.product.wrongProduct", orderNumberListWitkWrongNumer.toString());
-            }
+            isValid = false;
+            orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
+            orderNumberListWitkWrongNumer.append(", ");
+        }
+        if (!isValid) {
+            masterOrder.addError(masterOrderDD.getField(PRODUCT), "masterOrders.masterOrder.product.wrongProduct",
+                    orderNumberListWitkWrongNumer.toString());
         }
         return isValid;
     }
+
+    public boolean checkIsProductSelected(final DataDefinition dataDefinition, final Entity masterOrder) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+            return true;
+        }
+        if (masterOrder.getBelongsToField(PRODUCT) == null) {
+            masterOrder.addError(dataDefinition.getField(PRODUCT), "masterOrders.masterOrder.product.haveToBeSelected");
+            return false;
+        }
+        return true;
+    }
+
 }
