@@ -34,7 +34,7 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT)) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
         masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY,
