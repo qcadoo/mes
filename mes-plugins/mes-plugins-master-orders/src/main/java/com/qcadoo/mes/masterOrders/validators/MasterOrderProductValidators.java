@@ -64,8 +64,7 @@ public class MasterOrderProductValidators {
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
         for (Entity order : orders) {
             Entity technologyFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            if ((technologyFromOrder == null)
-                    || (technologyFromOrder != null && !(technologyFromOrder.getId().equals(technology.getId())))) {
+            if ((technologyFromOrder == null) || !technologyFromOrder.getId().equals(technology.getId())) {
                 isValid = false;
                 orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
                 orderNumberListWitkWrongNumer.append(", ");
