@@ -49,11 +49,15 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SamplesLoader.class);
 
+    private static final String NUMBER = "number";
+
     protected static final String NAME = "name";
 
     protected static final String ITEM = "item";
 
     protected static final String EMAIL = "email";
+
+    private static final String OWNER = "owner";
 
     public static final Random RANDOM = new Random(System.currentTimeMillis());
 
@@ -148,7 +152,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
         params.setField("currency", currency);
         params.setField("unit", values.get("unit"));
-        params.setField("company", getCompany(values.get("owner")));
+        params.setField("company", getCompany(values.get(OWNER)));
 
         if (isEnabledOrEnabling("productionCounting")) {
             params.setField("registerQuantityInProduct", true);
@@ -192,14 +196,14 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         Entity company = dataDefinitionService
                 .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).create();
 
-        LOG.debug("id: " + values.get("id") + "number: " + values.get("number") + " companyFullName "
+        LOG.debug("id: " + values.get("id") + "number: " + values.get(NUMBER) + " companyFullName "
                 + values.get("companyfullname") + " tax " + values.get("tax") + " street " + values.get("street") + " house "
                 + values.get("house") + " flat " + values.get("flat") + " zipCode " + values.get("zipcode") + " city "
                 + values.get("city") + " state " + values.get("state") + " country " + values.get("country") + " email "
                 + values.get(EMAIL) + " website " + values.get("website") + " phone " + values.get("phone") + " owner "
-                + values.get("owner"));
+                + values.get(OWNER));
 
-        company.setField("number", values.get("number"));
+        company.setField(NUMBER, values.get(NUMBER));
         company.setField(NAME, values.get(NAME));
         company.setField("tax", values.get("tax"));
         company.setField("street", values.get("street"));
@@ -212,7 +216,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         company.setField(EMAIL, values.get(EMAIL));
         company.setField("website", values.get("website"));
         company.setField("phone", values.get("phone"));
-        company.setField("owner", values.get("owner"));
+        company.setField(OWNER, values.get(OWNER));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test company item {company=" + company.getField(NAME) + "}");
@@ -223,7 +227,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     private Entity getCompany(final String number) {
         return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq("number", number)).uniqueResult();
+                .add(SearchRestrictions.eq(NUMBER, number)).uniqueResult();
     }
 
 }

@@ -116,6 +116,15 @@ import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_STATE
 import static com.qcadoo.mes.samples.constants.SamplesConstants.TRACKING_RECORD_STATE_DRAFT;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_MODEL_IDENTIFIER;
 import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMPANY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TECH_SUBCONTRACTING;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMPANY_PRODUCTS_FAMILY;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE_OF_PRODUCT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GLOBAL_TYPE_OF_MATERIAL;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ENTITY_TYPE;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PARENT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WAGE_GROUPS;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -165,7 +174,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         readDataFromXML(dataset, "users", locale);
 
         readDataFromXML(dataset, "dictionaries", locale);
-        readDataFromXML(dataset, "company", locale);
+        readDataFromXML(dataset, L_COMPANY, locale);
         readDataFromXML(dataset, "defaultParameters", locale);
         readDataFromXML(dataset, L_WORKSTATION_TYPES, locale);
         if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
@@ -235,7 +244,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_GENEALOGY_TABLES, locale);
         }
 
-        readDataFromXML(dataset, "companyProductsFamily", locale);
+        readDataFromXML(dataset, L_COMPANY_PRODUCTS_FAMILY, locale);
     }
 
     @Override
@@ -303,18 +312,18 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addProductionBalance(values);
         } else if (L_WAGE_GROUP.equals(type)) {
             addWageGroups(values);
-        } else if ("companyProductsFamily".equals(type)) {
+        } else if (L_COMPANY_PRODUCTS_FAMILY.equals(type)) {
             addCompanyProductsFamily(values);
         }
     }
 
     private void addCompanyProductsFamily(final Map<String, String> values) {
-        Entity companyProductsFamily = dataDefinitionService.get("deliveries", "companyProductsFamily").create();
+        Entity companyProductsFamily = dataDefinitionService.get("deliveries", L_COMPANY_PRODUCTS_FAMILY).create();
 
-        companyProductsFamily.setField("company", getCompany(values.get("company")));
+        companyProductsFamily.setField(L_COMPANY, getCompany(values.get(L_COMPANY)));
         companyProductsFamily.setField("product", getProductByNumber(values.get("product")));
 
-        dataDefinitionService.get("deliveries", "companyProductsFamily").save(companyProductsFamily);
+        dataDefinitionService.get("deliveries", L_COMPANY_PRODUCTS_FAMILY).save(companyProductsFamily);
     }
 
     private void addWorkstationType(final Map<String, String> values) {
@@ -346,12 +355,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
         if (isEnabledOrEnabling(WAGE_GROUPS_PLUGIN_IDENTIFIER)) {
             Entity wageGroup = getWageGroup(values.get("wage_group"));
-            staff.setField("wageGroup", wageGroup);
+            staff.setField(L_WAGE_GROUP, wageGroup);
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Add test staff item {staff=" + staff.getField(L_NAME) + ", " + L_SURNAME + "= "
-                    + staff.getField(L_SURNAME) + ", " + "wageGroup" + "= " + staff.getField("wageGroup") + "}");
+                    + staff.getField(L_SURNAME) + ", " + L_WAGE_GROUP + "= " + staff.getField(L_WAGE_GROUP) + "}");
         }
         dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, BASIC_MODEL_STAFF).save(staff);
     }
@@ -377,10 +386,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
         operation.setField(BASIC_MODEL_WORKSTATION_TYPE, getMachine(values.get(L_NUMBER)));
         operation.setField(BASIC_MODEL_STAFF, getRandomStaff());
-        if (isEnabledOrEnabling("techSubcontracting")) {
-            if (!values.get("operationcompanies").isEmpty()) {
-                operation.setField("operationCompanies", Lists.newArrayList(getCompany(values.get("operationcompanies"))));
-            }
+        if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("operationcompanies").isEmpty()) {
+            operation.setField("operationCompanies", Lists.newArrayList(getCompany(values.get("operationcompanies"))));
         }
         if (isEnabledOrEnabling("costNormsForOperation")) {
             operation.setField("pieceworkCost", values.get("pieceworkcost"));
@@ -411,14 +418,14 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (!values.get(L_PRODUCT_NR).isEmpty()) {
             product.setField(L_NUMBER, values.get(L_PRODUCT_NR));
         }
-        if (!values.get("typeofproduct").isEmpty()) {
-            product.setField("globalTypeOfMaterial", values.get("typeofproduct"));
+        if (!values.get(L_TYPE_OF_PRODUCT).isEmpty()) {
+            product.setField(L_GLOBAL_TYPE_OF_MATERIAL, values.get(L_TYPE_OF_PRODUCT));
         }
-        if (!values.get("parent").isEmpty()) {
-            product.setField("parent", getProductByNumber(values.get("parent")));
+        if (!values.get(L_PARENT).isEmpty()) {
+            product.setField(L_PARENT, getProductByNumber(values.get(L_PARENT)));
         }
-        product.setField("entityType", values.get("entitytype"));
-        product.setField("unit", values.get("unit"));
+        product.setField(L_ENTITY_TYPE, values.get("entitytype"));
+        product.setField(L_UNIT, values.get(L_UNIT));
 
         if (isEnabledOrEnabling("costNormsForProduct")) {
             product.setField("costForNumber", values.get("costfornumber"));
@@ -433,7 +440,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             LOG.debug("Add test product {id=" + product.getId() + ", category=" + product.getField("category") + ", ean="
                     + product.getField(L_EAN) + ", name=" + product.getField(L_NAME) + ", " + L_NUMBER + "="
                     + product.getField(L_NUMBER) + ", globalTypeOfMaterial=" + product.getField("typeOfMaterial") + ", unit="
-                    + product.getField("unit") + "}");
+                    + product.getField(L_UNIT) + "}");
         }
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -616,7 +623,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addTrackingRecord(final Map<String, String> values) {
         Entity trackingRecord = dataDefinitionService.get(L_ADVANCED_GENEALOGY, "trackingRecord").create();
-        trackingRecord.setField("entityType", values.get("entity_type"));
+        trackingRecord.setField(L_ENTITY_TYPE, values.get("entity_type"));
         trackingRecord.setField(L_NUMBER, values.get(L_NUMBER));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
@@ -863,11 +870,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity component = techOperCompDD.create();
         Entity technology = getTechnologyByNumber(values.get("technology_nr"));
         component.setField(TECHNOLOGY_MODEL_TECHNOLOGY, technology);
-        Entity parent = operationComponents.get(values.get("parent"));
-        component.setField("parent", parent);
+        Entity parent = operationComponents.get(values.get(L_PARENT));
+        component.setField(L_PARENT, parent);
         Entity operation = getOperationByNumber(values.get("operation_nr"));
         component.setField(TECHNOLOGY_MODEL_OPERATION, operation);
-        component.setField("entityType", values.get("entity_type"));
+        component.setField(L_ENTITY_TYPE, values.get("entity_type"));
         if (isEnabledOrEnabling("timeNormsForOperations")) {
             component.setField(L_TPZ, operation.getField(L_TPZ));
             component.setField("tj", operation.getField("tj"));
@@ -888,10 +895,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
-        if (isEnabledOrEnabling("techSubcontracting")) {
-            if (!values.get("issubcontracting").isEmpty()) {
-                component.setField("isSubcontracting", true);
-            }
+        if (isEnabledOrEnabling(L_TECH_SUBCONTRACTING) && !values.get("issubcontracting").isEmpty()) {
+            component.setField("isSubcontracting", true);
         }
 
         component = techOperCompDD.save(component);
@@ -1210,7 +1215,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private Entity getSupplierByNumber(final String number) {
-        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, "company").find().add(SearchRestrictions.eq(L_NUMBER, number))
+        return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, L_COMPANY).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
     }
 
@@ -1220,7 +1225,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private Entity getWageGroup(final String number) {
-        return dataDefinitionService.get("wageGroups", "wageGroup").find().add(SearchRestrictions.eq(L_NUMBER, number))
+        return dataDefinitionService.get(L_WAGE_GROUPS, L_WAGE_GROUP).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
     }
 
