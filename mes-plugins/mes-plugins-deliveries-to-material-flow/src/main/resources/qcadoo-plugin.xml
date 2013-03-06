@@ -11,7 +11,7 @@
 	a copy of the GNU Affero General Public License along with this program; 
 	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
 	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
-<plugin plugin="deliveriesToMaterialFlow" group="supplies" version="1.2.0-SNAPSHOT"
+<plugin plugin="deliveriesToMaterialFlow" group="supplies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
