@@ -42,9 +42,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -63,9 +61,6 @@ public class OrderStateValidationServiceTest {
     private OrderStateValidationService orderStateValidationService;
 
     @Mock
-    private OrderService orderService;
-
-    @Mock
     private Entity order;
 
     @Mock
@@ -79,8 +74,6 @@ public class OrderStateValidationServiceTest {
         MockitoAnnotations.initMocks(this);
 
         orderStateValidationService = new OrderStateValidationService();
-
-        ReflectionTestUtils.setField(orderStateValidationService, "orderService", orderService);
 
         given(stateChangeContext.getOwner()).willReturn(order);
         stubTechnologyField(technology);
