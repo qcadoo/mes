@@ -98,3 +98,28 @@ ALTER TABLE orders_order DROP COLUMN ordergroup_id;
 DROP TABLE ordergroups_ordergroup;
 
 -- end
+
+-- Table: orders_typeofcorrectioncauses
+-- changed: 07.03.2013
+
+CREATE TABLE orders_typeofcorrectioncauses
+(
+  id bigint NOT NULL,
+  reasontype character varying(255),
+  order_id bigint,
+  CONSTRAINT orders_typeofcorrectioncauses_pkey PRIMARY KEY (id),
+  CONSTRAINT typeofcorrectioncauses_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+
+-- end
+
+-- Table: orders_order
+-- changed: 07.03.2013
+ALTER TABLE orders_order ADD COLUMN commissionedplannedquantity numeric(10,5);
+ALTER TABLE orders_order ADD COLUMN commissionedcorrectedquantity numeric(10,5);
+ALTER TABLE orders_order ADD COLUMN amountofproductproduced numeric(10,5);
+ALTER TABLE orders_order ADD COLUMN remainingamountofproducttoproduce numeric(10,5);
+ALTER TABLE orders_order ADD COLUMN commentreasontypedeviationsquantity character varying(255);
+
+-- end

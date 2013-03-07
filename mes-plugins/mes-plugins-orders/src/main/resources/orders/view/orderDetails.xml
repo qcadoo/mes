@@ -602,31 +602,34 @@
 				<layoutElement column="2" row="1">
 					<component type="borderLayout" name="reasonForCorrectionBorderLayout">
 					<component type="gridLayout" name="productQuantityGridLayout" 
-								columns="1" rows="3" >
-						<layoutElement column="1" row="1">		
-								
-						<component type="awesomeDynamicList" name="typeOfCorrectionCauses"
-							source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
-							<option type="hasBorder" value="false" />
-							<option type="hasButtons" value="true" />
-							<components>
-							<component type="gridLayout" name="productQuantityGridLayout" 
-								columns="1" rows="1">
-								<layoutElement column="1" row="1">
-									<component type="select" name="reasonType"
-										field="reasonType" reference="reasonType">
-									</component>
-								</layoutElement>
-							</component>
+								columns="3" rows="3" >
+						 <layoutElement column="1" row="1">
+       						<component type="label" name="reasonTypesCorrectionProductQuantityFromLabel">
+       							<option type="labelStyle" value="label" />
+      						</component>
+     					</layoutElement>
+						<layoutElement column="2" row="1" width="2">		
+							<component type="awesomeDynamicList" name="typeOfCorrectionCauses"
+								source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
+								<option type="hasBorder" value="false" />
+								<option type="hasButtons" value="true" />
+								<components>
+									<component type="gridLayout" name="productQuantityGridLayout" 
+										columns="1" rows="1">
+										<layoutElement column="1" row="1">
+											<component type="select" name="reasonType"
+												field="reasonType" reference="reasonType" hasLabel="false">
+											</component>
+										</layoutElement>
+								</component>
 							</components>
-						
-					</component>
+						</component>
 					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
+					<layoutElement column="1" row="2" height="2" width="3">
 					<component type="textarea" name="commentreasonTypeDeviationsQuantity"
 						field="#{form}.commentreasonTypeDeviationsQuantity" reference="commentreasonTypeDeviationsQuantity">
 					</component>
-				</layoutElement>
+					</layoutElement>
 					</component>
 					<option type="label" value="reasonForCorrectionLabel" />
 				</component>
