@@ -178,8 +178,8 @@ public class OrderValidatorsMO {
     }
 
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
-        Date deadlineFromMaster = (Date) masterOrder.getField(DEADLINE);
-        Date deadlineFromOrder = (Date) order.getField(DEADLINE);
+        Date deadlineFromMaster = masterOrder.getDateField(DEADLINE);
+        Date deadlineFromOrder = order.getDateField(DEADLINE);
 
         if ((deadlineFromMaster == null && deadlineFromOrder == null)
                 || (deadlineFromMaster == null && deadlineFromOrder != null)) {
@@ -194,7 +194,7 @@ public class OrderValidatorsMO {
         if (deadlineFromOrder.equals(deadlineFromMaster)) {
             return true;
         }
-
+        order.addError(order.getDataDefinition().getField(DEADLINE), "masterOrders.masterOrder.deadline.isIncorrect");
         return false;
     }
 

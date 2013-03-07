@@ -196,15 +196,6 @@
 			</component>
 			<component type="grid" name="orders" reference="ordersGrid"
 				source="#{form}.orders">
-					<script>
-					<![CDATA[
-						this.addOnChangeListener({
-							onChange: function(selectedEntitiesArray) {
-								#{form}.performRefresh;
-							}
-						});
-					]]>
-					</script>
 				<option type="column" name="number" fields="number" />
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" />

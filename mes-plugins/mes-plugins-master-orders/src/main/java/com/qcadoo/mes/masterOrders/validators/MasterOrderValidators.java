@@ -57,10 +57,8 @@ public class MasterOrderValidators {
                 || (deadline != null && deadlineFromDB != null && deadline.equals(deadlineFromDB))) {
             return true;
         }
-
         if (checkIfMasterOrderHaveOrders(masterOrder)) {
             masterOrder.addError(masterOrderDD.getField(DEADLINE), "masterOrders.masterOrder.deadline.orderAlreadyExists");
-
             return false;
         }
         return true;
@@ -70,7 +68,6 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
-
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Boolean prefixMasterOrder = masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
         Boolean prefixMasterOrderDB = masterOrderFromDB.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
@@ -78,7 +75,6 @@ public class MasterOrderValidators {
         if (prefixMasterOrderDB == null || (!(!prefixMasterOrderDB && prefixMasterOrder))) {
             return true;
         }
-
         List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
 
         if (orders.isEmpty()) {
@@ -95,11 +91,9 @@ public class MasterOrderValidators {
 
             if (!orderNumber.startsWith(masterOrderNumber)) {
                 ordersNumbers.append(orderNumber + ", ");
-
                 isValid = false;
             }
         }
-
         if (!isValid) {
             masterOrder.addError(masterOrderDD.getField(MasterOrderFields.NUMBER),
                     "masterOrders.order.number.alreadyExistsOrderWithWrongNumber", ordersNumbers.toString());
@@ -156,7 +150,7 @@ public class MasterOrderValidators {
         Entity productFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())
-                || product.getId().equals(productFromDB.getId())
+                || productFromDB != null && product.getId().equals(productFromDB.getId())
                 || masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).isEmpty()) {
             return true;
         }
