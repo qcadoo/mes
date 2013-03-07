@@ -30,6 +30,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class OrderValidatorsMO {
 
+    private static final String L_MASTER_ORDERS_ORDER_MASTER_ORDER = "masterOrders.order.masterOrder.";
+
     @Autowired
     private TranslationService translationService;
 
@@ -113,18 +115,18 @@ public class OrderValidatorsMO {
                 isValid = false;
                 Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
                 Entity product = masterOrder.getBelongsToField(PRODUCT);
-                order.addError(orderDD.getField(TECHNOLOGY), "masterOrders.order.masterOrder." + TECHNOLOGY + ""
+                order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY + ""
                         + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
                 order.addError(orderDD.getField(PRODUCT),
-                        "masterOrders.order.masterOrder." + PRODUCT + "" + ".fieldIsNotTheSame",
+                        L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT + "" + ".fieldIsNotTheSame",
                         createInfoAboutEntity(product, PRODUCT));
             }
         } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             if (checkIfExistsMasterOrderWithTechAndProduct(order, masterOrder)) {
                 isValid = false;
-                order.addError(orderDD.getField(TECHNOLOGY), "masterOrders.order.masterOrder." + TECHNOLOGY
+                order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY
                         + ".masterOrderProductDoesnotExists");
-                order.addError(orderDD.getField(PRODUCT), "masterOrders.order.masterOrder." + PRODUCT
+                order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT
                         + ".masterOrderProductDoesnotExists");
             }
         }
