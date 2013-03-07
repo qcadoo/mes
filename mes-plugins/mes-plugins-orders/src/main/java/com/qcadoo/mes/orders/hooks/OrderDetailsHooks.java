@@ -127,7 +127,7 @@ public class OrderDetailsHooks {
         }
 
         if (order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
-            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
+            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
             changedEnabledFields(view, references, true);
         }
