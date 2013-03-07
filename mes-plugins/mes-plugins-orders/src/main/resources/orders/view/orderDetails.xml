@@ -26,7 +26,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderDetails" modelName="order" defaultAuthorizationRole="ROLE_SUPERVISOR">
+	name="orderDetails" modelName="order">
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
@@ -337,9 +337,6 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
-								method="checkIfProductionLineSupportsTechnology" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="5">

@@ -180,8 +180,6 @@ public final class SamplesConstants {
 
     public static final String L_BOM_ID = "bom_id";
 
-    public static final String L_ORDER_GROUPS = "orderGroups";
-
     public static final String L_COST_CALCULATION = "costCalculation";
 
     public static final String L_MATERIAL_FLOW = "materialFlow";
@@ -290,6 +288,28 @@ public final class SamplesConstants {
 
     public static final String TJ = "tj";
 
+    public static final String L_WAGE_GROUP = "wageGroup";
+
+    public static final String L_WAGE_GROUPS = "wageGroups";
+
+    public static final String L_LABOR_HOURLY_COST = "laborHourlyCost";
+
+    public static final String L_COMPANY_PRODUCTS_FAMILY = "companyProductsFamily";
+
+    public static final String L_COMPANY = "company";
+
+    public static final String L_UNIT = "unit";
+
+    public static final String L_ENTITY_TYPE = "entityType";
+
+    public static final String L_PARENT = "parent";
+
+    public static final String L_GLOBAL_TYPE_OF_MATERIAL = "globalTypeOfMaterial";
+
+    public static final String L_TYPE_OF_PRODUCT = "typeofproduct";
+
+    public static final String L_TECH_SUBCONTRACTING = "techSubcontracting";
+
     public static final String L_PROD_NR_10 = "000010";
 
     public static final String L_PROD_NR_11 = "000011";
@@ -377,9 +397,5 @@ public final class SamplesConstants {
     public static final String L_1600 = "1600";
 
     public static final String L_2400 = "2400";
-
-    public static final String L_WAGE_GROUP = "wageGroup";
-
-    public static final String L_LABOR_HOURLY_COST = "laborHourlyCost";
 
 }

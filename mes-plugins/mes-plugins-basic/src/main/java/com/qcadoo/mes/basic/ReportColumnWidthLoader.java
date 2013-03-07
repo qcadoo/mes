@@ -115,8 +115,10 @@ public class ReportColumnWidthLoader {
         reportColumnWidth.setField(PARAMETER, parameterService.getParameter());
 
         reportColumnWidth = reportColumnWidthDataDefinition.save(reportColumnWidth);
-        if (reportColumnWidth.isValid() && LOG.isDebugEnabled()) {
-            LOG.debug("Report column width saved {reportColumnWidth=" + reportColumnWidth.toString() + "}");
+        if (reportColumnWidth.isValid()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Report column width saved {reportColumnWidth=" + reportColumnWidth.toString() + "}");
+            }
         } else {
             throw new IllegalStateException("Saved report column width entity have validation errors - "
                     + values.get(IDENTIFIER.toLowerCase(Locale.ENGLISH)));

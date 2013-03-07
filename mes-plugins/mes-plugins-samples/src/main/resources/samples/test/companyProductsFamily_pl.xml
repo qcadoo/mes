@@ -24,24 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="orderGroup" activable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<date name="dateFrom" />
-		<date name="dateTo" />
-		<hasMany name="orders" model="order" plugin="orders"
-			joinField="orderGroup" />
-	</fields>
-	<hooks>
-		<validatesWith class="com.qcadoo.mes.orderGroups.OrderGroupsService"
-			method="validateDates" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
-</model>
+<companyProductsFamily>
+	<row COMPANY="2" PRODUCT="DREW-SUR" />
+	<row COMPANY="3" PRODUCT="EL-DOD" />
+</companyProductsFamily>

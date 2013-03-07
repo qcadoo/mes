@@ -79,6 +79,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class OrderDetailsHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -89,7 +91,7 @@ public class OrderDetailsHooks {
     private StateChangeHistoryService stateChangeHistoryService;
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
@@ -165,7 +167,7 @@ public class OrderDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
         List<RibbonGroup> ribbonGroups = ribbon.getGroups();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Long orderId = form.getEntityId();
         if (orderId == null) {
             return;
@@ -189,7 +191,7 @@ public class OrderDetailsHooks {
     }
 
     public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
@@ -203,7 +205,7 @@ public class OrderDetailsHooks {
     }
 
     public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }

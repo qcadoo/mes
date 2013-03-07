@@ -121,8 +121,10 @@ public class OccupationTypeLoaderModule extends Module {
         dictionaryItem.setField(L_DICTIONARY, getlDictionary());
 
         dictionaryItem = dictionaryItemDataDefinition.save(dictionaryItem);
-        if (dictionaryItem.isValid() && LOG.isDebugEnabled()) {
-            LOG.debug("Occupation type saved {currency=" + dictionaryItem.toString() + "}");
+        if (dictionaryItem.isValid()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Occupation type saved {currency=" + dictionaryItem.toString() + "}");
+            }
         } else {
             throw new IllegalStateException("Saved dictionaries entity have validation errors - " + values.get(L_NAME));
         }

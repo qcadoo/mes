@@ -24,6 +24,7 @@
     ***************************************************************************
 
 -->
-<orderGroups>
-	<row NUMBER="1" NAME="Zlecenia poniżej 100 sztuk" ORDER3="ZL-T-ST-P4-OP-2012.04-01" ORDER2="ZL-T-TAB-P4-2012.04-01"/>
-</orderGroups>
+<companyProductsFamily>
+	<row COMPANY="2" PRODUCT="RAW-WOOD" />
+	<row COMPANY="3" PRODUCT="ADD-EL" />
+</companyProductsFamily>
