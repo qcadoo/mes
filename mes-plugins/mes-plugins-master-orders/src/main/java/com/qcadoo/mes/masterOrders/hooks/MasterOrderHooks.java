@@ -78,12 +78,13 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity customer = masterOrder.getBelongsToField(COMPANY);
         if (customer == null) {
             return;
         }
         List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> pendingOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
+        List<Entity> pendingOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
                 .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
         for (Entity order : pendingOrders) {
             order.setField(OrderFields.COMPANY, customer);
