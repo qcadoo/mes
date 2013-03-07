@@ -72,7 +72,7 @@
 
 		<model:model model="order" resource="model/order.xml" />
 		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
-		
+		<model:model model="typeOfCorrectionCauses" resource="model/typeOfCorrectionCauses.xml" />
 		<model:model-field plugin="states" model="message">
 		    <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>
@@ -131,6 +131,12 @@
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
 		    <model:integer name="earlierEffectiveDateToTime" default="900"/>
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="blockAbilityToChangeApprovalOrder" default="false" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+		    <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false" />
 		</model:model-field>
 		
 		<model:model-hook plugin="technologies" model="technology">

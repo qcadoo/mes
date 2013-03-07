@@ -53,7 +53,7 @@
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="ordersParameters" reference="form">
 				<component type="gridLayout" name="mainTabGridLayout"
-					columns="3" rows="1">
+					columns="3" rows="3">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="defaultProductionLine"
 							field="#{form}.defaultProductionLine" reference="defaultProductionLine">
@@ -64,6 +64,11 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="checkbox" name="blockAbilityToChangeApprovalOrder"
+							field="#{form}.blockAbilityToChangeApprovalOrder" reference="blockAbilityToChangeApprovalOrder">
 						</component>
 					</layoutElement>
 				</component>
@@ -85,7 +90,7 @@
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="gridLayout" name="reasonNeededWhenGridLayout"
-						columns="1" rows="5">
+						columns="1" rows="6">
 						<layoutElement column="1" row="1" height="2">
 							<component type="borderLayout" name="correctionOfDateBorderLayout">
 								<component type="gridLayout" name="correctionOfDateGridLayout"
@@ -108,18 +113,24 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="1" row="3">
+							<component type="checkbox" name="reasonNeededWhenCorrectingTheRequestedVolume"
+								field="#{form}.reasonNeededWhenCorrectingTheRequestedVolume" reference="reasonNeededWhenCorrectingTheRequestedVolume">
+								<option type="labelWidth" value="70" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4">
 							<component type="checkbox" name="reasonNeededWhenChangingStateToDeclined"
 								field="#{form}.reasonNeededWhenChangingStateToDeclined" reference="reasonNeededWhenChangingStateToDeclined">
 								<option type="labelWidth" value="70" />
 							</component>
 						</layoutElement>
-						<layoutElement column="1" row="4">
+						<layoutElement column="1" row="5">
 							<component type="checkbox" name="reasonNeededWhenChangingStateToInterrupted"
 								field="#{form}.reasonNeededWhenChangingStateToInterrupted" reference="reasonNeededWhenChangingStateToInterrupted">
 								<option type="labelWidth" value="70" />
 							</component>
 						</layoutElement>
-						<layoutElement column="1" row="5">
+						<layoutElement column="1" row="6">
 							<component type="checkbox" name="reasonNeededWhenChangingStateToAbandoned"
 								field="#{form}.reasonNeededWhenChangingStateToAbandoned" reference="reasonNeededWhenChangingStateToAbandoned">
 								<option type="labelWidth" value="70" />

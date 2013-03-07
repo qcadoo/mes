@@ -93,4 +93,16 @@ public final class OrderFields {
 
     public static final String FINISH_DATE = "finishDate";
 
+    public static final String COMMISSIONED_PLANNED_QUANTITY = "commissionedPlannedQuantity";
+
+    public static final String COMMISSIONED_CORRECTED_QUANTITY = "commissionedCorrectedQuantity";
+
+    public static final String AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
+
+    public static final String REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE = "remainingAmountOfProductToProduce";
+
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY = "commentreasonTypeDeviationsQuantity";
+
+    public static final String TYPE_OFCORRECTION_CAUSES = "typeOfCorrectionCauses";
+
 }
