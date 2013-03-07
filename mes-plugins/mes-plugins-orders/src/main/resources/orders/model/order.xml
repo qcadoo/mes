@@ -82,13 +82,6 @@
 		<tree name="technologyInstanceOperationComponents" copyable="true"
 			joinField="order" model="technologyInstanceOperationComponent"
 			plugin="technologies" cascade="delete" />
-
-		<dictionary name="reasonTypeCorrectionDateFrom" dictionary="reasonTypeOfChaningOrderState" />
-		<dictionary name="reasonTypeCorrectionDateTo" dictionary="reasonTypeOfChaningOrderState" />
-		<dictionary name="reasonTypeDeviationsOfEffectiveStart"
-			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
-		<dictionary name="reasonTypeDeviationsOfEffectiveEnd"
-			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
 			
 		<decimal name="commissionedPlannedQuantity">
 			<validatesRange from="0" exclusively="false" />
@@ -116,6 +109,15 @@
 
 		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
 			cascade="delete" />
+			
+		<hasMany name="reasonTypesCorrectionDateFrom" joinField="order" model="reasonTypeCorrectionDateFrom"
+			cascade="delete" />
+		<hasMany name="reasonTypesCorrectionDateTo" joinField="order" model="reasonTypeCorrectionDateTo"
+			cascade="delete" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveStart" joinField="order" model="reasonTypeOfChaningOrderState"
+			cascade="delete" persistent="false" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" joinField="order" model="reasonTypeOfChaningOrderState"
+			cascade="delete" persistent="false" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

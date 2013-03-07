@@ -365,9 +365,11 @@
 						</component>
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression"
 					value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
+					
 				<listener event="changeState"
 					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
 					method="changeState" />
@@ -410,15 +412,36 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="startDatesLabel" />
 					</component>
 					<component type="borderLayout" name="causeOfPlannedDateFromCorrection">
 						<component type="gridLayout"
-							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
-							rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
+							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1" rows="3" 
+							reference="causeOfPlannedDateFromCorrectionGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="select" name="reasonTypeCorrectionDateFrom"
-									field="#{form}.reasonTypeCorrectionDateFrom" reference="reasonTypeCorrectionDateFrom">
+								<component type="gridLayout" name="reasonTypesCorrectionDateFromGridLayout" columns="3" rows="1">
+									<layoutElement column="1" row="1">
+										<component type="label" name="reasonTypesCorrectionDateFromLabel">
+											<option type="labelStyle" value="label" />
+										</component>
+									</layoutElement>
+									<layoutElement column="2" row="1" width="2">
+										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateFrom"
+											source="#{form}.reasonTypesCorrectionDateFrom" reference="reasonTypesCorrectionDateFrom">
+											<option type="hasBorder" value="false" />
+											<option type="hasButtons" value="true" />
+											<components>
+												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+													columns="1" rows="1">
+													<layoutElement column="1" row="1">
+														<component type="select" name="reasonTypeOfChaningOrderState"
+															field="reasonTypeOfChaningOrderState" hasLabel="false" />
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+									</layoutElement>
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -428,6 +451,7 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="causeOfPlannedDateFromCorrectionLabel" />
 					</component>
 					<component type="borderLayout" name="causeDeviationsOfEffectiveStart">
@@ -435,8 +459,29 @@
 							name="causeDeviationsOfEffectiveStartGridLayout" columns="1"
 							rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="select" name="reasonTypeDeviationsOfEffectiveStart"
-									reference="reasonTypeDeviationsOfEffectiveStart" field="#{form}.reasonTypeDeviationsOfEffectiveStart">
+								<component type="gridLayout" name="reasonTypeDeviationsOfEffectiveStartGridLayout" columns="3" rows="1">
+									<layoutElement column="1" row="1">
+										<component type="label" name="reasonTypesDeviationsOfEffectiveStartLabel">
+											<option type="labelStyle" value="label" />
+										</component>
+									</layoutElement>
+									<layoutElement column="2" row="1" width="2">
+										<component type="awesomeDynamicList" name="reasonTypesDeviationsOfEffectiveStart"
+											source="#{form}.reasonTypesDeviationsOfEffectiveStart" reference="reasonTypesDeviationsOfEffectiveStart"
+											persistent="false" defaultEnabled="never">
+											<option type="hasBorder" value="false" />
+											<option type="hasButtons" value="true" />
+											<components>
+												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+													columns="1" rows="1">
+													<layoutElement column="1" row="1">
+														<component type="select" name="reasonTypeOfChaningOrderState"
+															field="reasonTypeOfChaningOrderState" hasLabel="false" />
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+									</layoutElement>
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -446,6 +491,7 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="causeDeviationsOfEffectiveStartLabel" />
 					</component>
 				</layoutElement>
@@ -480,6 +526,7 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="endDatesLabel" />
 					</component>
 					<component type="borderLayout" name="causeOfPlannedDateToCorrection">
@@ -487,9 +534,28 @@
 							name="causeOfPlannedDateToCorrectionGridLayout" columns="1" rows="3"
 							reference="causeOfPlannedDateToCorrectionGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="select" name="reasonTypeCorrectionDateTo"
-									field="#{form}.reasonTypeCorrectionDateTo" reference="reasonTypeCorrectionDateTo"
-									defaultEnabled="false">
+								<component type="gridLayout" name="reasonTypesCorrectionDateToGridLayout" columns="3" rows="1">
+									<layoutElement column="1" row="1">
+										<component type="label" name="reasonTypesCorrectionDateToLabel">
+											<option type="labelStyle" value="label" />
+										</component>
+									</layoutElement>
+									<layoutElement column="2" row="1" width="2">
+										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateTo"
+											source="#{form}.reasonTypesCorrectionDateTo" reference="reasonTypesCorrectionDateTo">
+											<option type="hasBorder" value="false" />
+											<option type="hasButtons" value="true" />
+											<components>
+												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+													columns="1" rows="1">
+													<layoutElement column="1" row="1">
+														<component type="select" name="reasonTypeOfChaningOrderState"
+															field="reasonTypeOfChaningOrderState" hasLabel="false" />
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+									</layoutElement>
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -499,6 +565,7 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="causeOfPlannedDateToCorrectionLabel" />
 					</component>
 					<component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
@@ -506,9 +573,29 @@
 							name="causeDeviationsOfEffectiveEndGridLayout" columns="1" rows="3"
 							reference="causeDeviationsOfEffectiveEndGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="select" name="reasonTypeDeviationsOfEffectiveEnd"
-									reference="reasonTypeDeviationsOfEffectiveEnd" field="#{form}.reasonTypeDeviationsOfEffectiveEnd"
-									defaultEnabled="false">
+								<component type="gridLayout" name="reasonTypeDeviationsOfEffectiveEndGridLayout" columns="3" rows="1">
+									<layoutElement column="1" row="1">
+										<component type="label" name="reasonTypesDeviationsOfEffectiveEndLabel">
+											<option type="labelStyle" value="label" />
+										</component>
+									</layoutElement>
+									<layoutElement column="2" row="1" width="2">
+										<component type="awesomeDynamicList" name="reasonTypesDeviationsOfEffectiveEnd"
+											source="#{form}.reasonTypesDeviationsOfEffectiveEnd" reference="reasonTypesDeviationsOfEffectiveEnd"
+											persistent="false" defaultEnabled="never">
+											<option type="hasBorder" value="false" />
+											<option type="hasButtons" value="true" />
+											<components>
+												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+													columns="1" rows="1">
+													<layoutElement column="1" row="1">
+														<component type="select" name="reasonTypeOfChaningOrderState"
+															field="reasonTypeOfChaningOrderState" hasLabel="false" />
+													</layoutElement>
+												</component>
+											</components>
+										</component>
+									</layoutElement>
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
@@ -518,6 +605,7 @@
 								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="causeDeviationsOfEffectiveEndLabel" />
 					</component>
 				</layoutElement>
@@ -645,7 +733,6 @@
 				<option type="column" name="previousState" fields="sourceState" />
 				<option type="column" name="currentState" fields="targetState" />
 				<option type="column" name="worker" fields="worker" />
-				<option type="column" name="reasonType" fields="reasonType" />
 				<option type="column" name="comment" fields="comment" />
 				<option type="order" column="dateAndTime" direction="asc" />
 				<option type="searchable" value="dateAndTime,previousState,currentState" />
@@ -698,10 +785,10 @@
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="disableOrderFormForExternalItems" />
 		<beforeRender
-			class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
+			class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveStart" />
 		<beforeRender
-			class="com.qcadoo.mes.orders.hooks.OrderStateChangeDetailsHooks"
+			class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="changedEnabledFieldForSpecificOrderState" />

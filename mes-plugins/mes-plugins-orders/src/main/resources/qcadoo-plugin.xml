@@ -72,7 +72,13 @@
 
 		<model:model model="order" resource="model/order.xml" />
 		<model:model model="orderStateChange" resource="model/orderStateChange.xml" />
+
 		<model:model model="typeOfCorrectionCauses" resource="model/typeOfCorrectionCauses.xml" />
+
+		<model:model model="reasonTypeCorrectionDateFrom" resource="model/reasonTypeCorrectionDateFrom.xml" />
+		<model:model model="reasonTypeCorrectionDateTo" resource="model/reasonTypeCorrectionDateTo.xml" />
+		<model:model model="reasonTypeOfChaningOrderState" resource="model/reasonTypeOfChaningOrderState.xml" />
+
 		<model:model-field plugin="states" model="message">
 		    <model:belongsTo name="orderStateChange" plugin="orders" model="orderStateChange" />
 		</model:model-field>

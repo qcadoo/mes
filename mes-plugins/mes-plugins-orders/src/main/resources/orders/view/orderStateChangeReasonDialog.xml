@@ -25,7 +25,7 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderStateChangeReasonDialog" modelName="orderStateChange" windowHeight="420">
+	name="orderStateChangeReasonDialog" modelName="orderStateChange" windowWidth="700" windowHeight="500" >
 
 	<component type="window" name="window" reference="window">
 		<ribbon>
@@ -36,7 +36,7 @@
 		</ribbon>
 		<windowTab name="mainTab">
 			<component type="form" name="logging" reference="form">
-				<component type="gridLayout" name="gridsLayout" columns="2"
+				<component type="gridLayout" name="gridLayout" columns="2"
 					rows="5" hasBorders="false">
 					<layoutElement column="1" row="1">
 						<component type="input" name="worker" field="#{form}.worker"
@@ -55,8 +55,29 @@
 							field="additionalInformation" reference="additionalInformation" defaultEnabled="false" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
-						<component type="select" name="reasonType" field="#{form}.reasonType"
-							reference="reasonType" />
+						<component type="gridLayout" name="reasonTypesGridLayout" columns="3" rows="1">
+							<layoutElement column="1" row="1">
+								<component type="label" name="reasonTypesLabel">
+									<option type="labelStyle" value="label" />
+								</component>
+							</layoutElement>
+							<layoutElement column="2" row="1" width="2">
+								<component type="awesomeDynamicList" name="reasonTypes"
+									source="#{form}.reasonTypes" reference="reasonTypes">
+									<option type="hasBorder" value="false" />
+									<option type="hasButtons" value="true" />
+									<components>
+										<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+											columns="1" rows="1">
+											<layoutElement column="1" row="1">
+												<component type="select" name="reasonTypeOfChaningOrderState"
+													field="reasonTypeOfChaningOrderState" hasLabel="false" />
+											</layoutElement>
+										</component>
+									</components>
+								</component>
+							</layoutElement>
+						</component>
 					</layoutElement>
 					<layoutElement column="2" row="2" height="2">
 						<component type="textarea" name="comment" field="#{form}.comment"

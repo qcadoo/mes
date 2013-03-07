@@ -36,8 +36,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -108,8 +108,8 @@ public class OrderHooks {
         Entity parameter = parameterService.getParameter();
         if (parameter.getBooleanField("reasonNeededWhenCorrectingDateFrom")
                 && entity.getField(OrderFields.CORRECTED_DATE_FROM) != null
-                && entity.getStringField(REASON_TYPE_CORRECTION_DATE_FROM) == null) {
-            entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_FROM),
+                && entity.getStringField(REASON_TYPES_CORRECTION_DATE_FROM) == null) {
+            entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_FROM),
                     "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
             return false;
         }
@@ -121,8 +121,8 @@ public class OrderHooks {
         Entity parameter = parameterService.getParameter();
         if (parameter.getBooleanField("reasonNeededWhenCorrectingDateTo")
                 && entity.getField(OrderFields.CORRECTED_DATE_TO) != null
-                && entity.getStringField(REASON_TYPE_CORRECTION_DATE_TO) == null) {
-            entity.addError(dataDefinition.getField(REASON_TYPE_CORRECTION_DATE_TO),
+                && entity.getStringField(REASON_TYPES_CORRECTION_DATE_TO) == null) {
+            entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_TO),
                     "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
             return false;
         }
