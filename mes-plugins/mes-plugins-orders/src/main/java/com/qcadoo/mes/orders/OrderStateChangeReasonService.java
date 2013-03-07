@@ -212,6 +212,16 @@ public class OrderStateChangeReasonService {
         showReasonForm(stateChangeContext, viewContext);
     }
 
+    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_FROM) == null
+                || (order.getField(REASON_TYPE_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
+    }
+
+    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_TO) == null
+                || (order.getField(REASON_TYPE_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
+    }
+
     public void onStart(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         if (neededWhenCorrectingDateFrom() && !hasRequiredCorrectionDateFromReasonField(order)) {
@@ -227,16 +237,6 @@ public class OrderStateChangeReasonService {
         }
         setAdditionalInfo(stateChangeContext, difference);
         showReasonForm(stateChangeContext, viewContext);
-    }
-
-    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_FROM) == null
-                || (order.getField(REASON_TYPE_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
-    }
-
-    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_TO) == null
-                || (order.getField(REASON_TYPE_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
     }
 
     private void setAdditionalInfo(final StateChangeContext stateChangeContext, final long difference) {

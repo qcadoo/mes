@@ -55,4 +55,8 @@ public final class ParameterFieldsO {
 
     public static final String EARLIER_EFFECTIVE_DATE_TO_TIME = "earlierEffectiveDateToTime";
 
+    public static final String BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER = "blockAbilityToChangeApprovalOrder";
+
+    public static final String REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME = "reasonNeededWhenCorrectingTheRequestedVolume";
+
 }

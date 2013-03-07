@@ -41,6 +41,7 @@
 		<string name="commentReasonTypeCorrectionDateFrom" />
 		<string name="commentReasonTypeCorrectionDateTo" />
 		<string name="externalNumber" unique="true"/>
+		<string name="commentreasonTypeDeviationsQuantity" />
 
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
@@ -88,6 +89,33 @@
 			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
 		<dictionary name="reasonTypeDeviationsOfEffectiveEnd"
 			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
+			
+		<decimal name="commissionedPlannedQuantity">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="commissionedCorrectedQuantity">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="amountOfProductProduced">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="remainingAmountOfProductToProduce">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+
+		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
+			cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
@@ -104,14 +132,19 @@
 			method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired" />
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="setInitialState" />
+		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="setSommissionedPlannedQuantity" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
 			method="createTechnologyInstanceForOrder" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onCorrectingTheRequestedVolume" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>
