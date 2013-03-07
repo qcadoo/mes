@@ -24,35 +24,13 @@
     ***************************************************************************
 
 -->
-<model name="orderStateChange" 
+<model name="typeOfCorrectionCauses" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
-		<hasMany name="reasonTypes" joinField="orderStateChange" model="reasonTypeOfChaningOrderState"
-			cascade="delete" />
-			
-<!-- 		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState"> -->
-<!-- 			<validatesWith  -->
-<!-- 				class="com.qcadoo.mes.orders.hooks.OrderStateChangeModelValidators"  -->
-<!-- 				method="checkReasonRequired"/> -->
-<!-- 		</dictionary> -->
-		<string name="comment" />
-		<boolean name="reasonRequired" default="false" />
-	
-		<!-- generic state change fields -->
-		<datetime name="dateAndTime" />
-		<enum name="sourceState"
-			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
-		<enum name="targetState"
-			values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
-			required="true" />
-		<enum name="status" values="01inProgress,02paused,03successful,04failure,05canceled" required="true"/>
-		<integer name="phase" />
-		<string name="worker" />
-		<hasMany name="messages" joinField="orderStateChange" model="message" plugin="states" cascade="delete" /> <!-- messages -->
-		<belongsTo name="order" model="order" /> <!-- owner -->
-		<belongsTo name="shift" model="shift" plugin="basic" />
-		<string name="additionalInformation" />
+		<dictionary name="reasonType"
+			dictionary="reasonTypeOfChaningOrderState"/>
+	<belongsTo name="order" model="order" />
 	</fields>
 	<hooks />
 </model>
