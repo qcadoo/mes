@@ -687,7 +687,7 @@
 						</layoutElement>
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="1">
+				<layoutElement column="2" row="1" height="3">
 					<component type="borderLayout" name="reasonForCorrectionBorderLayout">
 					<component type="gridLayout" name="productQuantityGridLayout" 
 								columns="3" rows="3" >
