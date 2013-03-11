@@ -132,17 +132,6 @@ public class OrderProductQuantityHooks {
         }
     }
 
-    public void changeAmountOfPPFieldState(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference(L_TYPE_OF_PRODUCTION_RECORDING);
-        FieldComponent amountOfPP = (FieldComponent) viewDefinitionState.getComponentByReference(AMOUNT_OF_PRODUCT_PRODUCED);
-        if ("".equals(typeOfProductionRecording.getFieldValue())) {
-            amountOfPP.setEnabled(true);
-        } else {
-            amountOfPP.setEnabled(false);
-        }
-    }
-
     public void setProductQuantity(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {

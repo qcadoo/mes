@@ -718,8 +718,6 @@
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
 			method="fillProductUnit" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
-			method="changeAmountOfPPFieldState" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
 			method="setProductQuantity" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="changedEnabledDescriptionFieldForSpecificOrderState" />
