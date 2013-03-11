@@ -147,7 +147,19 @@
 	</build>
 	
 	<repositories>
-			<repository>
+	    <repository>
+			<id>qcadoo-releases-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
 	      	<id>com.logdigger</id>
 	      	<name>com.logdigger</name>
 	      	<url>http://maven.logdigger.com/repos</url>
