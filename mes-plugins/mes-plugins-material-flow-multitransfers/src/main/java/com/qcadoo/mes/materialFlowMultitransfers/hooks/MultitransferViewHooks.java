@@ -55,4 +55,5 @@ public class MultitransferViewHooks {
     public void disableDateField(final ViewDefinitionState view) {
         materialFlorwResourcesService.disableDateField(view);
     }
+
 }

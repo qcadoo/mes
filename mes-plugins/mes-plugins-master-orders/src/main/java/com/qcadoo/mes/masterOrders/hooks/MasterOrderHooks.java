@@ -1,5 +1,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
@@ -62,12 +64,32 @@ public class MasterOrderHooks {
         if (deadline == null) {
             return;
         }
-        DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+        List<Entity> actualOrders = Lists.newArrayList();
         List<Entity> pendingOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
                 .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
         for (Entity order : pendingOrders) {
             order.setField(OrderFields.DEADLINE, deadline);
-            orderDD.save(order);
+            actualOrders.add(order);
         }
+        masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
+    }
+
+    public void changedCustomerInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        if (masterOrder.getId() == null) {
+            return;
+        }
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
+        Entity customer = masterOrder.getBelongsToField(COMPANY);
+        if (customer == null) {
+            return;
+        }
+        List<Entity> actualOrders = Lists.newArrayList();
+        List<Entity> pendingOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
+        for (Entity order : pendingOrders) {
+            order.setField(OrderFields.COMPANY, customer);
+            actualOrders.add(order);
+        }
+        masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
     }
 }

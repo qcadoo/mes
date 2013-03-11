@@ -29,8 +29,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static org.mockito.Mockito.when;
 
@@ -69,8 +69,8 @@ public class OrderDetailsHooksTest {
     private Entity order;
 
     @Mock
-    FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, reasonDateFromField,
-            dateFrom, dateTo, reasonDateToField;
+    FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, reasonsDateFromField,
+            dateFrom, dateTo, reasonsDateToField;
 
     @Before
     public void init() {
@@ -86,8 +86,8 @@ public class OrderDetailsHooksTest {
         when(dataDefinition.get(id)).thenReturn(order);
         when(view.getComponentByReference(CORRECTED_DATE_FROM)).thenReturn(correctDateFromField);
         when(view.getComponentByReference(CORRECTED_DATE_TO)).thenReturn(correctDateToField);
-        when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(reasonDateFromField);
-        when(view.getComponentByReference(REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(reasonDateToField);
+        when(view.getComponentByReference(REASON_TYPES_CORRECTION_DATE_FROM)).thenReturn(reasonsDateFromField);
+        when(view.getComponentByReference(REASON_TYPES_CORRECTION_DATE_TO)).thenReturn(reasonsDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
         when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
@@ -105,8 +105,8 @@ public class OrderDetailsHooksTest {
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateFromField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
-        Mockito.verify(reasonDateFromField).setEnabled(true);
-        Mockito.verify(reasonDateToField).setEnabled(true);
+        Mockito.verify(reasonsDateFromField).setEnabled(true);
+        Mockito.verify(reasonsDateToField).setEnabled(true);
         Mockito.verify(dateFrom).setEnabled(true);
         Mockito.verify(dateTo).setEnabled(true);
     }
@@ -120,7 +120,7 @@ public class OrderDetailsHooksTest {
         // then
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
-        Mockito.verify(reasonDateToField).setEnabled(true);
+        Mockito.verify(reasonsDateToField).setEnabled(true);
         Mockito.verify(dateFrom).setEnabled(true);
         Mockito.verify(dateTo).setEnabled(true);
     }

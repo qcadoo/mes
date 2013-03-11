@@ -124,7 +124,9 @@
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="masterOrderQuantity"
 									field="#{form}.masterOrderQuantity" reference="masterOrderQuantity"
-									defaultVisible="false" />
+									defaultVisible="false" >
+									<option type="alignment" value="right" />
+								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="masterOrderQuantityUnit"
@@ -136,7 +138,9 @@
 							<layoutElement column="1" row="2" width="3">
 								<component type="input" name="cumulatedOrderQuantity"
 									field="#{form}.cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-									defaultVisible="false" defaultEnabled="never" />
+									defaultVisible="false" defaultEnabled="never"  >
+									<option type="alignment" value="right" />
+								</component>
 							</layoutElement>
 							<layoutElement column="4" row="2">
 								<component type="input" name="cumulatedOrderQuantityUnit"
@@ -196,15 +200,6 @@
 			</component>
 			<component type="grid" name="orders" reference="ordersGrid"
 				source="#{form}.orders">
-					<script>
-					<![CDATA[
-						this.addOnChangeListener({
-							onChange: function(selectedEntitiesArray) {
-								#{form}.performRefresh;
-							}
-						});
-					]]>
-					</script>
 				<option type="column" name="number" fields="number" />
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" />
@@ -226,7 +221,8 @@
 
 				<option type="weakRelation" value="true" />
 				<option type="correspondingLookup" value="ordersLookup" />
-
+				
+				<option type="multiselect" value="true" />
 				<option type="deletable" value="true" />
 				<option type="creatable" value="true" />
 			</component>

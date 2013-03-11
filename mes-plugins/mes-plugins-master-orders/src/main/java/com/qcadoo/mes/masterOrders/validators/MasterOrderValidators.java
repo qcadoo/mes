@@ -57,10 +57,8 @@ public class MasterOrderValidators {
                 || (deadline != null && deadlineFromDB != null && deadline.equals(deadlineFromDB))) {
             return true;
         }
-
         if (checkIfMasterOrderHaveOrders(masterOrder)) {
             masterOrder.addError(masterOrderDD.getField(DEADLINE), "masterOrders.masterOrder.deadline.orderAlreadyExists");
-
             return false;
         }
         return true;
@@ -70,7 +68,6 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
-
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Boolean prefixMasterOrder = masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
         Boolean prefixMasterOrderDB = masterOrderFromDB.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER);
@@ -78,7 +75,6 @@ public class MasterOrderValidators {
         if (prefixMasterOrderDB == null || (!(!prefixMasterOrderDB && prefixMasterOrder))) {
             return true;
         }
-
         List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
 
         if (orders.isEmpty()) {
@@ -95,11 +91,9 @@ public class MasterOrderValidators {
 
             if (!orderNumber.startsWith(masterOrderNumber)) {
                 ordersNumbers.append(orderNumber + ", ");
-
                 isValid = false;
             }
         }
-
         if (!isValid) {
             masterOrder.addError(masterOrderDD.getField(MasterOrderFields.NUMBER),
                     "masterOrders.order.number.alreadyExistsOrderWithWrongNumber", ordersNumbers.toString());
@@ -118,27 +112,29 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
-        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
-        Entity technologyFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        if ((technology == null && technologyFromDB == null)
-                || (technology != null && technologyFromDB != null && technology.getId().equals(technologyFromDB.getId()))) {
-            return true;
-        }
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return true;
         }
-        List<Entity> orders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS);
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
+        Entity technologyFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.TECHNOLOGY);
+        Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
+        List<Entity> allOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS);
+        if ((technology == null && technologyFromDB == null)
+                || (technology != null && technologyFromDB != null && technology.getId().equals(technologyFromDB.getId()))
+                || allOrders.isEmpty()) {
+            return true;
+        }
+
+        List<Entity> ordersForTechnology = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.not(SearchRestrictions.belongsTo(MasterOrderFields.TECHNOLOGY, technology))).list()
+                .getEntities();
+
         boolean isValid = true;
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
-        for (Entity order : orders) {
-            Entity technologyFromOrder = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            if ((technologyFromOrder != null && technology != null && !(technologyFromOrder.getId().equals(technology.getId())))
-                    || (technologyFromOrder == null && technology != null)) {
-                isValid = false;
-                orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-                orderNumberListWitkWrongNumer.append(", ");
-            }
+        for (Entity order : ordersForTechnology) {
+            isValid = false;
+            orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
+            orderNumberListWitkWrongNumer.append(", ");
             if (!isValid) {
                 masterOrder.addError(masterOrderDD.getField(MasterOrderFields.TECHNOLOGY),
                         "masterOrders.masterOrder.technology.wrongTechnology", orderNumberListWitkWrongNumer.toString());
@@ -151,24 +147,24 @@ public class MasterOrderValidators {
         if (masterOrder.getId() == null) {
             return true;
         }
-
         Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity productFromDB = masterOrderFromDB.getBelongsToField(MasterOrderFields.PRODUCT);
+        List<Entity> allOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS);
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
         if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())
-                || product.getId().equals(productFromDB.getId())
-                || masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).isEmpty()) {
+                || (productFromDB != null && product.getId().equals(productFromDB.getId())) || allOrders.isEmpty()) {
             return true;
         }
-        List<Entity> orders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.belongsTo(PRODUCT, productFromDB)).list().getEntities();
-        if (orders.isEmpty()) {
+        List<Entity> ordersForProduct = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
+                .add(SearchRestrictions.not(SearchRestrictions.belongsTo(PRODUCT, product))).list().getEntities();
+
+        if (ordersForProduct.isEmpty()) {
             return true;
         }
 
         boolean isValid = true;
         StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
-        for (Entity order : orders) {
+        for (Entity order : ordersForProduct) {
             isValid = false;
             orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
             orderNumberListWitkWrongNumer.append(", ");

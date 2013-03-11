@@ -111,15 +111,17 @@ public class OrderValidatorsMO {
         }
 
         if (masterOrderType.equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
-            if (!checkTechnologyAndProductFieldForOneProductType(order, masterOrder)) {
+            if (!checkIfBelongToFieldIsTheSame(order, masterOrder, PRODUCT)) {
+                isValid = false;
+                Entity product = masterOrder.getBelongsToField(PRODUCT);
+                order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT + ""
+                        + ".fieldIsNotTheSame", createInfoAboutEntity(product, PRODUCT));
+            }
+            if (!checkIfBelongToFieldIsTheSame(order, masterOrder, TECHNOLOGY)) {
                 isValid = false;
                 Entity technology = masterOrder.getBelongsToField(TECHNOLOGY);
-                Entity product = masterOrder.getBelongsToField(PRODUCT);
                 order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY + ""
                         + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
-                order.addError(orderDD.getField(PRODUCT),
-                        L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT + "" + ".fieldIsNotTheSame",
-                        createInfoAboutEntity(product, PRODUCT));
             }
         } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             if (checkIfExistsMasterOrderWithTechAndProduct(order, masterOrder)) {
@@ -129,20 +131,6 @@ public class OrderValidatorsMO {
                 order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT
                         + ".masterOrderProductDoesnotExists");
             }
-        }
-
-        return isValid;
-    }
-
-    private boolean checkTechnologyAndProductFieldForOneProductType(final Entity order, final Entity masterOrder) {
-        boolean isValid = true;
-
-        if (!checkIfBelongToFieldIsTheSame(order, masterOrder, PRODUCT)) {
-            isValid = false;
-        }
-
-        if (!checkIfBelongToFieldIsTheSame(order, masterOrder, TECHNOLOGY)) {
-            isValid = false;
         }
 
         return isValid;
@@ -180,23 +168,21 @@ public class OrderValidatorsMO {
     }
 
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
-        Date deadlineFromMaster = (Date) masterOrder.getField(DEADLINE);
-        Date deadlineFromOrder = (Date) order.getField(DEADLINE);
-
+        Date deadlineFromMaster = masterOrder.getDateField(DEADLINE);
+        Date deadlineFromOrder = order.getDateField(DEADLINE);
         if ((deadlineFromMaster == null && deadlineFromOrder == null)
                 || (deadlineFromMaster == null && deadlineFromOrder != null)) {
             return true;
         }
 
-        if ((deadlineFromMaster != null && deadlineFromOrder == null)
-                || (deadlineFromMaster != null && deadlineFromOrder == null)) {
+        if ((deadlineFromMaster != null && deadlineFromOrder == null)) {
             return false;
         }
 
         if (deadlineFromOrder.equals(deadlineFromMaster)) {
             return true;
         }
-
+        order.addError(order.getDataDefinition().getField(DEADLINE), "masterOrders.masterOrder.deadline.isIncorrect");
         return false;
     }
 

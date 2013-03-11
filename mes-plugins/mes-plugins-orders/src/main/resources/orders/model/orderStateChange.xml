@@ -28,11 +28,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
-		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState">
-			<validatesWith 
-				class="com.qcadoo.mes.orders.hooks.OrderStateChangeModelValidators" 
-				method="checkReasonRequired"/>
-		</dictionary>
+		<hasMany name="reasonTypes" joinField="orderStateChange" model="reasonTypeOfChaningOrderState"
+			cascade="delete" />
+			
+<!-- 		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState"> -->
+<!-- 			<validatesWith  -->
+<!-- 				class="com.qcadoo.mes.orders.hooks.OrderStateChangeModelValidators"  -->
+<!-- 				method="checkReasonRequired"/> -->
+<!-- 		</dictionary> -->
 		<string name="comment" />
 		<boolean name="reasonRequired" default="false" />
 	

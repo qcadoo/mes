@@ -68,5 +68,7 @@
 			method="countCumulatedOrderQuantity" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="changedDeadlineInOrder" />
+		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+			method="changedCustomerInOrder" />
 	</hooks>
 </model>
