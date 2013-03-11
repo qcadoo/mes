@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="qualityControlsForOperation" version="${qcadoo.plugin.version}"
+<plugin plugin="qualityControlsForOperation" group="quality" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -46,6 +46,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -84,5 +85,9 @@
 		<view:view-tab
 			resource="view/tabExtensions/technologyOperationComponentDetails.xml" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

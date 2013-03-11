@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="catNumbersInDeliveries" version="${qcadoo.plugin.version}"
+<plugin plugin="catNumbersInDeliveries" group="supplies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -49,6 +49,8 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Adds catalog numbers do delivery orders.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -127,5 +129,9 @@
 		<custom:custom
 			class="com.qcadoo.mes.catNumbersInDeliveries.CatNumbersInDeliveriesOnStartupService" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

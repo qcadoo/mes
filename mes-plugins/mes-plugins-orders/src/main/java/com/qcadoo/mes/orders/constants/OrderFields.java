@@ -73,24 +73,36 @@ public final class OrderFields {
 
     public static final String CORRECTED_DATE_TO = "correctedDateTo";
 
-    public static final String REASON_TYPE_CORRECTION_DATE_FROM = "reasonTypeCorrectionDateFrom";
+    public static final String REASON_TYPES_CORRECTION_DATE_FROM = "reasonTypesCorrectionDateFrom";
 
     public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_FROM = "commentReasonTypeCorrectionDateFrom";
 
-    public static final String REASON_TYPE_CORRECTION_DATE_TO = "reasonTypeCorrectionDateTo";
+    public static final String REASON_TYPES_CORRECTION_DATE_TO = "reasonTypesCorrectionDateTo";
 
     public static final String COMMENT_REASON_TYPE_CORRECTION_DATE_TO = "commentReasonTypeCorrectionDateTo";
 
-    public static final String REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "reasonTypeDeviationsOfEffectiveEnd";
-
-    public static final String REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "reasonTypeDeviationsOfEffectiveStart";
-
-    public static final String COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
+    public static final String REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START = "reasonTypesDeviationsOfEffectiveStart";
 
     public static final String COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
+
+    public static final String REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END = "reasonTypesDeviationsOfEffectiveEnd";
+
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
     public static final String START_DATE = "startDate";
 
     public static final String FINISH_DATE = "finishDate";
+
+    public static final String COMMISSIONED_PLANNED_QUANTITY = "commissionedPlannedQuantity";
+
+    public static final String COMMISSIONED_CORRECTED_QUANTITY = "commissionedCorrectedQuantity";
+
+    public static final String AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
+
+    public static final String REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE = "remainingAmountOfProductToProduce";
+
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY = "commentreasonTypeDeviationsQuantity";
+
+    public static final String TYPE_OFCORRECTION_CAUSES = "typeOfCorrectionCauses";
 
 }

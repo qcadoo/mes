@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="samples" version="${qcadoo.plugin.version}"
+<plugin plugin="samples" group="other" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
@@ -42,6 +42,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Example production data for the plugins which are turned on by default in qcadoo MES Community Edition.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>

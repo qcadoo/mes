@@ -24,11 +24,13 @@
 package com.qcadoo.mes.basic.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFields.EAN;
 import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,12 +78,14 @@ public class ProductHooks {
     }
 
     public boolean checkIfNotBelongsToSameFamily(final DataDefinition productDD, final Entity product) {
-        Entity parent = product.getBelongsToField(PARENT);
+        if (product.getId() != null) {
+            Entity parent = product.getBelongsToField(PARENT);
 
-        if ((parent != null) && product.getId().equals(parent.getId())) {
-            product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
+            if ((parent != null) && product.getId().equals(parent.getId())) {
+                product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
 
-            return false;
+                return false;
+            }
         }
 
         return true;
@@ -99,6 +103,30 @@ public class ProductHooks {
 
             return false;
         }
+    }
+
+    public void clearEanOnCopy(final DataDefinition dataDefinition, final Entity product) {
+        if (product == null) {
+            return;
+        }
+        product.setField(EAN, null);
+    }
+
+    public boolean checkIfEanValueIsNumerical(final DataDefinition productDD, final Entity product) {
+        String eanCode = product.getStringField(EAN);
+        if (eanCode == null || StringUtils.isNumeric(eanCode)) {
+            return true;
+        } else {
+            product.addError(productDD.getField(EAN), "basic.product.ean.onlyNumericValue");
+            return false;
+        }
+    }
+
+    public void clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity == null) {
+            return;
+        }
+        entity.setField("externalNumber", null);
     }
 
 }

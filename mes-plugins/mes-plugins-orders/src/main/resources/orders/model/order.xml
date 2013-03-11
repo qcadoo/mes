@@ -41,11 +41,12 @@
 		<string name="commentReasonTypeCorrectionDateFrom" />
 		<string name="commentReasonTypeCorrectionDateTo" />
 		<string name="externalNumber" unique="true"/>
+		<string name="commentreasonTypeDeviationsQuantity" />
 
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
-		<datetime name="effectiveDateFrom" readonly="true" />
-		<datetime name="effectiveDateTo" readonly="true" />
+		<datetime name="effectiveDateFrom" />
+		<datetime name="effectiveDateTo" />
 		<datetime name="deadline" />
 		<datetime name="correctedDateFrom" />
 		<datetime name="correctedDateTo" />
@@ -81,13 +82,42 @@
 		<tree name="technologyInstanceOperationComponents" copyable="true"
 			joinField="order" model="technologyInstanceOperationComponent"
 			plugin="technologies" cascade="delete" />
+			
+		<decimal name="commissionedPlannedQuantity">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="commissionedCorrectedQuantity">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="amountOfProductProduced">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
+		
+		<decimal name="remainingAmountOfProductToProduce">
+			<validatesRange from="0" exclusively="false" />
+			<validatesUnscaledValue max="5" />
+			<validatesScale max="5" />
+		</decimal>
 
-		<dictionary name="reasonTypeCorrectionDateFrom" dictionary="reasonTypeOfChaningOrderState" />
-		<dictionary name="reasonTypeCorrectionDateTo" dictionary="reasonTypeOfChaningOrderState" />
-		<dictionary name="reasonTypeDeviationsOfEffectiveStart"
-			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
-		<dictionary name="reasonTypeDeviationsOfEffectiveEnd"
-			dictionary="reasonTypeOfChaningOrderState" persistent="false" />
+		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
+			cascade="delete" />
+			
+		<hasMany name="reasonTypesCorrectionDateFrom" joinField="order" model="reasonTypeCorrectionDateFrom"
+			cascade="delete" />
+		<hasMany name="reasonTypesCorrectionDateTo" joinField="order" model="reasonTypeCorrectionDateTo"
+			cascade="delete" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveStart" joinField="order" model="reasonTypeOfChaningOrderState"
+			cascade="delete" persistent="false" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" joinField="order" model="reasonTypeOfChaningOrderState"
+			cascade="delete" persistent="false" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
@@ -98,22 +128,25 @@
 			method="checkIfProductIsNotRemoved" />
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"
 			method="checkChosenTechnologyState" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkIfProductionLineSupportsTechnology" />
-		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
-		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
-		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
-		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
-			method="createTechnologyInstanceForOrder" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
-		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired" />
+		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="setInitialState" />
+		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
+			method="setSommissionedPlannedQuantity" />
+		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
+		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
+		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"
+			method="createTechnologyInstanceForOrder" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyStartDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyEndDate" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
+		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onCorrectingTheRequestedVolume" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
+		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

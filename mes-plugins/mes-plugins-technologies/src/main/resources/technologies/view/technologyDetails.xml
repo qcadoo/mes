@@ -278,6 +278,7 @@
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
+						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="5" height="4">
@@ -302,6 +303,7 @@
 						<option type="deletable" value="true" />
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
+						<option type="filtersDefaultVisible" value="false" />
 					</component>
 				</layoutElement>
 			</component>

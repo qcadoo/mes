@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="costNormsForMaterials" version="${qcadoo.plugin.version}"
+<plugin plugin="costNormsForMaterials" group="basic" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Adds the capability do enter the costs of products used in a specific order.</description>
+		<license>AGPL</license>
 	</information>
 	<dependencies>
 		<dependency>
@@ -112,5 +113,9 @@
 			type="beforeRender" class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyDetailsHooksCNFM"
 			method="updateViewCostsButtonState" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

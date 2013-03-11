@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="technologies" version="${qcadoo.plugin.version}"
+<plugin plugin="technologies" group="technologies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:custom="http://schema.qcadoo.org/modules/custom"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>A tree of operations which defines the manufacturing process.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -154,5 +155,9 @@
 		
 		<custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

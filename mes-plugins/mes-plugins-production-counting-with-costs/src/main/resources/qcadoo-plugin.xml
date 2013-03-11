@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionCountingWithCosts" version="${qcadoo.plugin.version}"
+<plugin plugin="productionCountingWithCosts" group="tracking" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -52,6 +52,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Adds monetary information to the production balance report and technical production cost summary.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -375,4 +376,7 @@
 			class="com.qcadoo.mes.productionCountingWithCosts.ProductionCountingWithCostsOnStartupService" />
 	</modules>
 
+	<features>
+		<end-user />
+	</features>
 </plugin>

@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<plugin plugin="assignmentToShift" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<plugin plugin="assignmentToShift" group="planning"
+	version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
 	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:custom="http://schema.qcadoo.org/modules/custom"
 	xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
@@ -52,6 +40,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Lets you plan when and which workers will be assigned to which shifts.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -76,28 +65,35 @@
 
 		<model:model model="assignmentToShift" resource="model/assignmentToShift.xml" />
 		<model:model model="staffAssignmentToShift" resource="model/staffAssignmentToShift.xml" />
-		<model:model model="assignmentToShiftStateChange" resource="model/assignmentToShiftStateChange.xml" />
+		<model:model model="assignmentToShiftStateChange"
+			resource="model/assignmentToShiftStateChange.xml" />
 		<model:model model="assignmentToShiftReport" resource="model/assignmentToShiftReport.xml" />
-		
+
 		<model:model-field plugin="states" model="message">
-		    <model:belongsTo name="assignmentToShiftStateChange" plugin="assignmentToShift" model="assignmentToShiftStateChange" />
+			<model:belongsTo name="assignmentToShiftStateChange"
+				plugin="assignmentToShift" model="assignmentToShiftStateChange" />
 		</model:model-field>
 
 		<menu:menu-category name="orders" />
 		<menu:menu-item name="assignmentToShift" category="orders"
 			view="assignmentToShiftList" />
-		<menu:menu-item name="assignmentToShiftReportList" category="orders"
-			view="assignmentToShiftReportList" />
+		<menu:menu-item name="assignmentToShiftReportList"
+			category="orders" view="assignmentToShiftReportList" />
 
 		<view:view resource="view/assignmentToShiftList.xml" />
 		<view:view resource="view/assignmentToShiftReportList.xml" />
 		<view:view resource="view/assignmentToShiftDetails.xml" />
 		<view:view resource="view/staffAssignmentToShiftDetails.xml" />
 		<view:view resource="view/assignmentToShiftReportDetails.xml" />
-		
+
 		<view:resource uri="public/**/*" />
 
-		<custom:custom class="com.qcadoo.mes.assignmentToShift.OccupationTypeLoaderModule" />
+		<custom:custom
+			class="com.qcadoo.mes.assignmentToShift.OccupationTypeLoaderModule" />
 	</modules>
+
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="materialRequirements" version="${qcadoo.plugin.version}"
+<plugin plugin="materialRequirements" group="calculations" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -47,6 +47,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Calculate how many products will have to be consumed in the technology to produce a specified quantity of products.</description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -123,5 +124,9 @@
 			method="setInputProductsRequiredForTypeFromParameters" />
 
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

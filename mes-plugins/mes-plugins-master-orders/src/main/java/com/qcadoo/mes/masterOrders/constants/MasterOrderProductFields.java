@@ -1,8 +1,9 @@
 package com.qcadoo.mes.masterOrders.constants;
 
-public class MasterOrderProductFields {
+public final class MasterOrderProductFields {
 
     private MasterOrderProductFields() {
+
     }
 
     public static final String PRODUCT = "product";
@@ -16,4 +17,5 @@ public class MasterOrderProductFields {
     public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
 
     public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+
 }

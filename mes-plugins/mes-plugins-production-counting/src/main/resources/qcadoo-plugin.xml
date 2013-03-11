@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionCounting" version="${qcadoo.plugin.version}"
+<plugin plugin="productionCounting" group="tracking" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -50,6 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Use production records to track how much products did you really produce/use and how much work did you put into them. Sum them all up and analyse in the production balance report.</description>
+		<license>AGPL</license>	
 	</information>
 
 	<dependencies>
@@ -216,5 +217,9 @@
 		<custom:custom
 			class="com.qcadoo.mes.productionCounting.states.module.ProductionRecordStateServiceRegisterModule" />
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>

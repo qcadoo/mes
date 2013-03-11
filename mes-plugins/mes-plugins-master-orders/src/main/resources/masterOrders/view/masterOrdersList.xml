@@ -1,10 +1,13 @@
 <view name="masterOrdersList" modelName="masterOrder"
 	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+	
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
+		
 		<component type="grid" name="masterOrdersList" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
 				width="150" />
@@ -13,15 +16,21 @@
 			<option type="column" name="deadline" fields="deadline" link="true" />
 			<option type="column" name="company" fields="company" expression="#company['name']" />
 			<option type="column" name="masterOrderState" fields="masterOrderState" />
+			
 			<option type="order" column="name" direction="asc" />
+			
+			<option type="searchable" value="name,number,deadline,company,masterOrderState" />
+			<option type="orderable" value="name,number,deadline,company,masterOrderState" />
+			
 			<option type="correspondingView" value="masterOrders/masterOrderDetails" />
 			<option type="correspondingComponent" value="form" />
-			<option type="searchable" value="name,number" />
-			<option type="orderable" value="name,number" />
+
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
 </view>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -147,11 +148,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-order-groups</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-counting</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
@@ -253,6 +249,11 @@
 		<dependency>
 			<groupId>com.qcadoo</groupId>
 			<artifactId>qcadoo-plugins-unit-conversion-management</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-commons</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>
@@ -367,8 +368,6 @@
 								${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
 								${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
-								<!-- TODO ALBR -->
-								<!-- ${basedir}/../../mes-comercial-plugins/mes-commercial-plugins-integration-cfc-simple/src/main/resources; -->
 							</resourcesAsCSV>
 						</baseResource>
 					</webAppConfig>
@@ -377,7 +376,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
+				<version>${maven.antrun.plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>generate-resources</phase>
@@ -388,7 +387,8 @@
 									buildApplicationName = Qcadoo MES
 									buildApplicationVersion = ${project.version}
 									buildFrameworkVersion = ${qcadoo.version}
-									buildTime = ${buildNumber}
+									buildTime =
+									${buildNumber}
 									buildRevision = ${buildRevision}
 								</echo>
 							</target>
@@ -416,6 +416,22 @@
 					<groupId>com.qcadoo</groupId>
 					<artifactId>qcadoo-plugins-plugin-management</artifactId>
 					<version>${qcadoo.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>saas</id>
+			<activation>
+				<property>
+					<name>spring.profiles.active</name>
+					<value>saas</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.qcadoo.saas</groupId>
+					<artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
+					<version>${qcadoo.saas.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -473,22 +489,6 @@
 					<groupId>com.qcadoo.mes</groupId>
 					<artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
 					<version>${qcadoo.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>saas</id>
-			<activation>
-				<property>
-					<name>spring.profiles.active</name>
-					<value>saas</value>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.qcadoo.saas</groupId>
-					<artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
-					<version>${qcadoo.saas.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>

@@ -44,7 +44,7 @@ public class MasterOrderDetailsHooksTest {
         when(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).thenReturn(defaultTechnologyField);
         when(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).thenReturn(cumulatedQuantityField);
         when(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).thenReturn(masterOrderQuantityField);
-        when(view.getComponentByReference("grid")).thenReturn(masterOrderProducts);
+        when(view.getComponentByReference("productsGrid")).thenReturn(masterOrderProducts);
         when(view.getComponentByReference("borderLayoutProductQuantity")).thenReturn(borderLayoutProductQuantity);
     }
 

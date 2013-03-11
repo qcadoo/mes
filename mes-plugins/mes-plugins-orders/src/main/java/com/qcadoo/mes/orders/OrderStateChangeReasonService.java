@@ -29,8 +29,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -198,7 +198,7 @@ public class OrderStateChangeReasonService {
     public void onComplete(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         if (neededWhenCorrectingDateTo() && !hasRequiredCorrectionDateToReasonField(order)) {
-            stateChangeContext.addFieldValidationError(REASON_TYPE_CORRECTION_DATE_TO,
+            stateChangeContext.addFieldValidationError(REASON_TYPES_CORRECTION_DATE_TO,
                     "orders.order.stateChange.missingEndCorrectionReason");
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.save();
@@ -212,10 +212,20 @@ public class OrderStateChangeReasonService {
         showReasonForm(stateChangeContext, viewContext);
     }
 
+    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_FROM) == null
+                || (order.getField(REASON_TYPES_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
+    }
+
+    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
+        return order.getField(CORRECTED_DATE_TO) == null
+                || (order.getField(REASON_TYPES_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
+    }
+
     public void onStart(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         if (neededWhenCorrectingDateFrom() && !hasRequiredCorrectionDateFromReasonField(order)) {
-            stateChangeContext.addFieldValidationError(REASON_TYPE_CORRECTION_DATE_FROM,
+            stateChangeContext.addFieldValidationError(REASON_TYPES_CORRECTION_DATE_FROM,
                     "orders.order.stateChange.missingStartCorrectionReason");
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             stateChangeContext.save();
@@ -227,16 +237,6 @@ public class OrderStateChangeReasonService {
         }
         setAdditionalInfo(stateChangeContext, difference);
         showReasonForm(stateChangeContext, viewContext);
-    }
-
-    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_FROM) == null
-                || (order.getField(REASON_TYPE_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
-    }
-
-    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_TO) == null
-                || (order.getField(REASON_TYPE_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
     }
 
     private void setAdditionalInfo(final StateChangeContext stateChangeContext, final long difference) {

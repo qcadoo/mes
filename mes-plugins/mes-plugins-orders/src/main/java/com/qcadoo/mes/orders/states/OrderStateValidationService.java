@@ -26,20 +26,17 @@ package com.qcadoo.mes.orders.states;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -50,17 +47,11 @@ public class OrderStateValidationService {
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
-    @Autowired
-    private OrderService orderService;
-
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
         checkRequired(references, stateChangeContext);
 
         validateTechnologyState(stateChangeContext);
-        validateProductionLine(stateChangeContext);
-        validateDates(stateChangeContext);
-
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
@@ -73,6 +64,7 @@ public class OrderStateValidationService {
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
         final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY, DONE_QUANTITY);
         checkRequired(fieldNames, stateChangeContext);
+        validateDates(stateChangeContext);
     }
 
     private void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
@@ -99,22 +91,16 @@ public class OrderStateValidationService {
         }
     }
 
-    private void validateProductionLine(final StateChangeContext stateChangeContext) {
+    public void validateDates(final StateChangeContext stateChangeContext) {
         checkArgument(stateChangeContext != null, ENTITY_IS_NULL);
 
         final Entity order = stateChangeContext.getOwner();
-        if (!orderService.checkIfProductionLineSupportsTechnology(order)) {
-            stateChangeContext.addFieldValidationError(PRODUCTION_LINE,
-                    "orders.order.productionLine.error.productionLineDoesntSupportTechnology");
-        }
-    }
 
-    private void validateDates(final StateChangeContext stateChangeContext) {
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
-        Date startDate = (Date) stateChangeEntity.getField(START_DATE);
-        Date deadline = (Date) stateChangeEntity.getField(DEADLINE);
-        if (startDate != null && deadline != null && deadline.before(startDate)) {
-            stateChangeContext.addFieldValidationError(DEADLINE, "orders.validate.global.error.deadline");
+        Date effectiveDateFrom = (Date) order.getField(EFFECTIVE_DATE_FROM);
+        Date effectiveDateTo = new Date();
+
+        if ((effectiveDateFrom != null) && (effectiveDateTo != null) && effectiveDateTo.before(effectiveDateFrom)) {
+            stateChangeContext.addFieldValidationError(EFFECTIVE_DATE_TO, "orders.validate.global.error.effectiveDateTo");
         }
     }
 

@@ -36,10 +36,10 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
@@ -50,6 +50,7 @@ import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STAT
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,14 +58,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -76,6 +84,8 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class OrderDetailsHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -85,8 +95,11 @@ public class OrderDetailsHooks {
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
 
+    @Autowired
+    private OrderStateChangeDescriber describer;
+
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
@@ -94,21 +107,27 @@ public class OrderDetailsHooks {
                 form.getEntityId());
 
         if (order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
-                    REASON_TYPE_CORRECTION_DATE_TO, REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
-                    REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
+            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
+                    REASON_TYPES_CORRECTION_DATE_TO, REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                    REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
                     COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM);
             changedEnabledFields(view, references, false);
         }
         if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
-            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_FROM,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPE_CORRECTION_DATE_TO,
+            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
             changedEnabledFields(view, references, true);
         }
         if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
-            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPE_CORRECTION_DATE_TO,
+            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+            changedEnabledFields(view, references, true);
+        }
+
+        if (order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
+            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
             changedEnabledFields(view, references, true);
         }
@@ -156,7 +175,7 @@ public class OrderDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         Ribbon ribbon = window.getRibbon();
         List<RibbonGroup> ribbonGroups = ribbon.getGroups();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Long orderId = form.getEntityId();
         if (orderId == null) {
             return;
@@ -178,4 +197,81 @@ public class OrderDetailsHooks {
         back.requestUpdate(true);
         form.setFormEnabled(false);
     }
+
+    public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+        Date finishDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
+        Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+        if (finishDate != null && deadlineDate != null && deadlineDate.before(finishDate)) {
+            form.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
+        }
+    }
+
+    public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() == null) {
+            return;
+        }
+        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(DATE_FROM);
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+        Date startDate = DateUtils.parseDate(startDateComponent.getFieldValue());
+        Date finidhDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
+        Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+        if (startDate != null && deadlineDate != null && finidhDate == null && deadlineDate.before(startDate)) {
+            form.addMessage("orders.validate.global.error.deadlineBeforeStartDate", MessageType.INFO, false);
+        }
+    }
+
+    public void fillReasonTypeDeviationsOfEffectiveStart(final ViewDefinitionState view) {
+        fillReasonTypeDeviations(view, "reasonTypesDeviationsOfEffectiveStart", "commentReasonTypeDeviationsOfEffectiveStart",
+                OrderState.ACCEPTED.getStringValue(), OrderState.IN_PROGRESS.getStringValue());
+    }
+
+    public void fillReasonTypeDeviationsOfEffectiveEnd(final ViewDefinitionState view) {
+        fillReasonTypeDeviations(view, "reasonTypesDeviationsOfEffectiveEnd", "commentReasonTypeDeviationsOfEffectiveEnd",
+                OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue());
+    }
+
+    private void fillReasonTypeDeviations(final ViewDefinitionState view, final String typeReasonsReference,
+            final String commentReference, final String previousState, final String currentState) {
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (form.getEntityId() == null) {
+            return;
+        }
+
+        final AwesomeDynamicListComponent typeReasonsADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(typeReasonsReference);
+
+        final FieldComponent comment = (FieldComponent) view.getComponentByReference(commentReference);
+
+        final Entity stateChange = getLastMatchingStateChange(form.getEntityId(), previousState, currentState);
+
+        if (stateChange == null) {
+            return;
+        }
+
+        typeReasonsADL.setFieldValue(stateChange.getField("reasonTypes"));
+        comment.setFieldValue(stateChange.getField("comment"));
+        typeReasonsADL.requestComponentUpdateState();
+        comment.requestComponentUpdateState();
+    }
+
+    private Entity getLastMatchingStateChange(final Long orderId, final String previousState, final String currentState) {
+        final SearchCriteriaBuilder criteriaBuilder = describer.getDataDefinition().find();
+        criteriaBuilder.createAlias(describer.getOwnerFieldName(), describer.getOwnerFieldName());
+        criteriaBuilder.add(SearchRestrictions.eq(describer.getOwnerFieldName() + ".id", orderId));
+        criteriaBuilder.add(SearchRestrictions.eq(describer.getSourceStateFieldName(), previousState));
+        criteriaBuilder.add(SearchRestrictions.eq(describer.getTargetStateFieldName(), currentState));
+        criteriaBuilder.add(SearchRestrictions.eq(describer.getStatusFieldName(), SUCCESSFUL.getStringValue()));
+        criteriaBuilder.addOrder(SearchOrders.desc(describer.getDateTimeFieldName()));
+        return criteriaBuilder.setMaxResults(1).uniqueResult();
+    }
+
 }

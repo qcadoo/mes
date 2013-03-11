@@ -33,4 +33,5 @@
 	<row NUMBER="6" NAME="Pakownia 2" TYPE="01controlPoint" />
 	<row NUMBER="7" NAME="Montażownia 1" TYPE="01controlPoint" />
 	<row NUMBER="8" NAME="Montażownia 2" TYPE="01controlPoint" />
+<!-- 	<row NUMBER="9" NAME="Magazyn 1" TYPE="02warehouse" /> -->
 </location>

@@ -1,30 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    ***************************************************************************
-    Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
-    Version: 1.2.0
-
-    This file is part of Qcadoo.
-
-    Qcadoo is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation; either version 3 of the License,
-    or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    ***************************************************************************
-
--->
-<plugin plugin="deliveriesToMaterialFlow" version="1.2.0-SNAPSHOT"
+<!-- *************************************************************************** 
+	Copyright (c) 2010 Qcadoo Limited Project: Qcadoo MES Version: 1.2.0 This 
+	file is part of Qcadoo. Qcadoo is free software; you can redistribute it 
+	and/or modify it under the terms of the GNU Affero General Public License 
+	as published by the Free Software Foundation; either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU Affero General Public License for more details. You should have received 
+	a copy of the GNU Affero General Public License along with this program; 
+	if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth 
+	Floor, Boston, MA 02110-1301 USA *************************************************************************** -->
+<plugin plugin="deliveriesToMaterialFlow" group="supplies" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -49,6 +36,8 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description>Integrates deliveries with material flow. </description>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
@@ -69,34 +58,34 @@
 			<model:belongsTo name="location" model="location"
 				plugin="materialFlow" />
 		</model:model-field>
-		
+
 		<model:model-field plugin="deliveries" model="delivery">
 			<model:belongsTo name="location" model="location"
 				plugin="materialFlow" />
 		</model:model-field>
 
+		<model:model-field plugin="materialFlow" model="transfer">
+			<model:belongsTo name="fromDelivery" model="delivery"
+				plugin="deliveries" />
+		</model:model-field>
+		
 		<model:model-hook plugin="basic" model="parameter">
 			<model:validatesWith
 				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.ParameterHooksDTMF"
 				method="checkIfLocationIsWarehouse" />
 		</model:model-hook>
-		
+
 		<model:model-hook plugin="deliveries" model="delivery">
 			<model:onCreate
 				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryHooksDTMF"
 				method="setLocationDefaultValue" />
 		</model:model-hook>
-		<model:model-hook plugin="deliveries" model="delivery">
-			<model:validatesWith
-				class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryHooksDTMF"
-				method="checkIfLocationIsWarehouse" />
-		</model:model-hook>
-
+	
 		<view:view-hook plugin="deliveries" view="deliveryDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryDetailsHooksDTMF"
 			method="fillLocationDefaultValue" />
-		
+
 		<view:view-hook plugin="deliveries" view="deliveryDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryDetailsHooksDTMF"
@@ -105,5 +94,11 @@
 		<view:view-tab resource="view/tabExtensions/supplyParametersForDeliveries.xml" />
 		<view:view-tab resource="view/tabExtensions/deliveryDetails.xml" />
 	</modules>
+
+	<features>
+		<end-user />
+		<internal-integration />
+	</features>
+	
 	
 </plugin>
