@@ -159,6 +159,30 @@
 				<updatePolicy>never</updatePolicy>
 			</snapshots>
 		</repository>
+		<repository>
+	      	<id>com.logdigger</id>
+	      	<url>http://maven.logdigger.com/repos</url>
+	      	<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+	    </repository>
+	    <repository>
+	      	<id>atlassian</id>
+	      	<url>https://maven.atlassian.com/repository/public</url>
+	      	<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+	    </repository>
 	</repositories>
 	
 	<scm>
