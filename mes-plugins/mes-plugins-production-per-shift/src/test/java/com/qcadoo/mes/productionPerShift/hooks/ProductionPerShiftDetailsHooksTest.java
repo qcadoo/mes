@@ -104,7 +104,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private FormComponent form, form1;
 
     @Mock
-    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionType,
+    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionTypes,
             plannedProgressCorrectionComment, unitField, setRoot;
 
     @Mock
@@ -283,13 +283,13 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldDisableReasonOfCorrectionsFieldForPlannedProgressType() throws Exception {
         // given
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
-        when(view.getComponentByReference("plannedProgressCorrectionType")).thenReturn(plannedProgressCorrectionType);
+        when(view.getComponentByReference("plannedProgressCorrectionTypes")).thenReturn(plannedProgressCorrectionTypes);
         when(view.getComponentByReference("plannedProgressCorrectionComment")).thenReturn(plannedProgressCorrectionComment);
         when(plannedProgressType.getFieldValue()).thenReturn("01planned");
         // when
         hooks.disableReasonOfCorrection(view);
         // then
-        verify(plannedProgressCorrectionType).setEnabled(false);
+        verify(plannedProgressCorrectionTypes).setEnabled(false);
         verify(plannedProgressCorrectionComment).setEnabled(false);
     }
 
@@ -297,13 +297,13 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldEnableReasonOfCorrectionsFieldForCorrectedProgressType() throws Exception {
         // given
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
-        when(view.getComponentByReference("plannedProgressCorrectionType")).thenReturn(plannedProgressCorrectionType);
+        when(view.getComponentByReference("plannedProgressCorrectionTypes")).thenReturn(plannedProgressCorrectionTypes);
         when(view.getComponentByReference("plannedProgressCorrectionComment")).thenReturn(plannedProgressCorrectionComment);
         when(plannedProgressType.getFieldValue()).thenReturn("02corrected");
         // when
         hooks.disableReasonOfCorrection(view);
         // then
-        verify(plannedProgressCorrectionType).setEnabled(true);
+        verify(plannedProgressCorrectionTypes).setEnabled(true);
         verify(plannedProgressCorrectionComment).setEnabled(true);
     }
 
