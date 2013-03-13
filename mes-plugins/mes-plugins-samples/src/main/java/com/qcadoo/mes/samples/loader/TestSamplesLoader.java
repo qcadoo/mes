@@ -154,11 +154,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_OFFER, locale);
             readDataFromXML(dataset, L_OFFER_PRODUCTS, locale);
 
-        }
+            if (isEnabledOrEnabling(L_DELIVERY)) {
+                readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
+                readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
+            }
 
-        if (isEnabledOrEnabling(L_DELIVERY)) {
-            readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
-            readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
         }
 
     }
