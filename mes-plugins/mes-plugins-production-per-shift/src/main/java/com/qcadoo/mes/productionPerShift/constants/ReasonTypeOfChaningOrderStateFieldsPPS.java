@@ -23,18 +23,12 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class ProductionPerShiftFields {
+public final class ReasonTypeOfChaningOrderStateFieldsPPS {
 
-    private ProductionPerShiftFields() {
+    private ReasonTypeOfChaningOrderStateFieldsPPS() {
 
     }
 
-    public static final String ORDER = "order";
-
-    public static final String PLANNED_PROGRESS_CORRECTION_TYPES = "plannedProgressCorrectionTypes";
-
-    public static final String PLANNED_PROGRESS_CORRECTION_COMMENT = "plannedProgressCorrectionComment";
-
-    public static final String PLANNED_PROGRESS_TYPE = "plannedProgressType";
+    public static final String PRODUCTION_PER_SHIFT = "productionPerShift";
 
 }

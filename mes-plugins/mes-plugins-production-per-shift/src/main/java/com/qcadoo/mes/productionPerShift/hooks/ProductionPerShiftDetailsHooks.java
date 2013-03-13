@@ -30,7 +30,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPE;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAILY_PROGRESS;
@@ -199,18 +199,18 @@ public class ProductionPerShiftDetailsHooks {
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {
         FieldComponent progressType = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
-        FieldComponent plannedProgressCorrectionType = (FieldComponent) view
-                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPE);
+        FieldComponent plannedProgressCorrectionTypes = (FieldComponent) view
+                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPES);
         FieldComponent plannedProgressCorrectionComment = (FieldComponent) view
                 .getComponentByReference(PLANNED_PROGRESS_CORRECTION_COMMENT);
         if (isPlanned(progressType.getFieldValue())) {
-            plannedProgressCorrectionType.setEnabled(false);
+            plannedProgressCorrectionTypes.setEnabled(false);
             plannedProgressCorrectionComment.setEnabled(false);
         } else {
-            plannedProgressCorrectionType.setEnabled(true);
+            plannedProgressCorrectionTypes.setEnabled(true);
             plannedProgressCorrectionComment.setEnabled(true);
         }
-        plannedProgressCorrectionType.requestComponentUpdateState();
+        plannedProgressCorrectionTypes.requestComponentUpdateState();
         plannedProgressCorrectionComment.requestComponentUpdateState();
     }
 
