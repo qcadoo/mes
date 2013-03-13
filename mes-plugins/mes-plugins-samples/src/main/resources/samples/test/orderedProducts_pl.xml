@@ -24,13 +24,10 @@
     ***************************************************************************
 
 -->
-<location>
-	<row NUMBER="1" NAME="Frezarnia 1" TYPE="01controlPoint" />
-	<row NUMBER="2" NAME="Frezarnia 2" TYPE="01controlPoint" />
-	<row NUMBER="3" NAME="Frezarnia 3" TYPE="01controlPoint" />
-	<row NUMBER="4" NAME="Wydanie surowców" TYPE="01controlPoint" />
-	<row NUMBER="5" NAME="Pakownia 1" TYPE="01controlPoint" />
-	<row NUMBER="6" NAME="Pakownia 2" TYPE="01controlPoint" />
-	<row NUMBER="7" NAME="Montażownia 1" TYPE="01controlPoint" />
-	<row NUMBER="8" NAME="Montażownia 2" TYPE="01controlPoint" />
-</location>
+<orderedProducts>
+	<row DELIVERY="000001" PRODUCT_NR="DSK-3" ORDEREDQUANTITY="40.00000" DESCRIPTION="0.00000" />
+	<row DELIVERY="000001" PRODUCT_NR="DSK-1" ORDEREDQUANTITY="110.00000" DESCRIPTION="0.00000" />
+	<row DELIVERY="000001" PRODUCT_NR="NG-ST-NF" ORDEREDQUANTITY="1600.00000" DESCRIPTION="0.00000" />
+	<row DELIVERY="000001" PRODUCT_NR="DSK-2" ORDEREDQUANTITY="450.00000" DESCRIPTION="0.00000" />
+	<row DELIVERY="000001" PRODUCT_NR="NG-S" ORDEREDQUANTITY="440.00000" DESCRIPTION="0.00000" />
+</orderedProducts>

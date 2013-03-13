@@ -24,13 +24,7 @@
     ***************************************************************************
 
 -->
-<location>
-	<row NUMBER="1" NAME="Frezarnia 1" TYPE="01controlPoint" />
-	<row NUMBER="2" NAME="Frezarnia 2" TYPE="01controlPoint" />
-	<row NUMBER="3" NAME="Frezarnia 3" TYPE="01controlPoint" />
-	<row NUMBER="4" NAME="Wydanie surowców" TYPE="01controlPoint" />
-	<row NUMBER="5" NAME="Pakownia 1" TYPE="01controlPoint" />
-	<row NUMBER="6" NAME="Pakownia 2" TYPE="01controlPoint" />
-	<row NUMBER="7" NAME="Montażownia 1" TYPE="01controlPoint" />
-	<row NUMBER="8" NAME="Montażownia 2" TYPE="01controlPoint" />
-</location>
+<requestForQuotations>
+	<row NUMBER="000001" NAME="" DESCRIPTION="" SUPPLIER="2" DESIREDDATE="2013-03-11 13:01:27" WORKINGDAYSAFTERORDER="" NEGOTIATION="000001" STATE="02accepted"/>
+	<row NUMBER="000002" NAME="" DESCRIPTION="" SUPPLIER="3" DESIREDDATE="2013-03-11 13:01:27" WORKINGDAYSAFTERORDER="" NEGOTIATION="000001" STATE="01draft"/>
+</requestForQuotations>

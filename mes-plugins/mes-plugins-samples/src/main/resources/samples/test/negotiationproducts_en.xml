@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<negotiationproducts>
+	<row NEGOTIATION="000001" PRODUCT_NR="BR-3" NEEDEDQUANTITY="40.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="40.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+	<row NEGOTIATION="000001" PRODUCT_NR="BRD-1" NEEDEDQUANTITY="110.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="110.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+	<row NEGOTIATION="000001" PRODUCT_NR="STL-LG-NM" NEEDEDQUANTITY="1600.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="1600.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+	<row NEGOTIATION="000001" PRODUCT_NR="BRD-2" NEEDEDQUANTITY="450.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="450.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+	<row NEGOTIATION="000001" PRODUCT_NR="TBL-LG" NEEDEDQUANTITY="440.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="440.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+	<row NEGOTIATION="000001" PRODUCT_NR="FR" NEEDEDQUANTITY="110.00000" APPROVEDDEDLIVEREDQUANTITY="0.00000" DRAFTDELIVEREDQUANTITY="0.00000" LEFTQUANTITY="110.00000" DUEDATE="2013-03-11 13:01:27" REQUESTFORQUTATIONSNUMBER="0" OPERATION="0"/>
+</negotiationproducts>

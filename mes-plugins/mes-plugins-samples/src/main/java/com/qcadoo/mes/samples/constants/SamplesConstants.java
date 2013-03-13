@@ -398,4 +398,44 @@ public final class SamplesConstants {
 
     public static final String L_2400 = "2400";
 
+    public static final String L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+
+    public static final String L_SUPPLY_NEGOTIATIONS = "supplyNegotiations";
+
+    public static final String L_NEGOTIATION_PRODUCTS = "negotiationproducts";
+
+    public static final String L_NEGOTIATIONS = "negotiations";
+
+    public static final String L_REQUEST_FOR_QUOTION_PRODUCTS = "requestForQuotationProducts";
+
+    public static final String L_REQUEST_FOR_QUOTION = "requestForQuotations";
+
+    public static final String L_NEGOTIATION_STATE_CHANGE = "negotiationStateChanges";
+
+    public static final String L_REQUEST_FOR_QUOTION_STATE_CHANGE = "requestForQuotationStateChanges";
+
+    public static final String L_OFFER = "offers";
+
+    public static final String L_OFFER_PRODUCTS = "offerProducts";
+
+    public static final String L_FARTHESTLIMITDATE = "FARTHESTLIMITDATE";
+
+    public static final String L_DELIVERY = "deliveries";
+
+    public static final String L_DELIVERY_DELIVERY = "deliveries";
+
+    public static final String L_ORDERED_PRODUCTS = "orderedProducts";
+
+    public static final String L_NEGOTIATION_STATE_DRAFT = "01draft";
+
+    public static final String L_NEGOTIATION_STATE_GENERATEDREQUESTS = "02generatedRequests";
+
+    public static final String L_REQUEST_FOR_QUOTION_STATE_DRAFT = "01draft";
+
+    public static final String L_REQUEST_FOR_QUOTION_STATE_ACCEPTED = "02accepted";
+
+    public static final String L_OFFER_STATE_DRAFT = "01draft";
+
+    public static final String L_DELIVERY_STATE_DRAFT = "01draft";
+
 }
