@@ -95,7 +95,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="select" name="unit" field="unit"
-							reference="unit" />
+							reference="unit" hasDescription="true" />
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="input" name="ean" field="ean" />
@@ -104,8 +104,7 @@
 						<component type="select" name="category" field="category" />
 					</layoutElement>
 					<layoutElement column="2" row="3" height="2">
-						<component type="textarea" name="description" field="description"
-							hasDescription="false" />
+						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 				</component>
 				<option type="header" value="true" />
