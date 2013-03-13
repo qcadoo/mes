@@ -21,20 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.constants;
+package com.qcadoo.mes.orders.constants;
 
-public final class ProductionPerShiftFields {
+public final class ReasonTypeCorrectionDateFromFields {
 
-    private ProductionPerShiftFields() {
+    private ReasonTypeCorrectionDateFromFields() {
 
     }
 
     public static final String ORDER = "order";
 
-    public static final String PLANNED_PROGRESS_CORRECTION_TYPES = "plannedProgressCorrectionTypes";
-
-    public static final String PLANNED_PROGRESS_CORRECTION_COMMENT = "plannedProgressCorrectionComment";
-
-    public static final String PLANNED_PROGRESS_TYPE = "plannedProgressType";
+    public static final String REASON_TYPE_OF_CHANING_ORDER_STATE = "reasonTypeOfChaningOrderState";
 
 }

@@ -110,14 +110,14 @@
 		<hasMany name="typeOfCorrectionCauses" joinField="order" model="typeOfCorrectionCauses"
 			cascade="delete" />
 			
-		<hasMany name="reasonTypesCorrectionDateFrom" joinField="order" model="reasonTypeCorrectionDateFrom"
-			cascade="delete" />
-		<hasMany name="reasonTypesCorrectionDateTo" joinField="order" model="reasonTypeCorrectionDateTo"
-			cascade="delete" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveStart" joinField="order" model="reasonTypeOfChaningOrderState"
-			cascade="delete" persistent="false" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" joinField="order" model="reasonTypeOfChaningOrderState"
-			cascade="delete" persistent="false" />
+		<hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
+			joinField="order" cascade="delete" />
+		<hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
+			joinField="order" cascade="delete" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveStart" model="reasonTypeOfChaningOrderState"
+			joinField="order" cascade="delete" persistent="false" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeOfChaningOrderState"
+			 joinField="order" cascade="delete" persistent="false" />
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.orders.OrderService"

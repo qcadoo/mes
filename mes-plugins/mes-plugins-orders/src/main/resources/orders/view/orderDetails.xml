@@ -29,6 +29,7 @@
 	name="orderDetails" modelName="order">
 
 	<component type="window" name="window" reference="window">
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="status">
@@ -128,6 +129,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
+
 		<windowTab name="mainTab">
 			<component type="form" name="order" reference="form">
 				<script>
@@ -261,8 +263,10 @@
 						<component type="lookup" name="company" reference="company"
 							field="company">
 							<option type="column" name="name" fields="name" />
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -295,12 +299,16 @@
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
+
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
-							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 								method="changeOrderProduct" />
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.util.UnitService"
 								method="fillProductUnit" />
@@ -318,11 +326,14 @@
 							field="technology" source="#{product}.technologies">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+
 							<listener event="onSelectedEntityChange" class="com.qcadoo.mes.orders.OrderService"
 								method="setDefaultNameUsingTechnology" />
 						</component>
@@ -332,8 +343,10 @@
 							reference="productionLine" field="productionLine">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
+
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -365,11 +378,11 @@
 						</component>
 					</layoutElement>
 				</component>
-				
+
 				<option type="header" value="true" />
 				<option type="expression"
 					value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state" />
-					
+
 				<listener event="changeState"
 					class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
 					method="changeState" />
@@ -377,6 +390,7 @@
 					class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
 			</component>
 		</windowTab>
+
 		<windowTab name="detailsTab">
 			<component type="gridLayout" name="detailsTablayout"
 				columns="3" rows="1">
@@ -389,6 +403,7 @@
 									field="#{form}.dateFrom" reference="plannedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+
 									<listener event="onChange"
 										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyStartDate" />
@@ -399,6 +414,7 @@
 									field="#{form}.correctedDateFrom" reference="correctedDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+
 									<listener event="onChange"
 										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyStartDate" />
@@ -412,15 +428,17 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="startDatesLabel" />
 					</component>
 					<component type="borderLayout" name="causeOfPlannedDateFromCorrection">
 						<component type="gridLayout"
-							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1" rows="3" 
-							reference="causeOfPlannedDateFromCorrectionGridLayout">
+							name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
+							rows="3" reference="causeOfPlannedDateFromCorrectionGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="gridLayout" name="reasonTypesCorrectionDateFromGridLayout" columns="3" rows="1">
+								<component type="gridLayout"
+									name="reasonTypesCorrectionDateFromGridLayout" columns="3"
+									rows="1">
 									<layoutElement column="1" row="1">
 										<component type="label" name="reasonTypesCorrectionDateFromLabel">
 											<option type="labelStyle" value="label" />
@@ -428,12 +446,15 @@
 									</layoutElement>
 									<layoutElement column="2" row="1" width="2">
 										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateFrom"
-											source="#{form}.reasonTypesCorrectionDateFrom" reference="reasonTypesCorrectionDateFrom">
+											source="#{form}.reasonTypesCorrectionDateFrom" reference="reasonTypesCorrectionDateFrom"
+											defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
+
 											<components>
-												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
-													columns="1" rows="1">
+												<component type="gridLayout"
+													name="reasonTypeOfChaningOrderStateGridLayout" columns="1"
+													rows="1">
 													<layoutElement column="1" row="1">
 														<component type="select" name="reasonTypeOfChaningOrderState"
 															field="reasonTypeOfChaningOrderState" hasLabel="false" />
@@ -451,7 +472,7 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="causeOfPlannedDateFromCorrectionLabel" />
 					</component>
 					<component type="borderLayout" name="causeDeviationsOfEffectiveStart">
@@ -459,21 +480,27 @@
 							name="causeDeviationsOfEffectiveStartGridLayout" columns="1"
 							rows="3" reference="causeDeviationsOfEffectiveStartGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="gridLayout" name="reasonTypeDeviationsOfEffectiveStartGridLayout" columns="3" rows="1">
+								<component type="gridLayout"
+									name="reasonTypeDeviationsOfEffectiveStartGridLayout" columns="3"
+									rows="1">
 									<layoutElement column="1" row="1">
-										<component type="label" name="reasonTypesDeviationsOfEffectiveStartLabel">
+										<component type="label"
+											name="reasonTypesDeviationsOfEffectiveStartLabel">
 											<option type="labelStyle" value="label" />
 										</component>
 									</layoutElement>
 									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList" name="reasonTypesDeviationsOfEffectiveStart"
-											source="#{form}.reasonTypesDeviationsOfEffectiveStart" reference="reasonTypesDeviationsOfEffectiveStart"
-											persistent="false" defaultEnabled="never">
+										<component type="awesomeDynamicList"
+											name="reasonTypesDeviationsOfEffectiveStart" source="#{form}.reasonTypesDeviationsOfEffectiveStart"
+											reference="reasonTypesDeviationsOfEffectiveStart" persistent="false"
+											defaultEnabled="never">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
+
 											<components>
-												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
-													columns="1" rows="1">
+												<component type="gridLayout"
+													name="reasonTypeOfChaningOrderStateGridLayout" columns="1"
+													rows="1">
 													<layoutElement column="1" row="1">
 														<component type="select" name="reasonTypeOfChaningOrderState"
 															field="reasonTypeOfChaningOrderState" hasLabel="false" />
@@ -491,7 +518,7 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="causeDeviationsOfEffectiveStartLabel" />
 					</component>
 				</layoutElement>
@@ -503,6 +530,7 @@
 								<component type="calendar" name="plannedDateTo" field="#{form}.dateTo"
 									reference="plannedDateTo" defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+
 									<listener event="onChange"
 										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyEndDate" />
@@ -513,6 +541,7 @@
 									field="#{form}.correctedDateTo" reference="correctedDateTo"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+
 									<listener event="onChange"
 										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
 										method="copyEndDate" />
@@ -526,7 +555,7 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="endDatesLabel" />
 					</component>
 					<component type="borderLayout" name="causeOfPlannedDateToCorrection">
@@ -534,7 +563,8 @@
 							name="causeOfPlannedDateToCorrectionGridLayout" columns="1" rows="3"
 							reference="causeOfPlannedDateToCorrectionGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="gridLayout" name="reasonTypesCorrectionDateToGridLayout" columns="3" rows="1">
+								<component type="gridLayout"
+									name="reasonTypesCorrectionDateToGridLayout" columns="3" rows="1">
 									<layoutElement column="1" row="1">
 										<component type="label" name="reasonTypesCorrectionDateToLabel">
 											<option type="labelStyle" value="label" />
@@ -542,12 +572,15 @@
 									</layoutElement>
 									<layoutElement column="2" row="1" width="2">
 										<component type="awesomeDynamicList" name="reasonTypesCorrectionDateTo"
-											source="#{form}.reasonTypesCorrectionDateTo" reference="reasonTypesCorrectionDateTo">
+											source="#{form}.reasonTypesCorrectionDateTo" reference="reasonTypesCorrectionDateTo"
+											defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
+
 											<components>
-												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
-													columns="1" rows="1">
+												<component type="gridLayout"
+													name="reasonTypeOfChaningOrderStateGridLayout" columns="1"
+													rows="1">
 													<layoutElement column="1" row="1">
 														<component type="select" name="reasonTypeOfChaningOrderState"
 															field="reasonTypeOfChaningOrderState" hasLabel="false" />
@@ -565,7 +598,7 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="causeOfPlannedDateToCorrectionLabel" />
 					</component>
 					<component type="borderLayout" name="causeDeviationsOfEffectiveEnd">
@@ -573,21 +606,27 @@
 							name="causeDeviationsOfEffectiveEndGridLayout" columns="1" rows="3"
 							reference="causeDeviationsOfEffectiveEndGridLayout">
 							<layoutElement column="1" row="1">
-								<component type="gridLayout" name="reasonTypeDeviationsOfEffectiveEndGridLayout" columns="3" rows="1">
+								<component type="gridLayout"
+									name="reasonTypeDeviationsOfEffectiveEndGridLayout" columns="3"
+									rows="1">
 									<layoutElement column="1" row="1">
-										<component type="label" name="reasonTypesDeviationsOfEffectiveEndLabel">
+										<component type="label"
+											name="reasonTypesDeviationsOfEffectiveEndLabel">
 											<option type="labelStyle" value="label" />
 										</component>
 									</layoutElement>
 									<layoutElement column="2" row="1" width="2">
-										<component type="awesomeDynamicList" name="reasonTypesDeviationsOfEffectiveEnd"
-											source="#{form}.reasonTypesDeviationsOfEffectiveEnd" reference="reasonTypesDeviationsOfEffectiveEnd"
-											persistent="false" defaultEnabled="never">
+										<component type="awesomeDynamicList"
+											name="reasonTypesDeviationsOfEffectiveEnd" source="#{form}.reasonTypesDeviationsOfEffectiveEnd"
+											reference="reasonTypesDeviationsOfEffectiveEnd" persistent="false"
+											defaultEnabled="never">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
+
 											<components>
-												<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
-													columns="1" rows="1">
+												<component type="gridLayout"
+													name="reasonTypeOfChaningOrderStateGridLayout" columns="1"
+													rows="1">
 													<layoutElement column="1" row="1">
 														<component type="select" name="reasonTypeOfChaningOrderState"
 															field="reasonTypeOfChaningOrderState" hasLabel="false" />
@@ -605,12 +644,13 @@
 								</component>
 							</layoutElement>
 						</component>
-						
+
 						<option type="label" value="causeDeviationsOfEffectiveEndLabel" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+
 		<windowTab name="productQuantityTab">
 			<component type="gridLayout" name="productQuantityTablayout"
 				columns="3" rows="3">
@@ -643,37 +683,40 @@
 								<component type="input" name="unitCCQ" reference="unitCCQ"
 									hasLabel="false">
 									<option type="textRepresentationOnDisabled" value="true" />
-								</component>	
+								</component>
 							</layoutElement>
 						</component>
+						
 						<option type="label" value="commissionedAmountLabel" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="gridLayout" name="amountOfProductProducedGridLayout"
-							columns="4" rows="1" reference="amountOfProductProducedGridLayout" hasBorders="false">
+						columns="4" rows="1" reference="amountOfProductProducedGridLayout"
+						hasBorders="false">
 						<layoutElement column="1" row="1" width="3">
 							<component type="input" name="amountOfProductProduced"
 								reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
 								<option type="labelWidth" value="55" />
 								<option type="alignment" value="right" />
-							</component>	
+							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
 							<component type="input" name="unitAOPP" reference="unitAOPP"
-									hasLabel="false">
+								hasLabel="false">
 								<option type="textRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="3">
-				<component type="gridLayout" name="remainingAmountOfProductToProduceGridLayout"
-							columns="4" rows="1" reference="remainingAmountOfProductToProduceGridLayout"
-							hasBorders="false">
+					<component type="gridLayout"
+						name="remainingAmountOfProductToProduceGridLayout" columns="4"
+						rows="1" reference="remainingAmountOfProductToProduceGridLayout"
+						hasBorders="false">
 						<layoutElement column="1" row="1" width="3">
 							<component type="input" name="remainingAmountOfProductToProduce"
-								reference="remainingAmountOfProductToProduce" field="#{form}.remainingAmountOfProductToProduce" 
+								reference="remainingAmountOfProductToProduce" field="#{form}.remainingAmountOfProductToProduce"
 								defaultEnabled="never">
 								<option type="labelWidth" value="55" />
 								<option type="alignment" value="right" />
@@ -681,7 +724,7 @@
 						</layoutElement>
 						<layoutElement column="4" row="1">
 							<component type="input" name="unitRAOPTP" reference="unitRAOPTP"
-									hasLabel="false">
+								hasLabel="false">
 								<option type="textRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
@@ -689,42 +732,45 @@
 				</layoutElement>
 				<layoutElement column="2" row="1" height="3">
 					<component type="borderLayout" name="reasonForCorrectionBorderLayout">
-					<component type="gridLayout" name="productQuantityGridLayout" 
-								columns="3" rows="3" >
-						 <layoutElement column="1" row="1">
-       						<component type="label" name="reasonTypesCorrectionProductQuantityFromLabel">
-       							<option type="labelStyle" value="label" />
-      						</component>
-     					</layoutElement>
-						<layoutElement column="2" row="1" width="2">		
-							<component type="awesomeDynamicList" name="typeOfCorrectionCauses"
-								source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
-								<option type="hasBorder" value="false" />
-								<option type="hasButtons" value="true" />
-								<components>
-									<component type="gridLayout" name="productQuantityGridLayout" 
-										columns="1" rows="1">
-										<layoutElement column="1" row="1">
-											<component type="select" name="reasonType"
-												field="reasonType" reference="reasonType" hasLabel="false">
-											</component>
-										</layoutElement>
+						<component type="gridLayout" name="productQuantityGridLayout"
+							columns="3" rows="3">
+							<layoutElement column="1" row="1">
+								<component type="label"
+									name="reasonTypesCorrectionProductQuantityFromLabel">
+									<option type="labelStyle" value="label" />
 								</component>
-							</components>
+							</layoutElement>
+							<layoutElement column="2" row="1" width="2">
+								<component type="awesomeDynamicList" name="typeOfCorrectionCauses"
+									source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
+									<option type="hasBorder" value="false" />
+									<option type="hasButtons" value="true" />
+
+									<components>
+										<component type="gridLayout" name="productQuantityGridLayout"
+											columns="1" rows="1">
+											<layoutElement column="1" row="1">
+												<component type="select" name="reasonType" field="reasonType"
+													reference="reasonType" hasLabel="false">
+												</component>
+											</layoutElement>
+										</component>
+									</components>
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" height="2" width="3">
+								<component type="textarea" name="commentreasonTypeDeviationsQuantity"
+									field="#{form}.commentreasonTypeDeviationsQuantity" reference="commentreasonTypeDeviationsQuantity">
+								</component>
+							</layoutElement>
 						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2" width="3">
-					<component type="textarea" name="commentreasonTypeDeviationsQuantity"
-						field="#{form}.commentreasonTypeDeviationsQuantity" reference="commentreasonTypeDeviationsQuantity">
+
+						<option type="label" value="reasonForCorrectionLabel" />
 					</component>
-					</layoutElement>
-					</component>
-					<option type="label" value="reasonForCorrectionLabel" />
-				</component>
 				</layoutElement>
-				
 			</component>
 		</windowTab>
+
 		<windowTab name="history">
 			<component type="grid" name="loggings" reference="grid"
 				source="#{form}.stateChanges">
@@ -734,13 +780,17 @@
 				<option type="column" name="currentState" fields="targetState" />
 				<option type="column" name="worker" fields="worker" />
 				<option type="column" name="comment" fields="comment" />
+
 				<option type="order" column="dateAndTime" direction="asc" />
+
 				<option type="searchable" value="dateAndTime,previousState,currentState" />
 				<option type="orderable" value="dateAndTime,previousState,currentState" />
+
 				<option type="correspondingView" value="orders/orderStateChangeDetails" />
 				<option type="correspondingComponent" value="form" />
 			</component>
 		</windowTab>
+
 		<windowTab name="integrationTab">
 			<script>
 					<![CDATA[
@@ -766,7 +816,9 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+
 	</component>
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.orders.OrderService"
 			method="fillProductionLine" />
@@ -784,11 +836,9 @@
 			method="fillProductUnitBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="disableOrderFormForExternalItems" />
-		<beforeRender
-			class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveStart" />
-		<beforeRender
-			class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
+		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="fillReasonTypeDeviationsOfEffectiveEnd" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
 			method="changedEnabledFieldForSpecificOrderState" />
@@ -809,4 +859,5 @@
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="changedEnabledDescriptionFieldForSpecificOrderState" />
 	</hooks>
+
 </view>
