@@ -114,7 +114,7 @@
 							acceptState.disable(differentStatesMessage);
 							cancelState.disable(differentStatesMessage);
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
-							checkState.disabled(differentStatesMessage);
+							checkState.disable(differentStatesMessage);
 							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
 							return;
 						}
@@ -139,7 +139,7 @@
 							cancelState.forState="04outdated";
 							cancelState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.outdated)}";
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
-							checkState.disabled();
+							checkState.disable();
 						} else if (state == "03declined") {
 						} else if (state == "04outdated") {
 							cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");

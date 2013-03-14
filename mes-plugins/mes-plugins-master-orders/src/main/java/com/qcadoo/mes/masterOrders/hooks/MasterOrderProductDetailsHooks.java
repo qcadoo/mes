@@ -14,7 +14,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -26,7 +25,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class MasterOrderProductDetailsHooks {
 
     @Autowired
-    private OrderService orderService;
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
@@ -44,7 +43,7 @@ public class MasterOrderProductDetailsHooks {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
-        orderService.fillDefaultTechnology(view);
+        masterOrderDetailsHooks.fillDefaultTechnology(view);
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
