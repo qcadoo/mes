@@ -22,6 +22,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -124,10 +125,13 @@ public class OrderValidatorsMO {
                         + ".fieldIsNotTheSame", createInfoAboutEntity(technology, TECHNOLOGY));
             }
         } else if (masterOrderType.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            if (checkIfExistsMasterOrderWithTechAndProduct(order, masterOrder)) {
+            if (!checkIfExistsMasterOrderWithTech(order, masterOrder)) {
                 isValid = false;
                 order.addError(orderDD.getField(TECHNOLOGY), L_MASTER_ORDERS_ORDER_MASTER_ORDER + TECHNOLOGY
                         + ".masterOrderProductDoesnotExists");
+            }
+            if (!checkIfExistsMasterOrderWithProduct(order, masterOrder)) {
+                isValid = false;
                 order.addError(orderDD.getField(PRODUCT), L_MASTER_ORDERS_ORDER_MASTER_ORDER + PRODUCT
                         + ".masterOrderProductDoesnotExists");
             }
@@ -136,7 +140,7 @@ public class OrderValidatorsMO {
         return isValid;
     }
 
-    private boolean checkIfExistsMasterOrderWithTechAndProduct(final Entity order, final Entity masterOrder) {
+    private boolean checkIfExistsMasterOrderWithTech(final Entity order, final Entity masterOrder) {
         List<Entity> masterOrderProductsWithProductAndTechnology = dataDefinitionService
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
                 .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
@@ -147,9 +151,33 @@ public class OrderValidatorsMO {
             masterOrderProductsWithProductAndTechnology = dataDefinitionService
                     .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
                     .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
-                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder)).list().getEntities();
+                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
+                    .add(SearchRestrictions.not(SearchRestrictions.belongsTo(TECHNOLOGY, order.getBelongsToField(TECHNOLOGY))))
+                    .list().getEntities();
+            if (!masterOrderProductsWithProductAndTechnology.isEmpty()) {
+                return false;
+            }
         }
-        return masterOrderProductsWithProductAndTechnology.isEmpty();
+        return true;
+    }
+
+    private boolean checkIfExistsMasterOrderWithProduct(final Entity order, final Entity masterOrder) {
+        List<Entity> masterOrderProductsWithProduct = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                .add(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))
+                .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder)).list().getEntities();
+
+        if (masterOrderProductsWithProduct.isEmpty()) {
+            masterOrderProductsWithProduct = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                    .add(SearchRestrictions.belongsTo(MASTER_ORDER, masterOrder))
+                    .add(SearchRestrictions.not(SearchRestrictions.belongsTo(PRODUCT, order.getBelongsToField(PRODUCT)))).list()
+                    .getEntities();
+            if (!masterOrderProductsWithProduct.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder, final String reference) {
@@ -170,7 +198,8 @@ public class OrderValidatorsMO {
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
         Date deadlineFromMaster = masterOrder.getDateField(DEADLINE);
         Date deadlineFromOrder = order.getDateField(DEADLINE);
-        if ((deadlineFromMaster == null && deadlineFromOrder == null)
+        if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())
+                || (deadlineFromMaster == null && deadlineFromOrder == null)
                 || (deadlineFromMaster == null && deadlineFromOrder != null)) {
             return true;
         }
