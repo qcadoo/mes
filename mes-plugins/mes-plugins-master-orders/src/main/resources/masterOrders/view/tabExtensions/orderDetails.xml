@@ -8,7 +8,7 @@
 		<component type="gridLayout" name="gridLayout" columns="3"
 			rows="1">
 			<layoutElement column="1" row="1">
-				<component type="lookup" name="masterOrder" field="#{form}.masterOrder">
+				<component type="lookup" name="masterOrder" field="#{form}.masterOrder" reference="masterOrder" >
 					<option type="column" name="name" fields="name" link="true" width="200" />
 					<option type="column" name="deadline" fields="deadline"  width="100" />
 					<option type="searchable" value="number,name,deadline" />
