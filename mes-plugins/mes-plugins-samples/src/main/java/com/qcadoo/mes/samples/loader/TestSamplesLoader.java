@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,7 +254,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addOrderProducts(final Map<String, String> values) {
         Entity orderedProduct = dataDefinitionService.get(L_DELIVERY, "orderedProduct").create();
-        orderedProduct.setField("delivery", getDeliveryByNumber(values.get("delivery")));
+        orderedProduct.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
         orderedProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
         orderedProduct.setField("orderedQuantity", values.get("orderedquantity"));
         orderedProduct.setField("description", values.get("description"));
@@ -263,7 +262,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addDeliveries(final Map<String, String> values) {
-        Entity delivery = dataDefinitionService.get(L_DELIVERY, "delivery").create();
+        Entity delivery = dataDefinitionService.get(L_DELIVERY, DELIVERY).create();
         delivery.setField(L_NUMBER, values.get(L_NUMBER));
         delivery.setField(L_NAME, values.get(L_NAME));
         delivery.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
@@ -278,9 +277,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addOfferProducts(final Map<String, String> values) {
         Entity offerProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offerProduct").create();
-        offerProduct.setField("offer", getOfferByNumber(values.get("offer")));
+        offerProduct.setField(OFFER, getOfferByNumber(values.get(OFFER)));
         offerProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
-        offerProduct.setField("quantity", values.get("quantity"));
+        offerProduct.setField(L_QUANTITY, values.get(L_QUANTITY));
         offerProduct.setField("pricePerUnit", values.get("priceperunit"));
         offerProduct.setField("totalPrice", values.get("totalprice"));
         offerProduct.getDataDefinition().save(offerProduct);
@@ -288,14 +287,14 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addOffers(final Map<String, String> values) {
-        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offer").create();
+        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).create();
         offer.setField(L_NUMBER, values.get(L_NUMBER));
         offer.setField(L_NAME, values.get(L_NAME));
         offer.setField(L_SUPPLIER, getSupplierByNumber(values.get(L_SUPPLIER)));
         offer.setField("offeredDate", values.get("offereddate"));
-        offer.setField("negotiation", getNegotationByNumber(values.get("negotiation")));
+        offer.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
         offer.setField(L_STATE, values.get(L_STATE));
-        offer.setField("requestForQuotation", getRequestForQuotationByNumber(values.get("requestforquotation")));
+        offer.setField(REQUEST_FOR_QUOTION, getRequestForQuotationByNumber(values.get("requestforquotation")));
         offer.setField("transportCost", values.get("transportcost"));
         offer.getDataDefinition().save(offer);
 
@@ -304,7 +303,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addRequestForQuotationProducts(final Map<String, String> values) {
         Entity requestForQuotationProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "requestForQuotationProduct")
                 .create();
-        requestForQuotationProduct.setField("requestForQuotation",
+        requestForQuotationProduct.setField(REQUEST_FOR_QUOTION,
                 getRequestForQuotationByNumber(values.get("requestforquotation")));
         requestForQuotationProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
         requestForQuotationProduct.setField("orderedQuantity", values.get("orderedquantity"));
@@ -313,12 +312,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addRequestForQuotations(final Map<String, String> values) {
-        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "requestForQuotation").create();
+        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).create();
         requestForQuotation.setField(L_NUMBER, values.get(L_NUMBER));
         requestForQuotation.setField(L_NAME, values.get(L_NAME));
         requestForQuotation.setField(L_SUPPLIER, getSupplierByNumber(values.get(L_SUPPLIER)));
         requestForQuotation.setField("desiredDate", values.get("desireddate"));
-        requestForQuotation.setField("negotiation", getNegotationByNumber(values.get("negotiation")));
+        requestForQuotation.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
         requestForQuotation.setField(L_STATE, values.get(L_STATE));
         requestForQuotation.getDataDefinition().save(requestForQuotation);
 
@@ -326,7 +325,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void addNegotiationProducts(final Map<String, String> values) {
         Entity negotiationProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiationProduct").create();
-        negotiationProduct.setField("negotiation", getNegotationByNumber(values.get("negotiation")));
+        negotiationProduct.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
         negotiationProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
         negotiationProduct.setField("neededQuantity", values.get("neededquantity"));
         negotiationProduct.setField("approvedDeliveredQuantity", values.get("approveddeliveredquantity"));
@@ -338,7 +337,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private void addNegotiations(final Map<String, String> values) {
-        Entity negotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiation").create();
+        Entity negotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, NEGOTIATION).create();
         negotation.setField(L_NUMBER, values.get(L_NUMBER));
         negotation.setField(L_NAME, values.get(L_NAME));
         negotation.setField("farthestLimitDate", values.get(L_FARTHESTLIMITDATE));
@@ -348,7 +347,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void changeddNegotiationState(final Map<String, String> values) {
         String state = values.get(L_STATE);
-        if (L_NEGOTIATION_STATE_DRAFT.equals(state)) {
+        if (STATE_DRAFT.equals(state)) {
             return;
         }
         Entity negotiation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiation").find()
@@ -359,10 +358,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void changedRequestForQuotationState(final Map<String, String> values) {
         String state = values.get(L_STATE);
-        if (L_REQUEST_FOR_QUOTION_STATE_DRAFT.equals(state)) {
+        if (STATE_DRAFT.equals(state)) {
             return;
         }
-        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "requestForQuotation").find()
+        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
         requestForQuotation.setField(L_STATE, state);
         requestForQuotation.getDataDefinition().save(requestForQuotation);
@@ -370,10 +369,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void changedOfferState(final Map<String, String> values) {
         String state = values.get(L_STATE);
-        if (L_OFFER_STATE_DRAFT.equals(state)) {
+        if (STATE_DRAFT.equals(state)) {
             return;
         }
-        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offer").find()
+        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
         offer.setField(L_STATE, state);
         offer.getDataDefinition().save(offer);
@@ -381,10 +380,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void changedDeliveryState(final Map<String, String> values) {
         String state = values.get(L_STATE);
-        if (L_DELIVERY_STATE_DRAFT.equals(state)) {
+        if (STATE_DRAFT.equals(state)) {
             return;
         }
-        Entity delivery = dataDefinitionService.get(L_DELIVERY, "delivery").find()
+        Entity delivery = dataDefinitionService.get(L_DELIVERY, DELIVERY).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
         delivery.setField(L_STATE, state);
         delivery.getDataDefinition().save(delivery);
@@ -564,10 +563,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
         final Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        if (TECHNOLOGY_STATE_ACCEPTED.equals(technology.getStringField(L_STATE))) {
+        if (STATE_ACCEPTED.equals(technology.getStringField(L_STATE))) {
             return;
         }
-        getStateChangeSamplesClient().changeState(technology, TECHNOLOGY_STATE_ACCEPTED);
+        getStateChangeSamplesClient().changeState(technology, STATE_ACCEPTED);
     }
 
     private void addOrder(final Map<String, String> values) {
@@ -678,7 +677,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_ORDER_NR))).uniqueResult();
         if (ORDER_STATE_IN_PROGRESS.equals(state)) {
-            order = getStateChangeSamplesClient().changeState(order, ORDER_STATE_ACCEPTED);
+            order = getStateChangeSamplesClient().changeState(order, STATE_ACCEPTED);
         }
         getStateChangeSamplesClient().changeState(order, state);
     }
@@ -700,7 +699,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         trackingRecord.setField(L_NUMBER, values.get(L_NUMBER));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
-        trackingRecord.setField(L_STATE, TRACKING_RECORD_STATE_DRAFT);
+        trackingRecord.setField(L_STATE, STATE_DRAFT);
         trackingRecord.getDataDefinition().save(trackingRecord);
     }
 
@@ -774,7 +773,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("techno")));
         costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("deftechno")));
         costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prodno")));
-        costCalculation.setField("quantity", values.get("quantity"));
+        costCalculation.setField(L_QUANTITY, values.get(L_QUANTITY));
         costCalculation.setField("includeTPZ", values.get("includetpz"));
         costCalculation.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
         costCalculation.setField("calculateMaterialCostsMode", values.get("calculatematerialcostmode"));
@@ -1070,12 +1069,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     void addProductionRecord(final Map<String, String> values) {
+
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
         productionRecord.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-        productionRecord.setField(L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT,
-                getTechnologyInstanceOperationComponentByNumber(values.get("technologyinstanceoperationcomponent")));
         productionRecord.setField(L_LAST_RECORD, values.get("lastrecord"));
         productionRecord.setField(L_MACHINE_TIME, values.get("machinetime"));
         productionRecord.setField(L_LABOR_TIME, values.get("labortime"));
@@ -1083,13 +1081,23 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord.getDataDefinition().save(productionRecord);
+        productionRecord.setField(L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT,
+                getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+
+        String typeOfProductionRecording = productionRecord.getBelongsToField(L_ORDER)
+                .getStringField("typeOfProductionRecording");
+        Object orderOperation = getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
+                getOrderByNumber(values.get(L_ORDER)));
+        if (!(orderOperation == null && "03forEach".equals(typeOfProductionRecording))) {
+            productionRecord.getDataDefinition().save(productionRecord);
+        }
+
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
         for (Entity productionRecord : order.getHasManyField("productionRecords")) {
-            getStateChangeSamplesClient().changeState(productionRecord, PRODUCTION_RECORD_STATE_ACCEPTED);
+            getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
         }
     }
 
@@ -1244,15 +1252,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                 .setMaxResults(1).uniqueResult();
     }
 
-    private Entity getTechnologyInstanceOperationComponentByNumber(final String number) {
-        if (StringUtils.isEmpty(number)) {
-            return null;
-        }
-        return dataDefinitionService.get(SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER,
-                SamplesConstants.MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT).get(Long.parseLong(number));
-
-    }
-
     private Entity getShiftByName(final String name) {
         return dataDefinitionService.get(BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_SHIFT).find()
                 .add(SearchRestrictions.eq(L_NAME, name)).setMaxResults(1).uniqueResult();
@@ -1330,22 +1329,22 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     private Entity getRequestForQuotationByNumber(final String number) {
-        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "requestForQuotation").find()
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).find()
                 .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private Entity getNegotationByNumber(final String number) {
-        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiation").find()
-                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, NEGOTIATION).find().add(SearchRestrictions.eq(L_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
     }
 
     private Entity getOfferByNumber(final String number) {
-        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offer").find().add(SearchRestrictions.eq(L_NUMBER, number))
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
     }
 
     private Entity getDeliveryByNumber(final String number) {
-        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offer").find().add(SearchRestrictions.eq(L_NUMBER, number))
+        return dataDefinitionService.get(L_DELIVERY, DELIVERY).find().add(SearchRestrictions.eq(L_NUMBER, number))
                 .setMaxResults(1).uniqueResult();
     }
 }
