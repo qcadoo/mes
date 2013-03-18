@@ -1,5 +1,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
@@ -10,7 +11,6 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -30,14 +30,14 @@ public class MasterOrderProductDetailsHooks {
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+        String unit = null;
 
-        if (product == null) {
-            return;
+        if (product != null) {
+            unit = product.getStringField(UNIT);
         }
-
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(product.getStringField(ProductFields.UNIT));
+            field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
     }

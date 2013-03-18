@@ -60,15 +60,16 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
-        Date deadline = (Date) masterOrder.getField(DEADLINE);
+        Date deadline = masterOrder.getDateField(DEADLINE);
         if (deadline == null) {
             return;
         }
         List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> pendingOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
-        for (Entity order : pendingOrders) {
-            order.setField(OrderFields.DEADLINE, deadline);
+        List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
+        for (Entity order : allOrders) {
+            if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+                order.setField(OrderFields.DEADLINE, deadline);
+            }
             actualOrders.add(order);
         }
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
@@ -78,16 +79,16 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null) {
             return;
         }
-        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
         Entity customer = masterOrder.getBelongsToField(COMPANY);
         if (customer == null) {
             return;
         }
         List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> pendingOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
-        for (Entity order : pendingOrders) {
-            order.setField(OrderFields.COMPANY, customer);
+        List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
+        for (Entity order : allOrders) {
+            if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+                order.setField(OrderFields.COMPANY, customer);
+            }
             actualOrders.add(order);
         }
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);

@@ -1,19 +1,33 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static org.mockito.Mockito.when;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class MasterOrderDetailsHooksTest {
 
@@ -23,11 +37,29 @@ public class MasterOrderDetailsHooksTest {
     private ViewDefinitionState view;
 
     @Mock
-    private FieldComponent masterOrderTypeField, productField, technologyField, defaultTechnologyField, cumulatedQuantityField,
-            masterOrderQuantityField;
+    private FieldComponent masterOrderTypeField, technologyField, defaultTechnologyField, cumulatedQuantityField,
+            masterOrderQuantityField, cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField;
+
+    @Mock
+    private FormComponent form;
+
+    @Mock
+    private LookupComponent productField;
 
     @Mock
     private GridComponent masterOrderProducts;
+
+    @Mock
+    private NumberGeneratorService numberGeneratorService;
+
+    @Mock
+    private ExpressionService expressionService;
+
+    @Mock
+    private TechnologyServiceO technologyServiceO;
+
+    @Mock
+    private Entity productEntity, defaultTechnologyEntity, masterOrderEntity;
 
     @Mock
     private ComponentState borderLayoutProductQuantity;
@@ -38,20 +70,26 @@ public class MasterOrderDetailsHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        when(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE)).thenReturn(masterOrderTypeField);
-        when(view.getComponentByReference(MasterOrderFields.PRODUCT)).thenReturn(productField);
-        when(view.getComponentByReference(MasterOrderFields.TECHNOLOGY)).thenReturn(technologyField);
-        when(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).thenReturn(defaultTechnologyField);
-        when(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).thenReturn(cumulatedQuantityField);
-        when(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).thenReturn(masterOrderQuantityField);
-        when(view.getComponentByReference("productsGrid")).thenReturn(masterOrderProducts);
-        when(view.getComponentByReference("borderLayoutProductQuantity")).thenReturn(borderLayoutProductQuantity);
+        ReflectionTestUtils.setField(masterOrderDetailsHooks, "numberGeneratorService", numberGeneratorService);
+        ReflectionTestUtils.setField(masterOrderDetailsHooks, "technologyServiceO", technologyServiceO);
+        ReflectionTestUtils.setField(masterOrderDetailsHooks, "expressionService", expressionService);
+        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderTypeField);
+        given(view.getComponentByReference(MasterOrderFields.PRODUCT)).willReturn(productField);
+        given(view.getComponentByReference(MasterOrderFields.TECHNOLOGY)).willReturn(technologyField);
+        given(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
+        given(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantityField);
+        given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantityField);
+        given(view.getComponentByReference("productsGrid")).willReturn(masterOrderProducts);
+        given(view.getComponentByReference("borderLayoutProductQuantity")).willReturn(borderLayoutProductQuantity);
+        given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
+        given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
     }
 
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeValueIsEmty() {
-        when(masterOrderTypeField.getFieldValue()).thenReturn(null);
-        // when
+        given(masterOrderTypeField.getFieldValue()).willReturn(null);
+        // given
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
         // then
         Mockito.verify(productField).setVisible(false);
@@ -66,8 +104,8 @@ public class MasterOrderDetailsHooksTest {
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeIsManyProducts() {
         // given
-        when(masterOrderTypeField.getFieldValue()).thenReturn(MasterOrderType.MANY_PRODUCTS.getStringValue());
-        // when
+        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.MANY_PRODUCTS.getStringValue());
+        // given
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
         // then
         Mockito.verify(productField).setVisible(false);
@@ -82,8 +120,8 @@ public class MasterOrderDetailsHooksTest {
     @Test
     public final void shouldInvisibleFieldWhenMasterOrderTypeIsUndefined() {
         // given
-        when(masterOrderTypeField.getFieldValue()).thenReturn(MasterOrderType.UNDEFINED.getStringValue());
-        // when
+        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.UNDEFINED.getStringValue());
+        // given
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
         // then
         Mockito.verify(productField).setVisible(false);
@@ -99,17 +137,104 @@ public class MasterOrderDetailsHooksTest {
     @Test
     public final void shouldVisibleFieldWhenMasterOrderTypeIsOnProduct() {
         // given
-        when(masterOrderTypeField.getFieldValue()).thenReturn(MasterOrderType.ONE_PRODUCT.getStringValue());
-        // when
+        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.ONE_PRODUCT.getStringValue());
+        // given
         masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
         // then
-        Mockito.verify(productField).setVisible(true);
-        Mockito.verify(defaultTechnologyField).setVisible(true);
-        Mockito.verify(cumulatedQuantityField).setVisible(true);
-        Mockito.verify(technologyField).setVisible(true);
-        Mockito.verify(masterOrderQuantityField).setVisible(true);
-        Mockito.verify(borderLayoutProductQuantity).setVisible(true);
-        Mockito.verify(masterOrderProducts).setVisible(false);
+        verify(productField).setVisible(true);
+        verify(defaultTechnologyField).setVisible(true);
+        verify(cumulatedQuantityField).setVisible(true);
+        verify(technologyField).setVisible(true);
+        verify(masterOrderQuantityField).setVisible(true);
+        verify(borderLayoutProductQuantity).setVisible(true);
+        verify(masterOrderProducts).setVisible(false);
 
     }
+
+    @Test
+    public final void shouldFillDefaultTechnologyIfExists() {
+        // given
+        String defaultTechnologyExpression = "00001 - Tech-1";
+        given(productField.getEntity()).willReturn(productEntity);
+        given(technologyServiceO.getDefaultTechnology(productEntity)).willReturn(defaultTechnologyEntity);
+        given(view.getLocale()).willReturn(Locale.getDefault());
+        given(expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name", Locale.getDefault())).willReturn(
+                defaultTechnologyExpression);
+        // given
+        masterOrderDetailsHooks.fillDefaultTechnology(view);
+        // then
+
+        verify(defaultTechnologyField).setFieldValue(defaultTechnologyExpression);
+    }
+
+    @Test
+    public final void shouldFillNullWhenDefaultTechnlogyDoesnotExists() {
+        // given
+        given(productField.getEntity()).willReturn(null);
+        // given
+        masterOrderDetailsHooks.fillDefaultTechnology(view);
+        // then
+        verify(defaultTechnologyField).setFieldValue(null);
+    }
+
+    @Test
+    public final void shouldShowMessageError() {
+        // given
+        BigDecimal cumulatedQuantity = BigDecimal.ONE;
+        BigDecimal masterQuantity = BigDecimal.TEN;
+        String masterOrderType = "02oneProduct";
+        given(form.getEntity()).willReturn(masterOrderEntity);
+        given(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
+        given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
+        given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
+        // when
+        masterOrderDetailsHooks.showErrorWhenCumulatedQuantity(view);
+        // then
+        verify(form).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO,
+                false);
+    }
+
+    @Test
+    public final void shouldDonotShowMessageError() {
+        // given
+        BigDecimal cumulatedQuantity = BigDecimal.TEN;
+        BigDecimal masterQuantity = BigDecimal.ONE;
+        String masterOrderType = "02oneProduct";
+        given(form.getEntity()).willReturn(masterOrderEntity);
+        given(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
+        given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
+        given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
+        // when
+        masterOrderDetailsHooks.showErrorWhenCumulatedQuantity(view);
+        // then
+        verify(form, Mockito.never()).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
+                MessageType.INFO, false);
+    }
+
+    @Test
+    public final void shouldSetNullToUnitField() {
+        // given
+        given(productField.getEntity()).willReturn(null);
+
+        // when
+        masterOrderDetailsHooks.fillUnitField(view);
+        // then
+        verify(masterOrderQuantityUnitField).setFieldValue(null);
+        verify(cumulatedOrderQuantityUnitField).setFieldValue(null);
+    }
+
+    @Test
+    public final void shouldSetproductUnitToField() {
+        String unit = "szt";
+        // given
+        given(productField.getEntity()).willReturn(productEntity);
+        given(productEntity.getStringField("unit")).willReturn(unit);
+        // when
+        masterOrderDetailsHooks.fillUnitField(view);
+        // then
+        verify(masterOrderQuantityUnitField).setFieldValue(unit);
+        verify(cumulatedOrderQuantityUnitField).setFieldValue(unit);
+
+    }
+
 }

@@ -80,13 +80,11 @@ public class MasterOrderDetailsHooks {
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+        String unit = null;
 
-        if (product == null) {
-            return;
+        if (product != null) {
+            unit = product.getStringField(UNIT);
         }
-
-        String unit = product.getStringField(UNIT);
-
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
@@ -97,25 +95,18 @@ public class MasterOrderDetailsHooks {
     public void fillDefaultTechnology(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
-        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
 
         Entity product = productField.getEntity();
-        if (product != null) {
-            Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
-            if (defaultTechnologyEntity != null) {
-                String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
-                        view.getLocale());
-                defaultTechnology.setFieldValue(defaultTechnologyValue);
-                if (StringUtils.isEmpty((String) technology.getFieldValue())) {
-                    technology.setFieldValue(defaultTechnologyEntity.getId());
-                }
-            }
-        } else {
+        if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
             defaultTechnology.setFieldValue(null);
-            technology.setFieldValue(null);
+            defaultTechnology.requestComponentUpdateState();
+            return;
         }
+        Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+        String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
+                view.getLocale());
+        defaultTechnology.setFieldValue(defaultTechnologyValue);
         defaultTechnology.requestComponentUpdateState();
-        technology.requestComponentUpdateState();
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
