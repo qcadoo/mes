@@ -110,19 +110,13 @@ public final class SamplesConstants {
 
     public static final String TECHNOLOGY_MODEL_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String TECHNOLOGY_STATE_DRAFT = "01draft";
+    public static final String STATE_DRAFT = "01draft";
 
-    public static final String TECHNOLOGY_STATE_ACCEPTED = "02accepted";
+    public static final String STATE_ACCEPTED = "02accepted";
 
     public static final String ORDER_STATE_PENDING = "01pending";
 
-    public static final String ORDER_STATE_ACCEPTED = "02accepted";
-
     public static final String ORDER_STATE_IN_PROGRESS = "03inProgress";
-
-    public static final String PRODUCTION_RECORD_STATE_ACCEPTED = "02accepted";
-
-    public static final String TRACKING_RECORD_STATE_DRAFT = "01draft";
 
     public static final String BATCH_STATE_TRACKED = "01tracked";
 
@@ -426,16 +420,14 @@ public final class SamplesConstants {
 
     public static final String L_ORDERED_PRODUCTS = "orderedProducts";
 
-    public static final String L_NEGOTIATION_STATE_DRAFT = "01draft";
-
     public static final String L_NEGOTIATION_STATE_GENERATEDREQUESTS = "02generatedRequests";
 
-    public static final String L_REQUEST_FOR_QUOTION_STATE_DRAFT = "01draft";
+    public static final String DELIVERY = "delivery";
 
-    public static final String L_REQUEST_FOR_QUOTION_STATE_ACCEPTED = "02accepted";
+    public static final String OFFER = "offer";
 
-    public static final String L_OFFER_STATE_DRAFT = "01draft";
+    public static final String NEGOTIATION = "negotiation";
 
-    public static final String L_DELIVERY_STATE_DRAFT = "01draft";
+    public static final String REQUEST_FOR_QUOTION = "requestForQuotation";
 
 }
