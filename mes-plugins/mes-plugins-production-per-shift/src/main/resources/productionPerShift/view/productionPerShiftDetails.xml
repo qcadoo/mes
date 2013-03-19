@@ -35,7 +35,7 @@
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="actions">
 				<bigButton name="save" icon="saveIcon24.png" state="enabled"
-					action="#{progressForDaysADL}.fireEvent(saveProgressForDays);" />
+					action="#{progressForDays}.fireEvent(saveProgressForDays);" />
 				<bigButton name="refresh" icon="updateIcon24.png" state="enabled"
 					action="#{form}.performRefresh;" />
 			</group>
@@ -50,7 +50,7 @@
 		<windowTab name="mainTab" reference="productionPerShiftTab">
 			<component type="form" name="form" reference="form">
 				<component type="lookup" name="order" field="order"
-					reference="order" defaultVisible="false">
+					reference="order" hasLabel="false" defaultVisible="false">
 					<option type="column" name="name" fields="name" link="true" />
 					<option type="column" name="state" fields="state" />
 					<option type="column" name="typeOfProductionRecording"
@@ -68,7 +68,7 @@
 					<option type="fieldCode" value="number" />
 				</component>
 				<component type="checkbox" name="setRoot" reference="setRoot"
-					defaultVisible="false" />
+					hasLabel="false" defaultVisible="false" />
 				<component type="gridLayout" name="mainGridLayout"
 					columns="3" rows="1">
 					<layoutElement column="1" row="1">
@@ -80,8 +80,9 @@
 										field="#{form}.plannedProgressType" reference="plannedProgressType"
 										defaultValue="01planned">
 
-										<listener event="onSelectedEntityChange" method="changeView"
-											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" />
+										<listener event="onSelectedEntityChange" 
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners" 
+											method="changeView" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
@@ -190,7 +191,7 @@
 								<layoutElement column="1" width="2" row="2">
 									<component type="awesomeDynamicList" name="progressForDay"
 										source="#{productionPerShiftOperation}.progressForDays"
-										reference="progressForDaysADL">
+										reference="progressForDays">
 										<option type="hasBorder" value="true" />
 										<option type="hasButtons" value="true" />
 
@@ -202,8 +203,8 @@
 														reference="day" hasDescription="true" />
 												</layoutElement>
 												<layoutElement column="2" row="1" width="2">
-													<component type="awesomeDynamicList" name="dailyProgressADL"
-														source="dailyProgress" reference="dailyProgressADL">
+													<component type="awesomeDynamicList" name="dailyProgress"
+														source="dailyProgress" reference="dailyProgress">
 														<option type="hasBorder" value="true" />
 														<option type="hasButtons" value="true" />
 														
@@ -287,7 +288,7 @@
 			method="disableReasonOfCorrection" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
-			method="changedButtonState" />
+			method="changeButtonState" />
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="checkIfWasItCorrected" />

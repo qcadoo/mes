@@ -25,6 +25,8 @@ package com.qcadoo.mes.productionPerShift.listeners;
 
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
+import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.HAS_CORRECTIONS;
@@ -53,12 +55,15 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionPerShiftListeners {
 
-    private static final String PROGRESS_FOR_DAYS_ADL = "progressForDaysADL";
+    private static final String L_FORM = "form";
+
+    private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDays";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -69,9 +74,8 @@ public class ProductionPerShiftListeners {
     @Autowired
     private ProductionPerShiftDetailsHooks detailsHooks;
 
-    public void redirectToProductionPerShift(final ViewDefinitionState viewState, final ComponentState componentState,
-            final String[] args) {
-        Long orderId = (Long) componentState.getFieldValue();
+    public void redirectToProductionPerShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
 
         if (orderId == null) {
             return;
@@ -79,15 +83,15 @@ public class ProductionPerShiftListeners {
 
         long ppsId = createCorrespondingProductionPerShfitEntity(orderId);
 
-        redirect(viewState, ppsId);
+        redirect(view, ppsId);
     }
 
-    void redirect(final ViewDefinitionState viewState, final Long ppsId) {
+    void redirect(final ViewDefinitionState view, final Long ppsId) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
         String url = "../page/productionPerShift/productionPerShiftDetails.html";
-        viewState.redirectTo(url, false, true, parameters);
+        view.redirectTo(url, false, true, parameters);
     }
 
     private long createCorrespondingProductionPerShfitEntity(final Long orderId) {
@@ -111,53 +115,84 @@ public class ProductionPerShiftListeners {
         return ppsDD.find().add(SearchRestrictions.belongsTo("order", order)).uniqueResult();
     }
 
-    public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        detailsHooks.fillProducedField(viewState);
+    public void fillProducedField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        detailsHooks.fillProducedField(view);
     }
 
     /**
      * Fill outer AwesomeDynamicList with entities fetched from db. Disable ADL if operation lookup is empty.
      * 
-     * @param viewState
-     * @param componentState
+     * @param view
+     * @param state
      * @param args
      */
-    public void fillProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        detailsHooks.fillProgressForDays(viewState);
+    public void fillProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        detailsHooks.fillProgressForDays(view);
     }
 
     /**
      * Save outer AwesomeDynamicList entities in db and reset operation lookup & related components
      * 
-     * @param viewState
-     * @param componentState
+     * @param view
+     * @param state
      * @param args
      */
-    public void saveProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) viewState
-                .getComponentByReference(PROGRESS_FOR_DAYS_ADL);
-        @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
+    public void saveProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        FieldComponent plannedProgressTypeField = (FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE);
+        String plannedProgressType = plannedProgressTypeField.getFieldValue().toString();
+
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
+
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
-        String plannedProgressType = viewState.getComponentByReference(PLANNED_PROGRESS_TYPE).getFieldValue().toString();
+
+        FieldComponent plannedProgressCorrectionCommentField = (FieldComponent) view
+                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_COMMENT);
+        String plannedProgressCorrectionComment = plannedProgressCorrectionCommentField.getFieldValue().toString();
+
+        AwesomeDynamicListComponent plannedProgressCorrectionTypesADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(PLANNED_PROGRESS_CORRECTION_TYPES);
+
+        List<Entity> plannedProgressCorrectionTypes = (List<Entity>) plannedProgressCorrectionTypesADL.getFieldValue();
+
         for (Entity progressForDay : progressForDays) {
             progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
-        boolean hasCorrections = helper.shouldHasCorrections(viewState);
+
+        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
+
+        boolean hasCorrections = helper.shouldHasCorrections(view);
+
         if (tioc != null) {
             tioc.setField(HAS_CORRECTIONS, hasCorrections);
             tioc.setField(PROGRESS_FOR_DAYS, prepareProgressForDaysForTIOC(tioc, hasCorrections, progressForDays));
             tioc = tioc.getDataDefinition().save(tioc);
+
             if (!tioc.isValid()) {
                 List<ErrorMessage> errors = tioc.getGlobalErrors();
                 for (ErrorMessage error : errors) {
-                    componentState.addMessage(error.getMessage(), MessageType.FAILURE, error.getVars());
+                    state.addMessage(error.getMessage(), MessageType.FAILURE, error.getVars());
                 }
             }
-            if (componentState.isHasError()) {
-                componentState.performEvent(viewState, "initialize", new String[0]);
+
+            if (state.isHasError()) {
+                state.performEvent(view, "initialize", new String[0]);
             } else {
-                componentState.performEvent(viewState, "save");
+                state.performEvent(view, "save");
+
+                Entity productionPerShift = productionPerShiftForm.getEntity();
+
+                productionPerShift.setField(PLANNED_PROGRESS_CORRECTION_COMMENT, plannedProgressCorrectionComment);
+                productionPerShift.setField(PLANNED_PROGRESS_CORRECTION_TYPES, plannedProgressCorrectionTypes);
+
+                productionPerShift.getDataDefinition().save(productionPerShift);
+
+                plannedProgressCorrectionCommentField.setFieldValue(plannedProgressCorrectionComment);
+                progressForDaysADL.setFieldValue(progressForDays);
+                plannedProgressCorrectionTypesADL.setFieldValue(plannedProgressCorrectionTypes);
             }
         }
     }
@@ -180,21 +215,21 @@ public class ProductionPerShiftListeners {
         return plannedPrograssForDay;
     }
 
-    public void changeView(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
-        detailsHooks.disablePlannedProgressTypeForPendingOrder(viewState);
-        detailsHooks.disableReasonOfCorrection(viewState);
-        detailsHooks.fillProgressForDays(viewState);
+    public void changeView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        detailsHooks.disablePlannedProgressTypeForPendingOrder(view);
+        detailsHooks.disableReasonOfCorrection(view);
+        detailsHooks.fillProgressForDays(view);
     }
 
-    public void copyFromPlanned(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {
+    public void copyFromPlanned(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
         if (tioc == null) {
             return;
         } else {
-            String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE))
-                    .getFieldValue().toString();
+            String plannedProgressType = ((FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
+                    .toString();
             List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
                     plannedProgressType.equals(PlannedProgressType.PLANNED.getStringValue()));
             List<Entity> copiedProgressForDays = new ArrayList<Entity>();
@@ -204,26 +239,25 @@ public class ProductionPerShiftListeners {
                 copiedProgressForDays.add(copyProgressForDay);
             }
             tioc.setField(HAS_CORRECTIONS, true);
-            deleteProgressForDays(viewState, tioc);
+            deleteProgressForDays(view, tioc);
             tioc.setField(PROGRESS_FOR_DAYS, addCorrectedToPlannedProgressForDay(tioc, copiedProgressForDays));
             tioc.getDataDefinition().save(tioc);
         }
-        detailsHooks.fillProgressForDays(viewState);
+        detailsHooks.fillProgressForDays(view);
     }
 
-    public void deleteProgressForDays(final ViewDefinitionState viewState, final ComponentState componentState,
-            final String[] args) {
-        Entity tioc = ((LookupComponent) viewState.getComponentByReference("productionPerShiftOperation")).getEntity();
+    public void deleteProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
         if (tioc == null) {
             return;
         } else {
-            deleteProgressForDays(viewState, tioc);
+            deleteProgressForDays(view, tioc);
         }
-        detailsHooks.fillProgressForDays(viewState);
+        detailsHooks.fillProgressForDays(view);
     }
 
-    private void deleteProgressForDays(final ViewDefinitionState viewState, final Entity tioc) {
-        String plannedProgressType = ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
+    private void deleteProgressForDays(final ViewDefinitionState view, final Entity tioc) {
+        String plannedProgressType = ((FieldComponent) view.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue()
                 .toString();
         List<Entity> progressForDays = getProgressForDayFromTIOC(tioc,
                 plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
@@ -237,4 +271,5 @@ public class ProductionPerShiftListeners {
         return tioc.getHasManyField(PROGRESS_FOR_DAYS).find().add(SearchRestrictions.eq(CORRECTED, corrected)).list()
                 .getEntities();
     }
+
 }

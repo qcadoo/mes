@@ -48,4 +48,5 @@ public class ProgressForDayHooks {
         Date dayOfDay = orderStartDate.plusDays(day - 1).toDate();
         entity.setField(ProgressForDayFields.DATE_OF_DAY, dayOfDay);
     }
+
 }
