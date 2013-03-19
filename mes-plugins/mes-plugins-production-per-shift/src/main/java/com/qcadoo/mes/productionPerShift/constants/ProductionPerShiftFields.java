@@ -37,4 +37,6 @@ public final class ProductionPerShiftFields {
 
     public static final String PLANNED_PROGRESS_TYPE = "plannedProgressType";
 
+    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
+
 }
