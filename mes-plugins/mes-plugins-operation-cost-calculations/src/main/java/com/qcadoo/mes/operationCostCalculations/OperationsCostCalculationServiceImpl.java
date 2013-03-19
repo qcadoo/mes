@@ -54,6 +54,7 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -123,10 +124,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         CalculateOperationCostMode mode = CalculateOperationCostMode.parseString(entity
                 .getStringField("calculateOperationCostsMode"));
-        BigDecimal quantity = convertNullToZero(entity.getField(L_QUANTITY));
+        BigDecimal quantity = BigDecimalUtils.convertNullToZero(entity.getField(L_QUANTITY));
         Boolean includeTPZ = entity.getBooleanField("includeTPZ");
         Boolean includeAdditionalTime = entity.getBooleanField("includeAdditionalTime");
-        BigDecimal margin = convertNullToZero(entity.getField("productionCostMargin"));
+        BigDecimal margin = BigDecimalUtils.convertNullToZero(entity.getField("productionCostMargin"));
 
         Entity costCalculation = copyTechnologyTree(entity);
 
@@ -230,8 +231,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         MathContext mc = numberService.getMathContext();
 
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
-        BigDecimal hourlyMachineCost = convertNullToZero(calcOperComp.getField(MACHINE_HOURLY_COST));
-        BigDecimal hourlyLaborCost = convertNullToZero(calcOperComp.getField(LABOR_HOURLY_COST));
+        BigDecimal hourlyMachineCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField(MACHINE_HOURLY_COST));
+        BigDecimal hourlyLaborCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField(LABOR_HOURLY_COST));
 
         BigDecimal durationMachine = BigDecimal.valueOf(dur.getMachineWorkTime());
         BigDecimal durationLabor = BigDecimal.valueOf(dur.getLaborWorkTime());
@@ -311,8 +312,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             final BigDecimal operationRuns, final BigDecimal margin) {
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
 
-        BigDecimal pieceworkCost = convertNullToZero(calcOperComp.getField("pieceworkCost"));
-        BigDecimal numberOfOperations = convertNullToOne(calcOperComp.getField("numberOfOperations"));
+        BigDecimal pieceworkCost = BigDecimalUtils.convertNullToZero(calcOperComp.getField("pieceworkCost"));
+        BigDecimal numberOfOperations = BigDecimalUtils.convertNullToOne(calcOperComp.getField("numberOfOperations"));
 
         BigDecimal pieceworkCostPerOperation = pieceworkCost.divide(numberOfOperations, numberService.getMathContext());
         BigDecimal operationCost = operationRuns.multiply(pieceworkCostPerOperation, numberService.getMathContext());
@@ -455,32 +456,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     (Integer) operComp.getField("quantityOfWorkstationTypes"));
         }
         return workstations;
-    }
-
-    private BigDecimal convertNullToZero(final Object value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        if (value instanceof BigDecimal) {
-            return (BigDecimal) value;
-        }
-
-        // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
-        // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
-        return BigDecimal.valueOf(Double.valueOf(value.toString()));
-    }
-
-    private BigDecimal convertNullToOne(final Object value) {
-        if (value == null) {
-            return BigDecimal.ONE;
-        }
-        if (value instanceof BigDecimal) {
-            return (BigDecimal) value;
-        }
-
-        // MAKU - using BigDecimal.valueOf(Double) instead of new BigDecimal(String) to prevent issue described at
-        // https://forums.oracle.com/forums/thread.jspa?threadID=2251030
-        return BigDecimal.valueOf(Double.valueOf(value.toString()));
     }
 
     private void debug(final String message) {

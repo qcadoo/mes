@@ -32,6 +32,7 @@ import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.mes.productionCountingWithCosts.util.DecimalUtils;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -43,7 +44,7 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
 
     @Override
     public void countRegisteredProductionMarginValue(final Entity productionBalance) {
-        final BigDecimal productionCostMargin = DecimalUtils.nullToZero(productionBalance
+        final BigDecimal productionCostMargin = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN));
         final BigDecimal registeredProductionCost = getRegisteredProductionCost(productionBalance);
         final BigDecimal productionCostMarginFactor = DecimalUtils
@@ -69,13 +70,13 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
     }
 
     private BigDecimal getRegisteredPieceworkCosts(final Entity productionBalance) {
-        return DecimalUtils.nullToZero(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.CYCLES_COSTS));
+        return BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.CYCLES_COSTS));
     }
 
     private BigDecimal getRegisteredHourlyCosts(final Entity productionBalance) {
         final BigDecimal registeredMachineCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.MACHINE_COSTS);
         final BigDecimal registeredLaborCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.LABOR_COSTS);
-        return DecimalUtils.nullToZero(registeredMachineCosts).add(DecimalUtils.nullToZero(registeredLaborCosts),
+        return BigDecimalUtils.convertNullToZero(registeredMachineCosts).add(DecimalUtils.nullToZero(registeredLaborCosts),
                 numberService.getMathContext());
     }
 

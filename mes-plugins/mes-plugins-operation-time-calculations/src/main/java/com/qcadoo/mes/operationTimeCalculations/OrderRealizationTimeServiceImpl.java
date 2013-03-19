@@ -45,6 +45,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -265,7 +266,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             final Entity productionLine, final boolean maxForWorkstation, final Map<Entity, BigDecimal> productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
         BigDecimal cycles = BigDecimal.ONE;
-        BigDecimal nextOperationAfterProducedQuantity = convertNullToZero(operationComponent
+        BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils.convertNullToZero(operationComponent
                 .getDecimalField("nextOperationAfterProducedQuantity"));
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
@@ -359,12 +360,5 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
     private Integer getIntegerValue(final Object value) {
         return value == null ? Integer.valueOf(0) : (Integer) value;
-    }
-
-    private BigDecimal convertNullToZero(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
     }
 }
