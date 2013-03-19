@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.productionLines.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -73,8 +74,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved) {
 
         MathContext mc = numberService.getMathContext();
-        BigDecimal laborUtilization = convertNullToZero(operationComponent.getDecimalField("laborUtilization"));
-        BigDecimal machineUtilization = convertNullToZero(operationComponent.getDecimalField("machineUtilization"));
+        BigDecimal laborUtilization = BigDecimalUtils.convertNullToZero(operationComponent.getDecimalField("laborUtilization"));
+        BigDecimal machineUtilization = BigDecimalUtils.convertNullToZero(operationComponent
+                .getDecimalField("machineUtilization"));
 
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
@@ -215,7 +217,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             operComp = operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDataDefinition()
                     .get(operComp.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getId());
         }
-        return convertNullToZero(operationRuns.get(operComp));
+        return BigDecimalUtils.convertNullToZero(operationRuns.get(operComp));
     }
 
     private Integer getWorkstationsQuantity(final Map<Entity, Integer> workstations, final Entity operationComponent) {
@@ -247,13 +249,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private Integer getIntegerValue(final Object value) {
         return value == null ? Integer.valueOf(0) : (Integer) value;
-    }
-
-    private BigDecimal convertNullToZero(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
     }
 
 }
