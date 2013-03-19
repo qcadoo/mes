@@ -161,7 +161,7 @@ public class MasterOrderHooksTest {
         // given
         given(masterOrder.getId()).willReturn(null);
         // when
-        masterOrderHooks.changedDeadlineInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
     }
@@ -172,8 +172,9 @@ public class MasterOrderHooksTest {
         // given
         given(masterOrder.getId()).willReturn(masterOrderId);
         given(masterOrder.getDateField(MasterOrderFields.DEADLINE)).willReturn(null);
+        given(masterOrder.getDateField(MasterOrderFields.COMPANY)).willReturn(null);
         // when
-        masterOrderHooks.changedDeadlineInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
 
@@ -196,7 +197,7 @@ public class MasterOrderHooksTest {
         given(masterOrder.getHasManyField(MasterOrderFields.ORDERS)).willReturn((EntityList) orders);
 
         // when
-        masterOrderHooks.changedDeadlineInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder).setField(MasterOrderFields.ORDERS, actualOrders);
     }
@@ -206,7 +207,7 @@ public class MasterOrderHooksTest {
         // given
         given(masterOrder.getId()).willReturn(null);
         // when
-        masterOrderHooks.changedCustomerInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
     }
@@ -218,7 +219,7 @@ public class MasterOrderHooksTest {
         given(masterOrder.getId()).willReturn(masterOrderId);
         given(masterOrder.getBelongsToField(MasterOrderFields.COMPANY)).willReturn(null);
         // when
-        masterOrderHooks.changedCustomerInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder, never()).setField(MasterOrderFields.ORDERS, Lists.newArrayList());
 
@@ -240,7 +241,7 @@ public class MasterOrderHooksTest {
         given(masterOrder.getHasManyField(MasterOrderFields.ORDERS)).willReturn((EntityList) orders);
 
         // when
-        masterOrderHooks.changedCustomerInOrder(masterOrderDD, masterOrder);
+        masterOrderHooks.changedDeadlineAndInOrder(masterOrderDD, masterOrder);
         // then
         verify(masterOrder).setField(MasterOrderFields.ORDERS, actualOrders);
     }

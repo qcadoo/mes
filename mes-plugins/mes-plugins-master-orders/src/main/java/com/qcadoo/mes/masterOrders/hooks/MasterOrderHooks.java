@@ -56,37 +56,26 @@ public class MasterOrderHooks {
         return cumulatedOrderPlannedQUantity;
     }
 
-    public void changedDeadlineInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public void changedDeadlineAndInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return;
         }
         Date deadline = masterOrder.getDateField(DEADLINE);
-        if (deadline == null) {
+        Entity customer = masterOrder.getBelongsToField(COMPANY);
+        if (deadline == null && customer == null) {
             return;
         }
         List<Entity> actualOrders = Lists.newArrayList();
         List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
         for (Entity order : allOrders) {
-            if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+            if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+                actualOrders.add(order);
+                continue;
+            }
+            if (deadline != null) {
                 order.setField(OrderFields.DEADLINE, deadline);
             }
-            actualOrders.add(order);
-        }
-        masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
-    }
-
-    public void changedCustomerInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        if (masterOrder.getId() == null) {
-            return;
-        }
-        Entity customer = masterOrder.getBelongsToField(COMPANY);
-        if (customer == null) {
-            return;
-        }
-        List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
-        for (Entity order : allOrders) {
-            if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+            if (customer != null) {
                 order.setField(OrderFields.COMPANY, customer);
             }
             actualOrders.add(order);
