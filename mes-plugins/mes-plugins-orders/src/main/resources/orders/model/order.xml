@@ -145,7 +145,7 @@
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="copyProductQuantity" />
 		<onSave class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onCorrectingTheRequestedVolume" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.orders.OrderService" method="clearOrderDatesOnCopy" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="clearOrSetSpecyfiedValueOrderFieldsOnCopy" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

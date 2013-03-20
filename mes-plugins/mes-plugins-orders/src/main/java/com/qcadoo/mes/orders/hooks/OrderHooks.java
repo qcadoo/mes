@@ -34,6 +34,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DESCRIPTION;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
+import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
@@ -349,5 +351,19 @@ public class OrderHooks {
         order.setField(COMMISSIONED_CORRECTED_QUANTITY, null);
         order.setField(AMOUNT_OF_PRODUCT_PRODUCED, null);
         order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, null);
+    }
+
+    public boolean clearOrSetSpecyfiedValueOrderFieldsOnCopy(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField(STATE, OrderState.PENDING.getStringValue());
+        entity.setField(EFFECTIVE_DATE_TO, null);
+        entity.setField(EFFECTIVE_DATE_FROM, null);
+        entity.setField(CORRECTED_DATE_FROM, null);
+        entity.setField(CORRECTED_DATE_TO, null);
+        entity.setField(DATE_FROM, entity.getDateField(START_DATE));
+        entity.setField(DATE_TO, entity.getDateField(FINISH_DATE));
+        entity.setField(DONE_QUANTITY, null);
+        entity.setField(EXTERNAL_NUMBER, null);
+        entity.setField(EXTERNAL_SYNCHRONIZED, true);
+        return true;
     }
 }
