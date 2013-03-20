@@ -88,6 +88,9 @@ public class MasterOrderDetailsHooks {
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
+            if (unit != null) {
+                field.setVisible(true);
+            }
             field.requestComponentUpdateState();
         }
     }

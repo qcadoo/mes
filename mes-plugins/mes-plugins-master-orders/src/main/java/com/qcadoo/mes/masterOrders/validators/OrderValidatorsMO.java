@@ -22,7 +22,6 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -198,8 +197,7 @@ public class OrderValidatorsMO {
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
         Date deadlineFromMaster = masterOrder.getDateField(DEADLINE);
         Date deadlineFromOrder = order.getDateField(DEADLINE);
-        if (order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())
-                || (deadlineFromMaster == null && deadlineFromOrder == null)
+        if ((deadlineFromMaster == null && deadlineFromOrder == null)
                 || (deadlineFromMaster == null && deadlineFromOrder != null)) {
             return true;
         }
