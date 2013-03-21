@@ -49,6 +49,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -60,6 +61,9 @@ public class OrderProductQuantityHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
@@ -152,9 +156,9 @@ public class OrderProductQuantityHooks {
         }
 
         BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)));
-        remainingAmountOfPTPComponent.setFieldValue(remainingAmountOfPTP);
-        order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfPTP);
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
+        remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
+        order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(remainingAmountOfPTP));
         order.getDataDefinition().save(order);
     }
 }
