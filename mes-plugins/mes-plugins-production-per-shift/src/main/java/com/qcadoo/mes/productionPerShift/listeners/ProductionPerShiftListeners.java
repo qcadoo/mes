@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
-import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
 import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.CORRECTED;
@@ -37,6 +36,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
@@ -77,38 +77,20 @@ public class ProductionPerShiftListeners {
             return;
         }
 
-        long ppsId = createCorrespondingProductionPerShfitEntity(orderId);
-
+        Long ppsId = helper.getPpsIdForOrder(orderId);
+        if (ppsId == null) {
+            ppsId = helper.createPpsForOrderAndReturnId(orderId);
+            Preconditions.checkNotNull(ppsId);
+        }
         redirect(viewState, ppsId);
     }
 
-    void redirect(final ViewDefinitionState viewState, final Long ppsId) {
+    private void redirect(final ViewDefinitionState viewState, final Long ppsId) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
         String url = "../page/productionPerShift/productionPerShiftDetails.html";
         viewState.redirectTo(url, false, true, parameters);
-    }
-
-    private long createCorrespondingProductionPerShfitEntity(final Long orderId) {
-        DataDefinition orderDD = dataDefinitionService.get("orders", "order");
-        Entity order = orderDD.get(orderId);
-
-        DataDefinition ppsDD = dataDefinitionService.get(PLUGIN_IDENTIFIER, MODEL_PRODUCTION_PER_SHIFT);
-
-        Entity pps = getPps(order, ppsDD);
-
-        if (pps == null) {
-            pps = ppsDD.create();
-            pps.setField("order", order);
-            ppsDD.save(pps);
-        }
-
-        return getPps(order, ppsDD).getId();
-    }
-
-    private Entity getPps(final Entity order, final DataDefinition ppsDD) {
-        return ppsDD.find().add(SearchRestrictions.belongsTo("order", order)).uniqueResult();
     }
 
     public void fillProducedField(final ViewDefinitionState viewState, final ComponentState componentState, final String[] args) {

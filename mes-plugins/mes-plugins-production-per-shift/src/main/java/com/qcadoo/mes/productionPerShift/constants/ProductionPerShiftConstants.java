@@ -23,14 +23,17 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public interface ProductionPerShiftConstants {
+public final class ProductionPerShiftConstants {
 
-    String PLUGIN_IDENTIFIER = "productionPerShift";
+    private ProductionPerShiftConstants() {
+    }
 
-    String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
+    public static final String PLUGIN_IDENTIFIER = "productionPerShift";
 
-    String MODEL_PROGRESS_FOR_DAY = "progressForDay";
+    public static final String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
 
-    String MODEL_DAILY_PROGRESS = "dailyProgress";
+    public static final String MODEL_PROGRESS_FOR_DAY = "progressForDay";
+
+    public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
 
 }
