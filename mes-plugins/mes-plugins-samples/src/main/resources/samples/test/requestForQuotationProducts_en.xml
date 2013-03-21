@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<requestForQuotationProducts>
+	<row REQUESTFORQUOTATION="000001" PRODUCT_NR="BR-3" ORDEREDQUANTITY="40.00000" ANNUALVOLUME="0.00000"/>
+	<row REQUESTFORQUOTATION="000001" PRODUCT_NR="BRD-1" ORDEREDQUANTITY="110.00000" ANNUALVOLUME="0.00000"/>
+	<row REQUESTFORQUOTATION="000001" PRODUCT_NR="STL-LG-NM" ORDEREDQUANTITY="1600.00000" ANNUALVOLUME="0.00000"/>
+	<row REQUESTFORQUOTATION="000001" PRODUCT_NR="BRD-2" ORDEREDQUANTITY="450.00000" ANNUALVOLUME="0.00000"/>
+	<row REQUESTFORQUOTATION="000001" PRODUCT_NR="TBL-LG" ORDEREDQUANTITY="440.00000" ANNUALVOLUME="0.00000"/>
+	<row REQUESTFORQUOTATION="000002" PRODUCT_NR="FR" ORDEREDQUANTITY="110.00000" ANNUALVOLUME="0.00000"/>
+</requestForQuotationProducts>

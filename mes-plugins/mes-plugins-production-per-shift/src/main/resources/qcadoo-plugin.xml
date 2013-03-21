@@ -82,7 +82,13 @@
 			plugin="technologies">
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
-
+	
+		<model:model-field model="reasonTypeOfChaningOrderState"
+			plugin="orders">
+			<model:belongsTo name="productionPerShift" model="productionPerShift"
+				plugin="productionPerShift" />
+		</model:model-field>
+		
 		<model:model-hook model="technologyInstanceOperationComponent"
 			plugin="technologies">
 			<model:validatesWith

@@ -90,6 +90,8 @@ public class ProductionRecordViewService {
 
     private static final String L_DONE_QUANTITY = "doneQuantity";
 
+    private static final String L_AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
+
     private static final String L_UNIT = "unit";
 
     private static final String L_NAME = "name";
@@ -309,10 +311,13 @@ public class ProductionRecordViewService {
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(L_DONE_QUANTITY);
+        FieldComponent amountOfPP = (FieldComponent) viewDefinitionState.getComponentByReference(L_AMOUNT_OF_PRODUCT_PRODUCED);
         if ("".equals(typeOfProductionRecording.getFieldValue())) {
             doneQuantity.setEnabled(true);
+            amountOfPP.setEnabled(true);
         } else {
             doneQuantity.setEnabled(false);
+            amountOfPP.setEnabled(false);
         }
     }
 

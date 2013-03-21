@@ -288,22 +288,6 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldClearOrderFieldsOnCopy() throws Exception {
-        // given
-        Entity order = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-
-        // when
-        boolean result = orderService.clearOrderDatesOnCopy(dataDefinition, order);
-        // then
-        assertTrue(result);
-        verify(order).setField("state", "01pending");
-        verify(order).setField("effectiveDateTo", null);
-        verify(order).setField("effectiveDateFrom", null);
-        verify(order).setField("doneQuantity", null);
-    }
-
-    @Test
     public void shouldSetAndDisableState() throws Exception {
         // given
         FormComponent form = mock(FormComponent.class);

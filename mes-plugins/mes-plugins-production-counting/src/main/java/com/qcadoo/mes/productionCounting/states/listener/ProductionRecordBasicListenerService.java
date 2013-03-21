@@ -56,6 +56,8 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 @Service
 public final class ProductionRecordBasicListenerService {
 
+    private static final String L_PRODUCED_QUANTITY = "producedQuantity";
+
     private static final String PRODUCT_L = "product";
 
     private static final String ORDER_FIELD = "order";
@@ -156,7 +158,7 @@ public final class ProductionRecordBasicListenerService {
         BigDecimal producedQuantity = BigDecimal.ZERO;
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            BigDecimal qty = (BigDecimal) basicProductionCounting.getField("producedQuantity");
+            BigDecimal qty = (BigDecimal) basicProductionCounting.getField(L_PRODUCED_QUANTITY);
             if (qty == null) {
                 qty = BigDecimal.ZERO;
             }
@@ -266,10 +268,10 @@ public final class ProductionRecordBasicListenerService {
                 continue;
             }
 
-            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField("producedQuantity");
+            final BigDecimal usedQuantity = (BigDecimal) productionCounting.getField(L_PRODUCED_QUANTITY);
             final BigDecimal productQuantity = (BigDecimal) productOut.getField(L_USED_QUANTITY);
             final BigDecimal result = operation.perform(usedQuantity, productQuantity);
-            productionCounting.setField("producedQuantity", result);
+            productionCounting.setField(L_PRODUCED_QUANTITY, result);
             productionCounting = productionCounting.getDataDefinition().save(productionCounting);
         }
     }

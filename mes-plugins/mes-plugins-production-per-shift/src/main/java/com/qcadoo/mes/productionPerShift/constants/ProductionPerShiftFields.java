@@ -31,10 +31,12 @@ public final class ProductionPerShiftFields {
 
     public static final String ORDER = "order";
 
-    public static final String PLANNED_PROGRESS_CORRECTION_TYPE = "plannedProgressCorrectionType";
+    public static final String PLANNED_PROGRESS_CORRECTION_TYPES = "plannedProgressCorrectionTypes";
 
     public static final String PLANNED_PROGRESS_CORRECTION_COMMENT = "plannedProgressCorrectionComment";
 
     public static final String PLANNED_PROGRESS_TYPE = "plannedProgressType";
+
+    public static final String TECHNOLOGY_INSTANCE_OPERATION_COMPONENT = "technologyInstanceOperationComponent";
 
 }

@@ -104,8 +104,8 @@ public class ProductionPerShiftDetailsHooksTest {
     private FormComponent form, form1;
 
     @Mock
-    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionType,
-            plannedProgressCorrectionComment, unitField, setRoot;
+    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionComment,
+            unitField, setRoot;
 
     @Mock
     private SearchResult result;
@@ -126,7 +126,7 @@ public class ProductionPerShiftDetailsHooksTest {
     Iterator<FormComponent> iteratorForm, iteratorForm1;
 
     @Mock
-    AwesomeDynamicListComponent adl, dprogress;
+    private AwesomeDynamicListComponent adl, dprogress, plannedProgressCorrectionTypes;
 
     @Mock
     private PPSHelper helper;
@@ -165,13 +165,13 @@ public class ProductionPerShiftDetailsHooksTest {
         when(technologyService.getMainOutputProductComponent(toc)).thenReturn(prodComp);
         when(prodComp.getBelongsToField("product")).thenReturn(prod);
         when(prod.getStringField("name")).thenReturn(prodName);
-        when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
+        when(view.getComponentByReference("progressForDays")).thenReturn(adl);
         when(adl.getFormComponents()).thenReturn(forms);
         when(forms.iterator()).thenReturn(iteratorForm);
         when(iteratorForm.next()).thenReturn(form);
         when(iteratorForm.hasNext()).thenReturn(true, false);
 
-        when(form.findFieldComponentByName("dailyProgressADL")).thenReturn(dprogress);
+        when(form.findFieldComponentByName("dailyProgress")).thenReturn(dprogress);
         when(dprogress.getFormComponents()).thenReturn(forms1);
         when(forms1.iterator()).thenReturn(iteratorForm1);
         when(iteratorForm1.next()).thenReturn(form1);
@@ -202,7 +202,7 @@ public class ProductionPerShiftDetailsHooksTest {
         when(techInstOperComps.getRoot()).thenReturn(root);
         when(view.getComponentByReference("productionPerShiftOperation")).thenReturn(operation);
         when(operation.getFieldValue()).thenReturn(null);
-        when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
+        when(view.getComponentByReference("progressForDays")).thenReturn(adl);
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
         when(plannedProgressType.getFieldValue()).thenReturn("01planned");
         when(order.getStringField("state")).thenReturn("01pending");
@@ -283,13 +283,13 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldDisableReasonOfCorrectionsFieldForPlannedProgressType() throws Exception {
         // given
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
-        when(view.getComponentByReference("plannedProgressCorrectionType")).thenReturn(plannedProgressCorrectionType);
+        when(view.getComponentByReference("plannedProgressCorrectionTypes")).thenReturn(plannedProgressCorrectionTypes);
         when(view.getComponentByReference("plannedProgressCorrectionComment")).thenReturn(plannedProgressCorrectionComment);
         when(plannedProgressType.getFieldValue()).thenReturn("01planned");
         // when
         hooks.disableReasonOfCorrection(view);
         // then
-        verify(plannedProgressCorrectionType).setEnabled(false);
+        verify(plannedProgressCorrectionTypes).setEnabled(false);
         verify(plannedProgressCorrectionComment).setEnabled(false);
     }
 
@@ -297,13 +297,13 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldEnableReasonOfCorrectionsFieldForCorrectedProgressType() throws Exception {
         // given
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
-        when(view.getComponentByReference("plannedProgressCorrectionType")).thenReturn(plannedProgressCorrectionType);
+        when(view.getComponentByReference("plannedProgressCorrectionTypes")).thenReturn(plannedProgressCorrectionTypes);
         when(view.getComponentByReference("plannedProgressCorrectionComment")).thenReturn(plannedProgressCorrectionComment);
         when(plannedProgressType.getFieldValue()).thenReturn("02corrected");
         // when
         hooks.disableReasonOfCorrection(view);
         // then
-        verify(plannedProgressCorrectionType).setEnabled(true);
+        verify(plannedProgressCorrectionTypes).setEnabled(true);
         verify(plannedProgressCorrectionComment).setEnabled(true);
     }
 
@@ -312,7 +312,7 @@ public class ProductionPerShiftDetailsHooksTest {
     public void shouldFillProgressForDaysSelectedOperation() throws Exception {
         // given
         String corrected = "02corrected";
-        when(view.getComponentByReference("progressForDaysADL")).thenReturn(adl);
+        when(view.getComponentByReference("progressForDays")).thenReturn(adl);
 
         when(view.getComponentByReference("plannedProgressType")).thenReturn(plannedProgressType);
         when(tioc.getHasManyField("progressForDays")).thenReturn(progressForDays);
@@ -349,7 +349,7 @@ public class ProductionPerShiftDetailsHooksTest {
         when(plannedProgressType.getFieldValue()).thenReturn("01planned");
 
         // when
-        hooks.changedButtonState(view);
+        hooks.changeButtonState(view);
 
         // then
         Mockito.verify(clearButton).setEnabled(false);
@@ -374,7 +374,7 @@ public class ProductionPerShiftDetailsHooksTest {
         when(plannedProgressType.getFieldValue()).thenReturn("02corrected");
 
         // when
-        hooks.changedButtonState(view);
+        hooks.changeButtonState(view);
 
         // then
         Mockito.verify(clearButton).setEnabled(true);

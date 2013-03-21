@@ -216,9 +216,9 @@
 				<option type="column" name="shift" fields="shift"
 					expression="#shift != null ? #shift['name'] : ''" />
 				<option type="column" name="worker" fields="worker" />
-				<option type="order" column="dateAndTime" direction="desc" />
 				<option type="searchable" value="false" />
 				<option type="orderable" value="false" />
+				<option type="order" column="dateAndTime" direction="asc" />
 			</component>
 		</windowTab>
 	</component>

@@ -13,12 +13,15 @@ public class MasterOrderProductDetailsListeners {
     @Autowired
     private MasterOrderProductDetailsHooks masterOrderProductDetailsHooks;
 
+    @Autowired
+    private MasterOrderDetailsListeners masterOrderDetailsListeners;
+
     public void fillUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderProductDetailsHooks.fillUnitField(view);
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        masterOrderProductDetailsHooks.fillDefaultTechnology(view);
+        masterOrderDetailsListeners.fillDefaultTechnology(view, state, args);
     }
 
 }

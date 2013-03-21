@@ -8,6 +8,7 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -19,8 +20,9 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -37,7 +39,10 @@ public class MasterOrderDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private OrderService orderService;
+    private ExpressionService expressionService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     public void generateMasterOrderNumer(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER, "form",
@@ -75,22 +80,36 @@ public class MasterOrderDetailsHooks {
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+        String unit = null;
 
-        if (product == null) {
-            return;
+        if (product != null) {
+            unit = product.getStringField(UNIT);
         }
-
-        String unit = product.getStringField(UNIT);
-
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
+            if (unit != null) {
+                field.setVisible(true);
+            }
             field.requestComponentUpdateState();
         }
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
-        orderService.fillDefaultTechnology(view);
+        LookupComponent productField = (LookupComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
+        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
+
+        Entity product = productField.getEntity();
+        if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
+            defaultTechnology.setFieldValue(null);
+            defaultTechnology.requestComponentUpdateState();
+            return;
+        }
+        Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+        String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
+                view.getLocale());
+        defaultTechnology.setFieldValue(defaultTechnologyValue);
+        defaultTechnology.requestComponentUpdateState();
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
