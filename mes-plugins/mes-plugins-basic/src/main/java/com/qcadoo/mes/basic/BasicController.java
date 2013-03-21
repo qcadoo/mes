@@ -41,7 +41,7 @@ import com.qcadoo.view.api.crud.CrudService;
 public class BasicController {
 
     @Autowired
-    private CrudService crudController;
+    private CrudService crudService;
 
     @Autowired
     private ParameterService parameterService;
@@ -50,7 +50,7 @@ public class BasicController {
     public ModelAndView getParameterPageView(final Locale locale) {
         JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
-        return crudController.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
+        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
     }
 
 }
