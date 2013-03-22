@@ -193,6 +193,10 @@ public class ProductionPerShiftListeners {
                 plannedProgressCorrectionCommentField.setFieldValue(plannedProgressCorrectionComment);
                 progressForDaysADL.setFieldValue(progressForDays);
                 plannedProgressCorrectionTypesADL.setFieldValue(plannedProgressCorrectionTypes);
+
+                plannedProgressCorrectionCommentField.requestComponentUpdateState();
+                progressForDaysADL.requestComponentUpdateState();
+                plannedProgressCorrectionTypesADL.requestComponentUpdateState();
             }
         }
     }
