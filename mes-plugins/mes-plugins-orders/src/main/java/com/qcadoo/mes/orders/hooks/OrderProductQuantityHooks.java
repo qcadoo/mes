@@ -107,6 +107,9 @@ public class OrderProductQuantityHooks {
     private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
         for (String reference : references) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            if (field == null) {
+                continue;
+            }
             field.setEnabled(enabled);
             field.requestComponentUpdateState();
         }
