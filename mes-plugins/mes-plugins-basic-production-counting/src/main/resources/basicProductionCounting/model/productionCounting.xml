@@ -24,13 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="typeOfCorrectionCauses" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
-	xmlns:xi="http://www.w3.org/2001/XInclude">
+<model name="basicProductionCounting" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<belongsTo name="order" model="order" />
-		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" required="true" />
+		<belongsTo name="order" model="order" plugin="orders" />
+		<belongsTo name="product" model="product" plugin="basic" />
+		<decimal name="plannedQuantity" />
+		<decimal name="usedQuantity" />
+		<decimal name="producedQuantity" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			method="checkValueOfQuantity" />
+	</hooks>
 </model>

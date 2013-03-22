@@ -759,8 +759,8 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2" width="3">
-								<component type="textarea" name="commentreasonTypeDeviationsQuantity"
-									field="#{form}.commentreasonTypeDeviationsQuantity" reference="commentreasonTypeDeviationsQuantity">
+								<component type="textarea" name="commentReasonTypeDeviationsQuantity"
+									field="#{form}.commentReasonTypeDeviationsQuantity" reference="commentReasonTypeDeviationsQuantity">
 								</component>
 							</layoutElement>
 						</component>

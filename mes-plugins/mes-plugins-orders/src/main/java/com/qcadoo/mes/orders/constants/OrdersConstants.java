@@ -56,4 +56,5 @@ public final class OrdersConstants {
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String FIELD_BATCH_REQUIRED = "batchRequired";
+
 }
