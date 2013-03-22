@@ -31,7 +31,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OFCORRECTION_CAUSES;
+import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER;
 
 import java.math.BigDecimal;
@@ -85,9 +85,9 @@ public class OrderProductQuantityHooks {
                 changedEnabledFields(view, references, true);
             }
         }
-        changedEnabledFields(view, Arrays.asList(TYPE_OFCORRECTION_CAUSES), false);
+        changedEnabledFields(view, Arrays.asList(TYPE_OF_CORRECTION_CAUSES), false);
         if (order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OFCORRECTION_CAUSES,
+            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
                     COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
             changedEnabledFields(view, references, false);
         }
@@ -96,7 +96,7 @@ public class OrderProductQuantityHooks {
                     || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
                     || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
 
-                List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OFCORRECTION_CAUSES,
+                List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
                         COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
                 changedEnabledFields(view, references, true);
             }

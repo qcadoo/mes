@@ -43,6 +43,9 @@ import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTIO
 import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
@@ -59,7 +62,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
@@ -108,9 +110,8 @@ public class OrderHooks {
     public boolean checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired(final DataDefinition dataDefinition,
             final Entity entity) {
         Entity parameter = parameterService.getParameter();
-        if (parameter.getBooleanField("reasonNeededWhenCorrectingDateFrom")
-                && entity.getField(OrderFields.CORRECTED_DATE_FROM) != null
-                && entity.getStringField(REASON_TYPES_CORRECTION_DATE_FROM) == null) {
+        if (parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM) && entity.getField(CORRECTED_DATE_FROM) != null
+                && entity.getHasManyField(REASON_TYPES_CORRECTION_DATE_FROM).isEmpty()) {
             entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_FROM),
                     "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
             return false;
@@ -121,9 +122,8 @@ public class OrderHooks {
     public boolean checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired(final DataDefinition dataDefinition,
             final Entity entity) {
         Entity parameter = parameterService.getParameter();
-        if (parameter.getBooleanField("reasonNeededWhenCorrectingDateTo")
-                && entity.getField(OrderFields.CORRECTED_DATE_TO) != null
-                && entity.getStringField(REASON_TYPES_CORRECTION_DATE_TO) == null) {
+        if (parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO) && entity.getField(CORRECTED_DATE_TO) != null
+                && entity.getHasManyField(REASON_TYPES_CORRECTION_DATE_TO).isEmpty()) {
             entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_TO),
                     "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
             return false;
@@ -244,7 +244,6 @@ public class OrderHooks {
         BigDecimal plannedQuantityDB = order.getDecimalField(PLANNED_QUANTITY);
 
         if (plannedQuantityDB.compareTo(plannedQuantity) != 0) {
-
             String state = entity.getStringField(STATE);
 
             if (PENDING.getStringValue().equals(state)) {
@@ -256,7 +255,6 @@ public class OrderHooks {
             }
 
         } else {
-
             if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)) != 0) {
                 entity.setField(PLANNED_QUANTITY, entity.getField(COMMISSIONED_CORRECTED_QUANTITY));
             } else if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedPlannedQuantity)) != 0) {
@@ -270,23 +268,20 @@ public class OrderHooks {
         BigDecimal amountOfProductProduced = entity.getDecimalField(AMOUNT_OF_PRODUCT_PRODUCED);
 
         String typeOfProductionRecording = entity.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if (StringUtils.isEmpty(typeOfProductionRecording)) {
 
+        if (StringUtils.isEmpty(typeOfProductionRecording)) {
             if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityDB)) != 0) {
                 entity.setField(AMOUNT_OF_PRODUCT_PRODUCED, entity.getField(DONE_QUANTITY));
             } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
                     BigDecimalUtils.convertNullToZero(amountOfProductProducedDB)) != 0) {
                 entity.setField(DONE_QUANTITY, entity.getField(AMOUNT_OF_PRODUCT_PRODUCED));
             }
-
         } else {
             entity.setField(AMOUNT_OF_PRODUCT_PRODUCED, entity.getField(DONE_QUANTITY));
         }
-
     }
 
     public void onCorrectingTheRequestedVolume(final DataDefinition orderDD, final Entity entity) {
-
         if (!neededWhenCorrectingTheRequestedVolume()) {
             return;
         }
@@ -306,14 +301,12 @@ public class OrderHooks {
             BigDecimal commissionedCorrectedQuantity = entity.getDecimalField(COMMISSIONED_CORRECTED_QUANTITY);
             BigDecimal commissionedCorrectedQuantityDB = order.getDecimalField(COMMISSIONED_CORRECTED_QUANTITY);
 
-            if (BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity).compareTo(
-                    BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityDB)) != 0) {
-                if (entity.getHasManyField("typeOfCorrectionCauses").size() == 0) {
-                    entity.addGlobalError("orders.order.correctingQuantity.missingTypeOfCorrectionCauses");
-                }
+            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity).compareTo(
+                    BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityDB)) != 0)
+                    && entity.getHasManyField(TYPE_OF_CORRECTION_CAUSES).isEmpty()) {
+                entity.addGlobalError("orders.order.correctingQuantity.missingTypeOfCorrectionCauses");
             }
         }
-
     }
 
     public boolean neededWhenCorrectingTheRequestedVolume() {
@@ -347,6 +340,7 @@ public class OrderHooks {
         if (order == null) {
             return;
         }
+
         order.setField(COMMISSIONED_PLANNED_QUANTITY, order.getDecimalField(PLANNED_QUANTITY));
         order.setField(COMMISSIONED_CORRECTED_QUANTITY, null);
         order.setField(AMOUNT_OF_PRODUCT_PRODUCED, null);
@@ -364,6 +358,8 @@ public class OrderHooks {
         entity.setField(DONE_QUANTITY, null);
         entity.setField(EXTERNAL_NUMBER, null);
         entity.setField(EXTERNAL_SYNCHRONIZED, true);
+
         return true;
     }
+
 }

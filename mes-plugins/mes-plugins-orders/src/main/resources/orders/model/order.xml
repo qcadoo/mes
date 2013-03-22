@@ -41,7 +41,7 @@
 		<string name="commentReasonTypeCorrectionDateFrom" />
 		<string name="commentReasonTypeCorrectionDateTo" />
 		<string name="externalNumber" unique="true"/>
-		<string name="commentreasonTypeDeviationsQuantity" />
+		<string name="commentReasonTypeDeviationsQuantity" />
 
 		<datetime name="dateFrom" />
 		<datetime name="dateTo" />
