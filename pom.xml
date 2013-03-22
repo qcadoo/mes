@@ -104,6 +104,11 @@
 			<artifactId>qcadoo-plugins-export</artifactId>
 			<version>${qcadoo.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo</groupId>
+			<artifactId>qcadoo-commons</artifactId>
+			<version>${qcadoo.version}</version>
+		</dependency>
 	</dependencies>
 	
 	<build>

@@ -58,11 +58,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
+import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -90,6 +92,9 @@ public class OrderHooks {
 
     @Autowired
     private OrderStateChangeDescriber describer;
+
+    @Autowired
+    private OrderDatesService orderDatesService;
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
         stateChangeEntityBuilder.buildInitial(describer, order, OrderState.PENDING);
@@ -186,26 +191,20 @@ public class OrderHooks {
     }
 
     private void fillStartDate(final Entity order) {
-        if (order.getField(EFFECTIVE_DATE_FROM) != null) {
-            order.setField(START_DATE, order.getField(EFFECTIVE_DATE_FROM));
-        } else if (order.getField(CORRECTED_DATE_FROM) != null) {
-            order.setField(START_DATE, order.getField(CORRECTED_DATE_FROM));
-        } else if (order.getField(DATE_FROM) != null) {
-            order.setField(START_DATE, order.getField(DATE_FROM));
+        DateRange dateRange = orderDatesService.getDates(order);
+        if (dateRange.getFrom() == null) {
+            order.setField(OrderFields.DATE_FROM, order.getField(OrderFields.START_DATE));
         } else {
-            order.setField(DATE_FROM, order.getField(START_DATE));
+            order.setField(OrderFields.START_DATE, dateRange.getFrom());
         }
     }
 
     private void fillEndDate(final Entity order) {
-        if (order.getField(EFFECTIVE_DATE_TO) != null) {
-            order.setField(FINISH_DATE, order.getField(EFFECTIVE_DATE_TO));
-        } else if (order.getField(CORRECTED_DATE_TO) != null) {
-            order.setField(FINISH_DATE, order.getField(CORRECTED_DATE_TO));
-        } else if (order.getField(DATE_TO) != null) {
-            order.setField(FINISH_DATE, order.getField(DATE_TO));
+        DateRange dateRange = orderDatesService.getDates(order);
+        if (dateRange.getTo() == null) {
+            order.setField(OrderFields.DATE_TO, order.getField(OrderFields.FINISH_DATE));
         } else {
-            order.setField(DATE_TO, order.getField(FINISH_DATE));
+            order.setField(OrderFields.FINISH_DATE, dateRange.getTo());
         }
     }
 
