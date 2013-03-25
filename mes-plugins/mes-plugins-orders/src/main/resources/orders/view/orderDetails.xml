@@ -654,78 +654,82 @@
 		<windowTab name="productQuantityTab">
 			<component type="gridLayout" name="productQuantityTablayout"
 				columns="3" rows="3">
-				<layoutElement column="1" row="1">
-					<component type="borderLayout" name="commissionedAmount">
-						<component type="gridLayout" name="commissionedAmountGridLayout"
-							columns="4" rows="2" reference="commissionedAmountGridLayout"
-							hasBorders="false">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="commissionedPlannedQuantity"
-									reference="commissionedPlannedQuantity" field="#{form}.commissionedPlannedQuantity">
-									<option type="labelWidth" value="55" />
-									<option type="alignment" value="right" />
+				<layoutElement column="1" row="1" height="3">
+					<component type="gridLayout" name="prodQuantityTablayout"
+						columns="1" rows="3">
+						<layoutElement column="1" row="1">
+							<component type="borderLayout" name="commissionedAmount">
+								<component type="gridLayout" name="commissionedAmountGridLayout"
+									columns="4" rows="2" reference="commissionedAmountGridLayout"
+									hasBorders="false">
+									<layoutElement column="1" row="1" width="3">
+										<component type="input" name="commissionedPlannedQuantity"
+											reference="commissionedPlannedQuantity" field="#{form}.commissionedPlannedQuantity">
+											<option type="labelWidth" value="55" />
+											<option type="alignment" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="4" row="1">
+										<component type="input" name="unitCPQ" reference="unitCPQ"
+											hasLabel="false">
+											<option type="textRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
+									<layoutElement column="1" row="2" width="3">
+										<component type="input" name="commissionedCorrectedQuantity"
+											reference="commissionedCorrectedQuantity" field="#{form}.commissionedCorrectedQuantity">
+											<option type="labelWidth" value="55" />
+											<option type="alignment" value="right" />
+										</component>
+									</layoutElement>
+									<layoutElement column="4" row="2">
+										<component type="input" name="unitCCQ" reference="unitCCQ"
+											hasLabel="false">
+											<option type="textRepresentationOnDisabled" value="true" />
+										</component>
+									</layoutElement>
 								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="unitCPQ" reference="unitCPQ"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2" width="3">
-								<component type="input" name="commissionedCorrectedQuantity"
-									reference="commissionedCorrectedQuantity" field="#{form}.commissionedCorrectedQuantity">
-									<option type="labelWidth" value="55" />
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="2">
-								<component type="input" name="unitCCQ" reference="unitCCQ"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
-						
-						<option type="label" value="commissionedAmountLabel" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="gridLayout" name="amountOfProductProducedGridLayout"
-						columns="4" rows="1" reference="amountOfProductProducedGridLayout"
-						hasBorders="false">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="amountOfProductProduced"
-								reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
-								<option type="labelWidth" value="55" />
-								<option type="alignment" value="right" />
+								<option type="label" value="commissionedAmountLabel" />
 							</component>
 						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="unitAOPP" reference="unitAOPP"
-								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+						<layoutElement column="1" row="2">
+							<component type="gridLayout" name="amountOfProductProducedGridLayout"
+								columns="4" rows="1" reference="amountOfProductProducedGridLayout"
+								hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="amountOfProductProduced"
+										reference="amountOfProductProduced" field="#{form}.amountOfProductProduced">
+										<option type="labelWidth" value="55" />
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="unitAOPP" reference="unitAOPP"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
 							</component>
 						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="3">
-					<component type="gridLayout"
-						name="remainingAmountOfProductToProduceGridLayout" columns="4"
-						rows="1" reference="remainingAmountOfProductToProduceGridLayout"
-						hasBorders="false">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="remainingAmountOfProductToProduce"
-								reference="remainingAmountOfProductToProduce" field="#{form}.remainingAmountOfProductToProduce"
-								defaultEnabled="never">
-								<option type="labelWidth" value="55" />
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="unitRAOPTP" reference="unitRAOPTP"
-								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+						<layoutElement column="1" row="3">
+							<component type="gridLayout"
+								name="remainingAmountOfProductToProduceGridLayout" columns="4"
+								rows="1" reference="remainingAmountOfProductToProduceGridLayout"
+								hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="remainingAmountOfProductToProduce"
+										reference="remainingAmountOfProductToProduce" field="#{form}.remainingAmountOfProductToProduce"
+										defaultEnabled="never">
+										<option type="labelWidth" value="55" />
+										<option type="alignment" value="right" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="unitRAOPTP" reference="unitRAOPTP"
+										hasLabel="false">
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
 							</component>
 						</layoutElement>
 					</component>
@@ -745,7 +749,7 @@
 									source="#{form}.typeOfCorrectionCauses" reference="typeOfCorrectionCauses">
 									<option type="hasBorder" value="false" />
 									<option type="hasButtons" value="true" />
-
+	
 									<components>
 										<component type="gridLayout" name="productQuantityGridLayout"
 											columns="1" rows="1">
@@ -764,7 +768,6 @@
 								</component>
 							</layoutElement>
 						</component>
-
 						<option type="label" value="reasonForCorrectionLabel" />
 					</component>
 				</layoutElement>
