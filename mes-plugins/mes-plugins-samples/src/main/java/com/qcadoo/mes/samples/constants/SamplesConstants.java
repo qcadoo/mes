@@ -430,4 +430,10 @@ public final class SamplesConstants {
 
     public static final String REQUEST_FOR_QUOTION = "requestForQuotation";
 
+    public static final String L_DELIVERY_STATE_CHANGES = "deliveryStateChanges";
+
+    public static final String L_NEGOTIAITION_STATE_CHANGES = "negotiationStateChanges";
+
+    public static final String L_OFFER_STATE_CHANGES = "offerStateChanges";
+
 }

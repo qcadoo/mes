@@ -148,14 +148,18 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         if (isEnabledOrEnabling(L_SUPPLY_NEGOTIATIONS)) {
             readDataFromXML(dataset, L_NEGOTIATIONS, locale);
             readDataFromXML(dataset, L_NEGOTIATION_PRODUCTS, locale);
+            readDataFromXML(dataset, L_NEGOTIATION_STATE_CHANGE, locale);
             readDataFromXML(dataset, L_REQUEST_FOR_QUOTION, locale);
             readDataFromXML(dataset, L_REQUEST_FOR_QUOTION_PRODUCTS, locale);
+            readDataFromXML(dataset, L_REQUEST_FOR_QUOTION_STATE_CHANGE, locale);
             readDataFromXML(dataset, L_OFFER, locale);
             readDataFromXML(dataset, L_OFFER_PRODUCTS, locale);
+            readDataFromXML(dataset, L_OFFER_STATE_CHANGES, locale);
 
             if (isEnabledOrEnabling(L_DELIVERY)) {
                 readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
                 readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
+                readDataFromXML(dataset, L_DELIVERY_STATE_CHANGES, locale);
             }
 
         }
@@ -249,7 +253,76 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             changedDeliveryState(values);
         } else if (L_ORDERED_PRODUCTS.equals(type)) {
             addOrderProducts(values);
+        } else if (L_DELIVERY_STATE_CHANGES.equals(type)) {
+            addDeliveryStateChange(values);
+        } else if (L_NEGOTIAITION_STATE_CHANGES.equals(type)) {
+            addNegotiationStateChange(values);
+        } else if (L_OFFER_STATE_CHANGES.equals(type)) {
+            addOfferStateChange(values);
+        } else if (L_REQUEST_FOR_QUOTION_STATE_CHANGE.equals(type)) {
+            addRequestForQuotationStateChange(values);
         }
+    }
+
+    private void addRequestForQuotationStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity requestForQuotationStateChange = dataDefinitionService
+                .get(L_SUPPLY_NEGOTIATIONS, "requestForQuotationStateChange").create();
+        requestForQuotationStateChange.setField("dateAndTime", new Date(date));
+        requestForQuotationStateChange.setField("sourceState", values.get("sourcestate"));
+        requestForQuotationStateChange.setField("targetState", values.get("targetstate"));
+        requestForQuotationStateChange.setField("status", values.get("status"));
+        requestForQuotationStateChange.setField("phase", values.get("phase"));
+        requestForQuotationStateChange.setField("worker", values.get("worker"));
+        requestForQuotationStateChange.setField(REQUEST_FOR_QUOTION,
+                getRequestForQuotationByNumber(values.get("requestforquotation")));
+        requestForQuotationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        requestForQuotationStateChange.getDataDefinition().save(requestForQuotationStateChange);
+
+    }
+
+    private void addOfferStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity offerStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offerStateChange").create();
+        offerStateChange.setField("dateAndTime", new Date(date));
+        offerStateChange.setField("sourceState", values.get("sourcestate"));
+        offerStateChange.setField("targetState", values.get("targetstate"));
+        offerStateChange.setField("status", values.get("status"));
+        offerStateChange.setField("phase", values.get("phase"));
+        offerStateChange.setField("worker", values.get("worker"));
+        offerStateChange.setField(OFFER, getOfferByNumber(values.get(OFFER)));
+        offerStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        offerStateChange.getDataDefinition().save(offerStateChange);
+
+    }
+
+    private void addNegotiationStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity negotiationStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiationStateChange").create();
+        negotiationStateChange.setField("dateAndTime", new Date(date));
+        negotiationStateChange.setField("sourceState", values.get("sourcestate"));
+        negotiationStateChange.setField("targetState", values.get("targetstate"));
+        negotiationStateChange.setField("status", values.get("status"));
+        negotiationStateChange.setField("phase", values.get("phase"));
+        negotiationStateChange.setField("worker", values.get("worker"));
+        negotiationStateChange.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
+        negotiationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        negotiationStateChange.getDataDefinition().save(negotiationStateChange);
+
+    }
+
+    private void addDeliveryStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity deliveryStateChange = dataDefinitionService.get(L_DELIVERY, "deliveryStateChange").create();
+        deliveryStateChange.setField("dateAndTime", new Date(date));
+        deliveryStateChange.setField("sourceState", values.get("sourcestate"));
+        deliveryStateChange.setField("targetState", values.get("targetstate"));
+        deliveryStateChange.setField("status", values.get("status"));
+        deliveryStateChange.setField("phase", values.get("phase"));
+        deliveryStateChange.setField("worker", values.get("worker"));
+        deliveryStateChange.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
+        deliveryStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        deliveryStateChange.getDataDefinition().save(deliveryStateChange);
     }
 
     private void addOrderProducts(final Map<String, String> values) {
@@ -342,7 +415,9 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         negotation.setField(L_NAME, values.get(L_NAME));
         negotation.setField("farthestLimitDate", values.get(L_FARTHESTLIMITDATE));
         negotation.setField(L_STATE, values.get(L_STATE));
+        negotation.setField("includedCompanies", Lists.newArrayList(getCompany("2"), getCompany("3")));
         negotation.getDataDefinition().save(negotation);
+
     }
 
     private void changeddNegotiationState(final Map<String, String> values) {
