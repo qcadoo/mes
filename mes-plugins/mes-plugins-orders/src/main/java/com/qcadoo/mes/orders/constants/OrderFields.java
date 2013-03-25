@@ -101,8 +101,8 @@ public final class OrderFields {
 
     public static final String REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE = "remainingAmountOfProductToProduce";
 
-    public static final String COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY = "commentreasonTypeDeviationsQuantity";
+    public static final String COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY = "commentReasonTypeDeviationsQuantity";
 
-    public static final String TYPE_OFCORRECTION_CAUSES = "typeOfCorrectionCauses";
+    public static final String TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 
 }

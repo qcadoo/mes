@@ -65,11 +65,13 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class OrderTimePredictionService {
 
-    private static final String PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
+    private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
-    private static final String TECHNOLOGY_COMPONENT = "technology";
+    private static final String L_QCADOOVIEW_VALIDATE_FIELD_ERROR_INVALIDNUMERICFORMAT = "qcadooView.validate.field.error.invalidNumericFormat";
 
-    private static final String QUANTITY_COMPONENT = "quantity";
+    private static final String L_TECHNOLOGY = "technology";
+
+    private static final String L_QUANTITY = "quantity";
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -247,33 +249,38 @@ public class OrderTimePredictionService {
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(TECHNOLOGY_COMPONENT);
-        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(QUANTITY_COMPONENT);
+        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_TECHNOLOGY);
+        FieldComponent plannedQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(L_QUANTITY);
         FieldComponent dateFrom = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_FROM);
         FieldComponent dateTo = (FieldComponent) viewDefinitionState.getComponentByReference(DATE_TO);
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState.getComponentByReference("productionLine");
 
         if (technologyLookup.getFieldValue() == null) {
-            technologyLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+            technologyLookup.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
         if (!StringUtils.hasText((String) dateFrom.getFieldValue())) {
-            dateFrom.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+            dateFrom.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
-            plannedQuantity.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+            plannedQuantity.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
         if (productionLineLookup.getFieldValue() == null) {
-            productionLineLookup.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+            productionLineLookup.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
-        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                viewDefinitionState.getLocale());
-
+        BigDecimal quantity = null;
+        try {
+            quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
+                    viewDefinitionState.getLocale());
+        } catch (IllegalStateException e) {
+            plannedQuantity.addMessage(L_QCADOOVIEW_VALIDATE_FIELD_ERROR_INVALIDNUMERICFORMAT, MessageType.FAILURE);
+            return;
+        }
         if (quantity.intValue() < 0) {
-            plannedQuantity.addMessage(PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+            plannedQuantity.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 

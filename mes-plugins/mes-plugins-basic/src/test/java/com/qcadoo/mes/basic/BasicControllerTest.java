@@ -54,7 +54,7 @@ public class BasicControllerTest {
         given(parameterService.getParameterId()).willReturn(13L);
 
         BasicController basicController = new BasicController();
-        setField(basicController, "crudController", crudController);
+        setField(basicController, "crudService", crudController);
         setField(basicController, "parameterService", parameterService);
 
         // // when

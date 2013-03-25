@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -52,30 +54,75 @@ public class ProductionPerShiftListenersTest {
     @Mock
     private DataDefinitionService dataDefinitionService;
 
+    @Mock
+    private PPSHelper helper;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         productionPerShiftListeners = new ProductionPerShiftListeners();
 
+        ReflectionTestUtils.setField(productionPerShiftListeners, "helper", helper);
         ReflectionTestUtils.setField(productionPerShiftListeners, "dataDefinitionService", dataDefinitionService);
     }
 
     @Test
-    public void shouldRedirectToTheProductionPerShiftView() {
+    public void shouldRedirectToProductionPerShiftView() {
         // given
-        Long id = 5L;
-        given(componentState.getFieldValue()).willReturn(id);
-        String url = "../page/productionPerShift/productionPerShiftDetails.html";
+        Long givenOrderId = 1L;
+        Long expectedPpsId = 50L;
+
+        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(expectedPpsId);
 
         // when
-        productionPerShiftListeners.redirect(viewState, id);
+        productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
 
         // then
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", id);
-
-        verify(viewState).redirectTo(url, false, true, parameters);
+        verifyRedirectToPpsDetails(expectedPpsId);
     }
 
+    @Test
+    public void shouldRedirectToJustCreatedProductionPerShiftView() {
+        // given
+        Long givenOrderId = 1L;
+        Long expectedPpsId = 50L;
+
+        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(null);
+        given(helper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(expectedPpsId);
+
+        // when
+        productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
+
+        // then
+        verifyRedirectToPpsDetails(expectedPpsId);
+    }
+
+    private void verifyRedirectToPpsDetails(final Long expectedPpsId) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", expectedPpsId);
+
+        verify(viewState).redirectTo("../page/productionPerShift/productionPerShiftDetails.html", false, true, parameters);
+    }
+
+    @Test
+    public void shouldThrowExceptionIfProductionPerShiftCanNotBeSaved() {
+        // given
+        Long givenOrderId = 1L;
+
+        given(componentState.getFieldValue()).willReturn(givenOrderId);
+        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(null);
+        given(helper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(null);
+
+        // when & then
+        try {
+            productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
+            Assert.fail();
+        } catch (NullPointerException ex) {
+            // test passed
+        }
+
+    }
 }

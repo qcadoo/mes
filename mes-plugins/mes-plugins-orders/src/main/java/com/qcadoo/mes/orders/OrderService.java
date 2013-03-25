@@ -26,10 +26,8 @@ package com.qcadoo.mes.orders;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
@@ -49,11 +47,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
@@ -93,6 +94,9 @@ public class OrderService {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OrderDatesService orderDatesService;
 
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
@@ -261,8 +265,16 @@ public class OrderService {
         technology.setEnabled(!disabled);
     }
 
-    public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        return compareDates(dataDefinition, entity, START_DATE, FINISH_DATE);
+    public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity order) {
+        DateRange orderDateRange = orderDatesService.getDates(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return true;
+        }
+        order.addError(dataDefinition.getField(OrderFields.FINISH_DATE), "orders.validate.global.error.datesOrder");
+        return false;
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
@@ -347,23 +359,6 @@ public class OrderService {
         SearchResult searchResult = searchCriteria.list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
-    }
-
-    private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,
-            final String dateToField) {
-        Date dateFrom = (Date) entity.getField(dateFromField);
-        Date dateTo = (Date) entity.getField(dateToField);
-
-        if (dateFrom == null || dateTo == null) {
-            return true;
-        }
-
-        if (dateFrom.after(dateTo)) {
-            entity.addError(dataDefinition.getField(dateToField), "orders.validate.global.error.datesOrder");
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public boolean checkAutogenealogyRequired() {
@@ -488,4 +483,5 @@ public class OrderService {
             fieldComponent.requestComponentUpdateState();
         }
     }
+
 }

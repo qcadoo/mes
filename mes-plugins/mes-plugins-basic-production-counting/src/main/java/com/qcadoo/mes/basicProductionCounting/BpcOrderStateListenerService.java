@@ -95,4 +95,5 @@ public class BpcOrderStateListenerService {
         productionCounting.setField("usedQuantity", numberService.setScale(BigDecimal.ZERO));
         productionCounting.getDataDefinition().save(productionCounting);
     }
+
 }
