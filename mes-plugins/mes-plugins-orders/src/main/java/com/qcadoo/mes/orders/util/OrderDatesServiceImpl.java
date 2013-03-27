@@ -42,4 +42,18 @@ public final class OrderDatesServiceImpl implements OrderDatesService {
         return null;
     }
 
+    private Date getDate(final Entity entity, final String fieldName) {
+        Date fieldValue = entity.getDateField(fieldName);
+        if (fieldValue != null) {
+            return fieldValue;
+        }
+
+        return null;
+    }
+
+    @Override
+    public DateRange getDatesFromAndTo(Entity order) {
+        return new DateRange(getDate(order, OrderFields.START_DATE), getDate(order, OrderFields.FINISH_DATE));
+    }
+
 }

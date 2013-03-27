@@ -19,4 +19,13 @@ public interface OrderDatesService {
      */
     DateRange getDates(final Entity order);
 
+    /**
+     * Get dateFrom and dateTo (expressed as {@link DateRange})
+     * 
+     * @param order
+     * @return {@link DateRange} representing start and finish dates
+     * @since 1.2.1
+     */
+    DateRange getDatesFromAndTo(final Entity order);
+
 }

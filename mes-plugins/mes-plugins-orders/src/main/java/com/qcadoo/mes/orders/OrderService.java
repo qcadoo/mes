@@ -55,6 +55,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
@@ -266,7 +267,7 @@ public class OrderService {
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity order) {
-        DateRange orderDateRange = orderDatesService.getDates(order);
+        DateRange orderDateRange = orderDatesService.getDatesFromAndTo(order);
         Date dateFrom = orderDateRange.getFrom();
         Date dateTo = orderDateRange.getTo();
 
@@ -274,7 +275,21 @@ public class OrderService {
             return true;
         }
         order.addError(dataDefinition.getField(OrderFields.FINISH_DATE), "orders.validate.global.error.datesOrder");
+        // order.addGlobalError("orders.validate.global.error.datesOrder");
         return false;
+    }
+
+    public void checkOrderDates(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        DateRange orderDateRange = orderDatesService.getDates(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return;
+        }
+        stateChangeContext.addValidationError("orders.validate.global.error.datesOrder.overdue");
+
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {

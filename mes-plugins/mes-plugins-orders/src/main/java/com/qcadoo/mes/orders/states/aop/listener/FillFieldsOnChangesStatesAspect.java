@@ -29,7 +29,10 @@ import java.util.Date;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -42,8 +45,12 @@ import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
+@Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
 public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect {
+
+    @Autowired
+    private OrderService orderService;
 
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
@@ -51,6 +58,7 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     public void afterStartProgress(final StateChangeContext stateChangeContext, final int phase) {
         stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
         stateChangeContext.getOwner().setField(OrderFields.DONE_QUANTITY, BigDecimal.ZERO);
+        orderService.checkOrderDates(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)
