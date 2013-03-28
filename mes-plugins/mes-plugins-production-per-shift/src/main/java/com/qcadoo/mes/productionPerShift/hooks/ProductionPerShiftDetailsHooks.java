@@ -82,6 +82,8 @@ public class ProductionPerShiftDetailsHooks {
 
     private static final String ORDER_PLANNED_START_DATE = "orderPlannedStartDate";
 
+    private static final String ORDER_EFFECTIVE_START_DATE = "orderEffectiveStartDate";
+
     private static final String L_ORDER = "order";
 
     private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDays";
@@ -191,10 +193,13 @@ public class ProductionPerShiftDetailsHooks {
         Entity order = ((LookupComponent) view.getComponentByReference(L_ORDER)).getEntity();
         FieldComponent orderPlannedStartDate = (FieldComponent) view.getComponentByReference(ORDER_PLANNED_START_DATE);
         FieldComponent orderCorrectedStartDate = (FieldComponent) view.getComponentByReference(ORDER_CORRECTED_START_DATE);
+        FieldComponent orderEffectiveStartDate = (FieldComponent) view.getComponentByReference(ORDER_EFFECTIVE_START_DATE);
         orderPlannedStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.DATE_FROM)));
         orderCorrectedStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.CORRECTED_DATE_FROM)));
+        orderEffectiveStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.EFFECTIVE_DATE_FROM)));
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
+        orderPlannedStartDate.requestComponentUpdateState();
     }
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {

@@ -88,7 +88,7 @@
 								<layoutElement column="1" row="2">
 									<component type="borderLayout" name="orderStartDate">
 										<component type="gridLayout" name="orderStartDateGridLayout"
-											columns="1" rows="2">
+											columns="1" rows="3">
 											<layoutElement column="1" row="1">
 												<component type="calendar" name="orderPlannedStartDate"
 													reference="orderPlannedStartDate" defaultEnabled="false">
@@ -98,6 +98,12 @@
 											<layoutElement column="1" row="2">
 												<component type="calendar" name="orderCorrectedStartDate"
 													reference="orderCorrectedStartDate" defaultEnabled="false">
+													<option type="withTimePicker" value="true" />
+												</component>
+											</layoutElement>
+											<layoutElement column="1" row="3">
+												<component type="calendar" name="orderEffectiveStartDate"
+													reference="orderEffectiveStartDate" defaultEnabled="false">
 													<option type="withTimePicker" value="true" />
 												</component>
 											</layoutElement>
