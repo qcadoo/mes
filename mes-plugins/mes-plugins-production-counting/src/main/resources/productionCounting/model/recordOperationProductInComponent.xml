@@ -33,13 +33,9 @@
 		
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="5" />
 		</decimal>
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="5" />
 		</decimal>
 		<decimal name="balance" />
 	</fields>

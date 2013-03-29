@@ -177,3 +177,21 @@ CREATE TABLE orders_reasontypeofchaningorderstate
 );
 
 -- end
+
+-- Table: productioncounting_recordoperationproductincomponent
+-- changed: 29.03.2013
+ALTER TABLE  productioncounting_recordoperationproductincomponent 
+ ALTER  COLUMN plannedquantity SET DATA TYPE numeric(12,5);
+ALTER TABLE  productioncounting_recordoperationproductincomponent 
+ ALTER  COLUMN usedquantity SET DATA TYPE numeric(12,5);
+ 
+-- end
+
+-- Table: productioncounting_recordoperationproductoutcomponent
+-- changed: 29.03.2013
+ALTER TABLE  productioncounting_recordoperationproductoutcomponent 
+ ALTER  COLUMN plannedquantity SET DATA TYPE numeric(12,5);
+ALTER TABLE  productioncounting_recordoperationproductoutcomponent 
+ ALTER  COLUMN usedquantity SET DATA TYPE numeric(12,5);
+ 
+ --end

@@ -281,7 +281,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         calcOperComp.setField(L_TOTAL_OPERATION_COST,
                 numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
 
-        checkArgument(calcOperComp.getDataDefinition().save(calcOperComp).isValid(), "invalid operationComponent");
+        calcOperComp.getDataDefinition().save(calcOperComp);
     }
 
     public BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode operationComponent,
