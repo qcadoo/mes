@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="technologyInstanceOperationComponent"
 			model="technologyInstanceOperationComponent" plugin="technologies" />
-		<integer name="day" default="1" />
+		<integer name="day" default="1" required="true" />
 		<hasMany name="dailyProgress" joinField="progressForDay"
 			model="dailyProgress" cascade="delete" copyable="true" />
 		<boolean name="corrected" default="false" />
