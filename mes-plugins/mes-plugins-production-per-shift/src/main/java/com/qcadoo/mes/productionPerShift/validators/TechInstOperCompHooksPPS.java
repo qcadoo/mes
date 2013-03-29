@@ -50,6 +50,11 @@ public class TechInstOperCompHooksPPS {
                     .getBooleanField(HAS_CORRECTIONS) || progressForDay.getField(DAY) == null) {
                 continue;
             }
+            if (!(progressForDay.getField(DAY) instanceof Long)) {
+                progressForDay.addError(progressForDay.getDataDefinition().getField(DAY),
+                        "productionPerShift.progressForDay.haveToBeInteger");
+                return false;
+            }
             Integer day = ((Long) progressForDay.getField(DAY)).intValue();
             if (day != null && dayNumber.compareTo(day) == -1) {
                 dayNumber = day;
