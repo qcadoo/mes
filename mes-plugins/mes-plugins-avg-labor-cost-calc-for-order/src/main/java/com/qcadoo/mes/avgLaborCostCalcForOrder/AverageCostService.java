@@ -168,7 +168,8 @@ public class AverageCostService {
                 .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine));
         if (state.equals(AssignmentToShiftState.CORRECTED.getStringValue())) {
             staffAssignmentToShifts = searchCriteriaBuilder
-                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.CORRECTED)).list().getEntities();
+                    .add(SearchRestrictions.eq("state", StaffAssignmentToShiftState.CORRECTED.getStringValue())).list()
+                    .getEntities();
         } else if (state.equals(AssignmentToShiftState.ACCEPTED.getStringValue())
                 || state.equals(AssignmentToShiftState.DURING_CORRECTION.getStringValue())) {
             staffAssignmentToShifts = searchCriteriaBuilder
