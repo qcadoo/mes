@@ -68,6 +68,13 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
         stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
     }
 
+    @RunInPhase(OrderStateChangePhase.LAST)
+    @RunForStateTransition(targetState = OrderStateStringValues.ABANDONED)
+    @After(PHASE_EXECUTION_POINTCUT)
+    public void afterAbandoning(final StateChangeContext stateChangeContext, final int phase) {
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
+    }
+
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
     }
