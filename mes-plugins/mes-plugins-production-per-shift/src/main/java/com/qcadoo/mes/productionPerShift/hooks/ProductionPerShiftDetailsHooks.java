@@ -199,7 +199,7 @@ public class ProductionPerShiftDetailsHooks {
         orderEffectiveStartDate.setFieldValue(DateUtils.toDateTimeString((Date) order.getField(OrderFields.EFFECTIVE_DATE_FROM)));
         orderPlannedStartDate.requestComponentUpdateState();
         orderCorrectedStartDate.requestComponentUpdateState();
-        orderPlannedStartDate.requestComponentUpdateState();
+        orderEffectiveStartDate.requestComponentUpdateState();
     }
 
     public void disableReasonOfCorrection(final ViewDefinitionState view) {

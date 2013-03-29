@@ -104,8 +104,8 @@ public class ProductionPerShiftDetailsHooksTest {
     private FormComponent form, form1;
 
     @Mock
-    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, plannedProgressCorrectionComment,
-            unitField, setRoot;
+    private FieldComponent operation, plannedProgressType, plannedDate, corretedDate, effectiveDate,
+            plannedProgressCorrectionComment, unitField, setRoot;
 
     @Mock
     private SearchResult result;
@@ -251,10 +251,12 @@ public class ProductionPerShiftDetailsHooksTest {
         when(orderDD.get(orderId)).thenReturn(order);
         when(view.getComponentByReference("orderPlannedStartDate")).thenReturn(plannedDate);
         when(view.getComponentByReference("orderCorrectedStartDate")).thenReturn(corretedDate);
+        when(view.getComponentByReference("orderEffectiveStartDate")).thenReturn(effectiveDate);
 
         Date planned = new Date();
         when(order.getField("dateFrom")).thenReturn(planned);
         when(order.getField("correctedDateFrom")).thenReturn(null);
+        when(order.getField("effectiveDateFrom")).thenReturn(null);
         // when
         hooks.setOrderStartDate(view);
         // then
@@ -267,16 +269,20 @@ public class ProductionPerShiftDetailsHooksTest {
         when(orderDD.get(orderId)).thenReturn(order);
         when(view.getComponentByReference("orderPlannedStartDate")).thenReturn(plannedDate);
         when(view.getComponentByReference("orderCorrectedStartDate")).thenReturn(corretedDate);
+        when(view.getComponentByReference("orderEffectiveStartDate")).thenReturn(effectiveDate);
 
         Date planned = new Date();
         Date corrected = new Date();
+        Date effective = new Date();
         when(order.getField("dateFrom")).thenReturn(planned);
         when(order.getField("correctedDateFrom")).thenReturn(corrected);
+        when(order.getField("orderEffectiveStartDate")).thenReturn(effective);
         // when
         hooks.setOrderStartDate(view);
         // then
         verify(plannedDate).setFieldValue(Mockito.any(Date.class));
         verify(corretedDate).setFieldValue(Mockito.any(Date.class));
+        verify(effectiveDate).setFieldValue(Mockito.any(Date.class));
     }
 
     @Test
