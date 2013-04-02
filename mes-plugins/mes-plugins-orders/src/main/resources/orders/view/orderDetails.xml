@@ -197,10 +197,13 @@
 							declineOrder.setIcon('deleteIcon16.png');
 							interruptOrder.enable();
 							del.disable();
+						}  else if (state == "04completed"){ 
+							cancel.disable();
+							del.disable();
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable()
 						} else if (state == "05declined"){
-							save.disable();
-							saveBack.disable();
-							saveNew.disable();
 							cancel.disable();
 							acceptOrder.disable();
 							declineOrder.disable();
@@ -216,7 +219,14 @@
 							declineOrder.setIcon('deleteIcon16.png');
 							interruptOrder.disable();
 							del.disable();
-						} else {
+						} else if (state == "07abandoned"){ 
+							cancel.disable();
+							del.disable();
+							acceptOrder.disable();
+							declineOrder.disable();
+							interruptOrder.disable()
+						}
+						else {
 							save.disable();
 							saveBack.disable();
 							saveNew.disable();
@@ -237,6 +247,7 @@
 							declineOrder.disable();
 							interruptOrder.disable();
 						}
+						
 						}
 					});
 					]]>

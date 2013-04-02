@@ -58,6 +58,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -308,17 +309,31 @@ public class ProductionRecordViewService {
     }
 
     public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
+        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        Entity order = null;
+        if (form.getEntityId() != null) {
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    form.getEntityId());
+        }
+
         FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent doneQuantity = (FieldComponent) viewDefinitionState.getComponentByReference(L_DONE_QUANTITY);
         FieldComponent amountOfPP = (FieldComponent) viewDefinitionState.getComponentByReference(L_AMOUNT_OF_PRODUCT_PRODUCED);
-        if ("".equals(typeOfProductionRecording.getFieldValue())) {
+
+        if (order == null || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
+            doneQuantity.setEnabled(false);
+            amountOfPP.setEnabled(false);
+        } else if ("".equals(typeOfProductionRecording.getFieldValue())
+                || TypeOfProductionRecording.BASIC.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
             doneQuantity.setEnabled(true);
             amountOfPP.setEnabled(true);
         } else {
             doneQuantity.setEnabled(false);
             amountOfPP.setEnabled(false);
         }
+
     }
 
     public void setProducedQuantity(final ViewDefinitionState view) {
