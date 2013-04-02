@@ -179,6 +179,7 @@
 
 						<option type="deletable" value="true" />
 						<option type="creatable" value="true" />
+						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
@@ -258,6 +259,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="showErrorWhenCumulatedQuantity" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="disabledGridWhenMasterOrderDoesnotHaveProduct" />
 	</hooks>
 
 </view>
