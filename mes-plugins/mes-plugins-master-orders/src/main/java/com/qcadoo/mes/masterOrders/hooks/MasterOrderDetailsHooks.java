@@ -129,4 +129,20 @@ public class MasterOrderDetailsHooks {
         }
     }
 
+    public void disabledGridWhenMasterOrderDoesnotHaveProduct(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity masterOrder = form.getEntity();
+        if (masterOrder == null) {
+            return;
+        }
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference("ordersGrid");
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference("productsGrid");
+        if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
+                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && productsGrid.getEntities().isEmpty()) {
+            ordersGrid.setEditable(false);
+        } else {
+            ordersGrid.setEditable(true);
+        }
+    }
+
 }
