@@ -35,5 +35,7 @@
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 	</fields>
-	<hooks />
+	<hooks>
+		<onSave class="com.qcadoo.mes.productionLines.hooks.WorkstationTypeComponentHooks" method="onSave" />
+	</hooks>
 </model>
