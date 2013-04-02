@@ -24,8 +24,6 @@
 package com.qcadoo.mes.productionPerShift.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.PENDING;
 import static com.qcadoo.mes.productionPerShift.constants.PlannedProgressType.PLANNED;
@@ -421,11 +419,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private Date getPlannedOrCorrectedDate(final Entity order) {
-        if (order.getField(CORRECTED_DATE_FROM) == null) {
-            return (Date) order.getField(DATE_FROM);
-        } else {
-            return (Date) order.getField(CORRECTED_DATE_FROM);
-        }
+        return order.getDateField(OrderFields.START_DATE);
     }
 
 }

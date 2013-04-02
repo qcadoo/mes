@@ -426,7 +426,7 @@ public class ProductionPerShiftDetailsHooksTest {
         when(dp1.getBelongsToField("shift")).thenReturn(shift);
 
         when(productionPerShift.getBelongsToField("order")).thenReturn(order);
-        when(order.getField("correctedDateFrom")).thenReturn(correctedDate);
+        when(order.getDateField("startDate")).thenReturn(correctedDate);
 
         // when
         hooks.checkShiftsIfWorks(view);
