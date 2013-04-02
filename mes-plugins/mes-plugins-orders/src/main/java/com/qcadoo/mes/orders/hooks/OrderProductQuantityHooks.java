@@ -154,7 +154,7 @@ public class OrderProductQuantityHooks {
 
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
         if (!StringUtils.isEmpty(typeOfProductionRecording)) {
-            amountOfPPComponent.setFieldValue(order.getField(DONE_QUANTITY));
+            amountOfPPComponent.setFieldValue(numberService.format(order.getField(DONE_QUANTITY)));
             order.setField(AMOUNT_OF_PRODUCT_PRODUCED, order.getField(DONE_QUANTITY));
         }
 
