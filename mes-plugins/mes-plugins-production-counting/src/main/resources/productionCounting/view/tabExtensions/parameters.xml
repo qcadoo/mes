@@ -35,7 +35,7 @@
 			<layoutElement column="1" row="1">
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
-					default="01basic" hasDescription="true">
+					default="02cumulated" hasDescription="true">
 				</component>
 			</layoutElement>
 			<layoutElement column="1" row="2">
