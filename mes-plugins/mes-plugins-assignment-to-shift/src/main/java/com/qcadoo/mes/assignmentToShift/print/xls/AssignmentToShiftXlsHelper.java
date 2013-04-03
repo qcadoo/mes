@@ -47,11 +47,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -107,8 +111,13 @@ public class AssignmentToShiftXlsHelper {
         if (shiftWorks) {
             return dataDefinitionService
                     .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT)
-                    .find().add(SearchRestrictions.belongsTo(SHIFT, shift)).add(SearchRestrictions.le(START_DATE, date))
-                    .addOrder(SearchOrders.desc(START_DATE)).setMaxResults(1).uniqueResult();
+                    .find()
+                    .add(SearchRestrictions.belongsTo(SHIFT, shift))
+                    .add(SearchRestrictions.or(SearchRestrictions.eq(AssignmentToShiftFields.STATE,
+                            AssignmentToShiftState.ACCEPTED.getStringValue()), SearchRestrictions.eq(
+                            AssignmentToShiftFields.STATE, AssignmentToShiftState.CORRECTED.getStringValue())))
+                    .add(SearchRestrictions.le(START_DATE, date)).addOrder(SearchOrders.desc(START_DATE)).setMaxResults(1)
+                    .uniqueResult();
         } else {
             return null;
         }
@@ -162,16 +171,14 @@ public class AssignmentToShiftXlsHelper {
         List<Entity> staffs = new ArrayList<Entity>();
 
         SearchCriterion criterion = SearchRestrictions.eq(OCCUPATION_TYPE, occupationType);
+        SearchCriteriaBuilder builder = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
+                .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine));
         String assignmentState = assignmentToShift.getStringField(STATE);
 
         if (AssignmentToShiftState.CORRECTED.getStringValue().equals(assignmentState)) {
-            staffs = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
-                    .add(SearchRestrictions.eq(STATE, CORRECTED.getStringValue()))
-                    .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).list().getEntities();
+            staffs = builder.add(SearchRestrictions.eq(STATE, CORRECTED.getStringValue())).list().getEntities();
         } else if (!AssignmentToShiftState.DRAFT.getStringValue().equals(assignmentState)) {
-            staffs = assignmentToShift.getHasManyField(STAFF_ASSIGNMENT_TO_SHIFTS).find().add(criterion)
-                    .add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue()))
-                    .add(SearchRestrictions.belongsTo(PRODUCTION_LINE, productionLine)).list().getEntities();
+            staffs = builder.add(SearchRestrictions.eq(STATE, ACCEPTED.getStringValue())).list().getEntities();
         }
 
         return staffs;
@@ -181,6 +188,16 @@ public class AssignmentToShiftXlsHelper {
         return dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE).find()
                 .add(SearchRestrictions.eq("active", true)).list().getEntities();
+    }
+
+    public List<Entity> getProductionLinesWithStaff(final Entity productionLine) {
+        return dataDefinitionService
+                .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_STAFF_ASSIGNMENT_TO_SHIFT)
+                .find()
+                .add(SearchRestrictions.ne(StaffAssignmentToShiftFields.STATE,
+                        StaffAssignmentToShiftState.SIMPLE.getStringValue()))
+                .add(SearchRestrictions.belongsTo(StaffAssignmentToShiftFields.PRODUCTION_LINE, productionLine)).list()
+                .getEntities();
     }
 
 }
