@@ -144,7 +144,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             List<Entity> occupationTypesWithoutTechnicalCode = getOccupationTypeDictionaryWithoutTechnicalCode();
             List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
 
-            if (productionlines != null) {
+            if (!productionlines.isEmpty()) {
                 fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines,
                         getDictionaryItemWithProductionOnLine());
                 rowNum += productionlines.size();
@@ -171,8 +171,12 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     productionLineValue = productionLine.getStringField(NUMBER) + "-"
                             + productionLine.getStringField(ProductionLineFields.PLACE);
                 }
+
                 row.createCell(0).setCellValue(productionLineValue);
 
+                if (assignmentToShiftXlsHelper.getProductionLinesWithStaff(productionLine).isEmpty()) {
+                    continue;
+                }
                 int columnNumber = 1;
                 int maxLength = 0;
                 for (DateTime day : days) {
@@ -185,7 +189,10 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                     List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                             dictionaryItem.getStringField(NAME), productionLine);
-
+                    if (staffs.isEmpty()) {
+                        columnNumber += 3;
+                        continue;
+                    }
                     String staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
 
                     row.createCell(columnNumber).setCellValue(staffsValue);
