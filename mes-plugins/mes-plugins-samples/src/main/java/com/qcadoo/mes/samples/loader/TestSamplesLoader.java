@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.jdom.Element;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -755,6 +756,13 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             order = getStateChangeSamplesClient().changeState(order, STATE_ACCEPTED);
         }
         getStateChangeSamplesClient().changeState(order, state);
+        Date effectiveDateFrom = order.getDateField("effectiveDateFrom");
+        if (effectiveDateFrom != null) {
+            effectiveDateFrom = (new DateTime(effectiveDateFrom).plusDays(Integer.valueOf(values.get("day_plus_effective_date")
+                    .toString()))).toDate();
+            order.setField("effectiveDateFrom", effectiveDateFrom);
+            dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        }
     }
 
     private void addBatches(final Map<String, String> values) {
