@@ -30,6 +30,9 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +75,8 @@ public class OrderTimePredictionService {
     private static final String L_TECHNOLOGY = "technology";
 
     private static final String L_QUANTITY = "quantity";
+
+    private static final Integer MAX = 5;
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -263,6 +268,7 @@ public class OrderTimePredictionService {
             dateFrom.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
+
         if (!StringUtils.hasText((String) plannedQuantity.getFieldValue())) {
             plannedQuantity.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
@@ -271,16 +277,41 @@ public class OrderTimePredictionService {
             productionLineLookup.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
+
         BigDecimal quantity = null;
-        try {
-            quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantity.getFieldValue(),
-                    viewDefinitionState.getLocale());
-        } catch (IllegalStateException e) {
-            plannedQuantity.addMessage(L_QCADOOVIEW_VALIDATE_FIELD_ERROR_INVALIDNUMERICFORMAT, MessageType.FAILURE);
+        Object value = plannedQuantity.getFieldValue();
+        if (value instanceof BigDecimal) {
+            quantity = (BigDecimal) value;
+        } else {
+            try {
+                ParsePosition parsePosition = new ParsePosition(0);
+                String trimedValue = value.toString().replaceAll(" ", "");
+                DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(viewDefinitionState.getLocale());
+                formatter.setParseBigDecimal(true);
+                quantity = new BigDecimal(String.valueOf(formatter.parseObject(trimedValue, parsePosition)));
+
+            } catch (NumberFormatException e) {
+                plannedQuantity.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+                return;
+            }
+        }
+
+        int scale = quantity.scale();
+
+        if (MAX != null && scale > MAX) {
+            plannedQuantity.addMessage("qcadooView.validate.field.error.invalidScale.max", MessageType.FAILURE, MAX.toString());
             return;
         }
-        if (quantity.intValue() < 0) {
-            plannedQuantity.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
+
+        int presicion = quantity.precision() - scale;
+        if (MAX != null && presicion > MAX) {
+            plannedQuantity.addMessage("qcadooView.validate.field.error.invalidPrecision.max", MessageType.FAILURE,
+                    MAX.toString());
+            return;
+        }
+
+        if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
+            plannedQuantity.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", MessageType.FAILURE);
             return;
         }
 
