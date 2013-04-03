@@ -75,6 +75,9 @@ public class QuantityService {
         BigDecimal minimalQuantity = getBigDecimalFromField(technologyEntity.getField("minimalQuantity"), view.getLocale());
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                 technologyEntity.getBelongsToField("product").getId());
+        if (plannedQuantity == null || minimalQuantity == null) {
+            return;
+        }
         String unit = product.getStringField("unit");
 
         if (plannedQuantity.compareTo(minimalQuantity) < 0) {
@@ -89,7 +92,7 @@ public class QuantityService {
             format.setParseBigDecimal(true);
             return new BigDecimal(format.parse(value.toString()).doubleValue());
         } catch (ParseException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            return null;
         }
     }
 }
