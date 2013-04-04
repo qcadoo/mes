@@ -125,7 +125,7 @@ public final class MessagesUtil {
     }
 
     public static boolean hasCorrespondField(final Entity message) {
-        return StringUtils.isNotBlank(message.getStringField(MessageFields.CORRESPOND_FIELD_NAME));
+        return StringUtils.isNotBlank(getCorrespondFieldName(message));
     }
 
     /**

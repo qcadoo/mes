@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,24 +74,25 @@ public class StateChangeViewClientValidationUtil {
 
     private void addValidationErrorsToForm(final FormComponent form, final List<Entity> messagesList) {
         final Entity entity = form.getEntity();
-        final DataDefinition dataDefinition = entity.getDataDefinition();
-
         final List<Entity> messages = Lists.newArrayList(messagesList);
         CollectionUtils.filter(messages, VALIDATION_MESSAGES_PREDICATE);
         for (Entity message : messages) {
-            if (MessagesUtil.hasCorrespondField(message)) {
-                final String fieldName = message.getStringField(CORRESPOND_FIELD_NAME);
-                entity.addError(dataDefinition.getField(fieldName), getKey(message), getArgs(message));
-            } else {
-                entity.addGlobalError(getKey(message), getArgs(message));
-            }
+            assignMessageToEntity(entity, message);
         }
-
         if (!entity.isValid()) {
             form.addMessage("qcadooView.message.saveFailedMessage", MessageType.FAILURE);
         }
-
         form.setEntity(entity);
+    }
+
+    private void assignMessageToEntity(final Entity entity, final Entity message) {
+        DataDefinition dataDefinition = entity.getDataDefinition();
+        String correspondFieldName = MessagesUtil.getCorrespondFieldName(message);
+        if (StringUtils.isNotBlank(correspondFieldName) && dataDefinition.getFields().containsKey(correspondFieldName)) {
+            entity.addError(entity.getDataDefinition().getField(correspondFieldName), getKey(message), getArgs(message));
+        } else {
+            entity.addGlobalError(getKey(message), getArgs(message));
+        }
     }
 
     private void addValidationErrors(final ComponentState component, final Entity entity, final List<Entity> messages) {
