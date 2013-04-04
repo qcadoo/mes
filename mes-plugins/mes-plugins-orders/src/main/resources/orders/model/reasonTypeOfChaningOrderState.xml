@@ -30,7 +30,11 @@
 	<fields>
 		<belongsTo name="order" model="order" persistent="false" />
 		<belongsTo name="orderStateChange" model="orderStateChange" />
-		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState" required="true" />
+		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState">
+			<validatesWith 
+				class="com.qcadoo.mes.orders.hooks.ReasonTypeOfChangingOrderStateModelValidators" 
+				method="checkReasonRequired"/>
+		</dictionary>
 	</fields>
 	<hooks />
 </model>
