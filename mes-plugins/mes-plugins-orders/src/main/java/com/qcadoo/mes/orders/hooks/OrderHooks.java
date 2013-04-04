@@ -24,6 +24,9 @@
 package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.AMOUNT_OF_PRODUCT_PRODUCED;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_CORRECTED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
@@ -358,8 +361,9 @@ public class OrderHooks {
         entity.setField(DONE_QUANTITY, null);
         entity.setField(EXTERNAL_NUMBER, null);
         entity.setField(EXTERNAL_SYNCHRONIZED, true);
-
+        entity.setField(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, null);
+        entity.setField(COMMENT_REASON_TYPE_CORRECTION_DATE_TO, null);
+        entity.setField(COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY, null);
         return true;
     }
-
 }
