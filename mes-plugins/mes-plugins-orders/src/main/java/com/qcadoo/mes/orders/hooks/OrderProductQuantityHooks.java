@@ -160,8 +160,13 @@ public class OrderProductQuantityHooks {
 
         BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
-        remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
-        order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(remainingAmountOfPTP));
+        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(BigDecimal.ZERO));
+        } else {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
+            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(remainingAmountOfPTP));
+        }
         order.getDataDefinition().save(order);
     }
 }
