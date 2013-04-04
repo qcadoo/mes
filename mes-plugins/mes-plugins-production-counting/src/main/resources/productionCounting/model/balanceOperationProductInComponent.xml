@@ -30,7 +30,6 @@
 	<fields>
 		<belongsTo name="productionBalance" model="productionBalance" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		
 		<decimal name="plannedQuantity">
 			<validatesRange from="0" exclusively="true" />
 			<validatesUnscaledValue max="5" />

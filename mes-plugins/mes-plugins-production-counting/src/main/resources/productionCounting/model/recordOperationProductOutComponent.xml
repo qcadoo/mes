@@ -30,10 +30,7 @@
 	<fields>
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		
-		<decimal name="plannedQuantity">
-			<validatesRange from="0" exclusively="true" />
-		</decimal>
+		<belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting" />
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
 		</decimal>

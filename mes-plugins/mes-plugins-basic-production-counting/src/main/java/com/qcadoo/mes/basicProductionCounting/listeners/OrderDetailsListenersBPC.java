@@ -21,22 +21,34 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.internal.constants;
+package com.qcadoo.mes.basicProductionCounting.listeners;
 
-public final class RecordOperationProductOutComponentFields {
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
-    private RecordOperationProductOutComponentFields() {
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
+@Service
+public class OrderDetailsListenersBPC {
+
+    public void showProductionCounting(final ViewDefinitionState viewState, final ComponentState triggerState, final String[] args) {
+        Long orderId = (Long) triggerState.getFieldValue();
+
+        if (orderId == null) {
+            return;
+        }
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("order.id", orderId);
+        } catch (JSONException e) {
+            throw new IllegalStateException(e);
+        }
+
+        String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
+        viewState.redirectTo(url, false, true);
     }
-
-    public static final String PRODUCTION_RECORD = "productionRecord";
-
-    public static final String PRODUCT = "product";
-
-    public static final String PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
 
 }

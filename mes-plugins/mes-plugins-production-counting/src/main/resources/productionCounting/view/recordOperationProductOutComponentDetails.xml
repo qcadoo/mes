@@ -48,7 +48,7 @@
 						defaultEnabled="false" />
 				</layoutElement>
 				<layoutElement column="1" row="3" width="5">
-					<component type="input" name="plannedQuantity" field="plannedQuantity"
+					<component type="input" name="plannedQuantity" 
 						reference="plannedQuantity" defaultEnabled="false">
 						<option type="alignment" value="right" />
 					</component>
@@ -76,5 +76,8 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionCounting.internal.ProductionRecordViewService"
 			method="fillFieldFromProduct" />
+		<beforeRender
+			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductOutComponentDetailsHooks"
+			method="fillPlannedQuantity" />
 	</hooks>
 </view>

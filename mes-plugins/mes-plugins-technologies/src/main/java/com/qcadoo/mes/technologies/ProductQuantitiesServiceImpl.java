@@ -65,7 +65,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final Map<Entity, BigDecimal> operationRuns) {
         Set<Entity> nonComponents = Sets.newHashSet();
 
-        return getProductComponentWithQuantitiesForTechnology(technology, givenQuantity, nonComponents, operationRuns);
+        return getProductComponentWithQuantitiesForTechnology(technology, givenQuantity, operationRuns, nonComponents);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Set<Entity> nonComponents = Sets.newHashSet();
 
         Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(technology,
-                givenQuantity, nonComponents, operationRuns);
+                givenQuantity, operationRuns, nonComponents);
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                 MODEL_OPERATION_PRODUCT_IN_COMPONENT);
@@ -139,8 +139,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 MODEL_OPERATION_PRODUCT_IN_COMPONENT);
     }
 
-    private Map<Entity, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
-            final BigDecimal givenQuantity, final Set<Entity> nonComponents, final Map<Entity, BigDecimal> operationRuns) {
+    @Override
+    public Map<Entity, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
+            final BigDecimal givenQuantity, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
         Map<Entity, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
 
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
@@ -167,13 +168,35 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             }
 
             productComponentWithQuantitiesForOrders.put(order.getId(),
-                    getProductComponentWithQuantitiesForTechnology(technology, plannedQuantity, nonComponents, operationRuns));
+                    getProductComponentWithQuantitiesForTechnology(technology, plannedQuantity, operationRuns, nonComponents));
         }
 
         return groupProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
     }
 
-    private Map<Entity, BigDecimal> groupProductComponentWithQuantities(
+    @Override
+    public Map<Entity, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders,
+            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
+        Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
+
+        for (Entity order : orders) {
+            BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
+
+            Entity technology = order.getBelongsToField("technology");
+
+            if (technology == null) {
+                throw new IllegalStateException("Order doesn't contain technology.");
+            }
+
+            productComponentWithQuantitiesForOrders.put(order.getId(),
+                    getProductComponentWithQuantitiesForTechnology(technology, plannedQuantity, operationRuns, nonComponents));
+        }
+
+        return groupProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
+    }
+
+    @Override
+    public Map<Entity, BigDecimal> groupProductComponentWithQuantities(
             final Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders) {
         Map<Entity, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
 

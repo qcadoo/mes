@@ -135,7 +135,7 @@
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="setInitialState" />
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="setSommissionedPlannedQuantity" />
+			method="setCommissionedPlannedQuantity" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillProductionLine" />
 		<onSave class="com.qcadoo.mes.orders.OrderService" method="fillOrderDates" />
 		<onSave class="com.qcadoo.mes.orders.hooks.TechnologyOperCompHooksOrder"

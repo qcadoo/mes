@@ -313,7 +313,7 @@ public class OrderHooks {
         return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
     }
 
-    public void setSommissionedPlannedQuantity(final DataDefinition orderDD, final Entity entity) {
+    public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity entity) {
         entity.setField(COMMISSIONED_PLANNED_QUANTITY, entity.getField(PLANNED_QUANTITY));
     }
 

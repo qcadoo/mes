@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.2.0
  *
  * This file is part of Qcadoo.
@@ -23,42 +23,42 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.DEFAULT;
-import static com.qcadoo.mes.orders.states.constants.OrderStateStringValues.ACCEPTED;
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.basicProductionCounting.BpcOrderStateListenerService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.annotation.RunForStateTransition;
-import com.qcadoo.mes.states.annotation.RunInPhase;
-import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
 @RunIfEnabled(BasicProductionCountingConstants.PLUGIN_IDENTIFIER)
-public class BpcOrderStateListenerAspect extends AbstractStateListenerAspect {
+public class ProductQuantitiesServiceImplBPCOverrideAspect {
 
     @Autowired
-    private BpcOrderStateListenerService listenerService;
+    private ProductQuantitiesServiceImplBPCOverrideUtil productQuantitiesServiceImplBPCOverrideUtil;
 
-    @RunInPhase(DEFAULT)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ACCEPTED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onAccept(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.onAccept(stateChangeContext);
+    @Pointcut("execution(private java.util.Map<com.qcadoo.model.api.Entity, java.math.BigDecimal> com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl.getProductComponentWithQuantitiesForOrders(..)) "
+            + "&& args(orders, operationRuns, nonComponents)")
+    public void getProductComponentWithQuantitiesForOrdersExecution(final List<Entity> orders,
+            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
     }
 
-    @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
-    protected void targetServicePointcut() {
+    @Around("getProductComponentWithQuantitiesForOrdersExecution(orders, operationRuns, nonComponents)")
+    public Map<Entity, BigDecimal> aroundGetProductComponentWithQuantitiesForOrdersExecution(final ProceedingJoinPoint pjp,
+            final List<Entity> orders, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents)
+            throws Throwable {
+        return productQuantitiesServiceImplBPCOverrideUtil.getProductComponentWithQuantitiesForOrders(orders, operationRuns,
+                nonComponents);
     }
 
 }
