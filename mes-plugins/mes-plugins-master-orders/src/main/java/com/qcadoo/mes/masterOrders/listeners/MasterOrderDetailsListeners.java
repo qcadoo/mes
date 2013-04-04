@@ -62,4 +62,8 @@ public class MasterOrderDetailsListeners {
         form.performEvent(view, "refresh");
     }
 
+    public void setUneditableWhenEntityHasUnsaveChanges(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        masterOrderDetailsHooks.setUneditableWhenEntityHasUnsaveChanges(view);
+    }
 }

@@ -21,9 +21,6 @@
 	<hooks>
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-			method="checkIfExistsOrderWithSelectedProduct" />
-		<validatesWith
-			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
 			method="checkIfEntityAlreadyExistsForProductAndMasterOrder" />
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
