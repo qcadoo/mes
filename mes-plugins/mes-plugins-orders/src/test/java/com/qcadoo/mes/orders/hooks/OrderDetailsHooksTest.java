@@ -25,12 +25,15 @@ package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +73,8 @@ public class OrderDetailsHooksTest {
 
     @Mock
     FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, reasonsDateFromField,
-            dateFrom, dateTo, reasonsDateToField;
+            dateFrom, dateTo, reasonsDateToField, effectiveDateFromField, commentDeviationsDateFromField,
+            reasonsDeviationsDateFromField;
 
     @Before
     public void init() {
@@ -90,8 +94,12 @@ public class OrderDetailsHooksTest {
         when(view.getComponentByReference(REASON_TYPES_CORRECTION_DATE_TO)).thenReturn(reasonsDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
+        when(view.getComponentByReference(COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START)).thenReturn(
+                commentDeviationsDateFromField);
+        when(view.getComponentByReference(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START)).thenReturn(reasonsDeviationsDateFromField);
         when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
         when(view.getComponentByReference(DATE_TO)).thenReturn(dateTo);
+        when(view.getComponentByReference(EFFECTIVE_DATE_FROM)).thenReturn(effectiveDateFromField);
     }
 
     @Test
@@ -123,6 +131,10 @@ public class OrderDetailsHooksTest {
         Mockito.verify(reasonsDateToField).setEnabled(true);
         Mockito.verify(dateFrom).setEnabled(true);
         Mockito.verify(dateTo).setEnabled(true);
+        Mockito.verify(effectiveDateFromField).setEnabled(true);
+        Mockito.verify(commentDeviationsDateFromField).setEnabled(true);
+        Mockito.verify(reasonsDeviationsDateFromField).setEnabled(true);
+
     }
 
 }
