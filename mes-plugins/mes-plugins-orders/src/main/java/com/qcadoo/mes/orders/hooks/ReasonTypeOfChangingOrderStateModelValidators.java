@@ -23,22 +23,28 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.ReasonTypeOfChaningOrderStateFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 
 @Service
-public class OrderStateChangeModelValidators {
+public class ReasonTypeOfChangingOrderStateModelValidators {
 
-    public boolean checkReasonRequired(final DataDefinition orderStateChangeDD, final FieldDefinition fieldDefinition,
-            final Entity orderStateChange, final Object oldValue, final Object newValue) {
-        boolean result = true;
-        if (orderStateChange.getBooleanField(OrderStateChangeFields.REASON_REQUIRED)) {
-            result = newValue != null;
+    public boolean checkReasonRequired(final DataDefinition reasonTypeOfChaningOrderStateDD,
+            final FieldDefinition fieldDefinition, final Entity reasonTypeOfChaningOrderState, final Object oldValue,
+            final Object newValue) {
+        Entity orderStateChange = reasonTypeOfChaningOrderState
+                .getBelongsToField(ReasonTypeOfChaningOrderStateFields.ORDER_STATE_CHANGE);
+        if (orderStateChange.getBooleanField(OrderStateChangeFields.REASON_REQUIRED) && StringUtils.isEmpty((String) newValue)) {
+            reasonTypeOfChaningOrderState.addError(fieldDefinition, fieldDefinition.getName(),
+                    "qcadooView.validate.field.error.missing");
+            return false;
         }
-        return result;
+        return true;
     }
 }
