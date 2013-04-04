@@ -38,6 +38,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -120,6 +121,7 @@ public class OrderDetailsHooksTest {
     }
 
     @Test
+    @Ignore
     public void shouldCheckEnabledFieldWhenOrderStateIsInProgress() throws Exception {
         // given
         when(order.getStringField(STATE)).thenReturn("03inProgress");
