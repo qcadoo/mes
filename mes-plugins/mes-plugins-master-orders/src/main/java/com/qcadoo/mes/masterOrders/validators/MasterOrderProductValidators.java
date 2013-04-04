@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -110,34 +109,4 @@ public class MasterOrderProductValidators {
         return isValid;
     }
 
-    public boolean checkIfExistsOrderWithSelectedProduct(final DataDefinition masterOrderProductDD,
-            final Entity masterProductOrder) {
-        Entity masterOrder = masterProductOrder.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        Entity product = masterProductOrder.getBelongsToField(PRODUCT);
-        List<Entity> orders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.not(SearchRestrictions.belongsTo(PRODUCT, product))).list().getEntities();
-        List<Entity> ordersWithProduct = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product)).list().getEntities();
-        boolean isValid = true;
-        if (orders.isEmpty()) {
-            return isValid;
-        }
-        if (!orders.isEmpty() && ordersWithProduct.isEmpty()) {
-            StringBuilder orderNumberListWitkWrongNumer = new StringBuilder();
-            for (Entity order : orders) {
-                isValid = false;
-                orderNumberListWitkWrongNumer.append(order.getStringField(OrderFields.NUMBER));
-                orderNumberListWitkWrongNumer.append(" [");
-                orderNumberListWitkWrongNumer.append(order.getBelongsToField(OrderFields.PRODUCT).getStringField(
-                        ProductFields.NUMBER));
-                orderNumberListWitkWrongNumer.append("], ");
-            }
-            if (!isValid) {
-                masterProductOrder.addError(masterOrderProductDD.getField(PRODUCT),
-                        "masterOrders.masterOrderProduct.ordersForSelectedProductDoesNotExists",
-                        orderNumberListWitkWrongNumer.toString());
-            }
-        }
-        return isValid;
-    }
 }

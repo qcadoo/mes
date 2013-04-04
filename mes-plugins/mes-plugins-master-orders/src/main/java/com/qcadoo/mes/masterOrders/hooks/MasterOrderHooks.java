@@ -2,6 +2,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -81,5 +84,26 @@ public class MasterOrderHooks {
             actualOrders.add(order);
         }
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
+    }
+
+    public void changedTypeFromOneToMany(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        Long masterOrderId = masterOrder.getId();
+        if (masterOrderId == null) {
+            return;
+        }
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrderId);
+        if (!(masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue()) && masterOrder
+                .getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue()))) {
+            return;
+        }
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+        Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
+        Entity masterOrderProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).create();
+        masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
+        masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, technology);
+        masterOrder.setField(MasterOrderFields.PRODUCT, null);
+        masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
+        masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
     }
 }

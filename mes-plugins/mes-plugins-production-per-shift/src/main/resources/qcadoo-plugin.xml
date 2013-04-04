@@ -101,7 +101,12 @@
 				class="com.qcadoo.mes.productionPerShift.validators.TechInstOperCompHooksPPS"
 				method="checkShiftsIfWorks" />
 		</model:model-hook>
-
+		<model:model-hook model="technologyInstanceOperationComponent"
+			plugin="technologies">
+			<model:onCopy
+				class="com.qcadoo.mes.productionPerShift.hooks.TechInstOpCompHooksPPS"
+				method="onCopy" />
+		</model:model-hook>
 		<view:view-listener plugin="orders" view="orderDetails"
 			component="form" event="redirectToProductionPerShift"
 			class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"

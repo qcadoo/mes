@@ -21,24 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.hooks;
+package com.qcadoo.mes.productionPerShift.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
+import com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
 
 @Service
-public class OrderStateChangeModelValidators {
+public class TechInstOpCompHooksPPS {
 
-    public boolean checkReasonRequired(final DataDefinition orderStateChangeDD, final FieldDefinition fieldDefinition,
-            final Entity orderStateChange, final Object oldValue, final Object newValue) {
-        boolean result = true;
-        if (orderStateChange.getBooleanField(OrderStateChangeFields.REASON_REQUIRED)) {
-            result = newValue != null;
-        }
-        return result;
+    public void onCopy(final DataDefinition dataDefinition, final Entity tioc) {
+        clearPPS(dataDefinition, tioc);
+    }
+
+    private void clearPPS(final DataDefinition dataDefinition, final Entity tioc) {
+
+        tioc.setField(TechInstOperCompFieldsPPS.HAS_CORRECTIONS, null);
+
     }
 }

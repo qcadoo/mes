@@ -33,6 +33,8 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
@@ -111,7 +113,7 @@ public class OrderDetailsHooks {
                     REASON_TYPES_CORRECTION_DATE_TO, REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
                     COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO);
             changedEnabledFields(view, references, false);
         }
         if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())) {
@@ -122,13 +124,19 @@ public class OrderDetailsHooks {
         }
         if (order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())) {
             List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM);
             changedEnabledFields(view, references, true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), true);
         }
 
         if (order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
             List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO);
+            changedEnabledFields(view, references, true);
+
+        }
+        if (order.getStringField(STATE).equals(OrderState.COMPLETED.getStringValue())) {
+            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO);
             changedEnabledFields(view, references, true);
         }
     }
@@ -138,6 +146,20 @@ public class OrderDetailsHooks {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setEnabled(enabled);
             field.requestComponentUpdateState();
+        }
+    }
+
+    private void changedEnabledAwesomeDynamicListComponents(final ViewDefinitionState view, final List<String> references,
+            final boolean enabled) {
+        for (String reference : references) {
+            AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(reference);
+            adl.setEnabled(enabled);
+            adl.requestComponentUpdateState();
+            for (FormComponent form : adl.getFormComponents()) {
+                FieldComponent field = ((FieldComponent) form.findFieldComponentByName("reasonTypeOfChaningOrderState"));
+                field.setEnabled(enabled);
+                field.requestComponentUpdateState();
+            }
         }
     }
 
