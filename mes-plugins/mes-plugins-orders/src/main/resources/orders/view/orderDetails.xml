@@ -504,7 +504,7 @@
 										<component type="awesomeDynamicList"
 											name="reasonTypesDeviationsOfEffectiveStart" source="#{form}.reasonTypesDeviationsOfEffectiveStart"
 											reference="reasonTypesDeviationsOfEffectiveStart" persistent="false"
-											defaultEnabled="never">
+											defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
 
@@ -630,7 +630,7 @@
 										<component type="awesomeDynamicList"
 											name="reasonTypesDeviationsOfEffectiveEnd" source="#{form}.reasonTypesDeviationsOfEffectiveEnd"
 											reference="reasonTypesDeviationsOfEffectiveEnd" persistent="false"
-											defaultEnabled="never">
+											defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
 
