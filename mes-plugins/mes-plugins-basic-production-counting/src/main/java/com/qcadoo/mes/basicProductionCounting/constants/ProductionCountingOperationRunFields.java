@@ -21,22 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.internal.constants;
+package com.qcadoo.mes.basicProductionCounting.constants;
 
-public final class RecordOperationProductOutComponentFields {
+public final class ProductionCountingOperationRunFields {
 
-    private RecordOperationProductOutComponentFields() {
+    private ProductionCountingOperationRunFields() {
 
     }
 
-    public static final String PRODUCTION_RECORD = "productionRecord";
+    public static final String ORDER = "order";
 
-    public static final String PRODUCT = "product";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public static final String PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
+    public static final String RUNS = "runs";
 
 }

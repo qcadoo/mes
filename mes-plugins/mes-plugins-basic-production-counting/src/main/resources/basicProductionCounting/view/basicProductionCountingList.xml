@@ -29,42 +29,48 @@
 	name="basicProductionCountingList" modelName="order" modelPlugin="orders">
 
 	<component type="window" name="window">
+
 		<ribbon>
 			<group template="navigation" />
-			
+
 			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
 		</ribbon>
-		<component type="form" name="order" reference="order"/>
-		<component type="form" name="basicProductionCounting" reference="form">
+
+		<component type="form" name="order" reference="order" />
+		<component type="form" name="basicProductionCounting"
+			reference="form">
 			<component type="grid" name="countingList" reference="grid"
 				source="#{order}.basicProductionCountings">
 				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true"/>
+					expression="#product['number']" link="true" />
 				<option type="column" name="productName" fields="product"
-					expression="#product['name']" link="true"/>
-				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
+					expression="#product['name']" link="true" />
+				<option type="column" name="plannedQuantity" fields="productionCountingQuantity"
+					expression="#productionCountingQuantity['plannedQuantity']" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
-				<option type="column" name="unit" fields="product" expression="#product['unit']"/>
+				<option type="column" name="unit" fields="product"
+					expression="#product['unit']" />
+
 				<option type="order" column="productType" direction="desc" />
+
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />
 				<option type="correspondingComponent" value="form" />
-				<option type="paginable" value="false" />
+
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 			</component>
-			</component>
+		</component>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
-		
 	</component>
+
 	<hooks>
-	<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
 			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
-			<!-- <beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
-			method="setGridContent" /> -->
 	</hooks>
+
 </view>

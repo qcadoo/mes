@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
@@ -147,6 +148,25 @@ public interface ProductQuantitiesService {
 
     /**
      * 
+     * @param orders
+     *            orders
+     * 
+     * @param operationRuns
+     *            Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
+     *            run.
+     * 
+     * @param nonComponents
+     *            non components
+     * 
+     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
+     *         products that are the same, but are related to different operations are here as different entries.
+     * 
+     */
+    Map<Entity, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders,
+            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents);
+
+    /**
+     * 
      * @param productComponentQuantity
      *            Product Component Quantity
      * 
@@ -164,5 +184,11 @@ public interface ProductQuantitiesService {
      * @return
      */
     Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
+
+    Map<Entity, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
+            final BigDecimal givenQuantity, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents);
+
+    Map<Entity, BigDecimal> groupProductComponentWithQuantities(
+            final Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders);
 
 }

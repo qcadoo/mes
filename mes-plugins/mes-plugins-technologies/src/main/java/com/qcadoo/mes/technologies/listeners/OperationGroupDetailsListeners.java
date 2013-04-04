@@ -48,7 +48,6 @@ public class OperationGroupDetailsListeners {
 
     public void redirectToFilteredOperationGroupsList(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-
         FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity operationGroup = operationGroupForm.getEntity();
@@ -72,6 +71,6 @@ public class OperationGroupDetailsListeners {
 
         String url = "../page/technologies/operationsList.html";
         view.redirectTo(url, false, true, parameters);
-
     }
+
 }

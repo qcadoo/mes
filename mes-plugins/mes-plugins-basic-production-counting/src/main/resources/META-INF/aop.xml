@@ -28,5 +28,6 @@
 <aspectj>
 	<aspects>
 		<aspect name="com.qcadoo.mes.basicProductionCounting.aop.BpcOrderStateListenerAspect" />
+		<aspect name="com.qcadoo.mes.basicProductionCounting.aop.ProductQuantitiesServiceImplBPCOverrideAspect" />
 	</aspects>
 </aspectj>

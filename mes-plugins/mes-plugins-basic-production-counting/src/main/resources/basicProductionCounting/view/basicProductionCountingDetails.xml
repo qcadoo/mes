@@ -27,12 +27,14 @@
 <view name="basicProductionCountingDetails" modelName="basicProductionCounting"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window">
+
 		<ribbon>
 			<group template="navigation" />
 			<group template="formSaveAction" />
 		</ribbon>
-		<component type="form" name="order" reference="order" />
+
 		<component type="form" name="basicProductionCountingDetails"
 			reference="form">
 			<component type="gridLayout" name="gridLayout" columns="8"
@@ -44,7 +46,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
-					<component type="input" name="plannedQuantity" field="plannedQuantity"
+					<component type="input" name="plannedQuantity" reference="plannedQuantity"
 						defaultEnabled="false">
 						<option type="alignment" value="right" />
 						<option type="labelWidth" value="50" />
@@ -79,24 +81,30 @@
 						defaultEnabled="false" hasLabel="false" reference="usedQuantityCurrency">
 					</component>
 				</layoutElement>
-
 			</component>
+
 			<option type="header" value="true" />
 			<option type="expression" value="#product['name']" />
-			
-			<listener event="save" class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService" method="fillDoneQuantityField"/>
+
+			<listener event="save"
+				class="com.qcadoo.mes.basicProductionCounting.listeners.BasicProductionCountingDetailsListeners"
+				method="fillDoneQuantityField" />
 		</component>
 	</component>
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="shouldDisableUsedProducedField" />
 		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="getProductNameFromCounting" />
 		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService"
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
+			method="fillPlannedQuantity" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="fillFieldsCurrency" />
 	</hooks>
+
 </view>
