@@ -4,6 +4,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
@@ -142,6 +143,23 @@ public class MasterOrderDetailsHooks {
             ordersGrid.setEditable(false);
         } else {
             ordersGrid.setEditable(true);
+        }
+    }
+
+    public void setUneditableWhenEntityHasUnsaveChanges(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Long masterOrderId = form.getEntityId();
+        if (masterOrderId == null) {
+            return;
+        }
+        FieldComponent masterOrderTypeField = (FieldComponent) view.getComponentByReference(MASTER_ORDER_TYPE);
+        Entity masterOrder = form.getEntity().getDataDefinition().get(masterOrderId);
+        String masterOrderType = masterOrderTypeField.getFieldValue().toString();
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference("productsGrid");
+        if (!masterOrder.getStringField(MASTER_ORDER_TYPE).equals(masterOrderType)) {
+            productsGrid.setEditable(false);
+        } else {
+            productsGrid.setEditable(true);
         }
     }
 

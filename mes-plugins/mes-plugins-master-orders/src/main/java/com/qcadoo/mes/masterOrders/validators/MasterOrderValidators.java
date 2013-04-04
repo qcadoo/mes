@@ -3,6 +3,7 @@ package com.qcadoo.mes.masterOrders.validators;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 
 import java.util.Date;
@@ -35,7 +36,7 @@ public class MasterOrderValidators {
             return true;
         }
 
-        if (checkIfMasterOrderHaveOrders(masterOrder)) {
+        if (checkIfMasterOrderHavePendingOrders(masterOrder)) {
             masterOrder.addError(masterOrderDD.getField(COMPANY), "masterOrders.masterOrder.company.orderAlreadyExists");
 
             return false;
@@ -57,7 +58,7 @@ public class MasterOrderValidators {
                 || (deadline != null && deadlineFromDB != null && deadline.equals(deadlineFromDB))) {
             return true;
         }
-        if (checkIfMasterOrderHaveOrders(masterOrder)) {
+        if (checkIfMasterOrderHavePendingOrders(masterOrder)) {
             masterOrder.addError(masterOrderDD.getField(DEADLINE), "masterOrders.masterOrder.deadline.orderAlreadyExists");
             return false;
         }
@@ -102,7 +103,7 @@ public class MasterOrderValidators {
         return isValid;
     }
 
-    private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {
+    private boolean checkIfMasterOrderHavePendingOrders(final Entity masterOrder) {
         return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
                 .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities()
                 .isEmpty();
@@ -187,4 +188,23 @@ public class MasterOrderValidators {
         return true;
     }
 
+    public boolean checkIfCanChangedType(final DataDefinition dataDefinition, final Entity masterOrder) {
+        Long masterOrderId = masterOrder.getId();
+        if (masterOrderId == null) {
+            return true;
+        }
+        Entity masterOrderFromDB = dataDefinition.get(masterOrderId);
+        if (masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.UNDEFINED.getStringValue())
+                && masterOrder.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+            if (checkIfMasterOrderHaveOrders(masterOrder)) {
+                masterOrder.addError(dataDefinition.getField(MASTER_ORDER_TYPE), "masterOrders.masterOrder.alreadyHaveOrder");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIfMasterOrderHaveOrders(final Entity masterOrder) {
+        return !masterOrder.getHasManyField(MasterOrderFields.ORDERS).find().list().getEntities().isEmpty();
+    }
 }

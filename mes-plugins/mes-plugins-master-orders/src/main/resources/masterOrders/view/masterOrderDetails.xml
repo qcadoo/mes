@@ -73,6 +73,8 @@
 
 						<listener event="onSelectedEntityChange" method="hideFieldDependOnMasterOrderType"
 							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
+						<listener event="onSelectedEntityChange" method="setUneditableWhenEntityHasUnsaveChanges"
+							class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -262,6 +264,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
 			method="disabledGridWhenMasterOrderDoesnotHaveProduct" />
+		<beforeRender
+			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+			method="setUneditableWhenEntityHasUnsaveChanges" />
 	</hooks>
 
 </view>
