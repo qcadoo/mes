@@ -76,14 +76,14 @@ public class OrderProductQuantityHooks {
         final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
 
-        if (!blockAbilityToChangeApprovalOrder()) {
-            if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-                List<String> references = Arrays.asList(PLANNED_QUANTITY);
-                changedEnabledFields(view, references, true);
-            }
+        if (!blockAbilityToChangeApprovalOrder()
+                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue()) || order.getStringField(
+                        STATE).equals(OrderState.PENDING.getStringValue()))) {
+            List<String> references = Arrays.asList(PLANNED_QUANTITY);
+            changedEnabledFields(view, references, true);
+
         }
         changedEnabledFields(view, Arrays.asList(TYPE_OF_CORRECTION_CAUSES), false);
         if (order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
@@ -91,17 +91,15 @@ public class OrderProductQuantityHooks {
                     COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
             changedEnabledFields(view, references, false);
         }
-        if (!blockAbilityToChangeApprovalOrder()) {
-            if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
+        if (!blockAbilityToChangeApprovalOrder()
+                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue()) || order.getStringField(
+                        STATE).equals(OrderState.INTERRUPTED.getStringValue()))) {
 
-                List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
-                        COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
-                changedEnabledFields(view, references, true);
-            }
+            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
+                    COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
+            changedEnabledFields(view, references, true);
         }
-
     }
 
     private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {

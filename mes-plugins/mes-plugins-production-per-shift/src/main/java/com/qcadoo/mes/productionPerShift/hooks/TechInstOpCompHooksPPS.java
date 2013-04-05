@@ -33,12 +33,11 @@ import com.qcadoo.model.api.Entity;
 public class TechInstOpCompHooksPPS {
 
     public void onCopy(final DataDefinition dataDefinition, final Entity tioc) {
-        clearPPS(dataDefinition, tioc);
+        clearPPS(tioc);
     }
 
-    private void clearPPS(final DataDefinition dataDefinition, final Entity tioc) {
-
+    private void clearPPS(final Entity tioc) {
         tioc.setField(TechInstOperCompFieldsPPS.HAS_CORRECTIONS, null);
-
     }
+
 }

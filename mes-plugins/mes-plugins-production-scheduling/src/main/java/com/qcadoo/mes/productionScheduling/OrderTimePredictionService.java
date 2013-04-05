@@ -70,8 +70,6 @@ public class OrderTimePredictionService {
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
-    private static final String L_QCADOOVIEW_VALIDATE_FIELD_ERROR_INVALIDNUMERICFORMAT = "qcadooView.validate.field.error.invalidNumericFormat";
-
     private static final String L_TECHNOLOGY = "technology";
 
     private static final String L_QUANTITY = "quantity";

@@ -275,7 +275,7 @@ public class OrderService {
             return true;
         }
         order.addError(dataDefinition.getField(OrderFields.FINISH_DATE), "orders.validate.global.error.datesOrder");
-        // order.addGlobalError("orders.validate.global.error.datesOrder");
+
         return false;
     }
 
