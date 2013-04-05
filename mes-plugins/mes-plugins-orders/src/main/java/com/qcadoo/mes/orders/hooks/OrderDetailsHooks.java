@@ -127,6 +127,7 @@ public class OrderDetailsHooks {
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM);
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
         }
 
         if (order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
@@ -138,6 +139,8 @@ public class OrderDetailsHooks {
         if (order.getStringField(STATE).equals(OrderState.COMPLETED.getStringValue())) {
             List<String> references = Arrays.asList(EFFECTIVE_DATE_TO);
             changedEnabledFields(view, references, true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
         }
     }
 
