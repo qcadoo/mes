@@ -54,6 +54,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -123,6 +124,15 @@ public class OrderReportPdf extends ReportPdfView {
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
         PdfPTable dynaminHeaderTable = pdfHelper.createPanelTable(3);
+        dynaminHeaderTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
+
+        PdfPTable firstColumnHeaderTable = new PdfPTable(1);
+        PdfPTable secondColumnHeaderTable = new PdfPTable(1);
+        PdfPTable thirdColumnHeaderTable = new PdfPTable(1);
+
+        setSimpleFormat(firstColumnHeaderTable);
+        setSimpleFormat(secondColumnHeaderTable);
+        setSimpleFormat(thirdColumnHeaderTable);
 
         dynaminHeaderTable.setSpacingBefore(7);
 
@@ -134,15 +144,23 @@ public class OrderReportPdf extends ReportPdfView {
                 Integer.valueOf(secondColumn.values().size()), Integer.valueOf(thirdColumn.values().size())));
 
         for (int i = 0; i < maxSize; i++) {
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, firstColumn, locale);
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, secondColumn, locale);
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, thirdColumn, locale);
+            firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(firstColumnHeaderTable, firstColumn, locale);
+            secondColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(secondColumnHeaderTable, secondColumn, locale);
+            thirdColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(thirdColumnHeaderTable, thirdColumn, locale);
         }
 
-        pdfHelper.addTableCellAsOneColumnTable(dynaminHeaderTable, "", "");
+        dynaminHeaderTable.addCell(firstColumnHeaderTable);
+        dynaminHeaderTable.addCell(secondColumnHeaderTable);
+        dynaminHeaderTable.addCell(thirdColumnHeaderTable);
 
         document.add(dynaminHeaderTable);
         document.add(Chunk.NEWLINE);
+    }
+
+    private void setSimpleFormat(final PdfPTable headerTable) {
+        headerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        headerTable.getDefaultCell().setPadding(6.0f);
+        headerTable.getDefaultCell().setVerticalAlignment(PdfPCell.ALIGN_TOP);
     }
 
     private Map<String, Object> createFirstColumn(final Entity delivery) {
