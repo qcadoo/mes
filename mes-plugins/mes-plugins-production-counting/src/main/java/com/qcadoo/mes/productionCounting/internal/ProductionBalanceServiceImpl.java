@@ -471,12 +471,11 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                 balanceOperationProductComponentModel).create();
 
         BigDecimal plannedQuantity = null;
-
-        if (recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY) == null) {
+        Entity productionCountingQuantity = recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
+        if (productionCountingQuantity == null) {
             plannedQuantity = BigDecimal.ZERO;
         } else {
-            plannedQuantity = getNotNullBigDecimal(recordOperationProductComponent
-                    .getBelongsToField(PRODUCTION_COUNTING_QUANTITY).getDecimalField(PLANNED_QUANTITY));
+            plannedQuantity = getNotNullBigDecimal(productionCountingQuantity.getDecimalField(PLANNED_QUANTITY));
         }
 
         BigDecimal usedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY));
