@@ -76,8 +76,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
             final PdfWriter writer) throws DocumentException, IOException {
         String documentTitle = translationService.translate("qualityControls.qualityControlForOperation.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper
-                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
         qualityControlsReportService.addQualityControlReportHeader(document, model, locale);
 
         List<Entity> orders = qualityControlsReportService.getOrderSeries(model, "qualityControlsForOperation");

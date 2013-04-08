@@ -105,8 +105,7 @@ public class DeliveryReportPdf extends ReportPdfView {
         String documentTitle = translationService.translate("deliveries.delivery.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
-        pdfHelper
-                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
         Long deliveryId = Long.valueOf(model.get("id").toString());
 

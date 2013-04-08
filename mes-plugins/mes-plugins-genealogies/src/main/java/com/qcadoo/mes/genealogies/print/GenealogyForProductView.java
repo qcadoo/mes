@@ -102,8 +102,7 @@ public class GenealogyForProductView extends ReportPdfView {
                 .get(Long.valueOf(model.get(VALUE).toString()));
         String documentTitle = translationService.translate("genealogies.genealogyForProduct.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper
-                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
         addTables(document, entity, locale);
         return translationService.translate("genealogies.genealogyForProduct.report.fileName", locale);
     }

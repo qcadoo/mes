@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -65,29 +64,17 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "orderReportPdf")
 public class OrderReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
-
-    private static final String QCADOO_SECURITY = "qcadooSecurity";
-
-    private static final String USER = "user";
-
-    private static final String FIRST_NAME = "firstName";
-
-    private static final String LAST_NAME = "lastName";
-
-    private static final String USER_NAME = "userName";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -102,9 +89,6 @@ public class OrderReportPdf extends ReportPdfView {
     private TranslationService translationService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private PdfHelper pdfHelper;
 
     @Autowired
@@ -112,9 +96,6 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
@@ -127,7 +108,7 @@ public class OrderReportPdf extends ReportPdfView {
         String documentTitle = translationService.translate("deliveries.order.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), getDocumentAuthor());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
         Long deliveryId = Long.valueOf(model.get("id").toString());
 
@@ -292,29 +273,4 @@ public class OrderReportPdf extends ReportPdfView {
                 .add(SearchRestrictions.eq("status", "03successful")).uniqueResult();
     }
 
-    private String getDocumentAuthor() {
-        Entity user = dataDefinitionService.get(QCADOO_SECURITY, USER).get(securityService.getCurrentUserId());
-        String firstName = user.getStringField(FIRST_NAME);
-        String lastName = user.getStringField(LAST_NAME);
-        String userName = user.getStringField(USER_NAME);
-        String documentAuthor = "";
-
-        if (!StringUtils.isEmpty(firstName)) {
-            documentAuthor += firstName;
-        }
-        if (!StringUtils.isEmpty(lastName)) {
-            if (StringUtils.isEmpty(documentAuthor)) {
-                documentAuthor += lastName;
-            } else {
-                documentAuthor += " " + lastName;
-            }
-        }
-        if (StringUtils.isEmpty(documentAuthor)) {
-            documentAuthor = userName;
-        } else {
-            documentAuthor += " (" + userName + ")";
-        }
-
-        return documentAuthor;
-    }
 }
