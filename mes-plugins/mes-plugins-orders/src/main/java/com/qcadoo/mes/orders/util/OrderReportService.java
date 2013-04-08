@@ -40,6 +40,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -56,6 +57,9 @@ public class OrderReportService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private PdfHelper pdfHelper;
 
     public Entity printForOrder(final ComponentState state, final String plugin, final String entityName,
             final Map<String, Object> entityFieldsMap, final OrderValidator orderValidator) {
@@ -107,7 +111,7 @@ public class OrderReportService {
 
         entity.setField("name", generateOrderPrintName(orders, locale));
         entity.setField("generated", true);
-        entity.setField("worker", securityService.getCurrentUserName());
+        entity.setField("worker", pdfHelper.getDocumentAuthor());
         entity.setField("date", new Date());
         if (data.getField("orders") != null) {
             entity.setField("orders", Lists.newArrayList(orders));
