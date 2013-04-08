@@ -32,7 +32,7 @@
 		<string name="name" required="true">
 			<validatesLength max="1024" />
 		</string>
-		<integer name="width" required="true">
+		<integer name="width">
 			<validatesRange from="0" exclusively="true" />
 		</integer>
 		<enum name="charType" values="01smallChars,02largeChars"
