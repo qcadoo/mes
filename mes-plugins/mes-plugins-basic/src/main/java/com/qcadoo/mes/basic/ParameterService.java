@@ -105,14 +105,18 @@ public class ParameterService {
 
         for (Entity reportColumnWidth : reportColumnWidths) {
 
-            if (CharType.SMALL_CHARS.getStringValue().equals(reportColumnWidth.getStringField(ReportColumnWidthFields.CHAR_TYPE))) {
-                converterValue = SMALL_CHAR_IN_PIXEL;
-            } else {
-                converterValue = LARGE_CHAR_IN_PIXEL;
-            }
+            if (reportColumnWidth.getIntegerField(ReportColumnWidthFields.WIDTH) != null) {
 
-            reportColumnWidthsMap.put(reportColumnWidth.getStringField(ReportColumnWidthFields.IDENTIFIER),
-                    reportColumnWidth.getIntegerField(ReportColumnWidthFields.WIDTH) * converterValue);
+                if (CharType.SMALL_CHARS.getStringValue().equals(
+                        reportColumnWidth.getStringField(ReportColumnWidthFields.CHAR_TYPE))) {
+                    converterValue = SMALL_CHAR_IN_PIXEL;
+                } else {
+                    converterValue = LARGE_CHAR_IN_PIXEL;
+                }
+
+                reportColumnWidthsMap.put(reportColumnWidth.getStringField(ReportColumnWidthFields.IDENTIFIER),
+                        reportColumnWidth.getIntegerField(ReportColumnWidthFields.WIDTH) * converterValue);
+            }
         }
 
         return reportColumnWidthsMap;

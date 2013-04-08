@@ -25,8 +25,11 @@
 
 -->
 <reportColumnWidth>
-	<row IDENTIFIER="productUnit" NAME="basic.reportColumnWidth.name.value.Unit"  WIDTH="4" CHARTYPE="01smallChars" />
-	<row IDENTIFIER="currency" NAME="basic.reportColumnWidth.name.value.Currency" WIDTH="3" CHARTYPE="02largeChars" />
-	<row IDENTIFIER="number" NAME="basic.reportColumnWidth.name.value.Number" WIDTH="12" CHARTYPE="02largeChars" />
-	<row IDENTIFIER="succession" NAME="basic.reportColumnWidth.name.value.Lp"  WIDTH="3" CHARTYPE="02largeChars" />
+	<row IDENTIFIER="productUnit" NAME="basic.reportColumnWidth.name.value.Unit" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="currency" NAME="basic.reportColumnWidth.name.value.Currency" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="number" NAME="basic.reportColumnWidth.name.value.Number" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="succession" NAME="basic.reportColumnWidth.name.value.Lp" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="price" NAME="basic.reportColumnWidth.name.value.Price" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="name" NAME="basic.reportColumnWidth.name.value.Name" CHARTYPE="01smallChars" />
+	<row IDENTIFIER="quantity" NAME="basic.reportColumnWidth.name.value.Quantity" CHARTYPE="01smallChars" />
 </reportColumnWidth>
