@@ -473,10 +473,10 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         BigDecimal plannedQuantity = null;
 
         if (recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY) == null) {
+            plannedQuantity = BigDecimal.ZERO;
+        } else {
             plannedQuantity = getNotNullBigDecimal(recordOperationProductComponent
                     .getBelongsToField(PRODUCTION_COUNTING_QUANTITY).getDecimalField(PLANNED_QUANTITY));
-        } else {
-            plannedQuantity = BigDecimal.ZERO;
         }
 
         BigDecimal usedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY));
