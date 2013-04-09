@@ -35,21 +35,23 @@ public final class DeliveryFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String STATE = "state";
-
     public static final String SUPPLIER = "supplier";
 
     public static final String DELIVERY_DATE = "deliveryDate";
+
+    public static final String DELIVERY_ADDRESS = "deliveryAddress";
+
+    public static final String RELATED_DELIVERY = "relatedDelivery";
+
+    public static final String STATE = "state";
+
+    public static final String STATE_CHANGES = "stateChanges";
 
     public static final String ORDERED_PRODUCTS = "orderedProducts";
 
     public static final String DELIVERED_PRODUCTS = "deliveredProducts";
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
-
-    public static final String LOCATION = "location";
-
-    public static final String DELIVERY_ADDRESS = "deliveryAddress";
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 

@@ -37,25 +37,26 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
+		<belongsTo name="supplier" model="company" plugin="basic"
+			required="true" />
+		<datetime name="deliveryDate" />
 		<string name="deliveryAddress">
 			<validatesLength max="2048" />
 		</string>
-		<string name="externalNumber" unique="true"/>	
+		<belongsTo name="relatedDelivery" model="delivery" />
+
+		<string name="externalNumber" unique="true" />
 		<boolean name="externalSynchronized" default="true" />
-		
-		<belongsTo name="supplier" model="company" plugin="basic" 
-			required="true" />
-		<datetime name="deliveryDate" />
-		
-		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
-			cascade="delete" copyable="true"  />
-		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
-			cascade="delete" />
-			
-		<enum
+
+		<enum name="state"
 			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
-			name="state" default="01draft" />
+			default="01draft" required="true" />
 		<hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
+			cascade="delete" />
+
+		<hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
+			cascade="delete" copyable="true" />
+		<hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
 			cascade="delete" />
 	</fields>
 	<hooks>
