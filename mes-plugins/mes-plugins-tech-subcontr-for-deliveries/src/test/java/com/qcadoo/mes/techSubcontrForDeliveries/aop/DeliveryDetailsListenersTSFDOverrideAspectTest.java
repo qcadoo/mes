@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 
 import org.junit.Test;
 
@@ -42,6 +43,26 @@ public class DeliveryDetailsListenersTSFDOverrideAspectTest {
         Class<?> clazz = DeliveryDetailsListeners.class;
         assertEquals("com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners", clazz.getCanonicalName());
         final Method method = clazz.getDeclaredMethod("createDeliveredProduct", Entity.class);
+        assertNotNull(method);
+        assertTrue(Modifier.isPrivate(method.getModifiers()));
+        assertEquals(Entity.class, method.getReturnType());
+    }
+
+    @Test
+    public final void checkCheckIfProductAreSameExecution() throws NoSuchMethodException {
+        Class<?> clazz = DeliveryDetailsListeners.class;
+        assertEquals("com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("checkIfProductsAreSame", Entity.class, Entity.class);
+        assertNotNull(method);
+        assertTrue(Modifier.isPrivate(method.getModifiers()));
+        assertEquals(boolean.class, method.getReturnType());
+    }
+
+    @Test
+    public final void checkCreateOrderedProductExecution() throws NoSuchMethodException {
+        Class<?> clazz = DeliveryDetailsListeners.class;
+        assertEquals("com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("createOrderedProduct", Entity.class, BigDecimal.class);
         assertNotNull(method);
         assertTrue(Modifier.isPrivate(method.getModifiers()));
         assertEquals(Entity.class, method.getReturnType());
