@@ -87,6 +87,7 @@
 			component="form" event="showCostCalculateFromOrder"
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
 			method="showCostCalculateFromOrder" />
+			
 		<view:view-listener plugin="technologies" view="technologyDetails"
 			component="form" event="showCostCalculateFromTechnology"
 			class="com.qcadoo.mes.costCalculation.CostCalculationViewService"
