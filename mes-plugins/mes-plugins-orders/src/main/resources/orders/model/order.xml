@@ -40,6 +40,8 @@
 		<string name="defaultTechnology" persistent="false" />
 		<string name="commentReasonTypeCorrectionDateFrom" />
 		<string name="commentReasonTypeCorrectionDateTo" />
+		<string name="commentReasonDeviationEffectiveStart" />
+		<string name="commentReasonDeviationEffectiveEnd" />
 		<string name="externalNumber" unique="true"/>
 		<string name="commentReasonTypeDeviationsQuantity" />
 
@@ -114,24 +116,15 @@
 			joinField="order" cascade="delete" />
 		<hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
 			joinField="order" cascade="delete" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveStart" model="reasonTypeOfChaningOrderState"
-			joinField="order" cascade="delete" persistent="false" />
-		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeOfChaningOrderState"
-			 joinField="order" cascade="delete" persistent="false" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveStart" model="reasonTypeDeviationEffectiveStart"
+			joinField="order" cascade="delete" />
+		<hasMany name="reasonTypesDeviationsOfEffectiveEnd" model="reasonTypeDeviationEffectiveEnd"
+			 joinField="order" cascade="delete" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkOrderDates" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkOrderPlannedQuantity" />
-		<validatesWith class="com.qcadoo.mes.basic.ProductService"
-			method="checkIfProductIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.orders.OrderService"
-			method="checkChosenTechnologyState" />
 		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired" />
-		<validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired" />
+			method="onValidate" />
+	
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
 			method="setInitialState" />
 		<onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"

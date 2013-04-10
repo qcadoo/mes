@@ -503,8 +503,8 @@
 									<layoutElement column="2" row="1" width="2">
 										<component type="awesomeDynamicList"
 											name="reasonTypesDeviationsOfEffectiveStart" source="#{form}.reasonTypesDeviationsOfEffectiveStart"
-											reference="reasonTypesDeviationsOfEffectiveStart" persistent="false"
-											defaultEnabled="never">
+											reference="reasonTypesDeviationsOfEffectiveStart"
+											defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
 
@@ -523,7 +523,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-								<component type="textarea"
+								<component type="textarea" field="#{form}.commentReasonDeviationEffectiveStart"
 									name="commentReasonTypeDeviationsOfEffectiveStart" reference="commentReasonTypeDeviationsOfEffectiveStart"
 									defaultEnabled="false">
 								</component>
@@ -629,8 +629,7 @@
 									<layoutElement column="2" row="1" width="2">
 										<component type="awesomeDynamicList"
 											name="reasonTypesDeviationsOfEffectiveEnd" source="#{form}.reasonTypesDeviationsOfEffectiveEnd"
-											reference="reasonTypesDeviationsOfEffectiveEnd" persistent="false"
-											defaultEnabled="never">
+											reference="reasonTypesDeviationsOfEffectiveEnd" defaultEnabled="false">
 											<option type="hasBorder" value="false" />
 											<option type="hasButtons" value="true" />
 
@@ -649,7 +648,7 @@
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2" height="2">
-								<component type="textarea"
+								<component type="textarea" field="#{form}.commentReasonDeviationEffectiveEnd"
 									name="commentReasonTypeDeviationsOfEffectiveEnd" reference="commentReasonTypeDeviationsOfEffectiveEnd"
 									defaultEnabled="false">
 								</component>
@@ -834,44 +833,8 @@
 	</component>
 
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="fillProductionLine" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="generateOrderNumber" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="fillDefaultTechnology" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="disableFieldOrder" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="disableTechnologiesIfProductDoesNotAny" />
-		<beforeRender class="com.qcadoo.mes.orders.OrderService"
-			method="setAndDisableState" />
-		<beforeRender class="com.qcadoo.mes.basic.util.UnitService"
-			method="fillProductUnitBeforeRender" />
 		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="disableOrderFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="fillReasonTypeDeviationsOfEffectiveStart" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="fillReasonTypeDeviationsOfEffectiveEnd" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="changedEnabledFieldForSpecificOrderState" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="filterStateChangeHistory" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="disabledRibbonWhenOrderIsSynchronized" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="compareDeadlineAndEndDate" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderDetailsHooks"
-			method="compareDeadlineAndStartDate" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
-			method="changedEnabledFieldForSpecificOrderState" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
-			method="fillProductUnit" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderProductQuantityHooks"
-			method="setProductQuantity" />
-		<beforeRender class="com.qcadoo.mes.orders.hooks.OrderHooks"
-			method="changedEnabledDescriptionFieldForSpecificOrderState" />
+			method="onBeforeRender" />
 	</hooks>
 
 </view>

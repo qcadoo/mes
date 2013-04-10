@@ -25,7 +25,6 @@ package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
@@ -95,7 +94,7 @@ public class OrderDetailsHooksTest {
         when(view.getComponentByReference(REASON_TYPES_CORRECTION_DATE_TO)).thenReturn(reasonsDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_TO)).thenReturn(commentDateToField);
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
-        when(view.getComponentByReference(COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START)).thenReturn(
+        when(view.getComponentByReference("commentReasonTypeDeviationsOfEffectiveStart")).thenReturn(
                 commentDeviationsDateFromField);
         when(view.getComponentByReference(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START)).thenReturn(reasonsDeviationsDateFromField);
         when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
