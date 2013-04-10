@@ -29,6 +29,7 @@ import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReport
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NAME;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.NUMBER;
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.SHIFT;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,10 +52,10 @@ public final class AssignmentToShiftReportDetailsHooks {
     private static final List<String> REPORT_FIELDS = Arrays.asList(NUMBER, NAME, SHIFT, DATE_FROM, DATE_TO);
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private NumberGeneratorService numberGeneratorService;
 
     public void generateAssignmentToShiftReportNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
@@ -94,5 +95,5 @@ public final class AssignmentToShiftReportDetailsHooks {
     private Entity getAssignmentToShiftReportFromDB(final Long assignmentToShiftReportId) {
         return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
                 AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT).get(assignmentToShiftReportId);
-    }       
+    }
 }
