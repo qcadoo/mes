@@ -68,7 +68,6 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -88,9 +87,6 @@ public class ProductionRecordService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private NumberService numberService;
 
     public void generateData(final DataDefinition productionRecordDD, final Entity productionRecord) {
         if (productionRecord.getField(NUMBER) == null) {
@@ -225,10 +221,9 @@ public class ProductionRecordService {
 
             if (operationProductModel.equals(operationProductComponent.getDataDefinition().getName())) {
                 Entity product = operationProductComponent.getBelongsToField(PRODUCT);
-                BigDecimal quantity = productComponentQuantity.getValue();
 
                 createRecordOperationProduct(recordOperationProducts, recordOperationProductModelName, operationProductComponent,
-                        operationProductModel, order, product, quantity);
+                        operationProductModel, order, product);
             }
         }
 
@@ -237,14 +232,13 @@ public class ProductionRecordService {
 
     private void createRecordOperationProduct(final List<Entity> recordOperationProducts,
             final String recordOperationProductModelName, final Entity operationProductComponent,
-            final String operationProductModel, final Entity order, final Entity product, final BigDecimal quantity) {
+            final String operationProductModel, final Entity order, final Entity product) {
         Entity recordOperationProduct = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 recordOperationProductModelName).create();
 
         recordOperationProduct.setField(PRODUCT, product);
         recordOperationProduct.setField(PRODUCTION_COUNTING_QUANTITY,
                 findProductionComponentQuantity(order, operationProductComponent, operationProductModel, product));
-        // recordOperationProduct.setField(PLANNED_QUANTITY, numberService.setScale(quantity));
 
         recordOperationProducts.add(recordOperationProduct);
     }

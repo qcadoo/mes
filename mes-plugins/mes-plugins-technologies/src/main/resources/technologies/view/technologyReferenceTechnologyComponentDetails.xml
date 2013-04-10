@@ -30,19 +30,23 @@
 	modelName="technologyOperationComponent">
 	
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" excludeItems="actions.save, actions.copy, actions.saveNew"/>
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
+			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="2">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technology" reference="technology"
 						field="referenceTechnology">
 						<option type="column" name="name" fields="name" link="true"
 							width="300" />
+							
 						<option type="searchable" value="name,number" />
 						<option type="orderable" value="name,number" />
+						
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
@@ -56,10 +60,13 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#technology['name']" />
 		</component>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
 			method="hideReferenceMode" />

@@ -585,7 +585,7 @@
 									<serverId>qcadoo-public</serverId>
 									<fromFile>${basedir}/target/${project.artifactId}.zip</fromFile>
 									<toFile>${profile}.zip</toFile>
-									<url>scp://46.248.165.49:222/home/stage/deploy</url>
+									<url>${wagon.url}</url>
 								</configuration>
 							</execution>
 						</executions>

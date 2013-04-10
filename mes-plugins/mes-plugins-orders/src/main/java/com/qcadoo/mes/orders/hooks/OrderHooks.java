@@ -163,26 +163,26 @@ public class OrderHooks {
         if (entity.getId() == null) {
             return;
         }
-        if (entity.getField(START_DATE) == null) {
+        Date startDate = entity.getDateField(START_DATE);
+        if (startDate == null) {
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 entity.getId());
         String state = entity.getStringField(STATE);
-        Date startDate = choppingOffMiliseconds(entity.getField(START_DATE));
         Date startDateDB = new Date();
-        if (order.getField(START_DATE) != null) {
-            startDateDB = choppingOffMiliseconds(order.getField(START_DATE));
+        if (order.getDateField(START_DATE) != null) {
+            startDateDB = order.getDateField(START_DATE);
         }
         if (PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
-            entity.setField(DATE_FROM, entity.getField(START_DATE));
+            entity.setField(DATE_FROM, startDate);
         }
         if (IN_PROGRESS.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
-            entity.setField(EFFECTIVE_DATE_FROM, entity.getField(START_DATE));
+            entity.setField(EFFECTIVE_DATE_FROM, startDate);
         }
-        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
-                .equals(state)) && !startDateDB.equals(startDate)) {
-            entity.setField(CORRECTED_DATE_FROM, entity.getField(START_DATE));
+        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state))
+                && !startDateDB.equals(startDate)) {
+            entity.setField(CORRECTED_DATE_FROM, startDate);
         }
     }
 
@@ -190,26 +190,26 @@ public class OrderHooks {
         if (entity.getId() == null) {
             return;
         }
-        if (entity.getField(FINISH_DATE) == null) {
+        Date finishDate = entity.getDateField(FINISH_DATE);
+        if (finishDate == null) {
             return;
         }
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 entity.getId());
         String state = entity.getStringField(STATE);
-        Date finishDate = choppingOffMiliseconds(entity.getField(FINISH_DATE));
         Date finishDateDB = new Date();
-        if (order.getField(FINISH_DATE) != null) {
-            finishDateDB = choppingOffMiliseconds(order.getField(FINISH_DATE));
+        if (order.getDateField(FINISH_DATE) != null) {
+            finishDateDB = order.getDateField(FINISH_DATE);
         }
         if (PENDING.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
-            entity.setField(DATE_TO, entity.getField(FINISH_DATE));
+            entity.setField(DATE_TO, finishDate);
         }
         if (COMPLETED.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
-            entity.setField(CORRECTED_DATE_TO, entity.getField(START_DATE));
+            entity.setField(EFFECTIVE_DATE_TO, finishDate);
         }
         if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
                 .equals(state)) && !finishDateDB.equals(finishDate)) {
-            entity.setField(CORRECTED_DATE_TO, entity.getField(FINISH_DATE));
+            entity.setField(CORRECTED_DATE_TO, finishDate);
         }
     }
 
@@ -229,10 +229,6 @@ public class OrderHooks {
         } else {
             order.setField(OrderFields.FINISH_DATE, dateRange.getTo());
         }
-    }
-
-    private Date choppingOffMiliseconds(final Object date) {
-        return new Date(((Date) date).getTime() / SECOND_MILLIS);
     }
 
     public boolean validateDates(final DataDefinition orderDD, final Entity order) {

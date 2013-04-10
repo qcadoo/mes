@@ -173,8 +173,9 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 }
 
                 row.createCell(0).setCellValue(productionLineValue);
-
                 if (assignmentToShiftXlsHelper.getProductionLinesWithStaff(productionLine).isEmpty()) {
+                    assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
+                            assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
                     continue;
                 }
                 int columnNumber = 1;

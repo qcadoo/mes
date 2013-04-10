@@ -163,6 +163,8 @@
 							link="true" expression="#product['number']" />
 						<option type="column" name="productName" fields="product"
 							expression="#product['name']" />
+						<option type="column" name="technologyNumber" fields="technology"
+							expression="#technology['number']" />
 						<option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" />
 						<option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity" />
 						<option type="column" name="productUnit" fields="product"

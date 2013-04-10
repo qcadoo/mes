@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveryFieldsDTMF;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
@@ -37,7 +38,7 @@ public class DeliveryStateServiceMF {
             return;
         }
 
-        Entity location = (Entity) delivery.getField(DeliveryFields.LOCATION);
+        Entity location = (Entity) delivery.getField(DeliveryFieldsDTMF.LOCATION);
 
         if (location == null) {
             return;
@@ -59,7 +60,7 @@ public class DeliveryStateServiceMF {
                 transfer.setField(TransferFields.TIME, delivery.getField(DeliveryFields.DELIVERY_DATE));
                 transfer.setField(TransferFields.PRODUCT, product.getField(DeliveredProductFields.PRODUCT));
                 transfer.setField(TransferFields.QUANTITY, product.getField(DeliveredProductFields.DELIVERED_QUANTITY));
-                transfer.setField(TransferFields.LOCATION_TO, delivery.getField(DeliveryFields.LOCATION));
+                transfer.setField(TransferFields.LOCATION_TO, delivery.getField(DeliveryFieldsDTMF.LOCATION));
                 transfer.setField(TransferFields.TYPE, TransferType.TRANSPORT.getStringValue());
                 transfer.setField(FROM_DELIVERY, delivery);
 

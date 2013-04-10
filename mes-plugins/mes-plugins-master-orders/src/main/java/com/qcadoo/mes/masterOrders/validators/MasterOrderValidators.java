@@ -195,11 +195,11 @@ public class MasterOrderValidators {
         }
         Entity masterOrderFromDB = dataDefinition.get(masterOrderId);
         if (masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.UNDEFINED.getStringValue())
-                && masterOrder.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            if (checkIfMasterOrderHaveOrders(masterOrder)) {
-                masterOrder.addError(dataDefinition.getField(MASTER_ORDER_TYPE), "masterOrders.masterOrder.alreadyHaveOrder");
-                return false;
-            }
+                && masterOrder.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue())
+                && checkIfMasterOrderHaveOrders(masterOrder)) {
+            masterOrder.addError(dataDefinition.getField(MASTER_ORDER_TYPE), "masterOrders.masterOrder.alreadyHaveOrder");
+            return false;
+
         }
         return true;
     }

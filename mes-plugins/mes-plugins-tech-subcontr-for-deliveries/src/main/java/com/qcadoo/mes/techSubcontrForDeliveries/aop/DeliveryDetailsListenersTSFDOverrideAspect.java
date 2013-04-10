@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
+import java.math.BigDecimal;
+
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,28 @@ public class DeliveryDetailsListenersTSFDOverrideAspect {
     @AfterReturning(value = "createDeliveredProductExecution(orderedProduct)", returning = "deliveredProduct")
     public void afterCreateDeliveredProductExecution(final Entity orderedProduct, final Entity deliveredProduct) {
         deliveryDetailsListenersTSFDOverrideUtil.fillDeliveredProductOperation(orderedProduct, deliveredProduct);
+    }
+
+    @Pointcut("execution(private boolean com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.checkIfProductsAreSame(..)) "
+            + " && args(orderedProduct, deliveredProduct)")
+    public void checkIfProductAreSameExecution(final Entity orderedProduct, final Entity deliveredProduct) {
+    }
+
+    @Around(value = "checkIfProductAreSameExecution(orderedProduct, deliveredProduct)")
+    public boolean aroundCheckIfProductAreSameExecution(final ProceedingJoinPoint pjp, final Entity orderedProduct,
+            final Entity deliveredProduct) throws Throwable {
+        return deliveryDetailsListenersTSFDOverrideUtil.checkIfProductsAndOperationsAreSame(orderedProduct, deliveredProduct);
+    }
+
+    @Pointcut("execution(private com.qcadoo.model.api.Entity com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.createOrderedProduct(..)) "
+            + " && args(orderedProduct, orderedQuantity)")
+    public void createOrderedProductExecution(final Entity orderedProduct, final BigDecimal orderedQuantity) {
+    }
+
+    @AfterReturning(value = "createOrderedProductExecution(orderedProduct, orderedQuantity)", returning = "newOrderedProduct")
+    public void afterCreateDeliveredProductExecution(final Entity orderedProduct, final BigDecimal orderedQuantity,
+            final Entity newOrderedProduct) {
+        deliveryDetailsListenersTSFDOverrideUtil.fillOrderedProductOperation(orderedProduct, orderedQuantity, newOrderedProduct);
     }
 
 }

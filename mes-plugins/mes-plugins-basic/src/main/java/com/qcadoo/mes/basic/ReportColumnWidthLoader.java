@@ -27,7 +27,6 @@ import static com.qcadoo.mes.basic.constants.ReportColumnWidthFields.CHAR_TYPE;
 import static com.qcadoo.mes.basic.constants.ReportColumnWidthFields.IDENTIFIER;
 import static com.qcadoo.mes.basic.constants.ReportColumnWidthFields.NAME;
 import static com.qcadoo.mes.basic.constants.ReportColumnWidthFields.PARAMETER;
-import static com.qcadoo.mes.basic.constants.ReportColumnWidthFields.WIDTH;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,7 +109,6 @@ public class ReportColumnWidthLoader {
 
         reportColumnWidth.setField(IDENTIFIER, values.get(IDENTIFIER.toLowerCase(Locale.ENGLISH)));
         reportColumnWidth.setField(NAME, values.get(NAME.toLowerCase(Locale.ENGLISH)));
-        reportColumnWidth.setField(WIDTH, Integer.valueOf(values.get(WIDTH.toLowerCase(Locale.ENGLISH))));
         reportColumnWidth.setField(CHAR_TYPE, values.get(CHAR_TYPE.toLowerCase(Locale.ENGLISH)));
         reportColumnWidth.setField(PARAMETER, parameterService.getParameter());
 

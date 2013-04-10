@@ -94,8 +94,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             throws DocumentException {
         String documentTitle = translationService.translate("productionCounting.productionBalance.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) productionBalance.getField("date"),
-                securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) productionBalance.getField("date"));
 
         PdfPTable topTable = pdfHelper.createPanelTable(2);
         topTable.addCell(productionBalancePdfService.createLeftPanel(productionBalance, locale));

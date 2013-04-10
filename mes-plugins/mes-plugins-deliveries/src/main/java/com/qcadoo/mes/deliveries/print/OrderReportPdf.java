@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -55,6 +54,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -65,29 +65,17 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "orderReportPdf")
 public class OrderReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
-
-    private static final String QCADOO_SECURITY = "qcadooSecurity";
-
-    private static final String USER = "user";
-
-    private static final String FIRST_NAME = "firstName";
-
-    private static final String LAST_NAME = "lastName";
-
-    private static final String USER_NAME = "userName";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -102,9 +90,6 @@ public class OrderReportPdf extends ReportPdfView {
     private TranslationService translationService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private PdfHelper pdfHelper;
 
     @Autowired
@@ -112,9 +97,6 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
@@ -127,7 +109,7 @@ public class OrderReportPdf extends ReportPdfView {
         String documentTitle = translationService.translate("deliveries.order.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), getDocumentAuthor());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
         Long deliveryId = Long.valueOf(model.get("id").toString());
 
@@ -142,6 +124,15 @@ public class OrderReportPdf extends ReportPdfView {
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
         PdfPTable dynaminHeaderTable = pdfHelper.createPanelTable(3);
+        dynaminHeaderTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
+
+        PdfPTable firstColumnHeaderTable = new PdfPTable(1);
+        PdfPTable secondColumnHeaderTable = new PdfPTable(1);
+        PdfPTable thirdColumnHeaderTable = new PdfPTable(1);
+
+        setSimpleFormat(firstColumnHeaderTable);
+        setSimpleFormat(secondColumnHeaderTable);
+        setSimpleFormat(thirdColumnHeaderTable);
 
         dynaminHeaderTable.setSpacingBefore(7);
 
@@ -153,15 +144,23 @@ public class OrderReportPdf extends ReportPdfView {
                 Integer.valueOf(secondColumn.values().size()), Integer.valueOf(thirdColumn.values().size())));
 
         for (int i = 0; i < maxSize; i++) {
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, firstColumn, locale);
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, secondColumn, locale);
-            dynaminHeaderTable = pdfHelper.addDynamicHeaderTableCell(dynaminHeaderTable, thirdColumn, locale);
+            firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(firstColumnHeaderTable, firstColumn, locale);
+            secondColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(secondColumnHeaderTable, secondColumn, locale);
+            thirdColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(thirdColumnHeaderTable, thirdColumn, locale);
         }
 
-        pdfHelper.addTableCellAsOneColumnTable(dynaminHeaderTable, "", "");
+        dynaminHeaderTable.addCell(firstColumnHeaderTable);
+        dynaminHeaderTable.addCell(secondColumnHeaderTable);
+        dynaminHeaderTable.addCell(thirdColumnHeaderTable);
 
         document.add(dynaminHeaderTable);
         document.add(Chunk.NEWLINE);
+    }
+
+    private void setSimpleFormat(final PdfPTable headerTable) {
+        headerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        headerTable.getDefaultCell().setPadding(6.0f);
+        headerTable.getDefaultCell().setVerticalAlignment(PdfPCell.ALIGN_TOP);
     }
 
     private Map<String, Object> createFirstColumn(final Entity delivery) {
@@ -292,29 +291,4 @@ public class OrderReportPdf extends ReportPdfView {
                 .add(SearchRestrictions.eq("status", "03successful")).uniqueResult();
     }
 
-    private String getDocumentAuthor() {
-        Entity user = dataDefinitionService.get(QCADOO_SECURITY, USER).get(securityService.getCurrentUserId());
-        String firstName = user.getStringField(FIRST_NAME);
-        String lastName = user.getStringField(LAST_NAME);
-        String userName = user.getStringField(USER_NAME);
-        String documentAuthor = "";
-
-        if (!StringUtils.isEmpty(firstName)) {
-            documentAuthor += firstName;
-        }
-        if (!StringUtils.isEmpty(lastName)) {
-            if (StringUtils.isEmpty(documentAuthor)) {
-                documentAuthor += lastName;
-            } else {
-                documentAuthor += " " + lastName;
-            }
-        }
-        if (StringUtils.isEmpty(documentAuthor)) {
-            documentAuthor = userName;
-        } else {
-            documentAuthor += " (" + userName + ")";
-        }
-
-        return documentAuthor;
-    }
 }

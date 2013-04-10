@@ -97,8 +97,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documenTitle = translationService.translate("materialRequirements.materialRequirement.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) entity.getField(DATE_FIELD),
-                securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor, (Date) entity.getField(DATE_FIELD));
         addPanel(document, entity, locale);
         document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
                 locale), FontUtils.getDejavuBold11Dark()));

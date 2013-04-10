@@ -108,7 +108,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingOperationRun.setField(TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         productionCountingOperationRun.setField(RUNS, numberService.setScale(runs));
 
-        productionCountingOperationRun = productionCountingOperationRun.getDataDefinition().save(productionCountingOperationRun);
+        productionCountingOperationRun.getDataDefinition().save(productionCountingOperationRun);
     }
 
     private void createProductionCountingQuantity(final Entity order, final Entity operationProductInComponent,
@@ -124,7 +124,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingQuantity.setField(PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
         productionCountingQuantity.setField(IS_NON_COMPONENT, isNonComponent);
 
-        productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+        productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
     }
 
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
@@ -173,8 +173,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             productionCountingOperationRun.setField(TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
             productionCountingOperationRun.setField(RUNS, runs);
 
-            productionCountingOperationRun = productionCountingOperationRun.getDataDefinition().save(
-                    productionCountingOperationRun);
+            productionCountingOperationRun.getDataDefinition().save(productionCountingOperationRun);
         }
     }
 
@@ -197,7 +196,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             productionCountingQuantity.setField(PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
             productionCountingQuantity.setField(IS_NON_COMPONENT, isNonComponent);
 
-            productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+            productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
         }
     }
 
