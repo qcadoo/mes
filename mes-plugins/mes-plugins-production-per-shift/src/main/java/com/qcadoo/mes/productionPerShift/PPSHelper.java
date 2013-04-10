@@ -29,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -41,6 +43,28 @@ public class PPSHelper {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public Long getPpsIdForOrder(final Long orderId) {
+        DataDefinition ppsDateDef = getPpsDataDef();
+        String query = "select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId";
+        Entity projectionResults = ppsDateDef.find(query).setLong("orderId", orderId).setMaxResults(1).uniqueResult();
+        if (projectionResults == null) {
+            return null;
+        }
+        return (Long) projectionResults.getField("ppsId");
+    }
+
+    public Long createPpsForOrderAndReturnId(final Long orderId) {
+        DataDefinition ppsDataDef = getPpsDataDef();
+        Entity pps = ppsDataDef.create();
+        pps.setField("order", orderId);
+        return ppsDataDef.save(pps).getId();
+    }
+
+    private DataDefinition getPpsDataDef() {
+        return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
+    }
 
     public Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
         ComponentState operationLookup = viewState.getComponentByReference("productionPerShiftOperation");

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.orders.listeners;
 
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_REQUIRED;
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_TYPES;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderStateReasonViewListeners {
+
+    private static final String L_FORM = "form";
 
     @Autowired
     private OrderStateChangeAspect orderStateChangeService;
@@ -82,15 +85,16 @@ public class OrderStateReasonViewListeners {
     }
 
     public void beforeRenderDialog(final ViewDefinitionState view) {
-        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference("reasonType");
-        final FieldComponent reasonRequiredField = (FieldComponent) view.getComponentByReference("reasonRequired");
+        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference(REASON_TYPES);
+        final FieldComponent reasonRequiredField = (FieldComponent) view.getComponentByReference(REASON_REQUIRED);
         reasonRequiredField.setFieldValue(true);
         reasonTypeField.setRequired(true);
     }
 
     public void beforeRenderDetails(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
-        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference("reasonType");
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference(REASON_TYPES);
         reasonTypeField.setRequired(form.getEntity().getBooleanField(REASON_REQUIRED));
     }
+
 }

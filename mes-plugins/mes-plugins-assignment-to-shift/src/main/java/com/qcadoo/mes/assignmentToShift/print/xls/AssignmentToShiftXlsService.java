@@ -100,7 +100,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         HSSFCell cellAuthorLine6 = headerAuthorLine.createCell(6);
         cellAuthorLine6.setCellValue(user);
 
-        headerAuthorLine.setHeightInPoints(15);
+        headerAuthorLine.setHeightInPoints(30);
 
         assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthor(sheet, 1,
                 assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(entity));
@@ -144,7 +144,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             List<Entity> occupationTypesWithoutTechnicalCode = getOccupationTypeDictionaryWithoutTechnicalCode();
             List<Entity> productionlines = assignmentToShiftXlsHelper.getProductionLines();
 
-            if (productionlines != null) {
+            if (!productionlines.isEmpty()) {
                 fillColumnWithStaffForWorkOnLine(sheet, rowNum, entity, days, productionlines,
                         getDictionaryItemWithProductionOnLine());
                 rowNum += productionlines.size();
@@ -171,9 +171,15 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     productionLineValue = productionLine.getStringField(NUMBER) + "-"
                             + productionLine.getStringField(ProductionLineFields.PLACE);
                 }
-                row.createCell(0).setCellValue(productionLineValue);
 
+                row.createCell(0).setCellValue(productionLineValue);
+                if (assignmentToShiftXlsHelper.getProductionLinesWithStaff(productionLine).isEmpty()) {
+                    assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, rowNum,
+                            assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                    continue;
+                }
                 int columnNumber = 1;
+                int maxLength = 0;
                 for (DateTime day : days) {
                     Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
@@ -184,11 +190,17 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                     List<Entity> staffs = assignmentToShiftXlsHelper.getStaffsList(assignmentToShift,
                             dictionaryItem.getStringField(NAME), productionLine);
-
+                    if (staffs.isEmpty()) {
+                        columnNumber += 3;
+                        continue;
+                    }
                     String staffsValue = assignmentToShiftXlsHelper.getListOfWorkers(staffs);
 
                     row.createCell(columnNumber).setCellValue(staffsValue);
-                    row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(staffsValue.length(), 22, 14));
+                    if (maxLength < staffsValue.length()) {
+                        maxLength = staffsValue.length();
+                    }
+                    row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
 
                     columnNumber += 3;
                 }
@@ -210,6 +222,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             row.createCell(0).setCellValue(occupationTypeValue);
 
             int columnNumber = 1;
+            int maxLength = 0;
             for (DateTime day : days) {
                 Entity assignmentToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                         assignmentToShiftReport.getBelongsToField(SHIFT), day.toDate());
@@ -228,7 +241,10 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 }
 
                 row.createCell(columnNumber).setCellValue(staffsValue);
-                row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(staffsValue.length(), 22, 14));
+                if (maxLength < staffsValue.length()) {
+                    maxLength = staffsValue.length();
+                }
+                row.setHeightInPoints(assignmentToShiftXlsStyleHelper.getHeightForRow(maxLength, 22, 14));
 
                 columnNumber += 3;
             }

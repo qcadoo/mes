@@ -29,9 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="progressForDay" model="progressForDay" />
-		<belongsTo name="shift" model="shift" plugin="basic"/>
-		<decimal name="quantity" />
+		<belongsTo name="shift" model="shift" plugin="basic" required="true" />
+		<decimal name="quantity" required="true" />
 	</fields>
-	<hooks/>
-	
 </model>

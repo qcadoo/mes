@@ -106,7 +106,7 @@ import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionCountingWi
 import com.qcadoo.mes.productionCountingWithCosts.materials.RegisteredMaterialCostHelper;
 import com.qcadoo.mes.productionCountingWithCosts.operations.RegisteredProductionCostHelper;
 import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
-import com.qcadoo.mes.productionCountingWithCosts.util.DecimalUtils;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -274,7 +274,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             }
         }
 
-        final BigDecimal plannedComponentsCosts = DecimalUtils.nullToZero(productionBalance
+        final BigDecimal plannedComponentsCosts = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS));
         BigDecimal componentsCostsBalance = componentsCosts.subtract(plannedComponentsCosts, numberService.getMathContext());
 
@@ -350,9 +350,9 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             }
         }
 
-        final BigDecimal plannedMachineCosts = DecimalUtils.nullToZero(productionBalance
+        final BigDecimal plannedMachineCosts = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS));
-        final BigDecimal plannedLaborCosts = DecimalUtils.nullToZero(productionBalance
+        final BigDecimal plannedLaborCosts = BigDecimalUtils.convertNullToZero(productionBalance
                 .getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS));
         final BigDecimal machineCosts = costs.get("machineCosts");
         final BigDecimal laborCosts = costs.get("laborCosts");
@@ -386,7 +386,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             if (calculationOperationComponent != null) {
                 BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-                BigDecimal machineHourlyCost = getNotNullBigDecimal(calculationOperationComponent
+                BigDecimal machineHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                         .getDecimalField(MACHINE_HOURLY_COST));
 
                 Integer machineTime = (Integer) productionRecordWithRegisteredTimes.getField(MACHINE_TIME);
@@ -396,7 +396,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                 machineCosts = machineCosts.add(machineHourlyCost.multiply(machineTimeHours, numberService.getMathContext()),
                         numberService.getMathContext());
 
-                BigDecimal laborHourlyCost = getNotNullBigDecimal(calculationOperationComponent
+                BigDecimal laborHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                         .getDecimalField(LABOR_HOURLY_COST));
 
                 Integer laborTime = (Integer) productionRecordWithRegisteredTimes.getField(LABOR_TIME);
@@ -425,7 +425,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
             BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-            BigDecimal averageMachineHourlyCost = getNotNullBigDecimal(productionBalance
+            BigDecimal averageMachineHourlyCost = BigDecimalUtils.convertNullToZero(productionBalance
                     .getDecimalField(AVERAGE_MACHINE_HOURLY_COST));
 
             Integer machineTime = (Integer) productionRecordWithRegisteredTimes.getField(MACHINE_TIME);
@@ -435,7 +435,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             machineCosts = machineCosts.add(averageMachineHourlyCost.multiply(machineTimeHours, numberService.getMathContext()),
                     numberService.getMathContext());
 
-            BigDecimal averageLaborHourlyCost = getNotNullBigDecimal(productionBalance.getDecimalField(AVERAGE_LABOR_HOURLY_COST));
+            BigDecimal averageLaborHourlyCost = BigDecimalUtils.convertNullToZero(productionBalance
+                    .getDecimalField(AVERAGE_LABOR_HOURLY_COST));
 
             Integer laborTime = (Integer) productionRecordWithRegisteredTimes.getField(LABOR_TIME);
             BigDecimal laborTimeHours = BigDecimal.valueOf(laborTime).divide(milisecondsInHour, numberService.getMathContext());
@@ -475,7 +476,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal milisecondsInHour = BigDecimal.valueOf(3600);
 
-                    BigDecimal machineHourlyCost = getNotNullBigDecimal(calculationOperationComponent
+                    BigDecimal machineHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                             .getDecimalField(MACHINE_HOURLY_COST));
 
                     Integer plannedMachineTime = productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId)
@@ -494,7 +495,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
                     BigDecimal machineCostsBalance = machineCosts.subtract(plannedMachineCosts, numberService.getMathContext());
 
-                    BigDecimal laborHourlyCost = getNotNullBigDecimal(calculationOperationComponent
+                    BigDecimal laborHourlyCost = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                             .getDecimalField(LABOR_HOURLY_COST));
 
                     Integer plannedLaborTime = productionRecordsWithPlannedTimes.get(technologyInstanceOperationComponentId).get(
@@ -550,10 +551,11 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     productionRecordWithRegisteredTimes);
 
             if (calculationOperationComponent != null) {
-                final BigDecimal pieces = convertNullToOne(calculationOperationComponent.getDecimalField(PIECES));
+                final BigDecimal pieces = BigDecimalUtils.convertNullToOne(calculationOperationComponent.getDecimalField(PIECES));
 
-                final BigDecimal cost = getNotNullBigDecimal(calculationOperationComponent.getDecimalField(OPERATION_COST))
-                        .divide(pieces, numberService.getMathContext());
+                final BigDecimal cost = BigDecimalUtils.convertNullToZero(
+                        calculationOperationComponent.getDecimalField(OPERATION_COST)).divide(pieces,
+                        numberService.getMathContext());
 
                 if (productionRecordWithRegisteredTimes.getField(EXECUTED_OPERATION_CYCLES) != null) {
                     cyclesCosts = cyclesCosts.add(cost.multiply(
@@ -563,7 +565,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             }
         }
 
-        final BigDecimal plannedCyclesCosts = getNotNullBigDecimal(productionBalance.getDecimalField(TOTAL_PIECEWORK_COSTS));
+        final BigDecimal plannedCyclesCosts = BigDecimalUtils.convertNullToZero(productionBalance
+                .getDecimalField(TOTAL_PIECEWORK_COSTS));
         final BigDecimal cyclesCostsBalance = cyclesCosts.subtract(plannedCyclesCosts, numberService.getMathContext());
 
         productionBalance.setField(PLANNED_CYCLES_COSTS, numberService.setScale(plannedCyclesCosts));
@@ -588,12 +591,13 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                     productionRecordWithRegisteredTimes);
 
             if (calculationOperationComponent != null) {
-                final BigDecimal plannedCyclesCosts = getNotNullBigDecimal(calculationOperationComponent
+                final BigDecimal plannedCyclesCosts = BigDecimalUtils.convertNullToZero(calculationOperationComponent
                         .getDecimalField(OPERATION_COST));
-                final BigDecimal pieces = convertNullToOne(calculationOperationComponent.getDecimalField(PIECES));
+                final BigDecimal pieces = BigDecimalUtils.convertNullToOne(calculationOperationComponent.getDecimalField(PIECES));
 
-                final BigDecimal cost = getNotNullBigDecimal(calculationOperationComponent.getDecimalField(OPERATION_COST))
-                        .divide(pieces, numberService.getMathContext());
+                final BigDecimal cost = BigDecimalUtils.convertNullToZero(
+                        calculationOperationComponent.getDecimalField(OPERATION_COST)).divide(pieces,
+                        numberService.getMathContext());
 
                 BigDecimal cyclesCosts = BigDecimal.ZERO;
 
@@ -658,7 +662,8 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         costCalculationService.calculateTotalOverhead(productionBalance);
 
         BigDecimal totalCosts = registeredTotalTechnicalProductionCosts.add(
-                DecimalUtils.nullToZero(productionBalance.getDecimalField(TOTAL_OVERHEAD)), numberService.getMathContext());
+                BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(TOTAL_OVERHEAD)),
+                numberService.getMathContext());
         productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_COSTS, numberService.setScale(totalCosts));
 
         final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
@@ -733,20 +738,6 @@ public class GenerateProductionBalanceWithCosts implements Observer {
                             operatonTimeComponent.getBelongsToField(MODEL_TECHNOLOGY_INSTANCE_OPERATION_COMPONENT)
                                     .getBelongsToField(MODEL_TECHNOLOGY_OPERATION_COMPONENT))).setMaxResults(1).uniqueResult();
         }
-    }
-
-    private static BigDecimal getNotNullBigDecimal(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
-    }
-
-    private static BigDecimal convertNullToOne(final BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ONE;
-        }
-        return value;
     }
 
 }

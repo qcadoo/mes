@@ -145,8 +145,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documentTitle = translationService.translate("costCalculation.costCalculationDetails.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper
-                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
         DataDefinition dataDefCostCalculation = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_COST_CALCULATION);

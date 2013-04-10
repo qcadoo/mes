@@ -101,8 +101,7 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
             throws DocumentException {
         String documentTitle = translationService.translate("simpleMaterialBalance.simpleMaterialBalance.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) simpleMaterialBalance.getField(L_DATE),
-                securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) simpleMaterialBalance.getField(L_DATE));
         addPanel(document, simpleMaterialBalance, locale);
         addBalance(document, simpleMaterialBalance, locale);
         addOrders(document, simpleMaterialBalance, locale);

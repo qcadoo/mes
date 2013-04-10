@@ -23,19 +23,23 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
@@ -45,9 +49,6 @@ public class PPSHelperTest {
 
     @Mock
     private ViewDefinitionState viewState;
-
-    @Mock
-    private ComponentState lookup;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
@@ -90,4 +91,47 @@ public class PPSHelperTest {
         Assert.assertTrue(result);
     }
 
+    @Test
+    public final void shouldGetPpsForOrderReturnExistingPpsId() {
+        // given
+        Long givenOrderId = 1L;
+        Long expectedPpsId = 50L;
+        given(
+                dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                        ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)).willReturn(dataDefinition);
+        SearchQueryBuilder sqb = mock(SearchQueryBuilder.class);
+        given(dataDefinition.find("select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId"))
+                .willReturn(sqb);
+        given(sqb.setMaxResults(Mockito.anyInt())).willReturn(sqb);
+        given(sqb.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(sqb);
+        given(sqb.uniqueResult()).willReturn(entity);
+        given(entity.getField("ppsId")).willReturn(expectedPpsId);
+
+        // when
+        final Long resultPpsId = helper.getPpsIdForOrder(givenOrderId);
+
+        // then
+        Assert.assertEquals(expectedPpsId, resultPpsId);
+    }
+
+    @Test
+    public final void shouldGetPpsForOrderReturnNullIfPpsDoesNotExists() {
+        // given
+        Long givenOrderId = 1L;
+        given(
+                dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                        ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)).willReturn(dataDefinition);
+        SearchQueryBuilder sqb = mock(SearchQueryBuilder.class);
+        given(dataDefinition.find("select id as ppsId from #productionPerShift_productionPerShift where order.id = :orderId"))
+                .willReturn(sqb);
+        given(sqb.setMaxResults(Mockito.anyInt())).willReturn(sqb);
+        given(sqb.setLong(Mockito.anyString(), Mockito.eq(givenOrderId))).willReturn(sqb);
+        given(sqb.uniqueResult()).willReturn(null);
+
+        // when
+        final Long resultPpsId = helper.getPpsIdForOrder(givenOrderId);
+
+        // then
+        Assert.assertNull(resultPpsId);
+    }
 }

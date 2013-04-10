@@ -23,76 +23,30 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.ALL_PRODUCTS_IN;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class BpcOrderStateListenerService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private NumberService numberService;
+    private BasicProductionCountingService basicProductionCountingService;
 
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        final Entity technology = order.getBelongsToField(TECHNOLOGY);
+
         if (technology == null) {
             stateChangeContext.addValidationError("orders.order.technology.isEmpty");
         } else {
-            createBasicProductionCountings(stateChangeContext);
+            basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
+            basicProductionCountingService.createBasicProductionCountings(order);
         }
     }
 
-    private void createBasicProductionCountings(final StateChangeContext stateChangeContext) {
-        final Entity order = stateChangeContext.getOwner();
-        final List<Entity> prodCountings = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).find()
-                .add(SearchRestrictions.belongsTo("order", order)).list().getEntities();
-
-        if (prodCountings == null || prodCountings.isEmpty()) {
-            final Map<Entity, BigDecimal> productsReq = productQuantitiesService.getNeededProductQuantities(Arrays.asList(order),
-                    ALL_PRODUCTS_IN);
-
-            for (Entry<Entity, BigDecimal> productReq : productsReq.entrySet()) {
-                createBasicProductionCounting(order, productReq.getKey(), productReq.getValue());
-            }
-
-            createBasicProductionCounting(order, order.getBelongsToField("product"),
-                    (BigDecimal) order.getField("plannedQuantity"));
-        }
-    }
-
-    private void createBasicProductionCounting(final Entity order, final Entity product, final BigDecimal plannedQuantity) {
-        Entity productionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
-        productionCounting.setField("order", order);
-        productionCounting.setField("product", product);
-        productionCounting.setField("plannedQuantity", plannedQuantity);
-        productionCounting.setField("producedQuantity", numberService.setScale(BigDecimal.ZERO));
-        productionCounting.setField("usedQuantity", numberService.setScale(BigDecimal.ZERO));
-        productionCounting.getDataDefinition().save(productionCounting);
-    }
 }

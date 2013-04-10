@@ -36,6 +36,14 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
 
+    public static final String MODEL_REASON_TYPE_CORRECTION_DATE_TO = "reasonTypeCorrectionDateTo";
+
+    public static final String MODEL_REASON_TYPE_CORRECTION_DATE_FROM = "reasonTypeCorrectionDateFrom";
+
+    public static final String MODEL_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+
+    public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
+
     // VIEW
     public static final String VIEW_ORDER_DETAILS = "orderDetails";
 
@@ -56,4 +64,5 @@ public final class OrdersConstants {
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String FIELD_BATCH_REQUIRED = "batchRequired";
+
 }

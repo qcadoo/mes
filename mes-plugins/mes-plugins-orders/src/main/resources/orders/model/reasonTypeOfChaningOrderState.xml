@@ -29,8 +29,12 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" persistent="false" />
-		<belongsTo name="orderStateChange" model="orderStateChange" required="true" />
-		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState" />
+		<belongsTo name="orderStateChange" model="orderStateChange" />
+		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState">
+			<validatesWith 
+				class="com.qcadoo.mes.orders.hooks.ReasonTypeOfChangingOrderStateModelValidators" 
+				method="checkReasonRequired"/>
+		</dictionary>
 	</fields>
 	<hooks />
 </model>

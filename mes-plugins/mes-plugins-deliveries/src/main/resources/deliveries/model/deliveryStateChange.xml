@@ -37,11 +37,11 @@
 		<enum name="status" values="01inProgress,02paused,03successful,04failure"
 			required="true" />
 		<integer name="phase" />
+		<belongsTo name="shift" model="shift" plugin="basic" />
 		<string name="worker" />
 		<hasMany name="messages" joinField="deliveryStateChange"
 			model="message" plugin="states" cascade="delete" /> <!-- messages -->
 		<belongsTo name="delivery" model="delivery" /> <!-- owner -->
-		<belongsTo name="shift" model="shift" plugin="basic" />
 	</fields>
 	<hooks />
 </model>

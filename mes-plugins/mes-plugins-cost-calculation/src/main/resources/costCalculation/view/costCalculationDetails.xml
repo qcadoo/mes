@@ -159,7 +159,6 @@
 						<component type="lookup" name="order" field="order"
 							reference="order">
 							<option type="column" name="name" fields="name" link="true" />
-							<option type="required" value="true" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
 							<option type="expression"

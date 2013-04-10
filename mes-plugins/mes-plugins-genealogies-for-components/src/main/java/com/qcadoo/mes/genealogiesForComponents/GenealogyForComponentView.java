@@ -76,8 +76,7 @@ public class GenealogyForComponentView extends ReportPdfView {
         String documentTitle = translationService
                 .translate("genealogiesForComponents.genealogyForComponent.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper
-                .addDocumentHeader(document, "", documentTitle, documentAuthor, new Date(), securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
         addTables(document, entity, locale);
         return translationService.translate("genealogiesForComponents.genealogyForComponent.report.fileName", locale);
     }

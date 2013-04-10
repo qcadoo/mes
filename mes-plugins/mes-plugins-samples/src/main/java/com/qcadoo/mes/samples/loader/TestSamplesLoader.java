@@ -23,108 +23,7 @@
  */
 package com.qcadoo.mes.samples.loader;
 
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_PRODUCT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_STAFF;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_SUBSTITUTE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_MODEL_WORKSTATION_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BASIC_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.BATCH_STATE_TRACKED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ADVANCED_GENEALOGY_FOR_ORDERS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BALANCE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCH;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BATCHES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_BOM_ID;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_CLOSED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMMENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COST_CALCULATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_FROM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DATE_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEADLINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DEFAULT_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DESCRIPTION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_DIVISION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_EAN;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_FILE_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENEALOGY_TABLES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GENERATED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_HOURLY_COST;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LABOR_TIME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LAST_RECORD;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION_FROM;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_LOCATION_TO;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MACHINE_TIME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_FLOW_RESOURCES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_MATERIAL_REQUIREMENTS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_NUMBER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_OPERATION_COMPONENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_NR;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ORDER_STATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PLANNED_QUANTITY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_BALANCE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_COUNTING;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_LINES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCTION_RECORD;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PRODUCT_NR;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITYCONTROLTYPE_3;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROLS_FOR_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUALITY_CONTROL_TYPE2;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_QUANTITY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_RESOURCE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SHIFTS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STAFF;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STATE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_STOCK_CORRECTION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SUPPLIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_SURNAME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TIME;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TPZ;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRACKING_RECORDS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TRANSFORMATIONS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WAGE_GROUP;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORKSTATION_TYPES;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WORK_PLANS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_MODEL_ORDER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDERS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_ACCEPTED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_IN_PROGRESS;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.ORDER_STATE_PENDING;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_LINES_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTION_RECORD_STATE_ACCEPTED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.PRODUCTS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGIES_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_OPERATION;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_MODEL_TECHNOLOGY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TECHNOLOGY_STATE_ACCEPTED;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.TRACKING_RECORD_STATE_DRAFT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_MODEL_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.WAGE_GROUPS_PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMPANY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TECH_SUBCONTRACTING;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_COMPANY_PRODUCTS_FAMILY;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_TYPE_OF_PRODUCT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_GLOBAL_TYPE_OF_MATERIAL;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_ENTITY_TYPE;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_PARENT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_UNIT;
-import static com.qcadoo.mes.samples.constants.SamplesConstants.L_WAGE_GROUPS;
+import static com.qcadoo.mes.samples.constants.SamplesConstants.*;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -137,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.jdom.Element;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,6 +145,26 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         readDataFromXML(dataset, L_COMPANY_PRODUCTS_FAMILY, locale);
+
+        if (isEnabledOrEnabling(L_SUPPLY_NEGOTIATIONS)) {
+            readDataFromXML(dataset, L_NEGOTIATIONS, locale);
+            readDataFromXML(dataset, L_NEGOTIATION_PRODUCTS, locale);
+            readDataFromXML(dataset, L_NEGOTIATION_STATE_CHANGE, locale);
+            readDataFromXML(dataset, L_REQUEST_FOR_QUOTION, locale);
+            readDataFromXML(dataset, L_REQUEST_FOR_QUOTION_PRODUCTS, locale);
+            readDataFromXML(dataset, L_REQUEST_FOR_QUOTION_STATE_CHANGE, locale);
+            readDataFromXML(dataset, L_OFFER, locale);
+            readDataFromXML(dataset, L_OFFER_PRODUCTS, locale);
+            readDataFromXML(dataset, L_OFFER_STATE_CHANGES, locale);
+
+            if (isEnabledOrEnabling(L_DELIVERY)) {
+                readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
+                readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
+                readDataFromXML(dataset, L_DELIVERY_STATE_CHANGES, locale);
+            }
+
+        }
+
     }
 
     @Override
@@ -314,7 +234,235 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addWageGroups(values);
         } else if (L_COMPANY_PRODUCTS_FAMILY.equals(type)) {
             addCompanyProductsFamily(values);
+        } else if (L_NEGOTIATIONS.equals(type)) {
+            addNegotiations(values);
+            changeddNegotiationState(values);
+        } else if (L_NEGOTIATION_PRODUCTS.equals(type)) {
+            addNegotiationProducts(values);
+        } else if (L_REQUEST_FOR_QUOTION.equals(type)) {
+            addRequestForQuotations(values);
+            changedRequestForQuotationState(values);
+        } else if (L_REQUEST_FOR_QUOTION_PRODUCTS.equals(type)) {
+            addRequestForQuotationProducts(values);
+        } else if (L_OFFER.equals(type)) {
+            addOffers(values);
+            changedOfferState(values);
+        } else if (L_OFFER_PRODUCTS.equals(type)) {
+            addOfferProducts(values);
+        } else if (L_DELIVERY_DELIVERY.equals(type)) {
+            addDeliveries(values);
+            changedDeliveryState(values);
+        } else if (L_ORDERED_PRODUCTS.equals(type)) {
+            addOrderProducts(values);
+        } else if (L_DELIVERY_STATE_CHANGES.equals(type)) {
+            addDeliveryStateChange(values);
+        } else if (L_NEGOTIAITION_STATE_CHANGES.equals(type)) {
+            addNegotiationStateChange(values);
+        } else if (L_OFFER_STATE_CHANGES.equals(type)) {
+            addOfferStateChange(values);
+        } else if (L_REQUEST_FOR_QUOTION_STATE_CHANGE.equals(type)) {
+            addRequestForQuotationStateChange(values);
         }
+    }
+
+    private void addRequestForQuotationStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity requestForQuotationStateChange = dataDefinitionService
+                .get(L_SUPPLY_NEGOTIATIONS, "requestForQuotationStateChange").create();
+        requestForQuotationStateChange.setField("dateAndTime", new Date(date));
+        requestForQuotationStateChange.setField("sourceState", values.get("sourcestate"));
+        requestForQuotationStateChange.setField("targetState", values.get("targetstate"));
+        requestForQuotationStateChange.setField("status", values.get("status"));
+        requestForQuotationStateChange.setField("phase", values.get("phase"));
+        requestForQuotationStateChange.setField("worker", values.get("worker"));
+        requestForQuotationStateChange.setField(REQUEST_FOR_QUOTION,
+                getRequestForQuotationByNumber(values.get("requestforquotation")));
+        requestForQuotationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        requestForQuotationStateChange.getDataDefinition().save(requestForQuotationStateChange);
+
+    }
+
+    private void addOfferStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity offerStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offerStateChange").create();
+        offerStateChange.setField("dateAndTime", new Date(date));
+        offerStateChange.setField("sourceState", values.get("sourcestate"));
+        offerStateChange.setField("targetState", values.get("targetstate"));
+        offerStateChange.setField("status", values.get("status"));
+        offerStateChange.setField("phase", values.get("phase"));
+        offerStateChange.setField("worker", values.get("worker"));
+        offerStateChange.setField(OFFER, getOfferByNumber(values.get(OFFER)));
+        offerStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        offerStateChange.getDataDefinition().save(offerStateChange);
+
+    }
+
+    private void addNegotiationStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity negotiationStateChange = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiationStateChange").create();
+        negotiationStateChange.setField("dateAndTime", new Date(date));
+        negotiationStateChange.setField("sourceState", values.get("sourcestate"));
+        negotiationStateChange.setField("targetState", values.get("targetstate"));
+        negotiationStateChange.setField("status", values.get("status"));
+        negotiationStateChange.setField("phase", values.get("phase"));
+        negotiationStateChange.setField("worker", values.get("worker"));
+        negotiationStateChange.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
+        negotiationStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        negotiationStateChange.getDataDefinition().save(negotiationStateChange);
+
+    }
+
+    private void addDeliveryStateChange(final Map<String, String> values) {
+        long date = System.currentTimeMillis();
+        Entity deliveryStateChange = dataDefinitionService.get(L_DELIVERY, "deliveryStateChange").create();
+        deliveryStateChange.setField("dateAndTime", new Date(date));
+        deliveryStateChange.setField("sourceState", values.get("sourcestate"));
+        deliveryStateChange.setField("targetState", values.get("targetstate"));
+        deliveryStateChange.setField("status", values.get("status"));
+        deliveryStateChange.setField("phase", values.get("phase"));
+        deliveryStateChange.setField("worker", values.get("worker"));
+        deliveryStateChange.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
+        deliveryStateChange.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
+        deliveryStateChange.getDataDefinition().save(deliveryStateChange);
+    }
+
+    private void addOrderProducts(final Map<String, String> values) {
+        Entity orderedProduct = dataDefinitionService.get(L_DELIVERY, "orderedProduct").create();
+        orderedProduct.setField(DELIVERY, getDeliveryByNumber(values.get(DELIVERY)));
+        orderedProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
+        orderedProduct.setField("orderedQuantity", values.get("orderedquantity"));
+        orderedProduct.setField("description", values.get("description"));
+        orderedProduct.getDataDefinition().save(orderedProduct);
+    }
+
+    private void addDeliveries(final Map<String, String> values) {
+        Entity delivery = dataDefinitionService.get(L_DELIVERY, DELIVERY).create();
+        delivery.setField(L_NUMBER, values.get(L_NUMBER));
+        delivery.setField(L_NAME, values.get(L_NAME));
+        delivery.setField(L_DESCRIPTION, values.get(L_DESCRIPTION));
+        delivery.setField(L_SUPPLIER, getSupplierByNumber(values.get(L_SUPPLIER)));
+        delivery.setField("deliveryAddress", values.get("deliveryaddress"));
+        delivery.setField(L_STATE, values.get(L_STATE));
+        delivery.setField("deliveryDate", values.get("deliverydate"));
+        delivery.setField("externalSynchronized", true);
+        delivery.getDataDefinition().save(delivery);
+
+    }
+
+    private void addOfferProducts(final Map<String, String> values) {
+        Entity offerProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "offerProduct").create();
+        offerProduct.setField(OFFER, getOfferByNumber(values.get(OFFER)));
+        offerProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
+        offerProduct.setField(L_QUANTITY, values.get(L_QUANTITY));
+        offerProduct.setField("pricePerUnit", values.get("priceperunit"));
+        offerProduct.setField("totalPrice", values.get("totalprice"));
+        offerProduct.getDataDefinition().save(offerProduct);
+
+    }
+
+    private void addOffers(final Map<String, String> values) {
+        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).create();
+        offer.setField(L_NUMBER, values.get(L_NUMBER));
+        offer.setField(L_NAME, values.get(L_NAME));
+        offer.setField(L_SUPPLIER, getSupplierByNumber(values.get(L_SUPPLIER)));
+        offer.setField("offeredDate", values.get("offereddate"));
+        offer.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
+        offer.setField(L_STATE, values.get(L_STATE));
+        offer.setField(REQUEST_FOR_QUOTION, getRequestForQuotationByNumber(values.get("requestforquotation")));
+        offer.setField("transportCost", values.get("transportcost"));
+        offer.getDataDefinition().save(offer);
+
+    }
+
+    private void addRequestForQuotationProducts(final Map<String, String> values) {
+        Entity requestForQuotationProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "requestForQuotationProduct")
+                .create();
+        requestForQuotationProduct.setField(REQUEST_FOR_QUOTION,
+                getRequestForQuotationByNumber(values.get("requestforquotation")));
+        requestForQuotationProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
+        requestForQuotationProduct.setField("orderedQuantity", values.get("orderedquantity"));
+        requestForQuotationProduct.setField("annualVolume", values.get("annualvolume"));
+        requestForQuotationProduct.getDataDefinition().save(requestForQuotationProduct);
+    }
+
+    private void addRequestForQuotations(final Map<String, String> values) {
+        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).create();
+        requestForQuotation.setField(L_NUMBER, values.get(L_NUMBER));
+        requestForQuotation.setField(L_NAME, values.get(L_NAME));
+        requestForQuotation.setField(L_SUPPLIER, getSupplierByNumber(values.get(L_SUPPLIER)));
+        requestForQuotation.setField("desiredDate", values.get("desireddate"));
+        requestForQuotation.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
+        requestForQuotation.setField(L_STATE, values.get(L_STATE));
+        requestForQuotation.getDataDefinition().save(requestForQuotation);
+
+    }
+
+    private void addNegotiationProducts(final Map<String, String> values) {
+        Entity negotiationProduct = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiationProduct").create();
+        negotiationProduct.setField(NEGOTIATION, getNegotationByNumber(values.get(NEGOTIATION)));
+        negotiationProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
+        negotiationProduct.setField("neededQuantity", values.get("neededquantity"));
+        negotiationProduct.setField("approvedDeliveredQuantity", values.get("approveddeliveredquantity"));
+        negotiationProduct.setField("approvedDeliveredQuantity", values.get("approveddeliveredquantity"));
+        negotiationProduct.setField("leftQuantity", values.get("leftquantity"));
+        negotiationProduct.setField("dueDate", values.get("duedate"));
+        negotiationProduct.setField("requestForQuotationsNumber", values.get("requestforquotationsnumber"));
+        negotiationProduct.getDataDefinition().save(negotiationProduct);
+    }
+
+    private void addNegotiations(final Map<String, String> values) {
+        Entity negotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, NEGOTIATION).create();
+        negotation.setField(L_NUMBER, values.get(L_NUMBER));
+        negotation.setField(L_NAME, values.get(L_NAME));
+        negotation.setField("farthestLimitDate", values.get(L_FARTHESTLIMITDATE));
+        negotation.setField(L_STATE, values.get(L_STATE));
+        negotation.setField("includedCompanies", Lists.newArrayList(getCompany("2"), getCompany("3")));
+        negotation.getDataDefinition().save(negotation);
+
+    }
+
+    private void changeddNegotiationState(final Map<String, String> values) {
+        String state = values.get(L_STATE);
+        if (STATE_DRAFT.equals(state)) {
+            return;
+        }
+        Entity negotiation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, "negotiation").find()
+                .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
+        negotiation.setField(L_STATE, state);
+        negotiation.getDataDefinition().save(negotiation);
+    }
+
+    private void changedRequestForQuotationState(final Map<String, String> values) {
+        String state = values.get(L_STATE);
+        if (STATE_DRAFT.equals(state)) {
+            return;
+        }
+        Entity requestForQuotation = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).find()
+                .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
+        requestForQuotation.setField(L_STATE, state);
+        requestForQuotation.getDataDefinition().save(requestForQuotation);
+    }
+
+    private void changedOfferState(final Map<String, String> values) {
+        String state = values.get(L_STATE);
+        if (STATE_DRAFT.equals(state)) {
+            return;
+        }
+        Entity offer = dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).find()
+                .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
+        offer.setField(L_STATE, state);
+        offer.getDataDefinition().save(offer);
+    }
+
+    private void changedDeliveryState(final Map<String, String> values) {
+        String state = values.get(L_STATE);
+        if (STATE_DRAFT.equals(state)) {
+            return;
+        }
+        Entity delivery = dataDefinitionService.get(L_DELIVERY, DELIVERY).find()
+                .add(SearchRestrictions.eq(L_NUMBER, values.get(L_NUMBER))).uniqueResult();
+        delivery.setField(L_STATE, state);
+        delivery.getDataDefinition().save(delivery);
     }
 
     private void addCompanyProductsFamily(final Map<String, String> values) {
@@ -491,10 +639,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
 
     private void prepareTechnologiesForOrder(final Map<String, String> values) {
         final Entity technology = getTechnologyByNumber(values.get("tech_nr"));
-        if (TECHNOLOGY_STATE_ACCEPTED.equals(technology.getStringField(L_STATE))) {
+        if (STATE_ACCEPTED.equals(technology.getStringField(L_STATE))) {
             return;
         }
-        getStateChangeSamplesClient().changeState(technology, TECHNOLOGY_STATE_ACCEPTED);
+        getStateChangeSamplesClient().changeState(technology, STATE_ACCEPTED);
     }
 
     private void addOrder(final Map<String, String> values) {
@@ -605,9 +753,16 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity order = dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).find()
                 .add(SearchRestrictions.eq(L_NUMBER, values.get(L_ORDER_NR))).uniqueResult();
         if (ORDER_STATE_IN_PROGRESS.equals(state)) {
-            order = getStateChangeSamplesClient().changeState(order, ORDER_STATE_ACCEPTED);
+            order = getStateChangeSamplesClient().changeState(order, STATE_ACCEPTED);
         }
         getStateChangeSamplesClient().changeState(order, state);
+        Date effectiveDateFrom = order.getDateField("effectiveDateFrom");
+        if (effectiveDateFrom != null) {
+            effectiveDateFrom = (new DateTime(effectiveDateFrom).plusDays(Integer.valueOf(values.get("day_plus_effective_date")
+                    .toString()))).toDate();
+            order.setField("effectiveDateFrom", effectiveDateFrom);
+            dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
+        }
     }
 
     private void addBatches(final Map<String, String> values) {
@@ -627,7 +782,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         trackingRecord.setField(L_NUMBER, values.get(L_NUMBER));
         trackingRecord.setField("producedBatch", getBatchByNumber(values.get("produced_batch_no")));
         trackingRecord.setField(L_ORDER, getOrderByNumber(values.get("order_no")));
-        trackingRecord.setField(L_STATE, TRACKING_RECORD_STATE_DRAFT);
+        trackingRecord.setField(L_STATE, STATE_DRAFT);
         trackingRecord.getDataDefinition().save(trackingRecord);
     }
 
@@ -701,7 +856,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         costCalculation.setField(TECHNOLOGY_MODEL_TECHNOLOGY, getTechnologyByNumber(values.get("techno")));
         costCalculation.setField("defaultTechnology", getTechnologyByNumber(values.get("deftechno")));
         costCalculation.setField(L_PRODUCT, getProductByNumber(values.get("prodno")));
-        costCalculation.setField("quantity", values.get("quantity"));
+        costCalculation.setField(L_QUANTITY, values.get(L_QUANTITY));
         costCalculation.setField("includeTPZ", values.get("includetpz"));
         costCalculation.setField("sourceOfMaterialCosts", values.get("sourceofmaterialcosts"));
         costCalculation.setField("calculateMaterialCostsMode", values.get("calculatematerialcostmode"));
@@ -997,6 +1152,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     }
 
     void addProductionRecord(final Map<String, String> values) {
+
         Entity productionRecord = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.PRODUCTION_RECORD_MODEL_PRODUCTION_RECORD).create();
         productionRecord.setField(L_NUMBER, values.get(L_NUMBER));
@@ -1008,13 +1164,23 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         productionRecord.setField(L_SHIFT, getShiftByName(values.get(L_SHIFT)));
         productionRecord.setField(L_WORKSTATION_TYPE, getWorkstationTypeByNumber(values.get("workstationtype")));
         productionRecord.setField(L_DIVISION, getDivisionByNumber(values.get(L_DIVISION)));
-        productionRecord.getDataDefinition().save(productionRecord);
+        productionRecord.setField(L_TECHNOLOGY_ISTANCE_OPERATION_COMPONENT,
+                getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION), getOrderByNumber(values.get(L_ORDER))));
+
+        String typeOfProductionRecording = productionRecord.getBelongsToField(L_ORDER)
+                .getStringField("typeOfProductionRecording");
+        Object orderOperation = getTechnologyInstanceOperationComponentByNumber(values.get(L_OPERATION),
+                getOrderByNumber(values.get(L_ORDER)));
+        if (!(orderOperation == null && "03forEach".equals(typeOfProductionRecording))) {
+            productionRecord.getDataDefinition().save(productionRecord);
+        }
+
     }
 
     private void prepareProductionRecords(final Map<String, String> values) {
         Entity order = getOrderByNumber(values.get(L_ORDER));
         for (Entity productionRecord : order.getHasManyField("productionRecords")) {
-            getStateChangeSamplesClient().changeState(productionRecord, PRODUCTION_RECORD_STATE_ACCEPTED);
+            getStateChangeSamplesClient().changeState(productionRecord, STATE_ACCEPTED);
         }
     }
 
@@ -1245,4 +1411,23 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     }
 
+    private Entity getRequestForQuotationByNumber(final String number) {
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, REQUEST_FOR_QUOTION).find()
+                .add(SearchRestrictions.eq(L_NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getNegotationByNumber(final String number) {
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, NEGOTIATION).find().add(SearchRestrictions.eq(L_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getOfferByNumber(final String number) {
+        return dataDefinitionService.get(L_SUPPLY_NEGOTIATIONS, OFFER).find().add(SearchRestrictions.eq(L_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getDeliveryByNumber(final String number) {
+        return dataDefinitionService.get(L_DELIVERY, DELIVERY).find().add(SearchRestrictions.eq(L_NUMBER, number))
+                .setMaxResults(1).uniqueResult();
+    }
 }

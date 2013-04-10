@@ -110,8 +110,7 @@ public class ProductionCountingPdfService extends PdfDocumentService {
         final String documentTitle = translationService.translate("productionCounting.productionCounting.report.title", locale)
                 + " " + productionCounting.getId().toString();
         final String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) productionCounting.getField("date"),
-                securityService.getCurrentUserName());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, (Date) productionCounting.getField("date"));
 
         final PdfPTable leftPanel = createLeftPanel(productionCounting, locale);
         final PdfPTable rightPanel = createRightPanel(productionCounting, locale);

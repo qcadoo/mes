@@ -62,13 +62,16 @@
 		<validatesWith
 			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
 			method="checkIfCanChangedDeadline" />
+		<validatesWith
+			class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+			method="checkIfCanChangedType" />
 		<onCreate class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="setExternalSynchronizedField" />
 		<onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="countCumulatedOrderQuantity" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="changedDeadlineInOrder" />
+			method="changedDeadlineAndInOrder" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
-			method="changedCustomerInOrder" />
+			method="changedTypeFromOneToMany" />
 	</hooks>
 </model>

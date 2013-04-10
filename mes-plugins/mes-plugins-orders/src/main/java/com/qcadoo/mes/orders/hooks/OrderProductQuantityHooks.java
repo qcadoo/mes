@@ -31,7 +31,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OFCORRECTION_CAUSES;
+import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER;
 
 import java.math.BigDecimal;
@@ -49,6 +49,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -62,6 +63,9 @@ public class OrderProductQuantityHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private NumberService numberService;
+
+    @Autowired
     private ParameterService parameterService;
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
@@ -72,37 +76,38 @@ public class OrderProductQuantityHooks {
         final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
                 form.getEntityId());
 
-        if (!blockAbilityToChangeApprovalOrder()) {
-            if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-                List<String> references = Arrays.asList(PLANNED_QUANTITY);
-                changedEnabledFields(view, references, true);
-            }
+        if (!blockAbilityToChangeApprovalOrder()
+                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue()) || order.getStringField(
+                        STATE).equals(OrderState.PENDING.getStringValue()))) {
+            List<String> references = Arrays.asList(PLANNED_QUANTITY);
+            changedEnabledFields(view, references, true);
+
         }
-        changedEnabledFields(view, Arrays.asList(TYPE_OFCORRECTION_CAUSES), false);
+        changedEnabledFields(view, Arrays.asList(TYPE_OF_CORRECTION_CAUSES), false);
         if (order.getStringField(STATE).equals(OrderState.PENDING.getStringValue())) {
-            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OFCORRECTION_CAUSES,
+            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
                     COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
             changedEnabledFields(view, references, false);
         }
-        if (!blockAbilityToChangeApprovalOrder()) {
-            if (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
-                    || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())) {
+        if (!blockAbilityToChangeApprovalOrder()
+                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue()) || order.getStringField(
+                        STATE).equals(OrderState.INTERRUPTED.getStringValue()))) {
 
-                List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OFCORRECTION_CAUSES,
-                        COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
-                changedEnabledFields(view, references, true);
-            }
+            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
+                    COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
+            changedEnabledFields(view, references, true);
         }
-
     }
 
     private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
         for (String reference : references) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            if (field == null) {
+                continue;
+            }
             field.setEnabled(enabled);
             field.requestComponentUpdateState();
         }
@@ -147,14 +152,19 @@ public class OrderProductQuantityHooks {
 
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
         if (!StringUtils.isEmpty(typeOfProductionRecording)) {
-            amountOfPPComponent.setFieldValue(order.getField(DONE_QUANTITY));
+            amountOfPPComponent.setFieldValue(numberService.format(order.getField(DONE_QUANTITY)));
             order.setField(AMOUNT_OF_PRODUCT_PRODUCED, order.getField(DONE_QUANTITY));
         }
 
         BigDecimal remainingAmountOfPTP = BigDecimalUtils.convertNullToZero(order.getDecimalField(PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)));
-        remainingAmountOfPTPComponent.setFieldValue(remainingAmountOfPTP);
-        order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfPTP);
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(DONE_QUANTITY)), numberService.getMathContext());
+        if (remainingAmountOfPTP.compareTo(BigDecimal.ZERO) == -1) {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(BigDecimal.ZERO));
+            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(BigDecimal.ZERO));
+        } else {
+            remainingAmountOfPTPComponent.setFieldValue(numberService.format(remainingAmountOfPTP));
+            order.setField(REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, numberService.setScale(remainingAmountOfPTP));
+        }
         order.getDataDefinition().save(order);
     }
 }

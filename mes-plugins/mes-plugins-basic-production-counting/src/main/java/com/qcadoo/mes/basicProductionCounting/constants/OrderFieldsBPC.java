@@ -21,24 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.hooks;
+package com.qcadoo.mes.basicProductionCounting.constants;
 
-import org.springframework.stereotype.Service;
+public final class OrderFieldsBPC {
 
-import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+    private OrderFieldsBPC() {
 
-@Service
-public class OrderStateChangeModelValidators {
-
-    public boolean checkReasonRequired(final DataDefinition orderStateChangeDD, final FieldDefinition fieldDefinition,
-            final Entity orderStateChange, final Object oldValue, final Object newValue) {
-        boolean result = true;
-        if (orderStateChange.getBooleanField(OrderStateChangeFields.REASON_REQUIRED)) {
-            result = newValue != null;
-        }
-        return result;
     }
+
+    public static final String BASIC_PRODUCTION_COUNTINGS = "basicProductionCountings";
+
+    public static final String PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
+
 }

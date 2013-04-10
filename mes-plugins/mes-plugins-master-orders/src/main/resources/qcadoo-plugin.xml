@@ -69,6 +69,13 @@
 		<view:view resource="view/masterOrderProductDetails.xml" />
 		
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		
+		<view:view-grid-column plugin="orders"
+			view="ordersList" component="grid">
+			<view:column name="masterOrder" fields="masterOrder"
+				orderable="true" searchable="true" expression="#masterOrder['number']"
+				width="50" />
+		</view:view-grid-column>
 
 	</modules>
 	

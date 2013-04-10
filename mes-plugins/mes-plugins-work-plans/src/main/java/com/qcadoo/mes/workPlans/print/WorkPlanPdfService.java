@@ -450,7 +450,7 @@ public class WorkPlanPdfService extends PdfDocumentService {
         String documenTitle = translationService.translate("workPlans.workPlan.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
         pdfHelper.addDocumentHeader(document, entity.getField(L_NAME).toString(), documenTitle, documentAuthor,
-                (Date) entity.getField("date"), securityService.getCurrentUserName());
+                (Date) entity.getField("date"));
     }
 
     private List<Entity> fetchOrderColumnDefinitions(final Entity workPlan) {

@@ -24,13 +24,13 @@
     ***************************************************************************
 
 -->
-<model name="typeOfCorrectionCauses" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" xmlns:xi="http://www.w3.org/2001/XInclude">
+<model name="typeOfCorrectionCauses" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
-		<dictionary name="reasonType"
-			dictionary="reasonTypeOfChaningOrderState"/>
-	<belongsTo name="order" model="order" />
+		<belongsTo name="order" model="order" />
+		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" required="true" />
 	</fields>
 	<hooks />
 </model>

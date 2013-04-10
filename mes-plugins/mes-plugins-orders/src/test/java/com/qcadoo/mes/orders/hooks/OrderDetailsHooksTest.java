@@ -29,6 +29,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -46,6 +47,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
@@ -69,8 +71,11 @@ public class OrderDetailsHooksTest {
     private Entity order;
 
     @Mock
-    FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, reasonsDateFromField,
-            dateFrom, dateTo, reasonsDateToField;
+    private FieldComponent correctDateFromField, correctDateToField, commentDateFromField, commentDateToField, dateFrom, dateTo,
+            effectiveDateFromField;
+
+    @Mock
+    private AwesomeDynamicListComponent reasonsDateFromField, reasonsDateToField;
 
     @Before
     public void init() {
@@ -92,6 +97,7 @@ public class OrderDetailsHooksTest {
         when(view.getComponentByReference(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM)).thenReturn(commentDateFromField);
         when(view.getComponentByReference(DATE_FROM)).thenReturn(dateFrom);
         when(view.getComponentByReference(DATE_TO)).thenReturn(dateTo);
+        when(view.getComponentByReference(EFFECTIVE_DATE_FROM)).thenReturn(effectiveDateFromField);
     }
 
     @Test
@@ -120,9 +126,10 @@ public class OrderDetailsHooksTest {
         // then
         Mockito.verify(correctDateToField).setEnabled(true);
         Mockito.verify(commentDateToField).setEnabled(true);
-        Mockito.verify(reasonsDateToField).setEnabled(true);
         Mockito.verify(dateFrom).setEnabled(true);
         Mockito.verify(dateTo).setEnabled(true);
+        Mockito.verify(effectiveDateFromField).setEnabled(true);
+
     }
 
 }

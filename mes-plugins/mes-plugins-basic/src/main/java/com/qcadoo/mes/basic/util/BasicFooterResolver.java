@@ -37,6 +37,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.FooterResolver;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.security.api.SecurityService;
 
 @Primary
@@ -57,6 +58,9 @@ public class BasicFooterResolver implements FooterResolver {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private PdfHelper pdfHelper;
+
     @Override
     public Footer resolveFooter(final Locale locale) {
         String companyName = "";
@@ -73,7 +77,7 @@ public class BasicFooterResolver implements FooterResolver {
         StringBuilder generatedBy = new StringBuilder();
         generatedBy = generatedBy.append(translationService.translate("qcadooReport.commons.generatedBy.label", locale));
         generatedBy = generatedBy.append(" ");
-        generatedBy = generatedBy.append(securityService.getCurrentUserName());
+        generatedBy = generatedBy.append(pdfHelper.getDocumentAuthor());
 
         if (company != null) {
 

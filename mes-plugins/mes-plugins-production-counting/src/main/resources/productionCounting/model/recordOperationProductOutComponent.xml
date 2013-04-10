@@ -30,16 +30,9 @@
 	<fields>
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		
-		<decimal name="plannedQuantity">
-			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="5" />
-		</decimal>
+		<belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting" />
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
-			<validatesUnscaledValue max="5" />
-			<validatesScale max="5" />
 		</decimal>
 		<decimal name="balance" />
 	</fields>

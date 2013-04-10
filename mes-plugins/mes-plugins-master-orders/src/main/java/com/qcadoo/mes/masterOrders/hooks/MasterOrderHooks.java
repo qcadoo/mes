@@ -2,6 +2,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -56,40 +59,51 @@ public class MasterOrderHooks {
         return cumulatedOrderPlannedQUantity;
     }
 
-    public void changedDeadlineInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
+    public void changedDeadlineAndInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
         if (masterOrder.getId() == null) {
             return;
         }
-        Date deadline = (Date) masterOrder.getField(DEADLINE);
-        if (deadline == null) {
+        Date deadline = masterOrder.getDateField(DEADLINE);
+        Entity customer = masterOrder.getBelongsToField(COMPANY);
+        if (deadline == null && customer == null) {
             return;
         }
         List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> pendingOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
-        for (Entity order : pendingOrders) {
-            order.setField(OrderFields.DEADLINE, deadline);
+        List<Entity> allOrders = masterOrder.getHasManyField(MasterOrderFields.ORDERS);
+        for (Entity order : allOrders) {
+            if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
+                actualOrders.add(order);
+                continue;
+            }
+            if (deadline != null) {
+                order.setField(OrderFields.DEADLINE, deadline);
+            }
+            if (customer != null) {
+                order.setField(OrderFields.COMPANY, customer);
+            }
             actualOrders.add(order);
         }
         masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
     }
 
-    public void changedCustomerInOrder(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        if (masterOrder.getId() == null) {
+    public void changedTypeFromOneToMany(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        Long masterOrderId = masterOrder.getId();
+        if (masterOrderId == null) {
             return;
         }
-        Entity masterOrderFromDB = masterOrderDD.get(masterOrder.getId());
-        Entity customer = masterOrder.getBelongsToField(COMPANY);
-        if (customer == null) {
+        Entity masterOrderFromDB = masterOrderDD.get(masterOrderId);
+        if (!(masterOrderFromDB.getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue()) && masterOrder
+                .getStringField(MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue()))) {
             return;
         }
-        List<Entity> actualOrders = Lists.newArrayList();
-        List<Entity> pendingOrders = masterOrderFromDB.getHasManyField(MasterOrderFields.ORDERS).find()
-                .add(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue())).list().getEntities();
-        for (Entity order : pendingOrders) {
-            order.setField(OrderFields.COMPANY, customer);
-            actualOrders.add(order);
-        }
-        masterOrder.setField(MasterOrderFields.ORDERS, actualOrders);
+        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+        Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
+        Entity masterOrderProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).create();
+        masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
+        masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, technology);
+        masterOrder.setField(MasterOrderFields.PRODUCT, null);
+        masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
+        masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
     }
 }

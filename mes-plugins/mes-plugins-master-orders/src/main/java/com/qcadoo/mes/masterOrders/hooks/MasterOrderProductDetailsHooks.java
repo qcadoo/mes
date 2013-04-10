@@ -1,5 +1,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
@@ -10,11 +11,9 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -26,25 +25,25 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class MasterOrderProductDetailsHooks {
 
     @Autowired
-    private OrderService orderService;
+    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
         Entity product = productField.getEntity();
+        String unit = null;
 
-        if (product == null) {
-            return;
+        if (product != null) {
+            unit = product.getStringField(UNIT);
         }
-
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(product.getStringField(ProductFields.UNIT));
+            field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
-        orderService.fillDefaultTechnology(view);
+        masterOrderDetailsHooks.fillDefaultTechnology(view);
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {

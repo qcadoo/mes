@@ -33,6 +33,10 @@ public final class BasicProductionCountingConstants {
 
     public static final String MODEL_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
 
+    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
+
+    public static final String MODEL_PRODUCTION_COUNTING_OPERATON_RUN = "productionCountingOperationRun";
+
     public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "basicProductionCounting";
 
     public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "productionCounting";

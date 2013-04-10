@@ -29,14 +29,15 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders" />
-		<dictionary name="plannedProgressCorrectionType"
-			dictionary="reasonTypeOfChaningOrderState" />
+		<hasMany name="plannedProgressCorrectionTypes" model="reasonTypeOfChaningOrderState"
+			plugin="orders" joinField="productionPerShift" cascade="delete" />
 		<text name="plannedProgressCorrectionComment" />
 		<!-- Not persistent fields below -->
 
 		<belongsTo persistent="false" name="technologyInstanceOperationComponent"
 			model="technologyInstanceOperationComponent" plugin="technologies" />
-		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected" default="01planned" />
+		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected"
+			default="01planned" />
 	</fields>
-	<hooks/>
+	<hooks />
 </model>

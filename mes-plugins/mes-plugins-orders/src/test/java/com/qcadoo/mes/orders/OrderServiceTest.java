@@ -72,9 +72,11 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -97,8 +99,6 @@ public class OrderServiceTest {
 
     private static final String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
 
-    private static final String L_PRODUCTION_LINE = "productionLine";
-
     private static final String L_FORM = "form";
 
     private static final long L_ID = 1L;
@@ -115,6 +115,8 @@ public class OrderServiceTest {
 
     private TechnologyServiceO technologyServiceO;
 
+    private OrderDatesService orderDatesService;
+
     @Before
     public void init() {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
@@ -122,7 +124,10 @@ public class OrderServiceTest {
         numberGeneratorService = mock(NumberGeneratorService.class);
         parameterService = mock(ParameterService.class);
         technologyServiceO = mock(TechnologyServiceO.class);
+        orderDatesService = mock(OrderDatesService.class);
+
         ExpressionService expressionService = mock(ExpressionService.class);
+
         orderService = new OrderService();
         setField(orderService, "dataDefinitionService", dataDefinitionService);
         setField(orderService, "translationService", translationService);
@@ -130,6 +135,7 @@ public class OrderServiceTest {
         setField(orderService, "expressionService", expressionService);
         setField(orderService, "parameterService", parameterService);
         setField(orderService, "technologyServiceO", technologyServiceO);
+        setField(orderService, "orderDatesService", orderDatesService);
     }
 
     @Test
@@ -285,22 +291,6 @@ public class OrderServiceTest {
 
         // then
         verify(order).setField(PRODUCTION_LINE, defaultProductionLine);
-    }
-
-    @Test
-    public void shouldClearOrderFieldsOnCopy() throws Exception {
-        // given
-        Entity order = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-
-        // when
-        boolean result = orderService.clearOrderDatesOnCopy(dataDefinition, order);
-        // then
-        assertTrue(result);
-        verify(order).setField("state", "01pending");
-        verify(order).setField("effectiveDateTo", null);
-        verify(order).setField("effectiveDateFrom", null);
-        verify(order).setField("doneQuantity", null);
     }
 
     @Test
@@ -620,8 +610,23 @@ public class OrderServiceTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
-        given(entity.getField("dateFrom")).willReturn(new Date(System.currentTimeMillis() - 10000));
-        given(entity.getField("dateTo")).willReturn(new Date());
+        DateRange dateRange = new DateRange(new Date(System.currentTimeMillis() - 10000), new Date());
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+
+        // when
+        boolean results = orderService.checkOrderDates(dataDefinition, entity);
+
+        // then
+        assertTrue(results);
+    }
+
+    @Test
+    public void shouldReturnTrueForNullDates() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        Entity entity = mock(Entity.class);
+        DateRange dateRange = new DateRange(null, null);
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -635,8 +640,8 @@ public class OrderServiceTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
-        given(entity.getField("dateFrom")).willReturn(null);
-        given(entity.getField("dateTo")).willReturn(new Date());
+        DateRange dateRange = new DateRange(null, new Date());
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -650,8 +655,8 @@ public class OrderServiceTest {
         // given
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
-        given(entity.getField("dateFrom")).willReturn(new Date());
-        given(entity.getField("dateTo")).willReturn(null);
+        DateRange dateRange = new DateRange(new Date(), null);
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -666,8 +671,27 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         FieldDefinition dateToField = mock(FieldDefinition.class);
         Entity entity = mock(Entity.class);
-        given(entity.getField("startDate")).willReturn(new Date());
-        given(entity.getField("finishDate")).willReturn(new Date(System.currentTimeMillis() - 10000));
+        DateRange dateRange = new DateRange(new Date(), new Date(System.currentTimeMillis() - 10000));
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(dataDefinition.getField("finishDate")).willReturn(dateToField);
+
+        // when
+        boolean results = orderService.checkOrderDates(dataDefinition, entity);
+
+        // then
+        assertFalse(results);
+        verify(entity).addError(dateToField, "orders.validate.global.error.datesOrder");
+    }
+
+    @Test
+    public void shouldReturnFalseForEqualOrderDates() throws Exception {
+        // given
+        DataDefinition dataDefinition = mock(DataDefinition.class);
+        FieldDefinition dateToField = mock(FieldDefinition.class);
+        Entity entity = mock(Entity.class);
+        Date currDate = new Date();
+        DateRange dateRange = new DateRange(currDate, currDate);
+        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
         given(dataDefinition.getField("finishDate")).willReturn(dateToField);
 
         // when

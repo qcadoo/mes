@@ -1,7 +1,7 @@
 package com.qcadoo.mes.masterOrders.validators;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.PRODUCT;
 
 import java.util.List;
 

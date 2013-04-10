@@ -37,7 +37,7 @@
 					state="disabled" action="#{form}.changeRecordState(cancelRecord)" />
 			</group>
 			<group name="copy">
-				<bigButton name="copyPlannedQuantity" icon="copyIcon24.png"  action="#{form}.fireEvent(copyPlannedQuantity);" />
+				<bigButton name="copyPlannedQuantityToUsedQuantity" icon="copyIcon24.png"  action="#{form}.fireEvent(copyPlannedQuantityToUsedQuantity);" />
 			</group>
 		</ribbon>
 		<windowTab name="mainTab">
@@ -287,9 +287,9 @@
 					class="com.qcadoo.mes.productionCounting.states.client.ProductionRecordStateChangeViewClient"
 					method="changeState" />
 				
-				<listener event="copyPlannedQuantity"
+				<listener event="copyPlannedQuantityToUsedQuantity"
 					class="com.qcadoo.mes.productionCounting.listeners.ProductionRecordDetailsListeners"
-					method="copyPlannedQuantity" />
+					method="copyPlannedQuantityToUsedQuantity" />
 			</component>
 		</windowTab>
 		<windowTab name="productsTab">

@@ -23,14 +23,11 @@
  */
 package com.qcadoo.mes.orders;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
@@ -50,11 +47,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.util.OrderDatesService;
+import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
@@ -94,6 +95,9 @@ public class OrderService {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OrderDatesService orderDatesService;
 
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
@@ -138,23 +142,13 @@ public class OrderService {
         return parameterService.getParameter().getBelongsToField(L_DEFAULT_PRODUCTION_LINE);
     }
 
-    public boolean clearOrderDatesOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(STATE, OrderState.PENDING.getStringValue());
-        entity.setField(EFFECTIVE_DATE_TO, null);
-        entity.setField(EFFECTIVE_DATE_FROM, null);
-        entity.setField("doneQuantity", null);
-        entity.setField(EXTERNAL_NUMBER, null);
-        entity.setField(EXTERNAL_SYNCHRONIZED, true);
-        return true;
-    }
-
     public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         if (!(component instanceof FieldComponent)) {
             return;
         }
 
         FieldComponent productField = (FieldComponent) view.getComponentByReference(BASIC_MODEL_PRODUCT);
-        FieldComponent technologyField = (FieldComponent) view.getComponentByReference("technology");
+        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
         FieldComponent name = (FieldComponent) view.getComponentByReference(NAME);
 
         if (technologyField.getFieldValue() == null || productField.getFieldValue() == null
@@ -210,7 +204,7 @@ public class OrderService {
             return;
         }
 
-        orderState.setFieldValue("01pending");
+        orderState.setFieldValue(OrderState.PENDING.getStringValue());
     }
 
     public void generateOrderNumber(final ViewDefinitionState state) {
@@ -236,7 +230,7 @@ public class OrderService {
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState state) {
         FieldComponent product = (FieldComponent) state.getComponentByReference(BASIC_MODEL_PRODUCT);
         FieldComponent technology = (FieldComponent) state.getComponentByReference(TECHNOLOGY);
-        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference("defaultTechnology");
+        FieldComponent defaultTechnology = (FieldComponent) state.getComponentByReference(DEFAULT_TECHNOLOGY);
         FieldComponent plannedQuantity = (FieldComponent) state.getComponentByReference(PLANNED_QUANTITY);
 
         defaultTechnology.setEnabled(false);
@@ -263,7 +257,7 @@ public class OrderService {
                 return;
             }
             String state = entity.getStringField(STATE);
-            if (!"01pending".equals(state) && order.isValid()) {
+            if (!OrderState.PENDING.getStringValue().equals(state) && order.isValid()) {
                 disabled = true;
             }
         }
@@ -272,8 +266,30 @@ public class OrderService {
         technology.setEnabled(!disabled);
     }
 
-    public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        return compareDates(dataDefinition, entity, START_DATE, FINISH_DATE);
+    public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity order) {
+        DateRange orderDateRange = orderDatesService.getDatesFromAndTo(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return true;
+        }
+        order.addError(dataDefinition.getField(OrderFields.FINISH_DATE), "orders.validate.global.error.datesOrder");
+
+        return false;
+    }
+
+    public void checkOrderDates(final StateChangeContext stateChangeContext) {
+        final Entity order = stateChangeContext.getOwner();
+        DateRange orderDateRange = orderDatesService.getDates(order);
+        Date dateFrom = orderDateRange.getFrom();
+        Date dateTo = orderDateRange.getTo();
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return;
+        }
+        stateChangeContext.addValidationError("orders.validate.global.error.datesOrder.overdue");
+
     }
 
     public boolean checkOrderPlannedQuantity(final DataDefinition dataDefinition, final Entity entity) {
@@ -303,8 +319,8 @@ public class OrderService {
     }
 
     public void fillOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        if (("03inProgress".equals(entity.getField(STATE)) || "04completed".equals(entity.getField(STATE)))
-                && entity.getField(EFFECTIVE_DATE_FROM) == null) {
+        if ((OrderState.IN_PROGRESS.getStringValue().equals(entity.getField(STATE)) || OrderState.COMPLETED.getStringValue()
+                .equals(entity.getField(STATE))) && entity.getField(EFFECTIVE_DATE_FROM) == null) {
             entity.setField(EFFECTIVE_DATE_FROM, new Date());
         }
         if ("04completed".equals(entity.getField(STATE)) && entity.getField(EFFECTIVE_DATE_TO) == null) {
@@ -358,23 +374,6 @@ public class OrderService {
         SearchResult searchResult = searchCriteria.list();
 
         return (searchResult.getTotalNumberOfEntities() > 0);
-    }
-
-    private boolean compareDates(final DataDefinition dataDefinition, final Entity entity, final String dateFromField,
-            final String dateToField) {
-        Date dateFrom = (Date) entity.getField(dateFromField);
-        Date dateTo = (Date) entity.getField(dateToField);
-
-        if (dateFrom == null || dateTo == null) {
-            return true;
-        }
-
-        if (dateFrom.after(dateTo)) {
-            entity.addError(dataDefinition.getField(dateToField), "orders.validate.global.error.datesOrder");
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public boolean checkAutogenealogyRequired() {
@@ -499,4 +498,5 @@ public class OrderService {
             fieldComponent.requestComponentUpdateState();
         }
     }
+
 }
