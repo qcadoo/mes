@@ -51,13 +51,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.lang.reflect.InvocationTargetException;
@@ -749,66 +746,6 @@ public class OrderServiceTest {
         // then
         assertFalse(results);
         verify(entity).addError(plannedQuantityField, "orders.validate.global.error.plannedQuantityError");
-    }
-
-    @Test
-    public void shouldNotFillOrderDates() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-
-        // when
-        orderService.fillOrderDates(dataDefinition, entity);
-
-        // then
-        verify(entity, atLeastOnce()).getField("state");
-        verifyNoMoreInteractions(entity);
-    }
-
-    @Test
-    public void shouldFillInProgressOrderDates() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("03inProgress");
-
-        // when
-        orderService.fillOrderDates(dataDefinition, entity);
-
-        // then
-        verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-    }
-
-    @Test
-    public void shouldFillDoneOrderDates() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("04completed");
-
-        // when
-        orderService.fillOrderDates(dataDefinition, entity);
-
-        // then
-        verify(entity).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity).setField(eq("effectiveDateTo"), any(Date.class));
-    }
-
-    @Test
-    public void shouldNotFillExistingDates() throws Exception {
-        // given
-        Entity entity = mock(Entity.class);
-        DataDefinition dataDefinition = mock(DataDefinition.class);
-        given(entity.getField("state")).willReturn("04completed");
-        given(entity.getField("effectiveDateFrom")).willReturn(new Date());
-        given(entity.getField("effectiveDateTo")).willReturn(new Date());
-
-        // when
-        orderService.fillOrderDates(dataDefinition, entity);
-
-        // then
-        verify(entity, never()).setField(eq("effectiveDateFrom"), any(Date.class));
-        verify(entity, never()).setField(eq("effectiveDateTo"), any(Date.class));
     }
 
     @Test

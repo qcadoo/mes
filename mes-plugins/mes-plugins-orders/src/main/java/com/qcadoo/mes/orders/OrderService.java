@@ -24,8 +24,6 @@
 package com.qcadoo.mes.orders;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.DEFAULT_TECHNOLOGY;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -316,16 +314,6 @@ public class OrderService {
             return false;
         }
         return true;
-    }
-
-    public void fillOrderDates(final DataDefinition dataDefinition, final Entity entity) {
-        if ((OrderState.IN_PROGRESS.getStringValue().equals(entity.getField(STATE)) || OrderState.COMPLETED.getStringValue()
-                .equals(entity.getField(STATE))) && entity.getField(EFFECTIVE_DATE_FROM) == null) {
-            entity.setField(EFFECTIVE_DATE_FROM, new Date());
-        }
-        if ("04completed".equals(entity.getField(STATE)) && entity.getField(EFFECTIVE_DATE_TO) == null) {
-            entity.setField(EFFECTIVE_DATE_TO, new Date());
-        }
     }
 
     public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
