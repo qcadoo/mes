@@ -3,9 +3,11 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack" />
 		</ribbon>
+		
 		<windowTab name="mainTab">
 			<component type="form" name="masterOrderProductDetails"
 				reference="form">
@@ -17,11 +19,14 @@
 							<option type="column" name="name" fields="name" link="true"
 								width="200" />
 							<option type="column" name="ean" fields="ean" />
+							
 							<option type="searchable" value="name,ean" />
 							<option type="orderable" value="name,ean" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							
 							<listener event="onSelectedEntityChange" method="fillDefaultTechnology"
 								class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners" />
 							<listener event="onSelectedEntityChange" method="fillUnitField"
@@ -39,8 +44,10 @@
 							hasDescription="true">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
+								
 							<option type="searchable" value="name,number" />
 							<option type="orderable" value="name,number" />
+							
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
@@ -79,7 +86,9 @@
 				</component>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"

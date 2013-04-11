@@ -28,7 +28,7 @@ import com.qcadoo.mes.states.messages.MessagesHolder;
 import com.qcadoo.model.api.Entity;
 
 /**
- * State change context holder obect
+ * State change context holder object
  * 
  * @since 1.1.7
  */
@@ -110,12 +110,17 @@ public interface StateChangeContext extends MessagesHolder {
     boolean setOwner(final Entity owner);
 
     /**
-     * Returns inner state change entity's owner
+     * Returns entity which state is changing
      * 
-     * @return inner state change entity's owner
+     * @return entity which state is changing
      */
     Entity getOwner();
 
+    /**
+     * Checks if owner entity (entity which state is changing) has any validation results.
+     * 
+     * @return false if owner entity (entity which state is changing) has any validation results.
+     */
     boolean isOwnerValid();
 
 }

@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -35,16 +39,21 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 public class TechnologyDetailsHooksCC {
 
     public void updateViewCostsCalculationButtonState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference("form");
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("costCalculate");
         RibbonActionItem costCalculate = (RibbonActionItem) materials.getItemByName("costCalculate");
-        if (orderForm.getEntityId() == null) {
+
+        Entity technology = technologyForm.getEntity();
+
+        if (technology.getId() == null || TechnologyStateStringValues.DRAFT.equals(technology.getStringField(STATE))) {
             costCalculate.setEnabled(false);
         } else {
             costCalculate.setEnabled(true);
         }
+
         costCalculate.requestUpdate(true);
     }
+
 }

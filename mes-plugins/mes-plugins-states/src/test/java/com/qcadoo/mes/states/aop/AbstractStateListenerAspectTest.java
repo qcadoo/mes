@@ -107,13 +107,4 @@ public class AbstractStateListenerAspectTest {
         return true;
     }
 
-    private void throwException(final Method method, final Class<?> clazz) {
-        for (Class<?> exceptionClazz : Lists.newArrayList(method.getExceptionTypes())) {
-            if (clazz.isAssignableFrom(exceptionClazz)) {
-                return;
-            }
-        }
-        Assert.fail("given method does not throw ");
-    }
-
 }

@@ -94,31 +94,35 @@ public class OrderStateChangeReasonService {
     }
 
     public boolean neededWhenChangingEffectiveDateFrom() {
-        return needForDelayedDateFrom() || needForEarlierDateFrom();
+        return neededWhenChangingEffectiveDateFrom(parameterService.getParameter());
     }
 
-    public boolean neededWhenChangingEffectiveDateTo() {
-        return needForDelayedDateTo() || needForEarlierDateTo();
+    private boolean neededWhenChangingEffectiveDateFrom(final Entity parameter) {
+        return needForDelayedDateFrom(parameter) || needForEarlierDateFrom(parameter);
     }
 
-    private boolean needForEarlierDateFrom() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM);
+    private boolean neededWhenChangingEffectiveDateTo(final Entity parameter) {
+        return needForDelayedDateTo(parameter) || needForEarlierDateTo(parameter);
     }
 
-    private boolean needForDelayedDateFrom() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM);
+    private boolean needForEarlierDateFrom(final Entity parameter) {
+        return parameter.getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM);
     }
 
-    private boolean needForEarlierDateTo() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO);
+    private boolean needForDelayedDateFrom(final Entity parameter) {
+        return parameter.getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM);
     }
 
-    private boolean needForDelayedDateTo() {
-        return parameterService.getParameter().getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO);
+    private boolean needForEarlierDateTo(final Entity parameter) {
+        return parameter.getBooleanField(REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO);
     }
 
-    public long getEffectiveDateFromDifference(final Entity order) {
-        if (!neededWhenChangingEffectiveDateFrom()) {
+    private boolean needForDelayedDateTo(final Entity parameter) {
+        return parameter.getBooleanField(REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO);
+    }
+
+    public long getEffectiveDateFromDifference(final Entity parameter, final Entity order) {
+        if (!neededWhenChangingEffectiveDateFrom(parameter)) {
             return 0L;
         }
         final long dateFromTimestamp = getTimestampFromOrder(order, DATE_FROM, CORRECTED_DATE_FROM);
@@ -133,15 +137,15 @@ public class OrderStateChangeReasonService {
                 - getAllowedDelayFromParametersAsMiliseconds(EARLIER_EFFECTIVE_DATE_FROM_TIME));
 
         long difference = 0L;
-        if ((effectiveDateFrom.isAfter(maxTime) && needForDelayedDateFrom())
-                || (effectiveDateFrom.isBefore(minTime) && needForEarlierDateFrom())) {
+        if ((effectiveDateFrom.isAfter(maxTime) && needForDelayedDateFrom(parameter))
+                || (effectiveDateFrom.isBefore(minTime) && needForEarlierDateFrom(parameter))) {
             difference = Seconds.secondsBetween(dateFrom, effectiveDateFrom).getSeconds();
         }
         return difference;
     }
 
-    public long getEffectiveDateToDifference(final Entity order) {
-        if (!neededWhenChangingEffectiveDateTo()) {
+    public long getEffectiveDateToDifference(final Entity parameter, final Entity order) {
+        if (!neededWhenChangingEffectiveDateTo(parameter)) {
             return 0L;
         }
         final long dateToTimestamp = getTimestampFromOrder(order, DATE_TO, CORRECTED_DATE_TO);
@@ -156,8 +160,8 @@ public class OrderStateChangeReasonService {
                 - getAllowedDelayFromParametersAsMiliseconds(EARLIER_EFFECTIVE_DATE_TO_TIME));
 
         long difference = 0L;
-        if ((effectiveDateTo.isAfter(maxTime) && needForDelayedDateTo())
-                || (effectiveDateTo.isBefore(minTime) && needForEarlierDateTo())) {
+        if ((effectiveDateTo.isAfter(maxTime) && needForDelayedDateTo(parameter))
+                || (effectiveDateTo.isBefore(minTime) && needForEarlierDateTo(parameter))) {
             difference = Seconds.secondsBetween(dateTo, effectiveDateTo).getSeconds();
         }
         return difference;
@@ -204,7 +208,7 @@ public class OrderStateChangeReasonService {
             stateChangeContext.save();
             return;
         }
-        final long difference = getEffectiveDateToDifference(order);
+        final long difference = getEffectiveDateToDifference(parameterService.getParameter(), order);
         if (difference == 0L) {
             return;
         }
@@ -231,7 +235,7 @@ public class OrderStateChangeReasonService {
             stateChangeContext.save();
             return;
         }
-        final long difference = getEffectiveDateFromDifference(order);
+        final long difference = getEffectiveDateFromDifference(parameterService.getParameter(), order);
         if (difference == 0L) {
             return;
         }
