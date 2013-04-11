@@ -24,6 +24,7 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -55,7 +56,7 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterStartProgress(final StateChangeContext stateChangeContext, final int phase) {
-        // stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
         stateChangeContext.getOwner().setField(OrderFields.DONE_QUANTITY, BigDecimal.ZERO);
         orderService.checkOrderDates(stateChangeContext);
     }
@@ -64,14 +65,14 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     @RunForStateTransition(targetState = OrderStateStringValues.COMPLETED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterComplete(final StateChangeContext stateChangeContext, final int phase) {
-        // stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(targetState = OrderStateStringValues.ABANDONED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterAbandoning(final StateChangeContext stateChangeContext, final int phase) {
-        // stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
+        stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
     }
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
