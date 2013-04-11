@@ -112,7 +112,9 @@ public class OrderHooks {
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
                 && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
-                && checkReasonOfEndDateCorrection(parameter, order);
+                && checkReasonOfEndDateCorrection(parameter, order)
+                && checkReasonOfEffectiveStartDateCorrection(parameter, order)
+                && checkReasonOfEffectiveEndDateCorrection(parameter, order);
     }
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
@@ -139,6 +141,19 @@ public class OrderHooks {
         return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
                 || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
                         "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+    }
+
+    protected boolean checkReasonOfEffectiveStartDateCorrection(final Entity parameter, final Entity order) {
+        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
+                || checkReasonNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                        "orders.order.reasonTypesDeviationsOfEffectiveStart.isRequired");
+    }
+
+    protected boolean checkReasonOfEffectiveEndDateCorrection(final Entity parameter, final Entity order) {
+        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
+                || checkReasonNeeded(order, OrderFields.EFFECTIVE_DATE_TO, OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                        "orders.order.reasonTypesDeviationsOfEffectiveEnd.isRequired");
     }
 
     private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
