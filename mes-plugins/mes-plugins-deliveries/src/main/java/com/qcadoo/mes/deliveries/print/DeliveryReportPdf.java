@@ -288,11 +288,8 @@ public class DeliveryReportPdf extends ReportPdfView {
 
             }
         }
-        if (totalProductsCosts != null) {
 
-        }
         return totalProductsCosts;
-
     }
 
     private List<Entity> filterEmptyColumns(final List<Entity> columnsForDeliveries,
