@@ -40,6 +40,10 @@ public final class OrdersConstants {
 
     public static final String MODEL_REASON_TYPE_CORRECTION_DATE_FROM = "reasonTypeCorrectionDateFrom";
 
+    public static final String MODEL_REASON_TYPE_DEVIATION_EFFECTIVE_START = "reasonTypeDeviationEffectiveStart";
+
+    public static final String MODEL_REASON_TYPE_DEVIATION_EFFECTIVE_END = "reasonTypeDeviationEffectiveEnd";
+
     public static final String MODEL_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChaningOrderState";
 
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";

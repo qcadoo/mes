@@ -248,7 +248,7 @@
 							<option type="nodeLabelExpression" value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']" />
 							<option type="correspondingView" value="technologies/technologyReferenceTechnologyComponentDetails" />
 							<option type="correspondingComponent" value="form" />
-							<option type="correspondingViewInModal" value="false" />
+							<option type="correspondingViewInModal" value="true" />
 							<option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png" />
 							<option type="newIcon" value="/technologies/public/css/icons/newTechnologyIcon16.png" />
 							<option type="canHaveChildren" value="false" />

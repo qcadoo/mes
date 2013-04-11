@@ -77,6 +77,8 @@
 
 		<model:model model="reasonTypeCorrectionDateFrom" resource="model/reasonTypeCorrectionDateFrom.xml" />
 		<model:model model="reasonTypeCorrectionDateTo" resource="model/reasonTypeCorrectionDateTo.xml" />
+		<model:model model="reasonTypeDeviationEffectiveStart" resource="model/reasonTypeDeviationEffectiveStart.xml" />
+		<model:model model="reasonTypeDeviationEffectiveEnd" resource="model/reasonTypeDeviationEffectiveEnd.xml" />
 		<model:model model="reasonTypeOfChaningOrderState" resource="model/reasonTypeOfChaningOrderState.xml" />
 
 		<model:model-field plugin="states" model="message">

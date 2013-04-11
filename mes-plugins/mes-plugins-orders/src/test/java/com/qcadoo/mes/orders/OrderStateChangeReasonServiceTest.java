@@ -266,7 +266,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_FROM_TIME)).willReturn(earlierDateFromTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
 
         // then
         assertEquals(5L, result);
@@ -305,7 +305,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_FROM_TIME)).willReturn(earlierDateFromTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
 
         // then
         assertEquals(5L, result);
@@ -325,7 +325,7 @@ public class OrderStateChangeReasonServiceTest {
         given(order.getField(EFFECTIVE_DATE_FROM)).willReturn(null);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
 
         // then
         assertTrue(result == 0);
@@ -364,7 +364,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_FROM_TIME)).willReturn(earlierDateFromTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
 
         // then
         assertTrue(result == 0L);
@@ -403,7 +403,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_TO_TIME)).willReturn(earlierDateToTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
 
         // then
         assertEquals(5L, result);
@@ -442,7 +442,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_TO_TIME)).willReturn(earlierDateToTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
 
         // then
         assertEquals(5L, result);
@@ -462,7 +462,7 @@ public class OrderStateChangeReasonServiceTest {
         given(order.getField(EFFECTIVE_DATE_TO)).willReturn(null);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
 
         // then
         assertTrue(result == 0L);
@@ -501,7 +501,7 @@ public class OrderStateChangeReasonServiceTest {
         given(parameter.getField(EARLIER_EFFECTIVE_DATE_TO_TIME)).willReturn(earlierDateToTime);
 
         // when
-        long result = orderStateChangeReasonService.getEffectiveDateToDifference(order);
+        long result = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
 
         // then
         assertTrue(result == 0L);

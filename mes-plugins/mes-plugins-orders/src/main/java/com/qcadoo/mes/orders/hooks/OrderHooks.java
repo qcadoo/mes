@@ -41,14 +41,10 @@ import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
 import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 import static com.qcadoo.mes.orders.states.constants.OrderState.ACCEPTED;
@@ -66,8 +62,11 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.util.OrderDatesService;
@@ -102,6 +101,20 @@ public class OrderHooks {
     @Autowired
     private OrderDatesService orderDatesService;
 
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private ProductService productService;
+
+    public boolean onValidate(final DataDefinition orderDD, final Entity order) {
+        Entity parameter = parameterService.getParameter();
+        return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
+                && productService.checkIfProductIsNotRemoved(orderDD, order)
+                && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
+                && checkReasonOfEndDateCorrection(parameter, order);
+    }
+
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
         stateChangeEntityBuilder.buildInitial(describer, order, OrderState.PENDING);
     }
@@ -116,29 +129,35 @@ public class OrderHooks {
         fillEndDate(entity);
     }
 
-    public boolean checkReasonNeededWhenDelayedEffectiveDateFromIfIsRequired(final DataDefinition dataDefinition,
-            final Entity entity) {
-        Entity parameter = parameterService.getParameter();
-        if (parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_FROM) && entity.getField(CORRECTED_DATE_FROM) != null
-                && entity.getHasManyField(REASON_TYPES_CORRECTION_DATE_FROM).isEmpty()) {
-            entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_FROM),
-                    "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+    protected boolean checkReasonOfStartDateCorrection(final Entity parameter, final Entity order) {
+        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
+                || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM,
+                        "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+    }
+
+    protected boolean checkReasonOfEndDateCorrection(final Entity parameter, final Entity order) {
+        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
+                || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
+                        "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+    }
+
+    private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
+            final String messageTranslationKey) {
+        if (order.getField(dateFieldName) != null && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
+            order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey);
             return false;
         }
         return true;
     }
 
-    public boolean checkReasonNeededWhenDelayedEffectiveDateToIfIsRequired(final DataDefinition dataDefinition,
-            final Entity entity) {
-        Entity parameter = parameterService.getParameter();
-        if (parameter.getBooleanField(REASON_NEEDED_WHEN_CORRECTING_DATE_TO) && entity.getField(CORRECTED_DATE_TO) != null
-                && entity.getHasManyField(REASON_TYPES_CORRECTION_DATE_TO).isEmpty()) {
-            entity.addError(dataDefinition.getField(REASON_TYPES_CORRECTION_DATE_TO),
-                    "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
-            return false;
-        }
-        return true;
-    }
+    // private boolean checkEffectiveDeviation(final Entity parameter, final Entity order) {
+    // if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)) {
+    // ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME
+    // }
+    // if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)) {
+    //
+    // }
+    // }
 
     private void setStartDate(final Entity entity) {
         if (entity.getId() == null) {
