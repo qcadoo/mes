@@ -47,7 +47,8 @@
 
 		<string name="externalNumber" unique="true" />
 		<boolean name="externalSynchronized" default="true" />
-
+		<decimal name="quantityOfOrderedProduct" persistent="false" />
+		<decimal name="quantityOfDeliveredProduct" persistent="false" />
 		<enum name="state"
 			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
 			default="01draft" required="true" />
@@ -70,6 +71,8 @@
 			method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
 			method="clearFieldsOnCopy" />
+		<onView class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" 
+			method="fillOrderedAndDeliveredQuantity"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

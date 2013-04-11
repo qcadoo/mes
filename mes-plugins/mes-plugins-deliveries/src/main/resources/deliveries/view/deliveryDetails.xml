@@ -349,8 +349,12 @@
 		
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
-				columns="1" rows="1">
+				columns="3" rows="2">
 				<layoutElement column="1" row="1">
+					<component type="input" name="quantityOfOrderedProduct" field="quantityOfOrderedProduct"
+							reference="quantityOfOrderedProduct" defaultEnabled="never" />
+				</layoutElement>
+				<layoutElement column="1" row="2" width="3">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
 						source="#{form}.orderedProducts" defaultEnabled="false">
 						<option type="column" name="succession" fields="succession"
@@ -384,8 +388,12 @@
 		
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
-				columns="1" rows="1">
+				columns="3" rows="2">
 				<layoutElement column="1" row="1">
+					<component type="input" name="quantityOfDeliveredProduct" field="quantityOfDeliveredProduct"
+							reference="quantityOfDeliveredProduct" defaultEnabled="never" />
+				</layoutElement>
+				<layoutElement column="1" row="2" width="3">
 					<component type="grid" name="deliveredProducts"
 						reference="deliveredProducts" source="#{form}.deliveredProducts"
 						defaultEnabled="false">

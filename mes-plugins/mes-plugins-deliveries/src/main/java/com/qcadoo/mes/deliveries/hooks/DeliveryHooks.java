@@ -30,15 +30,24 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHR
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class DeliveryHooks {
@@ -51,6 +60,14 @@ public class DeliveryHooks {
 
     @Autowired
     private DeliveryStateChangeDescriber describer;
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    private static final String L_ORDERED_QUANTITY = "orderedQuantity";
 
     public void setInitialState(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
         stateChangeEntityBuilder.buildInitial(describer, assignmentToShift, DRAFT);
@@ -76,6 +93,44 @@ public class DeliveryHooks {
         if (description == null) {
             delivery.setField(DESCRIPTION, deliveriesService.getDescriptionDefaultValue());
         }
+
     }
 
+    public void fillOrderedAndDeliveredQuantity(final DataDefinition deliveryDD, final Entity delivery) {
+        delivery.setField(DeliveryFields.QUANTITY_OF_DELIVERED_PRODUCT, countQuantityOfDeliveredProducts(delivery));
+        delivery.setField(DeliveryFields.QUANTITY_OF_ORDERED_PRODUCT, countQuantityOfOrderedProducts(delivery));
+    }
+
+    private BigDecimal countQuantityOfDeliveredProducts(final Entity delivery) {
+        DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
+        List<Entity> deliveredProducts = deliveredProductDD.find(createQueryForDeliveredProduct()).list().getEntities();
+        BigDecimal quantityOfDeliveredProducts = BigDecimal.ZERO;
+        if (!deliveredProducts.isEmpty()) {
+            for (Entity deliveryProduct : deliveredProducts) {
+                BigDecimal deliveredQuantity = deliveryProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+                if (deliveredQuantity == null) {
+                    deliveredQuantity = BigDecimal.ZERO;
+                }
+                quantityOfDeliveredProducts = numberService.setScale(quantityOfDeliveredProducts.add(deliveredQuantity));
+            }
+        }
+        return quantityOfDeliveredProducts;
+    }
+
+    private String createQueryForDeliveredProduct() {
+        return String.format("SELECT SUM(op.orderedQuantity) AS " + L_ORDERED_QUANTITY + " FROM #deliveries_orderedProduct op ");
+    }
+
+    private BigDecimal countQuantityOfOrderedProducts(final Entity delivery) {
+        List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+        BigDecimal quantityOfOrderedProducts = BigDecimal.ZERO;
+        if (!orderedProducts.isEmpty()) {
+            for (Entity deliveryProduct : orderedProducts) {
+                BigDecimal orderedQuantity = deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+                quantityOfOrderedProducts = numberService.setScale(quantityOfOrderedProducts.add(orderedQuantity));
+            }
+        }
+        return quantityOfOrderedProducts;
+    }
 }
