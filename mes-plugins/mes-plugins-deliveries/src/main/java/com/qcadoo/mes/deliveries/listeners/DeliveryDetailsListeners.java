@@ -255,8 +255,12 @@ public class DeliveryDetailsListeners {
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
         BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
 
-        return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext()).add(damagedQuantity,
-                numberService.getMathContext());
+        if (damagedQuantity == null) {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
+        } else {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext()).add(damagedQuantity,
+                    numberService.getMathContext());
+        }
     }
 
 }
