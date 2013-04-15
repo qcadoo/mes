@@ -85,20 +85,4 @@ public class OrderStateChangeReasonAspect extends AbstractStateListenerAspect {
         }
     }
 
-    @RunForStateTransition(targetState = OrderStateStringValues.COMPLETED)
-    @RunInPhase(OrderStateChangePhase.FILL_REASON)
-    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
-    public void askForCompletionTimeDifferenceReason(final StateChangeContext stateChangeContext, final int phase,
-            final ViewContextHolder viewContext) {
-        stateChangeReasonService.onComplete(stateChangeContext, viewContext);
-    }
-
-    @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
-    @RunInPhase(OrderStateChangePhase.FILL_REASON)
-    @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
-    public void askForStartProgressTimeDifferenceReason(final StateChangeContext stateChangeContext, final int phase,
-            final ViewContextHolder viewContext) {
-        stateChangeReasonService.onStart(stateChangeContext, viewContext);
-    }
-
 }

@@ -55,10 +55,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
@@ -130,6 +129,10 @@ public class OrderStateChangeReasonService {
             return 0L;
         }
         final DateTime dateFrom = new DateTime(dateFromTimestamp);
+
+        if (getEffectiveDate(order, EFFECTIVE_DATE_FROM) == null) {
+            return 0L;
+        }
         final DateTime effectiveDateFrom = new DateTime(getEffectiveDate(order, EFFECTIVE_DATE_FROM));
         final DateTime maxTime = new DateTime(dateFromTimestamp
                 + getAllowedDelayFromParametersAsMiliseconds(DELAYED_EFFECTIVE_DATE_FROM_TIME));
@@ -153,6 +156,10 @@ public class OrderStateChangeReasonService {
             return 0L;
         }
         final DateTime dateTo = new DateTime(dateToTimestamp);
+
+        if (getEffectiveDate(order, EFFECTIVE_DATE_TO) == null) {
+            return 0L;
+        }
         final DateTime effectiveDateTo = new DateTime(getEffectiveDate(order, EFFECTIVE_DATE_TO));
         final DateTime maxTime = new DateTime(dateToTimestamp
                 + getAllowedDelayFromParametersAsMiliseconds(DELAYED_EFFECTIVE_DATE_TO_TIME));
@@ -178,9 +185,6 @@ public class OrderStateChangeReasonService {
 
     private Date getEffectiveDate(final Entity order, final String effectiveField) {
         Date effectiveDate = (Date) order.getField(effectiveField);
-        if (effectiveDate == null) {
-            effectiveDate = new Date();
-        }
         return effectiveDate;
     }
 
@@ -199,23 +203,6 @@ public class OrderStateChangeReasonService {
         }
     }
 
-    public void onComplete(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
-        final Entity order = stateChangeContext.getOwner();
-        if (neededWhenCorrectingDateTo() && !hasRequiredCorrectionDateToReasonField(order)) {
-            stateChangeContext.addFieldValidationError(REASON_TYPES_CORRECTION_DATE_TO,
-                    "orders.order.stateChange.missingEndCorrectionReason");
-            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            stateChangeContext.save();
-            return;
-        }
-        final long difference = getEffectiveDateToDifference(parameterService.getParameter(), order);
-        if (difference == 0L) {
-            return;
-        }
-        setAdditionalInfo(stateChangeContext, difference);
-        showReasonForm(stateChangeContext, viewContext);
-    }
-
     private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
         return order.getField(CORRECTED_DATE_FROM) == null
                 || (order.getField(REASON_TYPES_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
@@ -226,56 +213,48 @@ public class OrderStateChangeReasonService {
                 || (order.getField(REASON_TYPES_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
     }
 
-    public void onStart(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
-        final Entity order = stateChangeContext.getOwner();
-        if (neededWhenCorrectingDateFrom() && !hasRequiredCorrectionDateFromReasonField(order)) {
-            stateChangeContext.addFieldValidationError(REASON_TYPES_CORRECTION_DATE_FROM,
-                    "orders.order.stateChange.missingStartCorrectionReason");
-            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            stateChangeContext.save();
-            return;
-        }
-        final long difference = getEffectiveDateFromDifference(parameterService.getParameter(), order);
-        if (difference == 0L) {
-            return;
-        }
-        setAdditionalInfo(stateChangeContext, difference);
-        showReasonForm(stateChangeContext, viewContext);
-    }
-
-    private void setAdditionalInfo(final StateChangeContext stateChangeContext, final long difference) {
-        if (difference == 0L) {
-            return;
-        }
-        final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        final OrderState orderState = (OrderState) stateChangeContext.getStateEnumValue(describer.getTargetStateFieldName());
-
-        String additionalInfoKey = null;
-        if (OrderState.IN_PROGRESS.equals(orderState)) {
-            if (difference < 0L) {
-                additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooEarly";
-            } else {
-                additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooLate";
-            }
-        } else if (OrderState.COMPLETED.equals(orderState)) {
-            if (difference < 0L) {
-                additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooEarly";
-            } else {
-                additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooLate";
-            }
-        } else {
-            return;
-        }
-
-        final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math.abs(difference)));
-        final String additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(),
-                differenceAsString);
-        stateChangeEntity.setField(OrderStateChangeFields.ADDITIONAL_INFO, additionalInfo);
-        stateChangeContext.save();
-    }
-
     public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
+        final Entity order = stateChangeContext.getOwner();
+        final Entity parameter = parameterService.getParameter();
+        Long differenceForDateFrom = getEffectiveDateFromDifference(parameter, order);
+        Long differenceForDateTo = getEffectiveDateToDifference(parameter, order);
+        final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
+        String additionalInfoKey = null;
+        String additionalInfo = null;
+        // EFFECTIVE_DATE_FROM
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
+                && differenceForDateFrom > 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateFrom)));
+            additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooLate";
+            additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
+        }
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
+                && differenceForDateFrom < 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateFrom)));
+            additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooEarly";
+            additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
+
+        }
+        // EFFECTIVE_DATE_TO
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateTo)));
+            additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooLate";
+            additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
+
+        }
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateTo)));
+            additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooEarly";
+            additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
+        }
+        if (additionalInfo != null) {
+            stateChangeEntity.setField(OrderStateChangeFields.ADDITIONAL_INFO, additionalInfo);
+            stateChangeContext.save();
+        }
         stateChangeContext.setStatus(StateChangeStatus.PAUSED);
         stateChangeContext.save();
         viewContext.getViewDefinitionState().openModal(

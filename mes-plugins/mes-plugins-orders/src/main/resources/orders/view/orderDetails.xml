@@ -288,6 +288,9 @@
 							reference="dateFrom">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+							<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyStartDateToDetails" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="8">
@@ -295,6 +298,9 @@
 							reference="dateTo">
 							<option type="labelWidth" value="50" />
 							<option type="withTimePicker" value="true" />
+							<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyFinishDateToDetails" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="9">
@@ -436,6 +442,10 @@
 									field="#{form}.effectiveDateFrom" reference="effectiveDateFrom"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyStartDate" />
 								</component>
 							</layoutElement>
 						</component>
@@ -563,6 +573,10 @@
 									field="#{form}.effectiveDateTo" reference="effectiveDateTo"
 									defaultEnabled="false">
 									<option type="withTimePicker" value="true" />
+									
+									<listener event="onChange"
+										class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+										method="copyEndDate" />
 								</component>
 							</layoutElement>
 						</component>
