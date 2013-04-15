@@ -30,8 +30,11 @@ import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -39,6 +42,13 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class DeliveredProductHooks {
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);
+    }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = deliveredProductDD.find()

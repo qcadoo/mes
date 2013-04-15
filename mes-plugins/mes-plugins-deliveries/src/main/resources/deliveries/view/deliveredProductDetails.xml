@@ -39,7 +39,7 @@
 			<component type="form" name="deliveredProductDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="1"
-					rows="5">
+					rows="4">
 					<layoutElement column="1" row="1">
 						<component type="input" name="succession" reference="succession"
 							field="succession" defaultEnabled="never" />
@@ -62,75 +62,129 @@
 							<listener
 								class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
 								method="fillUnitFields" />
+							<listener
+								class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+								method="fillCurrencyFields" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
-						<component type="gridLayout" name="orderedQuantityGridLayout"
-							hasBorders="false" columns="4" rows="1">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="orderedQuantity"
-									reference="orderedQuantity" defaultEnabled="never">
-									<option type="alignment" value="right" />
-									<option type="labelWidth" value="40" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="orderedQuantityUnit"
-									reference="orderedQuantityUnit" defaultEnabled="never"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
+						<component type="borderLayout" name="quantityBorderLayout">
+							<option type="label" value="quantityLabel" />
+							<component type="gridLayout" name="quantityGridLayout"
+								hasBorders="false" columns="2" rows="2">
+								<layoutElement column="1" row="1">
+									<component type="gridLayout" name="orderedQuantityGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="orderedQuantity"
+												reference="orderedQuantity" defaultEnabled="never">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="orderedQuantityUnit"
+												reference="orderedQuantityUnit" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="gridLayout" name="deliveredQuantityGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="deliveredQuantity"
+												field="#{form}.deliveredQuantity" reference="deliveredQuantity"
+												hasDescription="true">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="deliveredQuantityUnit"
+												reference="deliveredQuantityUnit" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+								<layoutElement column="2" row="2">
+									<component type="gridLayout" name="damagedQuantityGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="damagedQuantity"
+												field="#{form}.damagedQuantity" reference="damagedQuantity">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="damagedQuantityUnit"
+												reference="damagedQuantityUnit" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+							</component>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
-						<component type="gridLayout" name="deliveredQuantityGridLayout"
-							hasBorders="false" columns="4" rows="1">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveredQuantity"
-									field="#{form}.deliveredQuantity" reference="deliveredQuantity"
-									hasDescription="true">
-									<option type="alignment" value="right" />
-									<option type="labelWidth" value="40" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="deliveredQuantityUnit"
-									reference="deliveredQuantityUnit" defaultEnabled="never"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="5">
-						<component type="gridLayout" name="damagedQuantityGridLayout"
-							hasBorders="false" columns="4" rows="1">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="damagedQuantity" field="#{form}.damagedQuantity"
-									reference="damagedQuantity">
-									<option type="alignment" value="right" />
-									<option type="labelWidth" value="40" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="damagedQuantityUnit"
-									reference="damagedQuantityUnit" defaultEnabled="never"
-									hasLabel="false">
-									<option type="textRepresentationOnDisabled" value="true" />
-								</component>
-							</layoutElement>
+						<component type="borderLayout" name="priceBorderLayout">
+							<option type="label" value="priceLabel" />
+							<component type="gridLayout" name="priceGridLayout"
+								hasBorders="false" columns="2" rows="1">
+								<layoutElement column="1" row="1">
+									<component type="gridLayout" name="totalPriceGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="totalPrice" field="#{form}.totalPrice"
+												reference="totalPrice">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="totalPriceCurrency"
+												reference="totalPriceCurrency" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+								<layoutElement column="2" row="1">
+									<component type="gridLayout" name="pricePerUnitGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="pricePerUnit" field="#{form}.pricePerUnit"
+												reference="pricePerUnit" defaultEnabled="never">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="pricePerUnitCurrency"
+												reference="pricePerUnitCurrency" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+							</component>
 						</component>
 					</layoutElement>
 				</component>
-
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
 		</windowTab>
-
 	</component>
-
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
@@ -140,7 +194,9 @@
 			method="fillUnitFields" />
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
+			method="fillCurrencyFields" />
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
 			method="setDeliveredQuantityFieldRequired" />
 	</hooks>
-
 </view>

@@ -55,8 +55,12 @@ public final class DeliveryFields {
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
-    public static final String QUANTITY_OF_ORDERED_PRODUCT = "quantityOfOrderedProduct";
+    public static final String ORDERED_PRODUCTS_CUMULATED_QUANTITY = "orderedProductsCumulatedQuantity";
 
-    public static final String QUANTITY_OF_DELIVERED_PRODUCT = "quantityOfDeliveredProduct";
+    public static final String ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
+
+    public static final String DELIVERED_PRODUCTS_CUMULATED_QUANTITY = "deliveredProductsCumulatedQuantity";
+
+    public static final String DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "deliveredProductCumulatedTotalPrice";
 
 }

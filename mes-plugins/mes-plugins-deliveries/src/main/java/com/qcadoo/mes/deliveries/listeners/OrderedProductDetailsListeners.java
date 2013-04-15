@@ -40,4 +40,8 @@ public class OrderedProductDetailsListeners {
         orderedProductDetailsHooks.fillUnitFields(view);
     }
 
+    public void fillCurrencyFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        orderedProductDetailsHooks.fillCurrencyFields(view);
+    }
+
 }

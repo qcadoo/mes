@@ -46,8 +46,10 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -144,7 +146,10 @@ public class DeliveryDetailsListeners {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
         deliveredProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
-
+        deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
+                orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
+        deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
+                orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
         return deliveredProduct;
     }
 
@@ -245,6 +250,10 @@ public class DeliveryDetailsListeners {
 
         newOrderedProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
         newOrderedProduct.setField(ORDERED_QUANTITY, orderedQuantity);
+        newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
+                orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
+        newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
+                orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
 
         return newOrderedProduct;
     }

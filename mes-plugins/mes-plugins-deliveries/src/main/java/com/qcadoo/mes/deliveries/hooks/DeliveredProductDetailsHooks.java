@@ -96,6 +96,12 @@ public class DeliveredProductDetailsHooks {
         deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
     }
 
+    public void fillCurrencyFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
+
+        deliveriesService.fillCurrencyFields(view, referenceNames);
+    }
+
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
         FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DELIVERED_QUANTITY);
         delivedQuantity.setRequired(true);

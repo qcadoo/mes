@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
@@ -177,4 +178,31 @@ public interface DeliveriesService {
      */
     Entity getProduct(final DeliveryProduct deliveryProduct);
 
+    /**
+     * 
+     * @param entity
+     */
+    void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
+
+    /**
+     * Fills currency fields
+     * 
+     * @param view
+     *            view
+     * 
+     * @param referenceNames
+     *            reference names to unit fields
+     */
+    void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames);
+
+    /**
+     * Gets cost per unit for given parameter
+     * 
+     * @param entityDD
+     * @param entity
+     * @param entityName
+     * @param product
+     * @return
+     */
+    BigDecimal getPricePerUnit(final DataDefinition entityDD, final Entity entity, final String entityName, final Entity product);
 }

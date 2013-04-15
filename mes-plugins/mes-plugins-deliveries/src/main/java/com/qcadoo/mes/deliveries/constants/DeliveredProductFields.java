@@ -39,4 +39,7 @@ public final class DeliveredProductFields {
 
     public static final String SUCCESSION = "succession";
 
+    public static final String PRICE_PER_UNIT = "pricePerUnit";
+
+    public static final String TOTAL_PRICE = "totalPrice";
 }

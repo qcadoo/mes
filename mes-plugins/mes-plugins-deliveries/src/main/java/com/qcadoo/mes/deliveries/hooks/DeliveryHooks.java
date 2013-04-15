@@ -31,7 +31,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +46,6 @@ import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 
 @Service
 public class DeliveryHooks {
@@ -62,12 +60,13 @@ public class DeliveryHooks {
     private DeliveryStateChangeDescriber describer;
 
     @Autowired
-    private NumberService numberService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     private static final String L_ORDERED_QUANTITY = "orderedQuantity";
+
+    private static final String L_TOTAL_PRICE = "totalPrice";
+
+    private static final String L_DELIVERED_QUANTITY = "deliveredQuantity";
 
     public void setInitialState(final DataDefinition assignmentToShiftDD, final Entity assignmentToShift) {
         stateChangeEntityBuilder.buildInitial(describer, assignmentToShift, DRAFT);
@@ -96,41 +95,81 @@ public class DeliveryHooks {
 
     }
 
-    public void fillOrderedAndDeliveredQuantity(final DataDefinition deliveryDD, final Entity delivery) {
-        delivery.setField(DeliveryFields.QUANTITY_OF_DELIVERED_PRODUCT, countQuantityOfDeliveredProducts(delivery));
-        delivery.setField(DeliveryFields.QUANTITY_OF_ORDERED_PRODUCT, countQuantityOfOrderedProducts(delivery));
+    public void fillOrderedAndDeliveredQuantityAndTotalPrice(final DataDefinition deliveryDD, final Entity delivery) {
+        // delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY, countQuantityOfDeliveredProducts(delivery));
+        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_QUANTITY, countQuantityOfOrderedProducts(delivery));
+        // delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE,
+        // countTotalPriceOfDeliveredProducts(delivery));
+        delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE, countTotalPriceOfOrderedProducts(delivery));
     }
 
     private BigDecimal countQuantityOfDeliveredProducts(final Entity delivery) {
         DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
-        List<Entity> deliveredProducts = deliveredProductDD.find(createQueryForDeliveredProduct()).list().getEntities();
-        BigDecimal quantityOfDeliveredProducts = BigDecimal.ZERO;
-        if (!deliveredProducts.isEmpty()) {
-            for (Entity deliveryProduct : deliveredProducts) {
-                BigDecimal deliveredQuantity = deliveryProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-                if (deliveredQuantity == null) {
-                    deliveredQuantity = BigDecimal.ZERO;
-                }
-                quantityOfDeliveredProducts = numberService.setScale(quantityOfDeliveredProducts.add(deliveredQuantity));
-            }
-        }
-        return quantityOfDeliveredProducts;
-    }
+        String query = createQueryForDeliveredProduct();
+        Entity deliveredProductsCumulatedQuantity = deliveredProductDD.find(query).setMaxResults(0).uniqueResult();
 
-    private String createQueryForDeliveredProduct() {
-        return String.format("SELECT SUM(op.orderedQuantity) AS " + L_ORDERED_QUANTITY + " FROM #deliveries_orderedProduct op ");
+        BigDecimal deliveredQuantity = deliveredProductsCumulatedQuantity
+                .getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+        if (deliveredQuantity == null) {
+            deliveredQuantity = BigDecimal.ZERO;
+        }
+        return deliveredQuantity;
     }
 
     private BigDecimal countQuantityOfOrderedProducts(final Entity delivery) {
-        List<Entity> orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
-        BigDecimal quantityOfOrderedProducts = BigDecimal.ZERO;
-        if (!orderedProducts.isEmpty()) {
-            for (Entity deliveryProduct : orderedProducts) {
-                BigDecimal orderedQuantity = deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-                quantityOfOrderedProducts = numberService.setScale(quantityOfOrderedProducts.add(orderedQuantity));
-            }
+        DataDefinition orderedProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_ORDERED_PRODUCT);
+        String query = createQueryForQuantityOfOrderedProduct();
+        Entity orderedProductsCumulatedQuantity = orderedProductDD.find(query).setMaxResults(0).uniqueResult();
+
+        BigDecimal orderedQuantity = orderedProductsCumulatedQuantity.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+        if (orderedQuantity == null) {
+            orderedQuantity = BigDecimal.ZERO;
         }
-        return quantityOfOrderedProducts;
+        return orderedQuantity;
+    }
+
+    private BigDecimal countTotalPriceOfOrderedProducts(final Entity delivery) {
+        DataDefinition orderedProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_ORDERED_PRODUCT);
+        String query = createQueryForTotalPriceOfOrderedProduct();
+        Entity orderedProductsTotalPrice = orderedProductDD.find(query).setMaxResults(0).uniqueResult();
+
+        BigDecimal orderedTotalPrice = orderedProductsTotalPrice.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        if (orderedTotalPrice == null) {
+            orderedTotalPrice = BigDecimal.ZERO;
+        }
+        return orderedTotalPrice;
+    }
+
+    private BigDecimal countTotalPriceOfDeliveredProducts(final Entity delivery) {
+        DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
+        String query = createQueryForTotalPriceDeliveredProduct();
+        Entity deliveredProductsTotalPrice = deliveredProductDD.find(query).setMaxResults(0).uniqueResult();
+
+        BigDecimal deliveredTotalPrice = deliveredProductsTotalPrice.getDecimalField(DeliveredProductFields.TOTAL_PRICE);
+        if (deliveredTotalPrice == null) {
+            deliveredTotalPrice = BigDecimal.ZERO;
+        }
+        return deliveredTotalPrice;
+    }
+
+    private String createQueryForQuantityOfOrderedProduct() {
+        return String.format("SELECT SUM(op.orderedQuantity) AS " + L_ORDERED_QUANTITY + " FROM #deliveries_orderedProduct op ");
+    }
+
+    private String createQueryForDeliveredProduct() {
+        return String.format("SELECT SUM(dp.deliveredQuantity) AS " + L_DELIVERED_QUANTITY
+                + " FROM #deliveries_deliveredProduct dp ");
+    }
+
+    private String createQueryForTotalPriceOfOrderedProduct() {
+        return String.format("SELECT SUM(op.totalPrice) AS " + L_TOTAL_PRICE + " FROM #deliveries_orderedProduct op ");
+    }
+
+    private String createQueryForTotalPriceDeliveredProduct() {
+        return String.format("SELECT SUM(dp.totalPrice) AS " + L_TOTAL_PRICE + " FROM #deliveries_deliveredProduct dp ");
     }
 }
