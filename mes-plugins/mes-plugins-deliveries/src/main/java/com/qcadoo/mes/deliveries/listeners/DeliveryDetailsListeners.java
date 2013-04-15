@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
@@ -148,7 +149,7 @@ public class DeliveryDetailsListeners {
         return deliveredProduct;
     }
 
-    public final void createPartialDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void createRelatedDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -159,18 +160,18 @@ public class DeliveryDetailsListeners {
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
         if (RECEIVED.equals(delivery.getStringField(STATE))) {
-            Entity partialDelivery = createPartialDelivery(delivery);
+            Entity relatedDelivery = createRelatedDelivery(delivery);
 
-            if (partialDelivery == null) {
-                deliveryForm.addMessage("deliveries.delivery.partialDelivery.thereAreNoLacksToCover", MessageType.INFO);
+            if (relatedDelivery == null) {
+                deliveryForm.addMessage("deliveries.delivery.relatedDelivery.thereAreNoLacksToCover", MessageType.INFO);
 
                 return;
             }
 
-            Long partialDeliveryId = partialDelivery.getId();
+            Long relatedDeliveryId = relatedDelivery.getId();
 
             Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put("form.id", partialDeliveryId);
+            parameters.put("form.id", relatedDeliveryId);
 
             parameters.put(L_WINDOW_ACTIVE_MENU, "deliveries.deliveryDetails");
 
@@ -179,26 +180,26 @@ public class DeliveryDetailsListeners {
         }
     }
 
-    private Entity createPartialDelivery(final Entity delivery) {
-        Entity partialDelivery = null;
+    private Entity createRelatedDelivery(final Entity delivery) {
+        Entity relatedDelivery = null;
 
         List<Entity> orderedProducts = createOrderedProducts(delivery);
 
         if (!orderedProducts.isEmpty()) {
-            partialDelivery = deliveriesService.getDeliveryDD().create();
+            relatedDelivery = deliveriesService.getDeliveryDD().create();
 
-            partialDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(
+            relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(
                     DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
-            partialDelivery.setField(SUPPLIER, delivery.getBelongsToField(SUPPLIER));
-            partialDelivery.setField(DELIVERY_DATE, new Date());
-            partialDelivery.setField(RELATED_DELIVERY, delivery);
-            partialDelivery.setField(ORDERED_PRODUCTS, orderedProducts);
-            partialDelivery.setField(EXTERNAL_SYNCHRONIZED, true);
+            relatedDelivery.setField(SUPPLIER, delivery.getBelongsToField(SUPPLIER));
+            relatedDelivery.setField(DELIVERY_DATE, new Date());
+            relatedDelivery.setField(RELATED_DELIVERY, delivery);
+            relatedDelivery.setField(ORDERED_PRODUCTS, orderedProducts);
+            relatedDelivery.setField(EXTERNAL_SYNCHRONIZED, true);
 
-            partialDelivery = partialDelivery.getDataDefinition().save(partialDelivery);
+            relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
         }
 
-        return partialDelivery;
+        return relatedDelivery;
     }
 
     private List<Entity> createOrderedProducts(final Entity delivery) {
@@ -244,7 +245,7 @@ public class DeliveryDetailsListeners {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
         newOrderedProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
-        newOrderedProduct.setField(ORDERED_QUANTITY, orderedQuantity);
+        newOrderedProduct.setField(ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
 
         return newOrderedProduct;
     }
@@ -252,8 +253,14 @@ public class DeliveryDetailsListeners {
     private BigDecimal getLackQuantity(final Entity orderedProduct, final Entity deliveredProduct) {
         BigDecimal orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
+        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
 
-        return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
+        if (damagedQuantity == null) {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
+        } else {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext()).add(damagedQuantity,
+                    numberService.getMathContext());
+        }
     }
 
 }
