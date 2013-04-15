@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
@@ -249,20 +250,25 @@ public class DeliveryDetailsListeners {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
         newOrderedProduct.setField(PRODUCT, orderedProduct.getBelongsToField(PRODUCT));
-        newOrderedProduct.setField(ORDERED_QUANTITY, orderedQuantity);
+        newOrderedProduct.setField(ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
         newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
                 orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
-
         return newOrderedProduct;
     }
 
     private BigDecimal getLackQuantity(final Entity orderedProduct, final Entity deliveredProduct) {
         BigDecimal orderedQuantity = orderedProduct.getDecimalField(ORDERED_QUANTITY);
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DELIVERED_QUANTITY);
+        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DAMAGED_QUANTITY);
 
-        return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
+        if (damagedQuantity == null) {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
+        } else {
+            return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext()).add(damagedQuantity,
+                    numberService.getMathContext());
+        }
     }
 
 }
