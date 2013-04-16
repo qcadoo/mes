@@ -237,7 +237,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
 
         BigDecimal pricePerUnit = BigDecimal.ZERO;
-        if (quantity != null && !quantity.equals(BigDecimal.ZERO)) {
+        if (totalPrice != null && quantity != null && !quantity.equals(BigDecimal.ZERO)) {
             pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
         }
         entity.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);

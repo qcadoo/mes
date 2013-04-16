@@ -351,8 +351,23 @@
 			<component type="gridLayout" name="orderedProductsGridLayout"
 				columns="3" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
-							reference="orderedProductsCumulatedQuantity" defaultEnabled="never" />
+					<component type="gridLayout" name="orderedProductsCumulatedQuantityGridLayout"
+						hasBorders="false" columns="4" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
+								reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>										
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="orderedProductsCumulatedQuantityUnit"
+								reference="orderedProductsCumulatedQuantityUnit" defaultEnabled="never"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
@@ -387,8 +402,23 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="input" name="orderedProductsCumulatedTotalPrice" field="#{form}.orderedProductsCumulatedTotalPrice"
-							reference="orderedProductsCumulatedTotalPrice" defaultEnabled="never" />
+					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
+						hasBorders="false" columns="4" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="orderedProductsCumulatedTotalPrice" field="#{form}.orderedProductsCumulatedTotalPrice"
+								reference="orderedProductsCumulatedTotalPrice" defaultEnabled="never" >
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>										
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="orderedProductsCumulatedTotalPriceUnit"
+								reference="orderedProductsCumulatedTotalPriceUnit" defaultEnabled="never"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
@@ -397,9 +427,22 @@
 			<component type="gridLayout" name="deliveredProductsGridLayout"
 				columns="3" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
-						reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
-						<option type="alignment" value="right" />
+					<component type="gridLayout" name="orderedProductsCumulatedQuantityGridLayout"
+						hasBorders="false" columns="4" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
+								reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>										
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="deliveredProductsCumulatedQuantityUnit"
+								reference="deliveredProductsCumulatedQuantityUnit" defaultEnabled="never"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
@@ -435,8 +478,23 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
-					<component type="input" name="deliveredProductsCumulatedTotalPrice" field="#{form}.deliveredProductsCumulatedTotalPrice"
-							reference="deliveredProductsCumulatedTotalPrice" defaultEnabled="never" />
+					<component type="gridLayout" name="orderedProductsCumulatedTotalPriceGridLayout"
+						hasBorders="false" columns="4" rows="1">
+						<layoutElement column="1" row="1" width="3">
+							<component type="input" name="deliveredProductsCumulatedTotalPrice" field="#{form}.deliveredProductsCumulatedTotalPrice"
+							reference="deliveredProductsCumulatedTotalPrice" defaultEnabled="never" >
+								<option type="alignment" value="right" />
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>										
+						</layoutElement>
+						<layoutElement column="4" row="1">
+							<component type="input" name="deliveredProductsCumulatedTotalPriceUnit"
+								reference="deliveredProductsCumulatedTotalPriceUnit" defaultEnabled="never"
+								hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true" />
+							</component>
+						</layoutElement>
+					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
