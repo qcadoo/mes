@@ -211,3 +211,16 @@ ALTER TABLE deliveries_delivery
  	REFERENCES deliveries_delivery (id) DEFERRABLE;
  	
 -- end
+
+-- Table: deliveries_deliveredproduct
+-- changed: 16.04.2013
+ALTER TABLE deliveries_deliveredproduct ADD COLUMN priceperunit numeric(12,5);
+ALTER TABLE deliveries_deliveredproduct ADD COLUMN totalprice numeric(12,5);
+--end
+
+
+-- Table: deliveries_orderedproduct
+-- changed: 16.04.2013
+ALTER TABLE deliveries_orderedproduct ADD COLUMN priceperunit numeric(12,5);
+ALTER TABLE deliveries_orderedproduct ADD COLUMN totalprice numeric(12,5);
+--end

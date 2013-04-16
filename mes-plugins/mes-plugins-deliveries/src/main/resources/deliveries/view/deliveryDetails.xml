@@ -357,14 +357,14 @@
 							<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
 								reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
 								<option type="alignment" value="right" />
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>										
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="orderedProductsCumulatedQuantityUnit"
-								reference="orderedProductsCumulatedQuantityUnit" defaultEnabled="never"
+							<component type="input" name="orderedProductsCumulatedQuantityCurrency"
+								reference="orderedProductsCumulatedQuantityCurrency" defaultEnabled="never"
 								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
@@ -408,14 +408,14 @@
 							<component type="input" name="orderedProductsCumulatedTotalPrice" field="#{form}.orderedProductsCumulatedTotalPrice"
 								reference="orderedProductsCumulatedTotalPrice" defaultEnabled="never" >
 								<option type="alignment" value="right" />
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>										
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="orderedProductsCumulatedTotalPriceUnit"
-								reference="orderedProductsCumulatedTotalPriceUnit" defaultEnabled="never"
+							<component type="input" name="orderedProductsCumulatedTotalPriceCurrency"
+								reference="orderedProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
 								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
@@ -433,14 +433,14 @@
 							<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
 								reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
 								<option type="alignment" value="right" />
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>										
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="deliveredProductsCumulatedQuantityUnit"
-								reference="deliveredProductsCumulatedQuantityUnit" defaultEnabled="never"
+							<component type="input" name="deliveredProductsCumulatedQuantityCurrency"
+								reference="deliveredProductsCumulatedQuantityCurrency" defaultEnabled="never"
 								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
@@ -484,14 +484,14 @@
 							<component type="input" name="deliveredProductsCumulatedTotalPrice" field="#{form}.deliveredProductsCumulatedTotalPrice"
 							reference="deliveredProductsCumulatedTotalPrice" defaultEnabled="never" >
 								<option type="alignment" value="right" />
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>										
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="deliveredProductsCumulatedTotalPriceUnit"
-								reference="deliveredProductsCumulatedTotalPriceUnit" defaultEnabled="never"
+							<component type="input" name="deliveredProductsCumulatedTotalPriceCurrency"
+								reference="deliveredProductsCumulatedTotalPriceCurrency" defaultEnabled="never"
 								hasLabel="false">
-								<option type="textRepresentationOnDisabled" value="true" />
+								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
 						</layoutElement>
 					</component>
@@ -538,6 +538,8 @@
 			method="updateCreateRelatedDeliveryState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="filterStateChangeHistory" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="fillCurrencyFields" />
 	</hooks>
 	
 </view>
