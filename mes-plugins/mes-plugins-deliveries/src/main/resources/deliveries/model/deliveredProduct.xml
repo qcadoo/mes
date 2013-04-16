@@ -37,10 +37,18 @@
 		<decimal name="damagedQuantity">
 			<validatesRange from="0" />
 		</decimal>
+		<decimal name="pricePerUnit">
+			<validatesRange from="0" />
+		</decimal>
+		<decimal name="totalPrice" >
+			<validatesRange from="0" />
+		</decimal>
 		
 		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks>
+		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" 
+			method="calculateDeliveredProductPricePerUnit"/>
 		<validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
 			method="checkIfDeliveredProductAlreadyExists" />
 		<validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"

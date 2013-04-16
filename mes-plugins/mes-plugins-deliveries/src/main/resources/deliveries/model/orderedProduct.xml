@@ -34,6 +34,12 @@
 		<decimal name="orderedQuantity" required="true" >
 			<validatesRange from="0" exclusively="true" />
 		</decimal>
+		<decimal name="pricePerUnit">
+			<validatesRange from="0" />
+		</decimal>
+		<decimal name="totalPrice" >
+			<validatesRange from="0" />
+		</decimal>
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
@@ -41,6 +47,8 @@
 		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks>
+		<onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" 
+			method="calculateOrderedProductPricePerUnit"/>
 		<validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
 			method="checkIfOrderedProductAlreadyExists" />
 	</hooks>

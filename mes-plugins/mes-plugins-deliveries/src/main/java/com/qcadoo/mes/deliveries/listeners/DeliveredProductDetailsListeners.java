@@ -40,6 +40,10 @@ public class DeliveredProductDetailsListeners {
         deliveredProductDetailsHooks.fillUnitFields(view);
     }
 
+    public void fillCurrencyFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillCurrencyFields(view);
+    }
+
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
     }

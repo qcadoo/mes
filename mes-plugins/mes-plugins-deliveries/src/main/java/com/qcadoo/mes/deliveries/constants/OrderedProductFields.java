@@ -39,4 +39,8 @@ public final class OrderedProductFields {
 
     public static final String DESCRIPTION = "description";
 
+    public static final String PRICE_PER_UNIT = "pricePerUnit";
+
+    public static final String TOTAL_PRICE = "totalPrice";
+
 }

@@ -199,4 +199,12 @@ public class DeliveryDetailsHooks {
         ribbonActionItem.requestUpdate(true);
     }
 
+    public void fillCurrencyFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
+                "deliveredProductsCumulatedQuantityCurrency", "orderedProductsCumulatedTotalPriceCurrency",
+                "orderedProductsCumulatedQuantityCurrency");
+
+        deliveriesService.fillCurrencyFields(view, referenceNames);
+    }
+
 }

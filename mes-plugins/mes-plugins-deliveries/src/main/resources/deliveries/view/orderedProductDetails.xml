@@ -39,12 +39,12 @@
 			<component type="form" name="orderedProductDetails"
 				reference="form">
 				<component type="gridLayout" name="gridLayout" columns="2"
-					rows="3">
-					<layoutElement column="1" row="1">
+					rows="4">
+					<layoutElement column="1" row="1" width="2">
 						<component type="input" name="succession" reference="succession"
 							field="succession" defaultEnabled="never" />
 					</layoutElement>
-					<layoutElement column="1" row="2">
+					<layoutElement column="1" row="2" width="2">
 						<component type="lookup" name="product" reference="product"
 							field="product">
 							<option type="column" name="name" fields="name" link="true" />
@@ -59,6 +59,9 @@
 							<listener
 								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
 								method="fillUnitFields" />
+							<listener
+								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+								method="fillCurrencyFields" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="3">
@@ -79,13 +82,58 @@
 							</layoutElement>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="1" height="3">
+					<layoutElement column="1" row="4" >
+						<component type="borderLayout" name="priceBorderLayout">
+							<option type="label" value="priceLabel" />
+							<component type="gridLayout" name="priceGridLayout"
+							columns="1" rows="2" reference="priceGridLayout">
+								<layoutElement column="1" row="1" >
+									<component type="gridLayout" name="totalPriceGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="totalPrice"
+												field="#{form}.totalPrice" reference="totalPrice">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="totalPriceCurrency"
+												reference="totalPriceCurrency" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="2" >
+									<component type="gridLayout" name="pricePerUnitGridLayout"
+										hasBorders="false" columns="4" rows="1">
+										<layoutElement column="1" row="1" width="3">
+											<component type="input" name="pricePerUnit"
+												field="#{form}.pricePerUnit" reference="pricePerUnit" defaultEnabled="never">
+												<option type="alignment" value="right" />
+												<option type="labelWidth" value="40" />
+											</component>
+										</layoutElement>
+										<layoutElement column="4" row="1">
+											<component type="input" name="pricePerUnitCurrency"
+												reference="pricePerUnitCurrency" defaultEnabled="never"
+												hasLabel="false">
+												<option type="textRepresentationOnDisabled" value="true" />
+											</component>
+										</layoutElement>
+									</component>
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="3" height="2">
 						<component type="textarea" name="description" reference="description"
 							field="description">
 						</component>
 					</layoutElement>
 				</component>
-
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 			</component>
@@ -97,6 +145,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
 			method="fillUnitFields" />
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
+			method="fillCurrencyFields" />
 	</hooks>
 
 </view>

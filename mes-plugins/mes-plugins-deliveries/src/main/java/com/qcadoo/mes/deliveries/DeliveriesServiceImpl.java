@@ -35,6 +35,7 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRE
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -43,14 +44,18 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -66,6 +71,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Override
     public Entity getDelivery(final Long deliveryId) {
@@ -217,6 +228,46 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(PRODUCT);
         } else {
             return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(PRODUCT);
+        }
+    }
+
+    @Override
+    public void calculatePricePerUnit(final Entity entity, final String quantityFieldName) {
+        BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        BigDecimal quantity = entity.getDecimalField(quantityFieldName);
+
+        BigDecimal pricePerUnit = BigDecimal.ZERO;
+        if (totalPrice != null && quantity != null && !quantity.equals(BigDecimal.ZERO)) {
+            pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+        }
+        entity.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
+    }
+
+    @Override
+    public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames) {
+        String currency = currencyService.getCurrencyAlphabeticCode();
+
+        if (currency == null) {
+            return;
+        }
+
+        for (String reference : referenceNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+            field.setFieldValue(currency);
+            field.requestComponentUpdateState();
+        }
+    }
+
+    @Override
+    public BigDecimal getPricePerUnit(final DataDefinition entityProductDD, final Entity entity, final String entityName,
+            final Entity product) {
+        Entity offerProduct = entityProductDD.find().add(SearchRestrictions.belongsTo(entityName, entity))
+                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
+
+        if (offerProduct == null) {
+            return null;
+        } else {
+            return offerProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         }
     }
 

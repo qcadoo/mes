@@ -46,4 +46,10 @@ public class OrderedProductDetailsHooks {
         deliveriesService.fillUnitFields(view, PRODUCT, referenceNames);
     }
 
+    public void fillCurrencyFields(final ViewDefinitionState view) {
+        List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
+
+        deliveriesService.fillCurrencyFields(view, referenceNames);
+    }
+
 }

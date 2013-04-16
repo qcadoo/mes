@@ -26,8 +26,11 @@ package com.qcadoo.mes.deliveries.hooks;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
 import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -35,6 +38,13 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class OrderedProductHooks {
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    public void calculateOrderedProductPricePerUnit(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
+    }
 
     public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD.find()
