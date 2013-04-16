@@ -211,3 +211,33 @@ ALTER TABLE deliveries_delivery
  	REFERENCES deliveries_delivery (id) DEFERRABLE;
  	
 -- end
+
+ 	
+-- Table: orders_reasontypedeviationeffectiveend
+-- changed: 16.04.2013
+
+CREATE TABLE orders_reasontypedeviationeffectiveend
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  reasontypeofchaningorderstate character varying(255),
+  CONSTRAINT orders_reasontypedeviationeffectiveend_pkey PRIMARY KEY (id),
+  CONSTRAINT reasontypedeviationeffectiveend_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+-- end
+
+
+-- Table: orders_reasontypedeviationeffectivestart
+-- changed: 16.04.2013
+
+CREATE TABLE orders_reasontypedeviationeffectivestart
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  reasontypeofchaningorderstate character varying(255),
+  CONSTRAINT orders_reasontypedeviationeffectivestart_pkey PRIMARY KEY (id),
+  CONSTRAINT reasontypedeviationeffectivestart_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+-- end
