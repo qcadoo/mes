@@ -302,7 +302,9 @@
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never" />
+									reference="deliveryDateBuffer" defaultEnabled="never" >
+									<option type="labelWidth" value="40" />
+								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="deliveryDateBufferDays"
