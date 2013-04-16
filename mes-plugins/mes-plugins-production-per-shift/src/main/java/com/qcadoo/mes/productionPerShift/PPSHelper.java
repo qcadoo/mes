@@ -24,10 +24,15 @@
 package com.qcadoo.mes.productionPerShift;
 
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_TYPE;
+import static com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields.DAY;
 
+import java.util.Date;
+
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -61,9 +66,14 @@ public class PPSHelper {
         return ppsDataDef.save(pps).getId();
     }
 
-    private DataDefinition getPpsDataDef() {
+    public DataDefinition getPpsDataDef() {
         return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
+    }
+
+    public DataDefinition getDailyProgressDataDef() {
+        return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
     }
 
     public Entity getTiocFromOperationLookup(final ViewDefinitionState viewState) {
@@ -81,4 +91,21 @@ public class PPSHelper {
         return ((FieldComponent) viewState.getComponentByReference(PLANNED_PROGRESS_TYPE)).getFieldValue().equals(
                 PlannedProgressType.CORRECTED.getStringValue());
     }
+
+    public Date getDateAfterStartOrderForProgress(final Entity order, final Entity progressForDay) {
+        final Integer day = Integer.valueOf(progressForDay.getField(DAY).toString());
+
+        return getDateAfterStartOrderForProgress(order, day);
+    }
+
+    public Date getDateAfterStartOrderForProgress(final Entity order, final Integer day) {
+        final Date startOrder = getPlannedOrCorrectedDate(order);
+
+        return new DateTime(startOrder).plusDays(day - 1).toDate();
+    }
+
+    private Date getPlannedOrCorrectedDate(final Entity order) {
+        return order.getDateField(OrderFields.START_DATE);
+    }
+
 }

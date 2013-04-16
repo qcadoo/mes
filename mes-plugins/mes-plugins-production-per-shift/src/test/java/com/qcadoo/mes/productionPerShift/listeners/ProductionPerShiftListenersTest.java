@@ -55,7 +55,7 @@ public class ProductionPerShiftListenersTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private PPSHelper helper;
+    private PPSHelper ppsHelper;
 
     @Before
     public void init() {
@@ -63,7 +63,7 @@ public class ProductionPerShiftListenersTest {
 
         productionPerShiftListeners = new ProductionPerShiftListeners();
 
-        ReflectionTestUtils.setField(productionPerShiftListeners, "helper", helper);
+        ReflectionTestUtils.setField(productionPerShiftListeners, "ppsHelper", ppsHelper);
         ReflectionTestUtils.setField(productionPerShiftListeners, "dataDefinitionService", dataDefinitionService);
     }
 
@@ -74,7 +74,7 @@ public class ProductionPerShiftListenersTest {
         Long expectedPpsId = 50L;
 
         given(componentState.getFieldValue()).willReturn(givenOrderId);
-        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(expectedPpsId);
+        given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(expectedPpsId);
 
         // when
         productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
@@ -90,8 +90,8 @@ public class ProductionPerShiftListenersTest {
         Long expectedPpsId = 50L;
 
         given(componentState.getFieldValue()).willReturn(givenOrderId);
-        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(null);
-        given(helper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(expectedPpsId);
+        given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(null);
+        given(ppsHelper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(expectedPpsId);
 
         // when
         productionPerShiftListeners.redirectToProductionPerShift(viewState, componentState, new String[] {});
@@ -113,8 +113,8 @@ public class ProductionPerShiftListenersTest {
         Long givenOrderId = 1L;
 
         given(componentState.getFieldValue()).willReturn(givenOrderId);
-        given(helper.getPpsIdForOrder(givenOrderId)).willReturn(null);
-        given(helper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(null);
+        given(ppsHelper.getPpsIdForOrder(givenOrderId)).willReturn(null);
+        given(ppsHelper.createPpsForOrderAndReturnId(givenOrderId)).willReturn(null);
 
         // when & then
         try {

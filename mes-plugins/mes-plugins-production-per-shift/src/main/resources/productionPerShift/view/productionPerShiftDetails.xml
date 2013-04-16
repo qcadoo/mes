@@ -205,9 +205,19 @@
 											<component type="gridLayout" name="plannedDayProgressGridLayout"
 												columns="3" rows="1">
 												<layoutElement column="1" row="1">
-													<component type="input" name="day" field="day"
-														reference="day" hasDescription="true" />
+													<component type="gridLayout" name="dayGridLayout"
+														columns="1" rows="2">
+														<layoutElement column="1" row="1">
+															<component type="input" name="day" field="day"
+																reference="day" hasDescription="true" />
+														</layoutElement>
+														<layoutElement column="1" row="2">
+															<component type="calendar" name="date" reference="date" 
+																hasLabel="false" defaultEnabled="false" />
+														</layoutElement>
+													</component>
 												</layoutElement>
+												
 												<layoutElement column="2" row="1" width="2">
 													<component type="awesomeDynamicList" name="dailyProgress"
 														source="dailyProgress" reference="dailyProgress">
@@ -242,6 +252,9 @@
 											</component>
 										</components>
 										
+										<listener event="onAddRow"
+											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+											method="updateProgressForDays" />
 										<listener event="saveProgressForDays"
 											class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
 											method="saveProgressForDays" />
@@ -301,6 +314,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
 			method="checkShiftsIfWorks" />
+		<beforeRender
+			class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks"
+			method="updateProgressForDaysDates" />
 	</hooks>
 	
 </view>
