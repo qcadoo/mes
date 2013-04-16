@@ -45,7 +45,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -448,6 +447,85 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     }
 
+    @Override
+    public Entity getShiftFromDateWithTime(final Date date) {
+        List<Entity> shifts = getShiftsWorkingAtDate(date);
+
+        for (Entity shift : shifts) {
+            String stringHours = shift.getStringField(getDayOfWeekName(date) + HOURS_LITERAL);
+            LocalTime[][] dayHours = convertDayHoursToInt(stringHours);
+
+            for (LocalTime[] dayHour : dayHours) {
+                if (dayHour[1].getHourOfDay() < dayHour[0].getHourOfDay()) {
+                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, date)
+                            || checkIfEndDateShiftIsLaterThanDate(dayHour, date)) {
+                        return shift;
+                    }
+                } else {
+                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, date)
+                            && checkIfEndDateShiftIsLaterThanDate(dayHour, date)) {
+                        return shift;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private boolean checkIfStartDateShiftIsEarlierThanDate(final LocalTime[] dayHour, final Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        int minuteOfHour = cal.get(Calendar.MINUTE);
+        return dayHour[0].getHourOfDay() < hourOfDay
+                || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0].getMinuteOfHour() <= minuteOfHour);
+    }
+
+    private boolean checkIfEndDateShiftIsLaterThanDate(final LocalTime[] dayHour, final Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        int minuteOfHour = cal.get(Calendar.MINUTE);
+        return hourOfDay < dayHour[1].getHourOfDay()
+                || (hourOfDay == dayHour[1].getHourOfDay() && minuteOfHour < dayHour[1].getMinuteOfHour());
+    }
+
+    @Override
+    public List<Entity> getShiftsWorkingAtDate(final Date date) {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find()
+                .add(SearchRestrictions.eq(getDayOfWeekName(date) + WORKING_LITERAL, true)).list().getEntities();
+    }
+
+    @Override
+    public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
+        List<Entity> shifts = getShiftsWorkingAtDate(date);
+
+        if (shifts.contains(shift)) {
+            return true;
+        }
+        return false;
+    }
+
+    private String getDayOfWeekName(final Date date) {
+        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
+        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
+        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
+        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
+        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
+        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
+        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
+        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+
+        return dayOfWeek.get(day);
+    }
+
     public static class ShiftHour {
 
         private final Date dateTo;
@@ -514,78 +592,4 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     }
 
-    @Override
-    public Entity getShiftFromDateWithTime(final Date date) {
-        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
-        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
-        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
-        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
-        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
-        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
-        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
-        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int day = cal.get(Calendar.DAY_OF_WEEK);
-        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_SHIFT).find();
-        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + WORKING_LITERAL, true));
-        List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
-
-        for (Entity shift : shifts) {
-            String stringHours = shift.getStringField(dayOfWeek.get(day) + HOURS_LITERAL);
-            LocalTime[][] dayHours = convertDayHoursToInt(stringHours);
-            for (LocalTime[] dayHour : dayHours) {
-                if (dayHour[1].getHourOfDay() < dayHour[0].getHourOfDay()) {
-                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, cal) || checkIfEndDateShiftIsLaterThanDate(dayHour, cal)) {
-                        return shift;
-                    }
-                } else {
-                    if (checkIfStartDateShiftIsEarlierThanDate(dayHour, cal) && checkIfEndDateShiftIsLaterThanDate(dayHour, cal)) {
-                        return shift;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean checkIfStartDateShiftIsEarlierThanDate(final LocalTime[] dayHour, final Calendar cal) {
-        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
-        int minuteOfHour = cal.get(Calendar.MINUTE);
-        return dayHour[0].getHourOfDay() < hourOfDay
-                || (dayHour[0].getHourOfDay() == hourOfDay && dayHour[0].getMinuteOfHour() <= minuteOfHour);
-    }
-
-    private boolean checkIfEndDateShiftIsLaterThanDate(final LocalTime[] dayHour, final Calendar cal) {
-        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
-        int minuteOfHour = cal.get(Calendar.MINUTE);
-        return hourOfDay < dayHour[1].getHourOfDay()
-                || (hourOfDay == dayHour[1].getHourOfDay() && minuteOfHour < dayHour[1].getMinuteOfHour());
-    }
-
-    @Override
-    public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
-        Map<Integer, String> dayOfWeek = new HashMap<Integer, String>();
-        dayOfWeek.put(Calendar.MONDAY, L_MONDAY);
-        dayOfWeek.put(Calendar.TUESDAY, L_TUESDAY);
-        dayOfWeek.put(Calendar.WEDNESDAY, L_WENSDAY);
-        dayOfWeek.put(Calendar.THURSDAY, L_THURSDAY);
-        dayOfWeek.put(Calendar.FRIDAY, L_FRIDAY);
-        dayOfWeek.put(Calendar.SATURDAY, L_SATURDAY);
-        dayOfWeek.put(Calendar.SUNDAY, L_SUNDAY);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int day = cal.get(Calendar.DAY_OF_WEEK);
-        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_SHIFT).find();
-        searchCriteriaBuilder.add(SearchRestrictions.eq(dayOfWeek.get(day) + WORKING_LITERAL, true));
-        List<Entity> shifts = searchCriteriaBuilder.list().getEntities();
-        if (shifts.contains(shift)) {
-            return true;
-        }
-        return false;
-    }
 }

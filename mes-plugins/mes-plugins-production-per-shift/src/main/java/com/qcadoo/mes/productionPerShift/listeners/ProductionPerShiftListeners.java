@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
+import static com.qcadoo.mes.productionPerShift.constants.DailyProgressFields.SHIFT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_COMMENT;
 import static com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields.PLANNED_PROGRESS_CORRECTION_TYPES;
@@ -32,14 +33,19 @@ import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFields
 import static com.qcadoo.mes.productionPerShift.constants.TechInstOperCompFieldsPPS.PROGRESS_FOR_DAYS;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.mes.productionPerShift.constants.PlannedProgressType;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
@@ -63,13 +69,26 @@ public class ProductionPerShiftListeners {
 
     private static final String L_FORM = "form";
 
-    private static final String L_PROGRESS_FOR_DAYS_ADL = "progressForDays";
+    private static final String L_PRODUCTION_PER_SHIFT_OPERATION = "productionPerShiftOperation";
+
+    private static final String L_PROGRESS_FOR_DAYS = "progressForDays";
+
+    private static final String L_DAILY_PROGRESS = "dailyProgress";
+
+    private static final String L_ORDER = "order";
+
+    private static final String L_DAY = "day";
+
+    private static final String L_DATE = "date";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private PPSHelper helper;
+    private ShiftsService shiftsService;
+
+    @Autowired
+    private PPSHelper ppsHelper;
 
     @Autowired
     private ProductionPerShiftDetailsHooks detailsHooks;
@@ -81,9 +100,9 @@ public class ProductionPerShiftListeners {
             return;
         }
 
-        Long ppsId = helper.getPpsIdForOrder(orderId);
+        Long ppsId = ppsHelper.getPpsIdForOrder(orderId);
         if (ppsId == null) {
-            ppsId = helper.createPpsForOrderAndReturnId(orderId);
+            ppsId = ppsHelper.createPpsForOrderAndReturnId(orderId);
             Preconditions.checkNotNull(ppsId);
         }
         redirect(view, ppsId);
@@ -127,7 +146,7 @@ public class ProductionPerShiftListeners {
         String plannedProgressType = plannedProgressTypeField.getFieldValue().toString();
 
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
-                .getComponentByReference(L_PROGRESS_FOR_DAYS_ADL);
+                .getComponentByReference(L_PROGRESS_FOR_DAYS);
 
         List<Entity> progressForDays = (List<Entity>) progressForDaysADL.getFieldValue();
 
@@ -144,9 +163,9 @@ public class ProductionPerShiftListeners {
             progressForDay.setField(CORRECTED, plannedProgressType.equals(PlannedProgressType.CORRECTED.getStringValue()));
         }
 
-        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
 
-        boolean hasCorrections = helper.shouldHasCorrections(view);
+        boolean hasCorrections = ppsHelper.shouldHasCorrections(view);
 
         if (tioc != null) {
             tioc.setField(HAS_CORRECTIONS, hasCorrections);
@@ -210,7 +229,7 @@ public class ProductionPerShiftListeners {
     public void copyFromPlanned(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         DataDefinition progressForDayDD = dataDefinitionService.get(PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         if (tioc == null) {
             return;
         } else {
@@ -233,7 +252,7 @@ public class ProductionPerShiftListeners {
     }
 
     public void deleteProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity tioc = ((LookupComponent) view.getComponentByReference("productionPerShiftOperation")).getEntity();
+        Entity tioc = ((LookupComponent) view.getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION)).getEntity();
         if (tioc == null) {
             return;
         } else {
@@ -256,6 +275,71 @@ public class ProductionPerShiftListeners {
     private List<Entity> getProgressForDayFromTIOC(final Entity tioc, final boolean corrected) {
         return tioc.getHasManyField(PROGRESS_FOR_DAYS).find().add(SearchRestrictions.eq(CORRECTED, corrected)).list()
                 .getEntities();
+    }
+
+    public void updateProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(L_PROGRESS_FOR_DAYS);
+
+        LookupComponent productionPerShiftOperationLookup = (LookupComponent) view
+                .getComponentByReference(L_PRODUCTION_PER_SHIFT_OPERATION);
+
+        Entity productionPerShiftOperation = productionPerShiftOperationLookup.getEntity();
+        Entity order = productionPerShiftOperation.getBelongsToField(L_ORDER);
+
+        Integer lastDay = null;
+
+        for (FormComponent progressForDay : progressForDaysADL.getFormComponents()) {
+            FieldComponent dayField = progressForDay.findFieldComponentByName(L_DAY);
+            FieldComponent dateField = progressForDay.findFieldComponentByName(L_DATE);
+
+            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) progressForDay
+                    .findFieldComponentByName(L_DAILY_PROGRESS);
+
+            String day = (String) dayField.getFieldValue();
+            Date date = null;
+            List<Entity> shifts = Lists.newArrayList();
+
+            if (StringUtils.isEmpty(day)) {
+                if (lastDay == null) {
+                    lastDay = 0;
+                }
+
+                do {
+                    lastDay++;
+
+                    date = ppsHelper.getDateAfterStartOrderForProgress(order, lastDay);
+
+                    shifts = shiftsService.getShiftsWorkingAtDate(date);
+                } while (shifts.isEmpty());
+
+                dayField.setFieldValue(lastDay);
+                dateField.setFieldValue(DateUtils.toDateString(date));
+
+                dailyProgressADL.setFieldValue(fillDailyProgressWithShifts(shifts));
+
+                dayField.requestComponentUpdateState();
+                dateField.requestComponentUpdateState();
+
+                dailyProgressADL.requestComponentUpdateState();
+            } else {
+                lastDay = Integer.parseInt(day);
+            }
+        }
+    }
+
+    private List<Entity> fillDailyProgressWithShifts(final List<Entity> shifts) {
+        List<Entity> dailyProgress = Lists.newArrayList();
+
+        for (Entity shift : shifts) {
+            Entity dailyProgressWithShift = ppsHelper.getDailyProgressDataDef().create();
+
+            dailyProgressWithShift.setField(SHIFT, shift);
+
+            dailyProgress.add(dailyProgressWithShift);
+        }
+
+        return dailyProgress;
     }
 
 }
