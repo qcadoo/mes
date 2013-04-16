@@ -45,5 +45,8 @@ public interface ShiftsService {
 
     Entity getShiftFromDateWithTime(final Date date);
 
+    List<Entity> getShiftsWorkingAtDate(final Date date);
+
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
+
 }

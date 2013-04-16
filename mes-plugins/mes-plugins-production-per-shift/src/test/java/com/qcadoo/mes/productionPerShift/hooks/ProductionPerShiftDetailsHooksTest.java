@@ -129,7 +129,7 @@ public class ProductionPerShiftDetailsHooksTest {
     private AwesomeDynamicListComponent adl, dprogress, plannedProgressCorrectionTypes;
 
     @Mock
-    private PPSHelper helper;
+    private PPSHelper ppsHelper;
 
     @Mock
     private ShiftsService shiftsService;
@@ -141,7 +141,7 @@ public class ProductionPerShiftDetailsHooksTest {
         hooks = new ProductionPerShiftDetailsHooks();
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(hooks, "technologyService", technologyService);
-        ReflectionTestUtils.setField(hooks, "helper", helper);
+        ReflectionTestUtils.setField(hooks, "ppsHelper", ppsHelper);
         ReflectionTestUtils.setField(hooks, "shiftsService", shiftsService);
 
         when(dataDefinitionService.get("orders", "order")).thenReturn(orderDD);
@@ -427,6 +427,8 @@ public class ProductionPerShiftDetailsHooksTest {
 
         when(productionPerShift.getBelongsToField("order")).thenReturn(order);
         when(order.getDateField("startDate")).thenReturn(correctedDate);
+
+        when(ppsHelper.getDateAfterStartOrderForProgress(order, pfd1)).thenReturn(correctedDate);
 
         // when
         hooks.checkShiftsIfWorks(view);
