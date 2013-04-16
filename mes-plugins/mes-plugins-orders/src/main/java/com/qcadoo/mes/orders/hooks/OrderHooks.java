@@ -64,6 +64,7 @@ import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
@@ -78,6 +79,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
 public class OrderHooks {
@@ -107,14 +109,15 @@ public class OrderHooks {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private OrderStateChangeReasonService orderStateChangeReasonService;
+
     public boolean onValidate(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
                 && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
-                && checkReasonOfEndDateCorrection(parameter, order)
-                && checkReasonOfEffectiveStartDateCorrection(parameter, order)
-                && checkReasonOfEffectiveEndDateCorrection(parameter, order);
+                && checkReasonOfEndDateCorrection(parameter, order) && checkEffectiveDeviation(parameter, order);
     }
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
@@ -143,19 +146,6 @@ public class OrderHooks {
                         "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
     }
 
-    protected boolean checkReasonOfEffectiveStartDateCorrection(final Entity parameter, final Entity order) {
-        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
-                || checkReasonNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
-                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
-                        "orders.order.reasonTypesDeviationsOfEffectiveStart.isRequired");
-    }
-
-    protected boolean checkReasonOfEffectiveEndDateCorrection(final Entity parameter, final Entity order) {
-        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
-                || checkReasonNeeded(order, OrderFields.EFFECTIVE_DATE_TO, OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
-                        "orders.order.reasonTypesDeviationsOfEffectiveEnd.isRequired");
-    }
-
     private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
             final String messageTranslationKey) {
         if (order.getField(dateFieldName) != null && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
@@ -165,14 +155,60 @@ public class OrderHooks {
         return true;
     }
 
-    // private boolean checkEffectiveDeviation(final Entity parameter, final Entity order) {
-    // if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)) {
-    // ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME
-    // }
-    // if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)) {
-    //
-    // }
-    // }
+    private boolean checkEffectiveDeviation(final Entity parameter, final Entity order) {
+
+        Long differenceForDateFrom = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
+        Long differenceForDateTo = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
+
+        // EFFECTIVE_DATE_FROM
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
+                && differenceForDateFrom > 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateFrom)));
+
+            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                    "orders.order.reasonNeededWhenDelayedEffectiveDateFrom.isRequired", differenceAsString);
+
+        }
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
+                && differenceForDateFrom < 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateFrom)));
+
+            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                    "orders.order.reasonNeededWhenEarlierEffectiveDateFrom.isRequired", differenceAsString);
+
+        }
+        // EFFECTIVE_DATE_TO
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateTo)));
+
+            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                    "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
+        }
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0l) {
+            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                    .abs(differenceForDateTo)));
+            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                    "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
+        }
+        return true;
+    }
+
+    private boolean checkEffectiveDeviationNeeded(final Entity order, final String dateFieldName,
+            final String reasonTypeFieldName, final String messageTranslationKey, final String differenceAsString) {
+
+        if (order.getField(dateFieldName) != null && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
+            order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey, differenceAsString);
+            return false;
+        }
+        return true;
+    }
 
     private void setStartDate(final Entity entity) {
         if (entity.getId() == null) {
@@ -192,11 +228,11 @@ public class OrderHooks {
         if (PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             entity.setField(DATE_FROM, startDate);
         }
-        if (IN_PROGRESS.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
+        if ((IN_PROGRESS.getStringValue().equals(state) || COMPLETED.getStringValue().equals(state) || ABANDONED.getStringValue()
+                .equals(state)) && !startDate.equals(startDateDB)) {
             entity.setField(EFFECTIVE_DATE_FROM, startDate);
         }
-        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state))
-                && !startDateDB.equals(startDate)) {
+        if (ACCEPTED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
             entity.setField(CORRECTED_DATE_FROM, startDate);
         }
     }
@@ -219,11 +255,12 @@ public class OrderHooks {
         if (PENDING.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
             entity.setField(DATE_TO, finishDate);
         }
-        if (COMPLETED.getStringValue().equals(state) && !finishDateDB.equals(finishDate)) {
+        if ((COMPLETED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state))
+                && !finishDateDB.equals(finishDate)) {
             entity.setField(EFFECTIVE_DATE_TO, finishDate);
         }
-        if ((ACCEPTED.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state) || IN_PROGRESS.getStringValue()
-                .equals(state)) && !finishDateDB.equals(finishDate)) {
+        if ((ACCEPTED.getStringValue().equals(state) || IN_PROGRESS.getStringValue().equals(state))
+                && !finishDateDB.equals(finishDate)) {
             entity.setField(CORRECTED_DATE_TO, finishDate);
         }
     }
@@ -393,6 +430,8 @@ public class OrderHooks {
         entity.setField(EXTERNAL_SYNCHRONIZED, true);
         entity.setField(COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, null);
         entity.setField(COMMENT_REASON_TYPE_CORRECTION_DATE_TO, null);
+        entity.setField(OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_END, null);
+        entity.setField(OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_START, null);
         entity.setField(COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY, null);
         return true;
     }

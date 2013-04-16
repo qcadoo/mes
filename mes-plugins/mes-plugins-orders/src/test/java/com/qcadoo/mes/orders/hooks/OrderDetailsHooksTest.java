@@ -117,19 +117,4 @@ public class OrderDetailsHooksTest {
         Mockito.verify(dateTo).setEnabled(true);
     }
 
-    @Test
-    public void shouldCheckEnabledFieldWhenOrderStateIsInProgress() throws Exception {
-        // given
-        when(order.getStringField(STATE)).thenReturn("03inProgress");
-        // when
-        hooks.changedEnabledFieldForSpecificOrderState(view);
-        // then
-        Mockito.verify(correctDateToField).setEnabled(true);
-        Mockito.verify(commentDateToField).setEnabled(true);
-        Mockito.verify(dateFrom).setEnabled(true);
-        Mockito.verify(dateTo).setEnabled(true);
-        Mockito.verify(effectiveDateFromField).setEnabled(true);
-
-    }
-
 }

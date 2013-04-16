@@ -29,6 +29,7 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRES
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERIES;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.APPROVED;
@@ -36,6 +37,8 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DECLINED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.PREPARED;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.RECEIVED;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +56,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class DeliveryDetailsHooks {
+
+    private static final String L_CREATE_RELATED_DELIVERY = "createRelatedDelivery";
+
+    private static final String L_CREATE = "create";
+
+    private static final String L_WINDOW = "window";
 
     private static final String L_FORM = "form";
 
@@ -139,8 +151,9 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillDescriptionDefaultValue(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (deliveryForm.getEntityId() != null) {
             return;
         }
 
@@ -157,6 +170,33 @@ public class DeliveryDetailsHooks {
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
                 DeliveryStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
+    }
+
+    public void updateCreateRelatedDeliveryState(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long deliveryId = deliveryForm.getEntityId();
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_CREATE);
+
+        RibbonActionItem createRelatedDelivery = (RibbonActionItem) reports.getItemByName(L_CREATE_RELATED_DELIVERY);
+
+        if (deliveryId == null) {
+            return;
+        }
+
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+        List<Entity> relatedDeliveries = delivery.getHasManyField(RELATED_DELIVERIES);
+
+        boolean enabled = (RECEIVED.getStringValue().equals(delivery.getStringField(STATE)) && ((relatedDeliveries == null) || relatedDeliveries
+                .isEmpty()));
+
+        updateButtonState(createRelatedDelivery, enabled);
+    }
+
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
     }
 
 }

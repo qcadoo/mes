@@ -43,8 +43,11 @@
 		<string name="deliveryAddress">
 			<validatesLength max="2048" />
 		</string>
+		
 		<belongsTo name="relatedDelivery" model="delivery" />
-
+		<hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"
+			cascade="nullify" />
+		
 		<string name="externalNumber" unique="true" />
 		<boolean name="externalSynchronized" default="true" />
 		<decimal name="orderedProductsCumulatedQuantity" persistent="false" />

@@ -100,8 +100,8 @@
 					state="disabled" action="#{form}.fireEvent(copyOrderedProductToDelivered);" />
 			</group>
 			<group name="create">
-				<bigButton name="createPartialDelivery" icon="genealogyIcon24.png"
-					state="disabled" action="#{form}.fireEvent(createPartialDelivery);" />
+				<bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(createRelatedDelivery);" />
 			</group>
 		</ribbon>
 
@@ -126,7 +126,7 @@
 					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
 					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
 					
-					var createPartialDeliveryBtn = #{window}.getRibbonItem("create.createPartialDelivery");
+					var createRelatedDeliveryBtn = #{window}.getRibbonItem("create.createRelatedDelivery");
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
@@ -169,7 +169,7 @@
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
-								createPartialDeliveryBtn.disable();
+								createRelatedDeliveryBtn.disable();
 							} else if (state == "02prepared") {
 								deleteBtn.disable();
 								acceptBtn.enable();
@@ -182,7 +182,7 @@
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
-								createPartialDeliveryBtn.disable();
+								createRelatedDeliveryBtn.disable();
 							} else if (state == "03duringCorrection") {
 								deleteBtn.disable();
 								acceptBtn.disable();
@@ -195,7 +195,7 @@
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
-								createPartialDeliveryBtn.disable();
+								createRelatedDeliveryBtn.disable();
 							} else if (state == "05approved") {
 								deleteBtn.disable();
 								acceptBtn.enable();
@@ -208,7 +208,7 @@
 								declineDeliveryBtn.setIcon('deleteIcon16.png');
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.enable();
-								createPartialDeliveryBtn.disable();
+								createRelatedDeliveryBtn.disable();
 							} else if (state == "06received") {
 								saveBtn.disable();
 								saveBackBtn.disable();
@@ -219,7 +219,7 @@
 								declineDeliveryBtn.disable();
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.disable();
-								createPartialDeliveryBtn.enable();
+								createRelatedDeliveryBtn.enable();
 							} else {
 								saveBtn.disable();
 								saveBackBtn.disable();
@@ -230,7 +230,7 @@
 								declineDeliveryBtn.disable();
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.disable();
-								createPartialDeliveryBtn.disable();
+								createRelatedDeliveryBtn.disable();
 							}
 							if(externalSynchronized == '0') {
 								saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
@@ -244,7 +244,7 @@
 								copyOrderedProductToDeliveredBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 								generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 								generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-								createPartialDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 							}
 						}
 					});
@@ -341,9 +341,9 @@
 				<listener event="copyOrderedProductToDelivered"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="copyOrderedProductToDelivered" />
-				<listener event="createPartialDelivery"
+				<listener event="createRelatedDelivery"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-					method="createPartialDelivery" />
+					method="createRelatedDelivery" />
 			</component>
 		</windowTab>
 		
@@ -529,11 +529,13 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillBufferForSupplier" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="changeFieldsEnabledDependOnState" />
-		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillDeliveryAddressDefaultValue" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="fillDescriptionDefaultValue" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="changeFieldsEnabledDependOnState" />
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+			method="updateCreateRelatedDeliveryState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="filterStateChangeHistory" />
 	</hooks>

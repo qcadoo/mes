@@ -28,6 +28,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.orders.states.constants.OrderState.ABANDONED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -49,6 +51,10 @@ public class OrderDetailsListeners {
     private static final String PLANNED_DATE_FROM = "plannedDateFrom";
 
     private static final String PLANNED_DATE_TO = "plannedDateTo";
+
+    private static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
+
+    private static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -84,6 +90,8 @@ public class OrderDetailsListeners {
     public void copyStartDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         if (triggerState.getName().equals(PLANNED_DATE_FROM)) {
             copyDate(view, PLANNED_DATE_FROM, DATE_FROM);
+        } else if (triggerState.getName().equals(EFFECTIVE_DATE_FROM)) {
+            copyDate(view, OrderFields.EFFECTIVE_DATE_FROM, DATE_FROM);
         } else {
             copyDate(view, CORRECTED_DATE_FROM, DATE_FROM);
         }
@@ -92,10 +100,51 @@ public class OrderDetailsListeners {
     public void copyEndDate(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         if (triggerState.getName().equals(PLANNED_DATE_TO)) {
             copyDate(view, PLANNED_DATE_TO, DATE_TO);
+        } else if (triggerState.getName().equals(EFFECTIVE_DATE_TO)) {
+            copyDate(view, OrderFields.EFFECTIVE_DATE_TO, DATE_TO);
         } else {
             copyDate(view, CORRECTED_DATE_TO, DATE_TO);
         }
 
+    }
+
+    public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity order = getOrderFromForm(form.getEntityId());
+        if (order == null) {
+            return;
+        }
+        String state = order.getStringField(OrderFields.STATE);
+        if (OrderState.PENDING.getStringValue().equals(state)) {
+            copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
+        }
+        if (OrderState.IN_PROGRESS.getStringValue().equals(state) || ABANDONED.getStringValue().equals(state)
+                || OrderState.COMPLETED.getStringValue().equals(state)) {
+            copyDate(view, DATE_FROM, EFFECTIVE_DATE_FROM);
+        }
+        if ((OrderState.ACCEPTED.getStringValue().equals(state))) {
+            copyDate(view, DATE_FROM, CORRECTED_DATE_FROM);
+        }
+
+    }
+
+    public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity order = getOrderFromForm(form.getEntityId());
+        if (order == null) {
+            return;
+        }
+        String state = order.getStringField(OrderFields.STATE);
+
+        if (OrderState.PENDING.getStringValue().equals(state)) {
+            copyDate(view, DATE_TO, PLANNED_DATE_TO);
+        }
+        if (OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED.getStringValue().equals(state)) {
+            copyDate(view, DATE_TO, EFFECTIVE_DATE_TO);
+        }
+        if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)) {
+            copyDate(view, DATE_TO, CORRECTED_DATE_TO);
+        }
     }
 
     public void changeOrderProduct(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

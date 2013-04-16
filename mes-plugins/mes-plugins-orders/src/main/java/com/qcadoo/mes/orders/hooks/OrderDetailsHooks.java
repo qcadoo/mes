@@ -150,17 +150,31 @@ public class OrderDetailsHooks {
         if (orderState.equals(OrderState.IN_PROGRESS.getStringValue())
                 || orderState.equals(OrderState.INTERRUPTED.getStringValue())) {
             List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM);
+                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM, "commentReasonTypeDeviationsOfEffectiveStart");
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
         }
 
         if (orderState.equals(OrderState.COMPLETED.getStringValue())) {
-            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO);
+            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
+                    "commentReasonTypeDeviationsOfEffectiveEnd", "commentReasonTypeDeviationsOfEffectiveStart");
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+        }
+
+        if (orderState.equals(OrderState.ABANDONED.getStringValue())) {
+            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
+                    "commentReasonTypeDeviationsOfEffectiveEnd", "commentReasonTypeDeviationsOfEffectiveStart");
+            changedEnabledFields(view, references, true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
         }
     }
 

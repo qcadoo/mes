@@ -43,6 +43,8 @@ public final class DeliveryFields {
 
     public static final String RELATED_DELIVERY = "relatedDelivery";
 
+    public static final String RELATED_DELIVERIES = "relatedDeliveries";
+
     public static final String STATE = "state";
 
     public static final String STATE_CHANGES = "stateChanges";

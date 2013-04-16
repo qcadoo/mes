@@ -27,6 +27,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 
 import java.math.BigDecimal;
@@ -220,7 +221,7 @@ public class OrderTimePredictionService {
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
         Date beforeOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM);
+            Date operationDateFrom = (Date) operation.getField(START_DATE);
             if (operationDateFrom != null) {
                 if (beforeOperation == null) {
                     beforeOperation = operationDateFrom;
@@ -236,7 +237,7 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateTo = (Date) operation.getField(EFFECTIVE_DATE_TO);
+            Date operationDateTo = (Date) operation.getField(FINISH_DATE);
             if (operationDateTo != null) {
                 if (laterOperation == null) {
                     laterOperation = operationDateTo;
