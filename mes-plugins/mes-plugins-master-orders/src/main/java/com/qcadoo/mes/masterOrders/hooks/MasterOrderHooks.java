@@ -106,4 +106,9 @@ public class MasterOrderHooks {
         masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
         masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
     }
+
+    public void clearExternalFields(final DataDefinition masterOrderDD, final Entity masterOrder) {
+        masterOrder.setField(MasterOrderFields.EXTERNAL_NUMBER, null);
+        masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
+    }
 }
