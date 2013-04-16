@@ -110,10 +110,14 @@ public class OrderDetailsListeners {
 
     public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity order = getOrderFromForm(form.getEntityId());
-        if (order == null) {
+
+        if (form.getEntityId() == null) {
+            copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
             return;
         }
+
+        Entity order = getOrderFromForm(form.getEntityId());
+
         String state = order.getStringField(OrderFields.STATE);
         if (OrderState.PENDING.getStringValue().equals(state)) {
             copyDate(view, DATE_FROM, PLANNED_DATE_FROM);
@@ -130,10 +134,13 @@ public class OrderDetailsListeners {
 
     public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity order = getOrderFromForm(form.getEntityId());
-        if (order == null) {
+        if (form.getEntityId() == null) {
+            copyDate(view, DATE_TO, PLANNED_DATE_TO);
             return;
         }
+
+        Entity order = getOrderFromForm(form.getEntityId());
+
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderState.PENDING.getStringValue().equals(state)) {
