@@ -69,12 +69,12 @@
 
 		<model:model-field plugin="deliveries" model="orderedProduct">
 			<model:belongsTo name="productCatalogNumber" model="productCatalogNumbers"
-				plugin="productCatalogNumbers" />
+				plugin="productCatalogNumbers" persistent="false" />
 		</model:model-field>
 
 		<model:model-field plugin="deliveries" model="deliveredProduct">
 			<model:belongsTo name="productCatalogNumber" model="productCatalogNumbers"
-				plugin="productCatalogNumbers" />
+				plugin="productCatalogNumbers" persistent="false" />
 		</model:model-field>
 
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
@@ -92,26 +92,15 @@
 		</view:view-grid-column>
 
 		<model:model-hook plugin="deliveries" model="orderedProduct">
-			<model:onCreate
+			<model:onView
 				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.OrderedProductHooksCNID"
 				method="updateOrderedProductCatalogNumber" />
 		</model:model-hook>
-
+		
 		<model:model-hook plugin="deliveries" model="deliveredProduct">
-			<model:onCreate
+			<model:onView
 				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.DeliveredProductHooksCNID"
 				method="updateDeliveredProductCatalogNumber" />
-		</model:model-hook>
-
-		<model:model-hook plugin="deliveries" model="delivery">
-			<model:onSave
-				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.DeliveryHooksCNID"
-				method="updateOrderedProductsCatalogNumbers" />
-		</model:model-hook>
-		<model:model-hook plugin="deliveries" model="delivery">
-			<model:onSave
-				class="com.qcadoo.mes.catNumbersInDeliveries.hooks.DeliveryHooksCNID"
-				method="updateDeliveredProductsCatalogNumbers" />
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/orderedProductDetails.xml" />
