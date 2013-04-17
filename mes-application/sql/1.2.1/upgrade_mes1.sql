@@ -135,7 +135,7 @@ CREATE TABLE orders_reasontypecorrectiondatefrom
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypecorrectiondatefrom_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypecorrectiondatefrom_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
@@ -151,7 +151,7 @@ CREATE TABLE orders_reasontypecorrectiondateto
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypecorrectiondateto_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypecorrectiondateto_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
@@ -160,19 +160,19 @@ CREATE TABLE orders_reasontypecorrectiondateto
 -- end
 
 
--- Table: orders_reasontypeofchaningorderstate
+-- Table: orders_reasontypeofchangingorderstate
 -- changed: 11.03.2013
 
-CREATE TABLE orders_reasontypeofchaningorderstate
+CREATE TABLE orders_reasontypeofchangingorderstate
 (
   id bigint NOT NULL,
   orderstatechange_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   productionpershift_id bigint,
-  CONSTRAINT orders_reasontypeofchaningorderstate_pkey PRIMARY KEY (id),
-  CONSTRAINT reasontypeofchaningorderstate_order_fkey FOREIGN KEY (productionpershift_id)
+  CONSTRAINT orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id),
+  CONSTRAINT reasontypeofchangingorderstate_order_fkey FOREIGN KEY (productionpershift_id)
       REFERENCES productionpershift_productionpershift (id) DEFERRABLE,
-  CONSTRAINT reasontypeofchaningorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
+  CONSTRAINT reasontypeofchangingorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
       REFERENCES orders_orderstatechange (id) DEFERRABLE
 );
 
@@ -237,7 +237,7 @@ CREATE TABLE orders_reasontypedeviationeffectiveend
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypedeviationeffectiveend_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypedeviationeffectiveend_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
@@ -253,7 +253,7 @@ CREATE TABLE orders_reasontypedeviationeffectivestart
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypedeviationeffectivestart_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypedeviationeffectivestart_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE

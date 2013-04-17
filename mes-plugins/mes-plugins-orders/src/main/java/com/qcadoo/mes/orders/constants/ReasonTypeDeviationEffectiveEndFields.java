@@ -7,6 +7,6 @@ public final class ReasonTypeDeviationEffectiveEndFields {
 
     public static final String ORDER = "order";
 
-    public static final String REASON_TYPE_OF_CHANING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+    public static final String REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
 
 }

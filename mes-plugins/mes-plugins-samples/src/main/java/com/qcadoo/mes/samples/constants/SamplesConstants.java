@@ -136,7 +136,7 @@ public final class SamplesConstants {
 
     public static final String L_PRODUCTION_LINES_DICTIONARY = "productionLinesDictionary";
 
-    public static final String L_REASON_TYPE_OF_CHANING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+    public static final String L_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
 
     public static final String L_DEFAULT_PRODUCTION_LINE = "defaultProductionLine";
 

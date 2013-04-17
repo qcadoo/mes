@@ -193,7 +193,7 @@ public class OrderDetailsHooks {
             adl.setEnabled(enabled);
             adl.requestComponentUpdateState();
             for (FormComponent form : adl.getFormComponents()) {
-                FieldComponent field = ((FieldComponent) form.findFieldComponentByName("reasonTypeOfChaningOrderState"));
+                FieldComponent field = ((FieldComponent) form.findFieldComponentByName("reasonTypeOfChangingOrderState"));
                 field.setEnabled(enabled);
                 field.requestComponentUpdateState();
             }

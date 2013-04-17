@@ -30,7 +30,7 @@
 	xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
 		<belongsTo name="order" model="order" />
-		<dictionary name="reasonType" dictionary="reasonTypeOfChaningOrderState" required="true" />
+		<dictionary name="reasonType" dictionary="reasonTypeOfChangingOrderState" required="true" />
 	</fields>
 	<hooks />
 </model>

@@ -89,7 +89,7 @@
 
 		<model:dictionary name="categories" />
 		<model:dictionary name="posts" />
-		<model:dictionary name="reasonTypeOfChaningOrderState" />
+		<model:dictionary name="reasonTypeOfChangingOrderState" />
 	
 		<menu:menu-category name="basic" />
 

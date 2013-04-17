@@ -44,7 +44,7 @@ public final class OrdersConstants {
 
     public static final String MODEL_REASON_TYPE_DEVIATION_EFFECTIVE_END = "reasonTypeDeviationEffectiveEnd";
 
-    public static final String MODEL_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+    public static final String MODEL_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
 
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 

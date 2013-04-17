@@ -40,10 +40,10 @@
 	<row NAME="units" ITEM="pc" DESCRIPTION="Piece" />
 	<row NAME="units" ITEM="pair" DESCRIPTION="Pair" />
 	<row NAME="units" ITEM="set" DESCRIPTION="Set" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Employee absence" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Delays in materials delivery" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Faulty materials" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Production resources overload" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Machine malfunction" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Other" DESCRIPTION="" />
+	<row NAME="reasonTypeOfChangingOrderState" ITEM="Employee absence" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Delays in materials delivery" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Faulty materials" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Production resources overload" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Machine malfunction" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Other" DESCRIPTION="" />
 </dictionaries>
