@@ -73,5 +73,7 @@
 			method="changedDeadlineAndInOrder" />
 		<onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
 			method="changedTypeFromOneToMany" />
+		<onCopy class="com.qcadoo.mes.masterOrders.hooks.MasterOrderHooks"
+			method="clearExternalFields" />
 	</hooks>
 </model>

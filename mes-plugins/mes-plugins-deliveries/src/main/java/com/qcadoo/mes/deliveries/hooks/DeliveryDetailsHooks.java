@@ -201,10 +201,8 @@ public class DeliveryDetailsHooks {
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
-                "deliveredProductsCumulatedQuantityCurrency", "orderedProductsCumulatedTotalPriceCurrency",
-                "orderedProductsCumulatedQuantityCurrency");
+                "orderedProductsCumulatedTotalPriceCurrency");
 
         deliveriesService.fillCurrencyFields(view, referenceNames);
     }
-
 }

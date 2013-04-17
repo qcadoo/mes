@@ -155,6 +155,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         params.setField("company", getCompany(values.get(OWNER)));
 
         if (isEnabledOrEnabling("productionCounting")) {
+            params.setField("typeOfProductionRecording", "02cumulated");
             params.setField("registerQuantityInProduct", true);
             params.setField("registerQuantityOutProduct", true);
             params.setField("registerProductionTime", true);

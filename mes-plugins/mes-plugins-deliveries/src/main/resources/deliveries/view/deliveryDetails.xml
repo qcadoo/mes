@@ -302,7 +302,9 @@
 							hasBorders="false" columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never" />
+									reference="deliveryDateBuffer" defaultEnabled="never" >
+									<option type="labelWidth" value="40" />
+								</component>
 							</layoutElement>
 							<layoutElement column="4" row="1">
 								<component type="input" name="deliveryDateBufferDays"
@@ -349,27 +351,15 @@
 		
 		<windowTab name="orderedProductTab">
 			<component type="gridLayout" name="orderedProductsGridLayout"
-				columns="3" rows="2">
+				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedQuantityGridLayout"
-						hasBorders="false" columns="4" rows="1">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
-								reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
-								<option type="alignment" value="right" />
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="orderedProductsCumulatedQuantityCurrency"
-								reference="orderedProductsCumulatedQuantityCurrency" defaultEnabled="never"
-								hasLabel="false">
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-					</component>
+					<component type="input" name="orderedProductsCumulatedQuantity" field="#{form}.orderedProductsCumulatedQuantity"
+						reference="orderedProductsCumulatedQuantity" defaultEnabled="never" >
+						<option type="alignment" value="right" />
+						<option type="boldTextRepresentationOnDisabled" value="true" />
+					</component>										
 				</layoutElement>
-				<layoutElement column="1" row="2" width="3">
+				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="orderedProducts" reference="orderedProducts"
 						source="#{form}.orderedProducts" defaultEnabled="false">
 						<option type="column" name="succession" fields="succession"
@@ -425,27 +415,15 @@
 		
 		<windowTab name="deliveredProductTab">
 			<component type="gridLayout" name="deliveredProductsGridLayout"
-				columns="3" rows="2">
+				columns="4" rows="2">
 				<layoutElement column="1" row="1">
-					<component type="gridLayout" name="orderedProductsCumulatedQuantityGridLayout"
-						hasBorders="false" columns="4" rows="1">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
-								reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
-								<option type="alignment" value="right" />
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>										
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="deliveredProductsCumulatedQuantityCurrency"
-								reference="deliveredProductsCumulatedQuantityCurrency" defaultEnabled="never"
-								hasLabel="false">
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-					</component>
+					<component type="input" name="deliveredProductsCumulatedQuantity" field="#{form}.deliveredProductsCumulatedQuantity"
+						reference="deliveredProductsCumulatedQuantity" defaultEnabled="never" >
+						<option type="alignment" value="right" />
+						<option type="boldTextRepresentationOnDisabled" value="true" />
+					</component>										
 				</layoutElement>
-				<layoutElement column="1" row="2" width="3">
+				<layoutElement column="1" row="2" width="4">
 					<component type="grid" name="deliveredProducts"
 						reference="deliveredProducts" source="#{form}.deliveredProducts"
 						defaultEnabled="false">
