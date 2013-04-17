@@ -276,3 +276,43 @@ ALTER TABLE deliveries_orderedproduct DROP COLUMN productcatalognumber_id;
 ALTER TABLE deliveries_deliveredproduct DROP COLUMN productcatalognumber_id;
 
 -- end
+
+
+-- Table: orders_order
+-- changed: 17.04.2013
+
+ALTER TABLE orders_order DROP COLUMN reasontypecorrectiondatefrom;
+
+-- end
+
+
+-- Table: orders_order
+-- changed: 17.04.2013
+
+ALTER TABLE orders_order DROP COLUMN reasontypecorrectiondateto;
+
+-- end
+
+
+-- Table: orders_orderstatechange
+-- changed: 17.04.2013
+
+ALTER TABLE orders_orderstatechange DROP COLUMN reasontype;
+
+-- end
+
+
+-- Table: productionpershift_productionpershift
+-- changed: 17.04.2013
+
+ALTER TABLE productionpershift_productionpershift DROP COLUMN plannedprogresscorrectiontype;
+
+-- end
+
+
+-- Table: qcadoomodel_dictionary
+-- changed: 17.04.2013
+
+UPDATE qcadoomodel_dictionary SET name = 'reasonTypeOfChangingOrderState' WHERE name = 'reasonTypeOfChaningOrderState'; 
+
+-- end
