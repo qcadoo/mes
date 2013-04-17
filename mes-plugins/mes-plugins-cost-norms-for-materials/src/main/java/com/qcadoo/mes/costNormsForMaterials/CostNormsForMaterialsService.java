@@ -44,7 +44,6 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
-import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -59,7 +58,13 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class CostNormsForMaterialsService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductDetailsHooksCNFP.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CostNormsForMaterialsService.class);
+
+    private static final String L_GRID = "grid";
+
+    private static final String L_FORM = "form";
+
+    private static final String L_ORDER = "order";
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
@@ -75,15 +80,14 @@ public class CostNormsForMaterialsService {
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
-
-        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference("form");
-
-        if ((technology == null) || (technology.getEntityId() == null)) {
-            return;
-        }
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(L_GRID);
+        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
 
         Long technologyId = technology.getEntityId();
+
+        if ((technology == null) || (technologyId == null)) {
+            return;
+        }
 
         List<Entity> inputProducts = Lists.newArrayList();
 
@@ -135,9 +139,9 @@ public class CostNormsForMaterialsService {
             final String[] args) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(L_GRID);
 
-        FormComponent order = (FormComponent) viewDefinitionState.getComponentByReference("order");
+        FormComponent order = (FormComponent) viewDefinitionState.getComponentByReference(L_ORDER);
 
         if ((order == null) || (order.getEntityId() == null)) {
             return;
