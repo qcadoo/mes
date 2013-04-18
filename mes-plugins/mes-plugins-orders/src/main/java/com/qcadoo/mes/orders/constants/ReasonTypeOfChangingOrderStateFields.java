@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public final class ReasonTypeOfChaningOrderStateFields {
+public final class ReasonTypeOfChangingOrderStateFields {
 
-    private ReasonTypeOfChaningOrderStateFields() {
+    private ReasonTypeOfChangingOrderStateFields() {
 
     }
 
@@ -33,6 +33,6 @@ public final class ReasonTypeOfChaningOrderStateFields {
 
     public static final String ORDER_STATE_CHANGE = "orderStateChange";
 
-    public static final String REASON_TYPE_OF_CHANING_ORDER_STATE = "reasonTypeOfChaningOrderState";
+    public static final String REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
 
 }

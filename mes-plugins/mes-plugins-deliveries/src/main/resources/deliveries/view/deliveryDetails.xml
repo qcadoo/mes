@@ -99,9 +99,11 @@
 				<bigButton name="copyOrderedProductToDelivered" icon="copyIcon24.png"
 					state="disabled" action="#{form}.fireEvent(copyOrderedProductToDelivered);" />
 			</group>
-			<group name="create">
+			<group name="relatedDelivery">
 				<bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
 					state="disabled" action="#{form}.fireEvent(createRelatedDelivery);" />
+				<bigButton name="showRelatedDeliveries" icon="genealogyIcon24.png"
+					state="disabled" action="#{form}.fireEvent(showRelatedDeliveries);" />
 			</group>
 		</ribbon>
 
@@ -126,7 +128,8 @@
 					var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
 					var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
 					
-					var createRelatedDeliveryBtn = #{window}.getRibbonItem("create.createRelatedDelivery");
+					var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
+					var showRelatedDeliveriesBtn = #{window}.getRibbonItem("relatedDelivery.showRelatedDeliveries");
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
@@ -170,6 +173,7 @@
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
 								createRelatedDeliveryBtn.disable();
+								showRelatedDeliveriesBtn.disable();
 							} else if (state == "02prepared") {
 								deleteBtn.disable();
 								acceptBtn.enable();
@@ -183,6 +187,7 @@
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
 								createRelatedDeliveryBtn.disable();
+								showRelatedDeliveriesBtn.disable();
 							} else if (state == "03duringCorrection") {
 								deleteBtn.disable();
 								acceptBtn.disable();
@@ -196,6 +201,7 @@
 								approveDeliveryBtn.enable();
 								copyOrderedProductToDeliveredBtn.enable();
 								createRelatedDeliveryBtn.disable();
+								showRelatedDeliveriesBtn.disable();
 							} else if (state == "05approved") {
 								deleteBtn.disable();
 								acceptBtn.enable();
@@ -209,6 +215,7 @@
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.enable();
 								createRelatedDeliveryBtn.disable();
+								showRelatedDeliveriesBtn.disable();
 							} else if (state == "06received") {
 								saveBtn.disable();
 								saveBackBtn.disable();
@@ -220,6 +227,7 @@
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.disable();
 								createRelatedDeliveryBtn.enable();
+								showRelatedDeliveriesBtn.enable();
 							} else {
 								saveBtn.disable();
 								saveBackBtn.disable();
@@ -231,6 +239,7 @@
 								approveDeliveryBtn.disable();
 								copyOrderedProductToDeliveredBtn.disable();
 								createRelatedDeliveryBtn.disable();
+								showRelatedDeliveriesBtn.disable();
 							}
 							if(externalSynchronized == '0') {
 								saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
@@ -245,6 +254,7 @@
 								generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 								generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 								createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+								showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 							}
 						}
 					});
@@ -346,6 +356,9 @@
 				<listener event="createRelatedDelivery"
 					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
 					method="createRelatedDelivery" />
+				<listener event="showRelatedDeliveries"
+					class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+					method="showRelatedDeliveries" />
 			</component>
 		</windowTab>
 		
@@ -513,7 +526,7 @@
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="changeFieldsEnabledDependOnState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-			method="updateCreateRelatedDeliveryState" />
+			method="updateRelatedDeliveryButtonsState" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
 			method="filterStateChangeHistory" />
 		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"

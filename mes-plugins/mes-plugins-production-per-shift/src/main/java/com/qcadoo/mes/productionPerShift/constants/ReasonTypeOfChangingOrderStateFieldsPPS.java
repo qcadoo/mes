@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class ReasonTypeOfChaningOrderStateFieldsPPS {
+public final class ReasonTypeOfChangingOrderStateFieldsPPS {
 
-    private ReasonTypeOfChaningOrderStateFieldsPPS() {
+    private ReasonTypeOfChangingOrderStateFieldsPPS() {
 
     }
 

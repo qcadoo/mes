@@ -124,7 +124,7 @@ public class ParametersListenersOTest {
 
         given(dataDefinitionService.get("qcadooModel", "dictionary")).willReturn(dictionaryDD);
         given(dictionaryDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(SearchRestrictions.eq("name", "reasonTypeOfChaningOrderState"))).willReturn(
+        given(searchCriteriaBuilder.add(SearchRestrictions.eq("name", "reasonTypeOfChangingOrderState"))).willReturn(
                 searchCriteriaBuilder);
         given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.uniqueResult()).willReturn(dictionary);
@@ -147,7 +147,7 @@ public class ParametersListenersOTest {
 
         given(dataDefinitionService.get("qcadooModel", "dictionary")).willReturn(dictionaryDD);
         given(dictionaryDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.add(SearchRestrictions.eq("name", "reasonTypeOfChaningOrderState"))).willReturn(
+        given(searchCriteriaBuilder.add(SearchRestrictions.eq("name", "reasonTypeOfChangingOrderState"))).willReturn(
                 searchCriteriaBuilder);
         given(searchCriteriaBuilder.setMaxResults(1)).willReturn(searchCriteriaBuilder);
         given(searchCriteriaBuilder.uniqueResult()).willReturn(null);
@@ -196,8 +196,7 @@ public class ParametersListenersOTest {
         parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
-                DELAYED_EFFECTIVE_DATE_TO_TIME);
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO, DELAYED_EFFECTIVE_DATE_TO_TIME);
     }
 
     @Test
@@ -209,8 +208,7 @@ public class ParametersListenersOTest {
         parametersListenersO.showTimeField(view, componentState, null);
 
         // then
-        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
-                EARLIER_EFFECTIVE_DATE_TO_TIME);
+        verify(orderService).changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
     }
 
 }

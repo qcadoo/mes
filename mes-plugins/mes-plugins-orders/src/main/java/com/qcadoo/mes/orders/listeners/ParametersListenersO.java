@@ -63,7 +63,7 @@ public class ParametersListenersO {
 
     public void redirectToDeviationsDictionary(final ViewDefinitionState viewDefinitionState,
             final ComponentState componentState, final String[] args) {
-        Long dictionaryId = getDictionaryId("reasonTypeOfChaningOrderState");
+        Long dictionaryId = getDictionaryId("reasonTypeOfChangingOrderState");
 
         if (dictionaryId != null) {
             String url = "../page/qcadooDictionaries/dictionaryDetails.html?context={\"form.id\":\"" + dictionaryId + "\"}";
@@ -82,21 +82,16 @@ public class ParametersListenersO {
         }
     }
 
-    public void showTimeField(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void showTimeField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         String componentStateName = componentState.getName();
         if (REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM.equals(componentStateName)) {
-            orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM,
-                    DELAYED_EFFECTIVE_DATE_FROM_TIME);
+            orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM, DELAYED_EFFECTIVE_DATE_FROM_TIME);
         } else if (REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM.equals(componentStateName)) {
-            orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM,
-                    EARLIER_EFFECTIVE_DATE_FROM_TIME);
+            orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM, EARLIER_EFFECTIVE_DATE_FROM_TIME);
         } else if (REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO.equals(componentStateName)) {
-            orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO,
-                    DELAYED_EFFECTIVE_DATE_TO_TIME);
+            orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO, DELAYED_EFFECTIVE_DATE_TO_TIME);
         } else if (REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO.equals(componentStateName)) {
-            orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO,
-                    EARLIER_EFFECTIVE_DATE_TO_TIME);
+            orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
         }
     }
 

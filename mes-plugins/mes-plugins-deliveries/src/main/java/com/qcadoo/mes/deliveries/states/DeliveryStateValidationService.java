@@ -80,7 +80,8 @@ public class DeliveryStateValidationService {
             }
         }
         if (deliveredProductHasNull) {
-            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired");
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired",
+                    listOfProductNumber.toString());
             stateChangeContext.addMessage("deliveries.deliveredProducts.deliveredQuantity.isRequired", StateMessageType.FAILURE,
                     false, listOfProductNumber.toString());
         }

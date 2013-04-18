@@ -64,15 +64,17 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class DeliveryDetailsHooks {
 
-    private static final String L_CREATE_RELATED_DELIVERY = "createRelatedDelivery";
-
-    private static final String L_CREATE = "create";
-
-    private static final String L_WINDOW = "window";
+    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     private static final String L_FORM = "form";
 
-    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
+    private static final String L_WINDOW = "window";
+
+    private static final String L_RELATED_DELIVERY = "relatedDelivery";
+
+    private static final String L_CREATE_RELATED_DELIVERY = "createRelatedDelivery";
+
+    private static final String L_SHOW_RELATED_DELIVERIES = "showRelatedDeliveries";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -172,14 +174,15 @@ public class DeliveryDetailsHooks {
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
-    public void updateCreateRelatedDeliveryState(final ViewDefinitionState view) {
+    public void updateRelatedDeliveryButtonsState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_CREATE);
+        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_RELATED_DELIVERY);
 
         RibbonActionItem createRelatedDelivery = (RibbonActionItem) reports.getItemByName(L_CREATE_RELATED_DELIVERY);
+        RibbonActionItem showRelatedDelivery = (RibbonActionItem) reports.getItemByName(L_SHOW_RELATED_DELIVERIES);
 
         if (deliveryId == null) {
             return;
@@ -188,10 +191,11 @@ public class DeliveryDetailsHooks {
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         List<Entity> relatedDeliveries = delivery.getHasManyField(RELATED_DELIVERIES);
 
-        boolean enabled = (RECEIVED.getStringValue().equals(delivery.getStringField(STATE)) && ((relatedDeliveries == null) || relatedDeliveries
-                .isEmpty()));
+        boolean received = RECEIVED.getStringValue().equals(delivery.getStringField(STATE));
+        boolean created = ((relatedDeliveries != null) && !relatedDeliveries.isEmpty());
 
-        updateButtonState(createRelatedDelivery, enabled);
+        updateButtonState(createRelatedDelivery, received && !created);
+        updateButtonState(showRelatedDelivery, received && created);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
