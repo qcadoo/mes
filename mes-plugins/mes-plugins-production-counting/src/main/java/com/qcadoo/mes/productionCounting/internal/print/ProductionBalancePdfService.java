@@ -72,7 +72,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -91,9 +90,6 @@ public class ProductionBalancePdfService extends PdfDocumentService {
     private static final String QCADOO_VIEW_FALSE_LITERAL = "qcadooView.false";
 
     private static final String TABS_LITERAL = "\t \t \t";
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private TimeConverterService timeConverterService;

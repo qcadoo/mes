@@ -49,7 +49,6 @@ import com.qcadoo.mes.productionCounting.internal.print.ProductionBalancePdfServ
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 public class ProductionBalanceWithCostsPdfServiceTest {
 
@@ -59,9 +58,6 @@ public class ProductionBalanceWithCostsPdfServiceTest {
 
     @Mock
     private TranslationService translationService;
-
-    @Mock
-    private SecurityService securityService;
 
     @Mock
     private NumberService numberService;
@@ -92,7 +88,6 @@ public class ProductionBalanceWithCostsPdfServiceTest {
 
         ReflectionTestUtils.setField(productionBalanceWithCostsPdfService, "translationService", translationService);
         ReflectionTestUtils.setField(productionBalanceWithCostsPdfService, "pdfHelper", pdfHelper);
-        ReflectionTestUtils.setField(productionBalanceWithCostsPdfService, "securityService", securityService);
         ReflectionTestUtils.setField(productionBalanceWithCostsPdfService, "numberService", numberService);
         ReflectionTestUtils
                 .setField(productionBalanceWithCostsPdfService, "costCalculationPdfService", costCalculationPdfService);

@@ -49,15 +49,11 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "genealogyForComponentView")
 public class GenealogyForComponentView extends ReportPdfView {
 
     private static final String BATCH_FIELD = "batch";
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

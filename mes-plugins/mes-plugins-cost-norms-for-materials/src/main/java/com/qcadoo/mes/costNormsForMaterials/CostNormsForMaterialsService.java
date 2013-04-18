@@ -85,7 +85,7 @@ public class CostNormsForMaterialsService {
 
         Long technologyId = technology.getEntityId();
 
-        if ((technology == null) || (technologyId == null)) {
+        if (technologyId == null) {
             return;
         }
 

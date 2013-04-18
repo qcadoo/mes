@@ -55,7 +55,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -77,9 +76,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private final int[] defaultMatReqHeaderColumnWidth = new int[] { 25, 25, 24, 13, 13 };
 
     private final int[] defaultOrderHeaderColumnWidth = new int[] { 37, 37, 13, 13 };
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;

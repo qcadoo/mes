@@ -75,7 +75,6 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 public class WorkPlanPdfServiceTest {
 
@@ -97,9 +96,6 @@ public class WorkPlanPdfServiceTest {
 
     @Mock
     private TranslationService translationService;
-
-    @Mock
-    private SecurityService securityService;
 
     @Mock
     private PdfHelper pdfHelper;
@@ -144,7 +140,6 @@ public class WorkPlanPdfServiceTest {
         workPlanPdfService = new WorkPlanPdfService();
 
         ReflectionTestUtils.setField(workPlanPdfService, "translationService", translationService);
-        ReflectionTestUtils.setField(workPlanPdfService, "securityService", securityService);
         ReflectionTestUtils.setField(workPlanPdfService, "pdfHelper", pdfHelper);
 
         locale = Locale.getDefault();
@@ -270,7 +265,6 @@ public class WorkPlanPdfServiceTest {
         when(name.toString()).thenReturn("name");
         when(workPlan.getField("date")).thenReturn(date);
         when(workPlan.getField("name")).thenReturn(name);
-        when(securityService.getCurrentUserName()).thenReturn("userName");
 
         // when
         workPlanPdfService.addMainHeader(document, workPlan, locale);

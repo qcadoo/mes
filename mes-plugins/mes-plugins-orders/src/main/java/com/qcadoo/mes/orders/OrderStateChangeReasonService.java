@@ -29,8 +29,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -184,8 +182,7 @@ public class OrderStateChangeReasonService {
     }
 
     private Date getEffectiveDate(final Entity order, final String effectiveField) {
-        Date effectiveDate = (Date) order.getField(effectiveField);
-        return effectiveDate;
+        return (Date) order.getField(effectiveField);
     }
 
     private long getTimestampFromOrder(final Entity order, final String dateField, final String correctedField) {
@@ -203,16 +200,6 @@ public class OrderStateChangeReasonService {
         }
     }
 
-    private boolean hasRequiredCorrectionDateFromReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_FROM) == null
-                || (order.getField(REASON_TYPES_CORRECTION_DATE_FROM) != null && order.getField(CORRECTED_DATE_FROM) != null);
-    }
-
-    private boolean hasRequiredCorrectionDateToReasonField(final Entity order) {
-        return order.getField(CORRECTED_DATE_TO) == null
-                || (order.getField(REASON_TYPES_CORRECTION_DATE_TO) != null && order.getField(CORRECTED_DATE_TO) != null);
-    }
-
     public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         final Entity parameter = parameterService.getParameter();
@@ -223,14 +210,14 @@ public class OrderStateChangeReasonService {
         String additionalInfo = null;
         // EFFECTIVE_DATE_FROM
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom > 0l) {
+                && differenceForDateFrom > 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateFrom)));
             additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooLate";
             additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
         }
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom < 0l) {
+                && differenceForDateFrom < 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateFrom)));
             additionalInfoKey = "orders.order.stateChange.additionalInfo.startTooEarly";
@@ -238,14 +225,14 @@ public class OrderStateChangeReasonService {
 
         }
         // EFFECTIVE_DATE_TO
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0l) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
             additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooLate";
             additionalInfo = translationService.translate(additionalInfoKey, LocaleContextHolder.getLocale(), differenceAsString);
 
         }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0l) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
             additionalInfoKey = "orders.order.stateChange.additionalInfo.endTooEarly";

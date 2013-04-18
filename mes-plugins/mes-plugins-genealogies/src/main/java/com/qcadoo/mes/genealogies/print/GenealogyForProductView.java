@@ -53,7 +53,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.Pair;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "genealogyForProductView")
 public class GenealogyForProductView extends ReportPdfView {
@@ -79,9 +78,6 @@ public class GenealogyForProductView extends ReportPdfView {
     private static final String PRODUCT_FIELD = "product";
 
     private static final String ORDER_FIELD = "order";
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

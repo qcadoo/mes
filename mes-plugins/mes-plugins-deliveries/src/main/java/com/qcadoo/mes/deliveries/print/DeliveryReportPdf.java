@@ -267,8 +267,7 @@ public class DeliveryReportPdf extends ReportPdfView {
             final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues, final PdfPTable productsTable,
             final Locale locale, final List<String> columnsName) {
         if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)) {
-
-            BigDecimal totalProductsCosts = new BigDecimal(0);
+            BigDecimal totalProductsCosts = BigDecimal.ZERO;
             MathContext mc = numberService.getMathContext();
             for (DeliveryProduct deliveryProduct : deliveryProducts) {
                 for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
@@ -281,7 +280,6 @@ public class DeliveryReportPdf extends ReportPdfView {
                             totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
                         }
                     }
-
                 }
             }
             productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),

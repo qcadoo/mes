@@ -162,7 +162,7 @@ public class OrderHooks {
 
         // EFFECTIVE_DATE_FROM
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom > 0l) {
+                && differenceForDateFrom > 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateFrom)));
 
@@ -172,7 +172,7 @@ public class OrderHooks {
 
         }
         if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom < 0l) {
+                && differenceForDateFrom < 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateFrom)));
 
@@ -182,7 +182,7 @@ public class OrderHooks {
 
         }
         // EFFECTIVE_DATE_TO
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0l) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
 
@@ -190,7 +190,7 @@ public class OrderHooks {
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
         }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0l) {
+        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0L) {
             final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
                     .abs(differenceForDateTo)));
             checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,

@@ -55,7 +55,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
@@ -77,9 +76,6 @@ public final class SimpleMaterialBalancePdfService extends PdfDocumentService {
     private static final String L_LOCATION = "location";
 
     private static final String L_UNIT = "unit";
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;

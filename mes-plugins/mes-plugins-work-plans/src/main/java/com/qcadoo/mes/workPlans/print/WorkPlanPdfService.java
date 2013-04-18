@@ -58,7 +58,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.PrioritizedString;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class WorkPlanPdfService extends PdfDocumentService {
@@ -79,9 +78,6 @@ public class WorkPlanPdfService extends PdfDocumentService {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private PdfHelper pdfHelper;

@@ -51,13 +51,9 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "qualityControlForUnitPdfView")
 public class QualityControlForUnitPdfView extends ReportPdfView {
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private QualityControlsReportService qualityControlsReportService;
