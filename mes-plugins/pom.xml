@@ -67,6 +67,7 @@
 		<module>mes-plugins-tech-subcontr-for-production-counting</module>
 		<module>mes-plugins-cat-numbers-in-deliveries</module>
     	<module>mes-plugins-master-orders</module>
+    <module>mes-pack-open-source</module>
   </modules>
 
 </project>

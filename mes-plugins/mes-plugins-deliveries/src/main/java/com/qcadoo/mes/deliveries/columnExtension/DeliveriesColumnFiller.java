@@ -43,6 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.print.DeliveryColumnFiller;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.mes.deliveries.print.OrderColumnFiller;
@@ -75,9 +77,49 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillOrderedQuantity(values, deliveryProduct);
             fillDeliveredQuantity(values, deliveryProduct);
             fillDamagedQuantity(values, deliveryProduct);
+
+            fillPricePerUnit(values, deliveryProduct);
+            fillTotalPrice(values, deliveryProduct);
         }
 
         return values;
+    }
+
+    private void fillTotalPrice(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal totalPrice = null;
+
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct != null) {
+                totalPrice = deliveredProduct.getDecimalField(DeliveredProductFields.TOTAL_PRICE);
+            }
+        }
+
+        if (totalPrice == null) {
+            values.get(deliveryProduct).put("totalPrice", "");
+        } else {
+            values.get(deliveryProduct).put("totalPrice", numberService.format(totalPrice));
+        }
+    }
+
+    private void fillPricePerUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal pricePerUnit = null;
+
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct != null) {
+                pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+            }
+        }
+
+        if (pricePerUnit == null) {
+            values.get(deliveryProduct).put("pricePerUnit", "");
+        } else {
+            values.get(deliveryProduct).put("pricePerUnit", numberService.format(pricePerUnit));
+        }
+
     }
 
     @Override
@@ -96,9 +138,37 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             fillDescription(values, orderedProduct);
             fillSuccession(values, orderedProduct);
             fillOrderedQuantity(values, orderedProduct);
+
+            fillPricePerUnit(values, orderedProduct);
+            fillTotalPrice(values, orderedProduct);
         }
 
         return values;
+    }
+
+    private void fillTotalPrice(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        BigDecimal totalPrice = null;
+        if (orderedProduct != null) {
+            totalPrice = orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        }
+        if (totalPrice == null) {
+            values.get(orderedProduct).put("totalPrice", "");
+        } else {
+            values.get(orderedProduct).put("totalPrice", numberService.format(totalPrice));
+        }
+    }
+
+    private void fillPricePerUnit(Map<Entity, Map<String, String>> values, Entity orderedProduct) {
+        BigDecimal pricePerUnit = null;
+        if (orderedProduct != null) {
+            pricePerUnit = orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
+        }
+        if (pricePerUnit == null) {
+            values.get(orderedProduct).put("pricePerUnit", "");
+        } else {
+            values.get(orderedProduct).put("pricePerUnit", numberService.format(pricePerUnit));
+        }
+
     }
 
     private void fillProductNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
