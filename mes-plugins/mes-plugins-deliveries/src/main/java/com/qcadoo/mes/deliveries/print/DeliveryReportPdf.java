@@ -66,6 +66,8 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -250,46 +252,50 @@ public class DeliveryReportPdf extends ReportPdfView {
                         productsTable.addCell(new Phrase(value, FontUtils.getDejavuRegular9Dark()));
                     }
                 }
-                if (getTotalProductsCosts(deliveryProducts, filteredColumnsForDeliveries, deliveryProductsColumnValues)
-                        .compareTo(BigDecimal.ZERO) != 0) {
-                    productsTable.addCell(new Phrase(
-                            translationService.translate("deliveries.delivery.report.totalCost", locale), FontUtils
-                                    .getDejavuRegular9Dark()));
-                    productsTable.addCell("");
-                    productsTable.addCell("");
-                    productsTable.addCell("");
-                    productsTable.addCell("");
-                    productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-                    productsTable.addCell(new Phrase(numberService.format(getTotalProductsCosts(deliveryProducts,
-                            filteredColumnsForDeliveries, deliveryProductsColumnValues)), FontUtils.getDejavuRegular9Dark()));
+                addTotalProductsCosts(deliveryProducts, filteredColumnsForDeliveries, deliveryProductsColumnValues,
+                        productsTable, locale, columnsName);
 
-                    productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                }
                 document.add(productsTable);
                 document.add(Chunk.NEWLINE);
             }
         }
     }
 
-    private BigDecimal getTotalProductsCosts(List<DeliveryProduct> deliveryProducts, List<Entity> filteredColumnsForDeliveries,
-            Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
-        BigDecimal totalProductsCosts = new BigDecimal(0);
-        MathContext mc = numberService.getMathContext();
-        for (DeliveryProduct deliveryProduct : deliveryProducts) {
-            for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
-                String identifier = columnForDeliveries.getStringField(IDENTIFIER);
-                String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
+    private void addTotalProductsCosts(final List<DeliveryProduct> deliveryProducts,
+            final List<Entity> filteredColumnsForDeliveries,
+            final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues, final PdfPTable productsTable,
+            final Locale locale, final List<String> columnsName) {
+        if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)) {
 
-                if (identifier.equals("totalPrice")) {
-                    BigDecimal totalPrice = new BigDecimal(value);
-                    totalProductsCosts = totalProductsCosts.add(totalPrice, mc);
+            BigDecimal totalProductsCosts = new BigDecimal(0);
+            MathContext mc = numberService.getMathContext();
+            for (DeliveryProduct deliveryProduct : deliveryProducts) {
+                for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
+                    String identifier = columnForDeliveries.getStringField(IDENTIFIER);
+                    String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
+
+                    if (identifier.equals("totalPrice")) {
+                        if (StringUtils.isNotEmpty(value)) {
+                            BigDecimal totalPrice = new BigDecimal(value);
+                            totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
+                        }
+                    }
+
                 }
-
             }
+            productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
+                    FontUtils.getDejavuRegular9Dark()));
+            int columnQuantity = columnsName.size() - 2;
+            for (int i = 0; i < columnQuantity; i++) {
+                productsTable.addCell("");
+            }
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            productsTable.addCell(new Phrase(numberService.format(totalProductsCosts), FontUtils.getDejavuRegular9Dark()));
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
         }
 
-        return totalProductsCosts;
     }
 
     private List<Entity> filterEmptyColumns(final List<Entity> columnsForDeliveries,

@@ -24,9 +24,9 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.IDENTIFIER;
 import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
-import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
@@ -35,6 +35,8 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCT
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -65,7 +68,10 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
@@ -97,6 +103,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private NumberService numberService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
@@ -242,9 +251,45 @@ public class OrderReportPdf extends ReportPdfView {
                     }
                 }
 
+                addTotalProductsCosts(orderedProducts, filteredColumnsForOrders, orderedProductsColumnValues, productsTable,
+                        locale, columnsName);
                 document.add(productsTable);
                 document.add(Chunk.NEWLINE);
             }
+        }
+    }
+
+    private void addTotalProductsCosts(final List<Entity> orderedProducts, final List<Entity> filteredColumnsForOrders,
+            final Map<Entity, Map<String, String>> orderedProductsColumnValues, final PdfPTable productsTable,
+            final Locale locale, final List<String> columnsName) {
+        if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)) {
+
+            BigDecimal totalProductsCosts = new BigDecimal(0);
+            MathContext mc = numberService.getMathContext();
+            for (Entity orderedProduct : orderedProducts) {
+                for (Entity columnForOrders : filteredColumnsForOrders) {
+                    String identifier = columnForOrders.getStringField(IDENTIFIER);
+                    String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
+
+                    if (identifier.equals("totalPrice")) {
+                        if (StringUtils.isNotEmpty(value)) {
+                            BigDecimal totalPrice = new BigDecimal(value);
+                            totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
+                        }
+                    }
+
+                }
+            }
+            productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
+                    FontUtils.getDejavuRegular9Dark()));
+            int columnQuantity = columnsName.size() - 2;
+            for (int i = 0; i < columnQuantity; i++) {
+                productsTable.addCell("");
+            }
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            productsTable.addCell(new Phrase(numberService.format(totalProductsCosts), FontUtils.getDejavuRegular9Dark()));
+            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
         }
     }
 
