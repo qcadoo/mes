@@ -40,10 +40,10 @@
 	<row NAME="units" ITEM="szt" DESCRIPTION="Sztuka" />
 	<row NAME="units" ITEM="para" DESCRIPTION="Para" />
 	<row NAME="units" ITEM="kpl" DESCRIPTION="Komplet" />
-	<row NAME="reasonTypeOfChaningOrderState" ITEM="Nieobecność pracownika" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Opóźnienia w dostawie surowców" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Wadliwe surowce" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Przeciążenia zasobów produkcji" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Awaria maszyny" DESCRIPTION="" />
-    <row NAME="reasonTypeOfChaningOrderState" ITEM="Inne" DESCRIPTION="" />
+	<row NAME="reasonTypeOfChangingOrderState" ITEM="Nieobecność pracownika" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Opóźnienia w dostawie surowców" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Wadliwe surowce" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Przeciążenia zasobów produkcji" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Awaria maszyny" DESCRIPTION="" />
+    <row NAME="reasonTypeOfChangingOrderState" ITEM="Inne" DESCRIPTION="" />
 </dictionaries>

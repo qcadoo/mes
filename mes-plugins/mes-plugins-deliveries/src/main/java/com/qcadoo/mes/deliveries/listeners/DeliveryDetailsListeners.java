@@ -271,4 +271,21 @@ public class DeliveryDetailsListeners {
         }
     }
 
+    public final void showRelatedDeliveries(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long deliveryId = deliveryForm.getEntityId();
+
+        if (deliveryId == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("delivery.id", deliveryId);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "deliveries.deliveriesList");
+
+        String url = "../page/deliveries/deliveriesList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
 }

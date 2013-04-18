@@ -135,7 +135,7 @@ CREATE TABLE orders_reasontypecorrectiondatefrom
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypecorrectiondatefrom_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypecorrectiondatefrom_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
@@ -151,7 +151,7 @@ CREATE TABLE orders_reasontypecorrectiondateto
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypecorrectiondateto_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypecorrectiondateto_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
@@ -160,19 +160,19 @@ CREATE TABLE orders_reasontypecorrectiondateto
 -- end
 
 
--- Table: orders_reasontypeofchaningorderstate
+-- Table: orders_reasontypeofchangingorderstate
 -- changed: 11.03.2013
 
-CREATE TABLE orders_reasontypeofchaningorderstate
+CREATE TABLE orders_reasontypeofchangingorderstate
 (
   id bigint NOT NULL,
   orderstatechange_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   productionpershift_id bigint,
-  CONSTRAINT orders_reasontypeofchaningorderstate_pkey PRIMARY KEY (id),
-  CONSTRAINT reasontypeofchaningorderstate_order_fkey FOREIGN KEY (productionpershift_id)
+  CONSTRAINT orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id),
+  CONSTRAINT reasontypeofchangingorderstate_order_fkey FOREIGN KEY (productionpershift_id)
       REFERENCES productionpershift_productionpershift (id) DEFERRABLE,
-  CONSTRAINT reasontypeofchaningorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
+  CONSTRAINT reasontypeofchangingorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
       REFERENCES orders_orderstatechange (id) DEFERRABLE
 );
 
@@ -214,16 +214,21 @@ ALTER TABLE deliveries_delivery
 
 -- Table: deliveries_deliveredproduct
 -- changed: 16.04.2013
+
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN priceperunit numeric(12,5);
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN totalprice numeric(12,5);
---end
+
+-- end
 
 
 -- Table: deliveries_orderedproduct
 -- changed: 16.04.2013
+
 ALTER TABLE deliveries_orderedproduct ADD COLUMN priceperunit numeric(12,5);
 ALTER TABLE deliveries_orderedproduct ADD COLUMN totalprice numeric(12,5);
---end
+
+-- end
+
  	
 -- Table: orders_reasontypedeviationeffectiveend
 -- changed: 16.04.2013
@@ -232,11 +237,12 @@ CREATE TABLE orders_reasontypedeviationeffectiveend
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypedeviationeffectiveend_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypedeviationeffectiveend_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
 );
+
 -- end
 
 
@@ -247,9 +253,66 @@ CREATE TABLE orders_reasontypedeviationeffectivestart
 (
   id bigint NOT NULL,
   order_id bigint,
-  reasontypeofchaningorderstate character varying(255),
+  reasontypeofchangingorderstate character varying(255),
   CONSTRAINT orders_reasontypedeviationeffectivestart_pkey PRIMARY KEY (id),
   CONSTRAINT reasontypedeviationeffectivestart_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
 );
+
+-- end
+
+
+-- Table: deliveries_orderedproduct
+-- changed: 16.04.2013
+
+ALTER TABLE deliveries_orderedproduct DROP COLUMN productcatalognumber_id;
+
+-- end
+
+
+-- Table: deliveries_deliveredproduct
+-- changed: 16.04.2013
+
+ALTER TABLE deliveries_deliveredproduct DROP COLUMN productcatalognumber_id;
+
+-- end
+
+
+-- Table: orders_order
+-- changed: 17.04.2013
+
+ALTER TABLE orders_order DROP COLUMN reasontypecorrectiondatefrom;
+
+-- end
+
+
+-- Table: orders_order
+-- changed: 17.04.2013
+
+ALTER TABLE orders_order DROP COLUMN reasontypecorrectiondateto;
+
+-- end
+
+
+-- Table: orders_orderstatechange
+-- changed: 17.04.2013
+
+ALTER TABLE orders_orderstatechange DROP COLUMN reasontype;
+
+-- end
+
+
+-- Table: productionpershift_productionpershift
+-- changed: 17.04.2013
+
+ALTER TABLE productionpershift_productionpershift DROP COLUMN plannedprogresscorrectiontype;
+
+-- end
+
+
+-- Table: qcadoomodel_dictionary
+-- changed: 17.04.2013
+
+UPDATE qcadoomodel_dictionary SET name = 'reasonTypeOfChangingOrderState' WHERE name = 'reasonTypeOfChaningOrderState'; 
+
 -- end

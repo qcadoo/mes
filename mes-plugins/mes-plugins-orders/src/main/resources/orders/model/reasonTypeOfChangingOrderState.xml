@@ -24,13 +24,13 @@
     ***************************************************************************
 
 -->
-<model name="reasonTypeOfChaningOrderState"
+<model name="reasonTypeOfChangingOrderState"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" persistent="false" />
 		<belongsTo name="orderStateChange" model="orderStateChange" />
-		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState">
+		<dictionary name="reasonTypeOfChangingOrderState" dictionary="reasonTypeOfChangingOrderState">
 			<validatesWith 
 				class="com.qcadoo.mes.orders.hooks.ReasonTypeOfChangingOrderStateModelValidators" 
 				method="checkReasonRequired"/>

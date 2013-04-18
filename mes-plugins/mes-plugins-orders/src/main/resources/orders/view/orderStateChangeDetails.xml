@@ -69,11 +69,11 @@
 									<option type="hasBorder" value="false" />
 									<option type="hasButtons" value="true" />
 									<components>
-										<component type="gridLayout" name="reasonTypeOfChaningOrderStateGridLayout"
+										<component type="gridLayout" name="reasonTypeOfChangingOrderStateGridLayout"
 											columns="1" rows="1">
 											<layoutElement column="1" row="1">
-												<component type="select" name="reasonTypeOfChaningOrderState"
-													field="reasonTypeOfChaningOrderState" hasLabel="false" />
+												<component type="select" name="reasonTypeOfChangingOrderState"
+													field="reasonTypeOfChangingOrderState" hasLabel="false" />
 											</layoutElement>
 										</component>
 									</components>

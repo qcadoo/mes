@@ -83,7 +83,7 @@
 			<model:boolean name="hasCorrections" />
 		</model:model-field>
 	
-		<model:model-field model="reasonTypeOfChaningOrderState"
+		<model:model-field model="reasonTypeOfChangingOrderState"
 			plugin="orders">
 			<model:belongsTo name="productionPerShift" model="productionPerShift"
 				plugin="productionPerShift" />

@@ -91,135 +91,145 @@
 			</group>
 		</ribbon>
 		
-		<component type="grid" name="deliveriesList" reference="grid">
-			<script>
- 				<![CDATA[ 
-					var copyBtn = #{window}.getRibbonItem("actions.copy");
-					var deleteBtn = #{window}.getRibbonItem("actions.delete");
-					
-					var acceptBtn = #{window}.getRibbonItem("status.accept");
-					var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
-					var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
-					
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								copyBtn.disable();
-								deleteBtn.disable();
-								acceptBtn.disable();
-								declineDeliveryBtn.disable();
-								approveDeliveryBtn.disable();
-							} else {
-								var noDifferentStates = true;
- 								if(selectedEntitiesArray.length > 1)
-								{
-									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
-										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
-										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
-										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
-											noDifferentStates = false;
-											break;
-										}
-									}
-								} 
-								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
-									var state = selectedEntitiesArray[0].fields.state;
-									
-									if (state == "01draft") {
-										deleteBtn.enable();
-										acceptBtn.enable();
-										acceptBtn.state = "draft";
-										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
-										acceptBtn.setIcon('startIcon16.png');
-										declineDeliveryBtn.enable();
-										declineDeliveryBtn.state = "decline";
-										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDeliveryBtn.setIcon('deleteIcon16.png');
-										approveDeliveryBtn.enable();
-									} else if (state == "02prepared") {
-										deleteBtn.disable();
-										acceptBtn.enable();
-										acceptBtn.state = "prepare";
-										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-										acceptBtn.setIcon('startIcon16.png');
-										declineDeliveryBtn.enable();
-										declineDeliveryBtn.state = "decline";
-										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDeliveryBtn.setIcon('deleteIcon16.png');
-										approveDeliveryBtn.enable();
-									} else if (state == "03duringCorrection") {
-										deleteBtn.disable();
-										acceptBtn.disable();
-										acceptBtn.state = "correct";
-										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-										acceptBtn.setIcon('acceptIcon16.png');
-										declineDeliveryBtn.enable();
-										declineDeliveryBtn.state = "decline";
-										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDeliveryBtn.setIcon('deleteIcon16.png');
-										approveDeliveryBtn.enable();
-									} else if (state == "05approved"){
-										deleteBtn.disable();
-										acceptBtn.enable();
-										acceptBtn.state = "receive";
-										acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
-										acceptBtn.setIcon('acceptIcon16.png');
-										declineDeliveryBtn.enable();
-										declineDeliveryBtn.state = "decline";
-										declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
-										declineDeliveryBtn.setIcon('deleteIcon16.png');
-										approveDeliveryBtn.disable();
-									} else if (state == "06received"){
-										deleteBtn.disable();
-										acceptBtn.disable();
-										declineDeliveryBtn.disable();
-										approveDeliveryBtn.disable();
-									} else {
-										deleteBtn.enable();
-										acceptBtn.disable();
-										declineDeliveryBtn.disable();
-										approveDeliveryBtn.disable();
-									}
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="delivery" reference="delivery" />
+				
+			<component type="grid" name="deliveriesList" reference="grid">
+				<script>
+	 				<![CDATA[ 
+						var copyBtn = #{window}.getRibbonItem("actions.copy");
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
+						
+						var acceptBtn = #{window}.getRibbonItem("status.accept");
+						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
+						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
+						
+						var listener = {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									copyBtn.disable();
+									deleteBtn.disable();
+									acceptBtn.disable();
+									declineDeliveryBtn.disable();
+									approveDeliveryBtn.disable();
 								} else {
-									deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									acceptBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									declineDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-									approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									var noDifferentStates = true;
+	 								if(selectedEntitiesArray.length > 1)
+									{
+										for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+											if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
+											|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
+											|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+												noDifferentStates = false;
+												break;
+											}
+										}
+									} 
+									if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+										var state = selectedEntitiesArray[0].fields.state;
+										
+										if (state == "01draft") {
+											deleteBtn.enable();
+											acceptBtn.enable();
+											acceptBtn.state = "draft";
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept)}");
+											acceptBtn.setIcon('startIcon16.png');
+											declineDeliveryBtn.enable();
+											declineDeliveryBtn.state = "decline";
+											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+											declineDeliveryBtn.setIcon('deleteIcon16.png');
+											approveDeliveryBtn.enable();
+										} else if (state == "02prepared") {
+											deleteBtn.disable();
+											acceptBtn.enable();
+											acceptBtn.state = "prepare";
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
+											acceptBtn.setIcon('startIcon16.png');
+											declineDeliveryBtn.enable();
+											declineDeliveryBtn.state = "decline";
+											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+											declineDeliveryBtn.setIcon('deleteIcon16.png');
+											approveDeliveryBtn.enable();
+										} else if (state == "03duringCorrection") {
+											deleteBtn.disable();
+											acceptBtn.disable();
+											acceptBtn.state = "correct";
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+											acceptBtn.setIcon('acceptIcon16.png');
+											declineDeliveryBtn.enable();
+											declineDeliveryBtn.state = "decline";
+											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+											declineDeliveryBtn.setIcon('deleteIcon16.png');
+											approveDeliveryBtn.enable();
+										} else if (state == "05approved"){
+											deleteBtn.disable();
+											acceptBtn.enable();
+											acceptBtn.state = "receive";
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+											acceptBtn.setIcon('acceptIcon16.png');
+											declineDeliveryBtn.enable();
+											declineDeliveryBtn.state = "decline";
+											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
+											declineDeliveryBtn.setIcon('deleteIcon16.png');
+											approveDeliveryBtn.disable();
+										} else if (state == "06received"){
+											deleteBtn.disable();
+											acceptBtn.disable();
+											declineDeliveryBtn.disable();
+											approveDeliveryBtn.disable();
+										} else {
+											deleteBtn.enable();
+											acceptBtn.disable();
+											declineDeliveryBtn.disable();
+											approveDeliveryBtn.disable();
+										}
+									} else {
+										deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										acceptBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										declineDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+									}
+									copyBtn.enable();
 								}
-								copyBtn.enable();
 							}
 						}
-					}
-					
-					this.addOnChangeListener(listener);
-				]]>
-			</script>
-			<option type="column" name="number" fields="number" link="true" width="50" />
-			<option type="column" name="name" fields="name" link="true" width="100" />
-			<option type="column" name="supplierName" fields="supplier"
-				expression="#supplier['name']" />
-			<option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
-			<option type="column" name="state" fields="state" />
-			<option type="column" name="createDate" fields="createDate" width="100"/>
-			
-			<option type="order" column="number" direction="asc" />
-			
-			<option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate" />
-			<option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate" />
-			
-			<option type="correspondingView" value="deliveries/deliveryDetails" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-			
-			<listener event="changeState"
-				class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
-				method="changeState" />
-		</component>
+						
+						this.addOnChangeListener(listener);
+					]]>
+				</script>
+				<option type="column" name="number" fields="number" link="true" width="50" />
+				<option type="column" name="name" fields="name" link="true" width="100" />
+				<option type="column" name="supplierName" fields="supplier"
+					expression="#supplier['name']" />
+				<option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
+				<option type="column" name="state" fields="state" />
+				<option type="column" name="createDate" fields="createDate" width="100"/>
+				
+				<option type="order" column="number" direction="asc" />
+				
+				<option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate" />
+				<option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate" />
+				
+				<option type="correspondingView" value="deliveries/deliveryDetails" />
+				<option type="correspondingComponent" value="form" />
+				
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+				
+				<listener event="changeState"
+					class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
+					method="changeState" />
+			</component>
+		</windowTab>
 		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.deliveries.hooks.DeliveriesListHooks"
+			method="fillGridWithRelatedDeliveries" />
+	</hooks>
 	
 </view>

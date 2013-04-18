@@ -31,4 +31,6 @@
 	<row IDENTIFIER="orderedQuantity" NAME="deliveries.columnForOrders.name.value.orderedQuantity" DESCRIPTION="deliveries.columnForOrders.description.value.orderedQuantity" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
 	<row IDENTIFIER="productUnit" NAME="deliveries.columnForOrders.name.value.productUnit" DESCRIPTION="deliveries.columnForOrders.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 	<row IDENTIFIER="description" NAME="deliveries.columnForOrders.name.value.description" DESCRIPTION="deliveries.columnForOrders.description.value.description" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="pricePerUnit" NAME="deliveries.columnForOrders.name.value.pricePerUnit" DESCRIPTION="deliveries.columnForOrders.description.value.pricePerUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="totalPrice" NAME="deliveries.columnForOrders.name.value.totalPrice" DESCRIPTION="deliveries.columnForOrders.description.value.totalPrice" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
 </column>

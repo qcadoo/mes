@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" required="true" />
-		<dictionary name="reasonTypeOfChaningOrderState" dictionary="reasonTypeOfChaningOrderState" required="true" />
+		<dictionary name="reasonTypeOfChangingOrderState" dictionary="reasonTypeOfChangingOrderState" required="true" />
 	</fields>
 	<hooks />
 </model>
