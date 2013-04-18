@@ -59,15 +59,11 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
     private static final String L_COSTS = "Costs";
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private TranslationService translationService;

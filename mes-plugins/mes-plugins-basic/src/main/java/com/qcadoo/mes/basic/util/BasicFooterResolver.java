@@ -38,7 +38,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.FooterResolver;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 
 @Primary
 @Component
@@ -48,9 +47,6 @@ public class BasicFooterResolver implements FooterResolver {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private ParameterService parameterService;

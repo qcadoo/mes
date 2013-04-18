@@ -53,7 +53,7 @@ public class DeliveriesListHooks {
 
         Long deliveryId = deliveryForm.getEntityId();
 
-        if ((deliveryForm == null) || (deliveryId == null)) {
+        if (deliveryId == null) {
             return;
         }
 

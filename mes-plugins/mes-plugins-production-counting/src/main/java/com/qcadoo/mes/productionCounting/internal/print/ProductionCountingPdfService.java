@@ -67,7 +67,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -85,9 +84,6 @@ public class ProductionCountingPdfService extends PdfDocumentService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private TimeConverterService timeConverterService;

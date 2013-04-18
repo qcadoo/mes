@@ -274,7 +274,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     private BigDecimal getTotalProductsCosts(List<DeliveryProduct> deliveryProducts, List<Entity> filteredColumnsForDeliveries,
             Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
-        BigDecimal totalProductsCosts = new BigDecimal(0);
+        BigDecimal totalProductsCosts = BigDecimal.ZERO;
         MathContext mc = numberService.getMathContext();
         for (DeliveryProduct deliveryProduct : deliveryProducts) {
             for (Entity columnForDeliveries : filteredColumnsForDeliveries) {

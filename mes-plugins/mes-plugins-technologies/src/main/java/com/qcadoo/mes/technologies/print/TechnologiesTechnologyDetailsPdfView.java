@@ -58,13 +58,9 @@ import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import com.qcadoo.security.api.SecurityService;
 
 @Component(value = "technologiesTechnologyDetailsPdfView")
 public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
-
-    @Autowired
-    private SecurityService securityService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
