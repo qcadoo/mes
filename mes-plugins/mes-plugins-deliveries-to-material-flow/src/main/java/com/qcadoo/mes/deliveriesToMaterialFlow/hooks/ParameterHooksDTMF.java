@@ -43,10 +43,8 @@ public class ParameterHooksDTMF {
 
         if ((location != null) && !materialFlowResourcesService.isLocationIsWarehouse(location)) {
             parameter.addError(parameterDD.getField(LOCATION), "parameter.validate.global.error.locationIsNotWarehouse");
-
             return false;
         }
-
         return true;
     }
 

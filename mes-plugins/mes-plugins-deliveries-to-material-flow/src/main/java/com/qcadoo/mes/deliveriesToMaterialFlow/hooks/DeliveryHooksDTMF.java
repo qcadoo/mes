@@ -55,10 +55,8 @@ public class DeliveryHooksDTMF {
 
         if ((location != null) && !materialFlowResourcesService.isLocationIsWarehouse(location)) {
             delivery.addError(deliveryDD.getField(LOCATION), "delivery.validate.global.error.locationIsNotWarehouse");
-
             return false;
         }
-
         return true;
     }
 

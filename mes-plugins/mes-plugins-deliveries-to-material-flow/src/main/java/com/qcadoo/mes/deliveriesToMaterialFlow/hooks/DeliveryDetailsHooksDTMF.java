@@ -61,22 +61,23 @@ public class DeliveryDetailsHooksDTMF {
 
             if (defaultLocation != null) {
                 locationField.setFieldValue(defaultLocation.getId());
-                locationField.requestComponentUpdateState();
+            } else {
+                locationField.setFieldValue(null);
             }
+            locationField.requestComponentUpdateState();
         }
     }
 
     public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
-        String state = stateField.getFieldValue().toString();
-
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(LOCATION);
 
         if (deliveryForm.getEntityId() == null) {
             locationField.setEnabled(true);
         } else {
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
+            String state = stateField.getFieldValue().toString();
             if (DECLINED.getStringValue().equals(state) || RECEIVED.getStringValue().equals(state)) {
                 locationField.setEnabled(false);
             } else {

@@ -38,7 +38,7 @@ public class DeliveryStateServiceMF {
             return;
         }
 
-        Entity location = (Entity) delivery.getField(DeliveryFieldsDTMF.LOCATION);
+        Entity location = delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION);
 
         if (location == null) {
             return;
@@ -56,11 +56,11 @@ public class DeliveryStateServiceMF {
                 Entity transfer = transferDD.create();
 
                 transfer.setField(TransferFields.NUMBER, materialFlowService.generateNumberFromProduct(
-                        (Entity) product.getField(DeliveredProductFields.PRODUCT), MaterialFlowConstants.MODEL_TRANSFER));
-                transfer.setField(TransferFields.TIME, delivery.getField(DeliveryFields.DELIVERY_DATE));
-                transfer.setField(TransferFields.PRODUCT, product.getField(DeliveredProductFields.PRODUCT));
-                transfer.setField(TransferFields.QUANTITY, product.getField(DeliveredProductFields.DELIVERED_QUANTITY));
-                transfer.setField(TransferFields.LOCATION_TO, delivery.getField(DeliveryFieldsDTMF.LOCATION));
+                        product.getBelongsToField(DeliveredProductFields.PRODUCT), MaterialFlowConstants.MODEL_TRANSFER));
+                transfer.setField(TransferFields.TIME, delivery.getDateField(DeliveryFields.DELIVERY_DATE));
+                transfer.setField(TransferFields.PRODUCT, product.getBelongsToField(DeliveredProductFields.PRODUCT));
+                transfer.setField(TransferFields.QUANTITY, product.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+                transfer.setField(TransferFields.LOCATION_TO, delivery.getBelongsToField(DeliveryFieldsDTMF.LOCATION));
                 transfer.setField(TransferFields.TYPE, TransferType.TRANSPORT.getStringValue());
                 transfer.setField(FROM_DELIVERY, delivery);
 
