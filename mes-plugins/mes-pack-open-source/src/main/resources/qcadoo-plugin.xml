@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin plugin="openSource" group="framework" version="1.2.1-SNAPSHOT"
+<plugin plugin="openSource" group="other" version="${qcadoo.plugin.version}"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
 	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
 	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -24,6 +24,7 @@
 			<name>Qcadoo Limited</name>
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
+		<description></description>
 		<license>AGPL</license>
 	</information>
 
@@ -97,7 +98,7 @@
 			<version>[1.2.0</version>
 		</dependency>
 		<dependency>
-			<plugin>ganttForOperation</plugin>
+			<plugin>ganttForOperations</plugin>
 			<version>[1.2.0</version>
 		</dependency>
 		<dependency>
@@ -118,5 +119,9 @@
 		<localization:translation path="locales" />
 		
 	</modules>
+	
+	<features>
+		<end-user />
+	</features>
 
 </plugin>
