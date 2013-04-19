@@ -331,9 +331,9 @@ CREATE TABLE basicproductioncounting_productioncountingquantity
   plannedquantity numeric(12,5),
   isnoncomponent boolean DEFAULT false,
   CONSTRAINT basicproductioncounting_productioncountingquantity_pkey PRIMARY KEY (id),
-  CONSTRAINT productioncountingquantity_operationproductoutcomp_fkey FOREIGN KEY (operationproductoutcomponent_id)
+  CONSTRAINT productioncountingquantity_opoc_fkey FOREIGN KEY (operationproductoutcomponent_id)
       REFERENCES technologies_operationproductoutcomponent (id) DEFERRABLE,
-  CONSTRAINT productioncountingquantity_operationproductincomp_fkey FOREIGN KEY (operationproductincomponent_id)
+  CONSTRAINT productioncountingquantity_opic_fkey FOREIGN KEY (operationproductincomponent_id)
       REFERENCES technologies_operationproductincomponent (id) DEFERRABLE,
   CONSTRAINT productioncountingquantity_product_fkey FOREIGN KEY (product_id)
       REFERENCES basic_product (id) DEFERRABLE,
@@ -354,9 +354,9 @@ CREATE TABLE basicproductioncounting_productioncountingoperationrun
   technologyoperationcomponent_id bigint,
   runs numeric(12,5),
   CONSTRAINT basicproductioncounting_productioncountingoperationrun_pkey PRIMARY KEY (id),
-  CONSTRAINT productioncountingoperationrun_technologyoperationcomp_fkey FOREIGN KEY (technologyoperationcomponent_id)
+  CONSTRAINT productioncountingoperationrun_toc_fkey FOREIGN KEY (technologyoperationcomponent_id)
       REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE,
-  CONSTRAINT technologyoperationcomponent_order_fkey FOREIGN KEY (order_id)
+  CONSTRAINT productioncountingoperationrun_order_fkey FOREIGN KEY (order_id)
       REFERENCES orders_order (id) DEFERRABLE
 );
 
@@ -369,7 +369,7 @@ CREATE TABLE basicproductioncounting_productioncountingoperationrun
 ALTER TABLE basicproductioncounting_basicproductioncounting ADD COLUMN productioncountingquantity_id bigint;
 
 ALTER TABLE basicproductioncounting_basicproductioncounting
-  ADD CONSTRAINT basicproductioncounting_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+  ADD CONSTRAINT basicproductioncounting_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
       REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
  
 -- end
@@ -381,7 +381,7 @@ ALTER TABLE basicproductioncounting_basicproductioncounting
 ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN productioncountingquantity_id bigint;
 
 ALTER TABLE productioncounting_recordoperationproductincomponent
-  ADD CONSTRAINT recordoperationproductincomponent_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+  ADD CONSTRAINT recordoperationproductincomponent_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
       REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
       
 -- end
@@ -393,7 +393,7 @@ ALTER TABLE productioncounting_recordoperationproductincomponent
 ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN productioncountingquantity_id bigint;
 
 ALTER TABLE productioncounting_recordoperationproductoutcomponent
-  ADD CONSTRAINT recordoperationproductoutcomponent_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+  ADD CONSTRAINT recordoperationproductoutcomponent_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
       REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
 
 -- end
