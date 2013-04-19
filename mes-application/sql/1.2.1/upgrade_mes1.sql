@@ -316,3 +316,84 @@ ALTER TABLE productionpershift_productionpershift DROP COLUMN plannedprogresscor
 UPDATE qcadoomodel_dictionary SET name = 'reasonTypeOfChangingOrderState' WHERE name = 'reasonTypeOfChaningOrderState'; 
 
 -- end
+
+
+-- Table: basicproductioncounting_productioncountingquantity
+-- changed: 18.04.2013
+
+CREATE TABLE basicproductioncounting_productioncountingquantity
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  operationproductincomponent_id bigint,
+  operationproductoutcomponent_id bigint,
+  product_id bigint,
+  plannedquantity numeric(12,5),
+  isnoncomponent boolean DEFAULT false,
+  CONSTRAINT basicproductioncounting_productioncountingquantity_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncountingquantity_operationproductoutcomp_fkey FOREIGN KEY (operationproductoutcomponent_id)
+      REFERENCES technologies_operationproductoutcomponent (id) DEFERRABLE,
+  CONSTRAINT productioncountingquantity_operationproductincomp_fkey FOREIGN KEY (operationproductincomponent_id)
+      REFERENCES technologies_operationproductincomponent (id) DEFERRABLE,
+  CONSTRAINT productioncountingquantity_product_fkey FOREIGN KEY (product_id)
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT productioncountingquantity_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: basicproductioncounting_productioncountingoperationrun
+-- changed: 18.04.2013
+
+CREATE TABLE basicproductioncounting_productioncountingoperationrun
+(
+  id bigint NOT NULL,
+  order_id bigint,
+  technologyoperationcomponent_id bigint,
+  runs numeric(12,5),
+  CONSTRAINT basicproductioncounting_productioncountingoperationrun_pkey PRIMARY KEY (id),
+  CONSTRAINT productioncountingoperationrun_technologyoperationcomp_fkey FOREIGN KEY (technologyoperationcomponent_id)
+      REFERENCES technologies_technologyoperationcomponent (id) DEFERRABLE,
+  CONSTRAINT technologyoperationcomponent_order_fkey FOREIGN KEY (order_id)
+      REFERENCES orders_order (id) DEFERRABLE
+);
+
+-- end
+
+
+-- Table: basicproductioncounting_basicproductioncounting
+-- changed: 18.04.2013
+
+ALTER TABLE basicproductioncounting_basicproductioncounting ADD COLUMN productioncountingquantity_id bigint;
+
+ALTER TABLE basicproductioncounting_basicproductioncounting
+  ADD CONSTRAINT basicproductioncounting_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
+ 
+-- end
+
+
+-- Table: productioncounting_recordoperationproductincomponent
+-- changed: 18.04.2013   
+
+ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN productioncountingquantity_id bigint;
+
+ALTER TABLE productioncounting_recordoperationproductincomponent
+  ADD CONSTRAINT recordoperationproductincomponent_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
+      
+-- end
+
+
+-- Table: productioncounting_recordoperationproductoutcomponent
+-- changed: 18.04.2013
+     
+ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN productioncountingquantity_id bigint;
+
+ALTER TABLE productioncounting_recordoperationproductoutcomponent
+  ADD CONSTRAINT recordoperationproductoutcomponent_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
+      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
+
+-- end
