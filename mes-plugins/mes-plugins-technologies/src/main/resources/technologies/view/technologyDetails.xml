@@ -254,6 +254,7 @@
 							<option type="canHaveChildren" value="false" />
 						</dataType>
 						<option type="selectableWhenDisabled" value="true" />
+						
 						<listener event="select" class="com.qcadoo.mes.technologies.TechnologyService" method="loadProductsForReferencedTechnology" />
 						<listener event="select" class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners" method="setGridEditable" />
 					</component>
