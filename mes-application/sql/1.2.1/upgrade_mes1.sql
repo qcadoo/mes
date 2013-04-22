@@ -224,7 +224,6 @@ ALTER TABLE deliveries_deliveredproduct ADD COLUMN totalprice numeric(12,5);
 -- Table: deliveries_orderedproduct
 -- changed: 16.04.2013
 
-ALTER TABLE deliveries_orderedproduct ADD COLUMN priceperunit numeric(12,5);
 ALTER TABLE deliveries_orderedproduct ADD COLUMN totalprice numeric(12,5);
 
 -- end
