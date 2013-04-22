@@ -68,7 +68,7 @@ public class TechnologyTreeNumberingHooks {
         }
 
         debug("Fire tree node number generator for tecnology with id = " + technologyId);
-        treeNumberingService.generateNumbersAndUpdateTree(technologyTree);
+        treeNumberingService.generateTreeNumbers(technologyTree);
     }
 
     private Entity getTechnologyById(final Long id) {
