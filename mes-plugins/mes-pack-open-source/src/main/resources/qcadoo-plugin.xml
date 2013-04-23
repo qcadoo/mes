@@ -86,15 +86,7 @@
 			<version>[1.2.0</version>
 		</dependency>
 		<dependency>
-			<plugin>genealogiesForComponents</plugin>
-			<version>[1.2.0</version>
-		</dependency>
-		<dependency>
 			<plugin>qualityControlsForOperation</plugin>
-			<version>[1.2.0</version>
-		</dependency>
-		<dependency>
-			<plugin>qualityControlsForBatch</plugin>
 			<version>[1.2.0</version>
 		</dependency>
 		<dependency>
