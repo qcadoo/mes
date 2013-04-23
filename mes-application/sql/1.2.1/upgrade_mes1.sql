@@ -396,3 +396,14 @@ ALTER TABLE productioncounting_recordoperationproductoutcomponent
       REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
 
 -- end
+
+-- Table: basic_parameter
+-- changed: 23.04.2013
+
+ALTER TABLE basic_parameter ADD COLUMN reasonneededwhencorrectingtherequestedvolume boolean;
+ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhencorrectingtherequestedvolume SET DEFAULT false;
+
+ALTER TABLE basic_parameter ADD COLUMN blockabilitytochangeapprovalorder boolean;
+ALTER TABLE basic_parameter ALTER COLUMN blockabilitytochangeapprovalorder SET DEFAULT false;
+
+-- end
