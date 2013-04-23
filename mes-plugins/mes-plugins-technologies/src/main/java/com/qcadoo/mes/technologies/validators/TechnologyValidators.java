@@ -26,14 +26,27 @@ package com.qcadoo.mes.technologies.validators;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class TechnologyModelValidators {
+public class TechnologyValidators {
+
+    @Autowired
+    private ProductService productService;
+
+    public boolean validate(final DataDefinition dataDefinition, final Entity technology) {
+        boolean isValid = true;
+        isValid = isValid && checkTechnologyDefault(dataDefinition, technology);
+        isValid = isValid && productService.checkIfProductIsNotRemoved(dataDefinition, technology);
+        isValid = isValid && checkIfTreeOperationIsValid(dataDefinition, technology);
+        return isValid;
+    }
 
     public boolean checkIfTreeOperationIsValid(final DataDefinition dataDefinition, final Entity technology) {
         if (technology != null && technology.getId() != null) {
@@ -47,7 +60,6 @@ public class TechnologyModelValidators {
                     technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", operation);
                     return false;
                 }
-
             }
         }
         return true;

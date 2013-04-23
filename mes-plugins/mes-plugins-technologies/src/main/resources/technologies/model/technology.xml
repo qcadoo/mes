@@ -53,38 +53,16 @@
 			cascade="delete" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyModelValidators"
-			method="checkTechnologyDefault" />
-		<validatesWith class="com.qcadoo.mes.basic.ProductService"
-			method="checkIfProductIsNotRemoved" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="checkIfTechnologyHasAtLeastOneComponent" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="checkTopComponentsProducesProductForTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="checkIfAllReferenceTechnologiesAreAceepted" />
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="checkIfOperationsUsesSubOperationsProds" />
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
-			method="checkConsumingTheSameProductFromManySubOperations" />
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyModelValidators"
-			method="checkIfTreeOperationIsValid" />	 
-			
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyValidators"
+			method="validate" />
 		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
-			method="setInitialState" />
-			
+			method="onCreate" />
 		<onCopy class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks" 
-			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
-			method="clearMasterOnCopy" />
-		<onCopy class="com.qcadoo.mes.technologies.TechnologyService"
-			method="switchStateToDraftOnCopy" />
-			
+			method="onCopy" />
 		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
-			method="setNewMasterTechnology" />
-			
-		<onUpdate class="com.qcadoo.mes.technologies.TechnologyService"
-			method="performTreeNumbering" />
+			method="onSave" />
+		<onUpdate class="com.qcadoo.mes.technologies.hooks.TechnologyModelHooks"
+			method="onUpdate" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

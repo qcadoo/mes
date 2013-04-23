@@ -288,11 +288,6 @@
 				method="setDefaultValuesIfEmpty" />
 		</model:model-hook>
 
-		<model:model-hook model="technology" plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkIfAllOperationComponenthHaveTJSet" />
-		</model:model-hook>
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:onCreate
@@ -303,15 +298,8 @@
 		<model:model-hook model="technologyOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkIfUnitMatch" />
-		</model:model-hook>
-
-		<model:model-hook model="technologyOperationComponent"
-			plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkIfUnitsInTechnologyMatch" />
+				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyOperationComponentValidatorsTNFO"
+				method="validate" />
 		</model:model-hook>
 
 		<model:model-hook model="technologyInstanceOperationComponent"
@@ -324,22 +312,10 @@
 		<model:model-hook model="technologyInstanceOperationComponent"
 			plugin="technologies">
 			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkIfUnitMatch" />
+				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyInstanceOperationComponentValidatorsTNFO"
+				method="validate" />
 		</model:model-hook>
 
-		<model:model-hook model="technologyInstanceOperationComponent"
-			plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkIfUnitsInInstanceTechnologyMatch" />
-		</model:model-hook>
-		
-		<model:model-hook model="technology" plugin="technologies">
-			<model:validatesWith
-				class="com.qcadoo.mes.timeNormsForOperations.validators.TechnologyValidators"
-				method="checkOperationOutputQuantities" />
-		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		<view:view-tab

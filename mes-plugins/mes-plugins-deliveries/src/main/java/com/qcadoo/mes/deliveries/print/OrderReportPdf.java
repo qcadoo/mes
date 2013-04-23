@@ -68,7 +68,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -262,30 +262,30 @@ public class OrderReportPdf extends ReportPdfView {
     private void addTotalProductsCosts(final List<Entity> orderedProducts, final List<Entity> filteredColumnsForOrders,
             final Map<Entity, Map<String, String>> orderedProductsColumnValues, final PdfPTable productsTable,
             final Locale locale, final List<String> columnsName) {
-        if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)) {
-
-            BigDecimal totalProductsCosts = new BigDecimal(0);
+        if (columnsName.contains(OrderedProductFields.TOTAL_PRICE)) {
+            BigDecimal totalProductsCosts = BigDecimal.ZERO;
             MathContext mc = numberService.getMathContext();
             for (Entity orderedProduct : orderedProducts) {
                 for (Entity columnForOrders : filteredColumnsForOrders) {
                     String identifier = columnForOrders.getStringField(IDENTIFIER);
                     String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
 
-                    if (identifier.equals("totalPrice")) {
-                        if (StringUtils.isNotEmpty(value)) {
-                            BigDecimal totalPrice = new BigDecimal(value);
-                            totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
-                        }
+                    if (identifier.equals("totalPrice") && StringUtils.isNotEmpty(value)) {
+                        BigDecimal totalPrice = new BigDecimal(value);
+                        totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
                     }
 
                 }
             }
+
             productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
                     FontUtils.getDejavuRegular9Dark()));
+
             int columnQuantity = columnsName.size() - 2;
             for (int i = 0; i < columnQuantity; i++) {
                 productsTable.addCell("");
             }
+
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             productsTable.addCell(new Phrase(numberService.format(totalProductsCosts), FontUtils.getDejavuRegular9Dark()));
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
