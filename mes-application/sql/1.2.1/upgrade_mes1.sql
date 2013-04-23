@@ -403,6 +403,5 @@ ALTER TABLE basic_parameter ALTER COLUMN blockabilitytochangeapprovalorder SET D
 -- Table: orders_order
 -- changed: 23.04.2013
 ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectivestart character varying(255);
-:q:q
 
 -- end
