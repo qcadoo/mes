@@ -39,6 +39,8 @@ import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.mes.technologies.states.listener.TechnologyValidationService;
+import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -48,6 +50,9 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
 
     @Autowired
     private TechnologyValidationService technologyValidationService;
+
+    @Autowired
+    private TechnologyTreeValidators technologyTreeValidators;
 
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -59,6 +64,13 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
+        Entity technology = stateChangeContext.getOwner();
+        technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology);
+        technologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext);
+        // TODO DEV_TEAM when we fixed problem with referenced technology
+        // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
+        technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
+        technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
     }
 
     @RunInPhase(TechnologyStateChangePhase.PRE_VALIDATION)

@@ -54,15 +54,12 @@
 			joinField="operationComponent" cascade="delete" copyable="true" />
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-			method="validateTechnologyOperationComponent" />
-		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
-			method="copyReferencedTechnology" />
-		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
-			method="invalidateIfBelongsToAcceptedTechnology" />
-		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
-			method="setParentIfRootNodeAlreadyExists" />
-		<onCreate class="com.qcadoo.mes.technologies.TechnologyService"
-			method="copyCommentAndAttachmentFromOperation" />
+		<onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
+			method="onCreate" />
+		<!-- 		TODO DEV_TEAM when we add reference -->
+		<!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyOperationComponentValidators" -->
+		<!-- 			method="validateEntityTypeOfTechnologyOperationComponent" /> -->
+		<!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators" -->
+		<!-- 			method="invalidateIfBelongsToAcceptedTechnology" /> -->
 	</hooks>
 </model>

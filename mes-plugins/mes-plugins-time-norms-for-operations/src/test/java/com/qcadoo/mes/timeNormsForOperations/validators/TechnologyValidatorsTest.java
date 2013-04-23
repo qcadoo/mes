@@ -37,7 +37,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields;
-import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -46,7 +45,7 @@ public class TechnologyValidatorsTest {
 
     private static final String SOME_UNIT = "someUnit";
 
-    private TechnologyValidators technologyValidators;
+    private TechnologyValidatorsServiceTNFO technologyValidatorsServiceTNFO;
 
     @Mock
     private Entity technology;
@@ -67,29 +66,14 @@ public class TechnologyValidatorsTest {
     private Entity techInstanceOpComponent;
 
     @Mock
-    private NormService normService;
-
-    @Mock
     private ProductQuantitiesService productQuantitiesService;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        technologyValidators = new TechnologyValidators();
-        ReflectionTestUtils.setField(technologyValidators, "productQuantitiyService", productQuantitiesService);
-    }
-
-    @Test
-    public void shouldAlwaysPassIfTheTechnologyIsInDraftState() {
-        // given
-        given(technology.getStringField("state")).willReturn("01draft");
-
-        // when
-        boolean isValid = technologyValidators.checkOperationOutputQuantities(dataDefinition, technology);
-
-        // then
-        assertTrue(isValid);
+        technologyValidatorsServiceTNFO = new TechnologyValidatorsServiceTNFO();
+        ReflectionTestUtils.setField(technologyValidatorsServiceTNFO, "productQuantitiyService", productQuantitiesService);
     }
 
     @Test
@@ -99,7 +83,7 @@ public class TechnologyValidatorsTest {
         given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertFalse(isValid);
@@ -112,7 +96,7 @@ public class TechnologyValidatorsTest {
         given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(SOME_UNIT);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertTrue(isValid);
@@ -125,7 +109,7 @@ public class TechnologyValidatorsTest {
         given(techOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertFalse(isValid);
@@ -141,7 +125,7 @@ public class TechnologyValidatorsTest {
         given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertFalse(isValid);
@@ -157,7 +141,7 @@ public class TechnologyValidatorsTest {
         given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInTechnologyMatch(dataDefinition, techOpComponent);
 
         // then
         assertTrue(isValid);
@@ -173,7 +157,7 @@ public class TechnologyValidatorsTest {
         given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
                 techInstanceOpComponent);
 
         // then
@@ -191,7 +175,7 @@ public class TechnologyValidatorsTest {
                 SOME_UNIT);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
                 techInstanceOpComponent);
 
         // then
@@ -208,7 +192,7 @@ public class TechnologyValidatorsTest {
         given(techInstanceOpComponent.getStringField(TechnologyOperCompTNFOFields.PRODUCTION_IN_ONE_CYCLE_UNIT)).willReturn(null);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
                 techInstanceOpComponent);
 
         // then
@@ -229,7 +213,7 @@ public class TechnologyValidatorsTest {
         given(product.getStringField(ProductFields.UNIT)).willReturn("someAnoherUnit");
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
                 techInstanceOpComponent);
 
         // then
@@ -250,7 +234,7 @@ public class TechnologyValidatorsTest {
         given(product.getStringField(ProductFields.UNIT)).willReturn(SOME_UNIT);
 
         // when
-        final boolean isValid = technologyValidators.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
+        final boolean isValid = technologyValidatorsServiceTNFO.checkIfUnitsInInstanceTechnologyMatch(dataDefinition,
                 techInstanceOpComponent);
 
         // then

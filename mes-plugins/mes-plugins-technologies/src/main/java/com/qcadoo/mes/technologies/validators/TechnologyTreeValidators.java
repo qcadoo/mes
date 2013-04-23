@@ -24,8 +24,6 @@
 package com.qcadoo.mes.technologies.validators;
 
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
-import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +32,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -51,30 +50,24 @@ public class TechnologyTreeValidators {
     @Autowired
     private TechnologyTreeValidationService technologyTreeValidationService;
 
-    public boolean checkConsumingTheSameProductFromManySubOperations(final DataDefinition dd, final Entity tech) {
-        if (!(ACCEPTED.getStringValue().equals(tech.getStringField(STATE)) || CHECKED.getStringValue().equals(
-                tech.getStringField(STATE)))) {
-            return true;
-        }
+    public boolean checkConsumingTheSameProductFromManySubOperations(final DataDefinition technologyDD, final Entity technology) {
+        Entity techFromDB = technologyDD.get(technology.getId());
 
-        Entity techFromDB = tech.getDataDefinition().get(tech.getId());
-
-        EntityTree tree = techFromDB.getTreeField("operationComponents");
+        EntityTree tree = techFromDB.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         Map<String, Set<Entity>> nodesMap = technologyTreeValidationService
                 .checkConsumingTheSameProductFromManySubOperations(tree);
 
         for (Entry<String, Set<Entity>> entry : nodesMap.entrySet()) {
             String parentNodeNumber = entry.getKey();
             for (Entity product : entry.getValue()) {
-                String productName = product.getStringField("name");
-                String productNumber = product.getStringField("number");
+                String productName = product.getStringField(ProductFields.NAME);
+                String productNumber = product.getStringField(ProductFields.NUMBER);
 
-                tech.addGlobalError(
+                technology.addGlobalError(
                         "technologies.technology.validate.global.error.subOperationsProduceTheSameProductThatIsConsumed",
                         parentNodeNumber, productName, productNumber);
             }
         }
-
         return nodesMap.isEmpty();
     }
 

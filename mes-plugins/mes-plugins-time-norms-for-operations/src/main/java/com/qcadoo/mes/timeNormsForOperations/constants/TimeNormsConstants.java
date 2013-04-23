@@ -29,6 +29,8 @@ import com.google.common.collect.Sets;
 
 public interface TimeNormsConstants {
 
+    public static final String PLUGIN_IDENTIFIER = "timeNormsForOperations";
+
     Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "nextOperationAfterProducedType",
             "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT", "timeNextOperation",
             "machineUtilization", "laborUtilization", "productionInOneCycleUNIT", "areProductQuantitiesDivisible",

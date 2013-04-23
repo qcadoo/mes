@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 
@@ -30,12 +31,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeDescriber;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.TreeNumberingService;
 
 @Service
 public class TechnologyModelHooks {
@@ -46,15 +51,41 @@ public class TechnologyModelHooks {
     @Autowired
     private TechnologyStateChangeDescriber describer;
 
-    public void setInitialState(final DataDefinition dataDefinition, final Entity technology) {
+    @Autowired
+    private TechnologyService technologyService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TreeNumberingService treeNumberingService;
+
+    public void onCreate(final DataDefinition technologyDD, final Entity technology) {
+        setInitialState(technology);
+    }
+
+    public void onCopy(final DataDefinition technologyDD, final Entity technology) {
+        technology.setField(MASTER, false);
+        setInitialState(technology);
+    }
+
+    public void onSave(final DataDefinition technologyDD, final Entity technology) {
+        setNewMasterTechnology(technologyDD, technology);
+    }
+
+    public void onUpdate(final DataDefinition technologyDD, final Entity technology) {
+        performTreeNumbering(technologyDD, technology);
+    }
+
+    private void setInitialState(final Entity technology) {
         stateChangeEntityBuilder.buildInitial(describer, technology, TechnologyState.DRAFT);
     }
 
-    public void setNewMasterTechnology(final DataDefinition dataDefinition, final Entity technology) {
+    private void setNewMasterTechnology(final DataDefinition technologyDD, final Entity technology) {
         if (!technology.getBooleanField(MASTER)) {
             return;
         }
-        SearchCriteriaBuilder searchCriteries = dataDefinition.find();
+        SearchCriteriaBuilder searchCriteries = technologyDD.find();
         searchCriteries.add(SearchRestrictions.eq(MASTER, true));
         searchCriteries.add(SearchRestrictions.belongsTo(PRODUCT, technology.getBelongsToField(PRODUCT)));
 
@@ -67,7 +98,17 @@ public class TechnologyModelHooks {
             return;
         }
         defaultTechnology.setField(MASTER, false);
-        dataDefinition.save(defaultTechnology);
+        technologyDD.save(defaultTechnology);
+    }
+
+    public final void performTreeNumbering(final DataDefinition technologyDD, final Entity technology) {
+        if (!technologyService.checkIfTechnologyStateIsOtherThanCheckedAndAccepted(technology)) {
+            return;
+        }
+        DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+        treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, TechnologiesConstants.MODEL_TECHNOLOGY,
+                technology.getId());
     }
 
 }

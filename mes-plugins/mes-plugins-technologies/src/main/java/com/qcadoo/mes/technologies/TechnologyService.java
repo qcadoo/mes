@@ -25,25 +25,19 @@ package com.qcadoo.mes.technologies;
 
 import static com.qcadoo.mes.technologies.constants.OperationFields.ATTACHMENT;
 import static com.qcadoo.mes.technologies.constants.OperationFields.COMMENT;
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.REFERENCE_TECHNOLOGY;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 import static com.qcadoo.mes.technologies.constants.TechnologyInstanceOperCompFields.TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.ACCEPTED;
 import static com.qcadoo.mes.technologies.states.constants.TechnologyState.CHECKED;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,17 +48,13 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.plugin.api.PluginAccessor;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -124,9 +114,6 @@ public class TechnologyService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private TreeNumberingService treeNumberingService;
-
-    @Autowired
     private TranslationService translationService;
 
     @Autowired
@@ -135,23 +122,23 @@ public class TechnologyService {
     @Autowired
     private PluginAccessor pluginAccessor;
 
-    public void copyCommentAndAttachmentFromOperation(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
-        copyCommentAndAttachmentFromLowerInstance(technologyOperationComponent, OPERATION);
-    }
-
     public void copyCommentAndAttachmentFromTechnologyOperationComponent(
             final DataDefinition technologyInstanceOperationComponentDD, final Entity technologyInstanceOperationComponent) {
         copyCommentAndAttachmentFromLowerInstance(technologyInstanceOperationComponent, TECHNOLOGY_OPERATION_COMPONENT);
     }
 
-    private void copyCommentAndAttachmentFromLowerInstance(final Entity operationComponent, final String belongsToName) {
+    public void copyCommentAndAttachmentFromLowerInstance(final Entity operationComponent, final String belongsToName) {
         Entity operation = operationComponent.getBelongsToField(belongsToName);
 
         if (operation != null) {
             operationComponent.setField(COMMENT, operation.getStringField(COMMENT));
             operationComponent.setField(ATTACHMENT, operation.getStringField(ATTACHMENT));
         }
+    }
+
+    public boolean checkIfTechnologyStateIsOtherThanCheckedAndAccepted(final Entity technology) {
+        return !ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
+                && !CHECKED.getStringValue().equals(technology.getStringField(STATE));
     }
 
     public boolean isTechnologyUsedInActiveOrder(final Entity technology) {
@@ -176,11 +163,6 @@ public class TechnologyService {
 
     private enum ProductDirection {
         IN, OUT;
-    }
-
-    public boolean clearMasterOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(MASTER, false);
-        return true;
     }
 
     public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -303,303 +285,11 @@ public class TechnologyService {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
 
-    public void copyReferencedTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (!REFERENCE_TECHNOLOGY.equals(entity.getField(L_ENTITY_TYPE)) && entity.getField(REFERENCE_TECHNOLOGY) == null) {
-            return;
-        }
-
-        boolean copy = "02copy".equals(entity.getField(L_REFERENCE_MODE));
-
-        Entity technology = entity.getBelongsToField(L_TECHNOLOGY);
-        Entity referencedTechnology = entity.getBelongsToField(REFERENCE_TECHNOLOGY);
-
-        Set<Long> technologies = new HashSet<Long>();
-        technologies.add(technology.getId());
-
-        boolean cyclic = checkForCyclicReferences(technologies, referencedTechnology, copy);
-
-        if (cyclic) {
-            entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY),
-                    "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
-            return;
-        }
-
-        if (copy) {
-            EntityTreeNode root = referencedTechnology.getTreeField(L_OPERATION_COMPONENTS).getRoot();
-            Entity copiedRoot = copyReferencedTechnologyOperations(root, entity.getBelongsToField(L_TECHNOLOGY));
-
-            for (Entry<String, Object> entry : copiedRoot.getFields().entrySet()) {
-                if (!(entry.getKey().equals("id") || entry.getKey().equals(L_PARENT))) {
-                    entity.setField(entry.getKey(), entry.getValue());
-                }
-            }
-            entity.setField(L_ENTITY_TYPE, L_OPERATION);
-            entity.setField(REFERENCE_TECHNOLOGY, null);
-        }
-    }
-
-    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
-        if (!copy && technologies.contains(referencedTechnology.getId())) {
-            return true;
-        }
-        technologies.add(referencedTechnology.getId());
-
-        for (Entity operationComponent : referencedTechnology.getTreeField(L_OPERATION_COMPONENTS)) {
-            if (REFERENCE_TECHNOLOGY.equals(operationComponent.getField(L_ENTITY_TYPE))) {
-                boolean cyclic = checkForCyclicReferences(technologies,
-                        operationComponent.getBelongsToField(REFERENCE_TECHNOLOGY), false);
-                if (cyclic) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private Entity copyReferencedTechnologyOperations(final Entity node, final Entity technology) {
-        Entity copy = node.copy();
-
-        copy.setId(null);
-        copy.setField(L_PARENT, null);
-        copy.setField(L_TECHNOLOGY, technology);
-
-        for (Entry<String, Object> entry : node.getFields().entrySet()) {
-            Object value = entry.getValue();
-            if (value instanceof EntityList) {
-                EntityList entities = (EntityList) value;
-                List<Entity> copies = new ArrayList<Entity>();
-                for (Entity entity : entities) {
-                    copies.add(copyReferencedTechnologyOperations(entity, technology));
-                }
-
-                copy.setField(entry.getKey(), copies);
-            }
-        }
-
-        return copy;
-    }
-
-    public boolean validateTechnologyOperationComponent(final DataDefinition dataDefinition, final Entity entity) {
-        boolean isValid = true;
-        if (L_OPERATION.equals(entity.getStringField(L_ENTITY_TYPE))) {
-            if (entity.getField(L_OPERATION) == null) {
-                entity.addError(dataDefinition.getField(L_OPERATION), "qcadooView.validate.field.error.missing");
-                isValid = false;
-            }
-        } else if (REFERENCE_TECHNOLOGY.equals(entity.getStringField(L_ENTITY_TYPE))) {
-            if (entity.getField(REFERENCE_TECHNOLOGY) == null) {
-                entity.addError(dataDefinition.getField(REFERENCE_TECHNOLOGY), "qcadooView.validate.field.error.missing");
-                isValid = false;
-            }
-            if (entity.getField(L_REFERENCE_MODE) == null) {
-                entity.setField(L_REFERENCE_MODE, "01reference");
-            }
-        } else {
-            throw new IllegalStateException("unknown entityType");
-        }
-        return isValid;
-    }
-
-    public boolean checkIfTechnologyHasAtLeastOneComponent(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
-            return true;
-        }
-        final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
-        if (operations != null && !operations.isEmpty()) {
-            for (Entity operation : operations) {
-                if (L_OPERATION.equals(operation.getStringField(L_ENTITY_TYPE))) {
-                    return true;
-                }
-            }
-        }
-        technology.addGlobalError("technologies.technology.validate.global.error.emptyTechnologyTree");
-        return false;
-    }
-
-    public boolean checkTopComponentsProducesProductForTechnology(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
-            return true;
-        }
-        final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final Entity product = savedTechnology.getBelongsToField(L_PRODUCT);
-        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
-        final EntityTreeNode root = operations.getRoot();
-        final EntityList productOutComps = root.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
-        for (Entity productOutComp : productOutComps) {
-            if (product.getId().equals(productOutComp.getBelongsToField(L_PRODUCT).getId())) {
-                return true;
-            }
-        }
-        technology.addGlobalError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
-        return false;
-    }
-
-    public boolean checkIfAllReferenceTechnologiesAreAceepted(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
-            return true;
-        }
-        final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree operations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
-        for (Entity operation : operations) {
-            if (L_OPERATION.equals(operation.getStringField(L_ENTITY_TYPE))) {
-                continue;
-            }
-            final Entity referenceTechnology = operation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
-            if (referenceTechnology != null
-                    && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
-                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
-                        "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean checkIfOperationsUsesSubOperationsProds(final DataDefinition dataDefinition, final Entity technology) {
-        if (!ACCEPTED.getStringValue().equals(technology.getStringField(STATE))
-                && !CHECKED.getStringValue().equals(technology.getStringField(STATE))) {
-            return true;
-        }
-        final Entity savedTechnology = dataDefinition.get(technology.getId());
-        final EntityTree technologyOperations = savedTechnology.getTreeField(L_OPERATION_COMPONENTS);
-        Set<Entity> operations = checkIfConsumesSubOpsProds(technologyOperations);
-
-        if (!operations.isEmpty()) {
-            StringBuilder levels = new StringBuilder();
-
-            for (Entity operation : operations) {
-                if (levels.length() != 0) {
-                    levels.append(", ");
-                }
-
-                levels.append(operation.getStringField("nodeNumber"));
-            }
-
-            if (operations.size() == 1) {
-                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
-                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts",
-                        levels.toString());
-            } else {
-                technology.addError(dataDefinition.getField(L_OPERATION_COMPONENTS),
-                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural",
-                        levels.toString());
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean checkIfAtLeastOneCommonElement(final List<Entity> prodsIn, final List<Entity> prodsOut) {
-        for (Entity prodOut : prodsOut) {
-            for (Entity prodIn : prodsIn) {
-                if (prodIn.getBelongsToField(L_PRODUCT).getId().equals(prodOut.getBelongsToField(L_PRODUCT).getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private Set<Entity> checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
-        Set<Entity> operations = new HashSet<Entity>();
-
-        for (Entity technologyOperation : technologyOperations) {
-            final Entity parent = technologyOperation.getBelongsToField(L_PARENT);
-            if (parent == null || L_REFERENCE_TECHNOLOGY.equals(parent.getStringField(L_ENTITY_TYPE))) {
-                continue;
-            }
-            final EntityList prodsIn = parent.getHasManyField(L_OPERATION_PRODUCT_IN_COMPONENTS);
-
-            if (L_OPERATION.equals(technologyOperation.getStringField(L_ENTITY_TYPE))) {
-                final EntityList prodsOut = technologyOperation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS);
-
-                if (prodsIn == null) {
-                    operations.add(parent);
-                    continue;
-                }
-
-                if (prodsIn.isEmpty()) {
-                    operations.add(parent);
-                    continue;
-                }
-
-                if (prodsOut == null) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (prodsOut.isEmpty()) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (!checkIfAtLeastOneCommonElement(prodsOut, prodsIn)) {
-                    operations.add(technologyOperation);
-                }
-            } else {
-                final Entity prodOut = technologyOperation.getBelongsToField(L_REFERENCE_TECHNOLOGY);
-
-                if (prodOut == null) {
-                    operations.add(parent);
-                    continue;
-                }
-
-                if (prodsIn == null) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (prodsIn.isEmpty()) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodOut), prodsIn)) {
-                    operations.add(technologyOperation);
-                }
-            }
-        }
-
-        return operations;
-    }
-
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_OPERATION);
 
         operationLookup.setEnabled(form.getEntityId() == null);
-    }
-
-    public final void performTreeNumbering(final DataDefinition dd, final Entity technology) {
-        if (TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
-            return;
-        }
-        DataDefinition technologyOperationDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        treeNumberingService.generateNumbersAndUpdateTree(technologyOperationDD, L_TECHNOLOGY, technology.getId());
-
-    }
-
-    public void setParentIfRootNodeAlreadyExists(final DataDefinition dd, final Entity technologyOperation) {
-        Entity technology = technologyOperation.getBelongsToField(L_TECHNOLOGY);
-        EntityTree tree = technology.getTreeField(L_OPERATION_COMPONENTS);
-        if (tree == null) {
-            return;
-        }
-        if (tree.isEmpty()) {
-            return;
-        }
-        EntityTreeNode rootNode = tree.getRoot();
-        if (rootNode == null || technologyOperation.getBelongsToField(L_PARENT) != null) {
-            return;
-        }
-        technologyOperation.setField(L_PARENT, rootNode);
     }
 
     public void toggleDetailsViewEnabled(final ViewDefinitionState view) {
@@ -665,10 +355,6 @@ public class TechnologyService {
         }
 
         return L_00_UNRELATED;
-    }
-
-    public void switchStateToDraftOnCopy(final DataDefinition technologyDataDefinition, final Entity technology) {
-        technology.setField(STATE, TechnologyState.DRAFT.getStringValue());
     }
 
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree, final List<Entity> operationComponents) {
