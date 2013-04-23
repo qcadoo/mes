@@ -25,10 +25,12 @@ package com.qcadoo.mes.workPlans.hooks;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public interface ValidatorService {
 
-    boolean checkIfAttachmentExtensionIsValid(final DataDefinition modelDD, final Entity model, final String attachmentName);
+    boolean checkAttachmentExtension(final DataDefinition dataDefinition, final FieldDefinition attachmentFieldDef,
+            final Entity entity, final Object oldValue, final Object newValue);
 
     boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
             final String columnName, final String componentName);

@@ -115,7 +115,11 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
-			<model:file name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan">
+				<model:validatesWith
+					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
+					method="checkAttachmentExtension" />
+			</model:file>
 		</model:model-field>
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -150,7 +154,11 @@
 			<model:boolean name="hideTechnologyAndOrderInWorkPlans" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
-			<model:file name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan">
+				<model:validatesWith
+					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
+					method="checkAttachmentExtension" />
+			</model:file>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="dontPrintInputProductsInWorkPlans" />
@@ -184,7 +192,11 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
-			<model:file name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan">
+				<model:validatesWith
+					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
+					method="checkAttachmentExtension" />
+			</model:file>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -222,7 +234,11 @@
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
-			<model:file name="imageUrlInWorkPlan" />
+			<model:file name="imageUrlInWorkPlan">
+				<model:validatesWith
+					class="com.qcadoo.mes.workPlans.hooks.ValidatorService"
+					method="checkAttachmentExtension" />
+			</model:file>
 		</model:model-field>
 		<model:model-field plugin="technologies"
 			model="technologyInstanceOperationComponent">
@@ -246,32 +262,6 @@
 				cascade="delete" copyable="true" />
 		</model:model-field>
 
-		<model:model-hook plugin="basic" model="parameter">
-			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.ParameterModelValidators"
-				method="checkIfAttachmentExtensionIsValid" />
-		</model:model-hook>
-
-		<model:model-hook plugin="technologies" model="operation">
-			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.OperationModelValidatorsWP"
-				method="checkIfAttachmentExtensionIsValid" />
-		</model:model-hook>
-
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
-			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.TechnologyOperationComponentModelValidators"
-				method="checkIfAttachmentExtensionIsValid" />
-		</model:model-hook>
-
-		<model:model-hook plugin="technologies"
-			model="technologyInstanceOperationComponent">
-			<model:validatesWith
-				class="com.qcadoo.mes.workPlans.hooks.TechnologyInstanceOperationComponentModelValidators"
-				method="checkIfAttachmentExtensionIsValid" />
-		</model:model-hook>
-	
 		<model:model-hook plugin="workPlans" model="workPlan">
 			<model:onCreate class="com.qcadoo.mes.workPlans.hooks.WorkPlanModelHooks"
 				method="copyColumnForOrders" />
