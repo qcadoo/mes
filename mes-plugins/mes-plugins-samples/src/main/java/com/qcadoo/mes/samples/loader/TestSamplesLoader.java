@@ -157,12 +157,12 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_OFFER_PRODUCTS, locale);
             readDataFromXML(dataset, L_OFFER_STATE_CHANGES, locale);
 
-            if (isEnabledOrEnabling(L_DELIVERY)) {
-                readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
-                readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
-                readDataFromXML(dataset, L_DELIVERY_STATE_CHANGES, locale);
-            }
+        }
 
+        if (isEnabledOrEnabling(L_DELIVERY)) {
+            readDataFromXML(dataset, L_DELIVERY_DELIVERY, locale);
+            readDataFromXML(dataset, L_ORDERED_PRODUCTS, locale);
+            readDataFromXML(dataset, L_DELIVERY_STATE_CHANGES, locale);
         }
 
     }
@@ -332,6 +332,10 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         orderedProduct.setField(L_PRODUCT, getProductByNumber(values.get(L_PRODUCT_NR)));
         orderedProduct.setField("orderedQuantity", values.get("orderedquantity"));
         orderedProduct.setField("description", values.get("description"));
+        if (!isEnabledOrEnabling(L_SUPPLY_NEGOTIATIONS)) {
+            orderedProduct.setField("pricePerUnit", values.get("priceperunit"));
+            orderedProduct.setField("totalPrice", values.get("totalprice"));
+        }
         orderedProduct.getDataDefinition().save(orderedProduct);
     }
 
