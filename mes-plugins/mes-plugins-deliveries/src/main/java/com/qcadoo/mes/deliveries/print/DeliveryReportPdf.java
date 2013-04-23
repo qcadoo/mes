@@ -274,20 +274,21 @@ public class DeliveryReportPdf extends ReportPdfView {
                     String identifier = columnForDeliveries.getStringField(IDENTIFIER);
                     String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
 
-                    if (identifier.equals("totalPrice")) {
-                        if (StringUtils.isNotEmpty(value)) {
-                            BigDecimal totalPrice = new BigDecimal(value);
-                            totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
-                        }
+                    if (identifier.equals("totalPrice") && StringUtils.isNotEmpty(value)) {
+                        BigDecimal totalPrice = new BigDecimal(value);
+                        totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
                     }
                 }
             }
+
             productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
                     FontUtils.getDejavuRegular9Dark()));
+
             int columnQuantity = columnsName.size() - 2;
             for (int i = 0; i < columnQuantity; i++) {
                 productsTable.addCell("");
             }
+
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             productsTable.addCell(new Phrase(numberService.format(totalProductsCosts), FontUtils.getDejavuRegular9Dark()));
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
