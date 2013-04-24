@@ -57,15 +57,17 @@ public class TechnologyOperationComponentHooks {
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (!REFERENCE_TECHNOLOGY.equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))
-                && technologyOperationComponent.getField(REFERENCE_TECHNOLOGY) == null) {
+        if (!TechnologyOperationComponentFields.REFERENCETECHNOLOGY.equals(technologyOperationComponent
+                .getField(TechnologyOperationComponentFields.ENTITY_TYPE))
+                && technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY) == null) {
             return;
         }
 
         boolean copy = "02copy".equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCEMODE));
 
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-        Entity referencedTechnology = technologyOperationComponent.getBelongsToField(REFERENCE_TECHNOLOGY);
+        Entity referencedTechnology = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY);
 
         Set<Long> technologies = new HashSet<Long>();
         technologies.add(technology.getId());
@@ -73,7 +75,8 @@ public class TechnologyOperationComponentHooks {
         boolean cyclic = checkForCyclicReferences(technologies, referencedTechnology, copy);
 
         if (cyclic) {
-            technologyOperationComponent.addError(technologyOperationComponentDD.getField(REFERENCE_TECHNOLOGY),
+            technologyOperationComponent.addError(
+                    technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCETECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.cyclicDependency");
             return;
         }
@@ -114,6 +117,7 @@ public class TechnologyOperationComponentHooks {
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
+
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }

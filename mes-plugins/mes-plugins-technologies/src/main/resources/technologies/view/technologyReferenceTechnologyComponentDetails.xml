@@ -51,6 +51,9 @@
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
 						<option type="required" value="true" />
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.technologies.listeners.TechnologyReferenceTechnologyComponentDetailsListeners"
+							method="technologyReferenceTechnologyComponentDetailsHooks" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
@@ -68,7 +71,9 @@
 	</component>
 	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyReferenceTechnologyComponentDetailsHooks"
 			method="hideReferenceMode" />
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyReferenceTechnologyComponentDetailsHooks"
+			method="disabledSaveBackButton" />
 	</hooks>
 </view>

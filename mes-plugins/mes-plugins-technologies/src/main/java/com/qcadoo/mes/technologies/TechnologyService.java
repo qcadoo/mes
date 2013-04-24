@@ -105,8 +105,6 @@ public class TechnologyService {
 
     private static final String L_OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
 
-    private static final String L_REFERENCE_MODE = "referenceMode";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -270,15 +268,6 @@ public class TechnologyService {
         name.setFieldValue(translationService.translate("technologies.operation.name.default", state.getLocale(),
                 product.getStringField(L_NAME), product.getStringField(L_NUMBER),
                 cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1)));
-    }
-
-    public void hideReferenceMode(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
-            ComponentState referenceModeComponent = viewDefinitionState.getComponentByReference(L_REFERENCE_MODE);
-            referenceModeComponent.setFieldValue("01reference");
-            referenceModeComponent.setVisible(false);
-        }
     }
 
     private Entity getProductById(final Long productId) {

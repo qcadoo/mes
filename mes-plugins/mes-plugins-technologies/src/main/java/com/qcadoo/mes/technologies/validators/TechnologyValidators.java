@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -49,20 +50,26 @@ public class TechnologyValidators {
     }
 
     public boolean checkIfTreeOperationIsValid(final DataDefinition dataDefinition, final Entity technology) {
-        if (technology != null && technology.getId() != null) {
-            Entity techFromDB = technology.getDataDefinition().get(technology.getId());
-            if (techFromDB == null) {
-                return true;
-            }
-            for (Entity operationComponent : techFromDB.getTreeField("operationComponents")) {
-                if (!operationComponent.getDataDefinition().callValidators(operationComponent)) {
-                    String operation = operationComponent.getBelongsToField("operation").getStringField("name");
-                    technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", operation);
-                    return false;
-                }
+        if (technology == null || technology.getId() == null) {
+            return true;
+        }
+        Entity techFromDB = technology.getDataDefinition().get(technology.getId());
+        if (techFromDB == null) {
+            return true;
+        }
+        StringBuilder builder = new StringBuilder();
+        boolean isValid = true;
+        for (Entity operationComponent : techFromDB.getTreeField("operationComponents")) {
+            if (!operationComponent.getDataDefinition().callValidators(operationComponent)) {
+                isValid = false;
+                builder.append(operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                builder.append(", ");
             }
         }
-        return true;
+        if (!isValid) {
+            technology.addGlobalError("technologies.technology.validate.error.OperationTreeNotValid", builder.toString());
+        }
+        return isValid;
     }
 
     public boolean checkTechnologyDefault(final DataDefinition dataDefinition, final Entity technology) {
