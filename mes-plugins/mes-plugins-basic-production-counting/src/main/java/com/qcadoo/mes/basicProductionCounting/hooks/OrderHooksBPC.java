@@ -23,9 +23,12 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS;
+import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,10 +48,16 @@ public class OrderHooksBPC {
     public void updateProductionCountingQuantitiesAndOperationRuns(final DataDefinition orderDD, final Entity order) {
         BigDecimal plannedQuantity = order.getDecimalField(PLANNED_QUANTITY);
 
-        if ((OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
-                || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE)) || OrderStateStringValues.INTERRUPTED
-                    .equals(order.getStringField(OrderFields.STATE))) && hasPlannedQuantityChanged(order, plannedQuantity)) {
-            basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
+        if (OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))
+                || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))
+                || OrderStateStringValues.INTERRUPTED.equals(order.getStringField(OrderFields.STATE))) {
+            if (hasPlannedQuantityChanged(order, plannedQuantity)) {
+                basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
+            } else {
+                if (checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(order)) {
+                    basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
+                }
+            }
         }
     }
 
@@ -72,6 +81,14 @@ public class OrderHooksBPC {
             return null;
         }
         return order.getDataDefinition().get(order.getId());
+    }
+
+    boolean checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(final Entity order) {
+        List<Entity> productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES);
+        List<Entity> productionCountingOperationRuns = order.getHasManyField(PRODUCTION_COUNTING_OPERATION_RUNS);
+
+        return (((productionCountingQuantities == null) || (productionCountingQuantities.isEmpty())) && ((productionCountingOperationRuns == null) || (productionCountingOperationRuns
+                .isEmpty())));
     }
 
 }
