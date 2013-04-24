@@ -38,7 +38,7 @@
 					rows="4">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number">
+							reference="number" hasDescription="true">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
@@ -60,6 +60,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="setLineChangeoverNormsName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
@@ -72,6 +75,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="setLineChangeoverNormsName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="1">
@@ -88,6 +94,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="setLineChangeoverNormsName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="3">
@@ -100,6 +109,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="setLineChangeoverNormsName" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="4">
@@ -112,6 +124,9 @@
 							<option type="expression"
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+								class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
+								method="setLineChangeoverNormsName" />
 						</component>
 					</layoutElement>
 				</component>
@@ -123,6 +138,6 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.lineChangeoverNorms.hooks.LineChangeoverNormsDetailsHooks"
-			method="setFieldsVisibleAndRequired" />
+			method="onBeforeRender" />
 	</hooks>
 </view>
