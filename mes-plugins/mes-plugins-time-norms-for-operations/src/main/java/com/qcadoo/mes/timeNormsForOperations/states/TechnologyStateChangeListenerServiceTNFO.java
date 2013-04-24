@@ -1,7 +1,6 @@
 package com.qcadoo.mes.timeNormsForOperations.states;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +23,17 @@ public class TechnologyStateChangeListenerServiceTNFO {
         // FIXME DEV_TEAM, why would I need this? Without it operationComponents are null
         Entity technology = techology.getDataDefinition().get(techology.getId());
 
-        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
-
-        for (Entry<String, String> message : messages.entrySet()) {
-            stateChangeContext.addValidationError(message.getKey(), message.getValue());
+        List<String> messages = normService.checkOperationOutputQuantities(technology);
+        if (!messages.isEmpty()) {
+            stateChangeContext.addValidationError("Technology tree have validations errors.");
+            StringBuilder builder = new StringBuilder();
+            for (String message : messages) {
+                builder.append(message.toString());
+                builder.append(", ");
+            }
+            stateChangeContext.addMessage("technologies.technology.validate.error.invalidQuantity", StateMessageType.FAILURE,
+                    false, builder.toString());
         }
-
         return messages.isEmpty();
     }
 
@@ -53,7 +57,7 @@ public class TechnologyStateChangeListenerServiceTNFO {
             }
         }
         if (!isValid) {
-            stateChangeContext.addValidationError("technologies.technology.validate.global.error.tjIsNotSet");
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.treeIsNotValid");
             stateChangeContext.addMessage("technologies.technology.validate.global.error.noTJSpecified",
                     StateMessageType.FAILURE, false, errors.toString());
         }

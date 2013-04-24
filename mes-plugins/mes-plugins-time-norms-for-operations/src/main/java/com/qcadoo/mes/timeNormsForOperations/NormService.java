@@ -24,13 +24,12 @@
 package com.qcadoo.mes.timeNormsForOperations;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 
@@ -40,8 +39,8 @@ public class NormService {
     @Autowired
     private TechnologyService technologyService;
 
-    public Map<String, String> checkOperationOutputQuantities(final Entity technology) {
-        Map<String, String> messages = new HashMap<String, String>();
+    public List<String> checkOperationOutputQuantities(final Entity technology) {
+        List<String> messages = Lists.newArrayList();
 
         List<Entity> operationComponents = technology.getTreeField("operationComponents");
 
@@ -57,8 +56,7 @@ public class NormService {
             }
 
             if (timeNormsQuantity == null || timeNormsQuantity.compareTo(currentQuantity) != 0) {
-                messages.put("technologies.technology.validate.error.invalidQuantity",
-                        operationComponent.getStringField("nodeNumber"));
+                messages.add(operationComponent.getStringField("nodeNumber"));
             }
         }
 
