@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class ReasonTypeOfChangingOrderStateFieldsPPS {
+public final class ReasonTypeOfCorrectionPlanFields {
 
-    private ReasonTypeOfChangingOrderStateFieldsPPS() {
+    private ReasonTypeOfCorrectionPlanFields() {
 
     }
 
     public static final String PRODUCTION_PER_SHIFT = "productionPerShift";
 
+    public static final String REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
 }

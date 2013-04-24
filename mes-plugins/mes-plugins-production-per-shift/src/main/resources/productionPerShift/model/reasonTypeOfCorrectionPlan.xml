@@ -24,20 +24,13 @@
     ***************************************************************************
 
 -->
-<model name="productionPerShift" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="reasonTypeOfCorrectionPlan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
 	<fields>
-		<belongsTo name="order" model="order" plugin="orders" />
-		<hasMany name="plannedProgressCorrectionTypes" model="reasonTypeOfCorrectionPlan"
-			plugin="productionPerShift" joinField="productionPerShift" cascade="delete" />
-		<text name="plannedProgressCorrectionComment" />
-		<!-- Not persistent fields below -->
-
-		<belongsTo persistent="false" name="technologyInstanceOperationComponent"
-			model="technologyInstanceOperationComponent" plugin="technologies" />
-		<enum persistent="false" name="plannedProgressType" values="01planned,02corrected"
-			default="01planned" />
+		<belongsTo name="productionPerShift" model="productionPerShift" />
+		<dictionary name="reasonType" dictionary="reasonTypeOfChangingOrderState" required="true" />
 	</fields>
 	<hooks />
 </model>
