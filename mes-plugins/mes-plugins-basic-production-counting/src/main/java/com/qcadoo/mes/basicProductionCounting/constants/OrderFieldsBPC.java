@@ -33,4 +33,6 @@ public final class OrderFieldsBPC {
 
     public static final String PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
 
+    public static final String PRODUCTION_COUNTING_OPERATION_RUNS = "productionCountingOperationRuns";
+
 }

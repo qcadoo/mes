@@ -128,7 +128,9 @@ public class TechnologyValidationService {
             if (referenceTechnology != null
                     && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
                 stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
-                        "technologies.technology.validate.global.error.unacceptedReferenceTechnology");
+                        "technologies.technology.validate.global.error.treeIsNotValid");
+                stateContext.addMessage("technologies.technology.validate.global.error.unacceptedReferenceTechnology",
+                        StateMessageType.FAILURE, false);
                 return false;
             }
         }
@@ -155,12 +157,16 @@ public class TechnologyValidationService {
 
             if (operations.size() == 1) {
                 stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
+                        "technologies.technology.validate.global.error.treeIsNotValid");
+                stateContext.addMessage(
                         "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts",
-                        levels.toString());
+                        StateMessageType.FAILURE, false, levels.toString());
             } else {
                 stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
+                        "technologies.technology.validate.global.error.treeIsNotValid");
+                stateContext.addMessage(
                         "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural",
-                        levels.toString());
+                        StateMessageType.FAILURE, false, levels.toString());
             }
             return false;
         }

@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -86,7 +85,7 @@ public class NormServiceTest {
         given(technology.getTreeField("operationComponents")).willReturn(tree);
 
         // when
-        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
+        List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         // then
         assertTrue(messages.isEmpty());
@@ -100,7 +99,7 @@ public class NormServiceTest {
         given(technologyService.getProductCountForOperationComponent(operComp1)).willThrow(new IllegalStateException());
 
         // when
-        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
+        List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         // then
         assertTrue(messages.isEmpty());
@@ -124,7 +123,7 @@ public class NormServiceTest {
                 "message2");
 
         // when
-        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
+        List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         // then
         assertEquals(1, messages.size());
@@ -141,7 +140,7 @@ public class NormServiceTest {
         given(operComp1.getDecimalField("productionInOneCycle")).willReturn(new BigDecimal(13.500));
 
         // when
-        Map<String, String> messages = normService.checkOperationOutputQuantities(technology);
+        List<String> messages = normService.checkOperationOutputQuantities(technology);
 
         // then
         assertEquals(0, messages.size());
