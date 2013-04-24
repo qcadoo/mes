@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -52,8 +53,9 @@ public class TechnologyStateChangeListenerServiceTNFO {
             }
         }
         if (!isValid) {
-            stateChangeContext.addValidationError("technologies.technology.validate.global.error.noTJSpecified",
-                    errors.toString());
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.tjIsNotSet");
+            stateChangeContext.addMessage("technologies.technology.validate.global.error.noTJSpecified",
+                    StateMessageType.FAILURE, false, errors.toString());
         }
         return isValid;
     }
