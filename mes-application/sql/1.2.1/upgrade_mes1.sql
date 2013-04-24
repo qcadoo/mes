@@ -160,10 +160,7 @@ CREATE TABLE orders_reasontypeofchangingorderstate
   id bigint NOT NULL,
   orderstatechange_id bigint,
   reasontypeofchangingorderstate character varying(255),
-  productionpershift_id bigint,
   CONSTRAINT orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id),
-  CONSTRAINT reasontypeofchangingorderstate_order_fkey FOREIGN KEY (productionpershift_id)
-      REFERENCES productionpershift_productionpershift (id) DEFERRABLE,
   CONSTRAINT reasontypeofchangingorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id)
       REFERENCES orders_orderstatechange (id) DEFERRABLE
 );
@@ -405,5 +402,20 @@ ALTER TABLE basic_parameter ALTER COLUMN blockabilitytochangeapprovalorder SET D
 ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectivestart character varying(255);
 ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectiveend character varying(255);
 
+
+-- end
+
+-- Table: productionpershift_reasontypeofcorrectionplan
+
+
+CREATE TABLE productionpershift_reasontypeofcorrectionplan
+(
+  id bigint NOT NULL,
+  productionpershift_id bigint,
+  reasontype character varying(255),
+  CONSTRAINT productionpershift_reasontypeofcorrectionplan_pkey PRIMARY KEY (id),
+  CONSTRAINT reasontypeofcorrectionplan_productionpershift_fkey FOREIGN KEY (productionpershift_id)
+      REFERENCES productionpershift_productionpershift (id) DEFERRABLE
+);
 
 -- end
