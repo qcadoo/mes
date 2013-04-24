@@ -23,40 +23,39 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.FieldDefinition;
 
 @Service
 public class ValidatorServiceImpl implements ValidatorService {
 
-    public boolean checkIfAttachmentExtensionIsValid(final DataDefinition modelDD, final Entity model, final String attachmentName) {
+    public final boolean checkAttachmentExtension(final DataDefinition dataDefinition, final FieldDefinition attachmentFieldDef,
+            final Entity entity, final Object oldValue, final Object newValue) {
+        if (StringUtils.equals((String) oldValue, (String) newValue) || checkAttachmentExtension((String) newValue)) {
+            return true;
+        }
+        entity.addError(attachmentFieldDef, "workPlans.imageUrlInWorkPlan.message.attachmentExtensionIsNotValid");
+        return false;
+    }
 
-        String attachment = model.getStringField(attachmentName);
-
-        if (attachment != null) {
-            String attachemntExtension = attachment.substring((attachment.lastIndexOf('.') + 1), attachment.length());
-
-            boolean contains = false;
-
-            for (String fileExtension : WorkPlansConstants.FILE_EXTENSIONS) {
-                if (fileExtension.equals(attachemntExtension)) {
-                    contains = true;
-                }
-            }
-
-            if (!contains) {
-                model.addError(modelDD.getField(attachmentName),
-                        "workPlans.imageUrlInWorkPlan.message.attachmentExtensionIsNotValid");
-
-                return false;
-            }
+    private boolean checkAttachmentExtension(final String attachementPathValue) {
+        if (StringUtils.isBlank(attachementPathValue)) {
+            return true;
         }
 
-        return true;
+        // TODO DEV_TEAM after upgrade Apache's commons-lang this loop
+        // may be replaced with StringUtils.endsWithAny(attachementPathValue.toLowerCase(), WorkPlansConstants.FILE_EXTENSIONS)
+        for (String allowedFileExtension : WorkPlansConstants.FILE_EXTENSIONS) {
+            if (StringUtils.endsWithIgnoreCase(attachementPathValue, '.' + allowedFileExtension)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean checkIfColumnIsNotUsed(final DataDefinition componentDD, final Entity component, final String modelName,
@@ -73,20 +72,13 @@ public class ValidatorServiceImpl implements ValidatorService {
                 if (model == null) {
                     return true;
                 } else {
-                    EntityList modelComponents = model.getHasManyField(componentName);
+                    for (Entity modelComponent : model.getHasManyField(componentName)) {
+                        Entity columnUsed = modelComponent.getBelongsToField(columnName);
 
-                    if (modelComponents == null) {
-                        return true;
-                    } else {
-                        for (Entity modelComponent : modelComponents) {
-                            Entity columnUsed = modelComponent.getBelongsToField(columnName);
+                        if (columnUsed.getId().equals(column.getId())) {
+                            component.addError(componentDD.getField(columnName), "workPlans.column.message.columnIsAlreadyUsed");
 
-                            if (columnUsed.getId().equals(column.getId())) {
-                                component.addError(componentDD.getField(columnName),
-                                        "workPlans.column.message.columnIsAlreadyUsed");
-
-                                return false;
-                            }
+                            return false;
                         }
                     }
                 }

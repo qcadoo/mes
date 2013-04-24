@@ -79,14 +79,6 @@ ALTER TABLE orders_order
 -- Table: orders_order
 -- changed: 26.02.2013
 
-ALTER TABLE orders_order DROP COLUMN batchnumber;
-
--- end
-
-
--- Table: orders_order
--- changed: 26.02.2013
-
 ALTER TABLE orders_order DROP COLUMN ordergroup_id;
 
 -- end
@@ -405,5 +397,13 @@ ALTER TABLE basic_parameter ALTER COLUMN reasonneededwhencorrectingtherequestedv
 
 ALTER TABLE basic_parameter ADD COLUMN blockabilitytochangeapprovalorder boolean;
 ALTER TABLE basic_parameter ALTER COLUMN blockabilitytochangeapprovalorder SET DEFAULT false;
+
+-- end
+
+-- Table: orders_order
+-- changed: 23.04.2013
+ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectivestart character varying(255);
+ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectiveend character varying(255);
+
 
 -- end

@@ -46,7 +46,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 
-public class ShiftServiceTest {
+public class ShiftsServiceTest {
 
     private ShiftsServiceImpl shiftsService;
 
