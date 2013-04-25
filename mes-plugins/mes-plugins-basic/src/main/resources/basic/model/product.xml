@@ -46,10 +46,10 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-	
+
 		<hasMany name="conversionItems" joinField="product" model="unitConversionItem"
 			plugin="qcadooModel" cascade="delete" />
-	
+
 		<!-- PRODUCTS FAMILY TREE -->
 		<belongsTo name="parent" model="product" />
 		<belongsTo name="child" model="product" persistent="false" />
@@ -62,6 +62,7 @@
 		<enum name="entityType" values="01particularProduct,02productsFamily"
 			default="01particularProduct" required="true" />
 	</fields>
+
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="checkIfNotBelongsToSameFamily" />
@@ -69,19 +70,21 @@
 			method="checkIfParentIsFamily" />
 		<validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
 			method="checkIfEanValueIsNumerical" />
-			
-		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
+
+		<onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
+			method="generateNodeNumber" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit" />
 		<onCreate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionOnCreate" />
-		
+
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber" />
 		<onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged" />
-		
+
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber" />
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy" />
 		<onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearEanOnCopy" />
-		
+
 		<onUpdate class="com.qcadoo.mes.basic.ProductService" method="calculateConversionIfUnitChanged" />
 	</hooks>
+
 	<identifier expression="#number + ' - ' + #name" />
 </model>

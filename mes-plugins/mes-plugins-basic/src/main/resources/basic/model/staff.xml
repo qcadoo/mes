@@ -37,10 +37,10 @@
 		<string name="surname" required="true">
 			<validatesLength max="255" />
 		</string>
-		<string name="email" >
+		<string name="email">
 			<validatesLength max="255" />
 		</string>
-		<string name="phone" >
+		<string name="phone">
 			<validatesLength max="255" />
 		</string>
 		<belongsTo name="workFor" model="company" />
@@ -48,6 +48,8 @@
 		<belongsTo name="shift" model="shift" />
 		<belongsTo name="division" model="division" />
 	</fields>
+
 	<hooks />
+
 	<identifier expression="#number + ' - ' + #name" />
 </model>

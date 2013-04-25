@@ -61,14 +61,14 @@ public class CurrencyLoader {
     public void loadCurrencies() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Currency table will be populated...");
+                LOG.debug("Currency table will be populated ...");
             }
             readDataFromXML();
         }
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading test data from currency.xml ...");
+        LOG.info("Loading data from currency.xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
@@ -110,9 +110,10 @@ public class CurrencyLoader {
         currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
 
         currency = currencyDataDefinition.save(currency);
+
         if (currency.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Currency saved {currency=" + currency.toString() + "}");
+                LOG.debug("Currency saved {currency : " + currency.toString() + "}");
             }
         } else {
             throw new IllegalStateException("Saved currency entity have validation errors - "

@@ -39,8 +39,8 @@
 			required="true" />
 		<belongsTo name="parameter" model="parameter" required="true" />
 	</fields>
-	<hooks>
 
-	</hooks>
+	<hooks />
+	
 	<identifier expression="#identifier + ' - ' + #width" />
 </model>

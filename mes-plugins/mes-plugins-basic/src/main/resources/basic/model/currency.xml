@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="currency" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="currency" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="currency" />
@@ -35,7 +35,9 @@
 		<integer name="isoCode" unique="true" />
 		<integer name="minorUnit" required="true" />
 	</fields>
+	
 	<hooks />
+	
 	<identifier
 		expression="#alphabeticCode + 
 		#currency != null ? 

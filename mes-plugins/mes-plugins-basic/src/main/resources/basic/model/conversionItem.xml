@@ -24,19 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="conversionItem"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="conversionItem" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<decimal name="quantityFrom" required="true" />
-		<decimal name="quantityTo" required="true"/>
-		<dictionary name="unitFrom" dictionary="units" required="true"/>
-		<dictionary name="unitTo" dictionary="units" required="true"/>
+		<decimal name="quantityTo" required="true" />
+		<dictionary name="unitFrom" dictionary="units" required="true" />
+		<dictionary name="unitTo" dictionary="units" required="true" />
 		<belongsTo name="conversion" model="conversion" />
 		<belongsTo name="product" model="product" />
 	</fields>
-	<hooks >
-		<validatesWith class="com.qcadoo.mes.basic.hooks.ConversionItemHooks" method="validateQuantityFrom"/>	
-		<validatesWith class="com.qcadoo.mes.basic.hooks.ConversionItemHooks" method="validateUnitOnConversionWithProduct"/>	
+
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.basic.hooks.ConversionItemHooks"
+			method="validateQuantityFrom" />
+		<validatesWith class="com.qcadoo.mes.basic.hooks.ConversionItemHooks"
+			method="validateUnitOnConversionWithProduct" />
 	</hooks>
 </model>	

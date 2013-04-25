@@ -27,15 +27,18 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="productFamiliesAddProduct" modelName="product">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
-				<bigButton name="addProduct" icon="newIcon24.png"
-					state="enabled" action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
+				<bigButton name="addProduct" icon="newIcon24.png" state="enabled"
+					action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
 				</bigButton>
 			</group>
 		</ribbon>
+		
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="5">
@@ -44,21 +47,33 @@
 						reference="child">
 						<option type="column" name="name" fields="name" link="true"
 							width="200" />
-						<option type="column" name="parent" fields="parent" expression="#parent['number'] + ' - ' + #parent['name']" />
+						<option type="column" name="parent" fields="parent"
+							expression="#parent['number'] + ' - ' + #parent['name']" />
+							
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
+						
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange" class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners" method="changeProductInLookup" />
+						
+						<listener event="onSelectedEntityChange"
+							class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
+							method="changeProductInLookup" />
 					</component>
 				</layoutElement>
 			</component>
-			<listener event="addSelectedProductToFamily" class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners" method="addSelectedProductToFamily" />
+			
+			<listener event="addSelectedProductToFamily"
+				class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
+				method="addSelectedProductToFamily" />
 		</component>
+		
 	</component>
+	
 	<hooks>
-	<beforeRender class="com.qcadoo.mes.basic.hooks.ProductFamiliesAddProductHooks"
+		<beforeRender
+			class="com.qcadoo.mes.basic.hooks.ProductFamiliesAddProductHooks"
 			method="updateRibbonState" />
 	</hooks>
 </view>

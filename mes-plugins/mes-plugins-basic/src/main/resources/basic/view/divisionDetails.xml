@@ -24,15 +24,16 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="divisionDetails" 
-	modelName="division">
-	
+	name="divisionDetails" modelName="division">
+
 	<component type="window" name="window">
+
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
+
 		<component type="form" name="division" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="4">
@@ -45,19 +46,25 @@
 					<component type="textarea" name="name" field="name" />
 				</layoutElement>
 				<layoutElement column="1" row="4" height="1">
-					<component type="lookup" name="supervisor" field="supervisor" reference="supervisor">
+					<component type="lookup" name="supervisor" field="supervisor"
+						reference="supervisor">
 						<option type="column" name="name" fields="name" />
 						<option type="column" name="surname" fields="surname" />
 						<option type="column" name="post" fields="post" />
+
 						<option type="searchable" value="name,surname,post" />
 						<option type="orderable" value="name,surname,post" />
+
 						<option type="expression" value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
 					</component>
 				</layoutElement>
 			</component>
+
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 		</component>
+		
 	</component>
+	
 </view>

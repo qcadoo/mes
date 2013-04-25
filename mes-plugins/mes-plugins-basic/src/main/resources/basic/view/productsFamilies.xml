@@ -27,7 +27,9 @@
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="productsFamilies" modelName="product" menuAccessible="true">
+	
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
@@ -58,6 +60,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
+		
 		<windowTab name="mainTab">
 			<component type="form" name="product" reference="form">
 				<component type="gridLayout" name="gridLayout" columns="3"
@@ -81,13 +84,17 @@
 									this.addOnChangeListener(listener);
 								]]>
 							</script>
-							<option type="column" name="number" fields="number"  />
-							<option type="column" name="name" fields="name"  />
+							<option type="column" name="number" fields="number" />
+							<option type="column" name="name" fields="name" />
+							
 							<option type="order" column="name" direction="asc" />
+							
 							<option type="searchable" value="number,name" />
 							<option type="orderable" value="number,name" />
+							
 							<option type="correspondingView" value="basic/productDetails" />
 							<option type="correspondingComponent" value="form" />
+							
 							<option type="fullscreen" value="true" />
 							<option type="multiselect" value="false" />
 						</component>
@@ -97,9 +104,11 @@
 							reference="productFamilyChildrenTree" field="productFamilyChildrenTree">
 							<dataType name="01particularProduct">
 								<option type="nodeLabelExpression" value="#name + ' -' + #number" />
+								
 								<option type="correspondingView" value="basic/productDetails" />
 								<option type="correspondingComponent" value="form" />
 								<option type="correspondingViewInModal" value="false" />
+								
 								<option type="nodeIcon"
 									value="/technologies/public/css/icons/operationIcon16.png" />
 								<option type="newIcon"
@@ -108,9 +117,11 @@
 							</dataType>
 							<dataType name="02productsFamily">
 								<option type="nodeLabelExpression" value="#name + ' -' + #number" />
+								
 								<option type="correspondingView" value="basic/productFamiliesAddProduct" />
 								<option type="correspondingComponent" value="form" />
 								<option type="correspondingViewInModal" value="true" />
+								
 								<option type="nodeIcon"
 									value="/technologies/public/css/icons/technologyIcon16.png" />
 								<option type="newIcon"
@@ -120,14 +131,17 @@
 							<option type="hasDeleteButton" value="false" />
 							<option type="hasEditButton" value="false" />
 							<option type="hasMoveButton" value="false" />
+							
 							<listener event="select"
 								class="com.qcadoo.mes.basic.listeners.ProductsFamiliesListeners"
 								method="enabledEditButton" />
 						</component>
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+				
 				<listener event="generateHierarchyTree"
 					class="com.qcadoo.mes.basic.listeners.ProductsFamiliesListeners"
 					method="generateHierarchyTree" />
@@ -136,7 +150,9 @@
 					method="editSelectedProduct" />
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeInitialize class="com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks"
 			method="addDiscriminatorRestrictionToProductsFamilies" />
