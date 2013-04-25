@@ -112,8 +112,8 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
             for (Entity operationFromTree : sortedOperationFromTree) {
                 Entity operation = operations.get(operations.indexOf(operationFromTree));
-                Date dateFrom = (Date) operation.getField(EFFECTIVE_DATE_FROM_FIELD);
-                Date dateTo = (Date) operation.getField(EFFECTIVE_DATE_TO_FIELD);
+                Date dateFrom = operation.getDateField(EFFECTIVE_DATE_FROM_FIELD);
+                Date dateTo = operation.getDateField(EFFECTIVE_DATE_TO_FIELD);
 
                 if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;

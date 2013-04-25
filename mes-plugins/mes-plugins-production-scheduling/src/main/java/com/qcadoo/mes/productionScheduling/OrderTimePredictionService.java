@@ -27,7 +27,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.FINISH_DATE;
 import static com.qcadoo.mes.orders.constants.OrderFields.START_DATE;
 
 import java.math.BigDecimal;
@@ -56,6 +55,7 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperCompTNFOFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -221,7 +221,7 @@ public class OrderTimePredictionService {
     public Date getDateFromOrdersFromOperation(final List<Entity> operations) {
         Date beforeOperation = null;
         for (Entity operation : operations) {
-            Date operationDateFrom = (Date) operation.getField(START_DATE);
+            Date operationDateFrom = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_FROM);
             if (operationDateFrom != null) {
                 if (beforeOperation == null) {
                     beforeOperation = operationDateFrom;
@@ -237,7 +237,7 @@ public class OrderTimePredictionService {
     public Date getDateToOrdersFromOperation(final List<Entity> operations) {
         Date laterOperation = null;
         for (Entity operation : operations) {
-            Date operationDateTo = (Date) operation.getField(FINISH_DATE);
+            Date operationDateTo = operation.getDateField(TechnologyOperCompTNFOFields.EFFECTIVE_DATE_TO);
             if (operationDateTo != null) {
                 if (laterOperation == null) {
                     laterOperation = operationDateTo;
