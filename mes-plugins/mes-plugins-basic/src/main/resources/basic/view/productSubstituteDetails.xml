@@ -24,15 +24,16 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view" 
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productSubstituteDetails"
-	modelName="substitute">
-	
+	name="productSubstituteDetails" modelName="substitute">
+
 	<component type="window" name="window">
+	
 		<ribbon>
-			<template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew"/>
+			<template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew" />
 		</ribbon>
+		
 		<component type="form" name="substitute" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="3">
@@ -45,8 +46,11 @@
 					<component type="textarea" name="name" field="name" />
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 		</component>
+		
 	</component>
+	
 </view>

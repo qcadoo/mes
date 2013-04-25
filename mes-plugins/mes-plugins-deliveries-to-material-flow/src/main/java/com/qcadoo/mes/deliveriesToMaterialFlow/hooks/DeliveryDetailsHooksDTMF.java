@@ -59,10 +59,10 @@ public class DeliveryDetailsHooksDTMF {
         if (location == null) {
             Entity defaultLocation = parameterService.getParameter().getBelongsToField(LOCATION);
 
-            if (defaultLocation != null) {
-                locationField.setFieldValue(defaultLocation.getId());
-            } else {
+            if (defaultLocation == null) {
                 locationField.setFieldValue(null);
+            } else {
+                locationField.setFieldValue(defaultLocation.getId());
             }
             locationField.requestComponentUpdateState();
         }

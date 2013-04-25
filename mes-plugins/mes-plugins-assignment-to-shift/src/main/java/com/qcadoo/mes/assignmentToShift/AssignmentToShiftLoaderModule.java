@@ -76,7 +76,7 @@ public class AssignmentToShiftLoaderModule extends Module {
     public final void multiTenantEnable() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Occupation type table will be populated...");
+                LOG.debug("Occupation type table will be populated ...");
             }
 
             Map<Integer, Map<String, String>> occupationTypesAttributes = getOccupationTypesAttributesFromXML();
@@ -91,7 +91,7 @@ public class AssignmentToShiftLoaderModule extends Module {
     @Transactional
     public void multiTenantDisable() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Occupation type table will be unpopulated...");
+            LOG.debug("Occupation type table will be unpopulated ...");
         }
 
         Map<Integer, Map<String, String>> occupationTypesAttributes = getOccupationTypesAttributesFromXML();

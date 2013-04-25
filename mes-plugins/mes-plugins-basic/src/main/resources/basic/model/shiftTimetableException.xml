@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="shiftTimetableException" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="shiftTimetableException" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="name" required="false">
@@ -38,6 +38,7 @@
 		<belongsTo name="shift" model="shift" plugin="basic" lazy="false"
 			required="true" />
 	</fields>
+
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 			method="validateShiftTimetableException" />

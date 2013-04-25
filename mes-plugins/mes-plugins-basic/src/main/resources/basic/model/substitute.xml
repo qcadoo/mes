@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<model name="substitute" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="substitute" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="number" required="true" unique="true">
@@ -40,9 +40,11 @@
 			joinField="substitute" cascade="delete" copyable="true" />
 		<priority name="priority" scope="product" />
 	</fields>
+	
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.basic.ProductService"
 			method="checkIfProductIsNotRemoved" />
 	</hooks>
+	
 	<identifier expression="#number + ' - ' + #name" />
 </model>

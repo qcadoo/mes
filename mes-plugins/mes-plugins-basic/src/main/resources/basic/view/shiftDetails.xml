@@ -29,9 +29,11 @@
 	name="shiftDetails" modelName="shift">
 
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" />
 		</ribbon>
+		
 		<component type="form" name="shift" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="9"
 				rows="10" hasBorders="false">
@@ -40,14 +42,11 @@
 						<option type="labelWidth" value="20" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="3" width="2">
 					<component type="label" name="timeDataPatternDescription">
 						<option type="labelStyle" value="text" />
 					</component>
-
 				</layoutElement>
-
 				<layoutElement column="1" row="4">
 					<component type="checkbox" name="mondayWorking" field="mondayWorking"
 						reference="mondayWorking">
@@ -62,7 +61,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="5">
 					<component type="checkbox" name="tuesdayWorking" field="tuesdayWorking"
 						reference="tuesdayWorking">
@@ -77,7 +75,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="6">
 					<component type="checkbox" name="wensdayWorking" field="wensdayWorking"
 						reference="wensdayWorking">
@@ -92,7 +89,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="7">
 					<component type="checkbox" name="thursdayWorking" field="thursdayWorking"
 						reference="thursdayWorking">
@@ -107,7 +103,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="8">
 					<component type="checkbox" name="fridayWorking" field="fridayWorking"
 						reference="fridayWorking">
@@ -122,7 +117,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="9">
 					<component type="checkbox" name="saturdayWorking" field="saturdayWorking"
 						reference="saturdayWorking">
@@ -137,7 +131,6 @@
 						<option type="alignment" value="right" />
 					</component>
 				</layoutElement>
-
 				<layoutElement column="1" row="10">
 					<component type="checkbox" name="sundayWorking" field="sundayWorking"
 						reference="sundayWorking">
@@ -163,12 +156,16 @@
 							width="200" />
 						<option type="column" name="type" fields="type" link="false"
 							width="200" />
+							
 						<option type="order" column="fromDate" direction="desc" />
+						
+						<option type="searchable" value="name,fromDate,toDate,type" />
+						<option type="orderable" value="name,fromDate,toDate,type" />
+						
 						<option type="correspondingView" value="basic/shiftTimetableExceptionDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
-						<option type="searchable" value="name,fromDate,toDate,type" />
-						<option type="orderable" value="name,fromDate,toDate,type" />
+						
 						<option type="paginable" value="true" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -177,10 +174,13 @@
 					</component>
 				</layoutElement>
 			</component>
+			
 			<option type="header" value="true" />
 			<option type="expression" value="#name" />
 		</component>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ShiftsServiceImpl"
 			method="setHourFieldsState" />

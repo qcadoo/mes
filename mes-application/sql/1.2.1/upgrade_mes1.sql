@@ -120,7 +120,7 @@ ALTER TABLE orders_order ADD COLUMN commentreasontypedeviationsquantity characte
 -- end
 
 
--- Table: orders_order
+-- Table: orders_reasontypecorrectiondatefrom
 -- changed: 07.03.2013
 
 CREATE TABLE orders_reasontypecorrectiondatefrom

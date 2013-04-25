@@ -29,9 +29,11 @@
 	name="workstationTypesList" modelName="workstationType" menuAccessible="true">
 
 	<component type="window" name="window">
+	
 		<ribbon>
 			<template name="standardGridTemplate" />
 		</ribbon>
+		
 		<component type="grid" name="workstationTypes" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />
@@ -40,17 +42,23 @@
 			<option type="column" name="division" fields="division"
 				expression="(#division == null) ? '' : #division.get('number') + ' - ' + #division.get('name')"
 				link="true" />
+				
 			<option type="order" column="number" direction="desc" />
+			
 			<option type="searchable" value="name,number,division" />
 			<option type="orderable" value="name,number,division" />
+			
 			<option type="correspondingView" value="basic/workstationTypeDetails" />
 			<option type="correspondingComponent" value="form" />
+			
 			<option type="deletable" value="false" />
 			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+	
 </view>

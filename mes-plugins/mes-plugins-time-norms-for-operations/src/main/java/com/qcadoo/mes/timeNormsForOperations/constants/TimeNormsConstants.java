@@ -27,17 +27,22 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-public interface TimeNormsConstants {
+public final class TimeNormsConstants {
+
+    private TimeNormsConstants() {
+
+    }
 
     public static final String PLUGIN_IDENTIFIER = "timeNormsForOperations";
 
-    Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "nextOperationAfterProducedType",
-            "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT", "timeNextOperation",
-            "machineUtilization", "laborUtilization", "productionInOneCycleUNIT", "areProductQuantitiesDivisible",
-            "isTjDivisible");
+    public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
+            "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
+            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
+            "areProductQuantitiesDivisible", "isTjDivisible");
 
-    Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle", "nextOperationAfterProducedType",
-            "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT", "timeNextOperation",
-            "machineUtilization", "laborUtilization", "productionInOneCycleUNIT", "areProductQuantitiesDivisible",
-            "isTjDivisible");
+    public static final Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
+            "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
+            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
+            "areProductQuantitiesDivisible", "isTjDivisible");
+
 }

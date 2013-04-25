@@ -64,7 +64,7 @@ public class ReportColumnWidthLoader {
     public void loadReportColumnWidths() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Report column width table will be populated...");
+                LOG.debug("Report column width table will be populated ...");
             }
             readDataFromXML();
         }
@@ -113,9 +113,10 @@ public class ReportColumnWidthLoader {
         reportColumnWidth.setField(PARAMETER, parameterService.getParameter());
 
         reportColumnWidth = reportColumnWidthDataDefinition.save(reportColumnWidth);
+
         if (reportColumnWidth.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Report column width saved {reportColumnWidth=" + reportColumnWidth.toString() + "}");
+                LOG.debug("Report column width saved {reportColumnWidth : " + reportColumnWidth.toString() + "}");
             }
         } else {
             throw new IllegalStateException("Saved report column width entity have validation errors - "

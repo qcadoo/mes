@@ -29,6 +29,7 @@
 	name="productDetails" modelName="product">
 
 	<component type="window" name="window" reference="window">
+	
 		<ribbon>
 			<template name="standardFormTemplate" />
 			<group name="conversions">
@@ -47,6 +48,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
+		
 		<windowTab name="mainTab">
 			<component type="form" name="product" reference="form">
 				<script>
@@ -107,18 +109,21 @@
 						<component type="textarea" name="description" field="description" />
 					</layoutElement>
 				</component>
+				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
-				
+
 				<listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
-					method="getDefaultConversions" />	
+					method="getDefaultConversions" />
 			</component>
 		</windowTab>
+		
 		<windowTab name="productFamily">
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="2">
 				<layoutElement column="1" row="1">
-					<component type="select" name="entityType" field="#{form}.entityType" reference="entityType"/>
+					<component type="select" name="entityType" field="#{form}.entityType"
+						reference="entityType" />
 				</layoutElement>
 				<layoutElement column="1" row="2">
 					<component type="lookup" name="parent" field="#{form}.parent"
@@ -126,18 +131,22 @@
 						<option type="column" name="name" fields="name" link="true" />
 						<option type="column" name="parent" fields="parent"
 							expression="(#parent == null) ? '' : #parent['number'] + ' - ' + #parent['name']" />
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
+						
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						
-						<criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
- 						method="showProductFamilyOnly" />
+
+						<criteriaModifier
+							class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+							method="showProductFamilyOnly" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="auditTab">
 			<component type="gridLayout" name="gridLayout" columns="3"
 				rows="4">
@@ -168,6 +177,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="substitutesTab">
 			<component type="gridLayout" name="gridsLayout" columns="5"
 				rows="6" hasBorders="false">
@@ -178,10 +188,13 @@
 							width="50" />
 						<option type="column" name="name" fields="name" link="true"
 							width="100" />
+							
 						<option type="order" column="priority" direction="asc" />
+						
 						<option type="correspondingView" value="basic/productSubstituteDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -200,10 +213,13 @@
 							width="40" />
 						<option type="column" name="unit" fields="product"
 							expression="#product['unit']" link="false" width="30" />
+							
 						<option type="order" column="number" direction="desc" />
+						
 						<option type="correspondingView" value="basic/productSubstituteComponentDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
+						
 						<option type="paginable" value="false" />
 						<option type="creatable" value="true" />
 						<option type="deletable" value="true" />
@@ -213,6 +229,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="integrationTab">
 			<script>
 					<![CDATA[
@@ -238,6 +255,7 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 		<windowTab name="conversionTab">
 			<component type="gridLayout" name="conversionGridLayout"
 				columns="3" rows="1">
@@ -277,12 +295,15 @@
 
 							</components>
 						</component>
+						
 						<option type="label" value="conversionItems" />
 					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
+		
 	</component>
+	
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.ProductService"
 			method="generateProductNumber" />
