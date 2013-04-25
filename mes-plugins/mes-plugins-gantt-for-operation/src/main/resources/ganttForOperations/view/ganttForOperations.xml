@@ -38,7 +38,9 @@
 				rows="8" hasBorders="true">
 				<layoutElement column="1" row="1">
 					<component type="input" name="title" reference="title"
-						hasLabel="false" defaultEnabled="false" />
+						hasLabel="false" defaultEnabled="false" >
+						<option type="textRepresentationOnDisabled" value="true" />
+					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" height="7">
 					<component type="ganttChart" name="gantt" reference="gantt">
