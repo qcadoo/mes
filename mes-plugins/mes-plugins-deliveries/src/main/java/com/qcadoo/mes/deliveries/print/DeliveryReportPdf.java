@@ -35,11 +35,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,7 +65,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -83,6 +78,10 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
 public class DeliveryReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
+
+    private static final String ORDERED_QUANTITY = "orderedQuantity";
+
+    private static final String DELIVERED_QUANTITY = "deliveredQuantity";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -256,8 +255,7 @@ public class DeliveryReportPdf extends ReportPdfView {
                     }
                 }
 
-                addTotalProductsCosts(deliveryProducts, filteredColumnsForDeliveries, deliveryProductsColumnValues,
-                        productsTable, locale, columnsName);
+                addTotalRow(productsTable, locale, columnsName, delivery);
 
                 document.add(productsTable);
                 document.add(Chunk.NEWLINE);
@@ -265,41 +263,33 @@ public class DeliveryReportPdf extends ReportPdfView {
         }
     }
 
-    private void addTotalProductsCosts(final List<DeliveryProduct> deliveryProducts,
-            final List<Entity> filteredColumnsForDeliveries,
-            final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues, final PdfPTable productsTable,
-            final Locale locale, final List<String> columnsName) {
-        if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)) {
-            BigDecimal totalProductsCosts = BigDecimal.ZERO;
-            MathContext mc = numberService.getMathContext();
-            for (DeliveryProduct deliveryProduct : deliveryProducts) {
-                for (Entity columnForDeliveries : filteredColumnsForDeliveries) {
-                    String identifier = columnForDeliveries.getStringField(IDENTIFIER);
-                    String value = deliveryProductsColumnValues.get(deliveryProduct).get(identifier);
+    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
 
-                    if (identifier.equals("totalPrice") && StringUtils.isNotEmpty(value)) {
-                        ParsePosition parsePosition = new ParsePosition(0);
-                        String trimedValue = value.toString().replaceAll(" ", "");
-                        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(locale);
-                        formatter.setParseBigDecimal(true);
-                        BigDecimal totalPrice = new BigDecimal(String.valueOf(formatter.parseObject(trimedValue, parsePosition)));
+        DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
+        productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale), FontUtils
+                .getDejavuRegular9Dark()));
 
-                        totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
-                    }
-                }
-            }
+        for (int i = 1; i < columnsName.size(); i++) {
 
-            productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
-                    FontUtils.getDejavuRegular9Dark()));
-
-            int columnQuantity = columnsName.size() - 2;
-            for (int i = 0; i < columnQuantity; i++) {
+            if (columnsName.contains(ORDERED_QUANTITY) && columnsName.indexOf(ORDERED_QUANTITY) == i) {
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
+                        .getDejavuRegular9Dark()));
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            } else if (columnsName.contains(DELIVERED_QUANTITY) && columnsName.indexOf(DELIVERED_QUANTITY) == i) {
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredCumulatedQuantity()), FontUtils
+                        .getDejavuRegular9Dark()));
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
+                    && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredTotalPrice()), FontUtils
+                        .getDejavuRegular9Dark()));
+                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            } else {
                 productsTable.addCell("");
             }
-
-            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            productsTable.addCell(new Phrase(numberService.format(totalProductsCosts), FontUtils.getDejavuRegular9Dark()));
-            productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
         }
 
