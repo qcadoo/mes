@@ -37,6 +37,9 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -271,7 +274,12 @@ public class OrderReportPdf extends ReportPdfView {
                     String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
 
                     if (identifier.equals("totalPrice") && StringUtils.isNotEmpty(value)) {
-                        BigDecimal totalPrice = new BigDecimal(value);
+                        ParsePosition parsePosition = new ParsePosition(0);
+                        String trimedValue = value.toString().replaceAll(" ", "");
+                        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(locale);
+                        formatter.setParseBigDecimal(true);
+                        BigDecimal totalPrice = new BigDecimal(String.valueOf(formatter.parseObject(trimedValue, parsePosition)));
+
                         totalProductsCosts = totalProductsCosts.add(BigDecimalUtils.convertNullToZero(totalPrice), mc);
                     }
 
