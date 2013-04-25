@@ -30,17 +30,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public class DeliveryHooksTest {
 
     private DeliveryHooks deliveryHooks;
-
-    @Mock
-    private DataDefinition deliveryDD;
 
     @Mock
     private Entity delivery;
@@ -57,7 +54,7 @@ public class DeliveryHooksTest {
         // then
 
         // when
-        deliveryHooks.clearFieldsOnCopy(deliveryDD, delivery);
+        ReflectionTestUtils.invokeMethod(deliveryHooks, "clearFieldsOnCopy", delivery);
 
         // then
         verify(delivery).setField(STATE, DeliveryStateStringValues.DRAFT);

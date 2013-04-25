@@ -31,8 +31,9 @@ public class TechnologyStateChangeAspectTest {
 
     @Test
     public final void checkSelectorPointcutDefinition() {
-        assertEquals("com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect",
-                TechnologyStateChangeAspect.class.getCanonicalName());
+        final String givenCanonicalName = TechnologyStateChangeAspect.SELECTOR_POINTCUT.replaceAll("this\\(|\\)", "");
+        final String expectedCanonicalName = TechnologyStateChangeAspect.class.getCanonicalName();
+        assertEquals(expectedCanonicalName, givenCanonicalName);
     }
 
 }
