@@ -201,6 +201,7 @@
 						<component type="lookup" name="technology" field="technology"
 							reference="technology">
 							<option type="column" name="name" fields="name" link="true" />
+							<option type="column" name="state" fields="state"  />
 							<option type="required" value="true" />
 							<option type="searchable" value="name" />
 							<option type="orderable" value="name" />
