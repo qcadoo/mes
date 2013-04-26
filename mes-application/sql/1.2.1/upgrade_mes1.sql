@@ -351,41 +351,6 @@ CREATE TABLE basicproductioncounting_productioncountingoperationrun
 -- end
 
 
--- Table: basicproductioncounting_basicproductioncounting
--- changed: 18.04.2013
-
-ALTER TABLE basicproductioncounting_basicproductioncounting ADD COLUMN productioncountingquantity_id bigint;
-
-ALTER TABLE basicproductioncounting_basicproductioncounting
-  ADD CONSTRAINT basicproductioncounting_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
-      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
- 
--- end
-
-
--- Table: productioncounting_recordoperationproductincomponent
--- changed: 18.04.2013   
-
-ALTER TABLE productioncounting_recordoperationproductincomponent ADD COLUMN productioncountingquantity_id bigint;
-
-ALTER TABLE productioncounting_recordoperationproductincomponent
-  ADD CONSTRAINT recordoperationproductincomponent_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
-      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
-      
--- end
-
-
--- Table: productioncounting_recordoperationproductoutcomponent
--- changed: 18.04.2013
-     
-ALTER TABLE productioncounting_recordoperationproductoutcomponent ADD COLUMN productioncountingquantity_id bigint;
-
-ALTER TABLE productioncounting_recordoperationproductoutcomponent
-  ADD CONSTRAINT recordoperationproductoutcomponent_pcq_fkey FOREIGN KEY (productioncountingquantity_id)
-      REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE;
-
--- end
-
 -- Table: basic_parameter
 -- changed: 23.04.2013
 
@@ -397,16 +362,18 @@ ALTER TABLE basic_parameter ALTER COLUMN blockabilitytochangeapprovalorder SET D
 
 -- end
 
+
 -- Table: orders_order
 -- changed: 23.04.2013
+
 ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectivestart character varying(255);
 ALTER TABLE orders_order ADD COLUMN commentreasondeviationeffectiveend character varying(255);
 
-
 -- end
 
--- Table: productionpershift_reasontypeofcorrectionplan
 
+-- Table: productionpershift_reasontypeofcorrectionplan
+-- changed: 25.04.2013
 
 CREATE TABLE productionpershift_reasontypeofcorrectionplan
 (
