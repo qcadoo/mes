@@ -608,7 +608,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         DateRange dateRange = new DateRange(new Date(System.currentTimeMillis() - 10000), new Date());
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -623,7 +623,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         DateRange dateRange = new DateRange(null, null);
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -638,7 +638,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         DateRange dateRange = new DateRange(null, new Date());
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -653,7 +653,7 @@ public class OrderServiceTest {
         DataDefinition dataDefinition = mock(DataDefinition.class);
         Entity entity = mock(Entity.class);
         DateRange dateRange = new DateRange(new Date(), null);
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
 
         // when
         boolean results = orderService.checkOrderDates(dataDefinition, entity);
@@ -669,7 +669,7 @@ public class OrderServiceTest {
         FieldDefinition dateToField = mock(FieldDefinition.class);
         Entity entity = mock(Entity.class);
         DateRange dateRange = new DateRange(new Date(), new Date(System.currentTimeMillis() - 10000));
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
         given(dataDefinition.getField("finishDate")).willReturn(dateToField);
 
         // when
@@ -688,7 +688,7 @@ public class OrderServiceTest {
         Entity entity = mock(Entity.class);
         Date currDate = new Date();
         DateRange dateRange = new DateRange(currDate, currDate);
-        given(orderDatesService.getDatesFromAndTo(entity)).willReturn(dateRange);
+        given(orderDatesService.getCalculatedDates(entity)).willReturn(dateRange);
         given(dataDefinition.getField("finishDate")).willReturn(dateToField);
 
         // when
