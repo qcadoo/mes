@@ -266,7 +266,7 @@ public class OrderHooks {
     }
 
     private void fillStartDate(final Entity order) {
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
         if (dateRange.getFrom() == null) {
             order.setField(OrderFields.DATE_FROM, order.getField(OrderFields.START_DATE));
         } else {
@@ -275,7 +275,7 @@ public class OrderHooks {
     }
 
     private void fillEndDate(final Entity order) {
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
         if (dateRange.getTo() == null) {
             order.setField(OrderFields.DATE_TO, order.getField(OrderFields.FINISH_DATE));
         } else {

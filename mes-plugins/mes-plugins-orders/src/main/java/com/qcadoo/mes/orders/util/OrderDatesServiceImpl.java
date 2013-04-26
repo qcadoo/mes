@@ -20,7 +20,7 @@ public final class OrderDatesServiceImpl implements OrderDatesService {
             OrderFields.CORRECTED_DATE_TO, OrderFields.DATE_TO);
 
     @Override
-    public DateRange getDates(final Entity order) {
+    public DateRange getCalculatedDates(final Entity order) {
         return new DateRange(getStartDate(order), getFinishDate(order));
     }
 
@@ -52,7 +52,7 @@ public final class OrderDatesServiceImpl implements OrderDatesService {
     }
 
     @Override
-    public DateRange getDatesFromAndTo(Entity order) {
+    public DateRange getExistingDates(Entity order) {
         return new DateRange(getDate(order, OrderFields.START_DATE), getDate(order, OrderFields.FINISH_DATE));
     }
 

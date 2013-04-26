@@ -265,7 +265,7 @@ public class OrderService {
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity order) {
-        DateRange orderDateRange = orderDatesService.getDatesFromAndTo(order);
+        DateRange orderDateRange = orderDatesService.getCalculatedDates(order);
         Date dateFrom = orderDateRange.getFrom();
         Date dateTo = orderDateRange.getTo();
 
@@ -279,7 +279,7 @@ public class OrderService {
 
     public void checkOrderDates(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
-        DateRange orderDateRange = orderDatesService.getDates(order);
+        DateRange orderDateRange = orderDatesService.getCalculatedDates(order);
         Date dateFrom = orderDateRange.getFrom();
         Date dateTo = orderDateRange.getTo();
 
