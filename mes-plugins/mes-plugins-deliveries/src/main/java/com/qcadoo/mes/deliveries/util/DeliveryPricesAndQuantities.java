@@ -35,7 +35,7 @@ public class DeliveryPricesAndQuantities {
 
     private final Entity delivery;
 
-    private transient final NumberService numberService;
+    private final transient NumberService numberService;
 
     private final BigDecimal deliveredProductsQuantity;
 
