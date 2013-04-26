@@ -419,3 +419,10 @@ CREATE TABLE productionpershift_reasontypeofcorrectionplan
 );
 
 -- end
+
+-- Table: orders_order
+-- changed: 26.04.2013
+
+update orders_order set finishdate = startdate + time '00:00:01' where startdate >= finishdate;
+
+-- end
