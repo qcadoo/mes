@@ -26,7 +26,6 @@ package com.qcadoo.mes.basicProductionCounting;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.USED_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields.RUNS;
 import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT;
@@ -211,15 +210,21 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                     .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
                     .add(SearchRestrictions.isNull(OPERATION_PRODUCT_OUT_COMPONENT)).list().getEntities();
 
+            Set<Long> alreadyAddedProducts = Sets.newHashSet();
+
             for (Entity productionCountingQuantity : productionCountingQuantities) {
-                createBasicProductionCounting(order, productionCountingQuantity.getBelongsToField(PRODUCT),
-                        productionCountingQuantity);
+                Entity product = productionCountingQuantity.getBelongsToField(PRODUCT);
+                if (!alreadyAddedProducts.contains(product.getId())) {
+                    createBasicProductionCounting(order, product);
+
+                    alreadyAddedProducts.add(product.getId());
+                }
             }
 
         }
     }
 
-    private Entity createBasicProductionCounting(final Entity order, final Entity product, final Entity productionCountingQuantity) {
+    private Entity createBasicProductionCounting(final Entity order, final Entity product) {
         Entity basicProductionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                 BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).create();
 
@@ -227,7 +232,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         basicProductionCounting.setField(PRODUCT, product);
         basicProductionCounting.setField(PRODUCED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
         basicProductionCounting.setField(USED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
-        basicProductionCounting.setField(PRODUCTION_COUNTING_QUANTITY, productionCountingQuantity);
 
         basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
 

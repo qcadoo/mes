@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<belongsTo name="productionCountingQuantity" model="productionCountingQuantity" />
+		<decimal name="plannedQuantity" persistent="false" />
 		<decimal name="usedQuantity" />
 		<decimal name="producedQuantity" />
 	</fields>
@@ -38,5 +38,8 @@
 		<validatesWith
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
 			method="checkValueOfQuantity" />
+		<onView 
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
+			method="fillPlannedQuantity" />
 	</hooks>
 </model>

@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.PLANNED_QUANTITY;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +31,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -58,15 +54,15 @@ public class RecordOperationProductOutComponentDetailsHooks {
         Entity recordOperationProductOutComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_RECORD_OPERATION_PRODUCT_OUT_COMPONENT).get(form.getEntityId());
 
-        Entity productionCountingQuantity = recordOperationProductOutComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
-
-        if (productionCountingQuantity == null) {
-            return;
-        }
-
-        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY);
-        plannedQuantityField.setFieldValue(numberService.format(productionCountingQuantity.getDecimalField(PLANNED_QUANTITY)));
-        plannedQuantityField.requestComponentUpdateState();
+        // Entity productionCountingQuantity = recordOperationProductOutComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
+        //
+        // if (productionCountingQuantity == null) {
+        // return;
+        // }
+        //
+        // FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY);
+        // plannedQuantityField.setFieldValue(numberService.format(productionCountingQuantity.getDecimalField(PLANNED_QUANTITY)));
+        // plannedQuantityField.requestComponentUpdateState();
     }
 
 }

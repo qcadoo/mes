@@ -46,7 +46,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
-					<component type="input" name="plannedQuantity" reference="plannedQuantity"
+					<component type="input" name="plannedQuantity" field="plannedQuantity" reference="plannedQuantity"
 						defaultEnabled="false">
 						<option type="alignment" value="right" />
 						<option type="labelWidth" value="50" />
@@ -99,9 +99,6 @@
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="getProductNameFromCounting" />
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
-			method="fillPlannedQuantity" />
 		<beforeRender
 			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
 			method="fillFieldsCurrency" />
