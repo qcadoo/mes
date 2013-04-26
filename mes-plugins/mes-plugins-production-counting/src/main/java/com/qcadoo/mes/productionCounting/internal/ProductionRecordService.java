@@ -54,11 +54,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
@@ -204,6 +206,8 @@ public class ProductionRecordService {
         Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(asList(order));
 
+        Set<Long> alreadyAddedProducts = Sets.newHashSet();
+
         for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
             Entity operationProductComponent = productComponentQuantity.getKey();
 
@@ -220,8 +224,11 @@ public class ProductionRecordService {
             if (operationProductModel.equals(operationProductComponent.getDataDefinition().getName())) {
                 Entity product = operationProductComponent.getBelongsToField(PRODUCT);
 
-                createRecordOperationProduct(recordOperationProducts, recordOperationProductModelName, operationProductComponent,
-                        operationProductModel, order, product);
+                if (!alreadyAddedProducts.contains(product.getId())) {
+                    createRecordOperationProduct(recordOperationProducts, recordOperationProductModelName, product);
+
+                    alreadyAddedProducts.add(product.getId());
+                }
             }
         }
 
@@ -229,8 +236,7 @@ public class ProductionRecordService {
     }
 
     private void createRecordOperationProduct(final List<Entity> recordOperationProducts,
-            final String recordOperationProductModelName, final Entity operationProductComponent,
-            final String operationProductModel, final Entity order, final Entity product) {
+            final String recordOperationProductModelName, final Entity product) {
         Entity recordOperationProduct = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 recordOperationProductModelName).create();
 
