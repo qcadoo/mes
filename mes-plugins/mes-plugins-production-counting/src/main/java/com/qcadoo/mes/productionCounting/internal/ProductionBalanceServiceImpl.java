@@ -66,7 +66,6 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRec
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_IN_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PRODUCTION_COUNTING_QUANTITY;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.CUMULATED;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
@@ -470,14 +469,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Entity balanceOperationProductComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 balanceOperationProductComponentModel).create();
 
-        BigDecimal plannedQuantity = null;
-        Entity productionCountingQuantity = recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
-        if (productionCountingQuantity == null) {
-            plannedQuantity = BigDecimal.ZERO;
-        } else {
-            plannedQuantity = getNotNullBigDecimal(productionCountingQuantity.getDecimalField(PLANNED_QUANTITY));
-        }
-
+        BigDecimal plannedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY));
         BigDecimal usedQuantity = getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY));
 
         BigDecimal balance = usedQuantity.subtract(plannedQuantity, numberService.getMathContext());
@@ -498,10 +490,10 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         BigDecimal plannedQuantity = addedBalanceOperationProductInComponent.getDecimalField(PLANNED_QUANTITY);
         BigDecimal usedQuantity = addedBalanceOperationProductInComponent.getDecimalField(USED_QUANTITY);
 
-        if (shouldAddPlannedQuantity && (recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY) != null)) {
+        if (shouldAddPlannedQuantity) {
             plannedQuantity = plannedQuantity.add(
-                    getNotNullBigDecimal(recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY)
-                            .getDecimalField(PLANNED_QUANTITY)), numberService.getMathContext());
+                    getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY)),
+                    numberService.getMathContext());
         }
 
         usedQuantity = usedQuantity.add(getNotNullBigDecimal(recordOperationProductComponent.getDecimalField(USED_QUANTITY)),

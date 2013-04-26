@@ -44,7 +44,6 @@ import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRec
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.STATE;
 import static com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields.TECHNOLOGY_INSTANCE_OPERATION_COMPONENT;
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PRODUCTION_COUNTING_QUANTITY;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.BASIC;
 import static com.qcadoo.mes.productionCounting.internal.constants.TypeOfProductionRecording.FOR_EACH;
 import static com.qcadoo.mes.technologies.constants.OperationProductInComponentFields.OPERATION_COMPONENT;
@@ -61,7 +60,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.internal.constants.ProductionRecordFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -237,22 +235,8 @@ public class ProductionRecordService {
                 recordOperationProductModelName).create();
 
         recordOperationProduct.setField(PRODUCT, product);
-        recordOperationProduct.setField(PRODUCTION_COUNTING_QUANTITY,
-                findProductionComponentQuantity(order, operationProductComponent, operationProductModel, product));
 
         recordOperationProducts.add(recordOperationProduct);
-    }
-
-    private Entity findProductionComponentQuantity(final Entity order, final Entity operationProductComponent,
-            final String operationProductModel, final Entity product) {
-        Entity productionComponentQuantity = dataDefinitionService
-                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find()
-                .add(SearchRestrictions.belongsTo(ORDER, order))
-                .add(SearchRestrictions.belongsTo(operationProductModel, operationProductComponent))
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
-
-        return productionComponentQuantity;
     }
 
     public boolean checkIfOperationIsSet(final DataDefinition productionRecordDD, final Entity productionRecord) {

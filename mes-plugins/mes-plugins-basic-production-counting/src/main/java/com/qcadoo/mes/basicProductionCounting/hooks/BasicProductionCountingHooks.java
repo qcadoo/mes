@@ -58,11 +58,11 @@ public class BasicProductionCountingHooks {
         Entity order = basicProductionCounting.getBelongsToField(ORDER);
         Entity product = basicProductionCounting.getBelongsToField(PRODUCT);
 
-        List<Entity> productionCountingQuantites = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
+        List<Entity> productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
                 .add(SearchRestrictions.isNull(OPERATION_PRODUCT_OUT_COMPONENT))
                 .add(SearchRestrictions.belongsTo(PRODUCT, product)).list().getEntities();
 
-        for (Entity productionCountingQuantity : productionCountingQuantites) {
+        for (Entity productionCountingQuantity : productionCountingQuantities) {
             BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity.getDecimalField(PLANNED_QUANTITY);
 
             if (productionCountingQuantityPlannedQuantity != null) {

@@ -30,11 +30,15 @@
 	<fields>
 		<belongsTo name="productionRecord" model="productionRecord" />
 		<belongsTo name="product" model="product" plugin="basic" />
-		<belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting" />
+		<decimal name="plannedQuantity" persistent="false" />
 		<decimal name="usedQuantity">
 			<validatesRange from="0" exclusively="true" />
 		</decimal>
 		<decimal name="balance" />
 	</fields>
-	<hooks />
+	<hooks>
+		<onView
+			class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductOutComponentHooks"
+			method="fillPlannedQuantity" />
+	</hooks>
 </model>

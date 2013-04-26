@@ -33,7 +33,7 @@ public final class RecordOperationProductInComponentFields {
 
     public static final String PRODUCT = "product";
 
-    public static final String PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String USED_QUANTITY = "usedQuantity";
 
