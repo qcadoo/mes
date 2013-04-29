@@ -70,6 +70,7 @@ import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -260,10 +261,17 @@ public class OrderReportPdf extends ReportPdfView {
     private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
 
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
-        productsTable.addCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale), FontUtils
-                .getDejavuRegular9Dark()));
 
-        for (int i = 1; i < columnsName.size(); i++) {
+        PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
+                FontUtils.getDejavuRegular9Dark()));
+        total.setColspan(2);
+        total.setHorizontalAlignment(Element.ALIGN_LEFT);
+        total.setBackgroundColor(null);
+        total.disableBorderSide(Rectangle.RIGHT);
+        total.disableBorderSide(Rectangle.LEFT);
+        total.setBorderColor(ColorUtils.getLineLightColor());
+        productsTable.addCell(total);
+        for (int i = 2; i < columnsName.size(); i++) {
 
             if (columnsName.contains(ORDERED_QUANTITY) && columnsName.indexOf(ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
