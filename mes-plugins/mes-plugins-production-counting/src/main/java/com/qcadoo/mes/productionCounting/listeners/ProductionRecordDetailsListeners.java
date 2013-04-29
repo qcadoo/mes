@@ -23,8 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PRODUCTION_COUNTING_QUANTITY;
+import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.productionCounting.internal.constants.RecordOperationProductInComponentFields.USED_QUANTITY;
 
 import java.math.BigDecimal;
@@ -66,18 +65,10 @@ public class ProductionRecordDetailsListeners {
 
     private void copyPlannedQuantityToUsedQuantity(List<Entity> recordOperationProductComponents) {
         for (Entity recordOperationProductComponent : recordOperationProductComponents) {
-            BigDecimal plannedQuantity = null;
+            BigDecimal plannedQuantity = recordOperationProductComponent.getDecimalField(PLANNED_QUANTITY);
 
-            Entity productionCoutningQuantity = recordOperationProductComponent.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
-
-            if (productionCoutningQuantity == null) {
+            if (plannedQuantity == null) {
                 plannedQuantity = BigDecimal.ZERO;
-            } else {
-                plannedQuantity = productionCoutningQuantity.getDecimalField(PLANNED_QUANTITY);
-
-                if (plannedQuantity == null) {
-                    plannedQuantity = BigDecimal.ZERO;
-                }
             }
 
             recordOperationProductComponent.setField(USED_QUANTITY, numberService.setScale(plannedQuantity));

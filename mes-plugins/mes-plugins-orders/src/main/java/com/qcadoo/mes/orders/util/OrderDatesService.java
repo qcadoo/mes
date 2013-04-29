@@ -11,21 +11,21 @@ import com.qcadoo.model.api.Entity;
 public interface OrderDatesService {
 
     /**
-     * Get start and finish dates (expressed as {@link DateRange})
+     * Compute start and finish dates from effective, corrected and planned dates (expressed as {@link DateRange})
      * 
      * @param order
      * @return {@link DateRange} representing start and finish dates
      * @since 1.2.1
      */
-    DateRange getDates(final Entity order);
+    DateRange getCalculatedDates(final Entity order);
 
     /**
-     * Get dateFrom and dateTo (expressed as {@link DateRange})
+     * Get start and finish dates from entity (expressed as {@link DateRange})
      * 
      * @param order
      * @return {@link DateRange} representing start and finish dates
      * @since 1.2.1
      */
-    DateRange getDatesFromAndTo(final Entity order);
+    DateRange getExistingDates(final Entity order);
 
 }

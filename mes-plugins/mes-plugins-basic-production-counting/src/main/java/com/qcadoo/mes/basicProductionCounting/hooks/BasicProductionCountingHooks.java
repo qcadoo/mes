@@ -23,38 +23,75 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.USED_QUANTITY;
+import static com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES;
+import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.OPERATION_PRODUCT_OUT_COMPONENT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class BasicProductionCountingHooks {
 
-    public boolean checkValueOfQuantity(final DataDefinition basicProductionCountingDD, final Entity basciProductionCounting) {
-        BigDecimal usedQuantity = (BigDecimal) basciProductionCounting.getField(USED_QUANTITY);
-        BigDecimal producedQuantity = (BigDecimal) basciProductionCounting.getField(PRODUCED_QUANTITY);
+    @Autowired
+    private NumberService numberService;
+
+    public void fillPlannedQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+        basicProductionCounting.setField(PLANNED_QUANTITY, numberService.setScale(getPlannedQuantity(basicProductionCounting)));
+    }
+
+    private BigDecimal getPlannedQuantity(final Entity basicProductionCounting) {
+        BigDecimal plannedQuantity = BigDecimal.ZERO;
+
+        Entity order = basicProductionCounting.getBelongsToField(ORDER);
+        Entity product = basicProductionCounting.getBelongsToField(PRODUCT);
+
+        List<Entity> productionCountingQuantities = order.getHasManyField(PRODUCTION_COUNTING_QUANTITIES).find()
+                .add(SearchRestrictions.isNull(OPERATION_PRODUCT_OUT_COMPONENT))
+                .add(SearchRestrictions.belongsTo(PRODUCT, product)).list().getEntities();
+
+        for (Entity productionCountingQuantity : productionCountingQuantities) {
+            BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity.getDecimalField(PLANNED_QUANTITY);
+
+            if (productionCountingQuantityPlannedQuantity != null) {
+                plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity, numberService.getMathContext());
+            }
+        }
+
+        return plannedQuantity;
+    }
+
+    public boolean checkValueOfQuantity(final DataDefinition basicProductionCountingDD, final Entity basicProductionCounting) {
+        BigDecimal usedQuantity = (BigDecimal) basicProductionCounting.getField(USED_QUANTITY);
+        BigDecimal producedQuantity = (BigDecimal) basicProductionCounting.getField(PRODUCED_QUANTITY);
 
         if (usedQuantity == null && producedQuantity == null) {
             return true;
         }
 
         if (usedQuantity != null && usedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            basciProductionCounting.addError(basicProductionCountingDD.getField(USED_QUANTITY),
+            basicProductionCounting.addError(basicProductionCountingDD.getField(USED_QUANTITY),
                     "basic.production.counting.value.lower.zero");
         }
 
         if (producedQuantity != null && producedQuantity.compareTo(BigDecimal.ZERO) == -1) {
-            basciProductionCounting.addError(basicProductionCountingDD.getField(PRODUCED_QUANTITY),
+            basicProductionCounting.addError(basicProductionCountingDD.getField(PRODUCED_QUANTITY),
                     "basic.production.counting.value.lower.zero");
         }
 
-        if (!basciProductionCounting.getGlobalErrors().isEmpty() || !basciProductionCounting.getErrors().isEmpty()) {
+        if (!basicProductionCounting.getGlobalErrors().isEmpty() || !basicProductionCounting.getErrors().isEmpty()) {
             return false;
         }
 

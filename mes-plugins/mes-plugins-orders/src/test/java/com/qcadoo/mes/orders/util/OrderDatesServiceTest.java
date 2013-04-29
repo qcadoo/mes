@@ -34,7 +34,7 @@ public class OrderDatesServiceTest {
     @Test
     public final void shouldReturnEmptyDateRangeIfDatesIsNotSpecified() {
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -48,7 +48,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.DATE_FROM, plannedStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(plannedStartDate, dateRange.getFrom());
@@ -65,7 +65,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_FROM, correctedStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(correctedStartDate, dateRange.getFrom());
@@ -79,7 +79,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_FROM, correctedStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(correctedStartDate, dateRange.getFrom());
@@ -99,7 +99,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effectiveStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(effectiveStartDate, dateRange.getFrom());
@@ -116,7 +116,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effectiveStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(effectiveStartDate, dateRange.getFrom());
@@ -133,7 +133,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effectiveStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(effectiveStartDate, dateRange.getFrom());
@@ -147,7 +147,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, effectiveStartDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(effectiveStartDate, dateRange.getFrom());
@@ -161,7 +161,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.DATE_TO, plannedEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -178,7 +178,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, correctedEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -192,7 +192,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, correctedEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -212,7 +212,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -229,7 +229,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -246,7 +246,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -260,7 +260,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertNull(dateRange.getFrom());
@@ -277,7 +277,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.DATE_TO, plannedEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(plannedStartDate, dateRange.getFrom());
@@ -300,7 +300,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, correctedEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(correctedStartDate, dateRange.getFrom());
@@ -329,7 +329,7 @@ public class OrderDatesServiceTest {
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, effectiveEndDate);
 
         // when
-        DateRange dateRange = orderDatesService.getDates(order);
+        DateRange dateRange = orderDatesService.getCalculatedDates(order);
 
         // then
         assertEquals(effectiveStartDate, dateRange.getFrom());

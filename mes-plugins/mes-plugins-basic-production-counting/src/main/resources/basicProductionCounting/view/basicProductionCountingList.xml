@@ -45,8 +45,7 @@
 					expression="#product['number']" link="true" />
 				<option type="column" name="productName" fields="product"
 					expression="#product['name']" link="true" />
-				<option type="column" name="plannedQuantity" fields="productionCountingQuantity"
-					expression="#productionCountingQuantity['plannedQuantity']" />
+				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
 				<option type="column" name="producedQuantity" fields="producedQuantity" />
 				<option type="column" name="usedQuantity" fields="usedQuantity" />
 				<option type="column" name="unit" fields="product"

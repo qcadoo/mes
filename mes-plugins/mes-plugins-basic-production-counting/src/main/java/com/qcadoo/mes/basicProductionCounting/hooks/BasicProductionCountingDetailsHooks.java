@@ -27,9 +27,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.USED_QUANTITY;
-import static com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 
 import java.util.Arrays;
@@ -110,27 +108,6 @@ public class BasicProductionCountingDetailsHooks {
         Entity product = basicProductionCountingEntity.getBelongsToField(PRODUCT);
         productField.setFieldValue(product.getField(NAME));
         productField.requestComponentUpdateState();
-    }
-
-    public void fillPlannedQuantity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-
-        if (form.getEntity() == null) {
-            return;
-        }
-
-        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
-
-        Entity productionCountingQuantity = basicProductionCountingEntity.getBelongsToField(PRODUCTION_COUNTING_QUANTITY);
-
-        if (productionCountingQuantity == null) {
-            return;
-        }
-
-        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY);
-        plannedQuantityField.setFieldValue(numberService.format(productionCountingQuantity.getDecimalField(PLANNED_QUANTITY)));
-        plannedQuantityField.requestComponentUpdateState();
     }
 
     public void fillFieldsCurrency(final ViewDefinitionState view) {
