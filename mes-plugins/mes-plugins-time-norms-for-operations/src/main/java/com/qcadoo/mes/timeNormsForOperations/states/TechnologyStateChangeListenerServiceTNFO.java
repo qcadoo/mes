@@ -25,7 +25,7 @@ public class TechnologyStateChangeListenerServiceTNFO {
 
         List<String> messages = normService.checkOperationOutputQuantities(technology);
         if (!messages.isEmpty()) {
-            stateChangeContext.addValidationError("Technology tree have validations errors.");
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.treeIsNotValid");
             StringBuilder builder = new StringBuilder();
             for (String message : messages) {
                 builder.append(message.toString());

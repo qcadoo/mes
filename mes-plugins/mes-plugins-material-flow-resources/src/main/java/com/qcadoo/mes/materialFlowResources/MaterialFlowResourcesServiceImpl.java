@@ -159,10 +159,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         resource.setField(LOCATION, locationTo);
         resource.setField(PRODUCT, product);
-        resource.setField(QUANTITY, quantity);
+        resource.setField(QUANTITY, numberService.setScale(quantity));
         resource.setField(TIME, time);
         resource.setField(BATCH, batch);
-        resource.setField(PRICE, price);
+        resource.setField(PRICE, (price == null) ? price : numberService.setScale(price));
 
         resource.getDataDefinition().save(resource);
     }
@@ -178,6 +178,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
+                    // TODO LUPO batch update problem?
                     resource.getDataDefinition().delete(resource.getId());
 
                     if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -186,7 +187,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, resourceQuantity);
+                    resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 
@@ -220,7 +221,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, resourceQuantity);
+                    resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 
