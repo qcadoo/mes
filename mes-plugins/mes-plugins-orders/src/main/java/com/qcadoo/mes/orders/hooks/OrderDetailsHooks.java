@@ -113,7 +113,7 @@ public class OrderDetailsHooks {
         orderService.fillProductionLine(view);
         orderService.generateOrderNumber(view);
         orderService.fillDefaultTechnology(view);
-        orderService.disableFieldOrder(view);
+        orderService.disableFieldOrderForm(view);
         orderService.disableTechnologiesIfProductDoesNotAny(view);
         orderService.setAndDisableState(view);
         unitService.fillProductUnitBeforeRender(view);

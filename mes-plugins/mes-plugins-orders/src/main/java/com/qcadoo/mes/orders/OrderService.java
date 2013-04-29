@@ -242,9 +242,8 @@ public class OrderService {
         }
     }
 
-    public void disableFieldOrder(final ViewDefinitionState view) {
+    public void disableFieldOrderForm(final ViewDefinitionState view) {
         FormComponent order = (FormComponent) view.getComponentByReference(FIELD_FORM);
-        FieldComponent technology = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
 
         boolean disabled = false;
 
@@ -255,13 +254,13 @@ public class OrderService {
                 return;
             }
             String state = entity.getStringField(STATE);
-            if (!OrderState.PENDING.getStringValue().equals(state) && order.isValid()) {
+            if (!OrderState.PENDING.getStringValue().equals(state)) {
                 disabled = true;
             }
         }
 
         order.setFormEnabled(!disabled);
-        technology.setEnabled(!disabled);
+
     }
 
     public boolean checkOrderDates(final DataDefinition dataDefinition, final Entity order) {

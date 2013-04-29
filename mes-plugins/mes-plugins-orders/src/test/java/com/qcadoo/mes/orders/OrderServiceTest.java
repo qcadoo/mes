@@ -491,55 +491,13 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldNotDisableFormIfThereIsNoIdentifier() throws Exception {
-        // given
-        FormComponent order = mock(FormComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(order.getFieldValue()).willReturn(null);
-
-        // when
-        orderService.disableFieldOrder(viewDefinitionState);
-
-        // then
-        verify(order).setFormEnabled(true);
-        verify(technology).setEnabled(true);
-    }
-
-    @Test
-    public void shouldNotDisableFormIfThereIsNoOrder() throws Exception {
-        // given
-        FormComponent order = mock(FormComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(order.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
-                null);
-
-        // when
-        orderService.disableFieldOrder(viewDefinitionState);
-
-        // then
-        verify(order).setFormEnabled(true);
-        verify(technology).setEnabled(true);
-    }
-
-    @Test
     public void shouldNotDisableFormIfOrderIsNotDone() throws Exception {
         // given
         FormComponent order = mock(FormComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getFieldValue()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
@@ -547,47 +505,20 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFieldOrder(viewDefinitionState);
+        orderService.disableFieldOrderForm(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(false);
-        verify(technology).setEnabled(false);
-    }
-
-    @Test
-    public void shouldNotDisableFormIfOrderIsNotValid() throws Exception {
-        // given
-        FormComponent order = mock(FormComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
-        Entity entity = mock(Entity.class);
-
-        ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
-        given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
-        given(order.getFieldValue()).willReturn(117L);
-        given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
-                entity);
-        given(entity.getStringField("state")).willReturn("04completed");
-        given(order.isValid()).willReturn(false);
-
-        // when
-        orderService.disableFieldOrder(viewDefinitionState);
-
-        // then
-        verify(order).setFormEnabled(true);
-        verify(technology).setEnabled(true);
     }
 
     @Test
     public void shouldNotDisableFormForDoneOrder() throws Exception {
         // given
         FormComponent order = mock(FormComponent.class);
-        FieldComponent technology = mock(FieldComponent.class);
         Entity entity = mock(Entity.class);
 
         ViewDefinitionState viewDefinitionState = mock(ViewDefinitionState.class);
         given(viewDefinitionState.getComponentByReference(L_FORM)).willReturn(order);
-        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(order.getEntityId()).willReturn(117L);
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(117L)).willReturn(
                 entity);
@@ -595,11 +526,10 @@ public class OrderServiceTest {
         given(order.isValid()).willReturn(true);
 
         // when
-        orderService.disableFieldOrder(viewDefinitionState);
+        orderService.disableFieldOrderForm(viewDefinitionState);
 
         // then
         verify(order).setFormEnabled(false);
-        verify(technology).setEnabled(false);
     }
 
     @Test
