@@ -55,6 +55,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -148,13 +149,20 @@ public class CostCalculationPdfService extends PdfDocumentService {
         Entity costCalculation = dataDefCostCalculation.find("where id = " + entity.getId().toString()).uniqueResult();
 
         PdfPTable leftPanelColumn = addLeftPanelToReport(costCalculation, locale);
+
         PdfPTable rightPanelColumn = addRightPanelToReport(costCalculation, locale);
 
         PdfPTable panelTable = pdfHelper.createPanelTable(2);
+
+        panelTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
         panelTable.addCell(leftPanelColumn);
         panelTable.addCell(rightPanelColumn);
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
+
+        panelTable.setTableEvent(null);
+        panelTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+
         document.add(panelTable);
 
         document.add(new Paragraph(translationService
@@ -216,7 +224,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     public PdfPTable addLeftPanelToReport(final Entity costCalculation, final Locale locale) {
         PdfPTable leftPanelColumn = pdfHelper.createPanelTable(1);
-
+        leftPanelColumn.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
         pdfHelper.addTableCellAsTwoColumnsTable(leftPanelColumn,
                 translationService.translate("costCalculation.costCalculation.number.label", locale) + ":",
                 costCalculation.getStringField(NUMBER));
@@ -286,6 +294,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     public PdfPTable addRightPanelToReport(final Entity costCalculation, final Locale locale) {
         PdfPTable rightPanelColumn = pdfHelper.createPanelTable(1);
+        rightPanelColumn.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
         rightPanelColumn.addCell(new Phrase(translationService.translate(
                 "costCalculation.costCalculationDetails.window.mainTab.form.technicalProductionCost", locale) + ":", FontUtils
                 .getDejavuBold10Dark()));
