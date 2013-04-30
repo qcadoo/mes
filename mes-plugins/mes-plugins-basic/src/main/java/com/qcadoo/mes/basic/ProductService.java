@@ -50,30 +50,22 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class ProductService {
 
     private static final String L_FORM = "form";
 
-    private static final String UNIT_FROM = "unitFrom";
-
     @Autowired
-    private UnitConversionService unitConversionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private UnitService unitService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private UnitConversionService unitConversionService;
 
     public boolean checkIfProductEntityTypeIsCorrect(final Entity product, final ProductFamilyElementType entityType) {
         return entityType.getStringValue().equals(product.getStringField(ENTITY_TYPE));
@@ -135,24 +127,8 @@ public class ProductService {
         productsGrid.addMessage("basic.productsList.message.getDefaultConversionsForProductsSuccess", MessageType.SUCCESS);
     }
 
-    public void disableUnitFromWhenFormIsSaved(final ViewDefinitionState view) {
-        final FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
-        final AwesomeDynamicListComponent conversionItemsAdl = (AwesomeDynamicListComponent) view
-                .getComponentByReference(CONVERSION_ITEMS);
-
-        conversionItemsAdl.setEnabled(productForm.getEntityId() != null);
-        for (FormComponent formComponent : conversionItemsAdl.getFormComponents()) {
-            formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(formComponent.getEntityId() == null);
-        }
-    }
-
-    public void generateProductNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                L_FORM, "number");
-    }
-
-    public boolean checkIfSubstituteIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity substitute = entity.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
+    public boolean checkIfSubstituteIsNotRemoved(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
+        Entity substitute = substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
 
         if (substitute == null || substitute.getId() == null) {
             return true;
@@ -162,28 +138,29 @@ public class ProductService {
                 .get(substitute.getId());
 
         if (substituteEntity == null) {
-            entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField(SubstituteComponentFields.SUBSTITUTE, null);
+            substituteComponent.addGlobalError("qcadooView.message.belongsToNotFound");
+            substituteComponent.setField(SubstituteComponentFields.SUBSTITUTE, null);
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean checkSubstituteComponentUniqueness(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(SubstituteComponentFields.PRODUCT);
-        Entity substitute = entity.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
+    public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
+        Entity product = substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT);
+        Entity substitute = substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
 
         if (substitute == null || product == null) {
             return false;
         }
 
-        final SearchResult searchResult = dataDefinition.find()
+        final SearchResult searchResult = substituteComponentDD.find()
                 .add(SearchRestrictions.belongsTo(SubstituteComponentFields.PRODUCT, product))
                 .add(SearchRestrictions.belongsTo(SubstituteComponentFields.SUBSTITUTE, substitute)).list();
 
-        if (searchResult.getTotalNumberOfEntities() > 0 && !searchResult.getEntities().get(0).getId().equals(entity.getId())) {
-            entity.addError(dataDefinition.getField(SubstituteComponentFields.PRODUCT),
+        if (searchResult.getTotalNumberOfEntities() > 0
+                && !searchResult.getEntities().get(0).getId().equals(substituteComponent.getId())) {
+            substituteComponent.addError(substituteComponentDD.getField(SubstituteComponentFields.PRODUCT),
                     "basic.validate.global.error.substituteComponentDuplicated");
             return false;
         } else {
@@ -191,8 +168,8 @@ public class ProductService {
         }
     }
 
-    public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
-        Entity product = entity.getBelongsToField(SubstituteFields.PRODUCT);
+    public boolean checkIfProductIsNotRemoved(final DataDefinition substituteDD, final Entity substitute) {
+        Entity product = substitute.getBelongsToField(SubstituteFields.PRODUCT);
 
         if (product == null || product.getId() == null) {
             return true;
@@ -202,48 +179,12 @@ public class ProductService {
                 product.getId());
 
         if (productEntity == null) {
-            entity.addGlobalError("qcadooView.message.belongsToNotFound");
-            entity.setField(SubstituteFields.PRODUCT, null);
+            substitute.addGlobalError("qcadooView.message.belongsToNotFound");
+            substitute.setField(SubstituteFields.PRODUCT, null);
             return false;
         }
 
         return true;
-    }
-
-    public void disableProductFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
-        FieldComponent entityType = (FieldComponent) state.getComponentByReference(ProductFields.ENTITY_TYPE);
-        FieldComponent parent = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
-        if (form.getEntityId() == null) {
-            return;
-        }
-
-        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                form.getEntityId());
-
-        if (entity == null) {
-            return;
-        }
-
-        String externalNumber = entity.getStringField("externalNumber");
-
-        if (externalNumber != null) {
-            form.setFormEnabled(false);
-            entityType.setEnabled(true);
-            parent.setEnabled(true);
-        }
-
-    }
-
-    public void fillUnit(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        FieldComponent unitField = (FieldComponent) view.getComponentByReference(UNIT);
-
-        if ((productForm.getEntityId() == null) && (unitField.getFieldValue() == null)) {
-            unitField.setFieldValue(unitService.getDefaultUnitFromSystemParameters());
-            unitField.requestComponentUpdateState();
-        }
     }
 
     public void fillUnit(final DataDefinition productDD, final Entity product) {

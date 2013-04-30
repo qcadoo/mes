@@ -54,7 +54,7 @@ import com.qcadoo.model.api.search.SearchResult;
 @PrepareForTest(SearchRestrictions.class)
 public class ProductHooksTest {
 
-    private ProductHooks hooks;
+    private ProductHooks productHooks;
 
     @Mock
     private DataDefinition dataDefinition;
@@ -73,9 +73,12 @@ public class ProductHooksTest {
 
     @Before
     public void init() {
-        hooks = new ProductHooks();
         MockitoAnnotations.initMocks(this);
+
+        productHooks = new ProductHooks();
+
         PowerMockito.mockStatic(SearchRestrictions.class);
+
         when(entity.getDataDefinition()).thenReturn(dataDefinition);
         when(product.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.find()).thenReturn(searchCriteria);
@@ -100,7 +103,7 @@ public class ProductHooksTest {
         // given
         when(entity.getId()).thenReturn(null);
         // when
-        hooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
+        productHooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
     }
 
     @Test
@@ -112,7 +115,7 @@ public class ProductHooksTest {
         when(entity.getDataDefinition()).thenReturn(dataDefinition);
         when(dataDefinition.get(entityId)).thenReturn(product);
         // when
-        hooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
+        productHooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
 
         // then
     }
@@ -134,7 +137,7 @@ public class ProductHooksTest {
         when(result.getEntities()).thenReturn(products);
 
         // when
-        hooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
+        productHooks.clearFamilyFromProductWhenTypeIsChanged(dataDefinition, entity);
 
         // then
         Assert.assertEquals(null, prod1.getBelongsToField("parent"));
@@ -146,7 +149,7 @@ public class ProductHooksTest {
         // given
 
         // when
-        hooks.clearExternalIdOnCopy(dataDefinition, entity);
+        productHooks.clearExternalIdOnCopy(dataDefinition, entity);
 
         // then
 

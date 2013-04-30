@@ -305,13 +305,13 @@
 	</component>
 	
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
 			method="generateProductNumber" />
-		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
 			method="fillUnit" />
-		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
 			method="disableProductFormForExternalItems" />
-		<beforeRender class="com.qcadoo.mes.basic.ProductService"
+		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
 			method="disableUnitFromWhenFormIsSaved" />
 		<beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
 			method="updateRibbonState" />

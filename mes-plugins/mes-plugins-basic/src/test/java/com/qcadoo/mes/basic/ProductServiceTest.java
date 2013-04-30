@@ -29,10 +29,10 @@ import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,42 +41,31 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.SubstituteFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class ProductServiceTest {
 
     private static final String L_SZT = "szt";
 
-    private static final String L_FORM = "form";
-
-    private static final long L_ID = 1L;
-
     private ProductService productService;
-
-    @Mock
-    private ViewDefinitionState view;
-
-    @Mock
-    private UnitService unitService;
 
     @Mock
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private NumberGeneratorService numberGeneratorService;
+    private UnitService unitService;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition productDD, substituteDD, substituteComponentDD;
 
     @Mock
-    private Entity product, entity, substitute;
+    private Entity product, substitute, substituteComponent;
 
     @Before
     public final void init() {
@@ -84,15 +73,14 @@ public class ProductServiceTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(productService, "unitService", unitService);
-        ReflectionTestUtils.setField(productService, "numberGeneratorService", numberGeneratorService);
         ReflectionTestUtils.setField(productService, "dataDefinitionService", dataDefinitionService);
+        ReflectionTestUtils.setField(productService, "unitService", unitService);
     }
 
     @Test
     public void shouldReturnTrueWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
         // given
-        when(product.getStringField(ENTITY_TYPE)).thenReturn(PARTICULAR_PRODUCT.getStringValue());
+        given(product.getStringField(ENTITY_TYPE)).willReturn(PARTICULAR_PRODUCT.getStringValue());
 
         // when
         boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PARTICULAR_PRODUCT);
@@ -104,7 +92,7 @@ public class ProductServiceTest {
     @Test
     public void shouldReturnFalseWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
         // given
-        when(product.getStringField(ENTITY_TYPE)).thenReturn(PARTICULAR_PRODUCT.getStringValue());
+        given(product.getStringField(ENTITY_TYPE)).willReturn(PARTICULAR_PRODUCT.getStringValue());
 
         // when
         boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PRODUCTS_FAMILY);
@@ -116,7 +104,7 @@ public class ProductServiceTest {
     @Test
     public void shouldReturnTrueWhenProductIsNotRemoved() throws Exception {
         // when
-        boolean result = productService.checkIfProductIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfProductIsNotRemoved(productDD, product);
 
         // then
         assertTrue(result);
@@ -127,12 +115,17 @@ public class ProductServiceTest {
         // given
         DataDefinition productDD = Mockito.mock(DataDefinition.class);
         Long productId = 1L;
-        when(entity.getBelongsToField("product")).thenReturn(product);
-        when(dataDefinitionService.get("basic", "product")).thenReturn(productDD);
-        when(product.getId()).thenReturn(productId);
-        when(productDD.get(productId)).thenReturn(null);
+
+        given(substitute.getBelongsToField(SubstituteFields.PRODUCT)).willReturn(product);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).willReturn(productDD);
+        given(product.getId()).willReturn(productId);
+
+        given(productDD.get(productId)).willReturn(null);
+
         // when
-        boolean result = productService.checkIfProductIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfProductIsNotRemoved(substituteDD, substitute);
+
         // then
         assertFalse(result);
     }
@@ -142,12 +135,16 @@ public class ProductServiceTest {
         // given
         DataDefinition productDD = Mockito.mock(DataDefinition.class);
         Long productId = 1L;
-        when(entity.getBelongsToField("product")).thenReturn(product);
-        when(dataDefinitionService.get("basic", "product")).thenReturn(productDD);
-        when(product.getId()).thenReturn(productId);
-        when(productDD.get(productId)).thenReturn(product);
+
+        given(substitute.getBelongsToField(SubstituteFields.PRODUCT)).willReturn(product);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).willReturn(productDD);
+        given(product.getId()).willReturn(productId);
+
+        given(productDD.get(productId)).willReturn(product);
+
         // when
-        boolean result = productService.checkIfProductIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfProductIsNotRemoved(substituteDD, substitute);
 
         // then
         assertTrue(result);
@@ -158,12 +155,17 @@ public class ProductServiceTest {
         // given
         DataDefinition substituteDD = Mockito.mock(DataDefinition.class);
         Long substituteId = 1L;
-        when(entity.getBelongsToField("substitute")).thenReturn(substitute);
-        when(dataDefinitionService.get("basic", "substitute")).thenReturn(substituteDD);
-        when(substitute.getId()).thenReturn(substituteId);
-        when(substituteDD.get(substituteId)).thenReturn(null);
+
+        given(substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE)).willReturn(substitute);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)).willReturn(
+                substituteDD);
+        given(substitute.getId()).willReturn(substituteId);
+        given(substituteDD.get(substituteId)).willReturn(null);
+
         // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
+
         // then
         assertFalse(result);
     }
@@ -171,7 +173,7 @@ public class ProductServiceTest {
     @Test
     public void shouldReturnTrueWhenEntityDoesnotHaveBTSubstitute() throws Exception {
         // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
 
         // then
         assertTrue(result);
@@ -182,80 +184,20 @@ public class ProductServiceTest {
         // given
         DataDefinition substituteDD = Mockito.mock(DataDefinition.class);
         Long substituteId = 1L;
-        when(entity.getBelongsToField("substitute")).thenReturn(substitute);
-        when(dataDefinitionService.get("basic", "substitute")).thenReturn(substituteDD);
-        when(substitute.getId()).thenReturn(substituteId);
-        when(substituteDD.get(substituteId)).thenReturn(substitute);
+
+        given(substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE)).willReturn(substitute);
+
+        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)).willReturn(
+                substituteDD);
+        given(substitute.getId()).willReturn(substituteId);
+
+        given(substituteDD.get(substituteId)).willReturn(substitute);
+
         // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(dataDefinition, entity);
+        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
+
         // then
         assertTrue(result);
-    }
-
-    @Test
-    public void shouldDisabledFormWhenExternalNumberIsnotNull() throws Exception {
-        // given
-        FormComponent form = mock(FormComponent.class);
-        FieldComponent entityType = mock(FieldComponent.class);
-        FieldComponent parent = mock(FieldComponent.class);
-        Long productId = 1L;
-        String externalNumber = "0001";
-        DataDefinition productDD = mock(DataDefinition.class);
-        when(view.getComponentByReference("parent")).thenReturn(parent);
-        when(view.getComponentByReference("entityType")).thenReturn(entityType);
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(form.getEntityId()).thenReturn(productId);
-        when(dataDefinitionService.get("basic", "product")).thenReturn(productDD);
-        when(productDD.get(productId)).thenReturn(product);
-        when(product.getStringField("externalNumber")).thenReturn(externalNumber);
-        // when
-        productService.disableProductFormForExternalItems(view);
-        // then
-        verify(form).setFormEnabled(false);
-        verify(entityType).setEnabled(true);
-        verify(parent).setEnabled(true);
-    }
-
-    @Test
-    public void shouldntFillUnitIfFormIsSaved() {
-        // given
-        ViewDefinitionState view = mock(ViewDefinitionState.class);
-        FormComponent productForm = mock(FormComponent.class);
-
-        FieldComponent unitField = mock(FieldComponent.class);
-
-        when(view.getComponentByReference(L_FORM)).thenReturn(productForm);
-        when(productForm.getEntityId()).thenReturn(L_ID);
-
-        // when
-        productService.fillUnit(view);
-
-        // then
-        verify(unitField, never()).setFieldValue(Mockito.anyString());
-    }
-
-    @Test
-    public void shouldFillUnitIfFormIsntSaved() {
-        // given
-        ViewDefinitionState view = mock(ViewDefinitionState.class);
-        FormComponent productForm = mock(FormComponent.class);
-
-        FieldComponent unitField = mock(FieldComponent.class);
-
-        when(view.getComponentByReference(L_FORM)).thenReturn(productForm);
-        when(productForm.getEntityId()).thenReturn(null);
-
-        when(view.getComponentByReference(UNIT)).thenReturn(unitField);
-
-        when(unitField.getFieldValue()).thenReturn(null);
-
-        when(unitService.getDefaultUnitFromSystemParameters()).thenReturn(L_SZT);
-
-        // when
-        productService.fillUnit(view);
-
-        // then
-        verify(unitField).setFieldValue(L_SZT);
     }
 
     @Test
@@ -264,7 +206,7 @@ public class ProductServiceTest {
         Entity product = mock(Entity.class);
         DataDefinition productDD = mock(DataDefinition.class);
 
-        when(product.getField(UNIT)).thenReturn(L_SZT);
+        given(product.getField(UNIT)).willReturn(L_SZT);
 
         // when
         productService.fillUnit(productDD, product);
@@ -279,9 +221,9 @@ public class ProductServiceTest {
         Entity product = mock(Entity.class);
         DataDefinition productDD = mock(DataDefinition.class);
 
-        when(product.getField(UNIT)).thenReturn(null);
+        given(product.getField(UNIT)).willReturn(null);
 
-        when(unitService.getDefaultUnitFromSystemParameters()).thenReturn(L_SZT);
+        given(unitService.getDefaultUnitFromSystemParameters()).willReturn(L_SZT);
 
         // when
         productService.fillUnit(productDD, product);
