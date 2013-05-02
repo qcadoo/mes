@@ -41,8 +41,8 @@ public class TechnologyModelValidatorQC {
     private static final String L_UNIT_SAMPLING_NR = "unitSamplingNr";
 
     public boolean checkIfUnitSampligNrIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(L_QUALITY_CONTROL_TYPE);
-        BigDecimal unitSamplingNr = (BigDecimal) entity.getField(L_UNIT_SAMPLING_NR);
+        String qualityControlType = entity.getStringField(L_QUALITY_CONTROL_TYPE);
+        BigDecimal unitSamplingNr = entity.getDecimalField(L_UNIT_SAMPLING_NR);
 
         if ((qualityControlType != null) && "02forUnit".equals(qualityControlType) && (unitSamplingNr == null)) {
             entity.addError(dataDefinition.getField(L_UNIT_SAMPLING_NR),

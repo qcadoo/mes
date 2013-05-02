@@ -23,7 +23,7 @@
  */
 /**
  * ***************************************************************************
-. * Copyright (c) 2010 Qcadoo Limited
+ . * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.1.3
  *
@@ -186,22 +186,18 @@ public class QualityControlsReportService {
             List<BigDecimal> quantitiesList = new ArrayList<BigDecimal>();
             if (quantities.containsKey(product)) {
                 quantitiesList = quantities.get(product);
-                quantitiesList.set(
-                        0,
-                        quantitiesList.get(0).add((BigDecimal) entity.getField("controlledQuantity"),
-                                numberService.getMathContext()));
-                quantitiesList.set(
-                        1,
-                        quantitiesList.get(1).add((BigDecimal) entity.getField("rejectedQuantity"),
-                                numberService.getMathContext()));
+                quantitiesList.set(0,
+                        quantitiesList.get(0).add(entity.getDecimalField("controlledQuantity"), numberService.getMathContext()));
+                quantitiesList.set(1,
+                        quantitiesList.get(1).add(entity.getDecimalField("rejectedQuantity"), numberService.getMathContext()));
                 quantitiesList.set(
                         2,
-                        quantitiesList.get(2).add((BigDecimal) entity.getField("acceptedDefectsQuantity"),
+                        quantitiesList.get(2).add(entity.getDecimalField("acceptedDefectsQuantity"),
                                 numberService.getMathContext()));
             } else {
-                quantitiesList.add(0, (BigDecimal) entity.getField("controlledQuantity"));
-                quantitiesList.add(1, (BigDecimal) entity.getField("rejectedQuantity"));
-                quantitiesList.add(2, (BigDecimal) entity.getField("acceptedDefectsQuantity"));
+                quantitiesList.add(0, entity.getDecimalField("controlledQuantity"));
+                quantitiesList.add(1, entity.getDecimalField("rejectedQuantity"));
+                quantitiesList.add(2, entity.getDecimalField("acceptedDefectsQuantity"));
             }
             quantities.put(product, quantitiesList);
         }
@@ -226,38 +222,38 @@ public class QualityControlsReportService {
                 if (entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY) == null) {
                     quantitiesList.set(
                             4,
-                            quantitiesList.get(4).add(
-                                    (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY),
+                            quantitiesList.get(4).add(entity.getBelongsToField(MODEL_ORDER).getDecimalField(PLANNED_QUANTITY),
                                     numberService.getMathContext()));
                 } else {
                     quantitiesList.set(
                             4,
-                            quantitiesList.get(4).add((BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY),
+                            quantitiesList.get(4).add(entity.getBelongsToField(MODEL_ORDER).getDecimalField(DONE_QUANTITY),
                                     numberService.getMathContext()));
                 }
             } else {
                 quantitiesList.add(0, BigDecimal.ONE);
-                if (CONTROL_RESULT_TYPE_CORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                String controlResult = entity.getStringField(FIELD_CONTROL_RESULT);
+                if (CONTROL_RESULT_TYPE_CORRECT.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ONE);
                     quantitiesList.add(2, BigDecimal.ZERO);
                     quantitiesList.add(3, BigDecimal.ZERO);
-                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ZERO);
                     quantitiesList.add(2, BigDecimal.ONE);
                     quantitiesList.add(3, BigDecimal.ZERO);
-                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ZERO);
                     quantitiesList.add(2, BigDecimal.ZERO);
                     quantitiesList.add(3, BigDecimal.ONE);
                 }
-                if (entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY) == null) {
-                    if (entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY) == null) {
+                if (entity.getBelongsToField(MODEL_ORDER).getDecimalField(DONE_QUANTITY) == null) {
+                    if (entity.getBelongsToField(MODEL_ORDER).getDecimalField(PLANNED_QUANTITY) == null) {
                         quantitiesList.add(4, BigDecimal.ZERO);
                     } else {
-                        quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(PLANNED_QUANTITY));
+                        quantitiesList.add(4, entity.getBelongsToField(MODEL_ORDER).getDecimalField(PLANNED_QUANTITY));
                     }
                 } else {
-                    quantitiesList.add(4, (BigDecimal) entity.getBelongsToField(MODEL_ORDER).getField(DONE_QUANTITY));
+                    quantitiesList.add(4, entity.getBelongsToField(MODEL_ORDER).getDecimalField(DONE_QUANTITY));
                 }
             }
             quantities.put(product, quantitiesList);
@@ -287,24 +283,26 @@ public class QualityControlsReportService {
             if (quantities.containsKey(operation)) {
                 quantitiesList = quantities.get(operation);
                 quantitiesList.set(0, quantitiesList.get(0).add(BigDecimal.ONE, numberService.getMathContext()));
-                if (CONTROL_RESULT_TYPE_CORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                String controlResult = entity.getStringField(FIELD_CONTROL_RESULT);
+                if (CONTROL_RESULT_TYPE_CORRECT.equals(controlResult)) {
                     quantitiesList.set(1, quantitiesList.get(1).add(BigDecimal.ONE, numberService.getMathContext()));
-                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(controlResult)) {
                     quantitiesList.set(2, quantitiesList.get(2).add(BigDecimal.ONE, numberService.getMathContext()));
-                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(controlResult)) {
                     quantitiesList.set(3, quantitiesList.get(3).add(BigDecimal.ONE, numberService.getMathContext()));
                 }
             } else {
                 quantitiesList.add(0, BigDecimal.ONE);
-                if (CONTROL_RESULT_TYPE_CORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                String controlResult = entity.getStringField(FIELD_CONTROL_RESULT);
+                if (CONTROL_RESULT_TYPE_CORRECT.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ONE);
                     quantitiesList.add(2, BigDecimal.ZERO);
                     quantitiesList.add(3, BigDecimal.ZERO);
-                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_INCORRECT.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ZERO);
                     quantitiesList.add(2, BigDecimal.ONE);
                     quantitiesList.add(3, BigDecimal.ZERO);
-                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(entity.getField(FIELD_CONTROL_RESULT))) {
+                } else if (CONTROL_RESULT_TYPE_OBJECTION.equals(controlResult)) {
                     quantitiesList.add(1, BigDecimal.ZERO);
                     quantitiesList.add(2, BigDecimal.ZERO);
                     quantitiesList.add(3, BigDecimal.ONE);
@@ -367,7 +365,7 @@ public class QualityControlsReportService {
             if (MODEL_OPERATION.equals(type)) {
                 name = product.getBelongsToField(MODEL_OPERATION).getStringField("name");
             } else {
-                name = product.getField("name").toString();
+                name = product.getStringField("name");
             }
         }
         title.add(new Phrase(" " + name, FontUtils.getDejavuBold11Dark()));
