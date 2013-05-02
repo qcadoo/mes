@@ -121,17 +121,24 @@ public class CompanyDetailsHooks {
     public void disabledFieldAndRibbonForExternalCompany(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         if (form.getEntityId() == null) {
+            form.setFormEnabled(true);
             return;
         }
+        boolean enableButtons = true;
+        String buttonMessage = "basic.company.disableAfterWhenIsExternal";
         Entity company = form.getEntity();
         if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
             for (String reference : Arrays.asList(NUMBER, NAME, CITY, COUNTRY, EMAIL, HOUSE, FLAT, PHONE, ZIP_CODE, WEBSITE, TAX,
                     STREET, STATE)) {
                 disabledField(view, reference);
             }
-            for (String reference : Arrays.asList("delete")) {
-                disabledButton(view, "actions", reference, false, "basic.company.isExternalNumber");
-            }
+            enableButtons = false;
+            buttonMessage = "basic.company.isExternalNumber";
+        } else {
+            form.setFormEnabled(true);
+        }
+        for (String reference : Arrays.asList("delete")) {
+            disabledButton(view, "actions", reference, enableButtons, buttonMessage);
         }
     }
 
