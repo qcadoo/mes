@@ -128,7 +128,6 @@
 			<option type="column" name="shift" fields="shift" link="true"
 				expression="#shift['name']" />
 			<option type="column" name="state" fields="state" />
-			<option type="column" name="approvedAttendanceList" fields="approvedAttendanceList" />
 			<option type="order" column="name" direction="asc" />
 			<option type="correspondingView" value="assignmentToShift/assignmentToShiftDetails" />
 			<option type="correspondingComponent" value="form" />
