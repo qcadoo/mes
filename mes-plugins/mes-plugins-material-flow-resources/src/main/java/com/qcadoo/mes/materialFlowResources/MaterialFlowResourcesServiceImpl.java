@@ -162,7 +162,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         resource.setField(QUANTITY, numberService.setScale(quantity));
         resource.setField(TIME, time);
         resource.setField(BATCH, batch);
-        resource.setField(PRICE, (price == null) ? price : numberService.setScale(price));
+        resource.setField(PRICE, (price == null) ? null : numberService.setScale(price));
 
         resource.getDataDefinition().save(resource);
     }
