@@ -18,7 +18,7 @@ public class TechnologyOperationComponentValidators {
 
     public boolean validate(final DataDefinition dataDefinition, final Entity technologyOperationComponent) {
         boolean isValid = true;
-
+        // TODO DEV_TEAM validations can be uncommented when we fixed problem with add reference technology
         // isValid = isValid && validateEntityTypeOfTechnologyOperationComponent(dataDefinition, technologyOperationComponent);
         // isValid = isValid
         // && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(dataDefinition, technologyOperationComponent);

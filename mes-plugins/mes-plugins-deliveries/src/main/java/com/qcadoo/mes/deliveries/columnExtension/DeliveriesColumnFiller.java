@@ -97,9 +97,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         if (totalPrice == null) {
-            values.get(deliveryProduct).put("totalPrice", "");
+            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, "");
         } else {
-            values.get(deliveryProduct).put("totalPrice", numberService.format(totalPrice));
+            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, numberService.format(totalPrice));
         }
     }
 
@@ -115,9 +115,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         if (pricePerUnit == null) {
-            values.get(deliveryProduct).put("pricePerUnit", "");
+            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, "");
         } else {
-            values.get(deliveryProduct).put("pricePerUnit", numberService.format(pricePerUnit));
+            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
         }
 
     }
@@ -152,9 +152,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             totalPrice = orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE);
         }
         if (totalPrice == null) {
-            values.get(orderedProduct).put("totalPrice", "");
+            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, "");
         } else {
-            values.get(orderedProduct).put("totalPrice", numberService.format(totalPrice));
+            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, numberService.format(totalPrice));
         }
     }
 
@@ -164,9 +164,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
             pricePerUnit = orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         }
         if (pricePerUnit == null) {
-            values.get(orderedProduct).put("pricePerUnit", "");
+            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, "");
         } else {
-            values.get(orderedProduct).put("pricePerUnit", numberService.format(pricePerUnit));
+            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
         }
 
     }
