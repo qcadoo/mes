@@ -166,8 +166,8 @@ public class QualityControlServiceTest {
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
-        given(entity.getField("qualityControlType")).willReturn("qualityControlsForOrder");
-        given(entity.getField("controlResult")).willReturn("03objection");
+        given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForOrder");
+        given(entity.getStringField("controlResult")).willReturn("03objection");
         given(entity.getField("comment")).willReturn(null);
 
         // when
@@ -185,8 +185,8 @@ public class QualityControlServiceTest {
         Entity entity = mock(Entity.class);
         DataDefinition dataDefinition = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
 
-        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
-        given(entity.getField("acceptedDefectsQuantity")).willReturn(new BigDecimal("1"));
+        given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getDecimalField("acceptedDefectsQuantity")).willReturn(new BigDecimal("1"));
         given(entity.getField("comment")).willReturn(null);
 
         // when
@@ -307,7 +307,7 @@ public class QualityControlServiceTest {
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(qualityControlDD.getField("controlResult")).willReturn(controlResultField);
         given(state.getFieldValue()).willReturn(7L);
-        given(qualityControl.getField("controlResult")).willReturn("");
+        given(qualityControl.getStringField("controlResult")).willReturn("");
         given(
                 dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityControlDD);
@@ -315,7 +315,7 @@ public class QualityControlServiceTest {
         given(viewDefinitionState.getComponentByReference("controlResult")).willReturn(controlResult);
         given(controlResult.getFieldValue()).willReturn(null);
         given(viewDefinitionState.getComponentByReference("qualityControlType")).willReturn(qualityControlType);
-        given((String) qualityControl.getField("qualityControlType")).willReturn("qualityControlsForOrder");
+        given(qualityControl.getStringField("qualityControlType")).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOrder");
         given(qualityControlType.getFieldValue()).willReturn("qualityControlsForOperation");
 
@@ -384,8 +384,8 @@ public class QualityControlServiceTest {
                 dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL)).willReturn(qualityForBatchDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
-        given(order.getField("technology")).willReturn(technology);
-        given(technology.getField("qualityControlType")).willReturn("01forBatch");
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(technology.getStringField("qualityControlType")).willReturn("01forBatch");
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
         given(dataDefinitionService.get("genealogies", "genealogy")).willReturn(genealogyDataDefinition);
@@ -394,7 +394,7 @@ public class QualityControlServiceTest {
         given(
                 qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForBatch")).willReturn("1");
-        given(order.getField("plannedQuantity")).willReturn(new BigDecimal("1"));
+        given(order.getDecimalField("plannedQuantity")).willReturn(new BigDecimal("1"));
         given(order.getBelongsToField("technology")).willReturn(technology);
         given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
 
@@ -430,17 +430,17 @@ public class QualityControlServiceTest {
 
         given(dataDefinitionService.get("orders", "order")).willReturn(orderDataDefinition);
         given(orderDataDefinition.get(7L)).willReturn(order);
-        given(order.getField("technology")).willReturn(technology);
-        given(technology.getField("qualityControlType")).willReturn("02forUnit");
+        given(order.getBelongsToField("technology")).willReturn(technology);
+        given(technology.getStringField("qualityControlType")).willReturn("02forUnit");
         given(state.getLocale()).willReturn(Locale.ENGLISH);
         given(state.getFieldValue()).willReturn(7L);
-        given(technology.getField("unitSamplingNr")).willReturn(new BigDecimal("2"));
-        given(order.getField("plannedQuantity")).willReturn(new BigDecimal("5"));
+        given(technology.getDecimalField("unitSamplingNr")).willReturn(new BigDecimal("2"));
+        given(order.getDecimalField("plannedQuantity")).willReturn(new BigDecimal("5"));
         given(
                 qualityControlForNumber.generateNumber(QualityControlsConstants.PLUGIN_IDENTIFIER,
                         QualityControlsConstants.MODEL_QUALITY_CONTROL, DIGITS_NUMBER, "qualityControlForUnit")).willReturn("1");
         given(order.getBelongsToField("technology")).willReturn(technology);
-        given(order.getBelongsToField("technology").getField("qualityControlInstruction")).willReturn("test");
+        given(order.getBelongsToField("technology").getStringField("qualityControlInstruction")).willReturn("test");
 
         DataAccessService dataAccessService = mock(DataAccessService.class);
         given(dataAccessService.convertToDatabaseEntity(Mockito.any(Entity.class))).willReturn(new Object());
@@ -619,8 +619,8 @@ public class QualityControlServiceTest {
         FieldDefinition operation = mock(FieldDefinition.class);
 
         Entity qualityControl = mock(Entity.class);
-        given(qualityControl.getField("qualityControlType")).willReturn("qualityControlsForOperation");
-        given(qualityControl.getField("operation")).willReturn(null);
+        given(qualityControl.getStringField("qualityControlType")).willReturn("qualityControlsForOperation");
+        given(qualityControl.getBelongsToField("operation")).willReturn(null);
 
         given(qualityControlDD.getField("operation")).willReturn(operation);
 
@@ -638,11 +638,11 @@ public class QualityControlServiceTest {
         // given
         DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = mock(Entity.class);
-        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
-        given(entity.getField("controlledQuantity")).willReturn(null);
-        given(entity.getField("takenForControlQuantity")).willReturn(null);
-        given(entity.getField("rejectedQuantity")).willReturn(null);
-        given(entity.getField("acceptedDefectsQuantity")).willReturn(null);
+        given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getDecimalField("controlledQuantity")).willReturn(null);
+        given(entity.getDecimalField("takenForControlQuantity")).willReturn(null);
+        given(entity.getDecimalField("rejectedQuantity")).willReturn(null);
+        given(entity.getDecimalField("acceptedDefectsQuantity")).willReturn(null);
 
         // when
         qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
@@ -659,11 +659,11 @@ public class QualityControlServiceTest {
         // given
         DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = mock(Entity.class);
-        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
-        given(entity.getField("controlledQuantity")).willReturn(null);
-        given(entity.getField("takenForControlQuantity")).willReturn(new BigDecimal("1"));
-        given(entity.getField("rejectedQuantity")).willReturn(new BigDecimal("5"));
-        given(entity.getField("acceptedDefectsQuantity")).willReturn(null);
+        given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getDecimalField("controlledQuantity")).willReturn(null);
+        given(entity.getDecimalField("takenForControlQuantity")).willReturn(new BigDecimal("1"));
+        given(entity.getDecimalField("rejectedQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getDecimalField("acceptedDefectsQuantity")).willReturn(null);
 
         // when
         qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);
@@ -679,11 +679,11 @@ public class QualityControlServiceTest {
         // given
         DataDefinition qualityControlDD = mock(DataDefinition.class, RETURNS_DEEP_STUBS);
         Entity entity = mock(Entity.class);
-        given(entity.getField("qualityControlType")).willReturn("qualityControlsForUnit");
-        given(entity.getField("controlledQuantity")).willReturn(null);
-        given(entity.getField("takenForControlQuantity")).willReturn(new BigDecimal("5"));
-        given(entity.getField("rejectedQuantity")).willReturn(new BigDecimal("5"));
-        given(entity.getField("acceptedDefectsQuantity")).willReturn(new BigDecimal("10"));
+        given(entity.getStringField("qualityControlType")).willReturn("qualityControlsForUnit");
+        given(entity.getDecimalField("controlledQuantity")).willReturn(null);
+        given(entity.getDecimalField("takenForControlQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getDecimalField("rejectedQuantity")).willReturn(new BigDecimal("5"));
+        given(entity.getDecimalField("acceptedDefectsQuantity")).willReturn(new BigDecimal("10"));
 
         // when
         qualityControlService.checkIfQuantitiesAreCorrect(qualityControlDD, entity);

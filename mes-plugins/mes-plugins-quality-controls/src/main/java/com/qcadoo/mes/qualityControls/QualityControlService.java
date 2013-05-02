@@ -360,12 +360,10 @@ public final class QualityControlService {
             if (technology == null) {
                 return;
             }
-
-            if (technology.getField(QUALITY_CONTROL_TYPE_LITERAL) == null) {
+            String qualityControlType = technology.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
+            if (qualityControlType == null) {
                 state.addMessage("qualityControls.qualityControls.qualityType.missing", MessageType.FAILURE);
             } else {
-                String qualityControlType = technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString();
-
                 if (isQualityControlForOrderExists(order)) {
                     state.addMessage("qualityControls.qualityControls.generated.failure", MessageType.FAILURE);
                 } else {
@@ -373,7 +371,6 @@ public final class QualityControlService {
 
                     state.addMessage("qualityControls.qualityControls.generated.success", MessageType.SUCCESS);
                 }
-
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);
             }
         }
