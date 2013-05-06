@@ -203,7 +203,7 @@
 
 										<components>
 											<component type="gridLayout" name="plannedDayProgressGridLayout"
-												columns="3" rows="1">
+												columns="4" rows="1">
 												<layoutElement column="1" row="1">
 													<component type="gridLayout" name="dayGridLayout"
 														columns="1" rows="2">
@@ -218,7 +218,7 @@
 													</component>
 												</layoutElement>
 												
-												<layoutElement column="2" row="1" width="2">
+												<layoutElement column="2" row="1" width="3">
 													<component type="awesomeDynamicList" name="dailyProgress"
 														source="dailyProgress" reference="dailyProgress">
 														<option type="hasBorder" value="true" />
