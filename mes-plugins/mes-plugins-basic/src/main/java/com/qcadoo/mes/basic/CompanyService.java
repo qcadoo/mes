@@ -95,16 +95,14 @@ public class CompanyService {
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
         Boolean isOwner = isCompanyOwner(companyForm.getEntity());
 
-        if (isOwner) {
-            disableGridComponents(view, references);
-        }
+        disableGridComponents(view, !isOwner, references);
     }
 
-    private void disableGridComponents(final ViewDefinitionState view, final String... references) {
+    private void disableGridComponents(final ViewDefinitionState view, final Boolean enable, final String... references) {
         for (String reference : references) {
             ComponentState component = view.getComponentByReference(reference);
             if (component instanceof GridComponent) {
-                ((GridComponent) component).setEditable(false);
+                ((GridComponent) component).setEditable(enable);
             }
         }
     }
