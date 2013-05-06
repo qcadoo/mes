@@ -117,7 +117,7 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
                                 locale));
         PdfPTable table = pdfHelper.createTableWithHeader(4, qualityHeader, false);
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
-            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getField("number").toString(), FontUtils
+            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getStringField("number"), FontUtils
                     .getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(entry.getValue().get(0)), FontUtils.getDejavuRegular9Dark()));
@@ -147,14 +147,15 @@ public class QualityControlForBatchPdfView extends ReportPdfView {
         Collections.sort(sortedOrders, new EntityBatchNumberComparator());
 
         for (Entity entity : sortedOrders) {
-            table.addCell(new Phrase(entity.getField("batchNr") == null ? "" : entity.getField("batchNr").toString(), FontUtils
+            table.addCell(new Phrase(entity.getStringField("batchNr") == null ? "" : entity.getStringField("batchNr"), FontUtils
                     .getDejavuRegular9Dark()));
-            table.addCell(new Phrase(entity.getField("number").toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entity.getStringField("number"), FontUtils.getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entity.getField("controlledQuantity")), FontUtils
+            table.addCell(new Phrase(numberService.format(entity.getDecimalField("controlledQuantity")), FontUtils
                     .getDejavuRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(entity.getField("rejectedQuantity")), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(numberService.format(entity.getField("acceptedDefectsQuantity")), FontUtils
+            table.addCell(new Phrase(numberService.format(entity.getDecimalField("rejectedQuantity")), FontUtils
+                    .getDejavuRegular9Dark()));
+            table.addCell(new Phrase(numberService.format(entity.getDecimalField("acceptedDefectsQuantity")), FontUtils
                     .getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }

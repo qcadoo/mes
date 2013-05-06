@@ -54,6 +54,8 @@
 		<string name="externalNumber" unique="true"/>
 
 	</fields>
-	<hooks />
+	<hooks >
+		<onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks" />
+	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

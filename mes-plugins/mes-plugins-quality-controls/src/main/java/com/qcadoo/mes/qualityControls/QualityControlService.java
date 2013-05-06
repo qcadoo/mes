@@ -156,13 +156,13 @@ public final class QualityControlService {
     }
 
     public void setQualityControlTypeForTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getField(FIELD_QUALITY_CONTROL_REQUIRED) != null && (Boolean) entity.getField(FIELD_QUALITY_CONTROL_REQUIRED)) {
+        if (entity.getField(FIELD_QUALITY_CONTROL_REQUIRED) != null && entity.getBooleanField(FIELD_QUALITY_CONTROL_REQUIRED)) {
             Entity technology = entity.getBelongsToField(TECHNOLOGY_LITERAL);
             DataDefinition technologyInDef = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
             Entity technologyEntity = technologyInDef.get(technology.getId());
             if (technologyEntity.getField(QUALITY_CONTROL_TYPE_LITERAL) == null
-                    || !technologyEntity.getField(QUALITY_CONTROL_TYPE_LITERAL).equals(TYPE_04FOR_OPERATION)) {
+                    || !technologyEntity.getStringField(QUALITY_CONTROL_TYPE_LITERAL).equals(TYPE_04FOR_OPERATION)) {
                 technologyEntity.setField(QUALITY_CONTROL_TYPE_LITERAL, TYPE_04FOR_OPERATION);
                 technologyInDef.save(technologyEntity);
             }
@@ -188,7 +188,7 @@ public final class QualityControlService {
     }
 
     public boolean checkIfCommentForResultOrQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
+        String qualityControlType = entity.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
 
         if (hasControlResult(qualityControlType)) {
             return checkIfCommentForResultIsReq(dataDefinition, entity);
@@ -199,11 +199,11 @@ public final class QualityControlService {
     }
 
     public boolean checkIfCommentForResultIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        String resultType = (String) entity.getField(FIELD_CONTROL_RESULT);
+        String resultType = entity.getStringField(FIELD_CONTROL_RESULT);
 
         if (resultType != null && "03objection".equals(resultType)) {
 
-            String comment = (String) entity.getField(FIELD_COMMENT);
+            String comment = entity.getStringField(FIELD_COMMENT);
             if (comment == null || comment.isEmpty()) {
                 entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
                 entity.addError(dataDefinition.getField(FIELD_COMMENT),
@@ -216,10 +216,10 @@ public final class QualityControlService {
     }
 
     public boolean checkIfCommentForQuantityIsReq(final DataDefinition dataDefinition, final Entity entity) {
-        BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
+        BigDecimal acceptedDefectsQuantity = entity.getDecimalField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
         if (acceptedDefectsQuantity != null) {
-            String comment = (String) entity.getField(FIELD_COMMENT);
+            String comment = entity.getStringField(FIELD_COMMENT);
 
             if ((comment == null || comment.isEmpty()) && acceptedDefectsQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 entity.addGlobalError(QCADOO_VIEW_VALIDATE_GLOBAL_ERROR_CUSTOM);
@@ -293,7 +293,7 @@ public final class QualityControlService {
                 FieldDefinition controlResultField = qualityControlDD.getField(FIELD_CONTROL_RESULT);
 
                 Object controlResult = qualityControl.getField(FIELD_CONTROL_RESULT);
-                String qualityControlType = (String) qualityControl.getField(QUALITY_CONTROL_TYPE_LITERAL);
+                String qualityControlType = qualityControl.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
 
                 if (hasControlResult(qualityControlType) && controlResultField != null
                         && (controlResult == null || controlResult.toString().isEmpty())) {
@@ -333,8 +333,7 @@ public final class QualityControlService {
             if (qualityControl == null) {
                 return;
             } else {
-                boolean qualityControlType = TYPE_01FOR_BATCH
-                        .equals(technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString());
+                boolean qualityControlType = TYPE_01FOR_BATCH.equals(technology.getStringField(QUALITY_CONTROL_TYPE_LITERAL));
 
                 if (isQualityControlAutoGenEnabled() || qualityControlType) {
                     createAndSaveControlForSingleBatch(order, entity);
@@ -356,17 +355,15 @@ public final class QualityControlService {
                     OrdersConstants.MODEL_ORDER);
             Entity order = orderDataDefinition.get((Long) state.getFieldValue());
 
-            Entity technology = (Entity) order.getField(TECHNOLOGY_LITERAL);
+            Entity technology = order.getBelongsToField(TECHNOLOGY_LITERAL);
 
             if (technology == null) {
                 return;
             }
-
-            if (technology.getField(QUALITY_CONTROL_TYPE_LITERAL) == null) {
+            String qualityControlType = technology.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
+            if (qualityControlType == null) {
                 state.addMessage("qualityControls.qualityControls.qualityType.missing", MessageType.FAILURE);
             } else {
-                String qualityControlType = technology.getField(QUALITY_CONTROL_TYPE_LITERAL).toString();
-
                 if (isQualityControlForOrderExists(order)) {
                     state.addMessage("qualityControls.qualityControls.generated.failure", MessageType.FAILURE);
                 } else {
@@ -374,7 +371,6 @@ public final class QualityControlService {
 
                     state.addMessage("qualityControls.qualityControls.generated.success", MessageType.SUCCESS);
                 }
-
                 state.performEvent(viewDefinitionState, "refresh", new String[0]);
             }
         }
@@ -489,7 +485,7 @@ public final class QualityControlService {
     }
 
     public boolean checkIfOperationIsRequired(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
+        String qualityControlType = entity.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
 
         if (QUALITY_CONTROLS_FOR_OPERATION_LITERAL.equals(qualityControlType)) {
             Object operation = entity.getField(OPERATION_LITERAL);
@@ -506,13 +502,13 @@ public final class QualityControlService {
     }
 
     public boolean checkIfQuantitiesAreCorrect(final DataDefinition dataDefinition, final Entity entity) {
-        String qualityControlType = (String) entity.getField(QUALITY_CONTROL_TYPE_LITERAL);
+        String qualityControlType = entity.getStringField(QUALITY_CONTROL_TYPE_LITERAL);
 
         if (hasQuantitiesToBeChecked(qualityControlType)) {
-            BigDecimal controlledQuantity = (BigDecimal) entity.getField(CONTROLLED_QUANTITY_LITERAL);
-            BigDecimal takenForControlQuantity = (BigDecimal) entity.getField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL);
-            BigDecimal rejectedQuantity = (BigDecimal) entity.getField(REJECTED_QUANTITY_LITERAL);
-            BigDecimal acceptedDefectsQuantity = (BigDecimal) entity.getField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
+            BigDecimal controlledQuantity = entity.getDecimalField(CONTROLLED_QUANTITY_LITERAL);
+            BigDecimal takenForControlQuantity = entity.getDecimalField(TAKEN_FOR_CONTROL_QUANTITY_LITERAL);
+            BigDecimal rejectedQuantity = entity.getDecimalField(REJECTED_QUANTITY_LITERAL);
+            BigDecimal acceptedDefectsQuantity = entity.getDecimalField(ACCEPTED_DEFECTS_QUANTITY_LITERAL);
 
             if (controlledQuantity == null) {
                 controlledQuantity = BigDecimal.ZERO;
@@ -559,7 +555,7 @@ public final class QualityControlService {
             Entity entity = dataDefinitionService.get(QualityControlsConstants.PLUGIN_IDENTIFIER,
                     QualityControlsConstants.MODEL_QUALITY_CONTROL).get(qualityControl.getEntityId());
 
-            if (entity != null && (Boolean) entity.getField(CLOSED_LITERAL) && qualityControl.isValid()) {
+            if (entity != null && entity.getBooleanField(CLOSED_LITERAL) && qualityControl.isValid()) {
                 disabled = true;
             }
         }
@@ -648,8 +644,8 @@ public final class QualityControlService {
 
         SearchCriteriaBuilder searchCriteria = orderDD.find().setMaxResults(1).add(SearchRestrictions.eq("id", fieldValue));
 
-        return (String) searchCriteria.list().getEntities().get(0).getBelongsToField(TECHNOLOGY_LITERAL)
-                .getField("qualityControlInstruction");
+        return searchCriteria.list().getEntities().get(0).getBelongsToField(TECHNOLOGY_LITERAL)
+                .getStringField("qualityControlInstruction");
     }
 
     private boolean isNumber(final String value) {
@@ -677,10 +673,10 @@ public final class QualityControlService {
             }
 
         } else if (TYPE_02FOR_UNIT.equals(qualityControlType)) {
-            BigDecimal sampling = (BigDecimal) technology.getField(UNIT_SAMPLING_NR_LITERAL);
+            BigDecimal sampling = technology.getDecimalField(UNIT_SAMPLING_NR_LITERAL);
 
-            BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
+            BigDecimal doneQuantity = order.getDecimalField(DONE_QUANTITY_LITERAL);
+            BigDecimal plannedQuantity = order.getDecimalField(PLANNED_QUANTITY_LITERAL);
             BigDecimal numberOfControls = doneQuantity == null ? plannedQuantity.divide(sampling, numberService.getMathContext())
                     : doneQuantity.divide(sampling, numberService.getMathContext());
 
@@ -720,7 +716,7 @@ public final class QualityControlService {
             EntityTree tree = technology.getTreeField(OPERATION_COMPONENTS_LITERAL);
             for (Entity entity : tree) {
                 if (entity.getField(FIELD_QUALITY_CONTROL_REQUIRED) != null
-                        && (Boolean) entity.getField(FIELD_QUALITY_CONTROL_REQUIRED)) {
+                        && entity.getBooleanField(FIELD_QUALITY_CONTROL_REQUIRED)) {
 
                     createAndSaveControlForOperation(order, entity);
                 }
@@ -775,8 +771,8 @@ public final class QualityControlService {
         forBatch.setField(QUALITY_CONTROL_TYPE_LITERAL, QUALITY_CONTROLS_FOR_BATCH_LITERAL);
 
         if (getGenealogiesForOrder(order.getId()).size() == 1) {
-            BigDecimal doneQuantity = (BigDecimal) order.getField(DONE_QUANTITY_LITERAL);
-            BigDecimal plannedQuantity = (BigDecimal) order.getField(PLANNED_QUANTITY_LITERAL);
+            BigDecimal doneQuantity = order.getDecimalField(DONE_QUANTITY_LITERAL);
+            BigDecimal plannedQuantity = order.getDecimalField(PLANNED_QUANTITY_LITERAL);
 
             if (doneQuantity == null) {
                 if (plannedQuantity != null) {

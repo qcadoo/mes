@@ -60,8 +60,8 @@ public class DeliveryHooks {
 
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
-        setDeliveryAddressDefaultValue(deliveryDD, delivery);
-        setDescriptionDefaultValue(deliveryDD, delivery);
+        setDeliveryAddressDefaultValue(delivery);
+        setDescriptionDefaultValue(delivery);
     }
 
     public void onCopy(final DataDefinition deliveryDD, final Entity delivery) {
@@ -83,14 +83,14 @@ public class DeliveryHooks {
         delivery.setField(EXTERNAL_SYNCHRONIZED, true);
     }
 
-    private void setDeliveryAddressDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+    private void setDeliveryAddressDefaultValue(final Entity delivery) {
         String deliveryAddress = delivery.getStringField(DELIVERY_ADDRESS);
         if (deliveryAddress == null) {
             delivery.setField(DELIVERY_ADDRESS, deliveriesService.getDeliveryAddressDefaultValue());
         }
     }
 
-    private void setDescriptionDefaultValue(final DataDefinition deliveryDD, final Entity delivery) {
+    private void setDescriptionDefaultValue(final Entity delivery) {
         String description = delivery.getStringField(DESCRIPTION);
         if (description == null) {
             delivery.setField(DESCRIPTION, deliveriesService.getDescriptionDefaultValue());

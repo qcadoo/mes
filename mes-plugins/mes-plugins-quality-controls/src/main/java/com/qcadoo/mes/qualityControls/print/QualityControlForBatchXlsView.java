@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.qualityControls.print;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -116,15 +115,13 @@ public class QualityControlForBatchXlsView extends ReportXlsView {
             Collections.sort(orders, new EntityBatchNumberComparator());
             for (Entity order : orders) {
                 HSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("number").toString());
-                row.createCell(1).setCellValue(order.getField("batchNr") == null ? "" : order.getField("batchNr").toString());
-                row.createCell(2).setCellValue(order.getField("number").toString());
-                row.createCell(3).setCellValue(
-                        numberService.setScale((BigDecimal) order.getField("controlledQuantity")).doubleValue());
-                row.createCell(4).setCellValue(
-                        numberService.setScale((BigDecimal) order.getField("rejectedQuantity")).doubleValue());
+                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getStringField("number"));
+                row.createCell(1).setCellValue(order.getStringField("batchNr") == null ? "" : order.getStringField("batchNr"));
+                row.createCell(2).setCellValue(order.getStringField("number"));
+                row.createCell(3).setCellValue(numberService.setScale(order.getDecimalField("controlledQuantity")).doubleValue());
+                row.createCell(4).setCellValue(numberService.setScale(order.getDecimalField("rejectedQuantity")).doubleValue());
                 row.createCell(5).setCellValue(
-                        numberService.setScale((BigDecimal) order.getField("acceptedDefectsQuantity")).doubleValue());
+                        numberService.setScale(order.getDecimalField("acceptedDefectsQuantity")).doubleValue());
             }
         }
         sheet.autoSizeColumn((short) 0);
