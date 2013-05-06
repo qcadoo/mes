@@ -98,12 +98,13 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
                 return Collections.emptyMap();
             }
 
-            Date orderStartDate = orderTimePredictionService.getDateFromOrdersFromOperation(operations);
-            scale.setDateFrom(orderStartDate);
+            if (scale.getIsDatesSet() != null && scale.getIsDatesSet()) {
+                Date orderStartDate = orderTimePredictionService.getDateFromOrdersFromOperation(operations);
+                scale.setDateFrom(orderStartDate);
 
-            Date orderEndDate = orderTimePredictionService.getDateToOrdersFromOperation(operations);
-            scale.setDateTo(orderEndDate);
-
+                Date orderEndDate = orderTimePredictionService.getDateToOrdersFromOperation(operations);
+                scale.setDateTo(orderEndDate);
+            }
             Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
             Map<String, Integer> counters = new HashMap<String, Integer>();
 
