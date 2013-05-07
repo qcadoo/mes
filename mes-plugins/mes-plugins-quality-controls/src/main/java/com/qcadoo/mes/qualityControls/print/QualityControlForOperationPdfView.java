@@ -109,7 +109,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         qualityHeader.add(translationService.translate("qualityControls.qualityControl.report.objective.quantity", locale));
         PdfPTable table = pdfHelper.createTableWithHeader(5, qualityHeader, false);
         for (Entry<Entity, List<BigDecimal>> entry : quantities.entrySet()) {
-            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getField("nodeNumber").toString(), FontUtils
+            table.addCell(new Phrase(entry.getKey() == null ? "" : entry.getKey().getStringField("nodeNumber"), FontUtils
                     .getDejavuRegular9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             table.addCell(new Phrase(numberService.format(entry.getValue().get(0)), FontUtils.getDejavuRegular9Dark()));
@@ -137,7 +137,7 @@ public class QualityControlForOperationPdfView extends ReportPdfView {
         List<Entity> sortedOrders = entry.getValue();
         Collections.sort(sortedOrders, new EntityNumberComparator());
         for (Entity entity : sortedOrders) {
-            table.addCell(new Phrase(entity.getField("number").toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(entity.getStringField("number"), FontUtils.getDejavuRegular9Dark()));
             table.addCell(new Phrase(translationService.translate("qualityControls.qualityForOrder.controlResult.value."
                     + entity.getField("controlResult").toString(), locale), FontUtils.getDejavuRegular9Dark()));
         }

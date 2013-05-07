@@ -104,6 +104,10 @@ public class CompanyHooks {
     }
 
     public void onCopy(final DataDefinition companyDD, final Entity company) {
+        clearSpecyfiedFields(company);
+    }
+
+    private void clearSpecyfiedFields(final Entity company) {
         company.setField(CompanyFields.EXTERNAL_NUMBER, null);
     }
 

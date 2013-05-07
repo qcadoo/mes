@@ -81,7 +81,7 @@ public class TransferModelValidatorsTest {
         // then
         assertFalse(result);
 
-        verify(transfer, times(4)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
+        verify(transfer, times(2)).addError(Mockito.any(FieldDefinition.class), Mockito.anyString());
     }
 
     @Test

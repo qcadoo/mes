@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
+import com.qcadoo.mes.materialFlow.constants.TransferType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -45,16 +46,16 @@ public class TransferModelValidators {
 
     public boolean validateTransfer(final DataDefinition transferDD, final Entity transfer) {
         boolean isValid = true;
-
+        boolean result = true;
         String type = transfer.getStringField(TYPE);
         Date time = (Date) transfer.getField(TIME);
-        Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
-        Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
 
         if (type == null) {
             transfer.addError(transferDD.getField(TYPE), "materialFlow.validate.global.error.fillType");
 
             isValid = false;
+        } else {
+            result = validateLocation(transferDD, transfer, type);
         }
 
         if (time == null) {
@@ -62,14 +63,29 @@ public class TransferModelValidators {
 
             isValid = false;
         }
+        if (isValid) {
+            isValid = result;
+        }
+        return isValid;
+    }
 
-        if (locationFrom == null && locationTo == null) {
-            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillAtLeastOneLocation");
-            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillAtLeastOneLocation");
-
+    private boolean validateLocation(final DataDefinition transferDD, final Entity transfer, final String type) {
+        Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
+        Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
+        boolean isValid = true;
+        if (type.equals(TransferType.PRODUCTION.getStringValue()) && locationTo == null) {
+            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillRequired");
             isValid = false;
         }
-
+        if (type.equals(TransferType.CONSUMPTION.getStringValue()) && locationFrom == null) {
+            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillRequired");
+            isValid = false;
+        }
+        if (locationFrom == null && locationTo == null && (type.equals(TransferType.TRANSPORT.getStringValue()))) {
+            transfer.addError(transferDD.getField(LOCATION_FROM), "materialFlow.validate.global.error.fillRequired");
+            transfer.addError(transferDD.getField(LOCATION_TO), "materialFlow.validate.global.error.fillRequired");
+            isValid = false;
+        }
         return isValid;
     }
 

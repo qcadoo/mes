@@ -90,16 +90,17 @@ public class QualityControlForOrderXlsView extends ReportXlsView {
             Collections.sort(orders, new EntityNumberComparator());
             for (Entity order : orders) {
                 HSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getField("number").toString());
-                row.createCell(1).setCellValue(order.getField("number").toString());
+                row.createCell(0).setCellValue(entry.getKey() == null ? "" : entry.getKey().getStringField("number"));
+                row.createCell(1).setCellValue(order.getStringField("number"));
                 String result = "";
-                if ("01correct".equals(order.getField("controlResult"))) {
+                String controlResult = order.getStringField("controlResult");
+                if ("01correct".equals(controlResult)) {
                     result = translationService
                             .translate("qualityControls.qualityForOrder.controlResult.value.01correct", locale);
-                } else if ("02incorrect".equals(order.getField("controlResult"))) {
+                } else if ("02incorrect".equals(controlResult)) {
                     result = translationService.translate("qualityControls.qualityForOrder.controlResult.value.02incorrect",
                             locale);
-                } else if ("03objection".equals(order.getField("controlResult"))) {
+                } else if ("03objection".equals(controlResult)) {
                     result = translationService.translate("qualityControls.qualityForOrder.controlResult.value.03objection",
                             locale);
                 }
