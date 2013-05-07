@@ -47,6 +47,8 @@ public final class BasicConstants {
 
     public static final String MODEL_CURRENCY = "currency";
 
+    public static final String MODEL_COUNTRY = "country";
+
     public static final String MODEL_SHIFT = "shift";
 
     public static final String MODEL_WORKSTATION_TYPE = "workstationType";

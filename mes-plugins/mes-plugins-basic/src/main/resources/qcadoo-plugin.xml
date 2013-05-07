@@ -83,6 +83,7 @@
 		
 		<model:model model="parameter" resource="model/parameter.xml" />
 
+		<model:model model="country" resource="model/country.xml" />
 		<model:model model="currency" resource="model/currency.xml" />
 		
 		<model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml" />

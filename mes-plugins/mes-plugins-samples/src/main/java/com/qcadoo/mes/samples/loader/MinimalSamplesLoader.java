@@ -122,6 +122,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     protected void addUser(final Map<String, String> values) {
         Entity user = dataDefinitionService.get("qcadooSecurity", "user").create();
+
         user.setField("userName", values.get("login"));
         user.setField(EMAIL, values.get(EMAIL));
         user.setField("firstName", values.get("firstname"));
@@ -172,6 +173,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
     protected void addProductionLines(final Map<String, String> values) {
         Entity productionLine = dataDefinitionService.get(PRODUCTION_LINES_PLUGIN_IDENTIFIER,
                 PRODUCTION_LINES_MODEL_PRODUCTION_LINE).create();
+
         productionLine.setField(L_NAME, values.get(L_NAME));
         productionLine.setField(L_NUMBER, values.get(L_NUMBER));
         productionLine.setField("supportsAllTechnologies", values.get("supportsalltechnologies"));
@@ -184,6 +186,7 @@ public class MinimalSamplesLoader extends AbstractXMLSamplesLoader {
 
     protected void addDefaultProductionLine(final Map<String, String> values) {
         Entity parameter = parameterService.getParameter();
+
         parameter.setField(L_DEFAULT_PRODUCTION_LINE, getProductionLineByNumber(values.get("production_line_nr")));
         parameter.getDataDefinition().save(parameter);
     }

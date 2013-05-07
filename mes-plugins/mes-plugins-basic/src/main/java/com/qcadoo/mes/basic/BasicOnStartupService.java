@@ -33,6 +33,9 @@ import com.qcadoo.plugin.api.Module;
 public class BasicOnStartupService extends Module {
 
     @Autowired
+    private CountryLoader countryLoader;
+
+    @Autowired
     private CurrencyLoader currencyLoader;
 
     @Autowired
@@ -41,6 +44,7 @@ public class BasicOnStartupService extends Module {
     @Override
     @Transactional
     public void multiTenantEnable() {
+        countryLoader.loadCountries();
         currencyLoader.loadCurrencies();
         reportColumnWidthLoader.loadReportColumnWidths();
     }

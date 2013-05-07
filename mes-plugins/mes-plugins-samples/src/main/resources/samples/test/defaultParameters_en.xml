@@ -25,5 +25,5 @@
 
 -->
 <defaultParameters>
-	<row CODE="USD" UNIT="pc" OWNER="1"/>
+	<row COUNTRY="" CODE="USD" UNIT="pc" OWNER="1"/>
 </defaultParameters>

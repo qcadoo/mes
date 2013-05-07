@@ -34,6 +34,8 @@ public final class SamplesConstants {
 
     public static final String BASIC_MODEL_COMPANY = "company";
 
+    public static final String BASIC_MODEL_COUNTRY = "country";
+
     public static final String BASIC_MODEL_CURRENCY = "currency";
 
     public static final String BASIC_MODEL_PARAMETER = "parameter";

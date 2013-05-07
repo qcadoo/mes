@@ -21,29 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.hooks;
+package com.qcadoo.mes.basic.constants;
 
-import java.util.Currency;
-import java.util.Locale;
+public final class CountryFields {
 
-import org.springframework.stereotype.Service;
+    private CountryFields() {
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.types.BelongsToType;
-
-@Service
-public class ParameterModelHooks {
-
-    private static final String FIELD_CURRENCY = "currency";
-
-    public void setDefaultCurrency(final DataDefinition parameterDD, final Entity parameter) {
-        String defaultCurrencyAlphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        DataDefinition currencyDataDef = ((BelongsToType) parameterDD.getField(FIELD_CURRENCY).getType()).getDataDefinition();
-        Entity defaultCurrency = currencyDataDef.find()
-                .add(SearchRestrictions.eq("alphabeticCode", defaultCurrencyAlphabeticCode)).setMaxResults(1).uniqueResult();
-        parameter.setField(FIELD_CURRENCY, defaultCurrency);
     }
+
+    public static final String CODE = "code";
+
+    public static final String COUNTRY = "country";
 
 }

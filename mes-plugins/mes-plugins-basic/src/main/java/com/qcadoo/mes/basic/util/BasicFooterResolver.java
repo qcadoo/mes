@@ -101,9 +101,9 @@ public class BasicFooterResolver implements FooterResolver {
                 companyData = companyData.append(company.getStringField("zipCode"));
                 companyData = companyData.append(" ");
                 companyData = companyData.append(company.getStringField("city"));
-                if (company.getStringField("country") != null) {
+                if (company.getBelongsToField("country") != null) {
                     companyData = companyData.append(", ");
-                    companyData = companyData.append(company.getStringField("country"));
+                    companyData = companyData.append(company.getBelongsToField("country").getStringField("country"));
                 }
                 address = companyData.toString();
             }

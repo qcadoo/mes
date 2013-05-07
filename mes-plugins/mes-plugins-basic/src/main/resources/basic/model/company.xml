@@ -34,6 +34,7 @@
 		<string name="name" required="true">
 			<validatesLength max="255" />
 		</string>
+		<belongsTo name="taxCountryCode" plugin="basic" model="country" />
 		<string name="tax" />
 		<string name="street" />
 		<string name="house">
@@ -47,14 +48,17 @@
 		</string>
 		<string name="city" />
 		<string name="state" />
-		<string name="country" />
+		<belongsTo name="country" plugin="basic" model="country" />
 		<string name="email" />
 		<string name="website" />
 		<string name="phone" />
-		<string name="externalNumber" unique="true"/>
-
+		<string name="externalNumber" unique="true" />
 	</fields>
 	<hooks >
+		<validatesWith class="com.qcadoo.mes.basic.hooks.CompanyHooks"
+				method="validatesWith" />
+		<onCreate class="com.qcadoo.mes.basic.hooks.CompanyHooks"
+			method="onCreate" />
 		<onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
