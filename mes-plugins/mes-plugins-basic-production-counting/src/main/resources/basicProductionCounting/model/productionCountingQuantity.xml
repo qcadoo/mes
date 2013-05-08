@@ -37,4 +37,6 @@
 		<decimal name="plannedQuantity" required="true" />
 		<boolean name="isNonComponent" default="false" required="true" />
 	</fields>
+	
+	<hooks />
 </model>

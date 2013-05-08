@@ -54,12 +54,14 @@
 		<string name="phone" />
 		<string name="externalNumber" unique="true" />
 	</fields>
-	<hooks >
+	
+	<hooks>
 		<validatesWith class="com.qcadoo.mes.basic.hooks.CompanyHooks"
 				method="validatesWith" />
 		<onCreate class="com.qcadoo.mes.basic.hooks.CompanyHooks"
 			method="onCreate" />
 		<onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks" />
 	</hooks>
+	
 	<identifier expression="#number + ' - ' + #name" />
 </model>
