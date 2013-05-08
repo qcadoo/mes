@@ -48,8 +48,6 @@
 			<option type="correspondingView" value="basic/machineDetails" />
 			<option type="correspondingComponent" value="form" />
 			
-			<option type="deletable" value="false" />
-			<option type="creatable" value="false" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
