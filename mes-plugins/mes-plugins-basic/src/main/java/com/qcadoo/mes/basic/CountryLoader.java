@@ -106,8 +106,8 @@ public class CountryLoader {
         DataDefinition conutryDataDefinition = getCountryDataDefinition();
         Entity country = conutryDataDefinition.create();
 
-        country.setField(CODE, values.get(CODE.toLowerCase(Locale.ENGLISH)));
         country.setField(COUNTRY, values.get(COUNTRY.toLowerCase(Locale.ENGLISH)));
+        country.setField(CODE, values.get(CODE.toLowerCase(Locale.ENGLISH)));
 
         country = conutryDataDefinition.save(country);
 
