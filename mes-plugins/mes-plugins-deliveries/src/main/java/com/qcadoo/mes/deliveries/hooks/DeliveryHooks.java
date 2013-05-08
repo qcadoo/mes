@@ -70,7 +70,7 @@ public class DeliveryHooks {
     }
 
     public void onView(final DataDefinition deliveryDD, final Entity delivery) {
-        fillOrderedAndDeliveredQuantityAndTotalPrice(delivery);
+        fillOrderedAndDeliveredCumulatedQuantityAndCumulatedTotalPrice(delivery);
     }
 
     private void setInitialState(final Entity delivery) {
@@ -97,13 +97,13 @@ public class DeliveryHooks {
         }
     }
 
-    private void fillOrderedAndDeliveredQuantityAndTotalPrice(final Entity delivery) {
+    private void fillOrderedAndDeliveredCumulatedQuantityAndCumulatedTotalPrice(final Entity delivery) {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getDeliveredCumulatedQuantity());
         delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getOrderedCumulatedQuantity());
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getDeliveredTotalPrice());
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getDeliveredCumulatedQuantity());
         delivery.setField(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getOrderedTotalPrice());
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getDeliveredTotalPrice());
     }
 
 }

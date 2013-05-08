@@ -33,4 +33,5 @@
 	<row IDENTIFIER="productUnit" NAME="deliveries.columnForDeliveries.name.value.productUnit" DESCRIPTION="deliveries.columnForDeliveries.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 	<row IDENTIFIER="pricePerUnit" NAME="deliveries.columnForDeliveries.name.value.pricePerUnit" DESCRIPTION="deliveries.columnForDeliveries.description.value.pricePerUnit" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
 	<row IDENTIFIER="totalPrice" NAME="deliveries.columnForDeliveries.name.value.totalPrice" DESCRIPTION="deliveries.columnForDeliveries.description.value.totalPrice" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="currency" NAME="deliveries.columnForDeliveries.name.value.currency" DESCRIPTION="deliveries.columnForDeliveries.description.value.currency" COLUMNFILLER="com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller" ALIGNMENT="01left" />
 </column>

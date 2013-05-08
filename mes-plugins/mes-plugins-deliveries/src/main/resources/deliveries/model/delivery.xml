@@ -52,8 +52,8 @@
 		<boolean name="externalSynchronized" default="true" />
 		<decimal name="orderedProductsCumulatedQuantity" persistent="false" />
 		<decimal name="deliveredProductsCumulatedQuantity" persistent="false" />
-		<decimal name="deliveredProductsCumulatedTotalPrice" persistent="false"/>
 		<decimal name="orderedProductsCumulatedTotalPrice" persistent="false"/>
+		<decimal name="deliveredProductsCumulatedTotalPrice" persistent="false"/>
 		
 		<enum name="state"
 			values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"
