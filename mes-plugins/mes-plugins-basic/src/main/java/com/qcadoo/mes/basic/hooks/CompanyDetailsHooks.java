@@ -34,6 +34,7 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.PHONE;
 import static com.qcadoo.mes.basic.constants.CompanyFields.STATE;
 import static com.qcadoo.mes.basic.constants.CompanyFields.STREET;
 import static com.qcadoo.mes.basic.constants.CompanyFields.TAX;
+import static com.qcadoo.mes.basic.constants.CompanyFields.TAX_COUNTRY_CODE;
 import static com.qcadoo.mes.basic.constants.CompanyFields.WEBSITE;
 import static com.qcadoo.mes.basic.constants.CompanyFields.ZIP_CODE;
 
@@ -51,6 +52,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -113,9 +115,30 @@ public class CompanyDetailsHooks {
         disabledButton(view, "actions", "delete", enabled, "basic.company.isOwner");
     }
 
-    public void generateCompanyNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
+    public void generateCompanyNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
                 L_FORM, "number");
+    }
+
+    public void fillDefaultCountry(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() != null) {
+            return;
+        }
+
+        LookupComponent countryField = (LookupComponent) view.getComponentByReference(COUNTRY);
+        Entity country = countryField.getEntity();
+
+        if (country == null) {
+            Entity defaultCountry = parameterService.getParameter().getBelongsToField(COUNTRY);
+
+            if (defaultCountry == null) {
+                countryField.setFieldValue(null);
+            } else {
+                countryField.setFieldValue(defaultCountry.getId());
+            }
+            countryField.requestComponentUpdateState();
+        }
     }
 
     public void disabledFieldAndRibbonForExternalCompany(final ViewDefinitionState view) {
@@ -128,8 +151,8 @@ public class CompanyDetailsHooks {
         String buttonMessage = "basic.company.disableAfterWhenIsExternal";
         Entity company = form.getEntity();
         if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {
-            for (String reference : Arrays.asList(NUMBER, NAME, CITY, COUNTRY, EMAIL, HOUSE, FLAT, PHONE, ZIP_CODE, WEBSITE, TAX,
-                    STREET, STATE)) {
+            for (String reference : Arrays.asList(NUMBER, NAME, CITY, COUNTRY, EMAIL, HOUSE, FLAT, PHONE, ZIP_CODE, WEBSITE,
+                    TAX_COUNTRY_CODE, TAX, STREET, STATE)) {
                 disabledField(view, reference);
             }
             enableButtons = false;
@@ -161,4 +184,5 @@ public class CompanyDetailsHooks {
         }
         button.requestUpdate(true);
     }
+
 }

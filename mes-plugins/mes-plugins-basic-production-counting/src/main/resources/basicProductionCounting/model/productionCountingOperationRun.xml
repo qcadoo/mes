@@ -33,4 +33,6 @@
 			model="technologyOperationComponent" plugin="technologies" />
 		<decimal name="runs" required="true" />
 	</fields>
+	
+	<hooks />
 </model>

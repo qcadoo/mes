@@ -199,10 +199,29 @@ public interface DeliveriesService {
      * Gets cost per unit for given parameter
      * 
      * @param entityDD
+     *            data definitions
+     * 
      * @param entity
+     *            entity
+     * 
      * @param entityName
+     *            entity name
+     * 
      * @param product
-     * @return
+     *            product
+     * 
+     * @return pricePerUnit
      */
     BigDecimal getPricePerUnit(final DataDefinition entityDD, final Entity entity, final String entityName, final Entity product);
+
+    /**
+     * Filters currency column
+     * 
+     * @param columns
+     *            columnsForOrders, columnsForDeliveries
+     * 
+     * @return list of filtered columns
+     */
+    List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
+
 }

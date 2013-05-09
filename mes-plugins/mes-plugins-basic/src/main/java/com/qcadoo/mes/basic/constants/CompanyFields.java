@@ -35,6 +35,8 @@ public final class CompanyFields {
 
     public static final String NAME = "name";
 
+    public static final String TAX_COUNTRY_CODE = "taxCountryCode";
+
     public static final String TAX = "tax";
 
     public static final String STREET = "street";

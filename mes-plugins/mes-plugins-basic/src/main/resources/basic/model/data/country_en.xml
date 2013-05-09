@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<country>
+	<row COUNTRY="Afghanistan" CODE="AF" />
+	<row COUNTRY="Albania" CODE="AL" />
+	<row COUNTRY="Algeria" CODE="DZ" />
+	<row COUNTRY="Andorra" CODE="AD" />
+	<row COUNTRY="Angola" CODE="AO" />
+	<row COUNTRY="Anguilla" CODE="AI" />
+	<row COUNTRY="Antarctica" CODE="AQ" />
+	<row COUNTRY="Antigua and Barbuda" CODE="AG" />
+	<row COUNTRY="Saudi Arabia" CODE="SA" />
+	<row COUNTRY="Argentina" CODE="AR" />
+	<row COUNTRY="Armenia" CODE="AM" />
+	<row COUNTRY="Aruba" CODE="AW" />
+	<row COUNTRY="Australia" CODE="AU" />
+	<row COUNTRY="Austria" CODE="AT" />
+	<row COUNTRY="Azerbaijan" CODE="AZ" />
+	<row COUNTRY="Bahamas" CODE="BS" />
+	<row COUNTRY="Bahrain" CODE="BH" />
+	<row COUNTRY="Bangladesh" CODE="BD" />
+	<row COUNTRY="Barbados" CODE="BB" />
+	<row COUNTRY="Belgium" CODE="BE" />
+	<row COUNTRY="Belize" CODE="BZ" />
+	<row COUNTRY="Benin" CODE="BJ" />
+	<row COUNTRY="Bermuda" CODE="BM" />
+	<row COUNTRY="Bhutan" CODE="BT" />
+	<row COUNTRY="Belarus" CODE="BY" />
+	<row COUNTRY="Bolivia, Plurinational State of" CODE="BO" />
+	<row COUNTRY="Bonaire, Sint Eustatius and Saba" CODE="BQ" />
+	<row COUNTRY="Bosnia and Herzegovina" CODE="BA" />
+	<row COUNTRY="Botswana" CODE="BW" />
+	<row COUNTRY="Brazil" CODE="BR" />
+	<row COUNTRY="Brunei Darussalam" CODE="BN" />
+	<row COUNTRY="British Indian Ocean Territory" CODE="IO" />
+	<row COUNTRY="Virgin Islands, British" CODE="VG" />
+	<row COUNTRY="Bulgaria" CODE="BG" />
+	<row COUNTRY="Burkina Faso" CODE="BF" />
+	<row COUNTRY="Burundi" CODE="BI" />
+	<row COUNTRY="Chile" CODE="CL" />
+	<row COUNTRY="China" CODE="CN" />
+	<row COUNTRY="Croatia" CODE="HR" />
+	<row COUNTRY="Curaçao" CODE="CW" />
+	<row COUNTRY="Cyprus" CODE="CY" />
+	<row COUNTRY="Chad" CODE="TD" />
+	<row COUNTRY="Montenegro" CODE="ME" />
+	<row COUNTRY="Czech Republic" CODE="CZ" />
+	<row COUNTRY="United States Minor Outlying Islands" CODE="UM" />
+	<row COUNTRY="Denmark" CODE="DK" />
+	<row COUNTRY="Congo, the Democratic Republic of the" CODE="CD" />
+	<row COUNTRY="Dominica" CODE="DM" />
+	<row COUNTRY="Dominican Republic" CODE="DO" />
+	<row COUNTRY="Djibouti" CODE="DJ" />
+	<row COUNTRY="Egypt" CODE="EG" />
+	<row COUNTRY="Ecuador" CODE="EC" />
+	<row COUNTRY="Eritrea" CODE="ER" />
+	<row COUNTRY="Estonia" CODE="EE" />
+	<row COUNTRY="Ethiopia" CODE="ET" />
+	<row COUNTRY="Falkland Islands (Malvinas)" CODE="FK" />
+	<row COUNTRY="Fiji" CODE="FJ" />
+	<row COUNTRY="Philippines" CODE="PH" />
+	<row COUNTRY="Finland" CODE="FI" />
+	<row COUNTRY="France" CODE="FR" />
+	<row COUNTRY="French Southern Territories" CODE="TF" />
+	<row COUNTRY="Gabon" CODE="GA" />
+	<row COUNTRY="Gambia" CODE="GM" />
+	<row COUNTRY="South Georgia and the South Sandwich Islands" CODE="GS" />
+	<row COUNTRY="Ghana" CODE="GH" />
+	<row COUNTRY="Gibraltar" CODE="GI" />
+	<row COUNTRY="Greece" CODE="EL" />
+	<row COUNTRY="Grenada" CODE="GD" />
+	<row COUNTRY="Greenland" CODE="GL" />
+	<row COUNTRY="Georgia" CODE="GE" />
+	<row COUNTRY="Guam" CODE="GU" />
+	<row COUNTRY="Guernsey" CODE="GG" />
+	<row COUNTRY="French Guiana" CODE="GF" />
+	<row COUNTRY="Guyana" CODE="GY" />
+	<row COUNTRY="Guadeloupe" CODE="GP" />
+	<row COUNTRY="Guatemala" CODE="GT" />
+	<row COUNTRY="Guinea-Bissau" CODE="GW" />
+	<row COUNTRY="Equatorial Guinea" CODE="GQ" />
+	<row COUNTRY="Guinea" CODE="GN" />
+	<row COUNTRY="Haiti" CODE="HT" />
+	<row COUNTRY="Spain" CODE="ES" />
+	<row COUNTRY="Netherlands" CODE="NL" />
+	<row COUNTRY="Honduras" CODE="HN" />
+	<row COUNTRY="Hong Kong" CODE="HK" />
+	<row COUNTRY="India" CODE="IN" />
+	<row COUNTRY="Indonesia" CODE="ID" />
+	<row COUNTRY="Iraq" CODE="IQ" />
+	<row COUNTRY="Iran, Islamic Republic of" CODE="IR" />
+	<row COUNTRY="Ireland" CODE="IE" />
+	<row COUNTRY="Iceland" CODE="IS" />
+	<row COUNTRY="Israel" CODE="IL" />
+	<row COUNTRY="Jamaica" CODE="JM" />
+	<row COUNTRY="Japan" CODE="JP" />
+	<row COUNTRY="Yemen" CODE="YE" />
+	<row COUNTRY="Jersey" CODE="JE" />
+	<row COUNTRY="Jordan" CODE="JO" />
+	<row COUNTRY="Cayman Islands" CODE="KY" />
+	<row COUNTRY="Cambodia" CODE="KH" />
+	<row COUNTRY="Cameroon" CODE="CM" />
+	<row COUNTRY="Canada" CODE="CA" />
+	<row COUNTRY="Qatar" CODE="QA" />
+	<row COUNTRY="Kazakhstan" CODE="KZ" />
+	<row COUNTRY="Kenya" CODE="KE" />
+	<row COUNTRY="Kyrgyzstan" CODE="KG" />
+	<row COUNTRY="Kiribati" CODE="KI" />
+	<row COUNTRY="Colombia" CODE="CO" />
+	<row COUNTRY="Comoros" CODE="KM" />
+	<row COUNTRY="Congo" CODE="CG" />
+	<row COUNTRY="Korea, Republic of" CODE="KR" />
+	<row COUNTRY="Korea, Democratic People's Republic of" CODE="KP" />
+	<row COUNTRY="Costa Rica" CODE="CR" />
+	<row COUNTRY="Cuba" CODE="CU" />
+	<row COUNTRY="Kuwait" CODE="KW" />
+	<row COUNTRY="Lao People's Democratic Republic" CODE="LA" />
+	<row COUNTRY="Lesotho" CODE="LS" />
+	<row COUNTRY="Lebanon" CODE="LB" />
+	<row COUNTRY="Liberia" CODE="LR" />
+	<row COUNTRY="Libyan Arab Jamahiriya" CODE="LY" />
+	<row COUNTRY="Liechtenstein" CODE="LI" />
+	<row COUNTRY="Lithuania" CODE="LT" />
+	<row COUNTRY="Luxembourg" CODE="LU" />
+	<row COUNTRY="Latvia" CODE="LV" />
+	<row COUNTRY="Macedonia, the former Yugoslav Republic of" CODE="MK" />
+	<row COUNTRY="Madagascar" CODE="MG" />
+	<row COUNTRY="Mayotte" CODE="YT" />
+	<row COUNTRY="Macao" CODE="MO" />
+	<row COUNTRY="Malawi" CODE="MW" />
+	<row COUNTRY="Maldives" CODE="MV" />
+	<row COUNTRY="Malaysia" CODE="MY" />
+	<row COUNTRY="Mali" CODE="ML" />
+	<row COUNTRY="Malta" CODE="MT" />
+	<row COUNTRY="Northern Mariana Islands" CODE="MP" />
+	<row COUNTRY="Morocco" CODE="MA" />
+	<row COUNTRY="Martinique" CODE="MQ" />
+	<row COUNTRY="Mauritania" CODE="MR" />
+	<row COUNTRY="Mauritius" CODE="MU" />
+	<row COUNTRY="Mexico" CODE="MX" />
+	<row COUNTRY="Micronesia, Federated States of" CODE="FM" />
+	<row COUNTRY="Myanmar" CODE="MM" />
+	<row COUNTRY="Moldova, Republic of" CODE="MD" />
+	<row COUNTRY="Monaco" CODE="MC" />
+	<row COUNTRY="Mongolia" CODE="MN" />
+	<row COUNTRY="Montserrat" CODE="MS" />
+	<row COUNTRY="Mozambique" CODE="MZ" />
+	<row COUNTRY="Namibia" CODE="NA" />
+	<row COUNTRY="Nauru" CODE="NR" />
+	<row COUNTRY="Nepal" CODE="NP" />
+	<row COUNTRY="Germany" CODE="DE" />
+	<row COUNTRY="Niger" CODE="NE" />
+	<row COUNTRY="Nigeria" CODE="NG" />
+	<row COUNTRY="Nicaragua" CODE="NI" />
+	<row COUNTRY="Niue" CODE="NU" />
+	<row COUNTRY="Norfolk Island" CODE="NF" />
+	<row COUNTRY="Norway" CODE="NO" />
+	<row COUNTRY="New Caledonia" CODE="NC" />
+	<row COUNTRY="New Zealand" CODE="NZ" />
+	<row COUNTRY="Oman" CODE="OM" />
+	<row COUNTRY="Pakistan" CODE="PK" />
+	<row COUNTRY="Palau" CODE="PW" />
+	<row COUNTRY="Palestinian Territory, Occupied" CODE="PS" />
+	<row COUNTRY="Panama" CODE="PA" />
+	<row COUNTRY="Papua New Guinea" CODE="PG" />
+	<row COUNTRY="Paraguay" CODE="PY" />
+	<row COUNTRY="Peru" CODE="PE" />
+	<row COUNTRY="Pitcairn" CODE="PN" />
+	<row COUNTRY="French Polynesia" CODE="PF" />
+	<row COUNTRY="Poland" CODE="PL" />
+	<row COUNTRY="Puerto Rico" CODE="PR" />
+	<row COUNTRY="Portugal" CODE="PT" />
+	<row COUNTRY="South Africa" CODE="ZA" />
+	<row COUNTRY="Central African Republic" CODE="CF" />
+	<row COUNTRY="Cape Verde" CODE="CV" />
+	<row COUNTRY="Réunion" CODE="RE" />
+	<row COUNTRY="Russian Federation" CODE="RU" />
+	<row COUNTRY="Romania" CODE="RO" />
+	<row COUNTRY="Rwanda" CODE="RW" />
+	<row COUNTRY="Western Sahara" CODE="EH" />
+	<row COUNTRY="Saint Kitts and Nevis" CODE="KN" />
+	<row COUNTRY="Saint Lucia" CODE="LC" />
+	<row COUNTRY="Saint Vincent and the Grenadines" CODE="VC" />
+	<row COUNTRY="Saint Barthélemy" CODE="BL" />
+	<row COUNTRY="Saint Martin (French part)" CODE="MF" />
+	<row COUNTRY="Saint Pierre and Miquelon" CODE="PM" />
+	<row COUNTRY="El Salvador" CODE="SV" />
+	<row COUNTRY="American Samoa" CODE="AS" />
+	<row COUNTRY="Samoa" CODE="WS" />
+	<row COUNTRY="San Marino" CODE="SM" />
+	<row COUNTRY="Senegal" CODE="SN" />
+	<row COUNTRY="Serbia" CODE="RS" />
+	<row COUNTRY="Seychelles" CODE="SC" />
+	<row COUNTRY="Sierra Leone" CODE="SL" />
+	<row COUNTRY="Singapore" CODE="SG" />
+	<row COUNTRY="Sint Maarten (Dutch part)" CODE="SX" />
+	<row COUNTRY="Slovakia" CODE="SK" />
+	<row COUNTRY="Slovenia" CODE="SI" />
+	<row COUNTRY="Somalia" CODE="SO" />
+	<row COUNTRY="Sri Lanka" CODE="LK" />
+	<row COUNTRY="United States" CODE="US" />
+	<row COUNTRY="Swaziland" CODE="SZ" />
+	<row COUNTRY="Sudan" CODE="SD" />
+	<row COUNTRY="South Sudan" CODE="SS" />
+	<row COUNTRY="Suriname" CODE="SR" />
+	<row COUNTRY="Svalbard and Jan Mayen" CODE="SJ" />
+	<row COUNTRY="Syrian Arab Republic" CODE="SY" />
+	<row COUNTRY="Switzerland" CODE="CH" />
+	<row COUNTRY="Sweden" CODE="SE" />
+	<row COUNTRY="Tajikistan" CODE="TJ" />
+	<row COUNTRY="Thailand" CODE="TH" />
+	<row COUNTRY="Taiwan, Province of China" CODE="TW" />
+	<row COUNTRY="Tanzania, United Republic of" CODE="TZ" />
+	<row COUNTRY="Timor-Leste" CODE="TL" />
+	<row COUNTRY="Togo" CODE="TG" />
+	<row COUNTRY="Tokelau" CODE="TK" />
+	<row COUNTRY="Tonga" CODE="TO" />
+	<row COUNTRY="Trinidad and Tobago" CODE="TT" />
+	<row COUNTRY="Tunisia" CODE="TN" />
+	<row COUNTRY="Turkey" CODE="TR" />
+	<row COUNTRY="Turkmenistan" CODE="TM" />
+	<row COUNTRY="Turks and Caicos Islands" CODE="TC" />
+	<row COUNTRY="Tuvalu" CODE="TV" />
+	<row COUNTRY="Uganda" CODE="UG" />
+	<row COUNTRY="Ukraine" CODE="UA" />
+	<row COUNTRY="Uruguay" CODE="UY" />
+	<row COUNTRY="Uzbekistan" CODE="UZ" />
+	<row COUNTRY="Vanuatu" CODE="VU" />
+	<row COUNTRY="Wallis and Futuna" CODE="WF" />
+	<row COUNTRY="Holy See (Vatican City State)" CODE="VA" />
+	<row COUNTRY="Venezuela, Bolivarian Republic of" CODE="VE" />
+	<row COUNTRY="Hungary" CODE="HU" />
+	<row COUNTRY="United Kingdom" CODE="UK" />
+	<row COUNTRY="Viet Nam" CODE="VN" />
+	<row COUNTRY="Italy" CODE="IT" />
+	<row COUNTRY="Côte d'Ivoire" CODE="CI" />
+	<row COUNTRY="Bouvet Island" CODE="BV" />
+	<row COUNTRY="Christmas Island" CODE="CX" />
+	<row COUNTRY="Isle of Man" CODE="IM" />
+	<row COUNTRY="Saint Helena, Ascension and Tristan da Cunha" CODE="SH" />
+	<row COUNTRY="Aland Islands" CODE="AX" />
+	<row COUNTRY="Cook Islands" CODE="CK" />
+	<row COUNTRY="Virgin Islands, U.S." CODE="VI" />
+	<row COUNTRY="Heard Island and McDonald Islands" CODE="HM" />
+	<row COUNTRY="Cocos (Keeling) Islands" CODE="CC" />
+	<row COUNTRY="Marshall Islands" CODE="MH" />
+	<row COUNTRY="Faroe Islands" CODE="FO" />
+	<row COUNTRY="Solomon Islands" CODE="SB" />
+	<row COUNTRY="Sao Tome and Principe" CODE="ST" />
+	<row COUNTRY="Zambia" CODE="ZM" />
+	<row COUNTRY="Zimbabwe" CODE="ZW" />
+	<row COUNTRY="United Arab Emirates" CODE="AE" />
+</country>

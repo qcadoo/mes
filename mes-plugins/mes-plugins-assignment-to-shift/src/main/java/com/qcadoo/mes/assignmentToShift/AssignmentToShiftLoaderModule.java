@@ -102,7 +102,8 @@ public class AssignmentToShiftLoaderModule extends Module {
     }
 
     private Map<Integer, Map<String, String>> getOccupationTypesAttributesFromXML() {
-        LOG.info("Loading test data from occupationType.xml ...");
+        LOG.info("Loading test data from occupationType" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage()
+                + ".xml ...");
 
         Map<Integer, Map<String, String>> occupationTypesAttributes = Maps.newHashMap();
 

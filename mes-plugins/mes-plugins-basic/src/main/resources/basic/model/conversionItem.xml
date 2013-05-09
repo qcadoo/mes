@@ -35,7 +35,7 @@
 		<belongsTo name="conversion" model="conversion" />
 		<belongsTo name="product" model="product" />
 	</fields>
-
+	
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.basic.hooks.ConversionItemHooks"
 			method="validateQuantityFrom" />

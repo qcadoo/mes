@@ -144,53 +144,50 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     protected void addParameters(final Map<String, String> values) {
         LOG.info("Adding parameters");
-        Entity params = parameterService.getParameter();
+        Entity parameter = parameterService.getParameter();
 
-        Entity currency = dataDefinitionService
-                .get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
-                .add(SearchRestrictions.eq("alphabeticCode", values.get("code"))).uniqueResult();
-
-        params.setField("currency", currency);
-        params.setField("unit", values.get("unit"));
-        params.setField("company", getCompany(values.get(OWNER)));
+        parameter.setField("country", getCountry(values.get("country")));
+        parameter.setField("currency", getCurrency(values.get("code")));
+        parameter.setField("unit", values.get("unit"));
+        parameter.setField("company", getCompany(values.get(OWNER)));
 
         if (isEnabledOrEnabling("productionCounting")) {
-            params.setField("typeOfProductionRecording", "02cumulated");
-            params.setField("registerQuantityInProduct", true);
-            params.setField("registerQuantityOutProduct", true);
-            params.setField("registerProductionTime", true);
-            params.setField("justOne", false);
-            params.setField("allowToClose", false);
-            params.setField("autoCloseOrder", false);
+            parameter.setField("typeOfProductionRecording", "02cumulated");
+            parameter.setField("registerQuantityInProduct", true);
+            parameter.setField("registerQuantityOutProduct", true);
+            parameter.setField("registerProductionTime", true);
+            parameter.setField("justOne", false);
+            parameter.setField("allowToClose", false);
+            parameter.setField("autoCloseOrder", false);
         }
 
         if (isEnabledOrEnabling("qualityControls")) {
-            params.setField("checkDoneOrderForQuality", false);
-            params.setField("autoGenerateQualityControl", false);
+            parameter.setField("checkDoneOrderForQuality", false);
+            parameter.setField("autoGenerateQualityControl", false);
         }
 
         if (isEnabledOrEnabling("genealogies")) {
-            params.setField("batchForDoneOrder", "01none");
+            parameter.setField("batchForDoneOrder", "01none");
         }
 
         if (isEnabledOrEnabling("advancedGenealogy")) {
-            params.setField("batchNumberUniqueness", "01globally");
+            parameter.setField("batchNumberUniqueness", "01globally");
         }
 
         if (isEnabledOrEnabling("advancedGenealogyForOrders")) {
-            params.setField("trackingRecordForOrderTreatment", "01duringProduction");
-            params.setField("batchNumberRequiredInputProducts", false);
+            parameter.setField("trackingRecordForOrderTreatment", "01duringProduction");
+            parameter.setField("batchNumberRequiredInputProducts", false);
         }
 
         if (isEnabledOrEnabling("materialRequirements")) {
-            params.setField("inputProductsRequiredForType", "01startOrder");
+            parameter.setField("inputProductsRequiredForType", "01startOrder");
         }
 
         if (isEnabledOrEnabling("materialFlowResources")) {
-            params.setField("changeDateWhenTransferToWarehouseType", "01never");
+            parameter.setField("changeDateWhenTransferToWarehouseType", "01never");
         }
 
-        params.getDataDefinition().save(params);
+        parameter.getDataDefinition().save(parameter);
     }
 
     protected void addCompany(final Map<String, String> values) {
@@ -213,7 +210,7 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
         company.setField("zipCode", values.get("zipcode"));
         company.setField("city", values.get("city"));
         company.setField("state", values.get("state"));
-        company.setField("country", values.get("country"));
+        company.setField("country", getCountry(values.get("country")));
         company.setField(EMAIL, values.get(EMAIL));
         company.setField("website", values.get("website"));
         company.setField("phone", values.get("phone"));
@@ -228,7 +225,17 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
 
     private Entity getCompany(final String number) {
         return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COMPANY).find()
-                .add(SearchRestrictions.eq(NUMBER, number)).uniqueResult();
+                .add(SearchRestrictions.eq(NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getCurrency(final String code) {
+        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_CURRENCY).find()
+                .add(SearchRestrictions.eq("alphabeticCode", code)).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getCountry(final String code) {
+        return dataDefinitionService.get(SamplesConstants.BASIC_PLUGIN_IDENTIFIER, SamplesConstants.BASIC_MODEL_COUNTRY).find()
+                .add(SearchRestrictions.eq("code", code)).setMaxResults(1).uniqueResult();
     }
 
 }

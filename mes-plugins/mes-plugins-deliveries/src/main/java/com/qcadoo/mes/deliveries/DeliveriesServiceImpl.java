@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -269,6 +270,39 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         } else {
             return offerProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         }
+    }
+
+    @Override
+    public List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns) {
+        List<Entity> filteredCurrencyColumn = Lists.newArrayList();
+
+        if (checkIfContainsPriceColumns(columns)) {
+            filteredCurrencyColumn.addAll(columns);
+        } else {
+            for (Entity column : columns) {
+                String identifier = column.getStringField(ColumnForOrdersFields.IDENTIFIER);
+
+                if (!"currency".equals(identifier)) {
+                    filteredCurrencyColumn.add(column);
+                }
+            }
+        }
+
+        return filteredCurrencyColumn;
+    }
+
+    private boolean checkIfContainsPriceColumns(final List<Entity> columns) {
+        boolean contains = false;
+
+        for (Entity column : columns) {
+            String identifier = column.getStringField(ColumnForOrdersFields.IDENTIFIER);
+
+            if ("pricePerUnit".equals(identifier) || "totalPrice".equals(identifier)) {
+                contains = true;
+            }
+        }
+
+        return contains;
     }
 
 }

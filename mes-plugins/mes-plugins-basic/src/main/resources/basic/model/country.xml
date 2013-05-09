@@ -24,33 +24,17 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="shiftsList" modelName="shift" menuAccessible="true">
+<model name="country" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<string name="country" required="true" />
+		<string name="code" required="true" unique="true">
+			<validatesLength is="2" />
+		</string>
+	</fields>
 
-	<component type="window" name="window">
-	
-		<ribbon>
-			<template name="standardGridTemplate" />
-		</ribbon>
-		
-		<component type="grid" name="shifts" reference="grid">
-			<option type="column" name="name" fields="name" link="true" />
-			
-			<option type="order" column="name" direction="asc" />
-			
-			<option type="searchable" value="name" />
-			<option type="orderable" value="name" />
-			
-			<option type="correspondingView" value="basic/shiftDetails" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-		</component>
-		
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
-	
-</view>
+	<hooks />
+
+	<identifier expression="#code + ' - ' + #country" />
+</model>
