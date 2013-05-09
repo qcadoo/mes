@@ -24,9 +24,9 @@
 package com.qcadoo.mes.deliveries.print;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.IDENTIFIER;
-import static com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.ALIGNMENT;
+import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.IDENTIFIER;
+import static com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields.NAME;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
@@ -62,10 +62,11 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -81,7 +82,7 @@ public class OrderReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
 
-    private static final String ORDERED_QUANTITY = "orderedQuantity";
+    private static final String L_CURRENCY = "currency";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -103,6 +104,9 @@ public class OrderReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -227,8 +231,8 @@ public class OrderReportPdf extends ReportPdfView {
                     orderedProductsColumnValues);
 
             if (!filteredColumnsForOrders.isEmpty()) {
+                List<String> columnsName = Lists.newArrayList();
 
-                List<String> columnsName = new ArrayList<String>();
                 for (Entity entity : filteredColumnsForOrders) {
                     columnsName.add(entity.getStringField(IDENTIFIER));
                 }
@@ -252,49 +256,52 @@ public class OrderReportPdf extends ReportPdfView {
                 }
 
                 addTotalRow(productsTable, locale, columnsName, delivery);
+
                 document.add(productsTable);
                 document.add(Chunk.NEWLINE);
             }
         }
     }
 
-    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
+    private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,
+            final Map<Entity, Map<String, String>> orderedProductsColumnValues) {
+        return deliveriesService.getColumnsWithFilteredCurrencies(columnExtensionService.filterEmptyColumns(columnsForOrders,
+                orderedProducts, orderedProductsColumnValues));
+    }
 
+    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
                 FontUtils.getDejavuRegular9Dark()));
+
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
         total.setBackgroundColor(null);
         total.disableBorderSide(Rectangle.RIGHT);
         total.disableBorderSide(Rectangle.LEFT);
         total.setBorderColor(ColorUtils.getLineLightColor());
-        productsTable.addCell(total);
-        for (int i = 2; i < columnsName.size(); i++) {
 
-            if (columnsName.contains(ORDERED_QUANTITY) && columnsName.indexOf(ORDERED_QUANTITY) == i) {
+        productsTable.addCell(total);
+
+        for (int i = 2; i < columnsName.size(); i++) {
+            if (columnsName.contains(OrderedProductFields.ORDERED_QUANTITY)
+                    && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
                         .getDejavuRegular9Dark()));
-                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
-                    && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
+            } else if (columnsName.contains(OrderedProductFields.TOTAL_PRICE)
+                    && columnsName.indexOf(OrderedProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedTotalPrice()), FontUtils
                         .getDejavuRegular9Dark()));
+            } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                productsTable.addCell(new Phrase(currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
             } else {
                 productsTable.addCell("");
             }
-
         }
-
-    }
-
-    private List<Entity> getOrderReportColumns(final List<Entity> columnsForOrders, final List<Entity> orderedProducts,
-            final Map<Entity, Map<String, String>> orderedProductsColumnValues) {
-        return columnExtensionService.filterEmptyColumns(columnsForOrders, orderedProducts, orderedProductsColumnValues);
     }
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForOrders,

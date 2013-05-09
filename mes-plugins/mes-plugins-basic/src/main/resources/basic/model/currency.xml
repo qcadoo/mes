@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<string name="currency" />
-		<string name="alphabeticCode" required="true">
+		<string name="alphabeticCode" required="true" unique="true">
 			<validatesLength is="3" />
 		</string>
 		<integer name="isoCode" unique="true" />

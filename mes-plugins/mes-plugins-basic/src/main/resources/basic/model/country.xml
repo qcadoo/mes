@@ -28,10 +28,10 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
+		<string name="country" required="true" />
 		<string name="code" required="true" unique="true">
 			<validatesLength is="2" />
 		</string>
-		<string name="country" required="true" />
 	</fields>
 
 	<hooks />

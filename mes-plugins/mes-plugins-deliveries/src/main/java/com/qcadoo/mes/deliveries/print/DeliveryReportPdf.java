@@ -62,9 +62,11 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -80,9 +82,7 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
 
-    private static final String ORDERED_QUANTITY = "orderedQuantity";
-
-    private static final String DELIVERED_QUANTITY = "deliveredQuantity";
+    private static final String L_CURRENCY = "currency";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -98,6 +98,9 @@ public class DeliveryReportPdf extends ReportPdfView {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Autowired
     private NumberService numberService;
@@ -228,12 +231,12 @@ public class DeliveryReportPdf extends ReportPdfView {
             Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues = deliveryColumnFetcher
                     .getDeliveryProductsColumnValues(deliveryProducts);
 
-            List<Entity> filteredColumnsForDeliveries = filterEmptyColumns(columnsForDeliveries, deliveryProducts,
+            List<Entity> filteredColumnsForDeliveries = getDeliveryReportColumns(columnsForDeliveries, deliveryProducts,
                     deliveryProductsColumnValues);
 
             if (!filteredColumnsForDeliveries.isEmpty()) {
+                List<String> columnsName = Lists.newArrayList();
 
-                List<String> columnsName = new ArrayList<String>();
                 for (Entity entity : filteredColumnsForDeliveries) {
                     columnsName.add(entity.getStringField(IDENTIFIER));
                 }
@@ -264,44 +267,51 @@ public class DeliveryReportPdf extends ReportPdfView {
         }
     }
 
-    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
+    private List<Entity> getDeliveryReportColumns(final List<Entity> columnsForDeliveries,
+            final List<DeliveryProduct> deliveryProducts,
+            final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
+        return deliveriesService.getColumnsWithFilteredCurrencies(filterEmptyColumns(columnsForDeliveries, deliveryProducts,
+                deliveryProductsColumnValues));
+    }
 
+    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
         DeliveryPricesAndQuantities pricesAndQntts = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
                 FontUtils.getDejavuRegular9Dark()));
+
         total.setColspan(2);
         total.setHorizontalAlignment(Element.ALIGN_LEFT);
         total.setBackgroundColor(null);
         total.disableBorderSide(Rectangle.RIGHT);
         total.disableBorderSide(Rectangle.LEFT);
         total.setBorderColor(ColorUtils.getLineLightColor());
+
         productsTable.addCell(total);
 
         for (int i = 2; i < columnsName.size(); i++) {
-
-            if (columnsName.contains(ORDERED_QUANTITY) && columnsName.indexOf(ORDERED_QUANTITY) == i) {
+            if (columnsName.contains(OrderedProductFields.ORDERED_QUANTITY)
+                    && columnsName.indexOf(OrderedProductFields.ORDERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getOrderedCumulatedQuantity()), FontUtils
                         .getDejavuRegular9Dark()));
-                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            } else if (columnsName.contains(DELIVERED_QUANTITY) && columnsName.indexOf(DELIVERED_QUANTITY) == i) {
+            } else if (columnsName.contains(DeliveredProductFields.DELIVERED_QUANTITY)
+                    && columnsName.indexOf(DeliveredProductFields.DELIVERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredCumulatedQuantity()), FontUtils
                         .getDejavuRegular9Dark()));
-                productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 productsTable.addCell(new Phrase(numberService.format(pricesAndQntts.getDeliveredTotalPrice()), FontUtils
                         .getDejavuRegular9Dark()));
+            } else if (columnsName.contains(L_CURRENCY) && columnsName.indexOf(L_CURRENCY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                productsTable.addCell(new Phrase(currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular9Dark()));
             } else {
                 productsTable.addCell("");
             }
-
         }
-
     }
 
     private List<Entity> filterEmptyColumns(final List<Entity> columnsForDeliveries,

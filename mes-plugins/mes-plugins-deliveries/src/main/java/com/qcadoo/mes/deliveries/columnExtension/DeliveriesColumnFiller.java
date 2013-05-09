@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -59,6 +60,9 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Override
     public Map<DeliveryProduct, Map<String, String>> getDeliveryProductsColumnValues(final List<DeliveryProduct> deliveryProducts) {
@@ -80,46 +84,10 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
 
             fillPricePerUnit(values, deliveryProduct);
             fillTotalPrice(values, deliveryProduct);
+            fillCurrency(values, deliveryProduct);
         }
 
         return values;
-    }
-
-    private void fillTotalPrice(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        BigDecimal totalPrice = null;
-
-        if (deliveryProduct.getDeliveredProductId() != null) {
-            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-
-            if (deliveredProduct != null) {
-                totalPrice = deliveredProduct.getDecimalField(DeliveredProductFields.TOTAL_PRICE);
-            }
-        }
-
-        if (totalPrice == null) {
-            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, "");
-        } else {
-            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, numberService.format(totalPrice));
-        }
-    }
-
-    private void fillPricePerUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
-        BigDecimal pricePerUnit = null;
-
-        if (deliveryProduct.getDeliveredProductId() != null) {
-            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
-
-            if (deliveredProduct != null) {
-                pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
-            }
-        }
-
-        if (pricePerUnit == null) {
-            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, "");
-        } else {
-            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
-        }
-
     }
 
     @Override
@@ -141,34 +109,10 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
 
             fillPricePerUnit(values, orderedProduct);
             fillTotalPrice(values, orderedProduct);
+            fillCurrency(values, orderedProduct);
         }
 
         return values;
-    }
-
-    private void fillTotalPrice(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
-        BigDecimal totalPrice = null;
-        if (orderedProduct != null) {
-            totalPrice = orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE);
-        }
-        if (totalPrice == null) {
-            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, "");
-        } else {
-            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, numberService.format(totalPrice));
-        }
-    }
-
-    private void fillPricePerUnit(Map<Entity, Map<String, String>> values, Entity orderedProduct) {
-        BigDecimal pricePerUnit = null;
-        if (orderedProduct != null) {
-            pricePerUnit = orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
-        }
-        if (pricePerUnit == null) {
-            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, "");
-        } else {
-            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
-        }
-
     }
 
     private void fillProductNumber(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
@@ -332,6 +276,98 @@ public class DeliveriesColumnFiller implements DeliveryColumnFiller, OrderColumn
         }
 
         values.get(orderedProduct).put(DESCRIPTION, description);
+    }
+
+    private void fillPricePerUnit(Map<Entity, Map<String, String>> values, Entity orderedProduct) {
+        BigDecimal pricePerUnit = null;
+
+        if (orderedProduct != null) {
+            pricePerUnit = orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
+        }
+
+        if (pricePerUnit == null) {
+            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, "");
+        } else {
+            values.get(orderedProduct).put(OrderedProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
+        }
+    }
+
+    private void fillPricePerUnit(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal pricePerUnit = null;
+
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct != null) {
+                pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
+            }
+        }
+
+        if (pricePerUnit == null) {
+            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, "");
+        } else {
+            values.get(deliveryProduct).put(DeliveredProductFields.PRICE_PER_UNIT, numberService.format(pricePerUnit));
+        }
+    }
+
+    private void fillTotalPrice(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        BigDecimal totalPrice = null;
+
+        if (orderedProduct != null) {
+            totalPrice = orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE);
+        }
+
+        if (totalPrice == null) {
+            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, "");
+        } else {
+            values.get(orderedProduct).put(OrderedProductFields.TOTAL_PRICE, numberService.format(totalPrice));
+        }
+    }
+
+    private void fillTotalPrice(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        BigDecimal totalPrice = null;
+
+        if (deliveryProduct.getDeliveredProductId() != null) {
+            Entity deliveredProduct = deliveriesService.getDeliveredProduct(deliveryProduct.getDeliveredProductId());
+
+            if (deliveredProduct != null) {
+                totalPrice = deliveredProduct.getDecimalField(DeliveredProductFields.TOTAL_PRICE);
+            }
+        }
+
+        if (totalPrice == null) {
+            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, "");
+        } else {
+            values.get(deliveryProduct).put(DeliveredProductFields.TOTAL_PRICE, numberService.format(totalPrice));
+        }
+    }
+
+    private void fillCurrency(final Map<Entity, Map<String, String>> values, final Entity orderedProduct) {
+        String currency = null;
+
+        Entity currentCurrency = currencyService.getCurrentCurrency();
+
+        if (currentCurrency == null) {
+            currency = "";
+        } else {
+            currency = currencyService.getCurrencyAlphabeticCode();
+        }
+
+        values.get(orderedProduct).put("currency", currency);
+    }
+
+    private void fillCurrency(final Map<DeliveryProduct, Map<String, String>> values, final DeliveryProduct deliveryProduct) {
+        String currency = null;
+
+        Entity currentCurrency = currencyService.getCurrentCurrency();
+
+        if (currentCurrency == null) {
+            currency = "";
+        } else {
+            currency = currencyService.getCurrencyAlphabeticCode();
+        }
+
+        values.get(deliveryProduct).put("currency", currency);
     }
 
 }
