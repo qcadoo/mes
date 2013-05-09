@@ -24,34 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="columnForOrders" 
+<model name="parameterDeliveryOrderColumn" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="identifier" required="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description">
-			<validatesLength max="1024" />
-		</string>
-		<string name="columnFiller" required="true">
-			<validatesLength max="255" />
-		</string>
-		
-		<enum name="alignment" values="01left,02right"
-			default="01left" required="true" />
-			
-		<belongsTo name="parameter" model="parameter" plugin="basic"/>
-		
-		<priority name="succession" scope="delivery" />
-			
-		<hasMany name="parameterDeliveryOrderColumns" plugin="deliveries"
-			model="parameterDeliveryOrderColumn" joinField="columnForOrders"
-			cascade="delete" />
+		<belongsTo name="parameter" plugin="basic" model="parameter"
+			required="true" />
+
+		<belongsTo name="columnForOrders" plugin="deliveries"
+			model="columnForOrders" required="true" lazy="false" />
+
+		<priority name="succession" />
 	</fields>
-	<hooks />
-	<identifier expression="#identifier" />
+	<hooks>
+		<validatesWith
+			class="com.qcadoo.mes.deliveries.hooks.ParameterDeliveryColumnModelValidators"
+			method="checkIfColumnForOrdersIsNotAlreadyUsed" />
+	</hooks>
 </model>

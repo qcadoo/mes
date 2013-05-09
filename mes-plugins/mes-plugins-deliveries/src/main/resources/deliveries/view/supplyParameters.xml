@@ -63,17 +63,19 @@
 								columns="1" rows="2">
 								<layoutElement column="1" row="1">
 									<component type="grid" name="columnsForOrders"
-										source="#{form}.columnsForOrders" reference="columnsForOrders">
-										<option type="column" name="name" fields="name"
-											expression="'@' + #name"  />
+										source="#{form}.parameterDeliveryOrderColumns" reference="columnsForOrders">
+										<option type="column" name="name" fields="columnForOrders"
+								expression="'@' + #columnForOrders.get('name')" link="true" />
 										
 										<option type="order" column="succession" direction="desc" />
 										
 										<option type="searchable" value="name" />
 										<option type="orderable" value="name" />
-										
-										<option type="creatable" value="false" />
-										<option type="deletable" value="false" />
+										<option type="correspondingView" value="deliveries/parameterOrderColumnDetails" />
+										<option type="correspondingComponent" value="form" />
+										<option type="correspondingViewInModal" value="true" />
+										<option type="creatable" value="true" />
+										<option type="deletable" value="true" />
 										<option type="fullscreen" value="true" />
 										<option type="multiselect" value="true" />
 									</component>

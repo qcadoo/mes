@@ -47,4 +47,6 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_COMPANY_PRODUCTS_FAMILY = "companyProductsFamily";
 
+    public static final String MODEL_PARAMETER_DELIVERY_ORDER_COLUMN = "parameterDeliveryOrderColumn";
+
 }

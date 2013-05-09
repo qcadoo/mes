@@ -79,6 +79,8 @@
 		<model:model model="deliveredProduct" resource="model/deliveredProduct.xml" />
 		<model:model model="orderedProduct" resource="model/orderedProduct.xml" />
 		<model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml" />
+		<model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml" />
+		
 
 		<model:model-field plugin="states" model="message">
 			<model:belongsTo name="deliveryStateChange" plugin="deliveries"
@@ -129,6 +131,12 @@
 			<model:boolean name="hideEmptyColumnsForOrders" default="false"/>
 		</model:model-field>
 		
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterDeliveryOrderColumns" plugin="deliveries"
+				model="parameterDeliveryOrderColumn" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+		
 		<menu:menu-category name="requirements" />
 
 		<menu:menu-item name="deliveries" category="requirements"
@@ -144,7 +152,8 @@
 		<view:view resource="view/orderedProductDetails.xml" />
 		<view:view resource="view/supplyItems.xml" />
 		<view:view resource="view/supplyParameters.xml" />
-
+		<view:view resource="view/parameterOrderColumnDetails.xml" />
+		
 		<view:view-tab resource="view/tabExtensions/companyDetails.xml" />
 		<view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml" />
 		

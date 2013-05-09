@@ -25,17 +25,23 @@ package com.qcadoo.mes.deliveries;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.OperationType;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoaderService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveriesColumnLoaderServiceImpl.class);
 
     private static final String L_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
 
@@ -46,6 +52,9 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public void fillColumnsForDeliveries(final String plugin) {
@@ -122,6 +131,26 @@ public class DeliveriesColumnLoaderServiceImpl implements DeliveriesColumnLoader
         Entity parameter = parameterService.getParameter();
         column.setField("parameter", parameter);
         column.getDataDefinition().save(column);
+
+        addColumnForParameterOrders(column);
+
+    }
+
+    private void addColumnForParameterOrders(final Entity columnForOrders) {
+        Entity parameterOrderColumn = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_PARAMETER_DELIVERY_ORDER_COLUMN).create();
+        parameterOrderColumn.setField(BasicConstants.MODEL_PARAMETER, parameterService.getParameter());
+        parameterOrderColumn.setField(DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS, columnForOrders);
+        parameterOrderColumn = parameterOrderColumn.getDataDefinition().save(parameterOrderColumn);
+
+        if (parameterOrderColumn.isValid()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Column added to parameter orders columns {column=" + parameterOrderColumn.toString() + "}");
+            }
+        } else {
+            throw new IllegalStateException("Saved entity - parameterOrdersColumn - has validation errors - "
+                    + columnForOrders.toString());
+        }
     }
 
     private void deleteColumnForOrders(final Map<String, String> columnAttributes) {

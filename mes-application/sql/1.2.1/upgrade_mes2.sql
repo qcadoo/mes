@@ -40,3 +40,22 @@ ALTER TABLE basic_company
       REFERENCES basic_country (id) DEFERRABLE;
       
 -- end
+
+-- Table: deliveries_parameterdeliveryordercolumn
+-- changed: 09.05.2013
+
+CREATE TABLE deliveries_parameterdeliveryordercolumn
+(
+  id bigint NOT NULL,
+  parameter_id bigint,
+  columnfororders_id bigint,
+  succession integer,
+  CONSTRAINT deliveries_parameterdeliveryordercolumn_pkey PRIMARY KEY (id),
+  CONSTRAINT parameterdeliveryordercolumn_parameter_fkey FOREIGN KEY (parameter_id)
+      REFERENCES basic_parameter (id) DEFERRABLE,
+  CONSTRAINT parameterdeliveryordercolumn_columnfororders_fkey FOREIGN KEY (columnfororders_id)
+      REFERENCES deliveries_columnfororders (id) DEFERRABLE
+);
+
+-- end
+

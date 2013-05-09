@@ -36,6 +36,7 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_DESCR
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -111,7 +112,18 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForOrders() {
-        return getColumnForOrdersDD().find().addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
+
+        List<Entity> columns = new LinkedList<Entity>();
+        List<Entity> columnComponents = getColumnForOrdersDD().find()
+                .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
+
+        for (Entity columnComponent : columnComponents) {
+            Entity columnDefinition = columnComponent.getBelongsToField("columnForOrders");
+
+            columns.add(columnDefinition);
+        }
+
+        return columns;
     }
 
     @Override
@@ -147,7 +159,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public DataDefinition getColumnForOrdersDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS);
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_PARAMETER_DELIVERY_ORDER_COLUMN);
     }
 
     @Override
