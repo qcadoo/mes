@@ -279,36 +279,6 @@ public class DeliveriesServiceImplTest {
     }
 
     @Test
-    public void shouldReturnNullWhenGetColumnsForOrdersIfColumnsForOrdersAreNull() {
-        // given
-        given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(null);
-
-        // when
-        List<Entity> result = deliveriesService.getColumnsForOrders();
-
-        // then
-        assertEquals(null, result);
-    }
-
-    @Test
-    public void shouldReturnColumnsForOrdersWhenGetColumnsForOrdersIfColumnsForOrdersArentNull() {
-        // given
-        given(columnForOrdersDD.find()).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.addOrder(Mockito.any(SearchOrder.class))).willReturn(searchCriteriaBuilder);
-        given(searchCriteriaBuilder.list()).willReturn(searchResult);
-        given(searchResult.getEntities()).willReturn(columnsForOrders);
-
-        // when
-        List<Entity> result = deliveriesService.getColumnsForOrders();
-
-        // then
-        assertEquals(columnsForOrders, result);
-    }
-
-    @Test
     public void shouldReturnDeliveryDD() {
         // given
 
@@ -372,17 +342,6 @@ public class DeliveriesServiceImplTest {
 
         // then
         assertEquals(columnForDeliveriesDD, result);
-    }
-
-    @Test
-    public void shouldReturnColumnForOrdersDD() {
-        // given
-
-        // when
-        DataDefinition result = deliveriesService.getColumnForOrdersDD();
-
-        // then
-        assertEquals(columnForOrdersDD, result);
     }
 
 }
