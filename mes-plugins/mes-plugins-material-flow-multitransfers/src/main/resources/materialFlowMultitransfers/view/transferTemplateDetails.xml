@@ -41,6 +41,8 @@
 					<component type="lookup" name="locationFrom" field="locationFrom"
 						reference="locationFrom">
 						
+						<option type="required" value="true" />
+						
 						<option type="searchable" value="name" />
 						<option type="orderable" value=" name" />
 						
@@ -51,6 +53,8 @@
 				<layoutElement column="1" row="2" width="5">
 					<component type="lookup" name="locationTo" field="locationTo"
 						reference="locationTo">
+						
+						<option type="required" value="true" />
 						
 						<option type="searchable" value="name" />
 						<option type="orderable" value="name" />
