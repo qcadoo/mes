@@ -53,7 +53,7 @@
 						<option type="required" value="true" />
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.technologies.listeners.TechnologyReferenceTechnologyComponentDetailsListeners"
-							method="technologyReferenceTechnologyComponentDetailsHooks" />
+							method="disabledSaveBackButton" />
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
