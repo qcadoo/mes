@@ -130,14 +130,22 @@ public class OrderDetailsHooks {
     }
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             return;
         }
+
         final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
+                orderId);
+
+        if (order == null) {
+            return;
+        }
+
         String orderState = order.getStringField(STATE);
-        if (orderState.equals(OrderState.PENDING.getStringValue())) {
+        if (OrderState.PENDING.getStringValue().equals(orderState)) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
                     REASON_TYPES_CORRECTION_DATE_TO, REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                     REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
@@ -145,14 +153,14 @@ public class OrderDetailsHooks {
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO);
             changedEnabledFields(view, references, false);
         }
-        if (orderState.equals(OrderState.ACCEPTED.getStringValue())) {
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState)) {
             List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
             changedEnabledFields(view, references, true);
         }
-        if (orderState.equals(OrderState.IN_PROGRESS.getStringValue())
-                || orderState.equals(OrderState.INTERRUPTED.getStringValue())) {
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.INTERRUPTED.getStringValue().equals(orderState)) {
             List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
                     COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
@@ -162,7 +170,7 @@ public class OrderDetailsHooks {
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
         }
 
-        if (orderState.equals(OrderState.COMPLETED.getStringValue())) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState)) {
             List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
             changedEnabledFields(view, references, true);
@@ -172,7 +180,7 @@ public class OrderDetailsHooks {
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
         }
 
-        if (orderState.equals(OrderState.ABANDONED.getStringValue())) {
+        if (OrderState.ABANDONED.getStringValue().equals(orderState)) {
             List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
             changedEnabledFields(view, references, true);

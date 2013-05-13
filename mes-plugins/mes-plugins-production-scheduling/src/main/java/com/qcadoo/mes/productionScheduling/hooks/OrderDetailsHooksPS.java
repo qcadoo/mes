@@ -36,32 +36,37 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 @Service
 public class OrderDetailsHooksPS {
 
-    private static final String FORM = "form";
-
-    private static final String OPERATION_DURATION = "operationDuration";
+    private static final String L_FORM = "form";
 
     private static final String L_WINDOW = "window";
 
+    private static final String L_OPERATION_DURATION = "operationDuration";
+
     public void disabledButtonOperationDuration(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
-        if (form.getEntityId() == null) {
-            disabledButton(view, false);
-            return;
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId != null) {
+            Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
+
+            if ((order != null) && (order.getBelongsToField(OrderFields.TECHNOLOGY) != null)) {
+                disabledButton(view, true);
+
+                return;
+            }
         }
-        Entity order = form.getEntity().getDataDefinition().get(form.getEntityId());
-        if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
-            disabledButton(view, false);
-            return;
-        }
-        disabledButton(view, true);
+
+        disabledButton(view, false);
     }
 
     private void disabledButton(final ViewDefinitionState view, final boolean enable) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup group = (RibbonGroup) window.getRibbon().getGroupByName(OPERATION_DURATION);
+        RibbonGroup group = (RibbonGroup) window.getRibbon().getGroupByName(L_OPERATION_DURATION);
 
-        RibbonActionItem operationDuration = (RibbonActionItem) group.getItemByName(OPERATION_DURATION);
+        RibbonActionItem operationDuration = (RibbonActionItem) group.getItemByName(L_OPERATION_DURATION);
         operationDuration.setEnabled(enable);
         operationDuration.requestUpdate(true);
     }
+
 }

@@ -46,9 +46,11 @@ import org.springframework.util.StringUtils;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -65,6 +67,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class OrderTimePredictionService {
@@ -374,28 +377,36 @@ public class OrderTimePredictionService {
     }
 
     public void fillUnitField(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference("form");
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
 
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntity().getId());
-        Entity product = order.getBelongsToField("product");
+        Long orderId = orderForm.getEntityId();
 
-        unitField.setFieldValue(product.getField("unit"));
+        if (orderId != null) {
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+
+            if (order != null) {
+                Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+                if (product != null) {
+                    unitField.setFieldValue(product.getField(ProductFields.UNIT));
+                }
+            }
+        }
     }
 
     public void fillUnitField(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        LookupComponent technologyLookup = (LookupComponent) viewDefinitionState.getComponentByReference("technology");
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference("operationDurationQuantityUNIT");
 
-        FieldComponent technologyLookup = (FieldComponent) viewDefinitionState.getComponentByReference("technology");
+        Entity technology = technologyLookup.getEntity();
 
-        if (technologyLookup.getFieldValue() != null) {
-            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
+        if (technology != null) {
+            Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
-            Entity product = technology.getBelongsToField("product");
-
-            unitField.setFieldValue(product.getField("unit"));
+            if (product != null) {
+                unitField.setFieldValue(product.getField(ProductFields.UNIT));
+            }
         }
     }
 

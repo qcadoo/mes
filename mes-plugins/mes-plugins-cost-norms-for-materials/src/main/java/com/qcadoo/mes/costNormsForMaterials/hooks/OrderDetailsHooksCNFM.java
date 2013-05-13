@@ -56,23 +56,29 @@ public class OrderDetailsHooksCNFM {
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("materials");
         RibbonActionItem viewCosts = (RibbonActionItem) materials.getItemByName("viewCosts");
 
-        if (orderForm.getEntityId() != null) {
-            Long orderId = orderForm.getEntityId();
+        Long orderId = orderForm.getEntityId();
 
+        if (orderId != null) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-            if (order.getBelongsToField(TECHNOLOGY) != null && isTechnologyAccepted(order)
-                    && orderStateService.isSynchronized(order)) {
-                viewCosts.setEnabled(true);
-                viewCosts.requestUpdate(true);
-                return;
+            if ((order != null) && orderStateService.isSynchronized(order)) {
+                Entity technology = order.getBelongsToField(TECHNOLOGY);
+
+                if ((technology != null) && isTechnologyAccepted(technology)) {
+                    viewCosts.setEnabled(true);
+                    viewCosts.requestUpdate(true);
+
+                    return;
+                }
             }
         }
+
         viewCosts.setEnabled(false);
         viewCosts.requestUpdate(true);
     }
 
-    private boolean isTechnologyAccepted(final Entity order) {
-        return TechnologyState.ACCEPTED.getStringValue().equals(order.getBelongsToField(TECHNOLOGY).getStringField(STATE));
+    private boolean isTechnologyAccepted(final Entity technology) {
+        return TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(STATE));
     }
+
 }

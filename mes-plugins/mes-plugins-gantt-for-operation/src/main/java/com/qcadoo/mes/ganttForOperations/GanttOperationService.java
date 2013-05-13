@@ -100,12 +100,20 @@ public class GanttOperationService {
 
     public boolean isRealizationTimeGenerated(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        if (form.getEntityId() == null) {
+        Long orderId = form.getEntityId();
+
+        if (orderId == null) {
             return false;
         }
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
+
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+
+        if (order == null) {
+            return false;
+        }
+
         Integer realizationTime = (Integer) order.getField("realizationTime");
+
         return !(realizationTime == null || realizationTime == 0);
     }
 
