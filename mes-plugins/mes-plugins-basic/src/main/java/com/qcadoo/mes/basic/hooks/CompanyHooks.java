@@ -62,28 +62,32 @@ public class CompanyHooks {
     }
 
     private boolean checkIfTaxIsValid(String tax) {
-        if (tax.length() == 13) {
-            tax = tax.replaceAll("-", "");
-        }
-
-        if (tax.length() != 10) {
-            return false;
-        }
-
-        int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7 };
-
-        String[] taxNumbers = tax.split("");
-
-        try {
-            int sum = 0;
-
-            for (int i = 0; i < weights.length; i++) {
-                sum += Integer.parseInt(taxNumbers[i + 1]) * weights[i];
+        if (tax == null) {
+            return true;
+        } else {
+            if (tax.length() == 13) {
+                tax = tax.replaceAll("-", "");
             }
 
-            return (sum % 11) == Integer.parseInt(taxNumbers[10]);
-        } catch (NumberFormatException e) {
-            return false;
+            if (tax.length() != 10) {
+                return false;
+            }
+
+            int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7 };
+
+            String[] taxNumbers = tax.split("");
+
+            try {
+                int sum = 0;
+
+                for (int i = 0; i < weights.length; i++) {
+                    sum += Integer.parseInt(taxNumbers[i + 1]) * weights[i];
+                }
+
+                return (sum % 11) == Integer.parseInt(taxNumbers[10]);
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
     }
 
