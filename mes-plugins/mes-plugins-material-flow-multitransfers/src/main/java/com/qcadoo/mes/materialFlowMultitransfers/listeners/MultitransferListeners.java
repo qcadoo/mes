@@ -70,6 +70,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Component
 public class MultitransferListeners {
 
+    private static final String L_ERROR_INVALID_NUMERIC_FORMAT = "qcadooView.validate.field.error.invalidNumericFormat";
+
     private static final String L_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
 
     private static final String L_FORM = "form";
@@ -231,7 +233,17 @@ public class MultitransferListeners {
             for (FormComponent formComponent : formComponents) {
                 Entity productQuantity = formComponent.getEntity();
 
-                BigDecimal quantity = productQuantity.getDecimalField(QUANTITY);
+                BigDecimal quantity = null;
+
+                try {
+                    quantity = productQuantity.getDecimalField(QUANTITY);
+                } catch (IllegalArgumentException e) {
+                    formComponent.findFieldComponentByName(QUANTITY).addMessage(L_ERROR_INVALID_NUMERIC_FORMAT,
+                            MessageType.FAILURE);
+
+                    isValid = false;
+                }
+
                 Entity product = productQuantity.getBelongsToField(PRODUCT);
 
                 if (product == null) {
