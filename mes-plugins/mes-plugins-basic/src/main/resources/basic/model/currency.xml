@@ -28,12 +28,12 @@
 	xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="currency" />
-		<string name="alphabeticCode" required="true" unique="true">
+		<string name="currency" copyable="false" />
+		<string name="alphabeticCode" required="true" unique="true" copyable="false">
 			<validatesLength is="3" />
 		</string>
-		<integer name="isoCode" unique="true" />
-		<integer name="minorUnit" required="true" />
+		<integer name="isoCode" unique="true" copyable="false" />
+		<integer name="minorUnit" required="true" copyable="false" />
 	</fields>
 	
 	<hooks />
