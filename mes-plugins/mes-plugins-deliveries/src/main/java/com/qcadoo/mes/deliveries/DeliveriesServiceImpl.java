@@ -57,7 +57,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -250,11 +249,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
 
-        BigDecimal pricePerUnit = BigDecimal.ZERO;
-        if (totalPrice != null && quantity != null && !quantity.equals(BigDecimal.ZERO)) {
-            pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+        if ((quantity != null) && (totalPrice != null) && (BigDecimal.ZERO.compareTo(quantity) != 0)) {
+            BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+
+            entity.setField("totalPrice", numberService.setScale(pricePerUnit));
+            entity.setField("pricePerUnit", numberService.setScale(pricePerUnit));
+        } else {
+            entity.setField("totalPrice", null);
+            entity.setField("pricePerUnit", null);
         }
-        entity.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
     }
 
     @Override
@@ -269,19 +272,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(currency);
             field.requestComponentUpdateState();
-        }
-    }
-
-    @Override
-    public BigDecimal getPricePerUnit(final DataDefinition entityProductDD, final Entity entity, final String entityName,
-            final Entity product) {
-        Entity offerProduct = entityProductDD.find().add(SearchRestrictions.belongsTo(entityName, entity))
-                .add(SearchRestrictions.belongsTo(PRODUCT, product)).setMaxResults(1).uniqueResult();
-
-        if (offerProduct == null) {
-            return null;
-        } else {
-            return offerProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT);
         }
     }
 
