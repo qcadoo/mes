@@ -249,14 +249,19 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal totalPrice = entity.getDecimalField(OrderedProductFields.TOTAL_PRICE);
         BigDecimal quantity = entity.getDecimalField(quantityFieldName);
 
-        if ((quantity != null) && (totalPrice != null) && (BigDecimal.ZERO.compareTo(quantity) != 0)) {
-            BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
-
-            entity.setField("totalPrice", numberService.setScale(pricePerUnit));
-            entity.setField("pricePerUnit", numberService.setScale(pricePerUnit));
-        } else {
-            entity.setField("totalPrice", null);
+        if (totalPrice == null) {
             entity.setField("pricePerUnit", null);
+            entity.setField("totalPrice", null);
+        } else {
+            if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+                entity.setField("pricePerUnit", null);
+                entity.setField("totalPrice", numberService.setScale(totalPrice));
+            } else {
+                BigDecimal pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
+
+                entity.setField("pricePerUnit", numberService.setScale(pricePerUnit));
+                entity.setField("totalPrice", numberService.setScale(totalPrice));
+            }
         }
     }
 
