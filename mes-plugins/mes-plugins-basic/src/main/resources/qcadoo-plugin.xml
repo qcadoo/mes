@@ -99,8 +99,10 @@
 
 		<menu:menu-item name="companies" category="basic"
 			view="companiesList" />
-		<menu:menu-item name="countries" category="basic"
+			
+		<menu:menu-item name="countries" category="administration"
 			view="countriesList" />
+			
 		<menu:menu-item name="staff" category="basic" view="staffsList" />
 		<menu:menu-item name="shifts" category="basic" view="shiftsList" />
 		<menu:menu-item name="products" category="basic" view="productsList" />
