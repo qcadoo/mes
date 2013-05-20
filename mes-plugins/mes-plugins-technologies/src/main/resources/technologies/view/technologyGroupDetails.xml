@@ -60,9 +60,28 @@
 					
 			</component>
 		</windowTab>
+		<windowTab name="technologies">
+			<component type="grid" name="technologies" reference="grid"  source="#{form}.technologies"> 
+				<option type="column" name="number" fields="number" link="true"
+					width="50" />
+				<option type="column" name="name" fields="name" link="true" />
+				<option type="column" name="productName" fields="product"
+					expression="#product['name']" />
+				<option type="column" name="state" fields="state" />
+				<option type="column" name="master" fields="master" />
+				<option type="column" name="technologyGroupNumber" fields="technologyGroup" expression="#technologyGroup['number']" />
+				<option type="order" column="number" direction="desc" />
+				<option type="searchable" value="name,number,productName,state" />
+				<option type="orderable" value="name,number,productName,state" />
+				<option type="correspondingView" value="technologies/technologyDetails" />
+				<option type="correspondingComponent" value="form" />
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+			</component>
+		</windowTab>
 	
 	</component>
 		<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyGroupNumber" />
+			<beforeRender class="com.qcadoo.mes.technologies.TechnologyService" method="generateTechnologyGroupNumber" />
 		</hooks>
 </view>

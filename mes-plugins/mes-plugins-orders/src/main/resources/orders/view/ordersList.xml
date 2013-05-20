@@ -55,24 +55,17 @@
 								copyButton.disable();
 							} else {
 								copyButton.enable();
-								var hasClosed = false;
-								var hasExternal = false;
-								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "04completed") {
-										hasClosed = true;
-										break;
-									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
-										hasExternal = true;
-										break;	
-									}
-								}
-								if (hasClosed) {
-									deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsDone)}");
-								} else if (hasExternal) {
-									deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
-								} else {
-									deleteButton.enable();
-								}
+								alert(selectedEntitiesArray[0].fields.state);
+									
+								 		
+								 		if (selectedEntitiesArray[0].fields.state == "01pending" || selectedEntitiesArray[0].fields.state == "05declined") {
+								 			deleteButton.enable();
+								 			copyButton.disable();;
+								 		}else{
+								 		deleteButton.disable();
+								 		} 
+								
+								
 							}
 						}
 					}

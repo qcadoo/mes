@@ -32,21 +32,6 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardFormTemplate" excludeItems="actions.copy" />
-			<group name="operationGroups">
-				<bigButton name="redirectToFilteredOperationGroupsList" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if(window.canClose()) {
-										#{form}.performEvent('redirectToFilteredOperationGroupsList', []);
-									}
-								}
-							});		
-						]]>
-					</script>
-				</bigButton>
-			</group>
 		</ribbon>
 	
 		<windowTab name="mainTab">
@@ -64,13 +49,23 @@
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
 				
-				<listener event="redirectToFilteredOperationGroupsList"
-					class="com.qcadoo.mes.technologies.listeners.OperationGroupDetailsListeners" method="redirectToFilteredOperationGroupsList" />
 			</component>
 		</windowTab>
-		
+		<windowTab name="operations">
+			<component type="grid" name="operations" reference="grid" source="#{form}.operations">
+			<option type="column" name="number" fields="number" link="true" />
+			<option type="column" name="name" fields="name" link="true" />
+			<option type="column" name="operationGroupNumber" fields="operationGroup" expression="#operationGroup['number']" link="true"/>
+			<option type="order" column="number" direction="asc" />
+			<option type="correspondingView" value="technologies/operationDetails" />
+			<option type="correspondingComponent" value="form" />
+			<option type="searchable" value="number, name" />
+			<option type="orderable" value="number, name" />
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+		</component>
+		</windowTab>
 	</component>
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.OperationGroupHooks" method="updateRibbonState" />
 	</hooks>
 </view>
