@@ -23,32 +23,18 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class TechnologyFields {
+public enum TechnologyType {
 
-    private TechnologyFields() {
+    WITH_PATTERN_TECHNOLOGY("01patternTechnology"), WITH_OWN_TECHNOLOGY("02ownTechnology");
 
+    private final String state;
+
+    private TechnologyType(final String state) {
+        this.state = state;
     }
 
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String PRODUCT = "product";
-
-    public static final String MASTER = "master";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String STATE = "state";
-
-    public static final String STATE_CHANGES = "stateChanges";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String PATTERN_TECHNOLOGY = "patternTechnology";
+    public String getStringValue() {
+        return state;
+    }
 
 }

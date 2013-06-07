@@ -59,3 +59,41 @@ CREATE TABLE deliveries_parameterdeliveryordercolumn
 
 -- end
 
+-- Table: orders_order
+-- changed: 20.05.2013
+
+ALTER TABLE orders_order ADD COLUMN  ordertype character varying(255) DEFAULT '01withPatternTechnology'::character varying;
+
+-- end
+
+
+-- Table: technologies_technology
+-- changed: 05.06.2013
+
+ALTER TABLE technologies_technology ADD COLUMN  technologytype character varying(255);
+
+-- end
+
+
+-- Table: technologies_technology
+-- changed: 05.06.2013
+
+ALTER TABLE technologies_technology ADD COLUMN  patterntechnology_id bigint;
+
+ALTER TABLE technologies_technology
+  ADD CONSTRAINT technology_technology_fkey FOREIGN KEY (patterntechnology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE;
+      
+-- end
+
+      
+-- Table: orders_order
+-- changed: 05.06.2013
+
+ALTER TABLE orders_order ADD COLUMN  copyoftechnology_id bigint;
+
+ALTER TABLE orders_order
+  ADD CONSTRAINT order_technology_fkey FOREIGN KEY (copyoftechnology_id)
+      REFERENCES technologies_technology (id) DEFERRABLE;
+    
+-- end

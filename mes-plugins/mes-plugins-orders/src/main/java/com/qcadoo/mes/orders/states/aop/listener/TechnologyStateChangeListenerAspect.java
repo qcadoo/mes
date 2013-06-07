@@ -39,6 +39,7 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -64,7 +65,11 @@ public class TechnologyStateChangeListenerAspect extends AbstractStateListenerAs
     @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterChangeToChecked(final StateChangeContext stateChangeContext, final int phase) {
-        stateChangeContext.addMessage("orders.order.technology.info.aboutChecked", StateMessageType.INFO, false);
+        Entity technology = stateChangeContext.getOwner();
+        if (technology.getBelongsToField("patternTechnology") == null) {
+            stateChangeContext.addMessage("orders.order.technology.info.aboutChecked", StateMessageType.INFO, false);
+        }
+
     }
 
 }

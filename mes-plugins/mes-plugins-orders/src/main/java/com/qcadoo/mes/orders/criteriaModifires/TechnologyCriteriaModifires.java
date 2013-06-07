@@ -21,34 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.orders.criteriaModifires;
 
-public final class TechnologyFields {
+import org.springframework.stereotype.Service;
 
-    private TechnologyFields() {
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
+@Service
+public class TechnologyCriteriaModifires {
+
+    public static final String PRODUCT_PARAMETER = "product";
+
+    public void showProductForTechnology(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        Long productId = filterValue.getLong(PRODUCT_PARAMETER);
+        scb.createAlias(TechnologyFields.PRODUCT, "c").add(SearchRestrictions.eq("c.id", productId));
+        scb.add(SearchRestrictions.isNull("technologyType"));
     }
-
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String PRODUCT = "product";
-
-    public static final String MASTER = "master";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String STATE = "state";
-
-    public static final String STATE_CHANGES = "stateChanges";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String PATTERN_TECHNOLOGY = "patternTechnology";
 
 }

@@ -21,34 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.orders.states;
 
-public final class TechnologyFields {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    private TechnologyFields() {
+import com.qcadoo.mes.states.service.StateChangeService;
+import com.qcadoo.mes.states.service.client.AbstractStateChangeViewClient;
+import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 
+@Service
+public class CopyOfTechnologyStateChangeVC extends AbstractStateChangeViewClient {
+
+    @Autowired
+    private TechnologyStateChangeAspect technologyStateChangeService;
+
+    @Override
+    protected StateChangeService getStateChangeService() {
+        return technologyStateChangeService;
     }
-
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String PRODUCT = "product";
-
-    public static final String MASTER = "master";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String STATE = "state";
-
-    public static final String STATE_CHANGES = "stateChanges";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String PATTERN_TECHNOLOGY = "patternTechnology";
-
 }

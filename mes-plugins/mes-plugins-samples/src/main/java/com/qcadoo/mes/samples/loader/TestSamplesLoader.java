@@ -214,11 +214,11 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         } else if (L_GENEALOGY_TABLES.equals(type)) {
             addGenealogyTables(values);
         } else if (L_QUALITY_CONTROLS.equals(type)) {
-            addQualityControl(values);
+            // addQualityControl(values);
         } else if (L_MATERIAL_REQUIREMENTS.equals(type)) {
             addMaterialRequirements(values);
         } else if (L_WORK_PLANS.equals(type)) {
-            addWorkPlan(values);
+            // addWorkPlan(values);
         } else if (L_PRODUCTION_RECORD.equals(type)) {
             addProductionRecord(values);
         } else if (RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT.equals(type)) {
@@ -747,6 +747,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
                     + order.getField("trackingRecordTreatment") + ", state=" + order.getField(L_ORDER_STATE) + "}");
         }
 
+        order.setField("orderType", "01withPatternTechnology");
         dataDefinitionService.get(ORDERS_PLUGIN_IDENTIFIER, ORDERS_MODEL_ORDER).save(order);
     }
 
