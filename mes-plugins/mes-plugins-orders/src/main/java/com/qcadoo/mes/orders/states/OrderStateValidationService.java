@@ -36,6 +36,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.client.StateChangeSamplesClient;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.Entity;
 
@@ -47,6 +50,9 @@ public class OrderStateValidationService {
 
     @Autowired
     private TechnologyTreeValidators technologyTreeValidators;
+
+    @Autowired
+    private StateChangeSamplesClient stateChangeSamplesClient;
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
@@ -93,6 +99,11 @@ public class OrderStateValidationService {
         copyOfTechnologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext, technology);
         copyOfTechnologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext, technology);
+        final StateChangeStatus status = stateChangeContext.getStatus();
+
+        if (!StateChangeStatus.FAILURE.equals(status)) {
+            stateChangeSamplesClient.changeState(technology, TechnologyState.ACCEPTED.getStringValue());
+        }
     }
 
 }

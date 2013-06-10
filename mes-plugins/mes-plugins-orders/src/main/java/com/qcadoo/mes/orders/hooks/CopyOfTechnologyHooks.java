@@ -80,7 +80,6 @@ public class CopyOfTechnologyHooks {
 
         String orderType = order.getStringField(OrderFields.ORDER_TYPE);
         fillFileds(view, copyOfTechnology);
-        disableForm(view, order);
         enableFileds(view, orderType);
         disableRibbonItem(view, orderType);
         setVisibleFileds(view, orderType);
@@ -88,6 +87,8 @@ public class CopyOfTechnologyHooks {
         technologyDetailsViewHooks.filterStateChangeHistory(view);
         technologyDetailsViewHooks.setTreeTabEditable(view);
         technologyDetailsListeners.setGridEditable(view);
+        disableForm(view, order);
+
     }
 
     private void disableForm(final ViewDefinitionState view, final Entity order) {
@@ -106,7 +107,7 @@ public class CopyOfTechnologyHooks {
         }
 
         copyOfTechnology.setFormEnabled(!disabled);
-        technologyDetailsViewHooks.setTreeTabEditable(view, disabled);
+        technologyDetailsViewHooks.setTreeTabEditable(view, !disabled);
 
     }
 

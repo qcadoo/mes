@@ -147,6 +147,7 @@
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setInitialState" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="clearOrSetSpecyfiedValueOrderFieldsOnCopy" />
 		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setProductQuantity" />
+		<onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setCopyOfTechnology" />
 		<onSave class="com.qcadoo.mes.orders.TechnologyServiceO"
 			method="createOrUpdateTechnology" />
 	</hooks>

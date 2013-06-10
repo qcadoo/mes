@@ -72,6 +72,8 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -79,6 +81,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 
 @Service
@@ -112,12 +115,15 @@ public class OrderHooks {
     @Autowired
     private OrderStateChangeReasonService orderStateChangeReasonService;
 
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
     public boolean onValidate(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
         return orderService.checkOrderDates(orderDD, order) && orderService.checkOrderPlannedQuantity(orderDD, order)
                 && productService.checkIfProductIsNotRemoved(orderDD, order)
-                && orderService.checkChosenTechnologyState(orderDD, order) && checkReasonOfStartDateCorrection(parameter, order)
-                && checkReasonOfEndDateCorrection(parameter, order) && checkEffectiveDeviation(parameter, order);
+                && checkReasonOfStartDateCorrection(parameter, order) && checkReasonOfEndDateCorrection(parameter, order)
+                && checkEffectiveDeviation(parameter, order);
     }
 
     public void setInitialState(final DataDefinition dataDefinition, final Entity order) {
@@ -434,5 +440,17 @@ public class OrderHooks {
         entity.setField(OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_START, null);
         entity.setField(COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY, null);
         return true;
+    }
+
+    public void setCopyOfTechnology(final DataDefinition dataDefinition, final Entity order) {
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+
+        Entity copyOfTechnology = technologyDD.create();
+        copyOfTechnology = technologyDD.copy(order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY).getId()).get(0);
+        copyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
+                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+        copyOfTechnology.getDataDefinition().save(copyOfTechnology);
+        order.setField(OrderFields.COPY_OF_TECHNOLOGY, copyOfTechnology);
     }
 }
