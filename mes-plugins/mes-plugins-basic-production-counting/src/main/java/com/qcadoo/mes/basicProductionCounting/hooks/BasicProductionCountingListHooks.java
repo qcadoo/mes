@@ -36,36 +36,87 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class BasicProductionCountingListHooks {
 
+    private static final String L_WINDOW = "window";
+
+    private static final String L_GRID = "grid";
+
+    private static final String L_PRODUCTION_COUNTING = "productionCounting";
+
+    private static final String L_SHOW_DETAILED_PRODUCTION_COUNTING_AND_PROGRESS = "showDetailedProductionCountingAndProgress";
+
+    private static final String L_SHOW_DETAILED_PRODUCTION_COUNTING = "showDetailedProductionCounting";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void setUneditableGridWhenOrderTypeRecordingIsBasic(final ViewDefinitionState view) {
-        FormComponent order = (FormComponent) view.getComponentByReference(ORDER);
+    public void updateRibbonState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(ORDER);
 
-        if (order.getEntityId() == null) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCTION_COUNTING);
+
+        RibbonActionItem showDetailedProductionCountingAndProgress = (RibbonActionItem) technologies
+                .getItemByName(L_SHOW_DETAILED_PRODUCTION_COUNTING_AND_PROGRESS);
+        RibbonActionItem showDetailedProductionCounting = (RibbonActionItem) technologies
+                .getItemByName(L_SHOW_DETAILED_PRODUCTION_COUNTING);
+
+        Long orderId = orderForm.getEntityId();
+        if (orderId == null) {
             return;
         }
 
-        Entity orderFromDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                order.getEntityId());
+        Entity order = getOrderFromDB(orderId);
 
-        if (orderFromDB == null) {
+        boolean isSaved = (order != null);
+        boolean isForEach = false;
+
+        if ("03forEach".equals(order.getStringField("typeOfProductionRecording"))) {
+            isForEach = true;
+        }
+
+        updateButtonState(showDetailedProductionCountingAndProgress, isSaved && isForEach);
+        updateButtonState(showDetailedProductionCounting, isSaved && !isForEach);
+    }
+
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
+    }
+
+    public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(ORDER);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        Long orderId = orderForm.getEntityId();
+        if (orderId == null) {
             return;
         }
 
-        String orderState = orderFromDB.getStringField(STATE);
-        String productionRecordType = orderFromDB.getStringField("typeOfProductionRecording");
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        Entity order = getOrderFromDB(orderId);
 
-        if (("01basic".equals(productionRecordType)) && (OrderStateStringValues.IN_PROGRESS.equals(orderState))) {
+        if (order == null) {
+            return;
+        }
+
+        String orderState = order.getStringField(STATE);
+
+        if (OrderStateStringValues.ACCEPTED.equals(orderState) || OrderStateStringValues.IN_PROGRESS.equals(orderState)
+                || OrderStateStringValues.INTERRUPTED.equals(orderState)) {
             grid.setEditable(true);
         } else {
             grid.setEditable(false);
         }
+    }
+
+    private Entity getOrderFromDB(Long orderId) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
     }
 
 }

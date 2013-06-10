@@ -49,8 +49,8 @@ public interface ProductQuantitiesService {
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      *         products that are the same, but are related to different operations are here as different entries.
      */
-    Map<Entity, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
-            Map<Entity, BigDecimal> operationRuns);
+    Map<Long, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
+            Map<Long, BigDecimal> operationRuns);
 
     /**
      * 
@@ -60,7 +60,7 @@ public interface ProductQuantitiesService {
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      *         products that are the same, but are related to different operations are here as different entries.
      */
-    Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders);
+    Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders);
 
     /**
      * 
@@ -74,7 +74,7 @@ public interface ProductQuantitiesService {
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      *         products that are the same, but are related to different operations are here as different entries.
      */
-    Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders, Map<Entity, BigDecimal> operationRuns);
+    Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders, Map<Long, BigDecimal> operationRuns);
 
     /**
      * 
@@ -84,7 +84,7 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders);
+    Map<Long, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders);
 
     /**
      * 
@@ -99,7 +99,7 @@ public interface ProductQuantitiesService {
      * 
      * @return Map with product as the key and its quantity as the value. This time keys are products, so they are aggregated.
      */
-    Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
+    Map<Long, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
             final MrpAlgorithm mrpAlgorithm);
 
     /**
@@ -113,7 +113,24 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm);
+    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm);
+
+    /**
+     * 
+     * @param orders
+     *            Given list of orders
+     * 
+     * @param mrpAlgorithm
+     *            MRP Algorithm
+     * 
+     * @param onTheFly
+     *            onTheFly
+     * 
+     * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
+     *         aggregated)
+     */
+    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
+            final boolean onTheFly);
 
     /**
      * 
@@ -130,8 +147,8 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, MrpAlgorithm mrpAlgorithm,
-            Map<Entity, BigDecimal> operationRuns);
+    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, MrpAlgorithm mrpAlgorithm,
+            Map<Long, BigDecimal> operationRuns);
 
     /**
      * 
@@ -144,7 +161,7 @@ public interface ProductQuantitiesService {
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      *         aggregated)
      */
-    Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final MrpAlgorithm mrpAlgorithm);
+    Map<Long, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components, final MrpAlgorithm mrpAlgorithm);
 
     /**
      * 
@@ -162,8 +179,8 @@ public interface ProductQuantitiesService {
      *         products that are the same, but are related to different operations are here as different entries.
      * 
      */
-    Map<Entity, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents);
+    Map<Long, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders, final Map<Long, BigDecimal> operationRuns,
+            final Set<Long> nonComponents);
 
     /**
      * 
@@ -173,8 +190,8 @@ public interface ProductQuantitiesService {
      * @param productQuantities
      *            Product Quantities
      */
-    void addProductQuantitiesToList(final Entry<Entity, BigDecimal> productComponentQuantity,
-            final Map<Entity, BigDecimal> productQuantities);
+    void addProductQuantitiesToList(final Entry<Long, BigDecimal> productComponentQuantity,
+            final Map<Long, BigDecimal> productQuantities);
 
     /**
      * 
@@ -185,10 +202,60 @@ public interface ProductQuantitiesService {
      */
     Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
 
-    Map<Entity, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
-            final BigDecimal givenQuantity, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents);
+    /**
+     * 
+     * @param technology
+     * @param givenQuantity
+     * @param operationRuns
+     * @param nonComponents
+     * @return
+     */
+    Map<Long, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology, final BigDecimal givenQuantity,
+            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents);
 
-    Map<Entity, BigDecimal> groupProductComponentWithQuantities(
-            final Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders);
+    /**
+     * 
+     * @param productComponentWithQuantitiesForOrders
+     * @return
+     */
+    Map<Long, BigDecimal> groupProductComponentWithQuantities(
+            final Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders);
+
+    /**
+     * Gets technology operation component
+     * 
+     * @param operationProductComponentId
+     * 
+     * @return operation product component
+     */
+    Entity getOperationProductComponent(final Long operationProductComponentId);
+
+    /**
+     * Gets technology operation component
+     * 
+     * @param technologyOperationComponentId
+     * 
+     * @return technology operation component
+     */
+    Entity getTechnologyOperationComponent(final Long technologyOperationComponentId);
+
+    /**
+     * Gets product
+     * 
+     * @param productId
+     * 
+     * @return product
+     */
+    Entity getProduct(final Long productId);
+
+    /**
+     * Covers operations runs from product quantities
+     * 
+     * @param operationRunsFromProductionQuantities
+     * 
+     * @return operations runs
+     */
+    Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
+            final Map<Long, BigDecimal> operationRunsFromProductionQuantities);
 
 }

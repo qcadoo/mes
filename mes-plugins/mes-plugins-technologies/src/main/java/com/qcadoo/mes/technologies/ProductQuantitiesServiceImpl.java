@@ -49,7 +49,10 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
@@ -60,47 +63,64 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     @Override
-    public Map<Entity, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
-            final Map<Entity, BigDecimal> operationRuns) {
-        Set<Entity> nonComponents = Sets.newHashSet();
+    public Map<Long, BigDecimal> getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity,
+            final Map<Long, BigDecimal> operationRuns) {
+        Set<Long> nonComponents = Sets.newHashSet();
 
         return getProductComponentWithQuantitiesForTechnology(technology, givenQuantity, operationRuns, nonComponents);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders) {
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+    public Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders) {
+        return getProductComponentQuantities(orders, false);
+    }
 
-        return getProductComponentQuantities(orders, operationRuns);
+    private Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders, final boolean onTheFly) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
+        return getProductComponentQuantities(orders, operationRuns, false);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getProductComponentQuantities(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns) {
-        Set<Entity> nonComponents = Sets.newHashSet();
+    public Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns) {
+        return getProductComponentQuantities(orders, operationRuns, false);
+    }
 
-        return getProductComponentWithQuantitiesForOrders(orders, operationRuns, nonComponents);
+    private Map<Long, BigDecimal> getProductComponentQuantities(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns, final boolean onTheFly) {
+        Set<Long> nonComponents = Sets.newHashSet();
+
+        return getProductComponentWithQuantitiesForOrders(orders, operationRuns, nonComponents, onTheFly);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders) {
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
-        Set<Entity> nonComponents = Sets.newHashSet();
+    public Map<Long, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders) {
+        return getProductComponentQuantitiesWithoutNonComponents(orders, false);
+    }
 
-        Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(orders,
-                operationRuns, nonComponents);
+    private Map<Long, BigDecimal> getProductComponentQuantitiesWithoutNonComponents(final List<Entity> orders,
+            final boolean onTheFly) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<Long> nonComponents = Sets.newHashSet();
+
+        Map<Long, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(orders, operationRuns,
+                nonComponents, onTheFly);
 
         return getProductComponentWithQuantitiesWithoutNonComponents(productComponentWithQuantities, nonComponents);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
+    public Map<Long, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
             final MrpAlgorithm mrpAlgorithm) {
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
-        Set<Entity> nonComponents = Sets.newHashSet();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<Long> nonComponents = Sets.newHashSet();
 
-        Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(technology,
+        Map<Long, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(technology,
                 givenQuantity, operationRuns, nonComponents);
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
@@ -108,41 +128,57 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm) {
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
-
-        return getNeededProductQuantities(orders, mrpAlgorithm, operationRuns);
+    public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm) {
+        return getNeededProductQuantities(orders, mrpAlgorithm, false);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
-            final Map<Entity, BigDecimal> operationRuns) {
-        Set<Entity> nonComponents = Sets.newHashSet();
+    public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
+            final boolean onTheFly) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(orders,
-                operationRuns, nonComponents);
+        return getNeededProductQuantities(orders, mrpAlgorithm, operationRuns, onTheFly);
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
+            final Map<Long, BigDecimal> operationRuns) {
+        return getNeededProductQuantities(orders, mrpAlgorithm, operationRuns, false);
+    }
+
+    private Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
+            final Map<Long, BigDecimal> operationRuns, final boolean onTheFly) {
+        Set<Long> nonComponents = Sets.newHashSet();
+
+        Map<Long, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(orders, operationRuns,
+                nonComponents, onTheFly);
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                 MODEL_OPERATION_PRODUCT_IN_COMPONENT);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
+    public Map<Long, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
             final MrpAlgorithm mrpAlgorithm) {
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
-        Set<Entity> nonComponents = Sets.newHashSet();
+        return getNeededProductQuantitiesForComponents(components, mrpAlgorithm, false);
+    }
 
-        Map<Entity, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(
-                getOrdersFromComponents(components), operationRuns, nonComponents);
+    private Map<Long, BigDecimal> getNeededProductQuantitiesForComponents(final List<Entity> components,
+            final MrpAlgorithm mrpAlgorithm, final boolean onTheFly) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<Long> nonComponents = Sets.newHashSet();
+
+        Map<Long, BigDecimal> productComponentWithQuantities = getProductComponentWithQuantitiesForOrders(
+                getOrdersFromComponents(components), operationRuns, nonComponents, onTheFly);
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                 MODEL_OPERATION_PRODUCT_IN_COMPONENT);
     }
 
     @Override
-    public Map<Entity, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
-            final BigDecimal givenQuantity, final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
-        Map<Entity, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
+    public Map<Long, BigDecimal> getProductComponentWithQuantitiesForTechnology(final Entity technology,
+            final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents) {
+        Map<Long, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
 
         EntityTree operationComponents = technology.getTreeField(OPERATION_COMPONENTS);
         Entity root = operationComponents.getRoot();
@@ -154,9 +190,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return productComponentWithQuantities;
     }
 
-    private Map<Entity, BigDecimal> getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
-        Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
+    private Map<Long, BigDecimal> getProductComponentWithQuantitiesForOrders(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents, final boolean onTheFly) {
+        Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
 
         for (Entity order : orders) {
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
@@ -175,9 +211,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public Map<Entity, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders,
-            final Map<Entity, BigDecimal> operationRuns, final Set<Entity> nonComponents) {
-        Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
+    public Map<Long, BigDecimal> getProductComponentWithQuantities(final List<Entity> orders,
+            final Map<Long, BigDecimal> operationRuns, final Set<Long> nonComponents) {
+        Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders = Maps.newHashMap();
 
         for (Entity order : orders) {
             BigDecimal plannedQuantity = (BigDecimal) order.getField("plannedQuantity");
@@ -196,26 +232,29 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public Map<Entity, BigDecimal> groupProductComponentWithQuantities(
-            final Map<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrders) {
-        Map<Entity, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
+    public Map<Long, BigDecimal> groupProductComponentWithQuantities(
+            final Map<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrders) {
+        Map<Long, BigDecimal> productComponentWithQuantities = Maps.newHashMap();
 
-        for (Entry<Long, Map<Entity, BigDecimal>> productComponentWithQuantitiesForOrder : productComponentWithQuantitiesForOrders
+        for (Entry<Long, Map<Long, BigDecimal>> productComponentWithQuantitiesForOrder : productComponentWithQuantitiesForOrders
                 .entrySet()) {
 
-            for (Entry<Entity, BigDecimal> productComponentWithQuantity : productComponentWithQuantitiesForOrder.getValue()
+            for (Entry<Long, BigDecimal> productComponentWithQuantity : productComponentWithQuantitiesForOrder.getValue()
                     .entrySet()) {
-                Entity operationProductComponent = productComponentWithQuantity.getKey();
-                BigDecimal quantity = productComponentWithQuantity.getValue();
+                Entity operationProductComponent = getOperationProductComponent(productComponentWithQuantity.getKey());
 
-                if (productComponentWithQuantities.containsKey(operationProductComponent)) {
-                    BigDecimal addedQuantity = productComponentWithQuantities.get(operationProductComponent);
+                if (operationProductComponent != null) {
+                    BigDecimal quantity = productComponentWithQuantity.getValue();
 
-                    quantity = quantity.add(addedQuantity, numberService.getMathContext());
+                    if (productComponentWithQuantities.containsKey(operationProductComponent.getId())) {
+                        BigDecimal addedQuantity = productComponentWithQuantities.get(operationProductComponent.getId());
 
-                    productComponentWithQuantities.put(operationProductComponent, quantity);
-                } else {
-                    productComponentWithQuantities.put(operationProductComponent, quantity);
+                        quantity = quantity.add(addedQuantity, numberService.getMathContext());
+
+                        productComponentWithQuantities.put(operationProductComponent.getId(), quantity);
+                    } else {
+                        productComponentWithQuantities.put(operationProductComponent.getId(), quantity);
+                    }
                 }
             }
         }
@@ -224,7 +263,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private void preloadProductQuantitiesAndOperationRuns(final EntityTree operationComponents,
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Map<Entity, BigDecimal> operationRuns) {
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Map<Long, BigDecimal> operationRuns) {
         for (Entity operationComponent : operationComponents) {
             if ("referenceTechnology".equals(operationComponent.getStringField(ENTITY_TYPE))) {
                 Entity referenceTechnology = operationComponent.getBelongsToField(REFERENCETECHNOLOGY);
@@ -241,23 +280,23 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             preloadOperationProductComponentQuantity(operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS),
                     productComponentWithQuantities);
 
-            operationRuns.put(operationComponent, BigDecimal.ONE);
+            operationRuns.put(operationComponent.getId(), BigDecimal.ONE);
         }
     }
 
     private void preloadOperationProductComponentQuantity(final List<Entity> operationProductComponents,
-            final Map<Entity, BigDecimal> productComponentWithQuantities) {
+            final Map<Long, BigDecimal> productComponentWithQuantities) {
         for (Entity operationProductComponent : operationProductComponents) {
             BigDecimal neededQuantity = operationProductComponent.getDecimalField(QUANTITY);
 
-            productComponentWithQuantities.put(operationProductComponent, neededQuantity);
+            productComponentWithQuantities.put(operationProductComponent.getId(), neededQuantity);
         }
     }
 
     private void traverseProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal givenQuantity,
             final Entity operationComponent, final Entity previousOperationComponent,
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents,
-            final Map<Entity, BigDecimal> operationRuns) {
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents,
+            final Map<Long, BigDecimal> operationRuns) {
         if ("referenceTechnology".equals(operationComponent.getStringField(ENTITY_TYPE))) {
             Entity referenceTechnology = operationComponent.getBelongsToField(REFERENCETECHNOLOGY);
             EntityTree referenceOperationComponent = referenceTechnology.getTreeField(OPERATION_COMPONENTS);
@@ -273,7 +312,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
             for (Entity operationProductOutComponent : operationComponent.getHasManyField(OPERATION_PRODUCT_OUT_COMPONENTS)) {
                 if (operationProductOutComponent.getBelongsToField(PRODUCT).getId().equals(technologyProduct.getId())) {
-                    BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent);
+                    BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent.getId());
 
                     multiplyProductQuantitiesAndAddOperationRuns(operationComponent, givenQuantity, outQuantity,
                             productComponentWithQuantities, operationRuns);
@@ -290,8 +329,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                             .equals(operationProductInComponent.getBelongsToField(PRODUCT).getId())) {
                         isntComponent = true;
 
-                        BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent);
-                        BigDecimal inQuantity = productComponentWithQuantities.get(operationProductInComponent);
+                        BigDecimal outQuantity = productComponentWithQuantities.get(operationProductOutComponent.getId());
+                        BigDecimal inQuantity = productComponentWithQuantities.get(operationProductInComponent.getId());
 
                         multiplyProductQuantitiesAndAddOperationRuns(operationComponent, inQuantity, outQuantity,
                                 productComponentWithQuantities, operationRuns);
@@ -301,7 +340,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 }
 
                 if (isntComponent) {
-                    nonComponents.add(operationProductInComponent);
+                    nonComponents.add(operationProductInComponent.getId());
                 }
             }
         }
@@ -313,8 +352,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private void multiplyProductQuantitiesAndAddOperationRuns(final Entity operationComponent, final BigDecimal needed,
-            final BigDecimal actual, final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Map<Entity, BigDecimal> operationRuns) {
+            final BigDecimal actual, final Map<Long, BigDecimal> productComponentWithQuantities,
+            final Map<Long, BigDecimal> operationRuns) {
         BigDecimal multiplier = needed.divide(actual, numberService.getMathContext());
 
         if (!operationComponent.getBooleanField(ARE_PRODUCT_QUANTITIES_DIVISIBLE)) {
@@ -328,7 +367,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             runs = multiplier.setScale(0, RoundingMode.CEILING);
         }
 
-        operationRuns.put(operationComponent, runs);
+        operationRuns.put(operationComponent.getId(), runs);
 
         multiplyOperationProductComponentQuantities(operationComponent.getHasManyField(OPERATION_PRODUCT_IN_COMPONENTS),
                 multiplier, productComponentWithQuantities);
@@ -337,12 +376,12 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private void multiplyOperationProductComponentQuantities(final List<Entity> operationProductComponents,
-            final BigDecimal multiplier, final Map<Entity, BigDecimal> productComponentWithQuantities) {
+            final BigDecimal multiplier, final Map<Long, BigDecimal> productComponentWithQuantities) {
         for (Entity operationProductComponent : operationProductComponents) {
-            BigDecimal addedQuantity = productComponentWithQuantities.get(operationProductComponent);
+            BigDecimal addedQuantity = productComponentWithQuantities.get(operationProductComponent.getId());
             BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
-            productComponentWithQuantities.put(operationProductComponent, quantity);
+            productComponentWithQuantities.put(operationProductComponent.getId(), quantity);
         }
     }
 
@@ -363,8 +402,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return orders;
     }
 
-    private Map<Entity, BigDecimal> getProductWithQuantities(final Map<Entity, BigDecimal> productComponentWithQuantities,
-            final Set<Entity> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
+    private Map<Long, BigDecimal> getProductWithQuantities(final Map<Long, BigDecimal> productComponentWithQuantities,
+            final Set<Long> nonComponents, final MrpAlgorithm mrpAlgorithm, final String operationProductComponentModelName) {
         if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
             return getProductWithoutSubcontractingProduct(productComponentWithQuantities, nonComponents, false,
                     operationProductComponentModelName);
@@ -374,18 +413,22 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    private Map<Entity, BigDecimal> getProductWithoutSubcontractingProduct(
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents,
+    private Map<Long, BigDecimal> getProductWithoutSubcontractingProduct(
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents,
             final boolean onlyComponents, final String operationProductComponentModelName) {
-        Map<Entity, BigDecimal> productWithQuantities = Maps.newHashMap();
+        Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
-        for (Entry<Entity, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
-            if (operationProductComponentModelName.equals(productComponentWithQuantity.getKey().getDataDefinition().getName())) {
-                if (onlyComponents && nonComponents.contains(productComponentWithQuantity.getKey())) {
-                    continue;
+        for (Entry<Long, BigDecimal> productComponentWithQuantity : productComponentWithQuantities.entrySet()) {
+            Entity operationProductComponent = getOperationProductComponent(productComponentWithQuantity.getKey());
+
+            if (operationProductComponent != null) {
+                if (operationProductComponentModelName.equals(operationProductComponent.getDataDefinition().getName())) {
+                    if (onlyComponents && nonComponents.contains(productComponentWithQuantity.getKey())) {
+                        continue;
+                    }
+
+                    addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
                 }
-
-                addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
             }
         }
 
@@ -393,22 +436,26 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public void addProductQuantitiesToList(final Entry<Entity, BigDecimal> productComponentWithQuantity,
-            final Map<Entity, BigDecimal> productWithQuantities) {
-        Entity product = productComponentWithQuantity.getKey().getBelongsToField(PRODUCT);
-        BigDecimal newQuantity = productComponentWithQuantity.getValue();
+    public void addProductQuantitiesToList(final Entry<Long, BigDecimal> productComponentWithQuantity,
+            final Map<Long, BigDecimal> productWithQuantities) {
+        Entity operationProductComponent = getOperationProductComponent(productComponentWithQuantity.getKey());
 
-        BigDecimal oldQuantity = productWithQuantities.get(product);
-        if (oldQuantity != null) {
-            newQuantity = newQuantity.add(oldQuantity);
+        if (operationProductComponent != null) {
+            Entity product = operationProductComponent.getBelongsToField(PRODUCT);
+            BigDecimal newQuantity = productComponentWithQuantity.getValue();
+
+            BigDecimal oldQuantity = productWithQuantities.get(product.getId());
+            if (oldQuantity != null) {
+                newQuantity = newQuantity.add(oldQuantity);
+            }
+
+            productWithQuantities.put(product.getId(), newQuantity);
         }
-
-        productWithQuantities.put(product, newQuantity);
     }
 
-    private Map<Entity, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents) {
-        for (Entity nonComponent : nonComponents) {
+    private Map<Long, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents) {
+        for (Long nonComponent : nonComponents) {
             productComponentWithQuantities.remove(nonComponent);
         }
 
@@ -452,6 +499,48 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
 
         return false;
+    }
+
+    @Override
+    public Entity getOperationProductComponent(final Long operationProductComponentId) {
+        Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).get(operationProductComponentId);
+
+        Entity operationProductOutComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).get(operationProductComponentId);
+
+        if (operationProductInComponent != null) {
+            return operationProductInComponent;
+        } else if (operationProductOutComponent != null) {
+            return operationProductOutComponent;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Entity getTechnologyOperationComponent(final Long technologyOperationComponentId) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
+    }
+
+    @Override
+    public Entity getProduct(final Long productId) {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+    }
+
+    @Override
+    public Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
+            final Map<Long, BigDecimal> operationRunsFromProductionQuantities) {
+        final Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+
+        for (Entry<Long, BigDecimal> operationRunsFromProductionQuantity : operationRunsFromProductionQuantities.entrySet()) {
+            Entity technologyOperatonComponent = getTechnologyOperationComponent(operationRunsFromProductionQuantity.getKey());
+
+            operationRuns.put(technologyOperatonComponent, operationRunsFromProductionQuantity.getValue());
+        }
+
+        return operationRuns;
     }
 
 }

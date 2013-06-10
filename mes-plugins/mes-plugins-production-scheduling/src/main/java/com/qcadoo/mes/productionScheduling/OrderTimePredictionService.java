@@ -34,7 +34,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -172,8 +172,13 @@ public class OrderTimePredictionService {
         Boolean includeAdditionalTime = "1".equals(viewDefinitionState.getComponentByReference("includeAdditionalTime")
                 .getFieldValue());
 
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
+        // TODO LUPO fix problem with operationRuns
+        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+
+        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRunsFromProductionQuantities);
+
+        Map<Entity, BigDecimal> operationRuns = productQuantitiesService
+                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
                 includeAdditionalTime, productionLine, true);
@@ -336,8 +341,14 @@ public class OrderTimePredictionService {
 
         Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
                 ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
+
+        // TODO LUPO fix problem with operationRuns
+        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+
+        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRunsFromProductionQuantities);
+
+        Map<Entity, BigDecimal> operationRuns = productQuantitiesService
+                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
 
         boolean saved = true;
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,

@@ -1007,23 +1007,32 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
     private void addRecordOperationProductInComponent(final Map<String, String> values) {
         DataDefinition productInComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTINCOMPONENT_MODEL_RECORDOPERATIONPRODUCTINCOMPONENT);
+
         Entity productInComponent = productInComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
-                .uniqueResult();
-        productInComponent.setField("usedQuantity", values.get("usedquantity"));
-        productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        productInComponentDD.save(productInComponent);
+                .setMaxResults(1).uniqueResult();
+
+        if (productInComponent != null) {
+            productInComponent.setField("usedQuantity", values.get("usedquantity"));
+            productInComponent.setField(L_BALANCE, values.get(L_BALANCE));
+            productInComponentDD.save(productInComponent);
+        }
     }
 
-    private Entity addRecordOperationProductOutComponent(final Map<String, String> values) {
+    private void addRecordOperationProductOutComponent(final Map<String, String> values) {
         DataDefinition productOutComponentDD = dataDefinitionService.get(SamplesConstants.PRODUCTION_COUNTING_PLUGIN_IDENTIFIER,
                 SamplesConstants.RECORDOPERATIONPRODUCTOUTCOMPONENT_MODEL_RECORDOPERATIONPRODUCTOUTCOMPONENT);
+
         Entity productOutComponent = productOutComponentDD.find()
                 .add(SearchRestrictions.belongsTo(BASIC_MODEL_PRODUCT, getProductByNumber(values.get(BASIC_MODEL_PRODUCT))))
-                .uniqueResult();
-        productOutComponent.setField("usedQuantity", values.get("usedquantity"));
-        productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
-        return productOutComponentDD.save(productOutComponent);
+                .setMaxResults(1).uniqueResult();
+
+        if (productOutComponent != null) {
+            productOutComponent.setField("usedQuantity", values.get("usedquantity"));
+            productOutComponent.setField(L_BALANCE, values.get(L_BALANCE));
+
+            productOutComponentDD.save(productOutComponent);
+        }
     }
 
     private void addOperationComponent(final Map<String, String> values) {

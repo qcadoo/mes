@@ -203,13 +203,13 @@ public class ProductionRecordService {
             recordOperationProductsFieldName = RECORD_OPERATION_PRODUCT_OUT_COMPONENTS;
         }
 
-        Map<Entity, BigDecimal> productComponentQuantities = productQuantitiesService
-                .getProductComponentQuantities(asList(order));
+        Map<Long, BigDecimal> productComponentQuantities = productQuantitiesService.getProductComponentQuantities(asList(order));
 
         Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
-        for (Entry<Entity, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
-            Entity operationProductComponent = productComponentQuantity.getKey();
+        for (Entry<Long, BigDecimal> productComponentQuantity : productComponentQuantities.entrySet()) {
+            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(productComponentQuantity
+                    .getKey());
 
             if (technologyInstanceOperationComponent != null) {
                 Entity operation = technologyInstanceOperationComponent.getBelongsToField(TECHNOLOGY_OPERATION_COMPONENT);

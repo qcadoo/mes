@@ -189,9 +189,16 @@
 				class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
 				method="setParameterWithDefaultProductionCountingValues" />
 		</model:model-hook>
+		
 		<model:model-hook model="order" plugin="orders">
 			<model:onCreate class="com.qcadoo.mes.productionCounting.hooks.OrderHookPC"
 				method="setOrderWithDefaultProductionCountingValues" />
+		</model:model-hook>
+		
+		<model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
+			<model:onView
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
+				method="onView" />
 		</model:model-hook>
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />

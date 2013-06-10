@@ -100,11 +100,11 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                quantity, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
+                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
-        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantity.getKey();
+        for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
             BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
                     calculateMaterialCostsMode);
             results.put(product, thisProductsCost);
@@ -114,12 +114,12 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
-        Map<Entity, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
-                quantity, COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
+                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
 
-        for (Entry<Entity, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantity.getKey();
+        for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
             product = product.getDataDefinition().get(product.getId());
 
             Entity technologyInstOperProductInComp = dataDefinitionService

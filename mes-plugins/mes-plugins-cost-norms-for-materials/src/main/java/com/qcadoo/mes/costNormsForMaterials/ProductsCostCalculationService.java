@@ -42,4 +42,5 @@ public interface ProductsCostCalculationService {
             final String calculateMaterialCostsMode, final Entity order);
 
     Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts);
+
 }

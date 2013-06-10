@@ -77,7 +77,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -542,9 +541,16 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         final boolean includeTpz = productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ);
         final boolean includeAdditionalTime = productionBalance.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
         final Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        final Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+
+        // TODO LUPO fix problem with operationRuns
+        final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+
         productQuantitiesService.getNeededProductQuantities(Lists.newArrayList(order), MrpAlgorithm.ONLY_COMPONENTS,
-                operationRuns);
+                operationRunsFromProductionQuantities);
+
+        final Map<Entity, BigDecimal> operationRuns = productQuantitiesService
+                .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
+
         final OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns,
                 includeTpz, includeAdditionalTime, productionLine, false);
 
@@ -614,9 +620,9 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         List<Entity> operationPieceworkComponents = Lists.newArrayList();
 
-        Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        Map<Entity, BigDecimal> productComponents = productQuantitiesService.getProductComponentQuantities(
+        Map<Long, BigDecimal> productComponents = productQuantitiesService.getProductComponentQuantities(
                 asList(productionBalance.getBelongsToField(ORDER)), operationRuns);
 
         if (!productComponents.isEmpty()) {
@@ -640,8 +646,8 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
                     Entity technologyOperationComponent = getTechnologyOperationComponentFromDB(technologyOperationComponentId);
 
-                    if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent)) {
-                        BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent);
+                    if ((technologyOperationComponent != null) && operationRuns.containsKey(technologyOperationComponent.getId())) {
+                        BigDecimal plannedCycles = operationRuns.get(technologyOperationComponent.getId());
 
                         BigDecimal cycles = productionRecordWithRegisteredTimes.getDecimalField(EXECUTED_OPERATION_CYCLES);
 
@@ -711,10 +717,15 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
             plannedTimes.put(L_PLANNED_MACHINE_TIME, 0);
             plannedTimes.put(L_PLANNED_LABOR_TIME, 0);
-            Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+
+            // TODO LUPO fix problem with operationRuns
+            final Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
             productQuantitiesService.getProductComponentQuantities(order.getBelongsToField(OrderFields.TECHNOLOGY),
-                    order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRuns);
+                    order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRunsFromProductionQuantities);
+
+            final Map<Entity, BigDecimal> operationRuns = productQuantitiesService
+                    .convertOperationsRunsFromProductQuantities(operationRunsFromProductionQuantities);
 
             Map<Entity, OperationWorkTime> operationLaborAndMachineWorkTime = operationWorkTimeService
                     .estimateOperationsWorkTimeForOrder(order, operationRuns, productionBalance.getBooleanField(INCLUDE_TPZ),

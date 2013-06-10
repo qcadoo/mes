@@ -46,13 +46,11 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialRequirements.internal.util.EntityOrderNumberComparator;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -141,21 +139,27 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         List<Entity> orders = entity.getManyToManyField(ORDERS_FIELD);
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity.getStringField(MRP_ALGORITHM));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, algorithm);
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
+                true);
 
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
+        // TODO LUPO fix comparator
+        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
+
         PdfPTable table = pdfHelper.createTableWithHeader(4, productHeader, true, defaultOrderHeaderColumnWidth);
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
-            table.addCell(new Phrase(entry.getKey().getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            table.addCell(new Phrase(entry.getKey().getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
-            Object unit = entry.getKey().getField(UNIT_FIELD);
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
+            table.addCell(new Phrase(product.getField(NUMBER_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            table.addCell(new Phrase(product.getField(NAME_FIELD).toString(), FontUtils.getDejavuRegular9Dark()));
+            Object unit = product.getField(UNIT_FIELD);
             if (unit == null) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular9Dark()));
             } else {
                 table.addCell(new Phrase(unit.toString(), FontUtils.getDejavuRegular9Dark()));
             }
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(entry.getValue()), FontUtils.getDejavuBold9Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold9Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         }
         document.add(table);

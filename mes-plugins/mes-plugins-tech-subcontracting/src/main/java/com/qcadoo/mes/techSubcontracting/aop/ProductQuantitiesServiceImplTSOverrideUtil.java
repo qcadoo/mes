@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginStateResolver;
@@ -47,15 +48,20 @@ public class ProductQuantitiesServiceImplTSOverrideUtil {
     @Autowired
     private PluginStateResolver pluginStateResolver;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     public boolean shouldOverride() {
         return pluginStateResolver.isEnabled(TechSubcontractingConstants.PLUGIN_IDENTIFIER);
     }
 
-    public Map<Entity, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
-            final Map<Entity, BigDecimal> productComponentWithQuantities, final Set<Entity> nonComponents) {
-        for (Entity nonComponent : nonComponents) {
-            Entity product = nonComponent.getBelongsToField(PRODUCT);
-            Entity technologyOperationComponent = nonComponent.getBelongsToField(OPERATION_COMPONENT);
+    public Map<Long, BigDecimal> getProductComponentWithQuantitiesWithoutNonComponents(
+            final Map<Long, BigDecimal> productComponentWithQuantities, final Set<Long> nonComponents) {
+        for (Long nonComponent : nonComponents) {
+            Entity operationProductComponent = productQuantitiesService.getOperationProductComponent(nonComponent);
+
+            Entity product = operationProductComponent.getBelongsToField(PRODUCT);
+            Entity technologyOperationComponent = operationProductComponent.getBelongsToField(OPERATION_COMPONENT);
 
             List<Entity> children = technologyOperationComponent.getHasManyField(CHILDREN).find()
                     .add(SearchRestrictions.eq("isSubcontracting", true)).list().getEntities();

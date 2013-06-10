@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCED_QUANTITY;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.PRODUCT;
@@ -35,9 +34,10 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -52,21 +52,26 @@ public class BasicProductionCountingDetailsHooks {
 
     private static final String L_FINAL_PRODUCT = "03finalProduct";
 
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_PRODUCT_NAME_AND_NUMBER = "productNameAndNumber";
+
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
     private TechnologyService technologyService;
 
-    public void shouldDisableUsedProducedField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+    public void disableUsedProducedFieldDependsOfProductType(final ViewDefinitionState view) {
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent producedField = (FieldComponent) view.getComponentByReference(PRODUCED_QUANTITY);
         FieldComponent usedField = (FieldComponent) view.getComponentByReference(USED_QUANTITY);
-        Long basicProductionCountingId = form.getEntityId();
+
+        Long basicProductionCountingId = basicProductionCountingForm.getEntityId();
 
         if (basicProductionCountingId != null) {
-            final Entity basicProductionCounting = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(basicProductionCountingId);
+            final Entity basicProductionCounting = basicProductionCountingService
+                    .getBasicProductionCounting(basicProductionCountingId);
 
             Entity order = basicProductionCounting.getBelongsToField(ORDER);
             Entity technology = order.getBelongsToField(TECHNOLOGY);
@@ -86,45 +91,54 @@ public class BasicProductionCountingDetailsHooks {
         }
     }
 
-    public void getProductNameFromCounting(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
-        FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
+    public void fillProductNameAndNumberFields(final ViewDefinitionState view) {
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent productField = (FieldComponent) view.getComponentByReference(L_PRODUCT);
+        FieldComponent productNameAndNumberField = (FieldComponent) view.getComponentByReference(L_PRODUCT_NAME_AND_NUMBER);
 
-        if (formComponent.getEntityId() == null) {
+        Long basicProductionCoutningId = basicProductionCountingForm.getEntityId();
+
+        if (basicProductionCoutningId == null) {
             return;
         }
 
-        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(formComponent.getEntityId());
+        Entity basicProductionCounting = basicProductionCountingService.getBasicProductionCounting(basicProductionCoutningId);
 
-        if (basicProductionCountingEntity == null) {
+        if (basicProductionCounting == null) {
             return;
         }
 
-        Entity product = basicProductionCountingEntity.getBelongsToField(PRODUCT);
-        productField.setFieldValue(product.getField(NAME));
+        Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
+
+        String productNameAndNumber = product.getStringField(ProductFields.NUMBER) + " - " + product.getField(ProductFields.NAME);
+
+        productField.setFieldValue(productNameAndNumber);
         productField.requestComponentUpdateState();
+        productNameAndNumberField.setFieldValue(productNameAndNumber);
+        productNameAndNumberField.requestComponentUpdateState();
     }
 
-    public void fillFieldsCurrency(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+    public void fillUnitFields(final ViewDefinitionState view) {
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (form.getEntity() == null) {
+        Long basicProductionCountingId = basicProductionCountingForm.getEntityId();
+
+        if (basicProductionCountingId == null) {
             return;
         }
 
-        Entity basicProductionCountingEntity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING).get(form.getEntityId());
+        Entity basicProductionCountingEntity = basicProductionCountingService
+                .getBasicProductionCounting(basicProductionCountingId);
 
-        Entity product = basicProductionCountingEntity.getBelongsToField(PRODUCT);
+        Entity product = basicProductionCountingEntity.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
         if (product == null) {
             return;
         }
 
-        for (String reference : Arrays.asList("usedQuantityCurrency", "producedQuantityCurrency", "plannedQuantityCurrency")) {
+        for (String reference : Arrays.asList("plannedQuantityUnit", "usedQuantityUnit", "producedQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(product.getField("unit"));
+            field.setFieldValue(product.getField(ProductFields.UNIT));
             field.requestComponentUpdateState();
         }
     }

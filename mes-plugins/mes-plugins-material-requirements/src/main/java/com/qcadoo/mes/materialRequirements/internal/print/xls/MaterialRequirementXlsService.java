@@ -38,12 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.orders.util.EntityNumberComparator;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.report.api.SortUtil;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsHelper;
 
@@ -83,18 +81,22 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     protected void addSeries(final HSSFSheet sheet, final Entity entity) {
         int rowNum = 1;
         List<Entity> orders = entity.getManyToManyField("orders");
-        MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity
-                .getStringField(MRP_ALGORITHM));
+        MrpAlgorithm algorithm = MrpAlgorithm.parseString(entity.getStringField(MRP_ALGORITHM));
 
-        Map<Entity, BigDecimal> products = productQuantitiesService.getNeededProductQuantities(orders, algorithm);
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
+                true);
 
-        products = SortUtil.sortMapUsingComparator(products, new EntityNumberComparator());
-        for (Entry<Entity, BigDecimal> entry : products.entrySet()) {
+        // TODO LUPO fix comparator
+        // neededProductQuantities = SortUtil.sortMapUsingComparator(neededProductQuantities, new EntityNumberComparator());
+
+        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+
             HSSFRow row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(entry.getKey().getField("number").toString());
-            row.createCell(1).setCellValue(entry.getKey().getField("name").toString());
-            row.createCell(2).setCellValue(numberService.setScale(entry.getValue()).doubleValue());
-            Object unit = entry.getKey().getField("unit");
+            row.createCell(0).setCellValue(product.getField("number").toString());
+            row.createCell(1).setCellValue(product.getField("name").toString());
+            row.createCell(2).setCellValue(numberService.setScale(neededProductQuantity.getValue()).doubleValue());
+            Object unit = product.getField("unit");
             if (unit == null) {
                 row.createCell(3).setCellValue("");
             } else {

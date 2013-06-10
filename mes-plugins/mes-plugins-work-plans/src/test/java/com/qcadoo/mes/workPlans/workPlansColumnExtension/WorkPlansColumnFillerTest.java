@@ -33,7 +33,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +45,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -144,8 +144,8 @@ public class WorkPlansColumnFillerTest {
         EntityList prodOutComps = mockEntityList(new ArrayList<Entity>());
         given(operComp.getHasManyField("operationProductOutComponents")).willReturn(prodOutComps);
 
-        HashMap<Entity, BigDecimal> quantities = new HashMap<Entity, BigDecimal>();
-        quantities.put(productComponent, new BigDecimal(11));
+        Map<Long, BigDecimal> quantities = Maps.newHashMap();
+        quantities.put(productComponent.getId(), new BigDecimal(11));
         given(productQuantitiesService.getProductComponentQuantities(orders)).willReturn(quantities);
 
         // when
