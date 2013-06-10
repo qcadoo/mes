@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="productionCountingQuantityDetails" modelName="productionCountingQuantity">
+
+	<component type="window" name="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" />
+		</ribbon>
+
+		<component type="form" name="productionCountingQuantityDetails"
+			reference="form">
+			<component type="gridLayout" name="gridLayout" columns="3"
+				rows="5" hasBorders="false">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="technologyOperationComponent"
+						field="technologyOperationComponent" reference="technologyOperationComponent">
+						<option type="column" name="operationNumber" fields="operation"
+							expression="#operation.get('number')" link="true" />
+						<option type="column" name="operationName" fields="operation"
+							expression="#operation.get('name')" link="true" />
+
+						<option type="searchable" value="nodeNumber,operationNumber,operationName" />
+						<option type="orderable" value="nodeNumber,operationNumber,operationName" />
+
+						<option type="expression" value="#operation.get('name')" />
+						<option type="fieldCode" value="nodeNumber" />
+
+						<option type="required" value="true" />
+
+						<criteriaModifier
+							class="com.qcadoo.mes.basicProductionCounting.criteriaModifiers.TechnologyOperationComponentLookupCriteriaModifier"
+							method="restrictTechnologyOperationComponentsToOrderTechnology" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="lookup" name="product" field="product"
+						reference="product">
+						<option type="column" name="name" fields="name" link="true" />
+
+						<option type="searchable" value="name,number" />
+						<option type="orderable" value="name,number" />
+
+						<option type="expression" value="#number + ' - ' + #name" />
+						<option type="fieldCode" value="number" />
+
+						<listener
+							class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityDetailsListeners"
+							method="fillUnitFields" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="gridLayout" name="quantitiesGridLayout"
+						columns="1" rows="1" hasBorders="false">
+						<layoutElement column="1" row="1">
+							<component type="gridLayout" name="plannedQuantityGridLayout"
+								reference="plannedQuantityGridLayout" columns="4" rows="1"
+								hasBorders="false">
+								<layoutElement column="1" row="1" width="3">
+									<component type="input" name="plannedQuantity" field="plannedQuantity"
+										reference="plannedQuantity">
+										<option type="alignment" value="right" />
+										<option type="labelWidth" value="50" />
+									</component>
+								</layoutElement>
+								<layoutElement column="4" row="1">
+									<component type="input" name="plannedQuantityUnit"
+										reference="plannedQuantityUnit" defaultEnabled="false"
+										hasLabel="false">
+									</component>
+								</layoutElement>
+							</component>
+						</layoutElement>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="4">
+					<component type="select" name="role" field="role"
+						reference="role">
+						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="5">
+					<component type="select" name="typeOfMaterial" field="typeOfMaterial"
+						reference="typeOfMaterial">
+						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+			</component>
+
+			<option type="header" value="true" />
+			<option type="expression" value="" />
+		</component>
+
+	</component>
+
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="disableFieldsDependsOfState" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="setCriteriaModifierParameters" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="fillProductField" />
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityDetailsHooks"
+			method="fillUnitFields" />
+	</hooks>
+
+</view>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.2.0
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="detailedProductionCountingList" modelName="order" modelPlugin="orders">
+
+	<component type="window" name="window">
+
+		<ribbon>
+			<group template="navigation" />
+
+			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+		</ribbon>
+
+		<component type="form" name="order" reference="order" />
+		<component type="form" name="basicProductionCounting"
+			reference="form">
+			<component type="grid" name="productionCountingQuantities" reference="grid"
+				source="#{order}.productionCountingQuantities">
+				<option type="column" name="productNumber" fields="product"
+					expression="#product['number']" link="true" />
+				<option type="column" name="productName" fields="product"
+					expression="#product['name']" link="true" />
+				<option type="column" name="nodeNumber" fields="technologyOperationComponent"
+					expression="#technologyOperationComponent?.get('nodeNumber')"
+					link="true" />
+				<option type="column" name="operationNumber" fields="technologyOperationComponent"
+					expression="#technologyOperationComponent?.get('operation')?.get('number')"
+					link="true" />
+				<option type="column" name="operationName" fields="technologyOperationComponent"
+					expression="#technologyOperationComponent?.get('operation')?.get('name')"
+					link="true" />
+				<option type="column" name="role" fields="role" link="true" />
+				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+					link="true" />
+				<option type="column" name="plannedQuantity" fields="plannedQuantity" />
+				<option type="column" name="productUnit" fields="product"
+					expression="#product['unit']" />
+
+				<option type="order" column="nodeNumber" direction="desc" />
+
+				<option type="correspondingView"
+					value="basicProductionCounting/productionCountingQuantityDetails" />
+				<option type="correspondingComponent" value="form" />
+
+				<option type="creatable" value="true" />
+				<option type="deletable" value="true" />
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+				<option type="fixedHeight" value="true" />
+				
+				<option type="hasPredefinedFilters" value="true" />
+			
+				<predefinedFilters>
+					<predefinedFilter name="all">
+					</predefinedFilter>
+					<predefinedFilter name="components">
+						<filterRestriction column="typeOfMaterial" value="01component" />
+					</predefinedFilter>
+					<predefinedFilter name="intermediates">
+						<filterRestriction column="typeOfMaterial" value="02intermediate" />
+					</predefinedFilter>
+					<predefinedFilter name="finalProduct">
+						<filterRestriction column="typeOfMaterial" value="03finalProduct" />
+					</predefinedFilter>
+					<predefinedFilter name="wastes">
+						<filterRestriction column="typeOfMaterial" value="04waste" />
+					</predefinedFilter>
+				</predefinedFilters>
+			</component>
+		</component>
+
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
+			method="setUneditableGridWhenOrderTypeRecordingIsBasic" />
+	</hooks>
+
+</view>
