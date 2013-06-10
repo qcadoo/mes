@@ -240,8 +240,7 @@
 			</component>
 			<option type="header" value="true" />
 			<option type="expression" value="#number" />
-			<listener event="showOrderParameters" method="showOrderParameters"
-				class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" />
+
 			<listener event="generateRealizationTime" method="generateRealizationTime" 
 				class="com.qcadoo.mes.productionScheduling.OrderTimePredictionService"	/>
 			<listener event="copyRealizationTime" method="copyRealizationTime"
