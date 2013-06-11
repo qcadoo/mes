@@ -200,7 +200,7 @@ public class OrderDetailsListeners {
     }
 
     public void setFieldsVisibility(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        orderDetailsHooks.setFieldsVisibility(view);
+        orderDetailsHooks.setFieldsVisibilityAndFill(view);
     }
 
 }

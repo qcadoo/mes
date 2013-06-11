@@ -41,6 +41,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTIO
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
 import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.BASIC_MODEL_PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
 import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_NUMBER;
@@ -61,6 +62,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -77,6 +79,7 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -114,6 +117,9 @@ public class OrderDetailsHooks {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         orderService.fillProductionLine(view);
@@ -314,6 +320,30 @@ public class OrderDetailsHooks {
         boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
 
         changeFieldsVisibility(view, PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+    }
+
+    public void setFieldsVisibilityAndFill(final ViewDefinitionState view) {
+        FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+
+        boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
+
+        changeFieldsVisibility(view, PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+        if (selectForPatternTechnology) {
+            LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+            FieldComponent technology = (FieldComponent) view.getComponentByReference(TECHNOLOGY);
+            FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
+
+            Entity product = productLookup.getEntity();
+            defaultTechnology.setFieldValue("");
+            technology.setFieldValue(null);
+            if (product != null) {
+                Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+                if (defaultTechnologyEntity != null) {
+                    technology.setFieldValue(defaultTechnologyEntity.getId());
+                }
+            }
+
+        }
     }
 
     private void changeFieldsVisibility(final ViewDefinitionState view, final List<String> fieldNames,

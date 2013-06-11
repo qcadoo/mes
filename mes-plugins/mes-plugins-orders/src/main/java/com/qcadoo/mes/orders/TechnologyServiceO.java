@@ -75,7 +75,26 @@ public class TechnologyServiceO {
                     newCopyOfTechnology = copyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
                     order.setField(OrderFields.COPY_OF_TECHNOLOGY, newCopyOfTechnology);
 
+                } else if (technologyWasChanged(order)) {
+                    Entity copyOfTechnology = order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY);
+                    Entity orderDB = orderDD.get(order.getId());
+                    orderDB.setField(OrderFields.COPY_OF_TECHNOLOGY, null);
+                    orderDB.getDataDefinition().save(orderDB);
+
+                    technologyDD.delete(copyOfTechnology.getId());
+
+                    Entity newCopyOfTechnology = technologyDD.create();
+                    newCopyOfTechnology = technologyDD.copy(order.getBelongsToField(TECHNOLOGY).getId()).get(0);
+                    newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
+                            TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
+                    newCopyOfTechnology.setField("patternTechnology", order.getBelongsToField(TECHNOLOGY));
+                    newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE,
+                            TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
+                    newCopyOfTechnology = copyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
+                    order.setField(OrderFields.COPY_OF_TECHNOLOGY, newCopyOfTechnology);
+
                 }
+
             } else {
                 if (getExistingOrder(order) == null) {
                     Entity copyOfTechnology = technologyDD.create();
@@ -88,25 +107,6 @@ public class TechnologyServiceO {
                     copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
                     order.setField(OrderFields.COPY_OF_TECHNOLOGY, copyOfTechnology);
                 }
-            }
-            if (technologyWasChanged(order)) {
-                Entity copyOfTechnology = order.getBelongsToField(OrderFields.COPY_OF_TECHNOLOGY);
-                Entity orderDB = orderDD.get(order.getId());
-                orderDB.setField(OrderFields.COPY_OF_TECHNOLOGY, null);
-                orderDB.getDataDefinition().save(orderDB);
-
-                technologyDD.delete(copyOfTechnology.getId());
-
-                Entity newCopyOfTechnology = technologyDD.create();
-                newCopyOfTechnology = technologyDD.copy(order.getBelongsToField(TECHNOLOGY).getId()).get(0);
-                newCopyOfTechnology.setField(TechnologyFields.NUMBER, numberGeneratorService.generateNumber(
-                        TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY));
-                newCopyOfTechnology.setField("patternTechnology", order.getBelongsToField(TECHNOLOGY));
-                newCopyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE,
-                        TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
-                newCopyOfTechnology = copyOfTechnology.getDataDefinition().save(newCopyOfTechnology);
-                order.setField(OrderFields.COPY_OF_TECHNOLOGY, newCopyOfTechnology);
-
             }
         } else if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
 
