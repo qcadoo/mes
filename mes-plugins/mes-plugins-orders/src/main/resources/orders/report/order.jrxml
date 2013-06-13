@@ -18,10 +18,10 @@
 			company.flat AS flat,
 			company.zipCode AS zipCode,
 			company.city AS city,
-			company.country AS country,
 			company.email AS email,
 			company.phone AS phone,
 			company.tax AS tax,
+			country.country AS country,
 			parameter.additionalTextInFooter AS additional_text,
 			orders.number AS orders_order_number,
 			orders.name AS orders_order_name,
@@ -58,6 +58,7 @@
 			) AS orders_order_endworker
 			FROM 
 			com.qcadoo.model.beans.basic.BasicCompany AS company, 
+			com.qcadoo.model.beans.basic.BasicCountry AS country, 
 			com.qcadoo.model.beans.basic.BasicParameter AS parameter,
 			com.qcadoo.model.beans.orders.OrdersOrder AS orders 
 			LEFT OUTER JOIN
@@ -65,7 +66,7 @@
 			LEFT OUTER JOIN
 			orders.product AS product 
 			WHERE 
-			orders.id IN ($P{EntityIds}) AND company.id = parameter.company
+			orders.id IN ($P{EntityIds}) AND company.id = parameter.company AND country.id = company.country
 			]]>
 	</queryString>
 	<field name="company_name" class="java.lang.String"/>
