@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mes-plugins</artifactId>
 		<groupId>com.qcadoo.mes</groupId>
-		<version>1.2.1-SNAPSHOT</version>
+		<version>1.2.1-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-tech-subcontracting</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
+			<version>1.2.1-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-operational-tasks-for-orders</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
+			<version>1.2.1-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 
